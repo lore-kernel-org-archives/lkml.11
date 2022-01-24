@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E56C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51E9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444394AbiAXVAu (ORCPT
+        id S1444460AbiAXVA7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:00:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385443AbiAXUdZ (ORCPT
+        Mon, 24 Jan 2022 16:00:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59758 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387145AbiAXUg1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD2BC07E294;
-        Mon, 24 Jan 2022 11:45:10 -0800 (PST)
+        Mon, 24 Jan 2022 15:36:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6861261482;
-        Mon, 24 Jan 2022 19:45:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29597C340E5;
-        Mon, 24 Jan 2022 19:45:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDB561506;
+        Mon, 24 Jan 2022 20:36:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FB22C340E5;
+        Mon, 24 Jan 2022 20:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053509;
-        bh=WCqmV5V7bA9Ezs5dDtJnZCm+j+H3lnDU0oaDy3hIKIk=;
+        s=korg; t=1643056586;
+        bh=1XtZLBYLo8vRVDv6RwMfDJXo36eB71DbQs/OchA+8xU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QnGnXvNoylRzfJge4HSOq5tlA7cfwyuBCZ4VqET7tJgWkLgDXxWPQQR8lHoI6kAzz
-         Q8DGzxvORENUE6X+sbRgzB9hMNehrsTcEQXwHcd77X5SiBwl5pSOeTZgzdj2wm1KxX
-         G0bHa8Gon9oHj2L/GbaIKRnWyRHUchylSxYBowMs=
+        b=16H8C59woIAAolXgC7Zxhoop45LF4KPF4r2xvY3iaP1WIvuRgEltpJfoCGwcFqi6z
+         3Rh0ax3QARyfQdbkkq550rFQMGkpf7JP4+hz4OUMEyG37TVL7bwZ914/ftPXqHjqm8
+         r9vfXvIw0qCvcZTitp6bNHgnaO8kJvCFjIKiiLkE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Venkateswara Naralasetty <vnaralas@codeaurora.org>,
-        Sven Eckelmann <sven@narfation.org>,
-        Karthikeyan Kathirvel <kathirve@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Wander Lairson Costa <wander@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 088/563] ath11k: reset RSN/WPA present state for open BSS
-Date:   Mon, 24 Jan 2022 19:37:33 +0100
-Message-Id: <20220124184027.439684369@linuxfoundation.org>
+Subject: [PATCH 5.15 532/846] rcutorture: Avoid soft lockup during cpu stall
+Date:   Mon, 24 Jan 2022 19:40:49 +0100
+Message-Id: <20220124184119.354074053@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,57 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karthikeyan Kathirvel <kathirve@codeaurora.org>
+From: Wander Lairson Costa <wander@redhat.com>
 
-[ Upstream commit 64bc3aa02ae78b1fcb1b850e0eb1f0622002bfaa ]
+[ Upstream commit 5ff7c9f9d7e3e0f6db5b81945fa11b69d62f433a ]
 
-The ath11k driver is caching the information about RSN/WPA IE in the
-configured beacon template. The cached information is used during
-associations to figure out whether 4-way PKT/2-way GTK peer flags need to
-be set or not.
+If we use the module stall_cpu option, we may get a soft lockup warning
+in case we also don't pass the stall_cpu_block option.
 
-But the code never cleared the state when no such IE was found. This can
-for example happen when moving from an WPA/RSN to an open setup. The
-(seemingly connected) peer was then not able to communicate over the
-link because the firmware assumed a different (encryption enabled) state
-for the peer.
+Introduce the stall_no_softlockup option to avoid a soft lockup on
+cpu stall even if we don't use the stall_cpu_block option.
 
-Tested-on: IPQ6018 hw1.0 AHB WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
-
-Fixes: 01e34233c645 ("ath11k: fix wmi peer flags in peer assoc command")
-Cc: Venkateswara Naralasetty <vnaralas@codeaurora.org>
-Reported-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Karthikeyan Kathirvel <kathirve@codeaurora.org>
-[sven@narfation.org: split into separate patches, clean up commit message]
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211115100441.33771-2-sven@narfation.org
+Signed-off-by: Wander Lairson Costa <wander@redhat.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ kernel/rcu/rcutorture.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 304e158f09751..b4f8494e3c707 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -792,11 +792,15 @@ static int ath11k_mac_setup_bcn_tmpl(struct ath11k_vif *arvif)
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 968696ace8f3f..f922937eb39ad 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -46,6 +46,7 @@
+ #include <linux/oom.h>
+ #include <linux/tick.h>
+ #include <linux/rcupdate_trace.h>
++#include <linux/nmi.h>
  
- 	if (cfg80211_find_ie(WLAN_EID_RSN, ies, (skb_tail_pointer(bcn) - ies)))
- 		arvif->rsnie_present = true;
-+	else
-+		arvif->rsnie_present = false;
+ #include "rcu.h"
  
- 	if (cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
- 				    WLAN_OUI_TYPE_MICROSOFT_WPA,
- 				    ies, (skb_tail_pointer(bcn) - ies)))
- 		arvif->wpaie_present = true;
-+	else
-+		arvif->wpaie_present = false;
- 
- 	ret = ath11k_wmi_bcn_tmpl(ar, arvif->vdev_id, &offs, bcn);
- 
+@@ -109,6 +110,8 @@ torture_param(int, shutdown_secs, 0, "Shutdown time (s), <= zero to disable.");
+ torture_param(int, stall_cpu, 0, "Stall duration (s), zero to disable.");
+ torture_param(int, stall_cpu_holdoff, 10,
+ 	     "Time to wait before starting stall (s).");
++torture_param(bool, stall_no_softlockup, false,
++	     "Avoid softlockup warning during cpu stall.");
+ torture_param(int, stall_cpu_irqsoff, 0, "Disable interrupts while stalling.");
+ torture_param(int, stall_cpu_block, 0, "Sleep while stalling.");
+ torture_param(int, stall_gp_kthread, 0,
+@@ -2052,6 +2055,8 @@ static int rcu_torture_stall(void *args)
+ #else
+ 				schedule_timeout_uninterruptible(HZ);
+ #endif
++			} else if (stall_no_softlockup) {
++				touch_softlockup_watchdog();
+ 			}
+ 		if (stall_cpu_irqsoff)
+ 			local_irq_enable();
 -- 
 2.34.1
 
