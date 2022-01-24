@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC91C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDD8C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850149AbiAXX1c (ORCPT
+        id S1850096AbiAXX1Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:27:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39076 "EHLO
+        Mon, 24 Jan 2022 18:27:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588190AbiAXWbj (ORCPT
+        with ESMTP id S1588121AbiAXWbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:31:39 -0500
+        Mon, 24 Jan 2022 17:31:41 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AA21C09541E;
-        Mon, 24 Jan 2022 12:57:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44298C02B86B;
+        Mon, 24 Jan 2022 12:56:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18AB86130D;
-        Mon, 24 Jan 2022 20:57:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF2A7C340E7;
-        Mon, 24 Jan 2022 20:57:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9DE460916;
+        Mon, 24 Jan 2022 20:56:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7283C340E7;
+        Mon, 24 Jan 2022 20:56:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057834;
-        bh=Orco0cUg8wur0xcjUoBZQdIb4V8qqvT0qtwNt+7/SYY=;
+        s=korg; t=1643057773;
+        bh=WpOyy6PjwGpfsS2pWgBqOag+9MmARwpgbKe9wRIksXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eRjZAcRdsaCiLQDvlGCJj2ysaCzWpyFswdDvylQo8Jwyw9geVI+/cB5Rro/DnEfFQ
-         fLEvcV21LGLWIwpjjDPcRgBlGkTuTGUASAkyJhnn5aUNVMB7S8+7bcDWJLeiNaoO22
-         0GtNXNHxTek+kQo7DtvnbSBJhXJ7Q0QMhjzIWodw=
+        b=CKFZ/W+EyF5deTdMRPVKYZ7Ow9alcn3mGa3ZvgjOqmon3iM2ESh63X5SAeZ6GQ49t
+         Ur86ahDRIDDLnMa2Dc5dvohQGNvDZDNeG5yV/RqtyS4z0M01lIsqq/frrJbCiMDqtd
+         LyWC8ZgFHBvBonSXtTkANr5HJwBnUt42i84b66dE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0095/1039] clk: bcm-2835: Remove rounding up the dividers
-Date:   Mon, 24 Jan 2022 19:31:24 +0100
-Message-Id: <20220124184128.347023426@linuxfoundation.org>
+        stable@vger.kernel.org, Sam Bingner <sam@bingner.com>,
+        Yifeng Li <tomli@tomli.me>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: [PATCH 5.16 0074/1039] PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
+Date:   Mon, 24 Jan 2022 19:31:03 +0100
+Message-Id: <20220124184127.660334615@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,82 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Yifeng Li <tomli@tomli.me>
 
-[ Upstream commit 8ca011ef4af48a7af7b15afd8a4a44039dd04cea ]
+commit e445375882883f69018aa669b67cbb37ec873406 upstream.
 
-The driver, once it found a divider, tries to round it up by increasing
-the least significant bit of the fractional part by one when the
-round_up argument is set and there's a remainder.
+Like other SATA controller chips in the Marvell 88SE91xx series, the
+Marvell 88SE9125 has the same DMA requester ID hardware bug that prevents
+it from working under IOMMU.  Add it to the list of devices that need the
+quirk.
 
-However, since it increases the divider it will actually reduce the
-clock rate below what we were asking for, leading to issues with
-clk_set_min_rate() that will complain that our rounded clock rate is
-below the minimum of the rate.
+Without this patch, device initialization fails with DMA errors:
 
-Since the dividers are fairly precise already, let's remove that part so
-that we can have clk_set_min_rate() working.
+  ata8: softreset failed (1st FIS failed)
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Read NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
 
-This is effectively a revert of 9c95b32ca093 ("clk: bcm2835: add a round
-up ability to the clock divisor").
+After applying the patch, the controller can be successfully initialized:
 
-Fixes: 9c95b32ca093 ("clk: bcm2835: add a round up ability to the clock divisor")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-3-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  ata8: SATA link up 1.5 Gbps (SStatus 113 SControl 330)
+  ata8.00: ATAPI: PIONEER BD-RW   BDR-207M, 1.21, max UDMA/100
+  ata8.00: configured for UDMA/100
+  scsi 7:0:0:0: CD-ROM            PIONEER  BD-RW   BDR-207M 1.21 PQ: 0 ANSI: 5
+
+Link: https://lore.kernel.org/r/YahpKVR+McJVDdkD@work
+Reported-by: Sam Bingner <sam@bingner.com>
+Tested-by: Sam Bingner <sam@bingner.com>
+Tested-by: Yifeng Li <tomli@tomli.me>
+Signed-off-by: Yifeng Li <tomli@tomli.me>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/bcm/clk-bcm2835.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/pci/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index bf97b2b2a63f8..3667b4d731e71 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -932,8 +932,7 @@ static int bcm2835_clock_is_on(struct clk_hw *hw)
- 
- static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
- 				    unsigned long rate,
--				    unsigned long parent_rate,
--				    bool round_up)
-+				    unsigned long parent_rate)
- {
- 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
- 	const struct bcm2835_clock_data *data = clock->data;
-@@ -945,10 +944,6 @@ static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
- 
- 	rem = do_div(temp, rate);
- 	div = temp;
--
--	/* Round up and mask off the unused bits */
--	if (round_up && ((div & unused_frac_mask) != 0 || rem != 0))
--		div += unused_frac_mask + 1;
- 	div &= ~unused_frac_mask;
- 
- 	/* different clamping limits apply for a mash clock */
-@@ -1079,7 +1074,7 @@ static int bcm2835_clock_set_rate(struct clk_hw *hw,
- 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
- 	struct bcm2835_cprman *cprman = clock->cprman;
- 	const struct bcm2835_clock_data *data = clock->data;
--	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate, false);
-+	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate);
- 	u32 ctl;
- 
- 	spin_lock(&cprman->regs_lock);
-@@ -1130,7 +1125,7 @@ static unsigned long bcm2835_clock_choose_div_and_prate(struct clk_hw *hw,
- 
- 	if (!(BIT(parent_idx) & data->set_rate_parent)) {
- 		*prate = clk_hw_get_rate(parent);
--		*div = bcm2835_clock_choose_div(hw, rate, *prate, true);
-+		*div = bcm2835_clock_choose_div(hw, rate, *prate);
- 
- 		*avgrate = bcm2835_clock_rate_from_divisor(clock, *prate, *div);
- 
--- 
-2.34.1
-
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4103,6 +4103,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_M
+ 			 quirk_dma_func1_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
+ 			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c136 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9125,
++			 quirk_dma_func1_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9128,
+ 			 quirk_dma_func1_alias);
+ /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
 
 
