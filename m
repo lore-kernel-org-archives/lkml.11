@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89B3FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A61C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314843AbiAYCv6 (ORCPT
+        id S1314806AbiAYCvs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:58 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57682 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359375AbiAXVFN (ORCPT
+        Mon, 24 Jan 2022 21:51:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347317AbiAXVFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:13 -0500
+        Mon, 24 Jan 2022 16:05:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C712C055A97;
+        Mon, 24 Jan 2022 12:04:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C574761515;
-        Mon, 24 Jan 2022 21:05:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF7C3C36B00;
-        Mon, 24 Jan 2022 21:05:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09BF161357;
+        Mon, 24 Jan 2022 20:04:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB007C340E5;
+        Mon, 24 Jan 2022 20:04:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058312;
-        bh=awbqRVaIUfFP7Xv7D24AO89VIJbRkobad3YVxWh0VP8=;
+        s=korg; t=1643054671;
+        bh=TCMAxjkJB9dgoIXSVmuuBks01Ti+Fg5Kyhrp6E1okHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ybrbtZuNzGf11dZ94yijVVrOfP+sob45sgPbt7gWkuHTK9WWNkzCoesglw1LjfANi
-         ybNGTlGMWLY2ge276D3EJcfQmCGYn78/el3s7he0GcTNnXh3PevhhwTR6mPUHdWNsc
-         6BEYp1+b5/cCtslB097wWFUQdGRHnW2FCQzWY+h8=
+        b=DlqVVy0Ri6sg23/kQTRjdVd/x31vNOqjesvEa0NlsqOD4GYPRA7DDaZJtJxJwjVKa
+         EA+ehfVAXiU3c3O7MXaTgfFrsvJTKbvLT46WsyfxDMVyKa3u6gCHgorvLh3kkYgiN0
+         RrWanrZ/q3Kk/ad3fuwHELo0lf85K6PsrkoKbdSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Jay Chen <jkchen@linux.alibaba.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0248/1039] media: saa7146: mxb: Fix a NULL pointer dereference in mxb_attach()
-Date:   Mon, 24 Jan 2022 19:33:57 +0100
-Message-Id: <20220124184133.668160752@linuxfoundation.org>
+Subject: [PATCH 5.10 433/563] irqchip/gic-v4: Disable redistributors view of the VPE table at boot time
+Date:   Mon, 24 Jan 2022 19:43:18 +0100
+Message-Id: <20220124184039.425602485@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,62 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 0407c49ebe330333478440157c640fffd986f41b ]
+[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
 
-In mxb_attach(dev, info), saa7146_vv_init() is called to allocate a
-new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of mxb_probe(dev). There is a dereference of dev->vv_data
-in saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init().
+Jay Chen reported that using a kdump kernel on a GICv4.1 system
+results in a RAS error being delivered when the secondary kernel
+configures the ITS's view of the new VPE table.
 
-Fix this bug by adding a check of saa7146_vv_init().
+As it turns out, that's because each RD still has a pointer to
+the previous instance of the VPE table, and that particular
+implementation is very upset by seeing two bits of the HW that
+should point to the same table with different values.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+To solve this, let's invalidate any reference that any RD has to
+the VPE table when discovering the RDs. The ITS can then be
+programmed as expected.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_MXB=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 03b1930efd3c ("V4L/DVB: saa7146: fix regression of the av7110/budget-av driver")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-by: Jay Chen <jkchen@linux.alibaba.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
+Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/mxb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/media/pci/saa7146/mxb.c b/drivers/media/pci/saa7146/mxb.c
-index 73fc901ecf3db..bf0b9b0914cd5 100644
---- a/drivers/media/pci/saa7146/mxb.c
-+++ b/drivers/media/pci/saa7146/mxb.c
-@@ -683,10 +683,16 @@ static struct saa7146_ext_vv vv_data;
- static int mxb_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 1bdb7acf445f4..04d1b3963b6ba 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -915,6 +915,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
  {
- 	struct mxb *mxb;
-+	int ret;
+ 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
  
- 	DEB_EE("dev:%p\n", dev);
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		ERR("Error in saa7146_vv_init()");
-+		return ret;
++	/* Boot-time cleanip */
++	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
++		u64 val;
++
++		/* Deactivate any present vPE */
++		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
++		if (val & GICR_VPENDBASER_Valid)
++			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
++					      ptr + SZ_128K + GICR_VPENDBASER);
++
++		/* Mark the VPE table as invalid */
++		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
++		val &= ~GICR_VPROPBASER_4_1_VALID;
++		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
 +	}
 +
- 	if (mxb_probe(dev)) {
- 		saa7146_vv_release(dev);
- 		return -1;
+ 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
+ 
+ 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
 -- 
 2.34.1
 
