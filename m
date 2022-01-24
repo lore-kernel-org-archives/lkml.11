@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1056C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 332C8C35271
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360588AbiAXXhD (ORCPT
+        id S2360191AbiAXXgL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:37:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
+        Mon, 24 Jan 2022 18:36:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382661AbiAXW4E (ORCPT
+        with ESMTP id S1838742AbiAXWsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:56:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44224C055AA9;
-        Mon, 24 Jan 2022 13:11:13 -0800 (PST)
+        Mon, 24 Jan 2022 17:48:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D136AC068097;
+        Mon, 24 Jan 2022 13:07:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AC59B8123A;
-        Mon, 24 Jan 2022 21:11:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EE66C340E5;
-        Mon, 24 Jan 2022 21:11:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 625FB60E8D;
+        Mon, 24 Jan 2022 21:07:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B827C340E5;
+        Mon, 24 Jan 2022 21:07:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058670;
-        bh=Wjq8KJMxSK1M36zLBibg6MlMLF1ZI3aYOkSq2/bc0Lo=;
+        s=korg; t=1643058441;
+        bh=8e00U0sygiDjy9t1dLdGDBMdtS4FVv8xGfSfW3y8oLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Msj8iebwpRksyHWuDo3gNlIS4uHSMK0Z6e4RBWjLLu17+NE16jxMKzeVyh78ClQNJ
-         55dsENO4COZD3ZxAcL/wVlt2IaI2jc/mlngn/iZwUqKZCcpsvRfUjyqUTmflWgK77v
-         HmJ0cT5W/V3v2ceUh7SEL3Y24wuTiM2dmGOjv+EY=
+        b=bDuvcUxnPJZygDdKezPWYDV3ArJen/JVrnIuhmEW/YV30t2phHKBd7gOuZYLkQTvO
+         E/ic5ymnrotZqjvgadaYE7MK6W8L6InHQaZUrrCCmIn8ubA02YdhItQvQAWJzdpa2i
+         wBYPUukIVSTxm8W4l/iJauatxM2KfJpmZWRVpYMk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0363/1039] drm/amd/display: fix dereference before NULL check
-Date:   Mon, 24 Jan 2022 19:35:52 +0100
-Message-Id: <20220124184137.484891008@linuxfoundation.org>
+Subject: [PATCH 5.16 0290/1039] net: dsa: hellcreek: Add STP forwarding rule
+Date:   Mon, 24 Jan 2022 19:34:39 +0100
+Message-Id: <20220124184135.028681639@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,43 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-[ Upstream commit f28cad86ada1a7345d7bbd379bef5a8babfa791b ]
+[ Upstream commit b7ade35eb53a2455f737a623c24e4b24455b2271 ]
 
-The "plane_state" pointer was access before checking if it was NULL.
+Treat STP as management traffic. STP traffic is designated for the CPU port
+only. In addition, STP traffic has to pass blocked ports.
 
-Avoid a possible NULL pointer dereference by accessing the plane
-address after the check.
-
-Addresses-Coverity-ID: 1493892 ("Dereference before null check")
-Fixes: 3f68c01be9a22 ("drm/amd/display: add cyan_skillfish display support")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn201/dcn201_hwseq.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/hirschmann/hellcreek.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_hwseq.c b/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_hwseq.c
-index cfd09b3f705e9..fe22530242d2e 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_hwseq.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn201/dcn201_hwseq.c
-@@ -134,11 +134,12 @@ void dcn201_update_plane_addr(const struct dc *dc, struct pipe_ctx *pipe_ctx)
- 	PHYSICAL_ADDRESS_LOC addr;
- 	struct dc_plane_state *plane_state = pipe_ctx->plane_state;
- 	struct dce_hwseq *hws = dc->hwseq;
--	struct dc_plane_address uma = plane_state->address;
-+	struct dc_plane_address uma;
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index bb1a24c8078be..b488990b5b06e 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -1074,6 +1074,17 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+ 		.reprio_en    = 1,
+ 	};
++	static struct hellcreek_fdb_entry stp = {
++		/* MAC: 01-80-C2-00-00-00 */
++		.mac	      = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 },
++		.portmask     = 0x03,	/* Management ports */
++		.age	      = 0,
++		.is_obt	      = 0,
++		.pass_blocked = 1,
++		.is_static    = 1,
++		.reprio_tc    = 6,
++		.reprio_en    = 1,
++	};
+ 	int ret;
  
- 	if (plane_state == NULL)
- 		return;
+ 	mutex_lock(&hellcreek->reg_lock);
+@@ -1081,6 +1092,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 	if (ret)
+ 		goto out;
+ 	ret = __hellcreek_fdb_add(hellcreek, &p2p);
++	if (ret)
++		goto out;
++	ret = __hellcreek_fdb_add(hellcreek, &stp);
+ out:
+ 	mutex_unlock(&hellcreek->reg_lock);
  
-+	uma = plane_state->address;
- 	addr_patched = patch_address_for_sbs_tb_stereo(pipe_ctx, &addr);
- 
- 	plane_address_in_gpu_space_to_uma(hws, &uma);
 -- 
 2.34.1
 
