@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78282C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F46C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356596AbiAXTtX (ORCPT
+        id S1350163AbiAXTtb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:49:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59656 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349112AbiAXTio (ORCPT
+        Mon, 24 Jan 2022 14:49:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36706 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353484AbiAXTjC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:38:44 -0500
+        Mon, 24 Jan 2022 14:39:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39BBFB8122F;
-        Mon, 24 Jan 2022 19:38:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A569C340E5;
-        Mon, 24 Jan 2022 19:38:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E72D861488;
+        Mon, 24 Jan 2022 19:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5273C340E8;
+        Mon, 24 Jan 2022 19:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053122;
-        bh=j8QhFAcoP5YnbewakrrigomulAjYONylTaD5Y1/NRwM=;
+        s=korg; t=1643053140;
+        bh=SkxgkeQKtRzsXP4qhrbvLWmh+8iL7PKLaOqj4Z1DGOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zpNsqtbCGHfMTLfB0p7FMHPteZVZUdGf2S+r8v7EkBPRq5euAMngD+dLVmPdoqIRZ
-         AeJfg5UB+lpV/euga+F8q2Z7KGC2O/tu/XQvA789Mtk/UjWWnhrbImZwfb4d9lB8s+
-         gWcT65vc/dVYxHL2fCXgGGBwbucfw+1M/UVzVuBk=
+        b=xU+gvj78NmToGMFgaMO3Zbs1kq1CykbkBIXxJydaHLaWFvUgFQ58p4aAQzzIwGeav
+         /GaApy7Bse7lrshFkzjV/8sJ5vPMcx2td9khEORSdtsiFP6cwY7eM0OTFWGJctHQfW
+         zxrI+dGgUvpf4YO6yRs8AwQtXp5PoN6XYayA6n9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.4 284/320] dmaengine: stm32-mdma: fix STM32_MDMA_CTBR_TSEL_MASK
-Date:   Mon, 24 Jan 2022 19:44:28 +0100
-Message-Id: <20220124184003.630479015@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 290/320] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
+Date:   Mon, 24 Jan 2022 19:44:34 +0100
+Message-Id: <20220124184003.818013973@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,31 +46,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-commit e7f110889a87307fb0fed408a5dee1707796ca04 upstream.
+commit 3f7c239c7844d2044ed399399d97a5f1c6008e1b upstream.
 
-This patch fixes STM32_MDMA_CTBR_TSEL_MASK, which is [5:0], not [7:0].
+As reported by sparse: In the remove path, the driver would attempt to
+unmap its own priv pointer - instead of the io memory that it mapped
+in probe.
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211220165827.1238097-1-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/stm32-mdma.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/xgmac_mdio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -184,7 +184,7 @@
- #define STM32_MDMA_CTBR(x)		(0x68 + 0x40 * (x))
- #define STM32_MDMA_CTBR_DBUS		BIT(17)
- #define STM32_MDMA_CTBR_SBUS		BIT(16)
--#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(7, 0)
-+#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(5, 0)
- #define STM32_MDMA_CTBR_TSEL(n)		STM32_MDMA_SET(n, \
- 						      STM32_MDMA_CTBR_TSEL_MASK)
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -301,9 +301,10 @@ err_ioremap:
+ static int xgmac_mdio_remove(struct platform_device *pdev)
+ {
+ 	struct mii_bus *bus = platform_get_drvdata(pdev);
++	struct mdio_fsl_priv *priv = bus->priv;
  
+ 	mdiobus_unregister(bus);
+-	iounmap(bus->priv);
++	iounmap(priv->mdio_base);
+ 	mdiobus_free(bus);
+ 
+ 	return 0;
 
 
