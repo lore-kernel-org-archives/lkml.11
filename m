@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF874C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70144C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360444AbiAXXgr (ORCPT
+        id S2360508AbiAXXgz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:36:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        Mon, 24 Jan 2022 18:36:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839744AbiAXWvx (ORCPT
+        with ESMTP id S1382775AbiAXWxo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:51:53 -0500
+        Mon, 24 Jan 2022 17:53:44 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97FBC09D9F0;
-        Mon, 24 Jan 2022 13:07:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7843C061A10;
+        Mon, 24 Jan 2022 13:08:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 81A99B811FB;
-        Mon, 24 Jan 2022 21:07:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFE3C340E5;
-        Mon, 24 Jan 2022 21:07:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 831A0B80FA3;
+        Mon, 24 Jan 2022 21:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB209C340E5;
+        Mon, 24 Jan 2022 21:08:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058476;
-        bh=iOwbgegqT26I6orDq8beuiWOLFK1+X2f+sFwzIToXCw=;
+        s=korg; t=1643058519;
+        bh=XVfbMr+0bam4xryzd7On8rKa6GlVOXgJT+vvJ89vSBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dtLpkQMbi+nYL042ZCwqzyVpzMok3cY3EZ7z3wnggWVnWz86UiTAYV5P1yckulCOj
-         O+9BIY+F3inWjW1HxsjQssMX77bEWSEe23IXcXGXPkALj2P2EMexW7WiWiKh0Ms2PA
-         LJzE6IZJ+Ubwn6y88eNPE+i9A55OiaGLnw01mqC4=
+        b=v5TDG/ZebXH84R+DJhR9it98WcAEmXCcn2wNwx3tQpKQZRmIjEdwna8pC0nvIfGu1
+         Q29ER5MxBQahmLlEblDWJNx1K5pWtQZ9zl5bM13gvXO/mNoysxTrpS2q9JqwwcN8cT
+         dMejYdw0mbuY9jhmoTmKf5lCMCuhCxlxipqql8Bo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shuyi Cheng <chengshuyi@linux.alibaba.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0268/1039] libbpf: Add "bool skipped" to struct bpf_map
-Date:   Mon, 24 Jan 2022 19:34:17 +0100
-Message-Id: <20220124184134.312014386@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0316/1039] mt76: mt7921s: fix possible kernel crash due to invalid Rx count
+Date:   Mon, 24 Jan 2022 19:35:05 +0100
+Message-Id: <20220124184135.922658007@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,71 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 229fae38d0fc0d6ff58d57cbeb1432da55e58d4f ]
+[ Upstream commit 2b7f3574ca9a7ff4a6b4ec1ae4dfdfde481ac80b ]
 
-Fix error: "failed to pin map: Bad file descriptor, path:
-/sys/fs/bpf/_rodata_str1_1."
+Return the proper error code when out-of-range the Rx aggregation count
+are reported from the hardware that would create the unreasonable extreme
+large Rx buffer.
 
-In the old kernel, the global data map will not be created, see [0]. So
-we should skip the pinning of the global data map to avoid
-bpf_object__pin_maps returning error. Therefore, when the map is not
-created, we mark “map->skipped" as true and then check during relocation
-and during pinning.
+[  100.873810]  show_stack+0x20/0x2c
+[  100.873823]  dump_stack+0xc4/0x140
+[  100.873839]  bad_page+0x110/0x114
+[  100.873854]  check_new_pages+0xf8/0xfc
+[  100.873869]  rmqueue+0x5a0/0x640
+[  100.873884]  get_page_from_freelist+0x124/0x20c
+[  100.873898]  __alloc_pages_nodemask+0x114/0x2a4
+[  100.873918]  mt76s_rx_run_queue+0xd4/0x2e4 [mt76_sdio 8280a88a0c8c9cf203f16e194f99ac293bdbb2f5]
+[  100.873938]  mt76s_rx_handler+0xd4/0x2a0 [mt76_sdio 8280a88a0c8c9cf203f16e194f99ac293bdbb2f5]
+[  100.873957]  mt76s_txrx_worker+0xac/0x17c [mt76_sdio 8280a88a0c8c9cf203f16e194f99ac293bdbb2f5]
+[  100.873977]  mt7921s_txrx_worker+0x5c/0xd8 [mt7921s d0bdbc018082dbc8dc1407614be3c2e7bd64423b]
+[  100.874003]  __mt76_worker_fn+0xe8/0x170 [mt76 b80af3483a8f9d48e916c12d8dbfaa0d3cd15337]
+[  100.874018]  kthread+0x148/0x3ac
+[  100.874032]  ret_from_fork+0x10/0x30
+[  100.874067] Kernel Offset: 0x1fe2000000 from 0xffffffc010000000
+[  100.874079] PHYS_OFFSET: 0xffffffe800000000
+[  100.874090] CPU features: 0x0240002,2188200c
 
-Fixes: 16e0c35c6f7a ("libbpf: Load global data maps lazily on legacy kernels")
-Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Fixes: 48fab5bbef40 ("mt76: mt7921: introduce mt7921s support")
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/sdio.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 4050a0f8dad66..fd25e30e70cc2 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -400,6 +400,7 @@ struct bpf_map {
- 	char *pin_path;
- 	bool pinned;
- 	bool reused;
-+	bool skipped;
- 	__u64 map_extra;
- };
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
+index 5c88b6b8d0979..84be229a899da 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
+@@ -62,6 +62,10 @@ static int mt7921s_parse_intr(struct mt76_dev *dev, struct mt76s_intr *intr)
+ 	if (err < 0)
+ 		return err;
  
-@@ -5003,8 +5004,10 @@ bpf_object__create_maps(struct bpf_object *obj)
- 		 * kernels.
- 		 */
- 		if (bpf_map__is_internal(map) &&
--		    !kernel_supports(obj, FEAT_GLOBAL_DATA))
-+		    !kernel_supports(obj, FEAT_GLOBAL_DATA)) {
-+			map->skipped = true;
- 			continue;
-+		}
- 
- 		retried = false;
- retry:
-@@ -5607,8 +5610,7 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
- 			} else {
- 				const struct bpf_map *map = &obj->maps[relo->map_idx];
- 
--				if (bpf_map__is_internal(map) &&
--				    !kernel_supports(obj, FEAT_GLOBAL_DATA)) {
-+				if (map->skipped) {
- 					pr_warn("prog '%s': relo #%d: kernel doesn't support global data\n",
- 						prog->name, i);
- 					return -ENOTSUP;
-@@ -7733,6 +7735,9 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
- 		char *pin_path = NULL;
- 		char buf[PATH_MAX];
- 
-+		if (map->skipped)
-+			continue;
++	if (irq_data->rx.num[0] > 16 ||
++	    irq_data->rx.num[1] > 128)
++		return -EINVAL;
 +
- 		if (path) {
- 			int len;
- 
+ 	intr->isr = irq_data->isr;
+ 	intr->rec_mb = irq_data->rec_mb;
+ 	intr->tx.wtqcr = irq_data->tx.wtqcr;
 -- 
 2.34.1
 
