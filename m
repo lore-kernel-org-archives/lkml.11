@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCE50C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657CAC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346338AbiAXTFX (ORCPT
+        id S1346064AbiAXTFB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:05:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345343AbiAXTAI (ORCPT
+        Mon, 24 Jan 2022 14:05:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57802 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344004AbiAXS6v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F51DC061793;
-        Mon, 24 Jan 2022 10:57:12 -0800 (PST)
+        Mon, 24 Jan 2022 13:58:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FAF76154A;
-        Mon, 24 Jan 2022 18:57:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7E2FC340E5;
-        Mon, 24 Jan 2022 18:57:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B55F461569;
+        Mon, 24 Jan 2022 18:58:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94B14C340E5;
+        Mon, 24 Jan 2022 18:58:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050631;
-        bh=0KD1eiKFQZ+15lvlwGjcpA2CZ9608oocxiXbhgHw+rM=;
+        s=korg; t=1643050730;
+        bh=qOpc2/0oxmHJE4wi0lGuFKhNcUljuprERWZbbP+bl24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aHyujCZAr2Z2Fm9pqKveNg4112DjtAV/WiSCnEl78T1iWeKOUu4akxiCwKqxJeLkV
-         B2XOR+/5sRJ2tN03MHnw50uhi/HUDazg0MERtQ9CRl+dLoPMYnCTZiMajgisFVzCHj
-         6srHYjqe1Cx4hkrDxfwbdAZuZQ+KaDkm4eZpx+qE=
+        b=Z/a3xXon8Q8Nb57+0xAtzKnyuTjpc0zft6jKYsA+h8Mpen+4jtDy/ICf+h/Ws1us1
+         gHBfvVTEUl3lmcTV68gq8VRRBf4DGKP8ADj3DOuO/0Eln7dlKVwJs2uWIftqmxp9NY
+         mH43yI/cKqNDoPLBAOEiDTS11H5qKyIrjkb+y7UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org,
+        Mark Asselstine <mark.asselstine@windriver.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 063/157] char/mwave: Adjust io port register size
-Date:   Mon, 24 Jan 2022 19:42:33 +0100
-Message-Id: <20220124183934.788737719@linuxfoundation.org>
+Subject: [PATCH 4.9 095/157] ACPICA: Utilities: Avoid deleting the same object twice in a row
+Date:   Mon, 24 Jan 2022 19:43:05 +0100
+Message-Id: <20220124183935.790529145@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,49 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
+[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
 
-Using MKWORD() on a byte-sized variable results in OOB read. Expand the
-size of the reserved area so both MKWORD and MKBYTE continue to work
-without overflow. Silences this warning on a -Warray-bounds build:
+ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
 
-drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
-  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
-      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
-  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
-      |                                        ^~~~~
-drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
-  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
-      |                                         ^~~~~~
-drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
-  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
-      |                               ^~~~~~~~~~~~~
+If original_count is 0 in acpi_ut_update_ref_count (),
+acpi_ut_delete_internal_obj () is invoked for the target object, which is
+incorrect, because that object has been deleted once already and the
+memory allocated to store it may have been reclaimed and allocated
+for a different purpose by the host OS.  Moreover, a confusing debug
+message following the "Reference Count is already zero, cannot
+decrement" warning is printed in that case.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To fix this issue, make acpi_ut_update_ref_count () return after finding
+that original_count is 0 and printing the above warning.
+
+Link: https://github.com/acpica/acpica/commit/c11af67d
+Link: https://github.com/acpica/acpica/pull/652
+Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/mwave/3780i.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/acpica/utdelete.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
-index 9ccb6b270b071..95164246afd1a 100644
---- a/drivers/char/mwave/3780i.h
-+++ b/drivers/char/mwave/3780i.h
-@@ -68,7 +68,7 @@ typedef struct {
- 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
- 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
- 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
--	unsigned char Reserved:5;	/* 0: Reserved */
-+	unsigned short Reserved:13;	/* 0: Reserved */
- } DSP_ISA_SLAVE_CONTROL;
+diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
+index 03a2282ceb9ca..81a9c47973ce8 100644
+--- a/drivers/acpi/acpica/utdelete.c
++++ b/drivers/acpi/acpica/utdelete.c
+@@ -440,6 +440,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
+ 			ACPI_WARNING((AE_INFO,
+ 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
+ 				      object));
++			return;
+ 		}
  
- 
+ 		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
 -- 
 2.34.1
 
