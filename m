@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E06EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFF0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412542AbiAYAhN (ORCPT
+        id S3412649AbiAYAhY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:37:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58766 "EHLO
+        Mon, 24 Jan 2022 19:37:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2366197AbiAXXwa (ORCPT
+        with ESMTP id S2366247AbiAXXwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:52:30 -0500
+        Mon, 24 Jan 2022 18:52:33 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 717ABC07A95D;
-        Mon, 24 Jan 2022 13:45:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67A39C047CFE;
+        Mon, 24 Jan 2022 13:45:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D3B4B81142;
-        Mon, 24 Jan 2022 21:45:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53345C340E4;
-        Mon, 24 Jan 2022 21:45:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24814B8119E;
+        Mon, 24 Jan 2022 21:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C03C340E4;
+        Mon, 24 Jan 2022 21:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060708;
-        bh=nf9RogTdgf5rF0q38xnhspYQQDGnFe/Ue5b2fTj9+SU=;
+        s=korg; t=1643060736;
+        bh=b9l0gqvoTDt6A/0QvDZYMLVha/WUwb9rjfjzdWEXvYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lX5NfEs7uY3tpE/kkWgJPZsa1KP+ccqEJoRLpnr4IN/+sNYkN4VYSRr86bb5jsRWq
-         1W2P3nuElQEHus5UG9aQ3j22s9mkn0y0d/h5guUdqq0sOxTMettM7IZ2T4SiAmCxcA
-         NnJjFBXKAj2RgR8izBkWz/oJ65Zji3QPZ5BTHs4k=
+        b=TCWDIm27rgeqmYEuIs4j5I57MelnxAAxMujpSo9DvFgoU6jMi85H5xGHkEu+FPiMR
+         4JHhGC6R99mu7TXD9v0+8uaz464nuGsLOT2Agv6H1Qsh5u3WrraLSr7RCBe1C2YBcj
+         oLwzaBdE36NXoaOSm2sRCWuIEIFgCjRyZ06DbVn8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Guennadi Liakhovetski <guennadi.liakhovetski@linux.intel.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 1037/1039] ASoC: SOF: free widgets in sof_tear_down_pipelines() for static pipelines
-Date:   Mon, 24 Jan 2022 19:47:06 +0100
-Message-Id: <20220124184200.145139407@linuxfoundation.org>
+        =?UTF-8?q?=E7=85=A7=E5=B1=B1=E5=91=A8=E4=B8=80=E9=83=8E?= 
+        <teruyama@springboard-inc.jp>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 1018/1039] net: sfp: fix high power modules without diagnostic monitoring
+Date:   Mon, 24 Jan 2022 19:46:47 +0100
+Message-Id: <20220124184159.511708556@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -53,60 +52,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-commit b2ebcf42a48f4560862bb811f3268767d17ebdcd upstream.
+commit 5765cee119bf5a36c94d20eceb37c445508934be upstream.
 
-Free widgets for static pipelines in sof_tear_down_pipelines().
-But this feature is unavailable in older firmware with ABI < 3.19.
-Just reset widget use_count's for this case. This would ensure that
-the secondary cores enabled required for topology setup are powered
-down properly before the primary core is powered off during
-system suspend.
+Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
+modules") unintetionally changed the semantics for high power modules
+without the digital diagnostics monitoring. We repeatedly attempt to
+read the power status from the non-existing 0xa2 address in a futile
+hope this failure is temporary:
 
-Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Reviewed-by: Guennadi Liakhovetski <guennadi.liakhovetski@linux.intel.com>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Link: https://lore.kernel.org/r/20211119192621.4096077-8-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+[    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev 0000  sn 0000000000000000 dc 160408
+[    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-x link mode
+[    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
+[    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
+[    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
+
+We previosuly assumed such modules were powered up in the correct mode,
+continuing without further configuration as long as the required power
+class was supported by the host.
+
+Restore this behaviour, while preserving the intent of subsequent
+patches to avoid the "Address Change Sequence not supported" warning
+if we are not going to be accessing the DDM address.
+
+Fixes: 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change modules")
+Reported-by: 照山周一郎 <teruyama@springboard-inc.jp>
+Tested-by: 照山周一郎 <teruyama@springboard-inc.jp>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/sof-audio.c |   13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/net/phy/sfp.c |   25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
---- a/sound/soc/sof/sof-audio.c
-+++ b/sound/soc/sof/sof-audio.c
-@@ -665,11 +665,12 @@ int sof_set_up_pipelines(struct snd_sof_
- }
- 
- /*
-- * This function doesn't free widgets during suspend. It only resets the set up status for all
-- * routes and use_count for all widgets.
-+ * For older firmware, this function doesn't free widgets for static pipelines during suspend.
-+ * It only resets use_count for all widgets.
-  */
- int sof_tear_down_pipelines(struct snd_sof_dev *sdev, bool verify)
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1641,17 +1641,20 @@ static int sfp_sm_probe_for_phy(struct s
+ static int sfp_module_parse_power(struct sfp *sfp)
  {
-+	struct sof_ipc_fw_version *v = &sdev->fw_ready.version;
- 	struct snd_sof_widget *swidget;
- 	struct snd_sof_route *sroute;
- 	int ret;
-@@ -681,8 +682,14 @@ int sof_tear_down_pipelines(struct snd_s
- 	 * loading the sound card unavailable to open PCMs.
- 	 */
- 	list_for_each_entry_reverse(swidget, &sdev->widget_list, list) {
--		if (!verify) {
-+		if (swidget->dynamic_pipeline_widget)
-+			continue;
-+
-+		/* Do not free widgets for static pipelines with FW ABI older than 3.19 */
-+		if (!verify && !swidget->dynamic_pipeline_widget &&
-+		    v->abi_version < SOF_ABI_VER(3, 19, 0)) {
- 			swidget->use_count = 0;
-+			swidget->complete = 0;
- 			continue;
- 		}
+ 	u32 power_mW = 1000;
++	bool supports_a2;
  
+ 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
+ 		power_mW = 1500;
+ 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
+ 		power_mW = 2000;
+ 
++	supports_a2 = sfp->id.ext.sff8472_compliance !=
++				SFP_SFF8472_COMPLIANCE_NONE ||
++		      sfp->id.ext.diagmon & SFP_DIAGMON_DDM;
++
+ 	if (power_mW > sfp->max_power_mW) {
+ 		/* Module power specification exceeds the allowed maximum. */
+-		if (sfp->id.ext.sff8472_compliance ==
+-			SFP_SFF8472_COMPLIANCE_NONE &&
+-		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
++		if (!supports_a2) {
+ 			/* The module appears not to implement bus address
+ 			 * 0xa2, so assume that the module powers up in the
+ 			 * indicated mode.
+@@ -1668,11 +1671,25 @@ static int sfp_module_parse_power(struct
+ 		}
+ 	}
+ 
++	if (power_mW <= 1000) {
++		/* Modules below 1W do not require a power change sequence */
++		sfp->module_power_mW = power_mW;
++		return 0;
++	}
++
++	if (!supports_a2) {
++		/* The module power level is below the host maximum and the
++		 * module appears not to implement bus address 0xa2, so assume
++		 * that the module powers up in the indicated mode.
++		 */
++		return 0;
++	}
++
+ 	/* If the module requires a higher power mode, but also requires
+ 	 * an address change sequence, warn the user that the module may
+ 	 * not be functional.
+ 	 */
+-	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE && power_mW > 1000) {
++	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE) {
+ 		dev_warn(sfp->dev,
+ 			 "Address Change Sequence not supported but module requires %u.%uW, module may not be functional\n",
+ 			 power_mW / 1000, (power_mW / 100) % 10);
 
 
