@@ -2,109 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770DAC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1486FC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355318AbiAXTk0 (ORCPT
+        id S1355283AbiAXTkV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:40:26 -0500
-Received: from mga12.intel.com ([192.55.52.136]:30002 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352963AbiAXTbU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643052679; x=1674588679;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fpwYfflWld0ugqz8Mb0rqGT+uGIpwsHIjPs+XSu2Ols=;
-  b=GtLK60/hwKK6QWAGWVyucVf94Ic/Oy985a6qILffR84E3Cq4HzgqUpCv
-   TJKQcWFITtmlLtfpZ0R36zx8iiOOOMGkue+2y3VK4C0V2FKzYqkflGt+W
-   H3nZbQ22oQenNZQHxaOV5HEw8YoxVdRMCg+MDFThVL4J5kiO98LD5kWfz
-   UsEaabJLfSWMEhteAA4APfRO8kq/T1OPnVWFVudCLofTZbjDSNbr2xTIu
-   qxDlZLSMF1bn0gwWlJRlUpv76tm25Q+UOo3U4Nanihr3WV4jYhUc2WC71
-   6MRdlqJfuHutebPy3m5xIEMi6KRx4CZ8Djc+aIE/aH0FaM6b6LYeaU4rA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226108575"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="226108575"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 11:25:06 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="532180520"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 11:25:03 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC4xa-000IoS-PV; Mon, 24 Jan 2022 19:25:02 +0000
-Date:   Tue, 25 Jan 2022 03:24:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Harsha <harsha.harsha@xilinx.com>, herbert@gondor.apana.org.au,
-        davem@davemloft.net, linux-crypto@vger.kernel.org,
-        linux-kernel@vger.kernel.org, michals@xilinx.com,
-        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, saratcha@xilinx.com, harshj@xilinx.com
-Subject: Re: [PATCH 3/4] crypto: xilinx: Add Xilinx SHA3 driver
-Message-ID: <202201250209.WqpE2vMF-lkp@intel.com>
-References: <1642931227-20706-4-git-send-email-harsha.harsha@xilinx.com>
+        Mon, 24 Jan 2022 14:40:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57204 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353440AbiAXTeo (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 14:34:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 877B0B810BD;
+        Mon, 24 Jan 2022 19:34:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0615C340E5;
+        Mon, 24 Jan 2022 19:34:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643052882;
+        bh=88jBPow+2JlJ1CiI4sRMcEJq4kG76BFtyjtYunFiHdQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WHcvZOreiWv3NpnwWcQrto/Vhr3mGDhgPtkHtZQ2F+WZ0T1S+KNu98FJEgOdtxn/1
+         OP3n09r8apeS3zCGR2Shtk5q1ZPWlD/6QyiXT/IvlKeJ6VuLzHHLT5GqKhfZYAeEx+
+         zf2UaUwtSift8xF3SR/F9yDRmCO2ZG3trRJcXL0Y=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 172/320] rsi: Fix out-of-bounds read in rsi_read_pkt()
+Date:   Mon, 24 Jan 2022 19:42:36 +0100
+Message-Id: <20220124183959.512254254@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1642931227-20706-4-git-send-email-harsha.harsha@xilinx.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Harsha,
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-Thank you for the patch! Perhaps something to improve:
+[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
 
-[auto build test WARNING on herbert-cryptodev-2.6/master]
-[also build test WARNING on herbert-crypto-2.6/master]
-[cannot apply to xilinx-xlnx/master v5.17-rc1 next-20220124]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+rsi_get_* functions rely on an offset variable from usb
+input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+while 2-byte offset can be up to 0xFFFF. Thus a large offset
+can cause out-of-bounds read.
 
-url:    https://github.com/0day-ci/linux/commits/Harsha/crypto-Add-Xilinx-ZynqMP-SHA3-driver-support/20220123-175102
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
-config: s390-allyesconfig (https://download.01.org/0day-ci/archive/20220125/202201250209.WqpE2vMF-lkp@intel.com/config)
-compiler: s390-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/fc7aea6e3118ca7210454fdb7c9c588c05c1f171
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Harsha/crypto-Add-Xilinx-ZynqMP-SHA3-driver-support/20220123-175102
-        git checkout fc7aea6e3118ca7210454fdb7c9c588c05c1f171
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash drivers/crypto/
+The patch adds a bound checking condition when rcv_pkt_len is 0,
+indicating it's USB. It's unclear whether this is triggerable
+from other type of bus. The following check might help in that case.
+offset > rcv_pkt_len - FRAME_DESC_SZ
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+The bug is trigerrable with conpromised/malfunctioning USB devices.
+I tested the patch with the crashing input and got no more bug report.
 
-All warnings (new ones prefixed by >>):
+Attached is the KASAN report from fuzzing.
 
-   In file included from ./arch/s390/include/generated/asm/cacheflush.h:1,
-                    from drivers/crypto/xilinx/zynqmp-sha.c:6:
->> include/asm-generic/cacheflush.h:53:46: warning: 'struct folio' declared inside parameter list will not be visible outside of this definition or declaration
-      53 | static inline void flush_dcache_folio(struct folio *folio) { }
-         |                                              ^~~~~
+BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
 
+CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ __kasan_report.cold+0x37/0x7c
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ kasan_report+0xe/0x20
+ rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __wake_up_common+0x10b/0x520
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
 
-vim +53 include/asm-generic/cacheflush.h
-
-08b0b0059bf1c2 Matthew Wilcox (Oracle  2020-12-16  52) 
-08b0b0059bf1c2 Matthew Wilcox (Oracle  2020-12-16 @53) static inline void flush_dcache_folio(struct folio *folio) { }
-76b3b58fac350c Christoph Hellwig       2020-06-07  54  #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 0
-08b0b0059bf1c2 Matthew Wilcox (Oracle  2020-12-16  55) #define ARCH_IMPLEMENTS_FLUSH_DCACHE_FOLIO
-4f0bd808134d73 Mike Rapoport           2019-12-23  56  #endif
-c296d4dc13aefe Qian Cai                2019-07-16  57  
-
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+ drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
+ drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index 441fda71f6289..d92337169ee3a 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -23,6 +23,7 @@
+ #include "rsi_common.h"
+ #include "rsi_coex.h"
+ #include "rsi_hal.h"
++#include "rsi_usb.h"
+ 
+ u32 rsi_zone_enabled = /* INFO_ZONE |
+ 			INIT_ZONE |
+@@ -167,6 +168,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+ 		frame_desc = &rx_pkt[index];
+ 		actual_length = *(u16 *)&frame_desc[0];
+ 		offset = *(u16 *)&frame_desc[2];
++		if (!rcv_pkt_len && offset >
++			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
++			goto fail;
+ 
+ 		queueno = rsi_get_queueno(frame_desc, offset);
+ 		length = rsi_get_length(frame_desc, offset);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 730d7bf86c40c..94bf2a7ca635d 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -320,7 +320,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
+ 	struct sk_buff *skb;
+ 	u8 dword_align_bytes = 0;
+ 
+-#define RSI_MAX_RX_USB_PKT_SIZE	3000
+ 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
+ 	if (!skb)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
+index 8702f434b5699..ad88f8c70a351 100644
+--- a/drivers/net/wireless/rsi/rsi_usb.h
++++ b/drivers/net/wireless/rsi/rsi_usb.h
+@@ -44,6 +44,8 @@
+ #define RSI_USB_BUF_SIZE	     4096
+ #define RSI_USB_CTRL_BUF_SIZE	     0x04
+ 
++#define RSI_MAX_RX_USB_PKT_SIZE	3000
++
+ struct rx_usb_ctrl_block {
+ 	u8 *data;
+ 	struct urb *rx_urb;
+-- 
+2.34.1
+
+
+
