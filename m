@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B868FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 226AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343755AbiAXVGY (ORCPT
+        id S1443803AbiAXVGc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:06:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
+        Mon, 24 Jan 2022 16:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388453AbiAXUm6 (ORCPT
+        with ESMTP id S1389821AbiAXUo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFBAC04967E;
-        Mon, 24 Jan 2022 11:53:05 -0800 (PST)
+        Mon, 24 Jan 2022 15:44:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED38C019B3B;
+        Mon, 24 Jan 2022 11:54:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DB1C61007;
-        Mon, 24 Jan 2022 19:53:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB22C340E7;
-        Mon, 24 Jan 2022 19:53:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B80BB811F3;
+        Mon, 24 Jan 2022 19:53:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A07FC340E5;
+        Mon, 24 Jan 2022 19:53:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053984;
-        bh=OpXJQiAdVYaUhVv2ktwuoXqH6kxvKw1geUPxPGiPlk8=;
+        s=korg; t=1643054037;
+        bh=0KD1eiKFQZ+15lvlwGjcpA2CZ9608oocxiXbhgHw+rM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wxaNlaeEiDNw04iJZwNmG+Z3iIGWw5iqNyEba6hi2VR7pr0pnFQ9dZmGCmBYZg65T
-         tRhOh8eYt8vj8w7P4D+uXc0Afcieeb9/xMKBocn5jggi3RJgM7cWqDPxGzLP9tY/6P
-         uWVlhuolv+u+Bs3+PWKZHE0I4k72gFpXeRqdkYkU=
+        b=tSEiW+xc5XXiw6IDYHjSjbiap39Q6jkCZe6hRFdOGgd2BmRjC6tmyeJJ9ZHHssVwz
+         dnMNZWZoiEj5VmhDSqVPvd6i0njJfBXtKVgkprM3FW8TaHRsahSwZpdRXdIKX1v0aO
+         IqeoV+7d61GaQtnH6MRR58gaW5dVUcWQbQVOHtQU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 240/563] ALSA: PCM: Add missing rwsem around snd_ctl_remove() calls
-Date:   Mon, 24 Jan 2022 19:40:05 +0100
-Message-Id: <20220124184032.733574692@linuxfoundation.org>
+Subject: [PATCH 5.10 259/563] char/mwave: Adjust io port register size
+Date:   Mon, 24 Jan 2022 19:40:24 +0100
+Message-Id: <20220124184033.382939940@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,39 +49,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Kees Cook <keescook@chromium.org>
 
-[ Upstream commit 5471e9762e1af4b7df057a96bfd46cc250979b88 ]
+[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
 
-snd_ctl_remove() has to be called with card->controls_rwsem held (when
-called after the card instantiation).  This patch add the missing
-rwsem calls around it.
+Using MKWORD() on a byte-sized variable results in OOB read. Expand the
+size of the reserved area so both MKWORD and MKBYTE continue to work
+without overflow. Silences this warning on a -Warray-bounds build:
 
-Fixes: a8ff48cb7083 ("ALSA: pcm: Free chmap at PCM free callback, too")
-Link: https://lore.kernel.org/r/20211116071314.15065-2-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
+  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
+      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
+  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
+      |                                        ^~~~~
+drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
+  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
+      |                                         ^~~~~~
+drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
+  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
+      |                               ^~~~~~~~~~~~~
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/pcm.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/char/mwave/3780i.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/core/pcm.c b/sound/core/pcm.c
-index 41cbdac5b1cfa..a8ae5928decda 100644
---- a/sound/core/pcm.c
-+++ b/sound/core/pcm.c
-@@ -810,7 +810,11 @@ EXPORT_SYMBOL(snd_pcm_new_internal);
- static void free_chmap(struct snd_pcm_str *pstr)
- {
- 	if (pstr->chmap_kctl) {
--		snd_ctl_remove(pstr->pcm->card, pstr->chmap_kctl);
-+		struct snd_card *card = pstr->pcm->card;
-+
-+		down_write(&card->controls_rwsem);
-+		snd_ctl_remove(card, pstr->chmap_kctl);
-+		up_write(&card->controls_rwsem);
- 		pstr->chmap_kctl = NULL;
- 	}
- }
+diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
+index 9ccb6b270b071..95164246afd1a 100644
+--- a/drivers/char/mwave/3780i.h
++++ b/drivers/char/mwave/3780i.h
+@@ -68,7 +68,7 @@ typedef struct {
+ 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
+ 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
+ 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
+-	unsigned char Reserved:5;	/* 0: Reserved */
++	unsigned short Reserved:13;	/* 0: Reserved */
+ } DSP_ISA_SLAVE_CONTROL;
+ 
+ 
 -- 
 2.34.1
 
