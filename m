@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E473C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D2EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846512AbiAXXQK (ORCPT
+        id S1846455AbiAXXQA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:16:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
+        Mon, 24 Jan 2022 18:16:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583725AbiAXWT3 (ORCPT
+        with ESMTP id S1583746AbiAXWTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:19:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90D7FC0619C9;
-        Mon, 24 Jan 2022 12:49:27 -0800 (PST)
+        Mon, 24 Jan 2022 17:19:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5118C04A2FB;
+        Mon, 24 Jan 2022 12:49:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57025B811A9;
-        Mon, 24 Jan 2022 20:49:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AC10C340E5;
-        Mon, 24 Jan 2022 20:49:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7799860B18;
+        Mon, 24 Jan 2022 20:49:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61BF1C340E5;
+        Mon, 24 Jan 2022 20:49:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057365;
-        bh=3U9VP1OuruVXeNmVCUIDrfmA01G3vDMoXgFxbdOhwwE=;
+        s=korg; t=1643057382;
+        bh=Tc9AOZYZp2DQFZcIzTfoE35W2ly/fEgxYSyopAgJIBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qdHY+Id+wTWMavVFd6Vn5W3TJlqYvG2USon6TvfHXnyH1MII29HZi2SyKBe9RRORR
-         JGF6PNuGdphsIqcbIdpJLel0GHmQfZwSRVz/q5vAGkhzgOZ9wFaypdv9wYredYGm9m
-         s3CivBDQh0iC+zLfPQ1HMdTHJ8sYwHzCax+WHUOA=
+        b=sWvE8PEC1imd4SRL0XRg6crzQyksh9zL2yoYbMnAQ8/1T58rCP3IJgMSUhEgWP2rm
+         R5cvrVySsU0zpPn/j9DGd4M1BFo5PTNBIji2RnLB5/vqMujlF2a023oh0UoEy7WYUa
+         O2OQmM98VpirKPu0ag44bKsSuxiGL2vwI4KBnDCs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 756/846] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
-Date:   Mon, 24 Jan 2022 19:44:33 +0100
-Message-Id: <20220124184127.054924390@linuxfoundation.org>
+        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.15 752/846] RDMA/rxe: Fix a typo in opcode name
+Date:   Mon, 24 Jan 2022 19:44:29 +0100
+Message-Id: <20220124184126.918296104@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,38 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-commit 0d375d610fa96524e2ee2b46830a46a7bfa92a9f upstream.
+commit 8d1cfb884e881efd69a3be4ef10772c71cb22216 upstream.
 
-This block is used in (at least) T1024 and T1040, including their
-variants like T1023 etc.
+There is a redundant ']' in the name of opcode IB_OPCODE_RC_SEND_MIDDLE,
+so just fix it.
 
-Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20211218112320.3558770-1-cgxu519@mykernel.net
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/infiniband/sw/rxe/rxe_opcode.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-@@ -79,6 +79,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfc000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
- 
- 	xmdio0: mdio@fd000 {
-@@ -86,6 +87,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfd000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
- };
- 
+--- a/drivers/infiniband/sw/rxe/rxe_opcode.c
++++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
+@@ -117,7 +117,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NU
+ 		}
+ 	},
+ 	[IB_OPCODE_RC_SEND_MIDDLE]		= {
+-		.name	= "IB_OPCODE_RC_SEND_MIDDLE]",
++		.name	= "IB_OPCODE_RC_SEND_MIDDLE",
+ 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_SEND_MASK
+ 				| RXE_MIDDLE_MASK,
+ 		.length = RXE_BTH_BYTES,
 
 
