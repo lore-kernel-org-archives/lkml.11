@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EABC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6BAFC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349205AbiAXTU0 (ORCPT
+        id S1349317AbiAXTUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41430 "EHLO
+        Mon, 24 Jan 2022 14:20:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38610 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344587AbiAXTLx (ORCPT
+        with ESMTP id S1347649AbiAXTKz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:53 -0500
+        Mon, 24 Jan 2022 14:10:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5A09612C5;
-        Mon, 24 Jan 2022 19:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8D6C340E5;
-        Mon, 24 Jan 2022 19:11:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21C856129A;
+        Mon, 24 Jan 2022 19:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B6CC340EA;
+        Mon, 24 Jan 2022 19:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051511;
-        bh=4vD56yFlgUBC5atksTz50D4Z2EyBrU/6DhqxbVI8tNM=;
+        s=korg; t=1643051454;
+        bh=245/DyJSRj1bYGaEzKvSBOLNW98oDkp6oAu4TcdXWOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBqcQDqk9bjePlFPGjw0Sd+Eh7ro2pT/fH0FIfHt+lA0lCCJv4/em2dmFy6pr9S/E
-         5saap948RUUWYBfyosQpk8IWcbBkNhasiScIL3qQ1ARS7i10rRWgywFTMp9ODMfOdT
-         QLmlin/m2b8Jd0mu3FNHX8ZxB094HHz6CEO7ZGCE=
+        b=HotfXF0oY0zJKDNFyu/N4FcxtrZwTIZbMBM1Txzgd31Ty6yneRBzgXCoxoewhrhHE
+         y9UYMi3bgA6o8hlOUuMI+9kwotDbrYvwwpfKY1wFBLM6Wu08gaSexmwKEUyc7PWYiR
+         nypTHgzW+MPt/KLETO4/7PJTKenoWG4awRp/BBvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 4.14 178/186] scripts/dtc: dtx_diff: remove broken example from help text
-Date:   Mon, 24 Jan 2022 19:44:13 +0100
-Message-Id: <20220124183942.837047790@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.14 167/186] af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
+Date:   Mon, 24 Jan 2022 19:44:02 +0100
+Message-Id: <20220124183942.491822799@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,46 +47,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
+commit 9d6d7f1cb67cdee15f1a0e85aacfb924e0e02435 upstream.
 
-dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
-this has never worked: The /proc/self/fds/... paths passed by the shell
-will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
-but even with this check removed, the function cannot work: hexdump will
-eat up the DTB magic, making the subsequent dtc call fail, as a pipe
-cannot be rewound.
+wait_for_unix_gc() reads unix_tot_inflight & gc_in_progress
+without synchronization.
 
-Simply remove this broken example, as there is already an alternative one
-that works fine.
+Adds READ_ONCE()/WRITE_ONCE() and their associated comments
+to better document the intent.
 
-Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
+BUG: KCSAN: data-race in unix_inflight / wait_for_unix_gc
+
+write to 0xffffffff86e2b7c0 of 4 bytes by task 9380 on cpu 0:
+ unix_inflight+0x1e8/0x260 net/unix/scm.c:63
+ unix_attach_fds+0x10c/0x1e0 net/unix/scm.c:121
+ unix_scm_to_skb net/unix/af_unix.c:1674 [inline]
+ unix_dgram_sendmsg+0x679/0x16b0 net/unix/af_unix.c:1817
+ unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
+ __do_sys_sendmmsg net/socket.c:2578 [inline]
+ __se_sys_sendmmsg net/socket.c:2575 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffffffff86e2b7c0 of 4 bytes by task 9375 on cpu 1:
+ wait_for_unix_gc+0x24/0x160 net/unix/garbage.c:196
+ unix_dgram_sendmsg+0x8e/0x16b0 net/unix/af_unix.c:1772
+ unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
+ __do_sys_sendmmsg net/socket.c:2578 [inline]
+ __se_sys_sendmmsg net/socket.c:2575 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x00000002 -> 0x00000004
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 9375 Comm: syz-executor.1 Not tainted 5.16.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 9915672d4127 ("af_unix: limit unix_tot_inflight")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220114164328.2038499-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/dtc/dtx_diff |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ net/unix/garbage.c |   14 +++++++++++---
+ net/unix/scm.c     |    6 ++++--
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
---- a/scripts/dtc/dtx_diff
-+++ b/scripts/dtc/dtx_diff
-@@ -56,12 +56,8 @@ Otherwise DTx is treated as a dts source
-    or '/include/' to be processed.
+--- a/net/unix/garbage.c
++++ b/net/unix/garbage.c
+@@ -197,8 +197,11 @@ void wait_for_unix_gc(void)
+ {
+ 	/* If number of inflight sockets is insane,
+ 	 * force a garbage collect right now.
++	 * Paired with the WRITE_ONCE() in unix_inflight(),
++	 * unix_notinflight() and gc_in_progress().
+ 	 */
+-	if (unix_tot_inflight > UNIX_INFLIGHT_TRIGGER_GC && !gc_in_progress)
++	if (READ_ONCE(unix_tot_inflight) > UNIX_INFLIGHT_TRIGGER_GC &&
++	    !READ_ONCE(gc_in_progress))
+ 		unix_gc();
+ 	wait_event(unix_gc_wait, gc_in_progress == false);
+ }
+@@ -218,7 +221,9 @@ void unix_gc(void)
+ 	if (gc_in_progress)
+ 		goto out;
  
-    If DTx_1 and DTx_2 are in different architectures, then this script
--   may not work since \${ARCH} is part of the include path.  Two possible
--   workarounds:
--
--      `basename $0` \\
--          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
--          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
-+   may not work since \${ARCH} is part of the include path.  The following
-+   workaround can be used:
+-	gc_in_progress = true;
++	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
++	WRITE_ONCE(gc_in_progress, true);
++
+ 	/* First, select candidates for garbage collection.  Only
+ 	 * in-flight sockets are considered, and from those only ones
+ 	 * which don't have any external reference.
+@@ -304,7 +309,10 @@ void unix_gc(void)
  
-       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
-       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
+ 	/* All candidates should have been detached by now. */
+ 	BUG_ON(!list_empty(&gc_candidates));
+-	gc_in_progress = false;
++
++	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
++	WRITE_ONCE(gc_in_progress, false);
++
+ 	wake_up(&unix_gc_wait);
+ 
+  out:
+--- a/net/unix/scm.c
++++ b/net/unix/scm.c
+@@ -57,7 +57,8 @@ void unix_inflight(struct user_struct *u
+ 		} else {
+ 			BUG_ON(list_empty(&u->link));
+ 		}
+-		unix_tot_inflight++;
++		/* Paired with READ_ONCE() in wait_for_unix_gc() */
++		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight + 1);
+ 	}
+ 	user->unix_inflight++;
+ 	spin_unlock(&unix_gc_lock);
+@@ -77,7 +78,8 @@ void unix_notinflight(struct user_struct
+ 
+ 		if (atomic_long_dec_and_test(&u->inflight))
+ 			list_del_init(&u->link);
+-		unix_tot_inflight--;
++		/* Paired with READ_ONCE() in wait_for_unix_gc() */
++		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight - 1);
+ 	}
+ 	user->unix_inflight--;
+ 	spin_unlock(&unix_gc_lock);
 
 
