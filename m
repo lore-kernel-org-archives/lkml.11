@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B24A7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D46C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347168AbiAXTSj (ORCPT
+        id S1348371AbiAXTSq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:18:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39192 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346755AbiAXTJg (ORCPT
+        Mon, 24 Jan 2022 14:18:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36688 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347111AbiAXTJn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:09:36 -0500
+        Mon, 24 Jan 2022 14:09:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 98971611DA;
-        Mon, 24 Jan 2022 19:09:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E626C340E5;
-        Mon, 24 Jan 2022 19:09:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BF65B8121B;
+        Mon, 24 Jan 2022 19:09:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DE0BC340E5;
+        Mon, 24 Jan 2022 19:09:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051375;
-        bh=DrDXfsqHh2FEtC2DRMTIv+/soE/QWkgoZin5Cpq2nFw=;
+        s=korg; t=1643051380;
+        bh=///eduZoePXlekkzVUpHa5zCsgdmQWKsry4wD4F/bcQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HE0ayxZK4diCVky77iFIb4dKhjmBSOZhHmuFoYxw4euZ2ySQAJxUyTxzwZKML+ag2
-         31pygo6y368epj6IdEHs8pA+xA3nm0NHRXYExAWr+Ad2P0UfB1+kWO4W4tKvHaCb+t
-         l081GHi6vRfBQlkmTcHevOArstEcCRu2MSb3jUQE=
+        b=sT01S87wPquJEfr8vsvQ2vqgtBZfqClL17/tM4S4ASZQ8RRpJOS/6gZLgs7w9JY4r
+         kRSJV4qI2lxgDmtbgA6D8RDR3sRgxZI6Bdhom01Avf8N2JoI5v21rdMp43NtbPZCyS
+         UU2PNTJ2VOQWdC1ADfAWzCEnBRTzrJC+sKBm11Gw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 140/186] w1: Misuse of get_user()/put_user() reported by sparse
-Date:   Mon, 24 Jan 2022 19:43:35 +0100
-Message-Id: <20220124183941.608785485@linuxfoundation.org>
+Subject: [PATCH 4.14 110/186] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 24 Jan 2022 19:43:05 +0100
+Message-Id: <20220124183940.648466485@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,84 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 33dc3e3e99e626ce51f462d883b05856c6c30b1d ]
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/w1/slaves/w1_ds28e04.c:342:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char [noderef] __user *_pu_addr @@     got char *buf @@
-   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     expected char [noderef] __user *_pu_addr
-   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     got char *buf
->> drivers/w1/slaves/w1_ds28e04.c:356:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char const [noderef] __user *_gu_addr @@     got char const *buf @@
-   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     expected char const [noderef] __user *_gu_addr
-   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     got char const *buf
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
 
-The buffer buf is a failsafe buffer in kernel space, it's not user
-memory hence doesn't deserve the use of get_user() or put_user().
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
 
-Access 'buf' content directly.
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
 
-Link: https://lore.kernel.org/lkml/202111190526.K5vb7NWC-lkp@intel.com/T/
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Link: https://lore.kernel.org/r/d14ed8d71ad4372e6839ae427f91441d3ba0e94d.1637946316.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/w1/slaves/w1_ds28e04.c | 26 ++++++--------------------
- 1 file changed, 6 insertions(+), 20 deletions(-)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/w1/slaves/w1_ds28e04.c b/drivers/w1/slaves/w1_ds28e04.c
-index ec234b846eb3c..e5eb19a34ee2a 100644
---- a/drivers/w1/slaves/w1_ds28e04.c
-+++ b/drivers/w1/slaves/w1_ds28e04.c
-@@ -34,7 +34,7 @@ static int w1_strong_pullup = 1;
- module_param_named(strong_pullup, w1_strong_pullup, int, 0);
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 7568cea559220..bf0a0ef60d6b4 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -631,6 +631,8 @@ try_again:
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
  
- /* enable/disable CRC checking on DS28E04-100 memory accesses */
--static char w1_enable_crccheck = 1;
-+static bool w1_enable_crccheck = true;
++	card->ocr = ocr_card;
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -737,7 +739,7 @@ try_again:
  
- #define W1_EEPROM_SIZE		512
- #define W1_PAGE_COUNT		16
-@@ -341,32 +341,18 @@ static BIN_ATTR_RW(pio, 1);
- static ssize_t crccheck_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
- {
--	if (put_user(w1_enable_crccheck + 0x30, buf))
--		return -EFAULT;
--
--	return sizeof(w1_enable_crccheck);
-+	return sysfs_emit(buf, "%d\n", w1_enable_crccheck);
- }
+ 		card = oldcard;
+ 	}
+-	card->ocr = ocr_card;
++
+ 	mmc_fixup_device(card, sdio_fixup_methods);
  
- static ssize_t crccheck_store(struct device *dev, struct device_attribute *attr,
- 			      const char *buf, size_t count)
- {
--	char val;
--
--	if (count != 1 || !buf)
--		return -EINVAL;
-+	int err = kstrtobool(buf, &w1_enable_crccheck);
- 
--	if (get_user(val, buf))
--		return -EFAULT;
-+	if (err)
-+		return err;
- 
--	/* convert to decimal */
--	val = val - 0x30;
--	if (val != 0 && val != 1)
--		return -EINVAL;
--
--	/* set the new value */
--	w1_enable_crccheck = val;
--
--	return sizeof(w1_enable_crccheck);
-+	return count;
- }
- 
- static DEVICE_ATTR_RW(crccheck);
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
 -- 
 2.34.1
 
