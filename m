@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A27C3526C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C25BDC3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365883AbiAXXvz (ORCPT
+        id S2365937AbiAXXwA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47694 "EHLO
+        Mon, 24 Jan 2022 18:52:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843474AbiAXXED (ORCPT
+        with ESMTP id S1845261AbiAXXLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:04:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89AA7C06C5AC;
-        Mon, 24 Jan 2022 13:15:12 -0800 (PST)
+        Mon, 24 Jan 2022 18:11:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636FCC0A02B2;
+        Mon, 24 Jan 2022 13:18:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 275E661425;
-        Mon, 24 Jan 2022 21:15:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE212C340E5;
-        Mon, 24 Jan 2022 21:15:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C5BDB8123A;
+        Mon, 24 Jan 2022 21:18:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DA99C340E4;
+        Mon, 24 Jan 2022 21:18:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058911;
-        bh=jCLuVy28HwBiuUUxs7Ez/SG8B5g+9UJE++jF70kFQIw=;
+        s=korg; t=1643059131;
+        bh=5bUKsrqF9mbHtV4XlYG05/ugAg6Jo+Sb90uYqTfChFM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dMKO6dQw36Sz86pGfU69dsVHVksUa6ale4o1YE4JczNWWHm4OEfRoqX78YGQ56mgs
-         B0UdcZviDa3qEfPwfAWV0XGgBouXDmrHaMl59fa/94y0dcYa23/tyXWJ0627NGLHcA
-         s1CeiA0Lci1EiVRXhm0rHExqcUwREluUQ147ZZBo=
+        b=Nop0maVa6lVucsRkAhc4uy2PU9je0gp9SaGJ3jPPcUZ41rZWiFUeScC18O+RUsKLq
+         H2HNZOCSgOtuSoc2U8VMCVb5OygtO88SbrIHq79CQUb2u5+lawc0SdbJMtpdPorfWg
+         HZGq0gR8Ep+ChLIsUIi+aG8l7sLSZauY280bnnHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0410/1039] Revert "net/mlx5e: Block offload of outer header csum for GRE tunnel"
-Date:   Mon, 24 Jan 2022 19:36:39 +0100
-Message-Id: <20220124184139.096166047@linuxfoundation.org>
+Subject: [PATCH 5.16 0481/1039] PCI/MSI: Fix pci_irq_vector()/pci_irq_get_affinity()
+Date:   Mon, 24 Jan 2022 19:37:50 +0100
+Message-Id: <20220124184141.435262990@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,46 +52,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 01c3fd113ef50490ffd43f78f347ef6bb008510b ]
+[ Upstream commit 29bbc35e29d9b6347780dcacde2deb4b39344167 ]
 
-This reverts commit 54e1217b90486c94b26f24dcee1ee5ef5372f832.
+pci_irq_vector() and pci_irq_get_affinity() use the list position to find the
+MSI-X descriptor at a given index. That's correct for the normal case where
+the entry number is the same as the list position.
 
-Although the NIC doesn't support offload of outer header CSUM, using
-gso_partial_features allows offloading the tunnel's segmentation. The
-driver relies on the stack CSUM calculation of the outer header. For
-this, NETIF_F_GSO_GRE_CSUM must be a member of the device's features.
+But it's wrong for cases where MSI-X was allocated with an entries array
+describing sparse entry numbers into the hardware message descriptor
+table. That's inconsistent at best.
 
-Fixes: 54e1217b9048 ("net/mlx5e: Block offload of outer header csum for GRE tunnel")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Make it always check the entry number because that's what the zero base
+index really means. This change won't break existing users which use a
+sparse entries array for allocation because these users retrieve the Linux
+interrupt number from the entries array after allocation and none of them
+uses pci_irq_vector() or pci_irq_get_affinity().
+
+Fixes: aff171641d18 ("PCI: Provide sensible IRQ vector alloc/free routines")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://lore.kernel.org/r/20211206210223.929792157@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/pci/msi.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index de8acd3217c18..d92b82cdfd4e1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4799,9 +4799,12 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
- 	}
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index d84cf30bb2790..8465221be6d21 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -1194,19 +1194,24 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
  
- 	if (mlx5e_tunnel_proto_supported_tx(mdev, IPPROTO_GRE)) {
--		netdev->hw_features     |= NETIF_F_GSO_GRE;
--		netdev->hw_enc_features |= NETIF_F_GSO_GRE;
--		netdev->gso_partial_features |= NETIF_F_GSO_GRE;
-+		netdev->hw_features     |= NETIF_F_GSO_GRE |
-+					   NETIF_F_GSO_GRE_CSUM;
-+		netdev->hw_enc_features |= NETIF_F_GSO_GRE |
-+					   NETIF_F_GSO_GRE_CSUM;
-+		netdev->gso_partial_features |= NETIF_F_GSO_GRE |
-+						NETIF_F_GSO_GRE_CSUM;
- 	}
+ /**
+  * pci_irq_vector - return Linux IRQ number of a device vector
+- * @dev: PCI device to operate on
+- * @nr: device-relative interrupt vector index (0-based).
++ * @dev:	PCI device to operate on
++ * @nr:		Interrupt vector index (0-based)
++ *
++ * @nr has the following meanings depending on the interrupt mode:
++ *   MSI-X:	The index in the MSI-X vector table
++ *   MSI:	The index of the enabled MSI vectors
++ *   INTx:	Must be 0
++ *
++ * Return: The Linux interrupt number or -EINVAl if @nr is out of range.
+  */
+ int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
+ {
+ 	if (dev->msix_enabled) {
+ 		struct msi_desc *entry;
+-		int i = 0;
  
- 	if (mlx5e_tunnel_proto_supported_tx(mdev, IPPROTO_IPIP)) {
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (i == nr)
++			if (entry->msi_attrib.entry_nr == nr)
+ 				return entry->irq;
+-			i++;
+ 		}
+ 		WARN_ON_ONCE(1);
+ 		return -EINVAL;
+@@ -1230,17 +1235,22 @@ EXPORT_SYMBOL(pci_irq_vector);
+  * pci_irq_get_affinity - return the affinity of a particular MSI vector
+  * @dev:	PCI device to operate on
+  * @nr:		device-relative interrupt vector index (0-based).
++ *
++ * @nr has the following meanings depending on the interrupt mode:
++ *   MSI-X:	The index in the MSI-X vector table
++ *   MSI:	The index of the enabled MSI vectors
++ *   INTx:	Must be 0
++ *
++ * Return: A cpumask pointer or NULL if @nr is out of range
+  */
+ const struct cpumask *pci_irq_get_affinity(struct pci_dev *dev, int nr)
+ {
+ 	if (dev->msix_enabled) {
+ 		struct msi_desc *entry;
+-		int i = 0;
+ 
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (i == nr)
++			if (entry->msi_attrib.entry_nr == nr)
+ 				return &entry->affinity->mask;
+-			i++;
+ 		}
+ 		WARN_ON_ONCE(1);
+ 		return NULL;
 -- 
 2.34.1
 
