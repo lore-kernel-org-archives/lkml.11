@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7782CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA8CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348606AbiAXUSi (ORCPT
+        id S1381054AbiAXUSt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:18:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376372AbiAXUBc (ORCPT
+        Mon, 24 Jan 2022 15:18:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44852 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353260AbiAXUBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1998CC055ABE;
-        Mon, 24 Jan 2022 11:28:48 -0800 (PST)
+        Mon, 24 Jan 2022 15:01:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADDA26148F;
-        Mon, 24 Jan 2022 19:28:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B0F3C340E7;
-        Mon, 24 Jan 2022 19:28:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C155B8122F;
+        Mon, 24 Jan 2022 20:01:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D309C340E5;
+        Mon, 24 Jan 2022 20:01:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052527;
-        bh=jNhhpFP2tNg+Npy4Crv5614QHwFsd4ldaIklWzBWj20=;
+        s=korg; t=1643054494;
+        bh=XKhNpFcyGUjE+sjTlejmD2OUYPSklbFBgEeUXUUIQe4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ncJBAo2PsG3u4k3A+vimOP90FEwhtem6E3chxLDlnL3dH76p/96eFWNAqHumcEyNr
-         ySRtEXFRcj4dZCvUaDhyOZnbr0zJTHhy0zhf0EFLDz7ZWL2QRSt5SUj5qZZPgamGwv
-         KUJXgHEy90bQR3er/+ZdnDIjsfHfvqOs2sCMFf10=
+        b=UPU4jHB/7hZKEoubXPoZsU5KKFr++YmltxEJQmdIYTQt3Alr5Rx5V8artuy2hswLq
+         9T8JADaa8ULydhnUrI0yapJBBgRhv8Xy1kz7B1Q/vYNi1uok/4SJG3TB4dADHKhMdI
+         43s/bev1ns/KgMaKHSnAHWaxxOV7keTrVcZawfNU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 088/320] media: hantro: Fix probe func error path
-Date:   Mon, 24 Jan 2022 19:41:12 +0100
-Message-Id: <20220124183956.735090904@linuxfoundation.org>
+Subject: [PATCH 5.10 408/563] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
+Date:   Mon, 24 Jan 2022 19:42:53 +0100
+Message-Id: <20220124184038.548917070@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,49 +46,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jernej Skrabec <jernej.skrabec@gmail.com>
+From: Ingo Molnar <mingo@kernel.org>
 
-[ Upstream commit 37af43b250fda6162005d47bf7c959c70d52b107 ]
+[ Upstream commit b6aa86cff44cf099299d3a5e66348cb709cd7964 ]
 
-If clocks for some reason couldn't be enabled, probe function returns
-immediately, without disabling PM. This obviously leaves PM ref counters
-unbalanced.
+Most distro kernels have this option enabled, to improve debug output.
 
-Fix that by jumping to appropriate error path, so effects of PM functions
-are reversed.
+Lockdep also selects it.
 
-Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
-Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
-Acked-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Enable this in the defconfig kernel as well, to make it more
+representative of what people are using on x86.
+
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/hantro/hantro_drv.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/configs/i386_defconfig   | 1 +
+ arch/x86/configs/x86_64_defconfig | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
-index 32e5966ba5c5f..58cf44045b396 100644
---- a/drivers/staging/media/hantro/hantro_drv.c
-+++ b/drivers/staging/media/hantro/hantro_drv.c
-@@ -823,7 +823,7 @@ static int hantro_probe(struct platform_device *pdev)
- 	ret = clk_bulk_prepare(vpu->variant->num_clocks, vpu->clocks);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Failed to prepare clocks\n");
--		return ret;
-+		goto err_pm_disable;
- 	}
- 
- 	ret = v4l2_device_register(&pdev->dev, &vpu->v4l2_dev);
-@@ -879,6 +879,7 @@ err_v4l2_unreg:
- 	v4l2_device_unregister(&vpu->v4l2_dev);
- err_clk_unprepare:
- 	clk_bulk_unprepare(vpu->variant->num_clocks, vpu->clocks);
-+err_pm_disable:
- 	pm_runtime_dont_use_autosuspend(vpu->dev);
- 	pm_runtime_disable(vpu->dev);
- 	return ret;
+diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
+index 78210793d357c..38d7acb9610cc 100644
+--- a/arch/x86/configs/i386_defconfig
++++ b/arch/x86/configs/i386_defconfig
+@@ -264,3 +264,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
++CONFIG_KALLSYMS_ALL=y
+diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
+index 9936528e19393..c6e587a9a6f85 100644
+--- a/arch/x86/configs/x86_64_defconfig
++++ b/arch/x86/configs/x86_64_defconfig
+@@ -260,3 +260,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
++CONFIG_KALLSYMS_ALL=y
 -- 
 2.34.1
 
