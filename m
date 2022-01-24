@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93045C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 803F6C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2361879AbiAXXlE (ORCPT
+        id S2361770AbiAXXkv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:41:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46112 "EHLO
+        Mon, 24 Jan 2022 18:40:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841065AbiAXW5a (ORCPT
+        with ESMTP id S1841089AbiAXW5g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:57:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC77C055ABC;
-        Mon, 24 Jan 2022 13:11:41 -0800 (PST)
+        Mon, 24 Jan 2022 17:57:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5EC5C055ABF;
+        Mon, 24 Jan 2022 13:12:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4E80B80FA1;
-        Mon, 24 Jan 2022 21:11:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBF70C340E5;
-        Mon, 24 Jan 2022 21:11:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 762CE6131F;
+        Mon, 24 Jan 2022 21:12:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 614E9C340E5;
+        Mon, 24 Jan 2022 21:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058699;
-        bh=Sg3S3kOi4mnZWSbiDwAh4Yx1tel3YqVXV3twfkoYhCA=;
+        s=korg; t=1643058723;
+        bh=WGPI17vQVAo2cE77Umhe/pZ01t6CYtWwSryzGlKR4Ac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=weFOZsnREhwfgzXBXPrv7aMj61kRjFHkEPLKH2h6jXl0G5vjkoJS7mW1X8b9RMsY7
-         BPR/y37a8nuTU8G2Cmaj7m/rv/IcMEMibaiGb+GpErIqtUQ7dkwgX0QSgDmjgdmY94
-         y9hNaP7ecURwW8qleK7z5GVfe2+/W/ZeJqFlHmrs=
+        b=fAX2Xyov3G8BudDESXrh4rUzLqRV0kO/7KoSsy5bamKnkwTJhAKDk9QBQHGqmH66f
+         MVxTbgJ27fcU1CUgXeWUOCas2V02N+rUj6DrnYkkdZ/kI47QfRvVemC+w8mPiPEqXL
+         +50M0G9rUhvb6ZAMiYVL/jjtoDcra5rds6UQZTyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
+        syzbot <syzkaller@googlegroups.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0341/1039] um: virtio_uml: Fix time-travel external time propagation
-Date:   Mon, 24 Jan 2022 19:35:30 +0100
-Message-Id: <20220124184136.768068556@linuxfoundation.org>
+Subject: [PATCH 5.16 0382/1039] ppp: ensure minimum packet size in ppp_write()
+Date:   Mon, 24 Jan 2022 19:36:11 +0100
+Message-Id: <20220124184138.152052701@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,57 +53,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 85e73968a040c642fd38f6cba5b73b61f5d0f052 ]
+[ Upstream commit 44073187990d5629804ce0627525f6ea5cfef171 ]
 
-When creating an external event, the current time needs to
-be propagated to other participants of a simulation. This
-is done in the places here where we kick a virtq etc.
+It seems pretty clear ppp layer assumed user space
+would always be kind to provide enough data
+in their write() to a ppp device.
 
-However, it must be done for _all_ external events, and
-that includes making the initial socket connection and
-later closing it. Call time_travel_propagate_time() to do
-this before making or closing the socket connection.
+This patch makes sure user provides at least
+2 bytes.
 
-Apparently, at least for the initial connection creation,
-due to the remote side in my use cases using microseconds
-(rather than nanoseconds), this wasn't a problem yet; only
-started failing between 5.14-rc1 and 5.15-rc1 (didn't test
-others much), or possibly depending on the configuration,
-where more delays happen before the virtio devices are
-initialized.
+It adds PPP_PROTO_LEN macro that could replace
+in net-next many occurrences of hard-coded 2 value.
 
-Fixes: 88ce64249233 ("um: Implement time-travel=ext")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+I replaced only one occurrence to ease backports
+to stable kernels.
+
+The bug manifests in the following report:
+
+BUG: KMSAN: uninit-value in ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
+ ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
+ __ppp_xmit_process+0x23e/0x4b0 drivers/net/ppp/ppp_generic.c:1640
+ ppp_xmit_process+0x1fe/0x480 drivers/net/ppp/ppp_generic.c:1661
+ ppp_write+0x5cb/0x5e0 drivers/net/ppp/ppp_generic.c:513
+ do_iter_write+0xb0c/0x1500 fs/read_write.c:853
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ ppp_write+0x11d/0x5e0 drivers/net/ppp/ppp_generic.c:501
+ do_iter_write+0xb0c/0x1500 fs/read_write.c:853
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linux-ppp@vger.kernel.org
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/drivers/virtio_uml.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ppp/ppp_generic.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/um/drivers/virtio_uml.c b/arch/um/drivers/virtio_uml.c
-index d51e445df7976..7755cb4ff9fc6 100644
---- a/arch/um/drivers/virtio_uml.c
-+++ b/arch/um/drivers/virtio_uml.c
-@@ -1090,6 +1090,8 @@ static void virtio_uml_release_dev(struct device *d)
- 			container_of(d, struct virtio_device, dev);
- 	struct virtio_uml_device *vu_dev = to_virtio_uml_device(vdev);
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index 1180a0e2445fb..3ab24988198fe 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -69,6 +69,8 @@
+ #define MPHDRLEN	6	/* multilink protocol header length */
+ #define MPHDRLEN_SSN	4	/* ditto with short sequence numbers */
  
-+	time_travel_propagate_time();
++#define PPP_PROTO_LEN	2
 +
- 	/* might not have been opened due to not negotiating the feature */
- 	if (vu_dev->req_fd >= 0) {
- 		um_free_irq(vu_dev->irq, vu_dev);
-@@ -1136,6 +1138,8 @@ static int virtio_uml_probe(struct platform_device *pdev)
- 	vu_dev->pdev = pdev;
- 	vu_dev->req_fd = -1;
+ /*
+  * An instance of /dev/ppp can be associated with either a ppp
+  * interface unit or a ppp channel.  In both cases, file->private_data
+@@ -497,6 +499,9 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
  
-+	time_travel_propagate_time();
-+
- 	do {
- 		rc = os_connect_socket(pdata->socket_path);
- 	} while (rc == -EINTR);
+ 	if (!pf)
+ 		return -ENXIO;
++	/* All PPP packets should start with the 2-byte protocol */
++	if (count < PPP_PROTO_LEN)
++		return -EINVAL;
+ 	ret = -ENOMEM;
+ 	skb = alloc_skb(count + pf->hdrlen, GFP_KERNEL);
+ 	if (!skb)
+@@ -1764,7 +1769,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
+ 	}
+ 
+ 	++ppp->stats64.tx_packets;
+-	ppp->stats64.tx_bytes += skb->len - 2;
++	ppp->stats64.tx_bytes += skb->len - PPP_PROTO_LEN;
+ 
+ 	switch (proto) {
+ 	case PPP_IP:
 -- 
 2.34.1
 
