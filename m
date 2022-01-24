@@ -2,251 +2,240 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA486C47082
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDA6C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367149AbiAXXyP (ORCPT
+        id S2366809AbiAXXxh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:54:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49510 "EHLO
+        Mon, 24 Jan 2022 18:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846348AbiAXXPn (ORCPT
+        with ESMTP id S1846030AbiAXXOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:15:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED643C06177E;
-        Mon, 24 Jan 2022 13:23:40 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89C6560C44;
-        Mon, 24 Jan 2022 21:23:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F61AC340E4;
-        Mon, 24 Jan 2022 21:23:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059420;
-        bh=XqqZhZVVlX5olFQFKA/GsYEKRETBxCwomFV/uenBILs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HVPySKgXLd8qShyBcwbqgx5+sTLlyv85f0epauHbsoj/VbVpn1l414cqXTni4Ep2I
-         sh0MnkQcYFI+VQekyj9cWboOZeuLb7Dd9GmTPJ0zHkefYkLWrmhcaMsU/IF2s0v+Pq
-         Kk+7j7zyrQQvLJkp9RvxXLKj+YeUb95g3wOVUjEU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Zimmermann <tzimmermann@suse.de>,
-        Steven Price <steven.price@arm.com>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0609/1039] drm: Return error codes from struct drm_driver.gem_create_object
-Date:   Mon, 24 Jan 2022 19:39:58 +0100
-Message-Id: <20220124184145.811328797@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:14:14 -0500
+Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845C0C06F8C2
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:22:37 -0800 (PST)
+Received: by mail-pg1-x532.google.com with SMTP id z131so5495962pgz.12
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:22:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=YpyozKQg+308D8DXH4ejjXpy/uQNL1MLMopUiW1gyt0=;
+        b=MFN+GeC5TBnxb4Rbr/vO9y3o+Qqi6HhV1KvD9aSoeEA1HlJuA1Kjw0OG+c4ETZAGYT
+         7hRMSb7tTErMoJjogvXoPu3LjutHRGDCnIilEnaxZkCnP3i0D3BtuNIhtNKcljxVFJhE
+         DfcVteKWTP9tUhro+a5enzsAalT2r70VID5r0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=YpyozKQg+308D8DXH4ejjXpy/uQNL1MLMopUiW1gyt0=;
+        b=14bqyNxabGmx0MGyQrWWKT3y3viHPOx9h2bsnpdg+ge3Zinz3+ccl616EYmK/bHN75
+         eLy9ADJXW/t+FSCBBFpS0gt+D6lgaU7E1BBnyM7VjcNpl9dmgGpIPC4ELEEW6E0YmgT/
+         pYrV79vp4rerlGr99Fd4gKIrbgm73DNiP1hxvSrxw4+e8jRedHYcZC5ssFhUlSDAAjdp
+         Nl22F/9W+mAZTGgYlrOOYPEwXe9NtKspYSpK1gF3JQkWKxeTSef9j9QjlafF4NwxDIqi
+         Ggkbz8FjXYKF6aAh7gqiiGiPz+E4yvJtG3QjHYk26s5aw4TYtTgeK49YOR4RmqxBTtvV
+         2CVQ==
+X-Gm-Message-State: AOAM533iDcKammJcupGkGaOpt3FD9f6H9KTPZzkgyY32M2s/nhd6W0hC
+        aimqPKnvVxFKBHWfEMuSXQ2xRw==
+X-Google-Smtp-Source: ABdhPJykSEUhExV5uSgDgwcOxuN//4yGOBWt8z3cAjgNQMtDG/WYh2+VEoGlrOBPWPnQX2RCWy5leQ==
+X-Received: by 2002:a63:3746:: with SMTP id g6mr12992725pgn.18.1643059357059;
+        Mon, 24 Jan 2022 13:22:37 -0800 (PST)
+Received: from chromium.org (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id bc19sm2901282pgb.66.2022.01.24.13.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 13:22:36 -0800 (PST)
+Date:   Mon, 24 Jan 2022 21:22:35 +0000
+From:   Prashant Malani <pmalani@chromium.org>
+To:     Daisuke Nojiri <dnojiri@chromium.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Stephen Boyd <swboyd@chromium.org>, linux-pm@vger.kernel.org
+Subject: Re: [PATCH v2] power: supply: PCHG: Use MKBP for device event
+ handling
+Message-ID: <Ye8Ym9Ie7UOp0/jY@chromium.org>
+References: <20220124010348.681893-1-dnojiri@chromium.org>
+ <20220124011143.684348-1-dnojiri@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124011143.684348-1-dnojiri@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Zimmermann <tzimmermann@suse.de>
+Hi Daisuke,
 
-[ Upstream commit 4ff22f487f8c26b99cbe1678344595734c001a39 ]
+On Jan 23 17:11, Daisuke Nojiri wrote:
+> This patch makes the PCHG driver receive device events through
+> MKBP protocol since CrOS EC switched to deliver all peripheral
+> charge events to the MKBP protocol. This will unify PCHG event
+> handling on X86 and ARM.
+> 
+> Signed-off-by: Daisuke Nojiri <dnojiri@chromium.org>
+> ---
+> v1 -> v2
+> * Make the patch description concise.
+> * Change the order of if-conditions in cros_ec_notify.
+> ---
+>  .../power/supply/cros_peripheral_charger.c    | 35 ++--------
+>  .../linux/platform_data/cros_ec_commands.h    | 64 +++++++++++++++++++
 
-GEM helper libraries use struct drm_driver.gem_create_object to let
-drivers override GEM object allocation. On failure, the call returns
-NULL.
+In the past, the maintainer here has requested the header update to be
+in a separate patch. Perhaps we should follow that format.
 
-Change the semantics to make the calls return a pointer-encoded error.
-This aligns the callback with its callers. Fixes the ingenic driver,
-which already returns an error pointer.
+>  2 files changed, 70 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/power/supply/cros_peripheral_charger.c b/drivers/power/supply/cros_peripheral_charger.c
+> index 305f10dfc06d1b..cb402f48087ddf 100644
+> --- a/drivers/power/supply/cros_peripheral_charger.c
+> +++ b/drivers/power/supply/cros_peripheral_charger.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/slab.h>
+>  #include <linux/stringify.h>
+>  #include <linux/types.h>
+> +#include <asm/unaligned.h>
+>  
+>  #define DRV_NAME		"cros-ec-pchg"
+>  #define PCHG_DIR_PREFIX		"peripheral"
+> @@ -237,46 +238,22 @@ static int cros_pchg_event(const struct charger_data *charger,
+>  	return NOTIFY_OK;
+>  }
+>  
+> -static u32 cros_get_device_event(const struct charger_data *charger)
+> -{
+> -	struct ec_params_device_event req;
+> -	struct ec_response_device_event rsp;
+> -	struct device *dev = charger->dev;
+> -	int ret;
+> -
+> -	req.param = EC_DEVICE_EVENT_PARAM_GET_CURRENT_EVENTS;
+> -	ret = cros_pchg_ec_command(charger, 0, EC_CMD_DEVICE_EVENT,
+> -				   &req, sizeof(req), &rsp, sizeof(rsp));
+> -	if (ret < 0) {
+> -		dev_warn(dev, "Unable to get device events (err:%d)\n", ret);
+> -		return 0;
+> -	}
+> -
+> -	return rsp.event_mask;
+> -}
+> -
+>  static int cros_ec_notify(struct notifier_block *nb,
+>  			  unsigned long queued_during_suspend,
+>  			  void *data)
+>  {
+>  	struct cros_ec_device *ec_dev = (struct cros_ec_device *)data;
+> -	u32 host_event = cros_ec_get_host_event(ec_dev);
+>  	struct charger_data *charger =
+>  			container_of(nb, struct charger_data, notifier);
+> -	u32 device_event_mask;
+> +	u32 host_event;
+>  
+> -	if (!host_event)
+> +	if (ec_dev->event_data.event_type != EC_MKBP_EVENT_PCHG
+> +			|| ec_dev->event_size != sizeof(host_event))
+>  		return NOTIFY_DONE;
+>  
+> -	if (!(host_event & EC_HOST_EVENT_MASK(EC_HOST_EVENT_DEVICE)))
+> -		return NOTIFY_DONE;
+> +	host_event = get_unaligned_le32(&ec_dev->event_data.data.host_event);
+>  
+> -	/*
+> -	 * todo: Retrieve device event mask in common place
+> -	 * (e.g. cros_ec_proto.c).
+> -	 */
+> -	device_event_mask = cros_get_device_event(charger);
+> -	if (!(device_event_mask & EC_DEVICE_EVENT_MASK(EC_DEVICE_EVENT_WLC)))
+> +	if (!(host_event & EC_MKBP_PCHG_DEVICE_EVENT))
+>  		return NOTIFY_DONE;
+>  
+>  	return cros_pchg_event(charger, host_event);
+> diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+> index 271bd87bff0a25..c784bed3388865 100644
+> --- a/include/linux/platform_data/cros_ec_commands.h
+> +++ b/include/linux/platform_data/cros_ec_commands.h
+> @@ -3386,6 +3386,9 @@ enum ec_mkbp_event {
+>  	/* Send an incoming CEC message to the AP */
+>  	EC_MKBP_EVENT_CEC_MESSAGE = 9,
+>  
+> +	/* Peripheral device charger event */
+> +	EC_MKBP_EVENT_PCHG = 12,
+> +
+>  	/* Number of MKBP events */
+>  	EC_MKBP_EVENT_COUNT,
+>  };
+> @@ -5527,6 +5530,67 @@ enum pchg_state {
+>  	[PCHG_STATE_CONNECTED] = "CONNECTED", \
+>  	}
+>  
+> +/**
+> + * Update firmware of peripheral chip
+> + */
+> +#define EC_CMD_PCHG_UPDATE 0x0136
+> +
+> +/* Port number is encoded in bit[28:31]. */
+> +#define EC_MKBP_PCHG_PORT_SHIFT		28
+> +/* Utility macro for converting MKBP event to port number. */
+> +#define EC_MKBP_PCHG_EVENT_TO_PORT(e)	(((e) >> EC_MKBP_PCHG_PORT_SHIFT) & 0xf)
+> +/* Utility macro for extracting event bits. */
+> +#define EC_MKBP_PCHG_EVENT_MASK(e)	((e) \
+> +					& GENMASK(EC_MKBP_PCHG_PORT_SHIFT-1, 0))
+> +
+> +#define EC_MKBP_PCHG_UPDATE_OPENED	BIT(0)
+> +#define EC_MKBP_PCHG_WRITE_COMPLETE	BIT(1)
+> +#define EC_MKBP_PCHG_UPDATE_CLOSED	BIT(2)
+> +#define EC_MKBP_PCHG_UPDATE_ERROR	BIT(3)
+> +#define EC_MKBP_PCHG_DEVICE_EVENT	BIT(4)
+> +
+> +enum ec_pchg_update_cmd {
+> +	/* Reset chip to normal mode. */
+> +	EC_PCHG_UPDATE_CMD_RESET_TO_NORMAL = 0,
+> +	/* Reset and put a chip in update (a.k.a. download) mode. */
+> +	EC_PCHG_UPDATE_CMD_OPEN,
+> +	/* Write a block of data containing FW image. */
+> +	EC_PCHG_UPDATE_CMD_WRITE,
+> +	/* Close update session. */
+> +	EC_PCHG_UPDATE_CMD_CLOSE,
+> +	/* End of commands */
+> +	EC_PCHG_UPDATE_CMD_COUNT,
+> +};
+> +
+> +struct ec_params_pchg_update {
+> +	/* PCHG port number */
+> +	uint8_t port;
+> +	/* enum ec_pchg_update_cmd */
+> +	uint8_t cmd;
+> +	/* Padding */
+> +	uint8_t reserved0;
+> +	uint8_t reserved1;
+> +	/* Version of new firmware */
+> +	uint32_t version;
+> +	/* CRC32 of new firmware */
+> +	uint32_t crc32;
+> +	/* Address in chip memory where <data> is written to */
+> +	uint32_t addr;
+> +	/* Size of <data> */
+> +	uint32_t size;
+> +	/* Partial data of new firmware */
+> +	uint8_t data[];
+> +} __ec_align4;
+> +
+> +BUILD_ASSERT(EC_PCHG_UPDATE_CMD_COUNT
+> +	     < BIT(sizeof(((struct ec_params_pchg_update *)0)->cmd)*8));
+> +
+> +struct ec_response_pchg_update {
+> +	/* Block size */
+> +	uint32_t block_size;
+> +} __ec_align4;
 
-Also update the callers to handle the involved types more strictly.
+Do we need to introduce these structs if they are not being used anywhere?
+This header isn't auto-generated AFAIK.
 
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
-Reviewed-by: Steven Price <steven.price@arm.com>
-Acked-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211130095255.26710-1-tzimmermann@suse.de
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/drm_gem_cma_helper.c    | 17 ++++++++++-------
- drivers/gpu/drm/drm_gem_shmem_helper.c  | 17 ++++++++++-------
- drivers/gpu/drm/drm_gem_vram_helper.c   |  4 ++--
- drivers/gpu/drm/lima/lima_gem.c         |  2 +-
- drivers/gpu/drm/panfrost/panfrost_gem.c |  2 +-
- drivers/gpu/drm/v3d/v3d_bo.c            |  4 ++--
- drivers/gpu/drm/vgem/vgem_drv.c         |  2 +-
- drivers/gpu/drm/virtio/virtgpu_object.c |  2 +-
- include/drm/drm_drv.h                   |  5 +++--
- 9 files changed, 31 insertions(+), 24 deletions(-)
+If they *are* being used, could you kindly point to where they are being
+used?
 
-diff --git a/drivers/gpu/drm/drm_gem_cma_helper.c b/drivers/gpu/drm/drm_gem_cma_helper.c
-index 9d05674550a4f..1e7e8cd64cb58 100644
---- a/drivers/gpu/drm/drm_gem_cma_helper.c
-+++ b/drivers/gpu/drm/drm_gem_cma_helper.c
-@@ -62,18 +62,21 @@ __drm_gem_cma_create(struct drm_device *drm, size_t size, bool private)
- 	struct drm_gem_object *gem_obj;
- 	int ret = 0;
- 
--	if (drm->driver->gem_create_object)
-+	if (drm->driver->gem_create_object) {
- 		gem_obj = drm->driver->gem_create_object(drm, size);
--	else
--		gem_obj = kzalloc(sizeof(*cma_obj), GFP_KERNEL);
--	if (!gem_obj)
--		return ERR_PTR(-ENOMEM);
-+		if (IS_ERR(gem_obj))
-+			return ERR_CAST(gem_obj);
-+		cma_obj = to_drm_gem_cma_obj(gem_obj);
-+	} else {
-+		cma_obj = kzalloc(sizeof(*cma_obj), GFP_KERNEL);
-+		if (!cma_obj)
-+			return ERR_PTR(-ENOMEM);
-+		gem_obj = &cma_obj->base;
-+	}
- 
- 	if (!gem_obj->funcs)
- 		gem_obj->funcs = &drm_gem_cma_default_funcs;
- 
--	cma_obj = container_of(gem_obj, struct drm_gem_cma_object, base);
--
- 	if (private) {
- 		drm_gem_private_object_init(drm, gem_obj, size);
- 
-diff --git a/drivers/gpu/drm/drm_gem_shmem_helper.c b/drivers/gpu/drm/drm_gem_shmem_helper.c
-index bca0de92802ef..fe157bf278347 100644
---- a/drivers/gpu/drm/drm_gem_shmem_helper.c
-+++ b/drivers/gpu/drm/drm_gem_shmem_helper.c
-@@ -51,14 +51,17 @@ __drm_gem_shmem_create(struct drm_device *dev, size_t size, bool private)
- 
- 	size = PAGE_ALIGN(size);
- 
--	if (dev->driver->gem_create_object)
-+	if (dev->driver->gem_create_object) {
- 		obj = dev->driver->gem_create_object(dev, size);
--	else
--		obj = kzalloc(sizeof(*shmem), GFP_KERNEL);
--	if (!obj)
--		return ERR_PTR(-ENOMEM);
--
--	shmem = to_drm_gem_shmem_obj(obj);
-+		if (IS_ERR(obj))
-+			return ERR_CAST(obj);
-+		shmem = to_drm_gem_shmem_obj(obj);
-+	} else {
-+		shmem = kzalloc(sizeof(*shmem), GFP_KERNEL);
-+		if (!shmem)
-+			return ERR_PTR(-ENOMEM);
-+		obj = &shmem->base;
-+	}
- 
- 	if (!obj->funcs)
- 		obj->funcs = &drm_gem_shmem_funcs;
-diff --git a/drivers/gpu/drm/drm_gem_vram_helper.c b/drivers/gpu/drm/drm_gem_vram_helper.c
-index bfa386b981346..3f00192215d11 100644
---- a/drivers/gpu/drm/drm_gem_vram_helper.c
-+++ b/drivers/gpu/drm/drm_gem_vram_helper.c
-@@ -197,8 +197,8 @@ struct drm_gem_vram_object *drm_gem_vram_create(struct drm_device *dev,
- 
- 	if (dev->driver->gem_create_object) {
- 		gem = dev->driver->gem_create_object(dev, size);
--		if (!gem)
--			return ERR_PTR(-ENOMEM);
-+		if (IS_ERR(gem))
-+			return ERR_CAST(gem);
- 		gbo = drm_gem_vram_of_gem(gem);
- 	} else {
- 		gbo = kzalloc(sizeof(*gbo), GFP_KERNEL);
-diff --git a/drivers/gpu/drm/lima/lima_gem.c b/drivers/gpu/drm/lima/lima_gem.c
-index 640acc060467c..54823bd701a4b 100644
---- a/drivers/gpu/drm/lima/lima_gem.c
-+++ b/drivers/gpu/drm/lima/lima_gem.c
-@@ -221,7 +221,7 @@ struct drm_gem_object *lima_gem_create_object(struct drm_device *dev, size_t siz
- 
- 	bo = kzalloc(sizeof(*bo), GFP_KERNEL);
- 	if (!bo)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	mutex_init(&bo->lock);
- 	INIT_LIST_HEAD(&bo->va);
-diff --git a/drivers/gpu/drm/panfrost/panfrost_gem.c b/drivers/gpu/drm/panfrost/panfrost_gem.c
-index 23377481f4e31..39ac031548954 100644
---- a/drivers/gpu/drm/panfrost/panfrost_gem.c
-+++ b/drivers/gpu/drm/panfrost/panfrost_gem.c
-@@ -221,7 +221,7 @@ struct drm_gem_object *panfrost_gem_create_object(struct drm_device *dev, size_t
- 
- 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
- 	if (!obj)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	INIT_LIST_HEAD(&obj->mappings.list);
- 	mutex_init(&obj->mappings.lock);
-diff --git a/drivers/gpu/drm/v3d/v3d_bo.c b/drivers/gpu/drm/v3d/v3d_bo.c
-index 6a8731ab9d7d0..9a1a92782524c 100644
---- a/drivers/gpu/drm/v3d/v3d_bo.c
-+++ b/drivers/gpu/drm/v3d/v3d_bo.c
-@@ -70,11 +70,11 @@ struct drm_gem_object *v3d_create_object(struct drm_device *dev, size_t size)
- 	struct drm_gem_object *obj;
- 
- 	if (size == 0)
--		return NULL;
-+		return ERR_PTR(-EINVAL);
- 
- 	bo = kzalloc(sizeof(*bo), GFP_KERNEL);
- 	if (!bo)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 	obj = &bo->base.base;
- 
- 	obj->funcs = &v3d_gem_funcs;
-diff --git a/drivers/gpu/drm/vgem/vgem_drv.c b/drivers/gpu/drm/vgem/vgem_drv.c
-index a87eafa89e9f4..c5e3e54577377 100644
---- a/drivers/gpu/drm/vgem/vgem_drv.c
-+++ b/drivers/gpu/drm/vgem/vgem_drv.c
-@@ -97,7 +97,7 @@ static struct drm_gem_object *vgem_gem_create_object(struct drm_device *dev, siz
- 
- 	obj = kzalloc(sizeof(*obj), GFP_KERNEL);
- 	if (!obj)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	/*
- 	 * vgem doesn't have any begin/end cpu access ioctls, therefore must use
-diff --git a/drivers/gpu/drm/virtio/virtgpu_object.c b/drivers/gpu/drm/virtio/virtgpu_object.c
-index f648b0e24447b..4749c9303de05 100644
---- a/drivers/gpu/drm/virtio/virtgpu_object.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_object.c
-@@ -140,7 +140,7 @@ struct drm_gem_object *virtio_gpu_create_object(struct drm_device *dev,
- 
- 	shmem = kzalloc(sizeof(*shmem), GFP_KERNEL);
- 	if (!shmem)
--		return NULL;
-+		return ERR_PTR(-ENOMEM);
- 
- 	dshmem = &shmem->base.base;
- 	dshmem->base.funcs = &virtio_gpu_shmem_funcs;
-diff --git a/include/drm/drm_drv.h b/include/drm/drm_drv.h
-index 0cd95953cdf55..96c264c4be4fe 100644
---- a/include/drm/drm_drv.h
-+++ b/include/drm/drm_drv.h
-@@ -291,8 +291,9 @@ struct drm_driver {
- 	/**
- 	 * @gem_create_object: constructor for gem objects
- 	 *
--	 * Hook for allocating the GEM object struct, for use by the CMA and
--	 * SHMEM GEM helpers.
-+	 * Hook for allocating the GEM object struct, for use by the CMA
-+	 * and SHMEM GEM helpers. Returns a GEM object on success, or an
-+	 * ERR_PTR()-encoded error code otherwise.
- 	 */
- 	struct drm_gem_object *(*gem_create_object)(struct drm_device *dev,
- 						    size_t size);
--- 
-2.34.1
-
-
-
+Thanks,
