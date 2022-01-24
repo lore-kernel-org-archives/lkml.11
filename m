@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE05DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:19:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7F9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:19:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345824AbiAXUTT (ORCPT
+        id S1348989AbiAXUTX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:19:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
+        Mon, 24 Jan 2022 15:19:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349343AbiAXUCF (ORCPT
+        with ESMTP id S1376547AbiAXUCN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:02:05 -0500
+        Mon, 24 Jan 2022 15:02:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7D14C068085;
-        Mon, 24 Jan 2022 11:28:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB446C06808A;
+        Mon, 24 Jan 2022 11:28:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 843D96148B;
-        Mon, 24 Jan 2022 19:28:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74B1CC340E5;
-        Mon, 24 Jan 2022 19:28:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 56F886141C;
+        Mon, 24 Jan 2022 19:28:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36571C340E5;
+        Mon, 24 Jan 2022 19:28:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052535;
-        bh=7TEbViqa5qzpkns3ce5kg4p4DVWtQcObvdBdTHY3K1Y=;
+        s=korg; t=1643052538;
+        bh=OINsiS5UdLDal6aqCsCS5uap8QN3jI0D+lllzyNHj5U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o4ZYnh75VhWTcKiYCnSh8rZGXsUXJZtUa4hVlzsy4BgbqJ9wl8EolXd2LJGc0UTih
-         qoOyXp0g6LHAlBX6rUSOV3YFSMmHvTIr6pgQx5S5s0+p4pe7zANqRrCyhW1mtWyQiF
-         om06ZU8zN3r+DI5uUG90K0k7hX1XB7ure4+oRNyY=
+        b=yqKqISlVts5CFFFWHtwQONCk3L84tzwN960Qok6i9hhc9D2IvZfJseIdxsrkhgLXN
+         ZBYW63bbZQWT5+ot+Kdkc+mqWe3ZEcWYN4sz2rSnPgCsF5PpdcVrh3VLK0lir8xv4s
+         Fs0t6DSYi/Mz+chdnfXUJQMMoc+YGGzRx5gzz5xQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
+        Adam Lackorzynski <adam@l4re.org>,
+        Peter Maydell <peter.maydell@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 090/320] xfrm: state and policy should fail if XFRMA_IF_ID 0
-Date:   Mon, 24 Jan 2022 19:41:14 +0100
-Message-Id: <20220124183956.800549443@linuxfoundation.org>
+Subject: [PATCH 5.4 091/320] ARM: 9159/1: decompressor: Avoid UNPREDICTABLE NOP encoding
+Date:   Mon, 24 Jan 2022 19:41:15 +0100
+Message-Id: <20220124183956.841627066@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,82 +54,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Andre Przywara <andre.przywara@arm.com>
 
-[ Upstream commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 ]
+[ Upstream commit a92882a4d270fbcc021ee6848de5e48b7f0d27f3 ]
 
-xfrm ineterface does not allow xfrm if_id = 0
-fail to create or update xfrm state and policy.
+In the decompressor's head.S we need to start with an instruction that
+is some kind of NOP, but also mimics as the PE/COFF header, when the
+kernel is linked as an UEFI application. The clever solution here is
+"tstne r0, #0x4d000", which in the worst case just clobbers the
+condition flags, and bears the magic "MZ" signature in the lowest 16 bits.
 
-With this commit:
- ip xfrm policy add src 192.0.2.1 dst 192.0.2.2 dir out if_id 0
- RTNETLINK answers: Invalid argument
+However the encoding used (0x13105a4d) is actually not valid, since bits
+[15:12] are supposed to be 0 (written as "(0)" in the ARM ARM).
+Violating this is UNPREDICTABLE, and *can* trigger an UNDEFINED
+exception. Common Cortex cores seem to ignore those bits, but QEMU
+chooses to trap, so the code goes fishing because of a missing exception
+handler at this point. We are just saved by the fact that commonly (with
+-kernel or when running from U-Boot) the "Z" bit is set, so the
+instruction is never executed. See [0] for more details.
 
- ip xfrm state add src 192.0.2.1 dst 192.0.2.2 proto esp spi 1 \
-            reqid 1 mode tunnel aead 'rfc4106(gcm(aes))' \
-            0x1111111111111111111111111111111111111111 96 if_id 0
- RTNETLINK answers: Invalid argument
+To make things more robust and avoid UNPREDICTABLE behaviour in the
+kernel code, lets replace this with a "two-instruction NOP":
+The first instruction is an exclusive OR, the effect of which the second
+instruction reverts. This does not leave any trace, neither in a
+register nor in the condition flags. Also it's a perfectly valid
+encoding. Kudos to Peter Maydell for coming up with this gem.
 
-v1->v2 change:
- - add Fixes: tag
+[0] https://lore.kernel.org/qemu-devel/YTPIdbUCmwagL5%2FD@os.inf.tu-dresden.de/T/
 
-Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Link: https://lore.kernel.org/linux-arm-kernel/20210908162617.104962-1-andre.przywara@arm.com/T/
+
+Fixes: 81a0bc39ea19 ("ARM: add UEFI stub support")
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+Reported-by: Adam Lackorzynski <adam@l4re.org>
+Suggested-by: Peter Maydell <peter.maydell@linaro.org>
+Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ arch/arm/boot/compressed/efi-header.S | 22 ++++++++++++++--------
+ arch/arm/boot/compressed/head.S       |  3 ++-
+ 2 files changed, 16 insertions(+), 9 deletions(-)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index ddcf569d852f7..42ff32700d68b 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -621,8 +621,13 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
+diff --git a/arch/arm/boot/compressed/efi-header.S b/arch/arm/boot/compressed/efi-header.S
+index a5983588f96b8..dd53d6eb53ade 100644
+--- a/arch/arm/boot/compressed/efi-header.S
++++ b/arch/arm/boot/compressed/efi-header.S
+@@ -9,16 +9,22 @@
+ #include <linux/sizes.h>
  
- 	xfrm_smark_init(attrs, &x->props.smark);
+ 		.macro	__nop
+-#ifdef CONFIG_EFI_STUB
+-		@ This is almost but not quite a NOP, since it does clobber the
+-		@ condition flags. But it is the best we can do for EFI, since
+-		@ PE/COFF expects the magic string "MZ" at offset 0, while the
+-		@ ARM/Linux boot protocol expects an executable instruction
+-		@ there.
+-		.inst	MZ_MAGIC | (0x1310 << 16)	@ tstne r0, #0x4d000
+-#else
+  AR_CLASS(	mov	r0, r0		)
+   M_CLASS(	nop.w			)
++		.endm
++
++		.macro __initial_nops
++#ifdef CONFIG_EFI_STUB
++		@ This is a two-instruction NOP, which happens to bear the
++		@ PE/COFF signature "MZ" in the first two bytes, so the kernel
++		@ is accepted as an EFI binary. Booting via the UEFI stub
++		@ will not execute those instructions, but the ARM/Linux
++		@ boot protocol does, so we need some NOPs here.
++		.inst	MZ_MAGIC | (0xe225 << 16)	@ eor r5, r5, 0x4d000
++		eor	r5, r5, 0x4d000			@ undo previous insn
++#else
++		__nop
++		__nop
+ #endif
+ 		.endm
  
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!x->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
- 	if (err)
-@@ -1328,8 +1333,13 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	mark = xfrm_mark_get(attrs, &m);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!if_id) {
-+			err = -EINVAL;
-+			goto out_noput;
-+		}
-+	}
- 
- 	if (p->info.seq) {
- 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-@@ -1631,8 +1641,13 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
- 
- 	xfrm_mark_get(attrs, &xp->mark);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!xp->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	return xp;
-  error:
+diff --git a/arch/arm/boot/compressed/head.S b/arch/arm/boot/compressed/head.S
+index cbe126297f549..0a2410adc25b3 100644
+--- a/arch/arm/boot/compressed/head.S
++++ b/arch/arm/boot/compressed/head.S
+@@ -165,7 +165,8 @@ start:
+ 		 * were patching the initial instructions of the kernel, i.e
+ 		 * had started to exploit this "patch area".
+ 		 */
+-		.rept	7
++		__initial_nops
++		.rept	5
+ 		__nop
+ 		.endr
+ #ifndef CONFIG_THUMB2_KERNEL
 -- 
 2.34.1
 
