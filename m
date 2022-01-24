@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58B9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7064BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579174AbiAXWFH (ORCPT
+        id S1579258AbiAXWFO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:05:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40852 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378406AbiAXVRZ (ORCPT
+        Mon, 24 Jan 2022 17:05:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449775AbiAXVQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:17:25 -0500
+        Mon, 24 Jan 2022 16:16:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B408C09F4BD;
+        Mon, 24 Jan 2022 12:12:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3FFE60C60;
-        Mon, 24 Jan 2022 21:17:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88417C340E7;
-        Mon, 24 Jan 2022 21:17:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD38E61368;
+        Mon, 24 Jan 2022 20:12:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9976FC340E5;
+        Mon, 24 Jan 2022 20:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059042;
-        bh=KELrlWHcvTQuXSNFFxUFF1tW/4V0P2KYuGkbnaXmsdg=;
+        s=korg; t=1643055126;
+        bh=PSnOz8+2zdvBrxOTMHC/DW/3Ey4OxIgreWCpGuumD1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aFYXdpydSY/eMO53hRtULDDnhWxoTyBPgLEuZPFDqGzS0aNl00FLLBMddrrF57bcb
-         Yj+tNzhDxa43D63CGnrLs5HGO6dbi74whOa3hWBIs3o+jfGMgc7Ktf/11sAa1e3/Db
-         X4ttRuA8yMXz6CTw1SBraA/tKDD0SQ2oYAriYKEI=
+        b=zT/AZwEcU4loj1CCEnluBLL2rXG8buQCZg+z7mU00YynQkcCKjvlap2eQkwZChNzW
+         6p/aI4dtsRp/Qmiqz/577JJ17lHUkH6yN/3yh6l8k142VYotP7MXtkx7F0Xmxgp+kQ
+         XK9nEG3yzLfw1IRfJQ1t28bXNNXs76mtOYF01YfQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0486/1039] ASoC: rt5663: Handle device_property_read_u32_array error codes
-Date:   Mon, 24 Jan 2022 19:37:55 +0100
-Message-Id: <20220124184141.608319251@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.15 050/846] media: pvrusb2: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:32:47 +0100
+Message-Id: <20220124184102.679166775@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,65 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 2167c0b205960607fb136b4bb3c556a62be1569a ]
+commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
 
-The return value of device_property_read_u32_array() is not always 0.
-To catch the exception in case that devm_kzalloc failed and the
-rt5663->imp_table was NULL, which caused the failure of
-device_property_read_u32_array.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Fixes: 450f0f6a8fb4 ("ASoC: rt5663: Add the manual offset field to compensate the DC offset")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20211215031550.70702-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Cc: stable@vger.kernel.org      # 2.6.18
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/codecs/rt5663.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
-index 0389b2bb360e2..2138f62e6af5d 100644
---- a/sound/soc/codecs/rt5663.c
-+++ b/sound/soc/codecs/rt5663.c
-@@ -3461,6 +3461,7 @@ static void rt5663_calibrate(struct rt5663_priv *rt5663)
- static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
- {
- 	int table_size;
-+	int ret;
- 
- 	device_property_read_u32(dev, "realtek,dc_offset_l_manual",
- 		&rt5663->pdata.dc_offset_l_manual);
-@@ -3477,9 +3478,11 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
- 		table_size = sizeof(struct impedance_mapping_table) *
- 			rt5663->pdata.impedance_sensing_num;
- 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
--		device_property_read_u32_array(dev,
-+		ret = device_property_read_u32_array(dev,
- 			"realtek,impedance_sensing_table",
- 			(u32 *)rt5663->imp_table, table_size);
-+		if (ret)
-+			return ret;
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -1467,7 +1467,7 @@ static int pvr2_upload_firmware1(struct
+ 	for (address = 0; address < fwsize; address += 0x800) {
+ 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
+ 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
+-				       0, fw_ptr, 0x800, HZ);
++				       0, fw_ptr, 0x800, 1000);
  	}
  
- 	return 0;
-@@ -3504,8 +3507,11 @@ static int rt5663_i2c_probe(struct i2c_client *i2c,
+ 	trace_firmware("Upload done, releasing device's CPU");
+@@ -1605,7 +1605,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
+ 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
  
- 	if (pdata)
- 		rt5663->pdata = *pdata;
--	else
--		rt5663_parse_dp(rt5663, &i2c->dev);
-+	else {
-+		ret = rt5663_parse_dp(rt5663, &i2c->dev);
-+		if (ret)
-+			return ret;
-+	}
+ 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
+-				    &actual_length, HZ);
++				    &actual_length, 1000);
+ 		ret |= (actual_length != bcnt);
+ 		if (ret) break;
+ 		fw_done += bcnt;
+@@ -3438,7 +3438,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
+ 						      0xa0,0xc0,
+ 						      address,0,
+ 						      hdw->fw_buffer+address,
+-						      0x800,HZ);
++						      0x800,1000);
+ 				if (ret < 0) break;
+ 			}
  
- 	for (i = 0; i < ARRAY_SIZE(rt5663->supplies); i++)
- 		rt5663->supplies[i].supply = rt5663_supply_names[i];
--- 
-2.34.1
-
+@@ -3977,7 +3977,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
+ 	/* Write the CPUCS register on the 8051.  The lsb of the register
+ 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
+ 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
+-	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
++	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
+ 	if (ret < 0) {
+ 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
+ 			   "cpureset_assert(%d) error=%d",val,ret);
 
 
