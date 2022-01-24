@@ -2,181 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA953C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D656C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:29:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237123AbiAXK2G (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:28:06 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:55362 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237091AbiAXK2B (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:28:01 -0500
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20O6jNgh004848;
-        Mon, 24 Jan 2022 11:27:59 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=BMEd9rbFZe/L5t9dVkX24nilGNsAVv7tpeWV7JNZjrA=;
- b=Ej24pEQmJI6rtNtRKMDgEQbsLjA6NU7ED3w/50RJCtGUGbf8xJ759bTZNl1brJhPLSIo
- W1IiwCb+6WoCT0JnTB1rgcYOVwVkq34YHUAslknTZ8LOVkxbjoHVd5YyGbDEb4BPoVqg
- aHL2Rc5Q7jFzreqwSw8zgyTCAaeHbzYMnxBmzaex+3uJGyUQhtzSGc7cSKw1q17fwutV
- lwP6vaSZYsiS6CSE8wZGBdV2Ndd8xY4VzNPOHdvn67k14JtSQN/yda8BLlEsqRtofjUC
- GhTQG0FJBzD3cJ8fCZ0WqagFpCmjJ868stMpeYZkuV1VTuJ/zHOLM6WX3ZADDgj08YLO gA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ds9v1kcy0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 11:27:59 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 41454100034;
-        Mon, 24 Jan 2022 11:27:59 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 38A4A2128C2;
-        Mon, 24 Jan 2022 11:27:59 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 24 Jan 2022 11:27:58
- +0100
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <julien.massot@iot.bzh>, <arnaud.pouliquen@foss.st.com>
-Subject: [PATCH v9 11/11] rpmsg: ctrl: Introduce new RPMSG_CREATE/RELEASE_DEV_IOCTL controls
-Date:   Mon, 24 Jan 2022 11:25:24 +0100
-Message-ID: <20220124102524.295783-12-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124102524.295783-1-arnaud.pouliquen@foss.st.com>
-References: <20220124102524.295783-1-arnaud.pouliquen@foss.st.com>
+        id S237138AbiAXK3k (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:29:40 -0500
+Received: from mga14.intel.com ([192.55.52.115]:22651 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233982AbiAXK3i (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:29:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643020178; x=1674556178;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=daLP+rgqWynhNuFdT/Qj6qmZPrVmeIgmjO0+r7cxsZ4=;
+  b=HaqLzzmcLVgLaf9jGxgjxbzHXFeXmHEOQFMHfc4ZGM/7IGYJqZH9FlcN
+   s2uP5BG6AtZPmm4+P003smpxjO+9J7kVy/OLmaST8JIF52hXko2BTIFxL
+   ZSaGCKh/sKOxFq3sDR8A6IQnfcytH7g8g66CnfKJBvhei3/6JkB5Gy3dx
+   k5/OPuNwEkHPcpfmz1DwNt7bE6Yy4dUuKa+ZthcgyAOIjg3iDvwxsa+JT
+   rZi2G3iYdW0XvIylzBb3hzoK2k6gFSZc+8kU54Y5bYU0ZicSYOXNSQZvQ
+   qCvPilKVXIJpnPBlzXMZMJBoVnc2fU0QKKIvXaZFOfndSCjnh2GEHgClD
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="246232448"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="246232448"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 02:29:38 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="562609565"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 24 Jan 2022 02:29:36 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nBwbP-000IBq-PY; Mon, 24 Jan 2022 10:29:35 +0000
+Date:   Mon, 24 Jan 2022 18:29:26 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Walker Chen <walker.chen@starfivetech.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Michael Yan <michael.yan@starfivetech.com>,
+        Jenny Zhang <jenny.zhang@starfivetech.com>
+Subject: [esmil:visionfive 48/63] sound/soc/starfive/spdif.h:145:6: warning:
+ no previous prototype for 'sf_spdif_pcm_push_tx'
+Message-ID: <202201241838.ABa6OLrH-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-24_06,2022-01-24_01,2021-12-02_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Allow the user space application to create and release an rpmsg device
-by adding RPMSG_CREATE_DEV_IOCTL and RPMSG_RELEASE_DEV_IOCTL ioctrls to
-the /dev/rpmsg_ctrl interface
+tree:   https://github.com/esmil/linux visionfive
+head:   fdbe623707a8f3f9b9d2cb3c4c240299a12b8302
+commit: 20e1533986c528bed5da7a0957f828337d17d47d [48/63] ASoC: starfive: Add StarFive JH7100 audio drivers
+config: sparc-randconfig-r014-20220124 (https://download.01.org/0day-ci/archive/20220124/202201241838.ABa6OLrH-lkp@intel.com/config)
+compiler: sparc-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/esmil/linux/commit/20e1533986c528bed5da7a0957f828337d17d47d
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 20e1533986c528bed5da7a0957f828337d17d47d
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash sound/soc/
 
-The RPMSG_CREATE_DEV_IOCTL Ioctl can be used to instantiate a local rpmsg
-device.
-Depending on the back-end implementation, the associated rpmsg driver is
-probed and a NS announcement can be sent to the remote processor.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-The RPMSG_RELEASE_DEV_IOCTL allows the user application to release a
-rpmsg device created either by the remote processor or with the
-RPMSG_CREATE_DEV_IOCTL call.
-Depending on the back-end implementation, the associated rpmsg driver is
-removed and a NS destroy rpmsg can be sent to the remote processor.
+All warnings (new ones prefixed by >>):
 
-Suggested-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Reviewed-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+   In file included from sound/soc/starfive/spdif.c:21:
+>> sound/soc/starfive/spdif.h:145:6: warning: no previous prototype for 'sf_spdif_pcm_push_tx' [-Wmissing-prototypes]
+     145 | void sf_spdif_pcm_push_tx(struct sf_spdif_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/spdif.h:146:6: warning: no previous prototype for 'sf_spdif_pcm_pop_rx' [-Wmissing-prototypes]
+     146 | void sf_spdif_pcm_pop_rx(struct sf_spdif_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/spdif.h:147:5: warning: no previous prototype for 'sf_spdif_pcm_register' [-Wmissing-prototypes]
+     147 | int sf_spdif_pcm_register(struct platform_device *pdev)
+         |     ^~~~~~~~~~~~~~~~~~~~~
+--
+   In file included from sound/soc/starfive/pwmdac.c:19:
+>> sound/soc/starfive/pwmdac.h:145:6: warning: no previous prototype for 'sf_pwmdac_pcm_push_tx' [-Wmissing-prototypes]
+     145 | void sf_pwmdac_pcm_push_tx(struct sf_pwmdac_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/pwmdac.h:146:6: warning: no previous prototype for 'sf_pwmdac_pcm_pop_rx' [-Wmissing-prototypes]
+     146 | void sf_pwmdac_pcm_pop_rx(struct sf_pwmdac_dev *dev) { }
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> sound/soc/starfive/pwmdac.h:147:5: warning: no previous prototype for 'sf_pwmdac_pcm_register' [-Wmissing-prototypes]
+     147 | int sf_pwmdac_pcm_register(struct platform_device *pdev)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/sf_spdif_pcm_push_tx +145 sound/soc/starfive/spdif.h
+
+   139	
+   140	#if IS_ENABLED(CONFIG_SND_STARFIVE_SPDIF_PCM)
+   141	void sf_spdif_pcm_push_tx(struct sf_spdif_dev *dev);
+   142	void sf_spdif_pcm_pop_rx(struct sf_spdif_dev *dev);
+   143	int sf_spdif_pcm_register(struct platform_device *pdev);
+   144	#else
+ > 145	void sf_spdif_pcm_push_tx(struct sf_spdif_dev *dev) { }
+ > 146	void sf_spdif_pcm_pop_rx(struct sf_spdif_dev *dev) { }
+ > 147	int sf_spdif_pcm_register(struct platform_device *pdev)
+   148	{
+   149		return -EINVAL;
+   150	}
+   151	#endif
+   152	
+   153	
+
 ---
- drivers/rpmsg/rpmsg_ctrl.c | 36 ++++++++++++++++++++++++++++++++----
- include/uapi/linux/rpmsg.h | 10 ++++++++++
- 2 files changed, 42 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/rpmsg/rpmsg_ctrl.c b/drivers/rpmsg/rpmsg_ctrl.c
-index f43b5e4dbb4c..107da70fdbaa 100644
---- a/drivers/rpmsg/rpmsg_ctrl.c
-+++ b/drivers/rpmsg/rpmsg_ctrl.c
-@@ -43,11 +43,13 @@ static DEFINE_IDA(rpmsg_minor_ida);
-  * @rpdev:	underlaying rpmsg device
-  * @cdev:	cdev for the ctrl device
-  * @dev:	device for the ctrl device
-+ * @ctrl_lock:	serialize the ioctrls.
-  */
- struct rpmsg_ctrldev {
- 	struct rpmsg_device *rpdev;
- 	struct cdev cdev;
- 	struct device dev;
-+	struct mutex ctrl_lock;
- };
- 
- static int rpmsg_ctrldev_open(struct inode *inode, struct file *filp)
-@@ -76,9 +78,8 @@ static long rpmsg_ctrldev_ioctl(struct file *fp, unsigned int cmd,
- 	void __user *argp = (void __user *)arg;
- 	struct rpmsg_endpoint_info eptinfo;
- 	struct rpmsg_channel_info chinfo;
--
--	if (cmd != RPMSG_CREATE_EPT_IOCTL)
--		return -EINVAL;
-+	struct rpmsg_device *rpdev;
-+	int ret = 0;
- 
- 	if (copy_from_user(&eptinfo, argp, sizeof(eptinfo)))
- 		return -EFAULT;
-@@ -88,7 +89,33 @@ static long rpmsg_ctrldev_ioctl(struct file *fp, unsigned int cmd,
- 	chinfo.src = eptinfo.src;
- 	chinfo.dst = eptinfo.dst;
- 
--	return rpmsg_chrdev_eptdev_create(ctrldev->rpdev, &ctrldev->dev, chinfo);
-+	mutex_lock(&ctrldev->ctrl_lock);
-+	switch (cmd) {
-+	case RPMSG_CREATE_EPT_IOCTL:
-+		ret = rpmsg_chrdev_eptdev_create(ctrldev->rpdev, &ctrldev->dev, chinfo);
-+		break;
-+
-+	case RPMSG_CREATE_DEV_IOCTL:
-+		rpdev = rpmsg_create_channel(ctrldev->rpdev, &chinfo);
-+		if (!rpdev) {
-+			dev_err(&ctrldev->dev, "failed to create %s channel\n", chinfo.name);
-+			ret = -ENXIO;
-+		}
-+		break;
-+
-+	case RPMSG_RELEASE_DEV_IOCTL:
-+		ret = rpmsg_release_channel(ctrldev->rpdev, &chinfo);
-+		if (ret)
-+			dev_err(&ctrldev->dev, "failed to release %s channel (%d)\n",
-+				chinfo.name, ret);
-+		break;
-+
-+	default:
-+		ret = -EINVAL;
-+	}
-+	mutex_unlock(&ctrldev->ctrl_lock);
-+
-+	return ret;
- };
- 
- static const struct file_operations rpmsg_ctrldev_fops = {
-@@ -125,6 +152,7 @@ static int rpmsg_ctrldev_probe(struct rpmsg_device *rpdev)
- 	dev->parent = &rpdev->dev;
- 	dev->class = rpmsg_class;
- 
-+	mutex_init(&ctrldev->ctrl_lock);
- 	cdev_init(&ctrldev->cdev, &rpmsg_ctrldev_fops);
- 	ctrldev->cdev.owner = THIS_MODULE;
- 
-diff --git a/include/uapi/linux/rpmsg.h b/include/uapi/linux/rpmsg.h
-index f5ca8740f3fb..1637e68177d9 100644
---- a/include/uapi/linux/rpmsg.h
-+++ b/include/uapi/linux/rpmsg.h
-@@ -33,4 +33,14 @@ struct rpmsg_endpoint_info {
-  */
- #define RPMSG_DESTROY_EPT_IOCTL	_IO(0xb5, 0x2)
- 
-+/**
-+ * Instantiate a new local rpmsg service device.
-+ */
-+#define RPMSG_CREATE_DEV_IOCTL	_IOW(0xb5, 0x3, struct rpmsg_endpoint_info)
-+
-+/**
-+ * Release a local rpmsg device.
-+ */
-+#define RPMSG_RELEASE_DEV_IOCTL	_IOW(0xb5, 0x4, struct rpmsg_endpoint_info)
-+
- #endif
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
