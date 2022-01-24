@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C7CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C36DC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849010AbiAXXYd (ORCPT
+        id S1849164AbiAXXY5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:24:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
+        Mon, 24 Jan 2022 18:24:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39488 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588164AbiAXWbj (ORCPT
+        with ESMTP id S1588106AbiAXWb2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:31:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859B3C047CE3;
-        Mon, 24 Jan 2022 12:57:09 -0800 (PST)
+        Mon, 24 Jan 2022 17:31:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF1CC047CD2;
+        Mon, 24 Jan 2022 12:55:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 259A5611C8;
-        Mon, 24 Jan 2022 20:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 033E7C340E5;
-        Mon, 24 Jan 2022 20:57:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45A3AB810BD;
+        Mon, 24 Jan 2022 20:55:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E1E7C340E5;
+        Mon, 24 Jan 2022 20:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057828;
-        bh=5mn8xY2Rw2yKpuokmAWh9/JaNI4qxPL/snAS97h6juY=;
+        s=korg; t=1643057746;
+        bh=V9iYAufSsS6be9z919tbPe8dpbb0u8ajnrEKYbMnD3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hvSKaK3iLPmDzpWIwoSiRXrEjsqHJ6LtUXH3Rcg8lauJa7x24IACbmMmk5IIyOUHB
-         q8hP4+HYdGt822MsA3V84ZD+AuJy1hpHW4Vb3f2yHgaUrw6Z0sZ1GI8zLN7V/WgL01
-         k8h0hioavYDL6YO6zz0jGdOzTXLyMIjSySqrRJq8=
+        b=EyNiN4hUHLBoxkOgXyrPV9PN+T+G2MOwIfgenaN78RxmLJK5JFa7JtffZqNyC2chn
+         JH51FdXUnpZlIb5vw3Kzp0u1doo7xrYXmUF8u3FX8+CsmZEDrOaA1G2f/cgSIWYjoj
+         Z2S/aG9xH3PdMX085RQVrCw+XCOzski76DWPnyWc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0093/1039] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-Date:   Mon, 24 Jan 2022 19:31:22 +0100
-Message-Id: <20220124184128.282005419@linuxfoundation.org>
+        stable@vger.kernel.org,
+        D Scott Phillips <scott@os.amperecomputing.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>
+Subject: [PATCH 5.16 0066/1039] arm64: errata: Fix exec handling in erratum 1418040 workaround
+Date:   Mon, 24 Jan 2022 19:30:55 +0100
+Message-Id: <20220124184127.386024672@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,54 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: D Scott Phillips <scott@os.amperecomputing.com>
 
-[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
+commit 38e0257e0e6f4fef2aa2966b089b56a8b1cfb75c upstream.
 
-I got a kernel BUG report when doing fault injection test:
+The erratum 1418040 workaround enables CNTVCT_EL1 access trapping in EL0
+when executing compat threads. The workaround is applied when switching
+between tasks, but the need for the workaround could also change at an
+exec(), when a non-compat task execs a compat binary or vice versa. Apply
+the workaround in arch_setup_new_exec().
 
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-...
-RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
-...
-Call Trace:
- proto_unregister+0x83/0x220
- cmtp_cleanup_sockets+0x37/0x40 [cmtp]
- cmtp_exit+0xe/0x1f [cmtp]
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+This leaves a small window of time between SET_PERSONALITY and
+arch_setup_new_exec where preemption could occur and confuse the old
+workaround logic that compares TIF_32BIT between prev and next. Instead, we
+can just read cntkctl to make sure it's in the state that the next task
+needs. I measured cntkctl read time to be about the same as a mov from a
+general-purpose register on N1. Update the workaround logic to examine the
+current value of cntkctl instead of the previous task's compat state.
 
-If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
-success. This will cause a kernel bug when accessing uncreated ctmp
-related data when the module exits.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d49f7d7376d0 ("arm64: Move handling of erratum 1418040 into C code")
+Cc: <stable@vger.kernel.org> # 5.9.x
+Signed-off-by: D Scott Phillips <scott@os.amperecomputing.com>
+Reviewed-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211220234114.3926-1-scott@os.amperecomputing.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/cmtp/core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ arch/arm64/kernel/process.c |   39 ++++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index 0a2d78e811cf5..83eb84e8e688f 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -501,9 +501,7 @@ static int __init cmtp_init(void)
- {
- 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
+--- a/arch/arm64/kernel/process.c
++++ b/arch/arm64/kernel/process.c
+@@ -439,34 +439,26 @@ static void entry_task_switch(struct tas
  
--	cmtp_init_sockets();
+ /*
+  * ARM erratum 1418040 handling, affecting the 32bit view of CNTVCT.
+- * Assuming the virtual counter is enabled at the beginning of times:
+- *
+- * - disable access when switching from a 64bit task to a 32bit task
+- * - enable access when switching from a 32bit task to a 64bit task
++ * Ensure access is disabled when switching to a 32bit task, ensure
++ * access is enabled when switching to a 64bit task.
+  */
+-static void erratum_1418040_thread_switch(struct task_struct *prev,
+-					  struct task_struct *next)
++static void erratum_1418040_thread_switch(struct task_struct *next)
+ {
+-	bool prev32, next32;
+-	u64 val;
 -
--	return 0;
-+	return cmtp_init_sockets();
+-	if (!IS_ENABLED(CONFIG_ARM64_ERRATUM_1418040))
+-		return;
+-
+-	prev32 = is_compat_thread(task_thread_info(prev));
+-	next32 = is_compat_thread(task_thread_info(next));
+-
+-	if (prev32 == next32 || !this_cpu_has_cap(ARM64_WORKAROUND_1418040))
++	if (!IS_ENABLED(CONFIG_ARM64_ERRATUM_1418040) ||
++	    !this_cpu_has_cap(ARM64_WORKAROUND_1418040))
+ 		return;
+ 
+-	val = read_sysreg(cntkctl_el1);
+-
+-	if (!next32)
+-		val |= ARCH_TIMER_USR_VCT_ACCESS_EN;
++	if (is_compat_thread(task_thread_info(next)))
++		sysreg_clear_set(cntkctl_el1, ARCH_TIMER_USR_VCT_ACCESS_EN, 0);
+ 	else
+-		val &= ~ARCH_TIMER_USR_VCT_ACCESS_EN;
++		sysreg_clear_set(cntkctl_el1, 0, ARCH_TIMER_USR_VCT_ACCESS_EN);
++}
+ 
+-	write_sysreg(val, cntkctl_el1);
++static void erratum_1418040_new_exec(void)
++{
++	preempt_disable();
++	erratum_1418040_thread_switch(current);
++	preempt_enable();
  }
  
- static void __exit cmtp_exit(void)
--- 
-2.34.1
-
+ /*
+@@ -501,7 +493,7 @@ __notrace_funcgraph struct task_struct *
+ 	contextidr_thread_switch(next);
+ 	entry_task_switch(next);
+ 	ssbs_thread_switch(next);
+-	erratum_1418040_thread_switch(prev, next);
++	erratum_1418040_thread_switch(next);
+ 	ptrauth_thread_switch_user(next);
+ 
+ 	/*
+@@ -611,6 +603,7 @@ void arch_setup_new_exec(void)
+ 	current->mm->context.flags = mmflags;
+ 	ptrauth_thread_init_user();
+ 	mte_thread_init_user();
++	erratum_1418040_new_exec();
+ 
+ 	if (task_spec_ssb_noexec(current)) {
+ 		arch_prctl_spec_ctrl_set(current, PR_SPEC_STORE_BYPASS,
 
 
