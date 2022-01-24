@@ -2,148 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B903C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6469C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236964AbiAXKDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:03:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59482 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235062AbiAXKDb (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:03:31 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B236C06173B;
-        Mon, 24 Jan 2022 02:03:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=H6LcKSehcG3T/G89t5l/X+r5xRWoUbyAIud7gmEk2Ns=; b=AI1SH0yWSYHRGtVDmwlkZmfGts
-        HB+d4rBh7HItjzsOBEar6kBuVbDGa3spuoIvOz/we8xbedmKSrqC6eF+3peimc27upL4/kFX+6fJJ
-        NCv+1F15l7r0fJPA/j9jd0fZymXwgC3KCYKBXd+HFxf2WriPXODLbwsA6v3d82q4Xx7FU8RBMoKuD
-        EfsXNGyCTyx/O/uLjbr3ZF6PLl/5faGeeiPtU8n3Wz7EN8eboCmUTXGYcKQPUyuE2yRIcWEz4zKHR
-        8zsMk1tiO2+hP/IOPUQbQ2IppkXJUo+qwEsUB21dE8y4cAcsGgNUajoJnPrQXZrI9q9J97RZnizpr
-        WxaifpMQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nBwBn-000RjR-KF; Mon, 24 Jan 2022 10:03:08 +0000
-Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
-        id AC413986245; Mon, 24 Jan 2022 11:03:06 +0100 (CET)
-Date:   Mon, 24 Jan 2022 11:03:06 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, posk@google.com, avagin@google.com,
-        jannh@google.com, tdelisle@uwaterloo.ca, posk@posk.io
-Subject: Re: [RFC][PATCH v2 5/5] sched: User Mode Concurency Groups
-Message-ID: <20220124100306.GO20638@worktop.programming.kicks-ass.net>
-References: <20220120155517.066795336@infradead.org>
- <20220120160822.914418096@infradead.org>
- <Yerl+ZrZ2qflIMyg@FVFF77S0Q05N>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yerl+ZrZ2qflIMyg@FVFF77S0Q05N>
+        id S236980AbiAXKEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:04:11 -0500
+Received: from foss.arm.com ([217.140.110.172]:55970 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235062AbiAXKEF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:04:05 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A5286D;
+        Mon, 24 Jan 2022 02:04:05 -0800 (PST)
+Received: from e120937-lin.home (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E7533F73B;
+        Mon, 24 Jan 2022 02:04:03 -0800 (PST)
+From:   Cristian Marussi <cristian.marussi@arm.com>
+To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
+        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
+        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
+        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
+        igor.skalkin@opensynergy.com, cristian.marussi@arm.com
+Subject: [PATCH 0/6] Add SCMI Virtio & Clock atomic support
+Date:   Mon, 24 Jan 2022 10:03:35 +0000
+Message-Id: <20220124100341.41191-1-cristian.marussi@arm.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 04:57:29PM +0000, Mark Rutland wrote:
+Hi,
 
-> > @@ -221,8 +227,11 @@ static inline void local_irq_disable_exi
-> >   */
-> >  static inline void irqentry_irq_enable(struct pt_regs *regs)
-> >  {
-> > -	if (!regs_irqs_disabled(regs))
-> > +	if (!regs_irqs_disabled(regs)) {
-> >  		local_irq_enable();
-> > +		if (user_mode(regs) && (current->flags & PF_UMCG_WORKER))
-> > +			umcg_sys_enter(regs, -1);
-> > +	}
-> >  }
-> 
-> Perhaps it would make sense to have separate umcg_sys_enter(regs) and
-> umcg_sys_enter_syscall(regs, syscallno)? Even if the former is just a wrapper,
-> to make the entry/exit bits clearly correspond for all the !syscall cases?
+This small series is the tail-subset of the previous V8 series about atomic
+support in SCMI [1], whose 8-patches head-subset has now been queued on
+[2]; as such, it is based on [2] on top of tag scmi-updates-5.17:
 
-Can do I suppose.
+commit 94d0cd1da14a ("firmware: arm_scmi: Add new parameter to
+		     mark_txdone")
 
-> Also, is the syscall case meant to nest within this, or syscall entry paths not
-> supposed to call irqentry_irq_enable() ?
+Patch 1/5 adds polling mode to SCMI VirtIO transport in order to support
+atomic operations on such transport and it could have been an independent
+patch indeed, it is provided here only for ease of testing.
 
-No nesting, syscall_ vs irqentry_. And you can't have a syscall and an
-exception both be from user at the same time :-)
+Patch 2,3 introduce a new optional SCMI binding, atomic_threshold, to
+configure a platform specific time threshold used in the following patches
+to select with a finer grain which SCMI resources should be eligible for
+atomic operations when requested.
 
-> >  /**
-> > @@ -232,8 +241,11 @@ static inline void irqentry_irq_enable(s
-> >   */
-> >  static inline void irqentry_irq_disable(struct pt_regs *regs)
-> >  {
-> > -	if (!regs_irqs_disabled(regs))
-> > +	if (!regs_irqs_disabled(regs)) {
-> > +		if (user_mode(regs) && (current->flags & PF_UMCG_WORKER))
-> > +			umcg_sys_exit(regs);
-> >  		local_irq_disable();
-> > +	}
-> >  }
-> 
-> Do the umcg_sys_{enter,exit}() calls need to happen with IRQs unmasked?
+Patch 4 exposes new SCMI Clock protocol operations to allow an SCMI user
+to request atomic mode on clock enable commands.
 
-Yes; both can end up blocking.
+Patch 5 adds support to SCMI Clock protocol for a new clock attributes
+field which advertises typical enable latency for a specific resource.
+It is marked as RFC since the SCMI spec including such addition is still
+to be finalized.
 
-> * If not (and this nests): for arm64 these can live in our
->   enter_from_user_mode() and exit_to_user_mode() helpers.
-> 
-> * If so (or this doesn't nest): for arm64 we'd need to rework our
->   local_daif_{inherit,restore,mask}() calls to handle this, though I've been
->   meaning to do that anyway to handle pseudo-NMI better.
-> 
-> Either way, it looks like we'd need helpers along the lines of:
-> 
-> | static __always_inline void umcg_enter_from_user(struct pt_regs *regs)
-> | {
-> | 	if (current->flags & PF_UMCG_WORKER)
-> | 		umcg_sys_enter(regs, -1);
-> | }
-> | 
-> | static __always_inline void umcg_exit_to_user(struct pt_regs *regs)
-> | {
-> | 	if (current->flags & PF_UMCG_WORKER)
-> | 		umcg_sys_exit(regs);
-> | }
+Finally patch 6 add support for atomic operations to the SCMI clock driver;
+the underlying logic here is that we register with the Clock framework
+atomic-capable clock resources if and only if the backing SCMI transport is
+capable of atomic operations AND the specific clock resource has been
+advertised by the SCMI platform as having:
 
-Would something like:
+	clock_enable_latency <= atomic_threshold
 
-#ifndef arch_irqentry_irq_enter
-static __always_inline bool arch_irqentry_irq_enter(struct pt_regs *regs)
-{
-	if (!regs_irqs_disabled(regs)) {
-		local_irq_enable();
-		return true;
-	}
-	return false;
-}
-#endif
+The idea is to avoid costly atomic busy-waiting for resources that have
+been advertised as 'slow' to operate upon. (i.e. a PLL vs a gating clock)
+This last patch is marked as RFC too since it is dependent on the previous
+one (that is RFC-tagged too)
 
-static __always_inline void irqentry_irq_enter(struct pt_regs *regs)
-{
-	if (arch_irqentry_irq_inherit(regs)) {
-		if (user_mode(regs) && (current->flags & PF_UMCG_WORKER))
-			umcg_sys_enter(regs, -1);
-	}
-}
+To ease testing the whole series can be find at [3].
 
-Work? Then arm64 can do:
+Any feedback/testing welcome as usual.
 
-static __always_inline bool arch_irqentry_irq_enter(struct pt_regs *regs)
-{
-	local_daif_inherit();
-	return interrupts_enabled(regs);
-}
+Thanks,
+Cristian
 
-or somesuch...
+[1]: https://lore.kernel.org/linux-arm-kernel/20211220195646.44498-1-cristian.marussi@arm.com/
+[2]: https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/tag/?h=scmi-updates-5.17
+[3]: https://gitlab.arm.com/linux-arm/linux-cm/-/commits/scmi_atomic_clk_virtio_V1/
+
+Cristian Marussi (6):
+  firmware: arm_scmi: Add atomic mode support to virtio transport
+  dt-bindings: firmware: arm,scmi: Add atomic_threshold optional
+    property
+  firmware: arm_scmi: Support optional system wide atomic_threshold
+  firmware: arm_scmi: Add atomic support to clock protocol
+  [RFC] firmware: arm_scmi: Add support for clock_enable_latency
+  [RFC] clk: scmi: Support atomic clock enable/disable API
+
+ .../bindings/firmware/arm,scmi.yaml           |  10 +
+ drivers/clk/clk-scmi.c                        |  71 +++-
+ drivers/firmware/arm_scmi/Kconfig             |  15 +
+ drivers/firmware/arm_scmi/clock.c             |  34 +-
+ drivers/firmware/arm_scmi/driver.c            |  36 +-
+ drivers/firmware/arm_scmi/virtio.c            | 315 ++++++++++++++++--
+ include/linux/scmi_protocol.h                 |   9 +-
+ 7 files changed, 440 insertions(+), 50 deletions(-)
+
+-- 
+2.17.1
+
