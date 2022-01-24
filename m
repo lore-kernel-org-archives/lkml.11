@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51196C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC08C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441920AbiAXUwX (ORCPT
+        id S1441898AbiAXUwQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:52:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35668 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384307AbiAXU33 (ORCPT
+        Mon, 24 Jan 2022 15:52:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53886 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356917AbiAXU3N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:29:29 -0500
+        Mon, 24 Jan 2022 15:29:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D90C6B81229;
-        Mon, 24 Jan 2022 20:29:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FA7DC340E5;
-        Mon, 24 Jan 2022 20:29:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D50061382;
+        Mon, 24 Jan 2022 20:29:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51F65C340E5;
+        Mon, 24 Jan 2022 20:29:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056164;
-        bh=uthVye0iwSuswlGwFuQRe9N7bDcMWWKiC6t7peSk9s0=;
+        s=korg; t=1643056152;
+        bh=rtpLZA/dEdKmmCJ55vX9tk3oGIr36nPawB5/HexGmQA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AW9v4rJFwdAP2DRFnxKzJFy/IwPd5M2HCFBXq4iGYBWDX4v0wpC0LSzxKVpjMgxeL
-         xi+b6lMTWGD4UPU+8Vh34awYXm7vub4WPzOUJfklD2SeueYTe1foARrS4Udd+8qoKD
-         bL8xwuh3TX98zsc9dHkPvnLqNrLYAg+9Imk8EWGc=
+        b=vl3+Qg2oN6cbMRxZ4L3+Hgxv9vr32h36J6L8N4j0SdjJzBvkc8NCpuuKX8gx+4SUG
+         7QsdGRr24YvcSIaM+aj4gsaJe6oQ3zycD60KhAOygHR8idM0Svj8hBorF8ZRL2xv+2
+         UgBJ+/pqQi9Z8vbn6OJBTThB1AY4z3zjlTos7j2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 391/846] powerpc/modules: Dont WARN on first module allocation attempt
-Date:   Mon, 24 Jan 2022 19:38:28 +0100
-Message-Id: <20220124184114.427101963@linuxfoundation.org>
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 388/846] ALSA: hda: Make proper use of timecounter
+Date:   Mon, 24 Jan 2022 19:38:25 +0100
+Message-Id: <20220124184114.326151138@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,82 +47,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit f1797e4de1146009c888bcf8b6bb6648d55394f1 ]
+[ Upstream commit 6dd21ad81bf96478db3403b1bbe251c0612d0431 ]
 
-module_alloc() first tries to allocate module text within 24 bits direct
-jump from kernel text, and tries a wider allocation if first one fails.
+HDA uses a timecounter to read a hardware clock running at 24 MHz. The
+conversion factor is set with a mult value of 125 and a shift value of 0,
+which is not converting the hardware clock to nanoseconds, it is converting
+to 1/3 nanoseconds because the conversion factor from 24Mhz to nanoseconds
+is 125/3. The usage sites divide the "nanoseconds" value returned by
+timecounter_read() by 3 to get a real nanoseconds value.
 
-When first allocation fails the following is observed in kernel logs:
+There is a lengthy comment in azx_timecounter_init() explaining this
+choice. That comment makes blatantly wrong assumptions about how
+timecounters work and what can overflow.
 
-  vmap allocation for size 2400256 failed: use vmalloc=<size> to increase size
-  systemd-udevd: vmalloc error: size 2395133, vm_struct allocation failed, mode:0xcc0(GFP_KERNEL), nodemask=(null)
-  CPU: 0 PID: 127 Comm: systemd-udevd Tainted: G        W         5.15.5-gentoo-PowerMacG4 #9
-  Call Trace:
-  [e2a53a50] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
-  [e2a53a70] [c0540128] warn_alloc+0x11c/0x2b4
-  [e2a53b50] [c0531be8] __vmalloc_node_range+0xd8/0x64c
-  [e2a53c10] [c00338c0] module_alloc+0xa0/0xac
-  [e2a53c40] [c027a368] load_module+0x2ae0/0x8148
-  [e2a53e30] [c027fc78] sys_finit_module+0xfc/0x130
-  [e2a53f30] [c0035098] ret_from_syscall+0x0/0x28
-  ...
+The comment says:
 
-Add __GFP_NOWARN flag to first allocation so that no warning appears
-when it fails.
+     * Applying the 1/3 factor as part of the multiplication
+     * requires at least 20 bits for a decent precision, however
+     * overflows occur after about 4 hours or less, not a option.
 
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Fixes: 2ec13df16704 ("powerpc/modules: Load modules closer to kernel text")
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/93c9b84d6ec76aaf7b4f03468e22433a6d308674.1638267035.git.christophe.leroy@csgroup.eu
+timecounters operate on time deltas between two readouts of a clock and use
+the mult/shift pair to calculate a precise nanoseconds value:
+
+    delta_nsec = (delta_clock * mult) >> shift;
+
+The fractional part is also taken into account and preserved to prevent
+accumulated rounding errors. For details see cyclecounter_cyc2ns().
+
+The mult/shift pair has to be chosen so that the multiplication of the
+maximum expected delta value does not result in a 64bit overflow. As the
+counter wraps around on 32bit, the maximum observable delta between two
+reads is (1 << 32) - 1 which is about 178.9 seconds.
+
+That in turn means the maximum multiplication factor which fits into an u32
+will not cause a 64bit overflow ever because it's guaranteed that:
+
+     ((1 << 32) - 1) ^ 2 < (1 << 64)
+
+The resulting correct multiplication factor is 2796202667 and the shift
+value is 26, i.e. 26 bit precision. The overflow of the multiplication
+would happen exactly at a clock readout delta of 6597069765 which is way
+after the wrap around of the hardware clock at around 274.8 seconds which
+is off from the claimed 4 hours by more than an order of magnitude.
+
+If the counter ever wraps around the last read value then the calculation
+is off by the number of wrap arounds times 178.9 seconds because the
+overflow cannot be observed.
+
+Use clocks_calc_mult_shift(), which calculates the most accurate mult/shift
+pair based on the given clock frequency, and remove the bogus comment along
+with the divisions at the readout sites.
+
+Fixes: 5d890f591d15 ("ALSA: hda: support for wallclock timestamps")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/871r35kwji.ffs@tglx
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/module.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ sound/hda/hdac_stream.c           | 14 ++++----------
+ sound/pci/hda/hda_controller.c    |  1 -
+ sound/soc/intel/skylake/skl-pcm.c |  1 -
+ 3 files changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/arch/powerpc/kernel/module.c b/arch/powerpc/kernel/module.c
-index ed04a3ba66fe8..40a583e9d3c70 100644
---- a/arch/powerpc/kernel/module.c
-+++ b/arch/powerpc/kernel/module.c
-@@ -90,16 +90,17 @@ int module_finalize(const Elf_Ehdr *hdr,
- }
- 
- static __always_inline void *
--__module_alloc(unsigned long size, unsigned long start, unsigned long end)
-+__module_alloc(unsigned long size, unsigned long start, unsigned long end, bool nowarn)
- {
- 	pgprot_t prot = strict_module_rwx_enabled() ? PAGE_KERNEL : PAGE_KERNEL_EXEC;
-+	gfp_t gfp = GFP_KERNEL | (nowarn ? __GFP_NOWARN : 0);
+diff --git a/sound/hda/hdac_stream.c b/sound/hda/hdac_stream.c
+index 9867555883c34..aa7955fdf68a0 100644
+--- a/sound/hda/hdac_stream.c
++++ b/sound/hda/hdac_stream.c
+@@ -534,17 +534,11 @@ static void azx_timecounter_init(struct hdac_stream *azx_dev,
+ 	cc->mask = CLOCKSOURCE_MASK(32);
  
  	/*
- 	 * Don't do huge page allocations for modules yet until more testing
- 	 * is done. STRICT_MODULE_RWX may require extra work to support this
- 	 * too.
+-	 * Converting from 24 MHz to ns means applying a 125/3 factor.
+-	 * To avoid any saturation issues in intermediate operations,
+-	 * the 125 factor is applied first. The division is applied
+-	 * last after reading the timecounter value.
+-	 * Applying the 1/3 factor as part of the multiplication
+-	 * requires at least 20 bits for a decent precision, however
+-	 * overflows occur after about 4 hours or less, not a option.
++	 * Calculate the optimal mult/shift values. The counter wraps
++	 * around after ~178.9 seconds.
  	 */
--	return __vmalloc_node_range(size, 1, start, end, GFP_KERNEL, prot,
-+	return __vmalloc_node_range(size, 1, start, end, gfp, prot,
- 				    VM_FLUSH_RESET_PERMS | VM_NO_HUGE_VMAP,
- 				    NUMA_NO_NODE, __builtin_return_address(0));
- }
-@@ -114,13 +115,13 @@ void *module_alloc(unsigned long size)
+-
+-	cc->mult = 125; /* saturation after 195 years */
+-	cc->shift = 0;
++	clocks_calc_mult_shift(&cc->mult, &cc->shift, 24000000,
++			       NSEC_PER_SEC, 178);
  
- 	/* First try within 32M limit from _etext to avoid branch trampolines */
- 	if (MODULES_VADDR < PAGE_OFFSET && MODULES_END > limit)
--		ptr = __module_alloc(size, limit, MODULES_END);
-+		ptr = __module_alloc(size, limit, MODULES_END, true);
+ 	nsec = 0; /* audio time is elapsed time since trigger */
+ 	timecounter_init(tc, cc, nsec);
+diff --git a/sound/pci/hda/hda_controller.c b/sound/pci/hda/hda_controller.c
+index 930ae4002a818..75dcb14ff20ad 100644
+--- a/sound/pci/hda/hda_controller.c
++++ b/sound/pci/hda/hda_controller.c
+@@ -504,7 +504,6 @@ static int azx_get_time_info(struct snd_pcm_substream *substream,
+ 		snd_pcm_gettime(substream->runtime, system_ts);
  
- 	if (!ptr)
--		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END);
-+		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END, false);
+ 		nsec = timecounter_read(&azx_dev->core.tc);
+-		nsec = div_u64(nsec, 3); /* can be optimized */
+ 		if (audio_tstamp_config->report_delay)
+ 			nsec = azx_adjust_codec_delay(substream, nsec);
  
- 	return ptr;
- #else
--	return __module_alloc(size, VMALLOC_START, VMALLOC_END);
-+	return __module_alloc(size, VMALLOC_START, VMALLOC_END, false);
- #endif
- }
+diff --git a/sound/soc/intel/skylake/skl-pcm.c b/sound/soc/intel/skylake/skl-pcm.c
+index 9ecaf6a1e8475..e4aa366d356eb 100644
+--- a/sound/soc/intel/skylake/skl-pcm.c
++++ b/sound/soc/intel/skylake/skl-pcm.c
+@@ -1251,7 +1251,6 @@ static int skl_platform_soc_get_time_info(
+ 		snd_pcm_gettime(substream->runtime, system_ts);
+ 
+ 		nsec = timecounter_read(&hstr->tc);
+-		nsec = div_u64(nsec, 3); /* can be optimized */
+ 		if (audio_tstamp_config->report_delay)
+ 			nsec = skl_adjust_codec_delay(substream, nsec);
+ 
 -- 
 2.34.1
 
