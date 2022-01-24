@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9830CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0734C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:08:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354606AbiAXUIL (ORCPT
+        id S1359855AbiAXUIV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:08:11 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46772 "EHLO
+        Mon, 24 Jan 2022 15:08:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46872 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357225AbiAXTtj (ORCPT
+        with ESMTP id S1357288AbiAXTtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:49:39 -0500
+        Mon, 24 Jan 2022 14:49:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F2886091C;
-        Mon, 24 Jan 2022 19:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 867CAC340E5;
-        Mon, 24 Jan 2022 19:49:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BD2D60918;
+        Mon, 24 Jan 2022 19:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 783AEC340E5;
+        Mon, 24 Jan 2022 19:49:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053778;
-        bh=WzNw0oSd1gKe/M9faZwGg+IalzTanMcEGX+KVptdEPQ=;
+        s=korg; t=1643053784;
+        bh=NME2bflPx5hxDRxQHfuwV9nyDf/2Q6iYYa/VJjCsh4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TcSepyyzt82KiaaIWdXx3BxTx7HKMqHV8mVziOHgPRBtmEpr1DvuR4sT69iadsslI
-         1s9voMzxfkEltQbjNjaqb2Ky1itTzxSthjpmE1ziAlnSK9rtExS9mRD7tWW5REiDb4
-         cxjwGPUKo3q1K+9DcFo/kyIFgjEVUcOKEQq1flvg=
+        b=SaYaOrUcmGYH8e0fIKRQd4Xgw5JfsfWOuLR19DdJGgfRPreZj2dLZPKFurTyXV931
+         MxbUhQ9YenDR7ZxJ/OTkCvKOLWAN4Nq/Fjmb4ljjAeXd4PS5hro128EHeu4mrRX1/G
+         JwxOjiNifkVm3/vy1q5nrlygCanM3DdFEI+7WGmc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 173/563] xfrm: interface with if_id 0 should return error
-Date:   Mon, 24 Jan 2022 19:38:58 +0100
-Message-Id: <20220124184030.397155595@linuxfoundation.org>
+Subject: [PATCH 5.10 144/563] wireless: iwlwifi: Fix a double free in iwl_txq_dyn_alloc_dma
+Date:   Mon, 24 Jan 2022 19:38:29 +0100
+Message-Id: <20220124184029.380871878@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,67 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
 
-[ Upstream commit 8dce43919566f06e865f7e8949f5c10d8c2493f5 ]
+[ Upstream commit f973795a8d19cbf3d03807704eb7c6ff65788d5a ]
 
-xfrm interface if_id = 0 would cause xfrm policy lookup errors since
-Commit 9f8550e4bd9d.
+In iwl_txq_dyn_alloc_dma, txq->tfds is freed at first time by:
+iwl_txq_alloc()->goto err_free_tfds->dma_free_coherent(). But
+it forgot to set txq->tfds to NULL.
 
-Now explicitly fail to create an xfrm interface when if_id = 0
+Then the txq->tfds is freed again in iwl_txq_dyn_alloc_dma by:
+goto error->iwl_txq_gen2_free_memory()->dma_free_coherent().
 
-With this commit:
- ip link add ipsec0  type xfrm dev lo  if_id 0
- Error: if_id must be non zero.
+My patch sets txq->tfds to NULL after the first free to avoid the
+double free.
 
-v1->v2 change:
- - add Fixes: tag
-
-Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 0cd1ad2d7fd41 ("iwlwifi: move all bus-independent TX functions to common code")
+Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+Link: https://lore.kernel.org/r/20210403054755.4781-1-lyl2019@mail.ustc.edu.cn
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_interface.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/queue/tx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index e9ce23343f5ca..e1fae61a5bb90 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -643,11 +643,16 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
- 			struct netlink_ext_ack *extack)
- {
- 	struct net *net = dev_net(dev);
--	struct xfrm_if_parms p;
-+	struct xfrm_if_parms p = {};
- 	struct xfrm_if *xi;
- 	int err;
- 
- 	xfrmi_netlink_parms(data, &p);
-+	if (!p.if_id) {
-+		NL_SET_ERR_MSG(extack, "if_id must be non zero");
-+		return -EINVAL;
-+	}
-+
- 	xi = xfrmi_locate(net, &p);
- 	if (xi)
- 		return -EEXIST;
-@@ -672,7 +677,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
- {
- 	struct xfrm_if *xi = netdev_priv(dev);
- 	struct net *net = xi->net;
--	struct xfrm_if_parms p;
-+	struct xfrm_if_parms p = {};
-+
-+	if (!p.if_id) {
-+		NL_SET_ERR_MSG(extack, "if_id must be non zero");
-+		return -EINVAL;
-+	}
- 
- 	xfrmi_netlink_parms(data, &p);
- 	xi = xfrmi_locate(net, &p);
+diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+index 9181221a2434d..0136df00ff6a6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
+@@ -1148,6 +1148,7 @@ int iwl_txq_alloc(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
+ 	return 0;
+ err_free_tfds:
+ 	dma_free_coherent(trans->dev, tfd_sz, txq->tfds, txq->dma_addr);
++	txq->tfds = NULL;
+ error:
+ 	if (txq->entries && cmd_queue)
+ 		for (i = 0; i < slots_num; i++)
 -- 
 2.34.1
 
