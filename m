@@ -2,80 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAF6C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 162FDC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346363AbiAXU2I (ORCPT
+        id S1384027AbiAXU2o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60596 "EHLO
+        Mon, 24 Jan 2022 15:28:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33698 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378121AbiAXUGV (ORCPT
+        with ESMTP id S1378280AbiAXUGo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:06:21 -0500
+        Mon, 24 Jan 2022 15:06:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2A24611CD;
-        Mon, 24 Jan 2022 20:06:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFB01C340E5;
-        Mon, 24 Jan 2022 20:06:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054780;
-        bh=YcFsUeslYa8xYA7haRFrlwUsZXiclWBMo3itOg4vcr0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xc1pzXAXH/SB3svvP63QPpNsCqIOaaiEZr8SBicrwIRZNmnJcL0fluv1gYg7tRVVR
-         N6NAu2/O51OwCFlJRCNQXzYhCk65nqFMapI1DCi9MMdDOXB6bSDdO58mk+t62VmjW6
-         6NssIbn9OFA5TIWwR3rQ5f+7ykwhfKZg9AA6SseM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.10 467/563] PCI: pci-bridge-emul: Set PCI_STATUS_CAP_LIST for PCIe device
-Date:   Mon, 24 Jan 2022 19:43:52 +0100
-Message-Id: <20220124184040.615274042@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25EA460989;
+        Mon, 24 Jan 2022 20:06:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47DB4C340E5;
+        Mon, 24 Jan 2022 20:06:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643054803;
+        bh=tAxMFrZB97HTTzVWzaI/qrmHKlzIq2ip8Mfv5JarAmU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=W71W7OVtlJXUuzDFOk4JNI3jFFGpgJEWDwmQccXN2Sp6MvKfTszyA9pNH+/chP+7S
+         AnJDhIObpRrxXfudSNj6cqZXbINuLF5Y7pGb7zr2DC+bd/YXrAaNUNIMeTEWf4yDYE
+         Miir9XGkeks2RYTOw/CQna7HPJn1PIsmfZcYSvuRrXqCzImlUIu32veQcMlzrTXc7b
+         m7EPBYtGKfrGoipdu9cncLKmh6zxvFVDBzcH9cb3sMC/z5AdUZv23XEgSpxWYZbPku
+         o5vOCZTHDMCFCCZolSlNkiDjckOwhjzH/J3uL0nTHS3bntFwFV9inMlyvZL/+MDHHs
+         TjxxMgsR4d90g==
+Date:   Mon, 24 Jan 2022 14:06:41 -0600
+From:   Bjorn Helgaas <helgaas@kernel.org>
+To:     Alain Volmat <avolmat@me.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, linux-pci@vger.kernel.org,
+        Patrice Chotard <patrice.chotard@foss.st.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: Re: [PATCH RESEND v2 1/5] dt-bindings: pci: st-pcie: PCIe controller
+ found on STi platforms
+Message-ID: <20220124200641.GA1546900@bhelgaas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220103074731.3651-2-avolmat@me.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+On Mon, Jan 03, 2022 at 08:47:27AM +0100, Alain Volmat wrote:
+> Addition of the bindings for the Designware based PCIe controller
+> that can be found on STi platforms such as STiH407, STiH410 or STiH418.
+> 
+> Signed-off-by: Alain Volmat <avolmat@me.com>
+> ---
+>  .../devicetree/bindings/pci/snps,dw-pcie.yaml |   2 +-
+>  .../devicetree/bindings/pci/st,st-pcie.yaml   | 112 ++++++++++++++++++
+>  2 files changed, 113 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/pci/st,st-pcie.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml b/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
+> index 9ed0dfba7f89..3a92078128f7 100644
+> --- a/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
+> +++ b/Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml
+> @@ -35,7 +35,7 @@ properties:
+>      maxItems: 5
+>      items:
+>        enum: [ dbi, dbi2, config, atu, app, elbi, mgmt, ctrl, parf, cfg, link,
+> -              ulreg, smu, mpu, apb, phy ]
+> +              ulreg, smu, mpu, apb, phy, mem-window ]
+>  
+>    num-lanes:
+>      description: |
+> diff --git a/Documentation/devicetree/bindings/pci/st,st-pcie.yaml b/Documentation/devicetree/bindings/pci/st,st-pcie.yaml
+> new file mode 100644
+> index 000000000000..2fa686d573c3
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/pci/st,st-pcie.yaml
+> @@ -0,0 +1,112 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/pci/st,st-pcie.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: PCIe RC controller on ST STi platform
+> +
+> +maintainers:
+> +  - Alain Volmat <avolmat@me.com>
+> +
+> +allOf:
+> +  - $ref: /schemas/pci/snps,dw-pcie.yaml#
+> +
+> +properties:
+> +  compatible:
+> +    const: st,stih407-pcie
+> +
+> +  reg:
+> +    items:
+> +      - description: Controller control and status registers.
+> +      - description: PCIe configuration registers.
+> +      - description: Memory made available to the controller
+> +
+> +  reg-names:
+> +    items:
+> +      - const: dbi
+> +      - const: config
+> +      - const: mem-window
 
-commit 3be9d243b21724d49b65043d4520d688b6040b36 upstream.
+I guess "mem-window" is the range for inbound DMA?  Other controllers
+should have similar ranges.  Can we use the same DT reg names used by
+other controllers instead of adding something new and STi-specific?
 
-Since all PCI Express device Functions are required to implement the PCI
-Express Capability structure, Capabilities List bit in PCI Status Register
-must be hardwired to 1b. Capabilities Pointer register (which is already
-set by pci-bride-emul.c driver) is valid only when Capabilities List is set
-to 1b.
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  resets:
+> +    items:
+> +    - description: Controller reset
+> +    - description: Powerdown reset (optional)
+> +    minItems: 1
+> +
+> +  reset-names:
+> +    items:
+> +      - const: softreset
+> +      - const: powerdown
 
-Link: https://lore.kernel.org/r/20211124155944.1290-7-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/pci/pci-bridge-emul.c |    1 +
- 1 file changed, 1 insertion(+)
-
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -296,6 +296,7 @@ int pci_bridge_emul_init(struct pci_brid
- 
- 	if (bridge->has_pcie) {
- 		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
-+		bridge->conf.status |= cpu_to_le16(PCI_STATUS_CAP_LIST);
- 		bridge->pcie_conf.cap_id = PCI_CAP_ID_EXP;
- 		bridge->pcie_conf.cap |= cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4);
- 		bridge->pcie_cap_regs_behavior =
-
-
+"softreset" and "powerdown" appear only in this binding.  Are they
+really unique to STi, or can we use the same names used for other
+controllers?
