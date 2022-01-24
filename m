@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 404F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1765C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376387AbiAXVTf (ORCPT
+        id S1450225AbiAXVUB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:19:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392375AbiAXUvF (ORCPT
+        Mon, 24 Jan 2022 16:20:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48374 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392457AbiAXUvP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0E7C05432D;
-        Mon, 24 Jan 2022 11:58:29 -0800 (PST)
+        Mon, 24 Jan 2022 15:51:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E218861028;
-        Mon, 24 Jan 2022 19:58:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B55FFC340E5;
-        Mon, 24 Jan 2022 19:58:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CCAE7B81063;
+        Mon, 24 Jan 2022 20:51:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E517C340E5;
+        Mon, 24 Jan 2022 20:51:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054308;
-        bh=ogkFxolfQWRQxJZn/Tdu72Ih6tdiWRo2xRIJQtxu78g=;
+        s=korg; t=1643057473;
+        bh=QQYbblQ35leF5mIDeINDGQFfwan87gWS7LaQi2QXxZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=abD5uZA+mkgD4DhYARoDRt+1Zad14ECoS1kZWmrSl3yMShD3xU3sBpAaWRTA669J3
-         Vi2WljSFa7w1j7Iz2f3vSliPsjGy6jGfBRjE6jqQ7/nk38xVO2U8AWAuD+zej6eFA8
-         ZF1bCkdXfWxehqOCNLanKVxQDDEcvSpClz11tpr0=
+        b=1txdVApDkGrpbneHEwbmecVV/7h9wD+k/cfuz1S5Ite1zEig/hxC8LwRJ6zjE27s/
+         3fGug7zYhUEzVq4lqE0Fp6ycsrnK4x36orq8VSsuBKK4yVJmNypdCl2rq3UEb0b77O
+         DouaohQRQul+68gWfGadraAib+/NnaIgwGNEyN8Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 346/563] thunderbolt: Runtime PM activate both ends of the device link
-Date:   Mon, 24 Jan 2022 19:41:51 +0100
-Message-Id: <20220124184036.381000032@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 791/846] net: axienet: increase reset timeout
+Date:   Mon, 24 Jan 2022 19:45:08 +0100
+Message-Id: <20220124184128.245066759@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,74 +47,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit f3380cac0c0b3a6f49ab161e2a057c363962f48d ]
+commit 2e5644b1bab2ccea9cfc7a9520af95b94eb0dbf1 upstream.
 
-If protocol tunnels are already up when the driver is loaded, for
-instance if the boot firmware implements connection manager of its own,
-runtime PM reference count of the consumer devices behind the tunnel
-might have been increased already before the device link is created but
-the supplier device runtime PM reference count is not. This leads to a
-situation where the supplier (the Thunderbolt driver) can runtime
-suspend even if it should not because the corresponding protocol tunnel
-needs to be up causing the devices to be removed from the corresponding
-native bus.
+The previous timeout of 1ms was too short to handle some cases where the
+core is reset just after the input clocks were started, which will
+be introduced in an upcoming patch. Increase the timeout to 50ms. Also
+simplify the reset timeout checking to use read_poll_timeout.
 
-Prevent this from happening by making both sides of the link runtime PM
-active briefly. The pm_runtime_put() for the consumer (PCIe
-root/downstream port, xHCI) then allows it to runtime suspend again but
-keeps the supplier runtime resumed the whole time it is runtime active.
-
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/thunderbolt/acpi.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   19 +++++++++----------
+ 1 file changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
-index b5442f979b4d0..6355fdf7d71a3 100644
---- a/drivers/thunderbolt/acpi.c
-+++ b/drivers/thunderbolt/acpi.c
-@@ -7,6 +7,7 @@
-  */
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -496,7 +496,8 @@ static void axienet_setoptions(struct ne
  
- #include <linux/acpi.h>
-+#include <linux/pm_runtime.h>
+ static int __axienet_device_reset(struct axienet_local *lp)
+ {
+-	u32 timeout;
++	u32 value;
++	int ret;
  
- #include "tb.h"
- 
-@@ -74,8 +75,18 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
- 		 pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))) {
- 		const struct device_link *link;
- 
-+		/*
-+		 * Make them both active first to make sure the NHI does
-+		 * not runtime suspend before the consumer. The
-+		 * pm_runtime_put() below then allows the consumer to
-+		 * runtime suspend again (which then allows NHI runtime
-+		 * suspend too now that the device link is established).
-+		 */
-+		pm_runtime_get_sync(&pdev->dev);
-+
- 		link = device_link_add(&pdev->dev, &nhi->pdev->dev,
- 				       DL_FLAG_AUTOREMOVE_SUPPLIER |
-+				       DL_FLAG_RPM_ACTIVE |
- 				       DL_FLAG_PM_RUNTIME);
- 		if (link) {
- 			dev_dbg(&nhi->pdev->dev, "created link from %s\n",
-@@ -84,6 +95,8 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
- 			dev_warn(&nhi->pdev->dev, "device link creation from %s failed\n",
- 				 dev_name(&pdev->dev));
- 		}
-+
-+		pm_runtime_put(&pdev->dev);
+ 	/* Reset Axi DMA. This would reset Axi Ethernet core as well. The reset
+ 	 * process of Axi DMA takes a while to complete as all pending
+@@ -506,15 +507,13 @@ static int __axienet_device_reset(struct
+ 	 * they both reset the entire DMA core, so only one needs to be used.
+ 	 */
+ 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, XAXIDMA_CR_RESET_MASK);
+-	timeout = DELAY_OF_ONE_MILLISEC;
+-	while (axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET) &
+-				XAXIDMA_CR_RESET_MASK) {
+-		udelay(1);
+-		if (--timeout == 0) {
+-			netdev_err(lp->ndev, "%s: DMA reset timeout!\n",
+-				   __func__);
+-			return -ETIMEDOUT;
+-		}
++	ret = read_poll_timeout(axienet_dma_in32, value,
++				!(value & XAXIDMA_CR_RESET_MASK),
++				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
++				XAXIDMA_TX_CR_OFFSET);
++	if (ret) {
++		dev_err(lp->dev, "%s: DMA reset timeout!\n", __func__);
++		return ret;
  	}
  
- out_put:
--- 
-2.34.1
-
+ 	return 0;
 
 
