@@ -2,89 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D3FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD88C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448402AbiAXVMf (ORCPT
+        id S1448626AbiAXVNL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:35 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:6353 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390807AbiAXUqZ (ORCPT
+        Mon, 24 Jan 2022 16:13:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40476 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387920AbiAXUhe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643057186; x=1674593186;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=GRbUMXJdZdTwUnYKR/ryNDqpfjnJkqgWc+WnYEkkLro=;
-  b=evgr4pyi8HwMiTnEnnSnaaPsR3vRS9aHceyf1hh7GnzAgViff9/4j1Pg
-   thxPw7XuPrwTKBPDgYVHxJ1Vlk0Qcz6pRnOC8K2rDi93rwYDyvuGwxsp8
-   K2qZNLZwXJqSMWUsFRFz8bzHNHh9SW4ZtwkiC3fr5BtmlPCV5uk7IWHk8
-   I=;
-Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
-  by alexa-out.qualcomm.com with ESMTP; 24 Jan 2022 12:46:23 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:46:22 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 24 Jan 2022 12:46:20 -0800
-Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
- nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 24 Jan 2022 12:46:20 -0800
-From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
-To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
-        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
-        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
-        <bjorn.andersson@linaro.org>
-CC:     <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
-        <quic_khsieh@quicinc.com>, <freedreno@lists.freedesktop.org>,
-        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] drm/msm/dp: always add fail-safe mode into connector mode list
-Date:   Mon, 24 Jan 2022 12:46:10 -0800
-Message-ID: <1643057170-10413-1-git-send-email-quic_khsieh@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        Mon, 24 Jan 2022 15:37:34 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8744CB8105C;
+        Mon, 24 Jan 2022 20:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A33C340E5;
+        Mon, 24 Jan 2022 20:37:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056652;
+        bh=rYM9exfV6ZPmhtkluUdEqD0mCu5N6+8LDBYWPagDUt8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=M23UC0dh7+yDWSz2hpgkAuClHtj83X+3YxwEd3LtMS5FneeOZcACmM3pCxhsLFs+B
+         HA35pZffIva9qDzZ9eun6pnwBvwZBI0W1kynT8hVKH+M7YAFHOefKdUyrlSX4IWrEB
+         DcyEa8OFRCXqBJZ64sgTLLjJngOhapdssn1OfDUg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 556/846] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 24 Jan 2022 19:41:13 +0100
+Message-Id: <20220124184120.199049720@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some of DP link compliant test expects to return fail-safe mode
-if prefer detailed timing mode can not be supported by mainlink's
-lane and rate after link training. Therefore add fail-safe mode
-into connector mode list as backup mode. This patch fixes test
-case 4.2.2.1.
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
+
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
+
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
+
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
+
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dp/dp_panel.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
-index 3b02922..7743b45 100644
---- a/drivers/gpu/drm/msm/dp/dp_panel.c
-+++ b/drivers/gpu/drm/msm/dp/dp_panel.c
-@@ -221,6 +221,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
- 		if (drm_add_modes_noedid(connector, 640, 480))
- 			drm_set_preferred_mode(connector, 640, 480);
- 		mutex_unlock(&connector->dev->mode_config.mutex);
-+	} else {
-+		/* always add fail-safe mode as backup mode */
-+		mutex_lock(&connector->dev->mode_config.mutex);
-+		drm_add_modes_noedid(connector, 640, 480);
-+		mutex_unlock(&connector->dev->mode_config.mutex);
- 	}
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 68edf7a615be5..5447c47157aa5 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -708,6 +708,8 @@ try_again:
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
  
- 	if (panel->aux_cfg_update_done) {
++	card->ocr = ocr_card;
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -820,7 +822,7 @@ try_again:
+ 			goto mismatch;
+ 		}
+ 	}
+-	card->ocr = ocr_card;
++
+ 	mmc_fixup_device(card, sdio_fixup_methods);
+ 
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.34.1
+
+
 
