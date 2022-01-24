@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EEFBC41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 146DFC4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574467AbiAXV5j (ORCPT
+        id S1355011AbiAXV54 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:57:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44732 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451155AbiAXVWS (ORCPT
+        Mon, 24 Jan 2022 16:57:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36596 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377051AbiAXVQ7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:22:18 -0500
+        Mon, 24 Jan 2022 16:16:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B68861469;
-        Mon, 24 Jan 2022 21:22:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70DE1C340E4;
-        Mon, 24 Jan 2022 21:22:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4992BB8122A;
+        Mon, 24 Jan 2022 21:16:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72DB6C340E5;
+        Mon, 24 Jan 2022 21:16:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059337;
-        bh=HFolmNo+c+aMlXO4NpVNNdLLeHerT2CSqgdw0YSR8sc=;
+        s=korg; t=1643059015;
+        bh=35bdOZwEX15/CDl0eOhUKLqgXQk8j5PQ12jCuwyOO2I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PS1WVTHwgWsa3AXLC/FIFz+X8dECP8jyRRpaTelFkbfI6mijmzmqZS/bp36XV7ABA
-         yLS+Y3f7Rf78AW0uGrhtgjWjnDvtt9oawO3/x/PcjkvMfnlqOFe+Uf2hTjcwb1aYxx
-         Yy06IiGLnHuNZ4HejDAZ3XAQAsPFWyYbIXLqpkpo=
+        b=dA4PRiW/DSxMKVKaRh7HCQF6/MPhJtB0LT3C9sIPedbG1JM0ct5Q41d8mI4Y6jRmU
+         lBvsba1nehzw3hAeb2lJLkZdJidFHBF2mwASTlvvu09ligVhrcDoKVOCb8HrRJfSrX
+         dL/1Sm7ZfQdJMt3PsUn61peKdH9qY0BdIIpSWCS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anilkumar Kolli <akolli@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Bard Liao <yung-chuan.liao@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0581/1039] ath11k: Fix mon status ring rx tlv processing
-Date:   Mon, 24 Jan 2022 19:39:30 +0100
-Message-Id: <20220124184144.872005397@linuxfoundation.org>
+Subject: [PATCH 5.16 0444/1039] ASoC: Intel: sof_sdw: fix jack detection on HP Spectre x360 convertible
+Date:   Mon, 24 Jan 2022 19:37:13 +0100
+Message-Id: <20220124184140.216493992@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,73 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anilkumar Kolli <akolli@codeaurora.org>
+From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
 
-[ Upstream commit 09f16f7390f302937409738d6cb6ce99b265f455 ]
+[ Upstream commit 0527b19fa4f390a6054612e1fa1dd4f8efc96739 ]
 
-In HE monitor capture, HAL_TLV_STATUS_PPDU_DONE is received
-on processing multiple skb. Do not clear the ppdu_info
-till the HAL_TLV_STATUS_PPDU_DONE is received.
+Tests on device show the JD2 mode does not work at all, the 'Headphone
+Jack' and 'Headset Mic Jack' are shown as 'on' always.
 
-This fixes below warning and packet drops in monitor mode.
- "Rate marked as an HE rate but data is invalid: MCS: 6, NSS: 0"
- WARNING: at
- PC is at ieee80211_rx_napi+0x624/0x840 [mac80211]
+JD1 seems to be the better option, with at least a change between the
+two cases.
 
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.4.0.1-01693-QCAHKSWPL_SILICONZ-1
+Jack not plugged-in:
+[root@fedora ~]# amixer -Dhw:0 cget numid=12
+numid=12,iface=CARD,name='Headphone Jack'
+  ; type=BOOLEAN,access=r-------,values=1
+  : values=off
+[root@fedora ~]# amixer -Dhw:0 cget numid=13
+numid=13,iface=CARD,name='Headset Mic Jack'
+  ; type=BOOLEAN,access=r-------,values=1
+  : values=off
 
-Signed-off-by: Anilkumar Kolli <akolli@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1637249433-10316-1-git-send-email-akolli@codeaurora.org
+Jack plugged-in:
+[root@fedora ~]# amixer -Dhw:0 cget numid=13
+numid=13,iface=CARD,name='Headset Mic Jack'
+  ; type=BOOLEAN,access=r-------,values=1
+  : values=on
+[root@fedora ~]# amixer -Dhw:0 cget numid=13
+numid=13,iface=CARD,name='Headset Mic Jack'
+  ; type=BOOLEAN,access=r-------,values=1
+  : values=on
+
+The 'Headset Mic Jack' is updated with a delay which seems normal with
+additional calibration needed.
+
+Fixes: d92e279dee56 ('ASoC: Intel: sof_sdw: add quirk for HP Spectre x360 convertible')
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Signed-off-by: Bard Liao <yung-chuan.liao@linux.intel.com>
+Link: https://lore.kernel.org/r/20211027021824.24776-3-yung-chuan.liao@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ sound/soc/intel/boards/sof_sdw.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index 22b6b6a470d4c..621372c568d2c 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -3064,10 +3064,10 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
- 	if (!num_buffs_reaped)
- 		goto exit;
- 
--	while ((skb = __skb_dequeue(&skb_list))) {
--		memset(&ppdu_info, 0, sizeof(ppdu_info));
--		ppdu_info.peer_id = HAL_INVALID_PEERID;
-+	memset(&ppdu_info, 0, sizeof(ppdu_info));
-+	ppdu_info.peer_id = HAL_INVALID_PEERID;
- 
-+	while ((skb = __skb_dequeue(&skb_list))) {
- 		if (ath11k_debugfs_is_pktlog_lite_mode_enabled(ar)) {
- 			log_type = ATH11K_PKTLOG_TYPE_LITE_RX;
- 			rx_buf_sz = DP_RX_BUFFER_SIZE_LITE;
-@@ -3095,10 +3095,7 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
- 			ath11k_dbg(ab, ATH11K_DBG_DATA,
- 				   "failed to find the peer with peer_id %d\n",
- 				   ppdu_info.peer_id);
--			spin_unlock_bh(&ab->base_lock);
--			rcu_read_unlock();
--			dev_kfree_skb_any(skb);
--			continue;
-+			goto next_skb;
- 		}
- 
- 		arsta = (struct ath11k_sta *)peer->sta->drv_priv;
-@@ -3107,10 +3104,13 @@ int ath11k_dp_rx_process_mon_status(struct ath11k_base *ab, int mac_id,
- 		if (ath11k_debugfs_is_pktlog_peer_valid(ar, peer->addr))
- 			trace_ath11k_htt_rxdesc(ar, skb->data, log_type, rx_buf_sz);
- 
-+next_skb:
- 		spin_unlock_bh(&ab->base_lock);
- 		rcu_read_unlock();
- 
- 		dev_kfree_skb_any(skb);
-+		memset(&ppdu_info, 0, sizeof(ppdu_info));
-+		ppdu_info.peer_id = HAL_INVALID_PEERID;
- 	}
- exit:
- 	return num_buffs_reaped;
+diff --git a/sound/soc/intel/boards/sof_sdw.c b/sound/soc/intel/boards/sof_sdw.c
+index 77219c3f8766c..54eefaff62a7e 100644
+--- a/sound/soc/intel/boards/sof_sdw.c
++++ b/sound/soc/intel/boards/sof_sdw.c
+@@ -188,7 +188,7 @@ static const struct dmi_system_id sof_sdw_quirk_table[] = {
+ 		},
+ 		.driver_data = (void *)(SOF_SDW_TGL_HDMI |
+ 					SOF_SDW_PCH_DMIC |
+-					RT711_JD2),
++					RT711_JD1),
+ 	},
+ 	{
+ 		/* NUC15 'Bishop County' LAPBC510 and LAPBC710 skews */
 -- 
 2.34.1
 
