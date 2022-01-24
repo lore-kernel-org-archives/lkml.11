@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7948C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663D6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353936AbiAXUBV (ORCPT
+        id S1376339AbiAXUBZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:01:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34990 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345679AbiAXTha (ORCPT
+        Mon, 24 Jan 2022 15:01:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57606 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354722AbiAXTh2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:37:30 -0500
+        Mon, 24 Jan 2022 14:37:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48CFC614A8;
-        Mon, 24 Jan 2022 19:37:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27201C340E7;
-        Mon, 24 Jan 2022 19:37:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE29CB811F9;
+        Mon, 24 Jan 2022 19:37:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C789C340E5;
+        Mon, 24 Jan 2022 19:37:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053049;
-        bh=YljHBSu8U7fYgPuBxiqBxuJLS3a+IyXUlt9fCs6zb+E=;
+        s=korg; t=1643053045;
+        bh=LexXsOHLM2Zyt+r8gcyKj5jMn+0GNWWGVK2D4CaDRiY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kps0+E7pgVwkAleioERwVpFQy9pYjS+XPbWmvlARwty3R/0k96d4Qwuu3R6TcIweJ
-         1QD1bMeRZw4AJm2YKgTRqN2SK4LdUCSF3SDe2geR7kp6i2Cvx0GXVuHlqYKPEKkgu/
-         ya+ZWclMksHzJhF3nUssLOX9HoYzGr/b7+A5ucfI=
+        b=a9AnDRd6HaerK29si4FEmlWR9M6sMpA6ZIG2Fa4mdLyozEy7y+0awWN68GUruUoHq
+         OGHAalf/Gptaxoi+ZYg7CVMijPBEKuxv1x7/6/OQzgZzW1pOi4HyFS2ic/hAxqQQQO
+         81TmxZVpP1qG+OmQ1/lByemgWn6WmvWYPWDcrFjs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.4 259/320] parisc: Fix lpa and lpa_user defines
-Date:   Mon, 24 Jan 2022 19:44:03 +0100
-Message-Id: <20220124184002.794686090@linuxfoundation.org>
+        stable@vger.kernel.org, Zain Wang <wzz@rock-chips.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Paul <seanpaul@chromium.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>
+Subject: [PATCH 5.4 258/320] drm/bridge: analogix_dp: Make PSR-exit block less
+Date:   Mon, 24 Jan 2022 19:44:02 +0100
+Message-Id: <20220124184002.765011039@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,84 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Brian Norris <briannorris@chromium.org>
 
-commit db19c6f1a2a353cc8dec35b4789733a3cf6e2838 upstream.
+commit c4c6ef229593366ab593d4d424addc7025b54a76 upstream.
 
-While working on the rewrite to the light-weight syscall and futex code, I
-experimented with using a hash index based on the user physical address of
-atomic variable. This exposed two problems with the lpa and lpa_user defines.
+Prior to commit 6c836d965bad ("drm/rockchip: Use the helpers for PSR"),
+"PSR exit" used non-blocking analogix_dp_send_psr_spd(). The refactor
+started using the blocking variant, for a variety of reasons -- quoting
+Sean Paul's potentially-faulty memory:
 
-Because of the copy instruction, the pa argument needs to be an early clobber
-argument. This prevents gcc from allocating the va and pa arguments to the same
-register.
+"""
+ - To avoid racing a subsequent PSR entry (if exit takes a long time)
+ - To avoid racing disable/modeset
+ - We're not displaying new content while exiting PSR anyways, so there
+   is minimal utility in allowing frames to be submitted
+ - We're lying to userspace telling them frames are on the screen when
+   we're just dropping them on the floor
+"""
 
-Secondly, the lpa instruction can cause a page fault so we need to catch
-exceptions.
+However, I'm finding that this blocking transition is causing upwards of
+60+ ms of unneeded latency on PSR-exit, to the point that initial cursor
+movements when leaving PSR are unbearably jumpy.
 
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Fixes: 116d753308cf ("parisc: Use lpa instruction to load physical addresses in driver code")
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org # v5.2+
+It turns out that we need to meet in the middle somewhere: Sean is right
+that we were "lying to userspace" with a non-blocking PSR-exit, but the
+new blocking behavior is also waiting too long:
+
+According to the eDP specification, the sink device must support PSR
+entry transitions from both state 4 (ACTIVE_RESYNC) and state 0
+(INACTIVE). It also states that in ACTIVE_RESYNC, "the Sink device must
+display the incoming active frames from the Source device with no
+visible glitches and/or artifacts."
+
+Thus, for our purposes, we only need to wait for ACTIVE_RESYNC before
+moving on; we are ready to display video, and subsequent PSR-entry is
+safe.
+
+Tested on a Samsung Chromebook Plus (i.e., Rockchip RK3399 Gru Kevin),
+where this saves about 60ms of latency, for PSR-exit that used to
+take about 80ms.
+
+Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
+Cc: <stable@vger.kernel.org>
+Cc: Zain Wang <wzz@rock-chips.com>
+Cc: Tomasz Figa <tfiga@chromium.org>
+Cc: Heiko Stuebner <heiko@sntech.de>
+Cc: Sean Paul <seanpaul@chromium.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Sean Paul <seanpaul@chromium.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211103135112.v3.1.I67612ea073c3306c71b46a87be894f79707082df@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/include/asm/special_insns.h |   44 +++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 20 deletions(-)
+ drivers/gpu/drm/bridge/analogix/analogix_dp_reg.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---- a/arch/parisc/include/asm/special_insns.h
-+++ b/arch/parisc/include/asm/special_insns.h
-@@ -2,28 +2,32 @@
- #ifndef __PARISC_SPECIAL_INSNS_H
- #define __PARISC_SPECIAL_INSNS_H
+--- a/drivers/gpu/drm/bridge/analogix/analogix_dp_reg.c
++++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_reg.c
+@@ -1086,11 +1086,21 @@ int analogix_dp_send_psr_spd(struct anal
+ 	if (!blocking)
+ 		return 0;
  
--#define lpa(va)	({			\
--	unsigned long pa;		\
--	__asm__ __volatile__(		\
--		"copy %%r0,%0\n\t"	\
--		"lpa %%r0(%1),%0"	\
--		: "=r" (pa)		\
--		: "r" (va)		\
--		: "memory"		\
--	);				\
--	pa;				\
-+#define lpa(va)	({					\
-+	unsigned long pa;				\
-+	__asm__ __volatile__(				\
-+		"copy %%r0,%0\n"			\
-+		"8:\tlpa %%r0(%1),%0\n"			\
-+		"9:\n"					\
-+		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
-+		: "=&r" (pa)				\
-+		: "r" (va)				\
-+		: "memory"				\
-+	);						\
-+	pa;						\
- })
- 
--#define lpa_user(va)	({		\
--	unsigned long pa;		\
--	__asm__ __volatile__(		\
--		"copy %%r0,%0\n\t"	\
--		"lpa %%r0(%%sr3,%1),%0"	\
--		: "=r" (pa)		\
--		: "r" (va)		\
--		: "memory"		\
--	);				\
--	pa;				\
-+#define lpa_user(va)	({				\
-+	unsigned long pa;				\
-+	__asm__ __volatile__(				\
-+		"copy %%r0,%0\n"			\
-+		"8:\tlpa %%r0(%%sr3,%1),%0\n"		\
-+		"9:\n"					\
-+		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
-+		: "=&r" (pa)				\
-+		: "r" (va)				\
-+		: "memory"				\
-+	);						\
-+	pa;						\
- })
- 
- #define mfctl(reg)	({		\
++	/*
++	 * db[1]!=0: entering PSR, wait for fully active remote frame buffer.
++	 * db[1]==0: exiting PSR, wait for either
++	 *  (a) ACTIVE_RESYNC - the sink "must display the
++	 *      incoming active frames from the Source device with no visible
++	 *      glitches and/or artifacts", even though timings may still be
++	 *      re-synchronizing; or
++	 *  (b) INACTIVE - the transition is fully complete.
++	 */
+ 	ret = readx_poll_timeout(analogix_dp_get_psr_status, dp, psr_status,
+ 		psr_status >= 0 &&
+ 		((vsc->db[1] && psr_status == DP_PSR_SINK_ACTIVE_RFB) ||
+-		(!vsc->db[1] && psr_status == DP_PSR_SINK_INACTIVE)), 1500,
+-		DP_TIMEOUT_PSR_LOOP_MS * 1000);
++		(!vsc->db[1] && (psr_status == DP_PSR_SINK_ACTIVE_RESYNC ||
++				 psr_status == DP_PSR_SINK_INACTIVE))),
++		1500, DP_TIMEOUT_PSR_LOOP_MS * 1000);
+ 	if (ret) {
+ 		dev_warn(dp->dev, "Failed to apply PSR %d\n", ret);
+ 		return ret;
 
 
