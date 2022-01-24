@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C244DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4975BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347058AbiAXT10 (ORCPT
+        id S1351581AbiAXT1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:27:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43606 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347155AbiAXTSt (ORCPT
+        Mon, 24 Jan 2022 14:27:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44614 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345934AbiAXTRi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:18:49 -0500
+        Mon, 24 Jan 2022 14:17:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4BBDDB8121F;
-        Mon, 24 Jan 2022 19:18:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F7A6C340E5;
-        Mon, 24 Jan 2022 19:18:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9946133D;
+        Mon, 24 Jan 2022 19:17:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F6FC340E7;
+        Mon, 24 Jan 2022 19:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051927;
-        bh=5AK/ZD+OO4TiPDAZvOFjQFvLrOlNWLTVM/ikSQ8BP24=;
+        s=korg; t=1643051857;
+        bh=2tlDt6Cs63ivblVqNROf09tHbLBAy/Z87u2ytLnMtfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W3/8hExv6fh0vWAT6WVi97xrVzev4OR5s5EP4u2PliM/VQyMOcOgpLiiuo8hLTU6t
-         PSnx1hPt4YOf950faLmg/BCFE9bPIsGux8Tshh07zriE5m1tIuktvTPSfvz/KrcRTp
-         DcVmi8IxTM2/VT6UPH+OTIokCHgUJvyyBIRGWbd8=
+        b=PLqsANrBh7VYOfKK+WRqn46qVeBQVTUSTFCpvOmLy7MwiQGONovCxMbpSQbJnGWoH
+         G8wNys9l2lpeBCqeBu5MrY+hXHI8JA2cVNZX943eKCn+TA/Vn3KUb8l6A9O/MTCkxC
+         YWCtWpwKx3KWMUvFHBuJxRAsZ3YosphQF1uLhCdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 131/239] HSI: core: Fix return freed object in hsi_new_client
-Date:   Mon, 24 Jan 2022 19:42:49 +0100
-Message-Id: <20220124183947.273001947@linuxfoundation.org>
+Subject: [PATCH 4.19 076/239] media: msi001: fix possible null-ptr-deref in msi001_probe()
+Date:   Mon, 24 Jan 2022 19:41:54 +0100
+Message-Id: <20220124183945.536846034@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,33 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
+[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
 
-cl is freed on error of calling device_register, but this
-object is return later, which will cause uaf issue. Fix it
-by return NULL on error.
+I got a null-ptr-deref report:
 
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+BUG: kernel NULL pointer dereference, address: 0000000000000060
+...
+RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
+...
+Call Trace:
+ msi001_probe+0x13b/0x24b [msi001]
+ spi_probe+0xeb/0x130
+...
+ do_syscall_64+0x35/0xb0
+
+In msi001_probe(), if the creation of control for bandwidth_auto
+fails, there will be a null-ptr-deref issue when it is used in
+v4l2_ctrl_auto_cluster().
+
+Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
+
+Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
+Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hsi/hsi_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/tuners/msi001.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
-index 71895da63810b..daf2de837a30a 100644
---- a/drivers/hsi/hsi_core.c
-+++ b/drivers/hsi/hsi_core.c
-@@ -115,6 +115,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
- 	if (device_register(&cl->device) < 0) {
- 		pr_err("hsi: failed to register client: %s\n", info->name);
- 		put_device(&cl->device);
-+		goto err;
- 	}
- 
- 	return cl;
+diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
+index 5de6ed7287085..13ffe196b7a42 100644
+--- a/drivers/media/tuners/msi001.c
++++ b/drivers/media/tuners/msi001.c
+@@ -451,6 +451,13 @@ static int msi001_probe(struct spi_device *spi)
+ 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
+ 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
+ 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
++	if (dev->hdl.error) {
++		ret = dev->hdl.error;
++		dev_err(&spi->dev, "Could not initialize controls\n");
++		/* control init failed, free handler */
++		goto err_ctrl_handler_free;
++	}
++
+ 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
+ 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
+ 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
 -- 
 2.34.1
 
