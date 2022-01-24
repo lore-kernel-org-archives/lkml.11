@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BF8C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E74C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373898AbiAYAPb (ORCPT
+        id S2373597AbiAYAO5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:15:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52960 "EHLO
+        Mon, 24 Jan 2022 19:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458146AbiAXX2Q (ORCPT
+        with ESMTP id S1574354AbiAXX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:16 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE822C01D7FE;
-        Mon, 24 Jan 2022 13:32:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5711EC0A54D9;
+        Mon, 24 Jan 2022 13:32:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6232B80CCF;
-        Mon, 24 Jan 2022 21:32:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC25BC340E5;
-        Mon, 24 Jan 2022 21:32:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14576B80FA1;
+        Mon, 24 Jan 2022 21:32:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D86C7C340E4;
+        Mon, 24 Jan 2022 21:32:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059953;
-        bh=hwKZ0mbwkBWAvdVxC0dHLJH2tEpOKFeWFTrJfS+VJ18=;
+        s=korg; t=1643059971;
+        bh=GzbYbsXc5BwyTSbLqMt453HSpU4UrE4xgXx+YQpBbjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bPWNwwZ0/uE5b+0xdVTyO2QdZv3DKsO1LEThuoSe9pU7tNXTL7H1ZmGYu9BHtLq8c
-         3WdjXsoDcAOg65je6DGRiEuhwC2d+zmwPfrS6QSBhsQhY2ARjDLcEZFrT3XbVsCLdL
-         sAsHFi0hFDxaTV7XW43/PP//HdC6Oo+D71YLTV+s=
+        b=b5ITBnkli9wJz6Uk5mClsU/jdyT5pdKGeI/lSITuKtuWjOVZoMaqBO08x8lCGdflM
+         4uFH4ovVnZEN2rE0L7stJfAdFXauUEOSD5BSGkgKl+dzp6vEB+1LeFgXWLB7Bc++lX
+         4CYpX7bqFM0ROFFb37BtlgOhnTJyjUei+a2F6dWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Christian Borntraeger <borntraeger@de.ibm.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0789/1039] KVM: s390: Ensure kvm_arch_no_poll() is read once when blocking vCPU
-Date:   Mon, 24 Jan 2022 19:42:58 +0100
-Message-Id: <20220124184151.815314575@linuxfoundation.org>
+        syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0763/1039] udf: Fix error handling in udf_new_inode()
+Date:   Mon, 24 Jan 2022 19:42:32 +0100
+Message-Id: <20220124184150.964657576@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,76 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 6f390916c4fb359507d9ac4bf1b28a4f8abee5c0 ]
+[ Upstream commit f05f2429eec60851b98bdde213de31dab697c01b ]
 
-Wrap s390's halt_poll_max_steal with READ_ONCE and snapshot the result of
-kvm_arch_no_poll() in kvm_vcpu_block() to avoid a mostly-theoretical,
-largely benign bug on s390 where the result of kvm_arch_no_poll() could
-change due to userspace modifying halt_poll_max_steal while the vCPU is
-blocking.  The bug is largely benign as it will either cause KVM to skip
-updating halt-polling times (no_poll toggles false=>true) or to update
-halt-polling times with a slightly flawed block_ns.
+When memory allocation of iinfo or block allocation fails, already
+allocated struct udf_inode_info gets freed with iput() and
+udf_evict_inode() may look at inode fields which are not properly
+initialized. Fix it by marking inode bad before dropping reference to it
+in udf_new_inode().
 
-Note, READ_ONCE is unnecessary in the current code, add it in case the
-arch hook is ever inlined, and to provide a hint that userspace can
-change the param at will.
-
-Fixes: 8b905d28ee17 ("KVM: s390: provide kvm_arch_no_poll function")
-Reviewed-by: Christian Borntraeger <borntraeger@de.ibm.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Message-Id: <20211009021236.4122790-4-seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Reported-by: syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/kvm/kvm-s390.c | 2 +-
- virt/kvm/kvm_main.c      | 5 +++--
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ fs/udf/ialloc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index ef299aad40090..8fc9c79c899b5 100644
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -3449,7 +3449,7 @@ bool kvm_arch_no_poll(struct kvm_vcpu *vcpu)
- {
- 	/* do not poll with more than halt_poll_max_steal percent of steal time */
- 	if (S390_lowcore.avg_steal_timer * 100 / (TICK_USEC << 12) >=
--	    halt_poll_max_steal) {
-+	    READ_ONCE(halt_poll_max_steal)) {
- 		vcpu->stat.halt_no_poll_steal++;
- 		return true;
+diff --git a/fs/udf/ialloc.c b/fs/udf/ialloc.c
+index 2ecf0e87660e3..b5d611cee749c 100644
+--- a/fs/udf/ialloc.c
++++ b/fs/udf/ialloc.c
+@@ -77,6 +77,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
+ 					GFP_KERNEL);
  	}
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 72c4e6b393896..5bd62342c482b 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -3153,6 +3153,7 @@ update_halt_poll_stats(struct kvm_vcpu *vcpu, u64 poll_ns, bool waited)
-  */
- void kvm_vcpu_block(struct kvm_vcpu *vcpu)
- {
-+	bool halt_poll_allowed = !kvm_arch_no_poll(vcpu);
- 	ktime_t start, cur, poll_end;
- 	bool waited = false;
- 	u64 block_ns;
-@@ -3160,7 +3161,7 @@ void kvm_vcpu_block(struct kvm_vcpu *vcpu)
- 	kvm_arch_vcpu_blocking(vcpu);
- 
- 	start = cur = poll_end = ktime_get();
--	if (vcpu->halt_poll_ns && !kvm_arch_no_poll(vcpu)) {
-+	if (vcpu->halt_poll_ns && halt_poll_allowed) {
- 		ktime_t stop = ktime_add_ns(ktime_get(), vcpu->halt_poll_ns);
- 
- 		++vcpu->stat.generic.halt_attempted_poll;
-@@ -3215,7 +3216,7 @@ out:
- 	update_halt_poll_stats(
- 		vcpu, ktime_to_ns(ktime_sub(poll_end, start)), waited);
- 
--	if (!kvm_arch_no_poll(vcpu)) {
-+	if (halt_poll_allowed) {
- 		if (!vcpu_valid_wakeup(vcpu)) {
- 			shrink_halt_poll_ns(vcpu);
- 		} else if (vcpu->kvm->max_halt_poll_ns) {
+ 	if (!iinfo->i_data) {
++		make_bad_inode(inode);
+ 		iput(inode);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+@@ -86,6 +87,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
+ 			      dinfo->i_location.partitionReferenceNum,
+ 			      start, &err);
+ 	if (err) {
++		make_bad_inode(inode);
+ 		iput(inode);
+ 		return ERR_PTR(err);
+ 	}
 -- 
 2.34.1
 
