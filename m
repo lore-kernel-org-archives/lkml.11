@@ -2,167 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8C0C352A7
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D101C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448222AbiAXVMN (ORCPT
+        id S1448486AbiAXVMl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33176 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355702AbiAXUl7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:41:59 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDBF461316;
-        Mon, 24 Jan 2022 20:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5FB2C340E5;
-        Mon, 24 Jan 2022 20:41:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056917;
-        bh=Y4ZVPC9JgMkic69D/SYjuLk7XJOUJS7KtSR9xJSVSd8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DY3vmHMTxLtT+5AW2acwhqTMgmEU9H0i0k3nV5H5RtrxtWb3b1fuH6VabttQP+17h
-         xXdACn/n/dazu3ifsyPGXhVgnH1E4ZsnMkBtg6rXQJvWr6whnDCD793MfBNrF95aza
-         WfalrCAizTJfp4XQLPn3FHocgUq2HxbyvLPnlfeE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 641/846] scsi: lpfc: Fix leaked lpfc_dmabuf mbox allocations with NPIV
-Date:   Mon, 24 Jan 2022 19:42:38 +0100
-Message-Id: <20220124184123.141173263@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 16:12:41 -0500
+Received: from mga03.intel.com ([134.134.136.65]:35515 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1390882AbiAXUqe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 15:46:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643057193; x=1674593193;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ujacmyO/PuoKNYdTwG8FMRiUMSIRWymHhVuwGwF59xk=;
+  b=YIW/i+TZwgQZF8HdHnZbCvSPlV1wMQHB2mtNF+djAmaDRlkw44kIlQId
+   6tg//mbwzkVkVvBrr6ZyNRb4gCyfba5YyJvk+vsdgxIFD86kS7LdNW1TH
+   L2cAfzhHbZvJQn4Zcb+UaKPjY43XrU/Re9Oh8Aw6nEyHXw5U1KH6+hPJM
+   zmLZKxQcaCIEjCC2rlPQ4a+mwUncRsP/hnUTlefkUHLrcXVBTgj1eQDA+
+   XKAVuMAfpR7eYjYtft1Ca8hI88I6QYY14odU8UGU874Kp80T4YRdvNnbm
+   kqUQpijkDvH6H6yBduZM5hZvzORyz9jy2ho47cLq7t2AA1UOwE1NvEc5D
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246089183"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="246089183"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:33:17 -0800
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="494750089"
+Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:33:16 -0800
+Date:   Mon, 24 Jan 2022 12:33:12 -0800
+From:   Fenghua Yu <fenghua.yu@intel.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+Message-ID: <Ye8NCAKoGF/AsLfs@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+ <87ee4w6g1n.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87ee4w6g1n.ffs@tglx>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+Hi, Thomas,
 
-[ Upstream commit f0d3919697492950f57a26a1093aee53880d669d ]
+On Mon, Jan 24, 2022 at 09:21:24PM +0100, Thomas Gleixner wrote:
+> On Fri, Dec 17 2021 at 22:01, Fenghua Yu wrote:
+> > diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+> > index bd41405d34e9..ee2294e02716 100644
+> > --- a/drivers/iommu/iommu-sva-lib.c
+> > +++ b/drivers/iommu/iommu-sva-lib.c
+> > @@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
+> >   *
+> >   * Try to allocate a PASID for this mm, or take a reference to the existing one
+> >   * provided it fits within the [@min, @max] range. On success the PASID is
+> > - * available in mm->pasid, and must be released with iommu_sva_free_pasid().
+> > - * @min must be greater than 0, because 0 indicates an unused mm->pasid.
+> > + * available in mm->pasid and will be available for the lifetime of the mm.
+> >   *
+> >   * Returns 0 on success and < 0 on error.
+> >   */
+> > @@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+> >  		return -EINVAL;
+> >  
+> >  	mutex_lock(&iommu_sva_lock);
+> > -	if (mm->pasid) {
+> > -		if (mm->pasid >= min && mm->pasid <= max)
+> > -			ioasid_get(mm->pasid);
+> > -		else
+> > +	/* Is a PASID already associated with this mm? */
+> > +	if (pasid_valid(mm->pasid)) {
+> > +		if (mm->pasid < min || mm->pasid >= max)
+> >  			ret = -EOVERFLOW;
+> > -	} else {
+> > -		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+> > -		if (pasid == INVALID_IOASID)
+> > -			ret = -ENOMEM;
+> > -		else
+> > -			mm->pasid = pasid;
+> > +		goto out;
+> >  	}
+> > +
+> > +	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+> > +	if (!pasid_valid(pasid))
+> > +		ret = -ENOMEM;
+> > +	else
+> > +		mm_pasid_get(mm, pasid);
+> 
+> Hrm. This is odd.
+> 
+> > +/* Associate a PASID with an mm_struct: */
+> > +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
+> > +{
+> > +	mm->pasid = pasid;
+> > +}
+> 
+> This does not get anything. It sets the allocated PASID in the mm. The
+> refcount on the PASID was already taken by the allocation. So this
+> should be mm_pasid_set() or mm_pasid_install(), right?
 
-During rmmod testing, messages appeared indicating lpfc_mbuf_pool entries
-were still busy. This situation was only seen doing rmmod after at least 1
-vport (NPIV) instance was created and destroyed. The number of messages
-scaled with the number of vports created.
+Ok. Will change mm_pasid_get() to mm_pasid_set().
 
-When a vport is created, it can receive a PLOGI from another initiator
-Nport.  When this happens, the driver prepares to ack the PLOGI and
-prepares an RPI for registration (via mbx cmd) which includes an mbuf
-allocation. During the unsolicited PLOGI processing and after the RPI
-preparation, the driver recognizes it is one of the vport instances and
-decides to reject the PLOGI. During the LS_RJT preparation for the PLOGI,
-the mailbox struct allocated for RPI registration is freed, but the mbuf
-that was also allocated is not released.
+Thank you very much for your review!
 
-Fix by freeing the mbuf with the mailbox struct in the LS_RJT path.
-
-As part of the code review to figure the issue out a couple of other areas
-where found that also would not have released the mbuf. Those are cleaned
-up as well.
-
-Link: https://lore.kernel.org/r/20211204002644.116455-2-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/scsi/lpfc/lpfc_els.c       | 6 +++++-
- drivers/scsi/lpfc/lpfc_init.c      | 8 ++++++--
- drivers/scsi/lpfc/lpfc_nportdisc.c | 6 ++++++
- 3 files changed, 17 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
-index f7197b7161d52..6d7b9571f5c03 100644
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -6877,6 +6877,7 @@ static int
- lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
- {
- 	LPFC_MBOXQ_t *mbox = NULL;
-+	struct lpfc_dmabuf *mp;
- 	int rc;
- 
- 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
-@@ -6892,8 +6893,11 @@ lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
- 	mbox->mbox_cmpl = lpfc_mbx_cmpl_rdp_page_a0;
- 	mbox->ctx_ndlp = (struct lpfc_rdp_context *)rdp_context;
- 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
--	if (rc == MBX_NOT_FINISHED)
-+	if (rc == MBX_NOT_FINISHED) {
-+		mp = (struct lpfc_dmabuf *)mbox->ctx_buf;
-+		lpfc_mbuf_free(phba, mp->virt, mp->phys);
- 		goto issue_mbox_fail;
-+	}
- 
- 	return 0;
- 
-diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
-index 0fee8d590b0c4..2bbd1be6cc5d4 100644
---- a/drivers/scsi/lpfc/lpfc_init.c
-+++ b/drivers/scsi/lpfc/lpfc_init.c
-@@ -5314,8 +5314,10 @@ lpfc_sli4_async_link_evt(struct lpfc_hba *phba,
- 	 */
- 	if (!(phba->hba_flag & HBA_FCOE_MODE)) {
- 		rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
--		if (rc == MBX_NOT_FINISHED)
-+		if (rc == MBX_NOT_FINISHED) {
-+			lpfc_mbuf_free(phba, mp->virt, mp->phys);
- 			goto out_free_dmabuf;
-+		}
- 		return;
- 	}
- 	/*
-@@ -6266,8 +6268,10 @@ lpfc_sli4_async_fc_evt(struct lpfc_hba *phba, struct lpfc_acqe_fc_la *acqe_fc)
- 	}
- 
- 	rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
--	if (rc == MBX_NOT_FINISHED)
-+	if (rc == MBX_NOT_FINISHED) {
-+		lpfc_mbuf_free(phba, mp->virt, mp->phys);
- 		goto out_free_dmabuf;
-+	}
- 	return;
- 
- out_free_dmabuf:
-diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
-index 27263f02ab9f6..7d717a4ac14d1 100644
---- a/drivers/scsi/lpfc/lpfc_nportdisc.c
-+++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
-@@ -322,6 +322,7 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- {
- 	struct lpfc_hba    *phba = vport->phba;
- 	struct lpfc_dmabuf *pcmd;
-+	struct lpfc_dmabuf *mp;
- 	uint64_t nlp_portwwn = 0;
- 	uint32_t *lp;
- 	IOCB_t *icmd;
-@@ -571,6 +572,11 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
- 		 * a default RPI.
- 		 */
- 		if (phba->sli_rev == LPFC_SLI_REV4) {
-+			mp = (struct lpfc_dmabuf *)login_mbox->ctx_buf;
-+			if (mp) {
-+				lpfc_mbuf_free(phba, mp->virt, mp->phys);
-+				kfree(mp);
-+			}
- 			mempool_free(login_mbox, phba->mbox_mem_pool);
- 			login_mbox = NULL;
- 		} else {
--- 
-2.34.1
-
-
-
+-Fenghua
