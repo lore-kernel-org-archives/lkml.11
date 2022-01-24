@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7128C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:33:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDD4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:33:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421030AbiAYC0A (ORCPT
+        id S3421048AbiAYC0C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37996 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244239AbiAXTsT (ORCPT
+        Mon, 24 Jan 2022 21:26:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45628 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347817AbiAXTs0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:19 -0500
+        Mon, 24 Jan 2022 14:48:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE296B81215;
-        Mon, 24 Jan 2022 19:48:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFD6C340E5;
-        Mon, 24 Jan 2022 19:48:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F97C612E9;
+        Mon, 24 Jan 2022 19:48:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B78C340E5;
+        Mon, 24 Jan 2022 19:48:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053695;
-        bh=16LNaUCzIzb/T+JoyZ/ziwN0gPqMj0yFnQdm07T7pxI=;
+        s=korg; t=1643053704;
+        bh=485Pel/umrmGTI7pbf0TizhUtAcoT/WJdPbsQcA5Gb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shcIEfWvnM0gbpdkALGEjXiDVd3xiWRmKG35WGE8uVqi+u762JnRbPFx6TpIANYbA
-         uZ9OuijgvGMpkD1Ec6q+TMgA+NeYwywhh/SdwjWQ0aok3IhDEgJsjbJqnhUAs5SSoc
-         kRu/YdOSaT7QNgMqLFxG7alHqNqiIr5o0Pm2yRno=
+        b=w7pCNwDnkVRmKWv9J8izLv8/dX856/Axt+/B8OvTIXYtCj8t9HY0IVkbYjxlA6VRX
+         ii2HxKlztTU4CRuzubEsFWwjr3vzF841HCHDV6Ul9KLcY/SjtMGEq4UjcMlIVwaNZd
+         HspaySBgkNRxKFvN/WS7637AYD3yFsaLYNeL+wvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Reiji Watanabe <reijiw@google.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
+        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 140/563] arm64: clear_page() shouldnt use DC ZVA when DCZID_EL0.DZP == 1
-Date:   Mon, 24 Jan 2022 19:38:25 +0100
-Message-Id: <20220124184029.244698891@linuxfoundation.org>
+Subject: [PATCH 5.10 151/563] selftests: clone3: clone3: add case CLONE3_ARGS_NO_TEST
+Date:   Mon, 24 Jan 2022 19:38:36 +0100
+Message-Id: <20220124184029.628320367@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,52 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Reiji Watanabe <reijiw@google.com>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-[ Upstream commit f0616abd4e67143b45b04b565839148458857347 ]
+[ Upstream commit a531b0c23c0fc68ad758cc31a74cf612a4dafeb0 ]
 
-Currently, clear_page() uses DC ZVA instruction unconditionally.  But it
-should make sure that DCZID_EL0.DZP, which indicates whether or not use
-of DC ZVA instruction is prohibited, is zero when using the instruction.
-Use STNP instead when DCZID_EL0.DZP == 1.
+Building selftests/clone3 with clang warns about enumeration not handled
+in switch case:
 
-Fixes: f27bb139c387 ("arm64: Miscellaneous library functions")
-Signed-off-by: Reiji Watanabe <reijiw@google.com>
-Reviewed-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20211206004736.1520989-2-reijiw@google.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+clone3.c:54:10: warning: enumeration value 'CLONE3_ARGS_NO_TEST' not handled in switch [-Wswitch]
+        switch (test_mode) {
+                ^
+
+Add the missing switch case with a comment.
+
+Fixes: 17a810699c18 ("selftests: add tests for clone3()")
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/lib/clear_page.S | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ tools/testing/selftests/clone3/clone3.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm64/lib/clear_page.S b/arch/arm64/lib/clear_page.S
-index b84b179edba3a..1fd5d790ab800 100644
---- a/arch/arm64/lib/clear_page.S
-+++ b/arch/arm64/lib/clear_page.S
-@@ -16,6 +16,7 @@
-  */
- SYM_FUNC_START_PI(clear_page)
- 	mrs	x1, dczid_el0
-+	tbnz	x1, #4, 2f	/* Branch if DC ZVA is prohibited */
- 	and	w1, w1, #0xf
- 	mov	x2, #4
- 	lsl	x1, x2, x1
-@@ -25,5 +26,14 @@ SYM_FUNC_START_PI(clear_page)
- 	tst	x0, #(PAGE_SIZE - 1)
- 	b.ne	1b
- 	ret
-+
-+2:	stnp	xzr, xzr, [x0]
-+	stnp	xzr, xzr, [x0, #16]
-+	stnp	xzr, xzr, [x0, #32]
-+	stnp	xzr, xzr, [x0, #48]
-+	add	x0, x0, #64
-+	tst	x0, #(PAGE_SIZE - 1)
-+	b.ne	2b
-+	ret
- SYM_FUNC_END_PI(clear_page)
- EXPORT_SYMBOL(clear_page)
+diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
+index 42be3b9258301..076cf4325f783 100644
+--- a/tools/testing/selftests/clone3/clone3.c
++++ b/tools/testing/selftests/clone3/clone3.c
+@@ -52,6 +52,12 @@ static int call_clone3(uint64_t flags, size_t size, enum test_mode test_mode)
+ 		size = sizeof(struct __clone_args);
+ 
+ 	switch (test_mode) {
++	case CLONE3_ARGS_NO_TEST:
++		/*
++		 * Uses default 'flags' and 'SIGCHLD'
++		 * assignment.
++		 */
++		break;
+ 	case CLONE3_ARGS_ALL_0:
+ 		args.flags = 0;
+ 		args.exit_signal = 0;
 -- 
 2.34.1
 
