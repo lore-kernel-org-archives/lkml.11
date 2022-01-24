@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC40C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:48:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244961AbiAXSsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:48:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47214 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235540AbiAXSsO (ORCPT
+        id S245172AbiAXSsU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:48:20 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48868 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235540AbiAXSsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:48:14 -0500
+        Mon, 24 Jan 2022 13:48:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FD7B614CF;
-        Mon, 24 Jan 2022 18:48:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D801FC340E5;
-        Mon, 24 Jan 2022 18:48:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49CCFB8121B;
+        Mon, 24 Jan 2022 18:48:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51ECAC340E8;
+        Mon, 24 Jan 2022 18:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050093;
-        bh=xI6llgryZevp/nVf9AEsHltZv4F4p8aDwlzP7X09vS4=;
+        s=korg; t=1643050097;
+        bh=XjFCQMtChNzQu+/wivrPl0tpf7DCbKXansZw5loAbeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oVygVloGnAzJ50vZKwFg/p/1+Wtf2OU11hlNbOhy7vGhuGtFKSnVhCmibaNYH99Dl
-         Mq8FBPZl+fqiTJGKrBV95QEI9CrAGjlRl2BY64RJhbgy24Ly9YoSEJFN2MH+C7KmLI
-         KlZhLH/D/rpf1exvBnmaGY0sEhpORXHQoMPBmbPw=
+        b=uu5tBXgzZoaOFJsUhecAnczwUjdm5M/Q0GwFLmShqZ0jdvswJCXqmpY8n8/Jdqkb6
+         8VaO+P/SzWIirECeeD2+FcChsM5LM8hq29hzxJak9jXfgRv44si/Da2d10gLL7g1nI
+         Td+Fo0m+Lf8fNhZQ6j/IWARQJnTUJ8ZVj3Z00Ou0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 4.4 001/114] Bluetooth: bfusb: fix division by zero in send path
-Date:   Mon, 24 Jan 2022 19:41:36 +0100
-Message-Id: <20220124183927.147715568@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 4.4 010/114] HID: uhid: Fix worker destroying device without any protection
+Date:   Mon, 24 Jan 2022 19:41:45 +0100
+Message-Id: <20220124183927.428429200@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -47,38 +45,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-commit b5e6fa7a12572c82f1e7f2f51fbb02a322291291 upstream.
+commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
 
-Add the missing bulk-out endpoint sanity check to probe() to avoid
-division by zero in bfusb_send_frame() in case a malicious device has
-broken descriptors (or when doing descriptor fuzz testing).
+uhid has to run hid_add_device() from workqueue context while allowing
+parallel use of the userspace API (which is protected with ->devlock).
+But hid_add_device() can fail. Currently, that is handled by immediately
+destroying the associated HID device, without using ->devlock - but if
+there are concurrent requests from userspace, that's wrong and leads to
+NULL dereferences and/or memory corruption (via use-after-free).
 
-Note that USB core will reject URBs submitted for endpoints with zero
-wMaxPacketSize but that drivers doing packet-size calculations still
-need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
-endpoint descriptors with maxpacket=0")).
+Fix it by leaving the HID device as-is in the worker. We can clean it up
+later, either in the UHID_DESTROY command handler or in the ->release()
+handler.
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/bfusb.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/drivers/bluetooth/bfusb.c
-+++ b/drivers/bluetooth/bfusb.c
-@@ -645,6 +645,9 @@ static int bfusb_probe(struct usb_interf
- 	data->bulk_out_ep   = bulk_out_ep->desc.bEndpointAddress;
- 	data->bulk_pkt_size = le16_to_cpu(bulk_out_ep->desc.wMaxPacketSize);
+--- a/drivers/hid/uhid.c
++++ b/drivers/hid/uhid.c
+@@ -33,11 +33,22 @@
  
-+	if (!data->bulk_pkt_size)
-+		goto done;
+ struct uhid_device {
+ 	struct mutex devlock;
 +
- 	rwlock_init(&data->lock);
++	/* This flag tracks whether the HID device is usable for commands from
++	 * userspace. The flag is already set before hid_add_device(), which
++	 * runs in workqueue context, to allow hid_add_device() to communicate
++	 * with userspace.
++	 * However, if hid_add_device() fails, the flag is cleared without
++	 * holding devlock.
++	 * We guarantee that if @running changes from true to false while you're
++	 * holding @devlock, it's still fine to access @hid.
++	 */
+ 	bool running;
  
- 	data->reassembly = NULL;
+ 	__u8 *rd_data;
+ 	uint rd_size;
+ 
++	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
+ 	struct hid_device *hid;
+ 	struct uhid_event input_buf;
+ 
+@@ -68,9 +79,18 @@ static void uhid_device_add_worker(struc
+ 	if (ret) {
+ 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
+ 
+-		hid_destroy_device(uhid->hid);
+-		uhid->hid = NULL;
++		/* We used to call hid_destroy_device() here, but that's really
++		 * messy to get right because we have to coordinate with
++		 * concurrent writes from userspace that might be in the middle
++		 * of using uhid->hid.
++		 * Just leave uhid->hid as-is for now, and clean it up when
++		 * userspace tries to close or reinitialize the uhid instance.
++		 *
++		 * However, we do have to clear the ->running flag and do a
++		 * wakeup to make sure userspace knows that the device is gone.
++		 */
+ 		uhid->running = false;
++		wake_up_interruptible(&uhid->report_wait);
+ 	}
+ }
+ 
+@@ -479,7 +499,7 @@ static int uhid_dev_create2(struct uhid_
+ 	void *rd_data;
+ 	int ret;
+ 
+-	if (uhid->running)
++	if (uhid->hid)
+ 		return -EALREADY;
+ 
+ 	rd_size = ev->u.create2.rd_size;
+@@ -560,7 +580,7 @@ static int uhid_dev_create(struct uhid_d
+ 
+ static int uhid_dev_destroy(struct uhid_device *uhid)
+ {
+-	if (!uhid->running)
++	if (!uhid->hid)
+ 		return -EINVAL;
+ 
+ 	uhid->running = false;
+@@ -569,6 +589,7 @@ static int uhid_dev_destroy(struct uhid_
+ 	cancel_work_sync(&uhid->worker);
+ 
+ 	hid_destroy_device(uhid->hid);
++	uhid->hid = NULL;
+ 	kfree(uhid->rd_data);
+ 
+ 	return 0;
 
 
