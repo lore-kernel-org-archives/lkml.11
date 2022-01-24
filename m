@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70FD6C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6651C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447102AbiAXVKC (ORCPT
+        id S1447252AbiAXVKR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35226 "EHLO
+        Mon, 24 Jan 2022 16:10:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33176 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388844AbiAXUkN (ORCPT
+        with ESMTP id S1388634AbiAXUjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:40:13 -0500
+        Mon, 24 Jan 2022 15:39:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 812CC6136C;
-        Mon, 24 Jan 2022 20:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BCECC340E5;
-        Mon, 24 Jan 2022 20:40:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 436A461536;
+        Mon, 24 Jan 2022 20:39:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27993C340E5;
+        Mon, 24 Jan 2022 20:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056811;
-        bh=cW6i1+FYbM41Py1EygcwC6wNPoFKzRktOYZzcq8jPVY=;
+        s=korg; t=1643056790;
+        bh=eZwEiXJyPGEonfCjOOp7aKHAaSn0sBKdsFPzaIWm9G4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=03GPsngxWqwqz5xSai1Gfu5/H62jd7QttUjklXKiWifKDzMA9SixO4WITYhrY6Ytc
-         +hiwIc77R/H9A6lJROmmn1OInngW5hRwEdgCz1BfrKfJ3tfrHdHISFZcpRZQY9Ev4L
-         dVUJ4vvDJiPS3m1nE1ILW0vMK+6SMXzCiHzEDnjw=
+        b=ffyFSdetoPrruAJ8SNAZiBsOIpNRkhtPrzryWqjI84vdTZOWROHFWBAUFsflT57Pn
+         F412fCuZOqqPt2ENSkMFCg5yDi7hEci5sdoAOQfrciUt7UhUjNOCYUqxm9GDO90Mq/
+         u2O6RXKFYe67USWUqX9Zs6aIA3wXEADS0SMg4PiQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Danielle Ratson <danieller@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 607/846] mlxsw: pci: Avoid flow control for EMAD packets
-Date:   Mon, 24 Jan 2022 19:42:04 +0100
-Message-Id: <20220124184121.963318420@linuxfoundation.org>
+Subject: [PATCH 5.15 601/846] btrfs: remove BUG_ON(!eie) in find_parent_nodes
+Date:   Mon, 24 Jan 2022 19:41:58 +0100
+Message-Id: <20220124184121.768919225@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,93 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit d43e4271747ace01a27a49a97a397cb4219f6487 ]
+[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
 
-Locally generated packets ingress the device through its CPU port. When
-the CPU port is congested and there are not enough credits in its
-headroom buffer, packets can be dropped.
+If we're looking for leafs that point to a data extent we want to record
+the extent items that point at our bytenr.  At this point we have the
+reference and we know for a fact that this leaf should have a reference
+to our bytenr.  However if there's some sort of corruption we may not
+find any references to our leaf, and thus could end up with eie == NULL.
+Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
+mortals.
 
-While this might be acceptable for data packets that traverse the
-network, configuration packets exchanged between the host and the device
-(EMADs) should not be subjected to this flow control.
-
-The "sdq_lp" bit in the SDQ (Send Descriptor Queue) context allows the
-host to instruct the device to treat packets sent on this queue as
-"local processing" and always process them, regardless of the state of
-the CPU port's headroom.
-
-Add the definition of this bit and set it for the dedicated SDQ reserved
-for the transmission of EMAD packets. This makes the "local processing"
-bit in the WQE (Work Queue Element) redundant, so clear it.
-
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/cmd.h | 12 ++++++++++++
- drivers/net/ethernet/mellanox/mlxsw/pci.c |  6 +++++-
- 2 files changed, 17 insertions(+), 1 deletion(-)
+ fs/btrfs/backref.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-index 392ce3cb27f72..51b260d54237e 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-+++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
-@@ -935,6 +935,18 @@ static inline int mlxsw_cmd_sw2hw_rdq(struct mlxsw_core *mlxsw_core,
-  */
- MLXSW_ITEM32(cmd_mbox, sw2hw_dq, cq, 0x00, 24, 8);
- 
-+enum mlxsw_cmd_mbox_sw2hw_dq_sdq_lp {
-+	MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE,
-+	MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE,
-+};
-+
-+/* cmd_mbox_sw2hw_dq_sdq_lp
-+ * SDQ local Processing
-+ * 0: local processing by wqe.lp
-+ * 1: local processing (ignoring wqe.lp)
-+ */
-+MLXSW_ITEM32(cmd_mbox, sw2hw_dq, sdq_lp, 0x00, 23, 1);
-+
- /* cmd_mbox_sw2hw_dq_sdq_tclass
-  * SDQ: CPU Egress TClass
-  * RDQ: Reserved
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 01c3235ab2bdf..d9f9cbba62465 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -285,6 +285,7 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
- 			      struct mlxsw_pci_queue *q)
- {
- 	int tclass;
-+	int lp;
- 	int i;
- 	int err;
- 
-@@ -292,9 +293,12 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
- 	q->consumer_counter = 0;
- 	tclass = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_PCI_SDQ_EMAD_TC :
- 						      MLXSW_PCI_SDQ_CTL_TC;
-+	lp = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE :
-+						  MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE;
- 
- 	/* Set CQ of same number of this SDQ. */
- 	mlxsw_cmd_mbox_sw2hw_dq_cq_set(mbox, q->num);
-+	mlxsw_cmd_mbox_sw2hw_dq_sdq_lp_set(mbox, lp);
- 	mlxsw_cmd_mbox_sw2hw_dq_sdq_tclass_set(mbox, tclass);
- 	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3); /* 8 pages */
- 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
-@@ -1678,7 +1682,7 @@ static int mlxsw_pci_skb_transmit(void *bus_priv, struct sk_buff *skb,
- 
- 	wqe = elem_info->elem;
- 	mlxsw_pci_wqe_c_set(wqe, 1); /* always report completion */
--	mlxsw_pci_wqe_lp_set(wqe, !!tx_info->is_emad);
-+	mlxsw_pci_wqe_lp_set(wqe, 0);
- 	mlxsw_pci_wqe_type_set(wqe, MLXSW_PCI_WQE_TYPE_ETHERNET);
- 
- 	err = mlxsw_pci_wqe_frag_map(mlxsw_pci, wqe, 0, skb->data,
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index 6b4b0f105a572..8b090c40daf77 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1365,10 +1365,18 @@ again:
+ 				goto out;
+ 			if (!ret && extent_item_pos) {
+ 				/*
+-				 * we've recorded that parent, so we must extend
+-				 * its inode list here
++				 * We've recorded that parent, so we must extend
++				 * its inode list here.
++				 *
++				 * However if there was corruption we may not
++				 * have found an eie, return an error in this
++				 * case.
+ 				 */
+-				BUG_ON(!eie);
++				ASSERT(eie);
++				if (!eie) {
++					ret = -EUCLEAN;
++					goto out;
++				}
+ 				while (eie->next)
+ 					eie = eie->next;
+ 				eie->next = ref->inode_list;
 -- 
 2.34.1
 
