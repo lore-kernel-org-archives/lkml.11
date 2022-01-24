@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35121C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1588C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380710AbiAXUQs (ORCPT
+        id S1380849AbiAXUQ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347532AbiAXT6p (ORCPT
+        Mon, 24 Jan 2022 15:16:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54130 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359511AbiAXT7q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:58:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D49AC047CFF;
-        Mon, 24 Jan 2022 11:28:00 -0800 (PST)
+        Mon, 24 Jan 2022 14:59:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAC7460917;
-        Mon, 24 Jan 2022 19:27:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CE0C340E5;
-        Mon, 24 Jan 2022 19:27:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E2CFF60FEA;
+        Mon, 24 Jan 2022 19:59:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1D60C340E5;
+        Mon, 24 Jan 2022 19:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052479;
-        bh=tmTLQNf5BhZCWTqkO9rUODhM5eaul2RlC0GLt8NNmhw=;
+        s=korg; t=1643054385;
+        bh=ND1OzIQ4qqHezNqKTpq1HofiiNOFrdx989O0rs0C+SM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qvsgcyVHEpSnCTW9ddLpVAkoW+jCybLMC++JaRnGtxw3axb4zb8QvDPZ+AStk8X6s
-         bPQVErX5Idsl5zpvuGt96huWVh+jppYfmNP4baf1lnpxiWqoSGGtj5dbIXooOzgK6q
-         6gDkB+r2ctMh3of2EVBM0UgHqaXp8fjo3sjCpcIw=
+        b=Ay3E388EtsoQ6C6rTgsCp+i/OwispjUSBbaaAdmOEiTxF0K6AWjpdSwvDra6rfT+d
+         PhlkTkMuShR7QmFwy1jSiHAyM6MV8NJ4tmKlDkmrQ1uG9ueCLyY1BpQZiFIbxqX96D
+         oc8kpVhScFxUDzQ4GGkp1a1hPbFOM80jeolSTZfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 073/320] media: saa7146: mxb: Fix a NULL pointer dereference in mxb_attach()
-Date:   Mon, 24 Jan 2022 19:40:57 +0100
-Message-Id: <20220124183956.213783043@linuxfoundation.org>
+        stable@vger.kernel.org, Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 373/563] rtw88: 8822c: update rx settings to prevent potential hw deadlock
+Date:   Mon, 24 Jan 2022 19:42:18 +0100
+Message-Id: <20220124184037.313369633@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,62 +47,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit 0407c49ebe330333478440157c640fffd986f41b ]
+[ Upstream commit c1afb26727d9e507d3e17a9890e7aaf7fc85cd55 ]
 
-In mxb_attach(dev, info), saa7146_vv_init() is called to allocate a
-new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of mxb_probe(dev). There is a dereference of dev->vv_data
-in saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init().
+These settings enables mac to detect and recover when rx fifo
+circuit deadlock occurs. Previous version missed this, so we fix it.
 
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_MXB=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 03b1930efd3c ("V4L/DVB: saa7146: fix regression of the av7110/budget-av driver")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211217012708.8623-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/mxb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/pci/saa7146/mxb.c b/drivers/media/pci/saa7146/mxb.c
-index 952ea250feda0..58fe4c1619eeb 100644
---- a/drivers/media/pci/saa7146/mxb.c
-+++ b/drivers/media/pci/saa7146/mxb.c
-@@ -683,10 +683,16 @@ static struct saa7146_ext_vv vv_data;
- static int mxb_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct mxb *mxb;
-+	int ret;
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 565efd8806247..2ef1416899f03 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1652,7 +1652,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
  
- 	DEB_EE("dev:%p\n", dev);
+ 	/* default rx filter setting */
+ 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
+-			  BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
++			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
+ 			  BIT_AB | BIT_AM | BIT_APM;
  
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		ERR("Error in saa7146_vv_init()");
-+		return ret;
-+	}
-+
- 	if (mxb_probe(dev)) {
- 		saa7146_vv_release(dev);
- 		return -1;
+ 	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index bd01e82b6bcd0..8d1e8ff71d7ef 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -131,7 +131,7 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+index 22d0dd640ac94..dbfd67c3f598c 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -204,7 +204,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+index 79ad6232dce83..cee586335552d 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -1248,7 +1248,7 @@ static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ #define WLAN_MAC_INT_MIG_CFG		0x33330000
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
 -- 
 2.34.1
 
