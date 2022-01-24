@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 871C6C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E2C8C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392231AbiAXUuu (ORCPT
+        id S1392269AbiAXUu5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:50:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33540 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383516AbiAXU1U (ORCPT
+        Mon, 24 Jan 2022 15:50:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37802 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383657AbiAXU1e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:27:20 -0500
+        Mon, 24 Jan 2022 15:27:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F799C08254D;
+        Mon, 24 Jan 2022 11:41:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2831B811FB;
-        Mon, 24 Jan 2022 20:27:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9770C340E5;
-        Mon, 24 Jan 2022 20:27:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FAF261551;
+        Mon, 24 Jan 2022 19:41:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06C37C340E5;
+        Mon, 24 Jan 2022 19:41:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056037;
-        bh=hk/eP+4vdEUObKkcLaViDp0mx6G5Xhs2R8ms/YVjohw=;
+        s=korg; t=1643053306;
+        bh=lDnMZdm1qIoBNi8zGpb9L19ogrWHp8r6Rf4WFn0gvus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O/Rm6Ai2tD7Z5g8uttA4Wtr952JiYenWDtgDmvU4iesIwNrX5wo4eV8zLAmWGWaVN
-         FAjmlYcQojlq6OtOjxkiaAZeCAtRcgiSriTPhzPyXsU1OoAByklzZdFrQilCa3sSDZ
-         Ecf+7Ige6kSuZ7xrcD2Y8PafQ3TGxB6z5nNcs7dM=
+        b=kb4XDSzvDrg9iabil5PzGCxkFqC7UxkzNGEKZ3HqgV2AqNdqhuhUotTKhLKr3WUVK
+         sQoh6e6PDfn3IMVKxJ21W0PNANn2h97V+OkiZiK1eg5qRCjXKUFMxyqMzeOc1IyY3G
+         OOi9U2OWEztgYbItzuMmBJbnScZD4nCie1hcEjWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>
-Subject: [PATCH 5.15 349/846] mptcp: fix opt size when sending DSS + MP_FAIL
-Date:   Mon, 24 Jan 2022 19:37:46 +0100
-Message-Id: <20220124184112.995825032@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.10 022/563] media: em28xx: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:36:27 +0100
+Message-Id: <20220124184025.187005090@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 04fac2cae9422a3401c172571afbcfdd58fa5c7e ]
+commit d9b7e8df3aa9b8c10708aab60e72e79ac08237e4 upstream.
 
-When these two options had to be sent -- which is not common -- the DSS
-size was not being taken into account in the remaining size.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Additionally in this situation, the reported size was only the one of
-the MP_FAIL which can cause issue if at the end, we need to write more
-in the TCP options than previously said.
-
-Here we use a dedicated variable for MP_FAIL size to keep the
-WARN_ON_ONCE() just after.
-
-Fixes: c25aeb4e0953 ("mptcp: MP_FAIL suboption sending")
-Acked-and-tested-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a6c2ba283565 ("[PATCH] v4l: 716: support for em28xx board family")
+Cc: stable@vger.kernel.org      # 2.6.16
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/mptcp/options.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/media/usb/em28xx/em28xx-core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 0966855a7c251..f69a1cadb13fc 100644
---- a/net/mptcp/options.c
-+++ b/net/mptcp/options.c
-@@ -823,10 +823,13 @@ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
- 	if (mptcp_established_options_mp(sk, skb, snd_data_fin, &opt_size, remaining, opts))
- 		ret = true;
- 	else if (mptcp_established_options_dss(sk, skb, snd_data_fin, &opt_size, remaining, opts)) {
-+		unsigned int mp_fail_size;
-+
- 		ret = true;
--		if (mptcp_established_options_mp_fail(sk, &opt_size, remaining, opts)) {
--			*size += opt_size;
--			remaining -= opt_size;
-+		if (mptcp_established_options_mp_fail(sk, &mp_fail_size,
-+						      remaining - opt_size, opts)) {
-+			*size += opt_size + mp_fail_size;
-+			remaining -= opt_size - mp_fail_size;
- 			return true;
- 		}
- 	}
--- 
-2.34.1
-
+--- a/drivers/media/usb/em28xx/em28xx-core.c
++++ b/drivers/media/usb/em28xx/em28xx-core.c
+@@ -89,7 +89,7 @@ int em28xx_read_reg_req_len(struct em28x
+ 	mutex_lock(&dev->ctrl_urb_lock);
+ 	ret = usb_control_msg(udev, pipe, req,
+ 			      USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			      0x0000, reg, dev->urb_buf, len, HZ);
++			      0x0000, reg, dev->urb_buf, len, 1000);
+ 	if (ret < 0) {
+ 		em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
+ 			      pipe,
+@@ -158,7 +158,7 @@ int em28xx_write_regs_req(struct em28xx
+ 	memcpy(dev->urb_buf, buf, len);
+ 	ret = usb_control_msg(udev, pipe, req,
+ 			      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			      0x0000, reg, dev->urb_buf, len, HZ);
++			      0x0000, reg, dev->urb_buf, len, 1000);
+ 	mutex_unlock(&dev->ctrl_urb_lock);
+ 
+ 	if (ret < 0) {
 
 
