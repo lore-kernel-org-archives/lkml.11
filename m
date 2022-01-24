@@ -2,71 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C39C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 472C2C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588235AbiAXWbl (ORCPT
+        id S1346718AbiAXWbx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:31:41 -0500
-Received: from thorn.bewilderbeest.net ([71.19.156.171]:35885 "EHLO
-        thorn.bewilderbeest.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378302AbiAXVjT (ORCPT
+        Mon, 24 Jan 2022 17:31:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456527AbiAXVj3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:19 -0500
-Received: from hatter.bewilderbeest.net (174-21-190-118.tukw.qwest.net [174.21.190.118])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 24 Jan 2022 16:39:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B13C0417C2;
+        Mon, 24 Jan 2022 12:24:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id D963B1E6;
-        Mon, 24 Jan 2022 13:39:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1643060342;
-        bh=6xNUxjEcpAPXQtqj2dw1JnrsCyGZcDtUqq17fYGSuBI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pDmSmp2iDp20Bo3XfxuH1oDIeCI9ZF3F5yxRmW/4n42hZFQy8/EYtZryCCFfTwpu/
-         jcdtrgLDBgM0PDv+h5pfjwB+0IuqWbmE+qZu41AylxmfJ7cCUJt6lkND1ELOODghQO
-         cGEIDur1gXxmukKNKkhtEa648nStcWHEpwPzUAT0=
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     linux-i2c@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Peter Rosin <peda@axentia.se>, Rob Herring <robh+dt@kernel.org>
-Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH 0/2] ic2: mux: pca9541: add delayed-release support
-Date:   Mon, 24 Jan 2022 13:38:48 -0800
-Message-Id: <20220124213850.3766-1-zev@bewilderbeest.net>
+        by ams.source.kernel.org (Postfix) with ESMTPS id F1245B8121A;
+        Mon, 24 Jan 2022 20:24:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124B5C340E5;
+        Mon, 24 Jan 2022 20:24:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643055868;
+        bh=sfLZiX02BJ5cJ5jesEuIRjHJpSQs6iwfZWTLM8msD+o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Rn9xlBFq7t0SJdB/G7UOt4q35sVk+rQWdigK4EBoTm7JT+X64KLQ/TTqc1IyGGpP3
+         7vpSEkRn+F6uHl2P/ZdQh76vuubCQb8+62mp8wVDV8WTqHdu1/W9MSk01439HjpxO3
+         actV2pR31ztOUTSEqe++VpNa15R7nhApza8rIb00=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 259/846] xfrm: interface with if_id 0 should return error
+Date:   Mon, 24 Jan 2022 19:36:16 +0100
+Message-Id: <20220124184109.861648019@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: Antony Antony <antony.antony@secunet.com>
 
-This series adds support for a new pca9541 device-tree property
-("release-delay-us"), which delays releasing ownership of the bus
-after a transaction for a configurable duration, anticipating that
-another transaction may follow shortly.  By avoiding a
-release/reacquisition between transactions, this can provide a
-substantial performance improvement for back-to-back operations -- on
-a Delta AHE-50DC (ASPEED AST1250) system running OpenBMC with LM25066
-PMICs behind PCA9541-arbitrated busses, a setting of 10000 (10 ms)
-reduces the median latency of reading hwmon sysfs files from 2.28 ms
-to 0.99 ms (a 57% improvement).
+[ Upstream commit 8dce43919566f06e865f7e8949f5c10d8c2493f5 ]
 
+xfrm interface if_id = 0 would cause xfrm policy lookup errors since
+Commit 9f8550e4bd9d.
 
-Thanks,
-Zev
+Now explicitly fail to create an xfrm interface when if_id = 0
 
-Zev Weiss (2):
-  i2c: mux: pca9541: add delayed-release support
-  dt-bindings: i2c: add nxp,pca9541 release-delay-us property
+With this commit:
+ ip link add ipsec0  type xfrm dev lo  if_id 0
+ Error: if_id must be non zero.
 
- .../devicetree/bindings/i2c/nxp,pca9541.txt   | 10 ++++
- drivers/i2c/muxes/i2c-mux-pca9541.c           | 56 ++++++++++++++++---
- 2 files changed, 57 insertions(+), 9 deletions(-)
+v1->v2 change:
+ - add Fixes: tag
 
+Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/xfrm/xfrm_interface.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
+
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 41de46b5ffa94..57448fc519fcd 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -637,11 +637,16 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct net *net = dev_net(dev);
+-	struct xfrm_if_parms p;
++	struct xfrm_if_parms p = {};
+ 	struct xfrm_if *xi;
+ 	int err;
+ 
+ 	xfrmi_netlink_parms(data, &p);
++	if (!p.if_id) {
++		NL_SET_ERR_MSG(extack, "if_id must be non zero");
++		return -EINVAL;
++	}
++
+ 	xi = xfrmi_locate(net, &p);
+ 	if (xi)
+ 		return -EEXIST;
+@@ -666,7 +671,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+ 	struct net *net = xi->net;
+-	struct xfrm_if_parms p;
++	struct xfrm_if_parms p = {};
++
++	if (!p.if_id) {
++		NL_SET_ERR_MSG(extack, "if_id must be non zero");
++		return -EINVAL;
++	}
+ 
+ 	xfrmi_netlink_parms(data, &p);
+ 	xi = xfrmi_locate(net, &p);
 -- 
 2.34.1
+
+
 
