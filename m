@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDBAEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA886C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386546AbiAXUfi (ORCPT
+        id S1386568AbiAXUfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34808 "EHLO
+        Mon, 24 Jan 2022 15:35:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355347AbiAXUNa (ORCPT
+        with ESMTP id S1355214AbiAXUNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:30 -0500
+        Mon, 24 Jan 2022 15:13:22 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC501C06174E;
-        Mon, 24 Jan 2022 11:34:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B52EC01D7CA;
+        Mon, 24 Jan 2022 11:34:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54E62B811FC;
-        Mon, 24 Jan 2022 19:34:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B43C340E5;
-        Mon, 24 Jan 2022 19:34:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53244B811FC;
+        Mon, 24 Jan 2022 19:34:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71581C340E5;
+        Mon, 24 Jan 2022 19:34:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052873;
-        bh=5jWSEyoXOPCc+nJwcvUbZBzSLJhgsecoSxLzR5hVwFw=;
+        s=korg; t=1643052870;
+        bh=TcxqqP3k9ttYzsoT+++OolzMeJ1YguBUZ1x8o29WZxg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=saNl67Fq3l52jnTQABG/5BqJ9nYI20DY3PaxyadRAMhn1F9+bp4dsJu0UMgSxNdk0
-         V+DZHLOvbqqKChBABfCNZUsZGm8wf/uFDbMmujwJuuQcnPv3F//n1ik+qPv3hst5mJ
-         NVLZxDqDfj2bH7Hdqedk7rxThXuaSJ8AuYYUnH5k=
+        b=ku7Efkn0xzFgM22oLcm1cJ3gJf7aDlY/NQ5NMufPiVdUHsdDSoX0ORo5rWNp1PvPt
+         iJVvhbqsEkw7DvenL4uHHrhEcckW5QkiFWVqwYxwKzcOiD7mFVrTgig2j+CaQIAZzS
+         b5iOFG/oryM1Ld/VzDPPAYmv7WAIBQxuEKjlK6Zk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
         Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 200/320] iwlwifi: remove module loading failure message
-Date:   Mon, 24 Jan 2022 19:43:04 +0100
-Message-Id: <20220124184000.439618211@linuxfoundation.org>
+Subject: [PATCH 5.4 199/320] iwlwifi: fix leaks/bad data after failed firmware load
+Date:   Mon, 24 Jan 2022 19:43:03 +0100
+Message-Id: <20220124184000.405209110@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -52,47 +52,65 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
+[ Upstream commit ab07506b0454bea606095951e19e72c282bfbb42 ]
 
-When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
-when the opmode module cannot be loaded, due to completing
-the completion before using drv->dev, which can then already
-be freed.
+If firmware load fails after having loaded some parts of the
+firmware, e.g. the IML image, then this would leak. For the
+host command list we'd end up running into a WARN on the next
+attempt to load another firmware image.
 
-Fix this by removing the (fairly useless) message. Moving the
-completion later causes a deadlock instead, so that's not an
-option.
+Fix this by calling iwl_dealloc_ucode() on failures, and make
+that also clear the data so we start fresh on the next round.
 
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
+Link: https://lore.kernel.org/r/iwlwifi.20211210110539.1f742f0eb58a.I1315f22f6aa632d94ae2069f85e1bca5e734dce0@changeid
 Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index c1a2fb154fe91..83cb2ad03451b 100644
+index e68366f248fe3..c1a2fb154fe91 100644
 --- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
 +++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1599,15 +1599,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	 * else from proceeding if the module fails to load
- 	 * or hangs loading.
- 	 */
--	if (load_module) {
-+	if (load_module)
- 		request_module("%s", op->name);
--#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
--		if (err)
--			IWL_ERR(drv,
--				"failed to load module %s (error %d), is dynamic loading enabled?\n",
--				op->name, err);
--#endif
--	}
- 	failure = false;
+@@ -183,6 +183,9 @@ static void iwl_dealloc_ucode(struct iwl_drv *drv)
+ 
+ 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
+ 		iwl_free_fw_img(drv, drv->fw.img + i);
++
++	/* clear the data for the aborted load case */
++	memset(&drv->fw, 0, sizeof(drv->fw));
+ }
+ 
+ static int iwl_alloc_fw_desc(struct iwl_drv *drv, struct fw_desc *desc,
+@@ -1338,6 +1341,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 	int i;
+ 	bool load_module = false;
+ 	bool usniffer_images = false;
++	bool failure = true;
+ 
+ 	fw->ucode_capa.max_probe_length = IWL_DEFAULT_MAX_PROBE_LENGTH;
+ 	fw->ucode_capa.standard_phy_calibration_size =
+@@ -1604,6 +1608,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 				op->name, err);
+ #endif
+ 	}
++	failure = false;
  	goto free;
  
+  try_again:
+@@ -1619,6 +1624,9 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 	complete(&drv->request_firmware_complete);
+ 	device_release_driver(drv->trans->dev);
+  free:
++	if (failure)
++		iwl_dealloc_ucode(drv);
++
+ 	if (pieces) {
+ 		for (i = 0; i < ARRAY_SIZE(pieces->img); i++)
+ 			kfree(pieces->img[i].sec);
 -- 
 2.34.1
 
