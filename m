@@ -2,237 +2,325 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9097CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7449DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:13:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238406AbiAXMNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:13:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40212 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233792AbiAXMNA (ORCPT
+        id S238939AbiAXMNY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:13:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60868 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238415AbiAXMNW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:13:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643026379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Jgo/S7sjlaPhT9Y19EsdD9p5FFY6hIgWybsEw2AdVf4=;
-        b=P3wQ5sM2qoKT/xc6P4kD6e4EKzdpbID7qLh6/M/Kity4ypPqgOxi9M9FHeqsBXzhfZMFYe
-        nM+OoPyZdwSZh8QxSgB2emMA5/aHNyNXBn482MMZIESDUrlHxzljbhQcywhvnHYCm+QSKX
-        /0z2oIYNlBELpMZKf2VNonDwJYQoCP4=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-44-_oBQ9XlTOnGQGi9V2A8Kxw-1; Mon, 24 Jan 2022 07:12:58 -0500
-X-MC-Unique: _oBQ9XlTOnGQGi9V2A8Kxw-1
-Received: by mail-ej1-f69.google.com with SMTP id rl11-20020a170907216b00b006b73a611c1aso1300297ejb.22
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:12:58 -0800 (PST)
+        Mon, 24 Jan 2022 07:13:22 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65813C06173B;
+        Mon, 24 Jan 2022 04:13:21 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id j2so20649220ejk.6;
+        Mon, 24 Jan 2022 04:13:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f3L6ZYv3V6UOvyY624IyKRFwhxJX1UQBs9D5MQtCAZY=;
+        b=KZAw/9cgOqmpQx3DUmHG6ec2lD5q4JobgMWvI9roMKjYvXIy2XUSm7EkTue4uRoNEb
+         tHQbw/NgH414UZZolIewZ/1CeSAXfeNbpseltUeTs6SM9jyO6eadsM9OvJI2rJHKu39x
+         JB/b6a7f0NQZ0Yx9vAqS945RsNSrJ3i3AlK6u3Gj5NBGScBJfUNV+YRZidEVhj2NH2ja
+         kNsDHrkFmkUn1RMtKrG7aaVRTlm/n/SfHvY+RmtshYPAWYWNe1vvh6rk+miJohnzJ/QI
+         0sr3SEwjgsWIWFZasQYNIDugxsGQayluKuSvrrXziN8TJNUAAfAebZcpjewNX9YxrHAy
+         frOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=Jgo/S7sjlaPhT9Y19EsdD9p5FFY6hIgWybsEw2AdVf4=;
-        b=s7b20BoKdoI6fqIUaD38o1oYUHok+WQRGwC7YRJDWh9BeRsm4JkJi1ahoRS5SpMqdm
-         GcGlyPX5+Wkggw/6lBTPEvZ90dXochZFcMZBdZs1JPSl/XFnB7cUs4p5X2pBz+OPbwks
-         80NL7rgP2uOFYqZkIvB1ip1icBu8ECaA/D3ooKNHeo93p6AWLIm/Wd/EGO1yEyz8u8En
-         WdM7WGqBW4mkNLgh+1Z8tdAsgDsbQTDzO0W14+2SuysAkooBqmMdRlQB94FLh4rLBCX8
-         6IqLxqGTZd/jMAOPUFnwLwf/Wg7ItYZJr+s7rdG91iyvBv1KVo12I4YnJq+yADhcvipE
-         TJ1A==
-X-Gm-Message-State: AOAM532B3rOddr0Z63DDxMSl1A7m5+LXKyG8HgSp7WhJKgpcinzQ8J2Z
-        rxbsAs1k7xNFo5+cnUm7utCpyTKhBW0iwe4TcYMEkVEQfWi/eTb3WBVAUfv8AdgVz6ye+KFuxg3
-        yrGynD6sMX2Q24fJ7Ej8gaSZ6
-X-Received: by 2002:a50:f60a:: with SMTP id c10mr15677284edn.244.1643026376217;
-        Mon, 24 Jan 2022 04:12:56 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzeAP+ilNlgL4BcKuLW9AzZIZHsF6UJc18boCsxUW/7gD4RQkhhDnrivWREc2YP+evP+Hm8iw==
-X-Received: by 2002:a50:f60a:: with SMTP id c10mr15677203edn.244.1643026374972;
-        Mon, 24 Jan 2022 04:12:54 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id bl12sm4786871ejb.75.2022.01.24.04.12.54
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f3L6ZYv3V6UOvyY624IyKRFwhxJX1UQBs9D5MQtCAZY=;
+        b=8IOhBei3EQdbs1jPiXPtVoX2OxEOrH1SjFWg/jWiRsgZCD3GNliPYXKAvpRSw+D5Qf
+         XcJFoQVi61mEVtgOZ/Mu7y7sn6M1MOjxiohspZ9AOXSyO4H3Kh/+YpPPDTnGZbKneBXz
+         2TcTTfKJ64v5w3yIU53EJljkF3hwgikNiYP+lPK6c3Bs/DIWqy66p9c267nu344Fd7ph
+         xPuRRKir8OdAj1ivB0rKEuQNd5AjMm2FylPnfw7xGFiUP2hAUhNpuIusydXlQ3YkX1rM
+         kYNqa+Fq3m4EX5VcYCGYR3pkP9bp9UmYUSjRypudNk+HAPms93y9LGD3BOqdgOgGUr22
+         negQ==
+X-Gm-Message-State: AOAM532ETdof/B6F+Xm667bKVW/o78Od2UMAqImfq9njJHkLsVWMJjkM
+        N7hKtyEjz9SHk++8u0EhegA=
+X-Google-Smtp-Source: ABdhPJwo8e1X3tU0BeNZXCbtf1yLz0+dk9QXlZI1sM4u/vb+sckX1fvPfRefvOQkNOe8MtyVcYqhOA==
+X-Received: by 2002:a17:906:c1d8:: with SMTP id bw24mr12446448ejb.286.1643026399873;
+        Mon, 24 Jan 2022 04:13:19 -0800 (PST)
+Received: from ponky.lan ([2a04:241e:502:a09c:a21f:7a9f:9158:4a40])
+        by smtp.gmail.com with ESMTPSA id b16sm4847517eja.211.2022.01.24.04.13.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 04:12:54 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id B0E2F18044B; Mon, 24 Jan 2022 13:12:53 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Colin Foster <colin.foster@in-advantage.com>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Mon, 24 Jan 2022 04:13:19 -0800 (PST)
+From:   Leonard Crestez <cdleonard@gmail.com>
+To:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Philip Paeps <philip@trouble.is>,
+        Dmitry Safonov <0x7f454c46@gmail.com>
+Cc:     Shuah Khan <shuah@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: Re: [net RFC v1 1/1] page_pool: fix NULL dereference crash
-In-Reply-To: <CAADnVQ+UqKMfn+ZxgOkBcXidBWUGJDugU7gCEV+rGS6wscZjJw@mail.gmail.com>
-References: <20220122005644.802352-1-colin.foster@in-advantage.com>
- <20220122005644.802352-2-colin.foster@in-advantage.com>
- <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
- <20220122022047.GA803138@euler>
- <CAADnVQ+UqKMfn+ZxgOkBcXidBWUGJDugU7gCEV+rGS6wscZjJw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Mon, 24 Jan 2022 13:12:53 +0100
-Message-ID: <87mtjl5o3e.fsf@toke.dk>
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yuchung Cheng <ycheng@google.com>,
+        Francesco Ruggeri <fruggeri@arista.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Christoph Paasch <cpaasch@apple.com>,
+        Ivan Delalande <colona@arista.com>,
+        Priyaranjan Jha <priyarjha@google.com>, netdev@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 00/20] tcp: Initial support for RFC5925 auth option
+Date:   Mon, 24 Jan 2022 14:12:46 +0200
+Message-Id: <cover.1643026076.git.cdleonard@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+This is similar to TCP-MD5 in functionality but it's sufficiently
+different that packet formats and interfaces are incompatible.
+Compared to TCP-MD5 more algorithms are supported and multiple keys
+can be used on the same connection but there is still no negotiation
+mechanism.
 
-> On Fri, Jan 21, 2022 at 6:20 PM Colin Foster
-> <colin.foster@in-advantage.com> wrote:
->>
->> On Fri, Jan 21, 2022 at 05:13:28PM -0800, Alexei Starovoitov wrote:
->> > On Fri, Jan 21, 2022 at 4:57 PM Colin Foster
->> > <colin.foster@in-advantage.com> wrote:
->> > >
->> > > Check for the existence of page pool params before dereferencing. This can
->> > > cause crashes in certain conditions.
->> >
->> > In what conditions?
->> > Out of tree driver?
->>
->> Hi Alexei,
->>
->> Thanks for the quick response.
->>
->> I'm actively working on a DSA driver that is currently out-of-tree, but
->> trying to get it into mainline. But I'm not convinced that's the
->> problem...
->>
->> I'm using a beagelebone black with the cpsw_new driver. There are two
->> tweaks to that driver: the default vlan port is 10 and 11 so there's no
->> conflict between cpsw_new and DSA, and the ndev->max_mtu / rx_packet_max
->> have been increased to 1600 to allow for DSA frames larger than the
->> standard MTU of 1500.
->>
->> My focus is on the DSA driver, but the crash happens as soon as I run
->> "ip link set eth0 up" which is invoking the cpsw_new driver. Therefore I
->> suspect that the issue is not directly related to the DSA section
->> (ocelot / felix, much of which uses code that is mainline)
->>
->> As I suggested, I haven't dug into what is going on around the
->> page_pool yet. If there is something that is pre-loading memory at 1500
->> byte intervals and I broke that, that's entirely on me.
->>
->> [ removes 1600 byte MTU patch and pool patch ]
->>
->> I can confirm it still crashes when I don't modify the MTU in the
->> cpsw_new driver... so that doesn't seem to be it. That crash log is
->> below.
->>
->>
->> # ip link set eth0 up
->> [   18.074704] cpsw-switch 4a100000.switch: starting ndev. mode: dual_mac
->> [   18.174286] SMSC LAN8710/LAN8720 4a101000.mdio:00: attached PHY driver (mii_bus:phy_addr=4a101000.mdio:00, irq=POLL)
->> [   18.185458] 8<--- cut here ---
->> [   18.188554] Unable to handle kernel paging request at virtual address c3104440
->> [   18.195819] [c3104440] *pgd=8300041e(bad)
->> [   18.199885] Internal error: Oops: 8000000d [#1] SMP ARM
->> [   18.205148] Modules linked in:
->> [   18.208233] CPU: 0 PID: 168 Comm: ip Not tainted 5.16.0-05302-g8bd405e6e8a0-dirty #265
->> [   18.216201] Hardware name: Generic AM33XX (Flattened Device Tree)
->> [   18.222328] PC is at 0xc3104440
->> [   18.225500] LR is at __page_pool_alloc_pages_slow+0xbc/0x2e0
->> [   18.231222] pc : [<c3104440>]    lr : [<c0ee06c8>]    psr: a00b0013
->> [   18.237523] sp : c3104440  ip : 00000020  fp : c219e580
->> [   18.242778] r10: c1a04d54  r9 : 00000000  r8 : 00000000
->> [   18.248032] r7 : c36b9000  r6 : 00000000  r5 : c36b9084  r4 : 00000000
->> [   18.254595] r3 : c07a399c  r2 : 00000000  r1 : c325784c  r0 : dfa48bc0
->> [   18.261162] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
->> [   18.268343] Control: 10c5387d  Table: 836f0019  DAC: 00000051
->> [   18.274119] Register r0 information: non-slab/vmalloc memory
->> [   18.279825] Register r1 information: non-slab/vmalloc memory
->> [   18.285523] Register r2 information: NULL pointer
->> [   18.290260] Register r3 information: non-slab/vmalloc memory
->> [   18.295957] Register r4 information: NULL pointer
->> [   18.300693] Register r5 information: slab kmalloc-1k start c36b9000 pointer offset 132 size 1024
->> [   18.309569] Register r6 information: NULL pointer
->> [   18.314306] Register r7 information: slab kmalloc-1k start c36b9000 pointer offset 0 size 1024
->> [   18.322999] Register r8 information: NULL pointer
->> [   18.327736] Register r9 information: NULL pointer
->> [   18.332473] Register r10 information: non-slab/vmalloc memory
->> [   18.338257] Register r11 information: slab kmalloc-4k start c219e000 pointer offset 1408 size 4096
->> [   18.347301] Register r12 information: non-paged memory
->> [   18.352475] Process ip (pid: 168, stack limit = 0x7eb0d4ab)
->> [   18.358089] Stack: (0xc3104440 to 0xc3258000)
->> (too big a stack to show)
->>
->>
->> I can confirm that it crashes on net-next/master as well:
->> commit fe8152b38d3a, using the same DTB that defines the cpsw_new port
->> as the DSA master. Relevant DTS snippet from my in-development driver:
->>
->> +&spi0 {
->> +       #address-cells = <1>;
->> +       #size-cells = <0>;
->> +       status = "okay";
->> +
->> +       ocelot-chip@0 {
->> +               compatible = "mscc,vsc7512_mfd_spi";
->> +               spi-max-frequency = <2500000>;
->> +               reg = <0>;
->> +
->> +               ethernet-switch@0 {
->> +                       compatible = "mscc,vsc7512-ext-switch";
->> +                       ports {
->> +                               #address-cells = <1>;
->> +                               #size-cells = <0>;
->> +
->> +                               port@0 {
->> +                                       reg = <0>;
->> +                                       label = "cpu";
->> +                                       status = "okay";
->> +                                       ethernet = <&mac_sw>;
->> +                                       phy-handle = <&sw_phy0>;
->> +                                       phy-mode = "internal";
->> +                               };
->>
->>
->> I was hoping for an "oh, if a switch is set up in DSA the page_pool gets
->> set up this way" type scenario. I fully understand that might not be the
->> case, and the issue could be in something I'm doing incorrectly - it
->> certainly wouldn't be the first time.
->>
->> If this patch doesn't make sense I can look deeper. As mentioned, I'm
->> working to get this accepted upstream, so I'll have to figure it out one
->> way or another.
->
-> With !pool tweak the patch makes sense.
->
-> Toke, wdyt?
+Expected use-case is protecting long-duration BGP/LDP connections
+between routers using pre-shared keys. The goal of this series is to
+allow routers using the Linux TCP stack to interoperate with vendors
+such as Cisco and Juniper.
 
-I don't really see how page_pool_set_pp_info() can be called with a NULL
-'pool' pointer. There are only two callers:
-__page_pool_alloc_page_order() and __page_pool_alloc_pages_slow(). And
-both functions deref the pool pointer right before calling
-page_pool_set_pp_info(), so I don't really see how this patch would
-actually be a proper fix?
+Both algorithms described in RFC5926 are implemented but the code is not
+very easily extensible beyond that. In particular there are several code
+paths making stack allocations based on RFC5926 maximum, those would
+have to be increased. Support for arbitrary algorithms was requested
+in reply to previous posts but I believe there is no real use case for
+that.
 
-Looking a bit closer, actually the fault seems like it lies with the
-driver; Colin, could you please check if the patch below fixes your
-issue?
+The current implementation is somewhat loose regarding configuration:
+* Overlaping MKTs can be configured despite what RFC5925 says
+* Current key can be deleted. RFC says this shouldn't be allowed but
+enforcing this belongs at an admin shell rather than in the kernel.
+* If multiple keys are valid for a destination the kernel picks one
+in an unpredictable manner (this can be overridden).
 
-I'll go check all the other drivers as well and send a fix for all that
-are affected...
+These conditions could be tightened but it is not clear the kernel
+should spend effort to prevent misconfiguration from userspace.
 
--Toke
+The current code is largely feature complete and well-tested but I am
+somewhat stuck on next steps for getting this into upstream. Any
+suggestions would be very welcome
+
+Here are some known flaws and limitations:
+
+* Unsigned packets are sent if AO is active but no keys are found.
+* Crypto API is used with buffers on the stack and inside struct sock,
+this might not work on all arches. I'm currently only testing x64 VMs
+* Interaction with TCP-MD5 not tested in all corners.
+* Interaction with FASTOPEN not tested and unlikely to work because
+sequence number assumptions for syn/ack.
+* No way to limit keys on a per-port basis (used to be implicit with
+per-socket keys).
+* Not clear if crypto_ahash_setkey might sleep. If some implementation
+do that then maybe they could be excluded through alloc flags.
+* Traffic key is not cached (reducing performance)
+* No caching or hashing for key lookups so this will scale poorly with
+many keys
+
+There is relatively little code sharing with the TCP_MD5SIG feature and
+earlier versions shared even less. Unlike MD5 the AO feature is kept
+separate from the rest of the TCP code and reusing code would require
+many unrelated cleanup changes.
+
+I'm not convinced that "authopt" is particularly good naming convention,
+this name is a personal invention that does not appear anywhere else.
+The RFC calls this "tcp-ao". Perhaps TCP_AOSIG would be a better name
+and it would also make the close connection to TCP_MD5SIG more visible?
+
+Some testing support is included in nettest and fcnal-test.sh, similar
+to the current level of tcp-md5 testing.
+
+A more elaborate test suite using pytest and scapy is available out of
+tree: https://github.com/cdleonard/tcp-authopt-test That test suite is
+much larger that the kernel code and did not receive many comments in
+previous ports so I will attempt to push it separately (if at all).
+
+Changes for frr (old): https://github.com/FRRouting/frr/pull/9442
+That PR was made early for ABI feedback, it has many issues.
+
+Changes for yabgp (old): https://github.com/cdleonard/yabgp/commits/tcp_authopt
+This can be used for easy interoperability testing with cisco/juniper/etc.
+Would need updates for global keys to avoid leaks
+
+Changes since PATCH v4:
+* Move the traffic_key context_bytes header to stack. If it's a constant
+string then ahash can fail unexpectedly.
+* Fix allowing unsigned traffic if all keys are marked norecv.
+* Fix crashing in __tcp_authopt_alg_init on failure.
+* Try to respect the rnextkeyid from SYN on SYNACK (new patch)
+* Fix incorrect check for TCP_AUTHOPT_KEY_DEL in __tcp_authopt_select_key
+* Improve docs on __tcp_authopt_select_key
+* Fix build with CONFIG_PROC_FS=n (kernel build robot)
+* Fix build with CONFIG_IPV6=n (kernel build robot)
+Link: https://lore.kernel.org/netdev/cover.1640273966.git.cdleonard@gmail.com/
+
+Changes since PATCH v3:
+* Made keys global (per-netns rather than per-sock).
+* Add /proc/net/tcp_authopt with a table of keys (not sockets).
+* Fix part of the shash/ahash conversion having slipped from patch 3 to patch 5
+* Fix tcp_parse_sig_options assigning NULL incorrectly when both MD5 and AO
+are disabled (kernel build robot)
+* Fix sparse endianness warnings in prefix match (kernel build robot)
+* Fix several incorrect RCU annotations reported by sparse (kernel build robot)
+Link: https://lore.kernel.org/netdev/cover.1638962992.git.cdleonard@gmail.com/
+
+Changes since PATCH v2:
+* Protect tcp_authopt_alg_get/put_tfm with local_bh_disable instead of
+preempt_disable. This caused signature corruption when send path executing
+with BH enabled was interrupted by recv.
+* Fix accepted keyids not configured locally as "unexpected". If any key
+is configured that matches the peer then traffic MUST be signed.
+* Fix issues related to sne rollover during handshake itself. (Francesco)
+* Implement and test prefixlen (David)
+* Replace shash with ahash and reuse some of the MD5 code (Dmitry)
+* Parse md5+ao options only once in the same function (Dmitry)
+* Pass tcp_authopt_info into inbound check path, this avoids second rcu
+dereference for same packet.
+* Pass tcp_request_socket into inbound check path instead of just listen
+socket. This is required for SNE rollover during handshake and clearifies
+ISN handling.
+* Do not allow disabling via sysctl after enabling once, this is difficult
+to support well (David)
+* Verbose check for sysctl_tcp_authopt (Dmitry)
+* Use netif_index_is_l3_master (David)
+* Cleanup ipvx_addr_match (David)
+* Add a #define tcp_authopt_needed to wrap static key usage because it looks
+nicer.
+* Replace rcu_read_lock with rcu_dereference_protected in SNE updates (Eric)
+* Remove test suite
+Link: https://lore.kernel.org/netdev/cover.1635784253.git.cdleonard@gmail.com/
+
+Changes since PATCH v1:
+* Implement Sequence Number Extension
+* Implement l3index for vrf: TCP_AUTHOPT_KEY_IFINDEX as equivalent of
+TCP_MD5SIG_FLAG_IFINDEX
+* Expand TCP-AO tests in fcnal-test.sh to near-parity with md5.
+* Show addr/port on failure similar to md5
+* Remove tox dependency from test suite (create venv directly)
+* Switch default pytest output format to TAP (kselftest standard)
+* Fix _copy_from_sockptr_tolerant stack corruption on short sockopts.
+This was covered in test but error was invisible without STACKPROTECTOR=y
+* Fix sysctl_tcp_authopt check in tcp_get_authopt_val before memset. This
+was harmless because error code is checked in getsockopt anyway.
+* Fix dropping md5 packets on all sockets with AO enabled
+* Fix checking (key->recv_id & TCP_AUTHOPT_KEY_ADDR_BIND) instead of
+key->flags in tcp_authopt_key_match_exact
+* Fix PATCH 1/19 not compiling due to missing "int err" declaration
+* Add ratelimited message for AO and MD5 both present
+* Export all symbols required by CONFIG_IPV6=m (again)
+* Fix compilation with CONFIG_TCP_AUTHOPT=y CONFIG_TCP_MD5SIG=n
+* Fix checkpatch issues
+* Pass -rrequirements.txt to tox to avoid dependency variation.
+Link: https://lore.kernel.org/netdev/cover.1632240523.git.cdleonard@gmail.com/
+
+Changes since RFCv3:
+* Implement TCP_AUTHOPT handling for timewait and reset replies. Write
+tests to execute these paths by injecting packets with scapy
+* Handle combining md5 and authopt: if both are configured use authopt.
+* Fix locking issues around send_key, introduced in on of the later patches.
+* Handle IPv4-mapped-IPv6 addresses: it used to be that an ipv4 SYN sent
+to an ipv6 socket with TCP-AO triggered WARN
+* Implement un-namespaced sysctl disabled this feature by default
+* Allocate new key before removing any old one in setsockopt (Dmitry)
+* Remove tcp_authopt_key_info.local_id because it's no longer used (Dmitry)
+* Propagate errors from TCP_AUTHOPT getsockopt (Dmitry)
+* Fix no-longer-correct TCP_AUTHOPT_KEY_DEL docs (Dmitry)
+* Simplify crypto allocation (Eric)
+* Use kzmalloc instead of __GFP_ZERO (Eric)
+* Add static_key_false tcp_authopt_needed (Eric)
+* Clear authopt_info copied from oldsk in __tcp_authopt_openreq (Eric)
+* Replace memcmp in ipv4 and ipv6 addr comparisons (Eric)
+* Export symbols for CONFIG_IPV6=m (kernel test robot)
+* Mark more functions static (kernel test robot)
+* Fix build with CONFIG_PROVE_RCU_LIST=y (kernel test robot)
+Link: https://lore.kernel.org/netdev/cover.1629840814.git.cdleonard@gmail.com/
+
+Changes since RFCv2:
+* Removed local_id from ABI and match on send_id/recv_id/addr
+* Add all relevant out-of-tree tests to tools/testing/selftests
+* Return an error instead of ignoring unknown flags, hopefully this makes
+it easier to extend.
+* Check sk_family before __tcp_authopt_info_get_or_create in tcp_set_authopt_key
+* Use sock_owned_by_me instead of WARN_ON(!lockdep_sock_is_held(sk))
+* Fix some intermediate build failures reported by kbuild robot
+* Improve documentation
+Link: https://lore.kernel.org/netdev/cover.1628544649.git.cdleonard@gmail.com/
+
+Changes since RFC:
+* Split into per-topic commits for ease of review. The intermediate
+commits compile with a few "unused function" warnings and don't do
+anything useful by themselves.
+* Add ABI documention including kernel-doc on uapi
+* Fix lockdep warnings from crypto by creating pools with one shash for
+each cpu
+* Accept short options to setsockopt by padding with zeros; this
+approach allows increasing the size of the structs in the future.
+* Support for aes-128-cmac-96
+* Support for binding addresses to keys in a way similar to old tcp_md5
+* Add support for retrieving received keyid/rnextkeyid and controling
+the keyid/rnextkeyid being sent.
+Link: https://lore.kernel.org/netdev/01383a8751e97ef826ef2adf93bfde3a08195a43.1626693859.git.cdleonard@gmail.com/
+
+Leonard Crestez (20):
+  tcp: authopt: Initial support and key management
+  docs: Add user documentation for tcp_authopt
+  tcp: authopt: Add crypto initialization
+  tcp: md5: Refactor tcp_sig_hash_skb_data for AO
+  tcp: authopt: Compute packet signatures
+  tcp: authopt: Hook into tcp core
+  tcp: authopt: Disable via sysctl by default
+  tcp: authopt: Implement Sequence Number Extension
+  tcp: ipv6: Add AO signing for tcp_v6_send_response
+  tcp: authopt: Add support for signing skb-less replies
+  tcp: ipv4: Add AO signing for skb-less replies
+  tcp: authopt: Add key selection controls
+  tcp: authopt: Add initial l3index support
+  tcp: authopt: Add NOSEND/NORECV flags
+  tcp: authopt: Add prefixlen support
+  tcp: authopt: Add /proc/net/tcp_authopt listing all keys
+  selftests: nettest: Rename md5_prefix to key_addr_prefix
+  selftests: nettest: Initial tcp_authopt support
+  selftests: net/fcnal: Initial tcp_authopt support
+  tcp: authopt: Try to respect rnextkeyid from SYN on SYNACK
+
+ Documentation/networking/index.rst        |    1 +
+ Documentation/networking/ip-sysctl.rst    |    6 +
+ Documentation/networking/tcp_authopt.rst  |   88 +
+ include/linux/tcp.h                       |   15 +
+ include/net/net_namespace.h               |    4 +
+ include/net/netns/tcp_authopt.h           |   12 +
+ include/net/tcp.h                         |   27 +-
+ include/net/tcp_authopt.h                 |  323 ++++
+ include/uapi/linux/snmp.h                 |    1 +
+ include/uapi/linux/tcp.h                  |  137 ++
+ net/ipv4/Kconfig                          |   14 +
+ net/ipv4/Makefile                         |    1 +
+ net/ipv4/proc.c                           |    1 +
+ net/ipv4/sysctl_net_ipv4.c                |   39 +
+ net/ipv4/tcp.c                            |   68 +-
+ net/ipv4/tcp_authopt.c                    | 1847 +++++++++++++++++++++
+ net/ipv4/tcp_input.c                      |   53 +-
+ net/ipv4/tcp_ipv4.c                       |  138 +-
+ net/ipv4/tcp_minisocks.c                  |   12 +
+ net/ipv4/tcp_output.c                     |   86 +-
+ net/ipv6/tcp_ipv6.c                       |  110 +-
+ tools/testing/selftests/net/fcnal-test.sh |  329 +++-
+ tools/testing/selftests/net/nettest.c     |  204 ++-
+ 23 files changed, 3430 insertions(+), 86 deletions(-)
+ create mode 100644 Documentation/networking/tcp_authopt.rst
+ create mode 100644 include/net/netns/tcp_authopt.h
+ create mode 100644 include/net/tcp_authopt.h
+ create mode 100644 net/ipv4/tcp_authopt.c
 
 
-diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
-index 3537502e5e8b..648c78ecf2a5 100644
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -1146,7 +1146,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
- static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
-                                               int size)
- {
--       struct page_pool_params pp_params;
-+       struct page_pool_params pp_params = {};
-        struct page_pool *pool;
- 
-        pp_params.order = 0;
-
+base-commit: fe8152b38d3a994c4c6fdbc0cd6551d569a5715a
+--
+2.25.1
