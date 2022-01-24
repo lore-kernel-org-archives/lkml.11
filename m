@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB520C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8844AC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352789AbiAXTbE (ORCPT
+        id S1352678AbiAXTa4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51292 "EHLO
+        Mon, 24 Jan 2022 14:30:56 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50176 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347213AbiAXTWu (ORCPT
+        with ESMTP id S234470AbiAXTV5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:50 -0500
+        Mon, 24 Jan 2022 14:21:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F085D6141C;
-        Mon, 24 Jan 2022 19:22:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC400C340E5;
-        Mon, 24 Jan 2022 19:22:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 557B461483;
+        Mon, 24 Jan 2022 19:21:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 298A6C340E5;
+        Mon, 24 Jan 2022 19:21:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052169;
-        bh=tjiI83nL6UJQvRW0FyOjkoiSq6W6ioe2SX4RcJz4nYI=;
+        s=korg; t=1643052116;
+        bh=n3NJfTp/Pp/vZAidsmeEXWJbiKjAhzMri3BOT8j4izQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSxGscQg66j1pPml3bHMhdqQOfgzWsvCukjPD5THqL76uFZ5jVHGtTh3WPaMJyVxA
-         bxy4mmA8F3DwodvYZ/mDDL/G8vfbXpXHAUVdWEJhSCmCU2ZCaoR0n3RSRGevrIknXc
-         ixmTlsTsptVWTaHckv4QfyIa9ARn+Dk66vE8oCYk=
+        b=TaagOhaNc/CBn0ksx45ffk9oMOf3QdPssT9bRXBy92Zf0zelXepT/Pc7styOAukUm
+         Dij2921Zq4v3tGEC7z2ijINPMqJzRheeM6Hdjbn12ASTas/SpOLnW8w4Uu9LKjdTUu
+         czAk2YVXyAVztpQvdKh5Rlgy2yEirHvwEMHn8/7g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 4.19 210/239] drm/radeon: fix error handling in radeon_driver_open_kms
-Date:   Mon, 24 Jan 2022 19:44:08 +0100
-Message-Id: <20220124183949.784680847@linuxfoundation.org>
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: [PATCH 4.19 195/239] rpmsg: core: Clean up resources on announce_create failure.
+Date:   Mon, 24 Jan 2022 19:43:53 +0100
+Message-Id: <20220124183949.311818706@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -49,86 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
 
-commit 4722f463896cc0ef1a6f1c3cb2e171e949831249 upstream.
+commit 8066c615cb69b7da8a94f59379847b037b3a5e46 upstream.
 
-The return value was never initialized so the cleanup code executed when
-it isn't even necessary.
+During the rpmsg_dev_probe, if rpdev->ops->announce_create returns an
+error, the rpmsg device and default endpoint should be freed before
+exiting the function.
 
-Just add proper error handling.
-
-Fixes: ab50cb9df889 ("drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()")
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Tested-by: Jan Stancek <jstancek@redhat.com>
-Tested-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 5e619b48677c ("rpmsg: Split rpmsg core and virtio backend")
+Suggested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: stable <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20211206190758.10004-1-arnaud.pouliquen@foss.st.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/radeon/radeon_kms.c |   22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/rpmsg/rpmsg_core.c |   20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/radeon/radeon_kms.c
-+++ b/drivers/gpu/drm/radeon/radeon_kms.c
-@@ -641,18 +641,18 @@ int radeon_driver_open_kms(struct drm_de
- 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
- 		if (unlikely(!fpriv)) {
- 			r = -ENOMEM;
--			goto out_suspend;
-+			goto err_suspend;
- 		}
- 
- 		if (rdev->accel_working) {
- 			vm = &fpriv->vm;
- 			r = radeon_vm_init(rdev, vm);
- 			if (r)
--				goto out_fpriv;
-+				goto err_fpriv;
- 
- 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
- 			if (r)
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 
- 			/* map the ib pool buffer read only into
- 			 * virtual address space */
-@@ -660,7 +660,7 @@ int radeon_driver_open_kms(struct drm_de
- 							rdev->ring_tmp_bo.bo);
- 			if (!vm->ib_bo_va) {
- 				r = -ENOMEM;
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 			}
- 
- 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
-@@ -668,19 +668,21 @@ int radeon_driver_open_kms(struct drm_de
- 						  RADEON_VM_PAGE_READABLE |
- 						  RADEON_VM_PAGE_SNOOPED);
- 			if (r)
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 		}
- 		file_priv->driver_priv = fpriv;
+--- a/drivers/rpmsg/rpmsg_core.c
++++ b/drivers/rpmsg/rpmsg_core.c
+@@ -473,13 +473,25 @@ static int rpmsg_dev_probe(struct device
+ 	err = rpdrv->probe(rpdev);
+ 	if (err) {
+ 		dev_err(dev, "%s: failed: %d\n", __func__, err);
+-		if (ept)
+-			rpmsg_destroy_ept(ept);
+-		goto out;
++		goto destroy_ept;
  	}
  
--	if (!r)
--		goto out_suspend;
-+	pm_runtime_mark_last_busy(dev->dev);
-+	pm_runtime_put_autosuspend(dev->dev);
-+	return 0;
- 
--out_vm_fini:
-+err_vm_fini:
- 	radeon_vm_fini(rdev, vm);
--out_fpriv:
-+err_fpriv:
- 	kfree(fpriv);
--out_suspend:
+-	if (ept && rpdev->ops->announce_create)
++	if (ept && rpdev->ops->announce_create) {
+ 		err = rpdev->ops->announce_create(rpdev);
++		if (err) {
++			dev_err(dev, "failed to announce creation\n");
++			goto remove_rpdev;
++		}
++	}
 +
-+err_suspend:
- 	pm_runtime_mark_last_busy(dev->dev);
- 	pm_runtime_put_autosuspend(dev->dev);
- 	return r;
++	return 0;
++
++remove_rpdev:
++	if (rpdrv->remove)
++		rpdrv->remove(rpdev);
++destroy_ept:
++	if (ept)
++		rpmsg_destroy_ept(ept);
+ out:
+ 	return err;
+ }
 
 
