@@ -2,93 +2,239 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F307C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:38:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C4CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243176AbiAXNiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:38:06 -0500
-Received: from mga05.intel.com ([192.55.52.43]:10476 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242805AbiAXNiF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:38:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643031485; x=1674567485;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=a1PvZoXdi3eZ4pNxeDvVQM8Mgu1K/7QAjtKXbKbV6xk=;
-  b=a5iZ+wfowl1QoAkaq8WEVMzchJJ5WZvbi1TIZrPQpEbXIcN+36Tt8L09
-   gJZovggf570T0Xa+SMKshUV2jFMOsKJiLytKC7s7n3CTac+hlFnW++EWZ
-   /fi+G5GFmuTtCbNHCkzo4c6ZNbAAX0AOjphz8H8GnDK7A3VIYabird6wq
-   zKD+Ja0W+fIYpq58eKCnl7Pa7Y6Oc70r5QTSY+UBzKZYFVtG62Lzw1+NP
-   WmFc3ujdfyRVD6nvkOpADL+GM8lRkmlf38EPJptIFfh3coElB2vQmS5yX
-   t7IkCeb7yvG+9GwI2muCwfSaAgC1HJMvcfXTxWaoptHCvZ/CthLCcE2Cw
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="332398208"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="332398208"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 05:38:04 -0800
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="479074173"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 05:38:02 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nBzWh-00Du6c-MU;
-        Mon, 24 Jan 2022 15:36:55 +0200
-Date:   Mon, 24 Jan 2022 15:36:55 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Kane Chen <kane.chen@intel.com>
-Subject: Re: [PATCH v1 1/1] pinctrl: intel: Fix a glitch when updating IRQ
- flags on a preconfigured line
-Message-ID: <Ye6rd3UzmLoMWq7S@smile.fi.intel.com>
-References: <20220119181915.27519-1-andriy.shevchenko@linux.intel.com>
- <YekS9O5Xhl6VL9GM@lahna>
+        id S243185AbiAXNiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:38:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52996 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243179AbiAXNiR (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 08:38:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64A4FC061401
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:38:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0109061298
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:38:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64DD6C340E1;
+        Mon, 24 Jan 2022 13:38:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643031496;
+        bh=6ULtvEmM53XpZVfgoAJQ9W/hCwEgO+guD2eYGiPzntw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qMlCTbq8gKKiIFbiZUj9e8mY67K+IcCYGh5bqxGVrjMT56Z9dT46e2CycMq5aPjeu
+         1WIR/EOoivFVsd8FfImvQZPcBhlwz604N92W01oTpTX6ynb+HP6CY5qK5e9OMP9TIE
+         hevuUQhFpOe79jhDnog+55NCwzluZlyEAFUnrSWqcEDvDvVpIG2IBy9RlOQIOiY+2q
+         QnoiHK5t41//lDht/j84gBD5WlbPXREjol8LhBE3Q+s2WATyPFTRF2zdGJs0b+/56z
+         BdIGSvxy+k/nomG6TFMzR5TckCxjGaPSvZWzCmYosZMTMQna9gBaAT3sBqKwQataZS
+         c7OakqBA9IzDQ==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nBzXy-002OVB-ED; Mon, 24 Jan 2022 13:38:14 +0000
+From:   Marc Zyngier <maz@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Jay Chen <jkchen@linux.alibaba.com>
+Subject: [PATCH v3] irqchip/gic-v3-its: Reset each ITS's BASERn register before probe
+Date:   Mon, 24 Jan 2022 13:38:09 +0000
+Message-Id: <20220124133809.1291195-1-maz@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YekS9O5Xhl6VL9GM@lahna>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, kernel-team@android.com, lorenzo.pieralisi@arm.com, jkchen@linux.alibaba.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 09:44:52AM +0200, Mika Westerberg wrote:
-> On Wed, Jan 19, 2022 at 08:19:15PM +0200, Andy Shevchenko wrote:
-> > The commit af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer
-> > when switching to GPIO") hadn't taken into account an update of the IRQ
-> > flags scenario.
-> > 
-> > When updating the IRQ flags on the preconfigured line the ->irq_set_type()
-> > is called again. In such case the sequential Rx buffer configuration
-> > changes may trigger a falling or rising edge interrupt that may lead,
-> > on some platforms, to an undesired event.
-> > 
-> > This may happen because each of intel_gpio_set_gpio_mode() and
-> > __intel_gpio_set_direction() updates the pad configuration with a different
-> > value of the GPIORXDIS bit. Notable, that the intel_gpio_set_gpio_mode() is
-> > called only for the pads that are configured as an input. Due to this fact,
-> > integrate the logic of __intel_gpio_set_direction() call into the
-> > intel_gpio_set_gpio_mode() so that the Rx buffer won't be disabled and
-> > immediately re-enabled.
-> > 
-> > Fixes: af7e3eeb84e2 ("pinctrl: intel: Disable input and output buffer when switching to GPIO")
-> > Reported-by: Kane Chen <kane.chen@intel.com>
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-> 
-> Please mark this for stable too.
+A recent bug report outlined that the way GICv4.1 is handled across
+kexec is pretty bad. We can end-up in a situation where ITSs share
+memory (this is the case when SVPET==1) and reprogram the base
+registers, creating a situation where ITSs that are part of a given
+affinity group see different pointers. Which is illegal. Boo.
 
-Pushed to my review and testing queue with the Grace Kao's tag, thanks!
+In order to restore some sanity, reset the BASERn registers to 0
+*before* probing any ITS. Although this isn't optimised at all,
+this is only a once-per-boot cost, which shouldn't show up on
+anyone's radar.
 
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: Jay Chen <jkchen@linux.alibaba.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20211216190315.GA14220@lpieralisi
+---
+ drivers/irqchip/irq-gic-v3-its.c | 114 +++++++++++++++++++++++++------
+ 1 file changed, 93 insertions(+), 21 deletions(-)
+
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index 7b8f1ec0ff78..c09d99d5b637 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -4856,6 +4856,38 @@ static struct syscore_ops its_syscore_ops = {
+ 	.resume = its_restore_enable,
+ };
+ 
++static void __init __iomem *its_map_one(struct resource *res, int *err)
++{
++	void __iomem *its_base;
++	u32 val;
++
++	its_base = ioremap(res->start, SZ_64K);
++	if (!its_base) {
++		pr_warn("ITS@%pa: Unable to map ITS registers\n", &res->start);
++		*err = -ENOMEM;
++		return NULL;
++	}
++
++	val = readl_relaxed(its_base + GITS_PIDR2) & GIC_PIDR2_ARCH_MASK;
++	if (val != 0x30 && val != 0x40) {
++		pr_warn("ITS@%pa: No ITS detected, giving up\n", &res->start);
++		*err = -ENODEV;
++		goto out_unmap;
++	}
++
++	*err = its_force_quiescent(its_base);
++	if (*err) {
++		pr_warn("ITS@%pa: Failed to quiesce, giving up\n", &res->start);
++		goto out_unmap;
++	}
++
++	return its_base;
++
++out_unmap:
++	iounmap(its_base);
++	return NULL;
++}
++
+ static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
+ {
+ 	struct irq_domain *inner_domain;
+@@ -4963,29 +4995,14 @@ static int __init its_probe_one(struct resource *res,
+ {
+ 	struct its_node *its;
+ 	void __iomem *its_base;
+-	u32 val, ctlr;
+ 	u64 baser, tmp, typer;
+ 	struct page *page;
++	u32 ctlr;
+ 	int err;
+ 
+-	its_base = ioremap(res->start, SZ_64K);
+-	if (!its_base) {
+-		pr_warn("ITS@%pa: Unable to map ITS registers\n", &res->start);
+-		return -ENOMEM;
+-	}
+-
+-	val = readl_relaxed(its_base + GITS_PIDR2) & GIC_PIDR2_ARCH_MASK;
+-	if (val != 0x30 && val != 0x40) {
+-		pr_warn("ITS@%pa: No ITS detected, giving up\n", &res->start);
+-		err = -ENODEV;
+-		goto out_unmap;
+-	}
+-
+-	err = its_force_quiescent(its_base);
+-	if (err) {
+-		pr_warn("ITS@%pa: Failed to quiesce, giving up\n", &res->start);
+-		goto out_unmap;
+-	}
++	its_base = its_map_one(res, &err);
++	if (!its_base)
++		return err;
+ 
+ 	pr_info("ITS %pR\n", res);
+ 
+@@ -5249,6 +5266,23 @@ static int its_cpu_memreserve_lpi(unsigned int cpu)
+ 	return ret;
+ }
+ 
++/* Mark all the BASER registers as invalid before they get reprogrammed */
++static int __init its_reset_one(struct resource *res)
++{
++	void __iomem *its_base;
++	int err, i;
++
++	its_base = its_map_one(res, &err);
++	if (!its_base)
++		return err;
++
++	for (i = 0; i < GITS_BASER_NR_REGS; i++)
++		gits_write_baser(0, its_base + GITS_BASER + (i << 3));
++
++	iounmap(its_base);
++	return 0;
++}
++
+ static const struct of_device_id its_device_id[] = {
+ 	{	.compatible	= "arm,gic-v3-its",	},
+ 	{},
+@@ -5259,6 +5293,26 @@ static int __init its_of_probe(struct device_node *node)
+ 	struct device_node *np;
+ 	struct resource res;
+ 
++	/*
++	 * Make sure *all* the ITS are reset before we probe any, as
++	 * they may be sharing memory. If any of the ITS fails to
++	 * reset, don't even try to go any further, as this could
++	 * result in something even worse.
++	 */
++	for (np = of_find_matching_node(node, its_device_id); np;
++	     np = of_find_matching_node(np, its_device_id)) {
++		int err;
++
++		if (!of_device_is_available(np) ||
++		    !of_property_read_bool(np, "msi-controller") ||
++		    of_address_to_resource(np, 0, &res))
++			continue;
++
++		err = its_reset_one(&res);
++		if (err)
++			return err;
++	}
++
+ 	for (np = of_find_matching_node(node, its_device_id); np;
+ 	     np = of_find_matching_node(np, its_device_id)) {
+ 		if (!of_device_is_available(np))
+@@ -5421,11 +5475,29 @@ static int __init gic_acpi_parse_madt_its(union acpi_subtable_headers *header,
+ 	return err;
+ }
+ 
++static int __init its_acpi_reset(union acpi_subtable_headers *header,
++				 const unsigned long end)
++{
++	struct acpi_madt_generic_translator *its_entry;
++	struct resource res;
++
++	its_entry = (struct acpi_madt_generic_translator *)header;
++	res = (struct resource) {
++		.start	= its_entry->base_address,
++		.end	= its_entry->base_address + ACPI_GICV3_ITS_MEM_SIZE - 1,
++		.flags	= IORESOURCE_MEM,
++	};
++
++	return its_reset_one(&res);
++}
++
+ static void __init its_acpi_probe(void)
+ {
+ 	acpi_table_parse_srat_its();
+-	acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
+-			      gic_acpi_parse_madt_its, 0);
++	if (acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
++				  its_acpi_reset, 0) > 0)
++		acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
++				      gic_acpi_parse_madt_its, 0);
+ 	acpi_its_srat_maps_free();
+ }
+ #else
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
