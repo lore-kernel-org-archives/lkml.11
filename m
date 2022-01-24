@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7590CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8CF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355414AbiAXTxE (ORCPT
+        id S1351897AbiAXTxN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:53:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35862 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345396AbiAXTmX (ORCPT
+        Mon, 24 Jan 2022 14:53:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34448 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346320AbiAXTm2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:42:23 -0500
+        Mon, 24 Jan 2022 14:42:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42B7061031;
-        Mon, 24 Jan 2022 19:42:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F61AC340E5;
-        Mon, 24 Jan 2022 19:42:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33301B81142;
+        Mon, 24 Jan 2022 19:42:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51722C340E5;
+        Mon, 24 Jan 2022 19:42:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053342;
-        bh=V+le2JyJO4eaQ2u2wi+xJ2j42OxrRL3YiITO6FyFsQQ=;
+        s=korg; t=1643053345;
+        bh=6d29mTJvh2GOvub6qrgiH29qIyJhZWECLVUAyxaXSJU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tUB8XIQUT7pjBHXwg9O4Kx+RaEv8ohO4uti8S/HOHt46KVsniVxITrqsERRYfxiz8
-         gHndP1l51YLzHfX5BtHGOj7ndX9aqfA2GLlZCt5t46iwT3DtcMrIohvpmbXMg8fDIB
-         zufZmb5FcgfCbUE3FZe28wgxuyvyMOGFTmKKKPQQ=
+        b=DnwInM1ZH9q16KkQPUMf1Ray8GQRZ3s9feio/k6go7PAmHbmJNU1LifCVa/NIEzxE
+         DdshhDMMDZum1qIitS0JNsJ7ChkE00aX2gtSJD5I9pH61wJ9N+Oxxbkt63E4DgLzmW
+         S+U+wBlTpGiZRcbJ6HptXiqFhfFDvS11HneuQ1ks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH 5.10 032/563] lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
-Date:   Mon, 24 Jan 2022 19:36:37 +0100
-Message-Id: <20220124184025.541909855@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.10 004/563] HID: wacom: Ignore the confidence flag when a touch is removed
+Date:   Mon, 24 Jan 2022 19:36:09 +0100
+Message-Id: <20220124184024.558854900@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,55 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Jason Gerecke <killertofu@gmail.com>
 
-commit bc93a22a19eb2b68a16ecf04cdf4b2ed65aaf398 upstream.
+commit df03e9bd6d4806619b4cdc91a3d7695818a8e2b7 upstream.
 
-On a kernel without CONFIG_STRICT_KERNEL_RWX, running EXEC_RODATA
-test leads to "Illegal instruction" failure.
+AES hardware may internally re-classify a contact that it thought was
+intentional as a palm. Intentional contacts are reported as "down" with
+the confidence bit set. When this re-classification occurs, however, the
+state transitions to "up" with the confidence bit cleared. This kind of
+transition appears to be legal according to Microsoft docs, but we do
+not handle it correctly. Because the confidence bit is clear, we don't
+call `wacom_wac_finger_slot` and update userspace. This causes hung
+touches that confuse userspace and interfere with pen arbitration.
 
-Looking at the content of rodata_objcopy.o, we see that the
-function content zeroes only:
+This commit adds a special case to ignore the confidence flag if a contact
+is reported as removed. This ensures we do not leave a hung touch if one
+of these re-classification events occured. Ideally we'd have some way to
+also let userspace know that the touch has been re-classified as a palm
+and needs to be canceled, but that's not possible right now :)
 
-	Disassembly of section .rodata:
-
-	0000000000000000 <.lkdtm_rodata_do_nothing>:
-	   0:	00 00 00 00 	.long 0x0
-
-Add the contents flag in order to keep the content of the section
-while renaming it.
-
-	Disassembly of section .rodata:
-
-	0000000000000000 <.lkdtm_rodata_do_nothing>:
-	   0:	4e 80 00 20 	blr
-
-Fixes: e9e08a07385e ("lkdtm: support llvm-objcopy")
-Cc: stable@vger.kernel.org
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/8900731fbc05fb8b0de18af7133a8fc07c3c53a1.1633712176.git.christophe.leroy@csgroup.eu
+Link: https://github.com/linuxwacom/input-wacom/issues/288
+Fixes: 7fb0413baa7f (HID: wacom: Use "Confidence" flag to prevent reporting invalid contacts)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/lkdtm/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/wacom_wac.c |   29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
---- a/drivers/misc/lkdtm/Makefile
-+++ b/drivers/misc/lkdtm/Makefile
-@@ -16,7 +16,7 @@ KCOV_INSTRUMENT_rodata.o	:= n
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2566,6 +2566,24 @@ static void wacom_wac_finger_slot(struct
+ 	}
+ }
  
- OBJCOPYFLAGS :=
- OBJCOPYFLAGS_rodata_objcopy.o	:= \
--			--rename-section .noinstr.text=.rodata,alloc,readonly,load
-+			--rename-section .noinstr.text=.rodata,alloc,readonly,load,contents
- targets += rodata.o rodata_objcopy.o
- $(obj)/rodata_objcopy.o: $(obj)/rodata.o FORCE
- 	$(call if_changed,objcopy)
++static bool wacom_wac_slot_is_active(struct input_dev *dev, int key)
++{
++	struct input_mt *mt = dev->mt;
++	struct input_mt_slot *s;
++
++	if (!mt)
++		return false;
++
++	for (s = mt->slots; s != mt->slots + mt->num_slots; s++) {
++		if (s->key == key &&
++			input_mt_get_value(s, ABS_MT_TRACKING_ID) >= 0) {
++			return true;
++		}
++	}
++
++	return false;
++}
++
+ static void wacom_wac_finger_event(struct hid_device *hdev,
+ 		struct hid_field *field, struct hid_usage *usage, __s32 value)
+ {
+@@ -2613,9 +2631,14 @@ static void wacom_wac_finger_event(struc
+ 	}
+ 
+ 	if (usage->usage_index + 1 == field->report_count) {
+-		if (equivalent_usage == wacom_wac->hid_data.last_slot_field &&
+-		    wacom_wac->hid_data.confidence)
+-			wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
++		if (equivalent_usage == wacom_wac->hid_data.last_slot_field) {
++			bool touch_removed = wacom_wac_slot_is_active(wacom_wac->touch_input,
++				wacom_wac->hid_data.id) && !wacom_wac->hid_data.tipswitch;
++
++			if (wacom_wac->hid_data.confidence || touch_removed) {
++				wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
++			}
++		}
+ 	}
+ }
+ 
 
 
