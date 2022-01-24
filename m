@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E956C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 555D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:04:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243423AbiAXPEM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:04:12 -0500
-Received: from mga12.intel.com ([192.55.52.136]:5630 "EHLO mga12.intel.com"
+        id S243309AbiAXPEP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:04:15 -0500
+Received: from mga12.intel.com ([192.55.52.136]:5640 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240314AbiAXPDK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:03:10 -0500
+        id S243216AbiAXPDL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:03:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643036590; x=1674572590;
+  t=1643036591; x=1674572591;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=tKPEY1KQTqIVQ760tEEDgDD58NKNldq3MW2/0q9iqtM=;
-  b=L89JNlrKz7B/qFGfq9NRLYNwpregWvEAJYDisCJTVURzmI31WOVYLcLR
-   dysQwuB6PmiDBswhXUYeXChmHcYm+CWkCRKStEFsH8/eSXLHxLN80SuS7
-   E2dD0KCN0qkw3FkpqBJgyHBw/le1NbU8oPK2rRMNFaGyJCoTn856i9fsU
-   +XbUWLWfgoihbWQBKIOWV1JOgSwxTgOaWOmMINrZfaKLoTOJFmdsr9PNr
-   7dh6NkMM01PBUqfxhqVkK6B/NKKWGsLGBrDbRQG9AmqBzzpZzRaBLdEMU
-   LhDLVtzaBiNFCLS566C1k/cHnuqa2lrSkcsuPN0CIUjWq7uBqUkJAkH/9
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226043252"
+  bh=f42jF0db27DH6xwdarJr96m9QIQKkwx3aAFrMyHkc2s=;
+  b=Q1IUitG/tapnBqr6cYEDbEKs/shuc+RYvFfBeXJVZe6Bo6OuDvJzUdMg
+   bLxrjAo8pLnUqexCOQZVlPjTCjPVf50lJFl8yz02MIgJE6H3dm3bCvdU1
+   CNsquyXxsXMI/TqnHYsXpD8RUZRbX365rmGlzBgva3KABtyJ5zjUc7hNP
+   NugkJwtgwTF45m22yqogCdjGU73AlnxCGnvtn7ASP0AlE5kfwzw1KCuuK
+   XsxTEEdvCKglUL/V2zlYzAc259LUROt51X899jAp+AT1D7iabvSaz8WEb
+   yb64yzPPcC/AQjTqFAaTxcj52kCD/4klIQ7jZXys14Q/nPYTyvhbB9y5x
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226043250"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="226043252"
+   d="scan'208";a="226043250"
 Received: from fmsmga007.fm.intel.com ([10.253.24.52])
   by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:28 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="532102282"
+   d="scan'208";a="532102276"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 07:02:22 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 07:02:20 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 76389D08; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
+        id 11AA6A8F; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -46,12 +46,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        Kai Huang <kai.huang@linux.intel.com>
-Subject: [PATCHv2 24/29] x86/mm/cpa: Add support for TDX shared memory
-Date:   Mon, 24 Jan 2022 18:02:10 +0300
-Message-Id: <20220124150215.36893-25-kirill.shutemov@linux.intel.com>
+        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv2 15/29] x86/tdx: Wire up KVM hypercalls
+Date:   Mon, 24 Jan 2022 18:02:01 +0300
+Message-Id: <20220124150215.36893-16-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
 References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
@@ -61,255 +59,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-TDX steals a bit from the physical address and uses it to indicate
-whether the page is private to the guest (bit set 0) or unprotected
-and shared with the VMM (bit set 1).
+From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 
-AMD SEV uses a similar scheme, repurposing a bit from the physical address
-to indicate encrypted or decrypted pages.
+KVM hypercalls use the VMCALL or VMMCALL instructions. Although the ABI
+is similar, those instructions no longer function for TDX guests.
 
-The kernel already has the infrastructure to deal with encrypted/decrypted
-pages for AMD SEV. Modify the __set_memory_enc_pgtable() and make it
-aware about TDX.
+Make vendor-specific TDVMCALLs instead of VMCALL. This enables TDX
+guests to run with KVM acting as the hypervisor.
 
-After modifying page table entries, the kernel needs to notify VMM about
-the change with tdx_hcall_request_gpa_type().
+Among other things, KVM hypercall is used to send IPIs.
 
-Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Since the KVM driver can be built as a kernel module, export
+tdx_kvm_hypercall() to make the symbols visible to kvm.ko.
+
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Tested-by: Kai Huang <kai.huang@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/Kconfig                   |  2 +-
- arch/x86/include/asm/mem_encrypt.h |  8 ++++++
- arch/x86/include/asm/set_memory.h  |  1 -
- arch/x86/kernel/cc_platform.c      |  2 ++
- arch/x86/mm/mem_encrypt_amd.c      | 10 ++++---
- arch/x86/mm/pat/set_memory.c       | 44 ++++++++++++++++++++++++++----
- include/linux/cc_platform.h        |  9 ++++++
- 7 files changed, 64 insertions(+), 12 deletions(-)
+ arch/x86/include/asm/kvm_para.h | 22 ++++++++++++++++++++++
+ arch/x86/include/asm/tdx.h      | 11 +++++++++++
+ arch/x86/kernel/tdx.c           | 15 +++++++++++++++
+ 3 files changed, 48 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 680c3cad9422..33e6ec6fd89f 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -886,7 +886,7 @@ config INTEL_TDX_GUEST
- 	depends on X86_X2APIC
- 	select ARCH_HAS_CC_PLATFORM
- 	select X86_MCE
--	select DYNAMIC_PHYSICAL_MASK
-+	select X86_MEM_ENCRYPT
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
- 	  the guest kernel can not boot or run under TDX.
-diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
-index e2c6f433ed10..f45a9ea2dec9 100644
---- a/arch/x86/include/asm/mem_encrypt.h
-+++ b/arch/x86/include/asm/mem_encrypt.h
-@@ -52,6 +52,8 @@ void __init mem_encrypt_free_decrypted_mem(void);
- /* Architecture __weak replacement functions */
- void __init mem_encrypt_init(void);
+diff --git a/arch/x86/include/asm/kvm_para.h b/arch/x86/include/asm/kvm_para.h
+index 56935ebb1dfe..57bc74e112f2 100644
+--- a/arch/x86/include/asm/kvm_para.h
++++ b/arch/x86/include/asm/kvm_para.h
+@@ -7,6 +7,8 @@
+ #include <linux/interrupt.h>
+ #include <uapi/asm/kvm_para.h>
  
-+int amd_notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
-+
- void __init sev_es_init_vc_handling(void);
- 
- #define __bss_decrypted __section(".bss..decrypted")
-@@ -85,6 +87,12 @@ early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages, bool enc) {}
- 
- static inline void mem_encrypt_free_decrypted_mem(void) { }
- 
-+static inline int amd_notify_range_enc_status_changed(unsigned long vaddr,
-+						      int npages, bool enc)
-+{
-+	return 0;
-+}
-+
- #define __bss_decrypted
- 
- #endif	/* CONFIG_AMD_MEM_ENCRYPT */
-diff --git a/arch/x86/include/asm/set_memory.h b/arch/x86/include/asm/set_memory.h
-index ff0f2d90338a..ce8dd215f5b3 100644
---- a/arch/x86/include/asm/set_memory.h
-+++ b/arch/x86/include/asm/set_memory.h
-@@ -84,7 +84,6 @@ int set_pages_rw(struct page *page, int numpages);
- int set_direct_map_invalid_noflush(struct page *page);
- int set_direct_map_default_noflush(struct page *page);
- bool kernel_page_present(struct page *page);
--void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc);
- 
- extern int kernel_set_to_readonly;
- 
-diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-index be8722ad4792..1fbcf19fa20d 100644
---- a/arch/x86/kernel/cc_platform.c
-+++ b/arch/x86/kernel/cc_platform.c
-@@ -21,6 +21,8 @@ static bool intel_cc_platform_has(enum cc_attr attr)
- 	switch (attr) {
- 	case CC_ATTR_GUEST_UNROLL_STRING_IO:
- 	case CC_ATTR_HOTPLUG_DISABLED:
-+	case CC_ATTR_GUEST_TDX:
-+	case CC_ATTR_GUEST_MEM_ENCRYPT:
- 		return true;
- 	default:
- 		return false;
-diff --git a/arch/x86/mm/mem_encrypt_amd.c b/arch/x86/mm/mem_encrypt_amd.c
-index 2b2d018ea345..6aa4e0c27368 100644
---- a/arch/x86/mm/mem_encrypt_amd.c
-+++ b/arch/x86/mm/mem_encrypt_amd.c
-@@ -256,7 +256,8 @@ static unsigned long pg_level_to_pfn(int level, pte_t *kpte, pgprot_t *ret_prot)
- 	return pfn;
- }
- 
--void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
-+int amd_notify_range_enc_status_changed(unsigned long vaddr, int npages,
-+					 bool enc)
- {
- #ifdef CONFIG_PARAVIRT
- 	unsigned long sz = npages << PAGE_SHIFT;
-@@ -270,7 +271,7 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
- 		kpte = lookup_address(vaddr, &level);
- 		if (!kpte || pte_none(*kpte)) {
- 			WARN_ONCE(1, "kpte lookup for vaddr\n");
--			return;
-+			return 0;
- 		}
- 
- 		pfn = pg_level_to_pfn(level, kpte, NULL);
-@@ -285,6 +286,7 @@ void notify_range_enc_status_changed(unsigned long vaddr, int npages, bool enc)
- 		vaddr = (vaddr & pmask) + psize;
- 	}
- #endif
-+	return 0;
- }
- 
- static void __init __set_clr_pte_enc(pte_t *kpte, int level, bool enc)
-@@ -392,7 +394,7 @@ static int __init early_set_memory_enc_dec(unsigned long vaddr,
- 
- 	ret = 0;
- 
--	notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
-+	amd_notify_range_enc_status_changed(start, PAGE_ALIGN(size) >> PAGE_SHIFT, enc);
- out:
- 	__flush_tlb_all();
- 	return ret;
-@@ -410,7 +412,7 @@ int __init early_set_memory_encrypted(unsigned long vaddr, unsigned long size)
- 
- void __init early_set_mem_enc_dec_hypercall(unsigned long vaddr, int npages, bool enc)
- {
--	notify_range_enc_status_changed(vaddr, npages, enc);
-+	amd_notify_range_enc_status_changed(vaddr, npages, enc);
- }
- 
- void __init mem_encrypt_free_decrypted_mem(void)
-diff --git a/arch/x86/mm/pat/set_memory.c b/arch/x86/mm/pat/set_memory.c
-index b4072115c8ef..06c65689d6fb 100644
---- a/arch/x86/mm/pat/set_memory.c
-+++ b/arch/x86/mm/pat/set_memory.c
-@@ -32,6 +32,7 @@
- #include <asm/set_memory.h>
- #include <asm/hyperv-tlfs.h>
- #include <asm/mshyperv.h>
 +#include <asm/tdx.h>
++
+ #ifdef CONFIG_KVM_GUEST
+ bool kvm_check_and_clear_guest_paused(void);
+ #else
+@@ -32,6 +34,10 @@ static inline bool kvm_check_and_clear_guest_paused(void)
+ static inline long kvm_hypercall0(unsigned int nr)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, 0, 0, 0, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr)
+@@ -42,6 +48,10 @@ static inline long kvm_hypercall0(unsigned int nr)
+ static inline long kvm_hypercall1(unsigned int nr, unsigned long p1)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, 0, 0, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1)
+@@ -53,6 +63,10 @@ static inline long kvm_hypercall2(unsigned int nr, unsigned long p1,
+ 				  unsigned long p2)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, p2, 0, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1), "c"(p2)
+@@ -64,6 +78,10 @@ static inline long kvm_hypercall3(unsigned int nr, unsigned long p1,
+ 				  unsigned long p2, unsigned long p3)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, p2, p3, 0);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3)
+@@ -76,6 +94,10 @@ static inline long kvm_hypercall4(unsigned int nr, unsigned long p1,
+ 				  unsigned long p4)
+ {
+ 	long ret;
++
++	if (cpu_feature_enabled(X86_FEATURE_TDX_GUEST))
++		return tdx_kvm_hypercall(nr, p1, p2, p3, p4);
++
+ 	asm volatile(KVM_HYPERCALL
+ 		     : "=a"(ret)
+ 		     : "a"(nr), "b"(p1), "c"(p2), "d"(p3), "S"(p4)
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 8013686192fd..4bcaadf21dc6 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -65,4 +65,15 @@ static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
  
- #include "../mm_internal.h"
+ #endif /* CONFIG_INTEL_TDX_GUEST */
  
-@@ -1983,6 +1984,27 @@ int set_memory_global(unsigned long addr, int numpages)
- 				    __pgprot(_PAGE_GLOBAL), 0);
++#if defined(CONFIG_KVM_GUEST) && defined(CONFIG_INTEL_TDX_GUEST)
++long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
++		       unsigned long p3, unsigned long p4);
++#else
++static inline long tdx_kvm_hypercall(unsigned int nr, unsigned long p1,
++				     unsigned long p2, unsigned long p3,
++				     unsigned long p4)
++{
++	return -ENODEV;
++}
++#endif /* CONFIG_INTEL_TDX_GUEST && CONFIG_KVM_GUEST */
+ #endif /* _ASM_X86_TDX_H */
+diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
+index ebb29dfb3ad4..a4e696f12666 100644
+--- a/arch/x86/kernel/tdx.c
++++ b/arch/x86/kernel/tdx.c
+@@ -44,6 +44,21 @@ static inline u64 _tdx_hypercall(u64 fn, u64 r12, u64 r13, u64 r14,
+ 	return out->r10;
  }
  
-+static pgprot_t pgprot_cc_mask(bool enc)
++#ifdef CONFIG_KVM_GUEST
++long tdx_kvm_hypercall(unsigned int nr, unsigned long p1, unsigned long p2,
++		       unsigned long p3, unsigned long p4)
 +{
-+	if (enc)
-+		return pgprot_encrypted(__pgprot(0));
-+	else
-+		return pgprot_decrypted(__pgprot(0));
++	struct tdx_hypercall_output out;
++
++	/* Non zero return value indicates buggy TDX module, so panic */
++	if (__tdx_hypercall(nr, p1, p2, p3, p4, 0, &out))
++		panic("KVM hypercall %u failed. Buggy TDX module?\n", nr);
++
++	return out.r10;
 +}
++EXPORT_SYMBOL_GPL(tdx_kvm_hypercall);
++#endif
 +
-+static int notify_range_enc_status_changed(unsigned long vaddr, int npages,
-+					   bool enc)
-+{
-+	if (cc_platform_has(CC_ATTR_GUEST_TDX)) {
-+		phys_addr_t start = __pa(vaddr);
-+		phys_addr_t end = __pa(vaddr + npages * PAGE_SIZE);
-+
-+		return tdx_hcall_request_gpa_type(start, end, enc);
-+	} else {
-+		return amd_notify_range_enc_status_changed(vaddr, npages, enc);
-+	}
-+}
-+
- /*
-  * __set_memory_enc_pgtable() is used for the hypervisors that get
-  * informed about "encryption" status via page tables.
-@@ -1999,8 +2021,10 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
- 	memset(&cpa, 0, sizeof(cpa));
- 	cpa.vaddr = &addr;
- 	cpa.numpages = numpages;
--	cpa.mask_set = enc ? __pgprot(_PAGE_ENC) : __pgprot(0);
--	cpa.mask_clr = enc ? __pgprot(0) : __pgprot(_PAGE_ENC);
-+
-+	cpa.mask_set = pgprot_cc_mask(enc);
-+	cpa.mask_clr = pgprot_cc_mask(!enc);
-+
- 	cpa.pgd = init_mm.pgd;
- 
- 	/* Must avoid aliasing mappings in the highmem code */
-@@ -2008,9 +2032,17 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
- 	vm_unmap_aliases();
- 
+ static u64 __cpuidle _tdx_halt(const bool irq_disabled, const bool do_sti)
+ {
  	/*
--	 * Before changing the encryption attribute, we need to flush caches.
-+	 * Before changing the encryption attribute, flush caches.
-+	 *
-+	 * For TDX, guest is responsible for flushing caches on private->shared
-+	 * transition. VMM is responsible for flushing on shared->private.
- 	 */
--	cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
-+	if (cc_platform_has(CC_ATTR_GUEST_TDX)) {
-+		if (!enc)
-+			cpa_flush(&cpa, 1);
-+	} else {
-+		cpa_flush(&cpa, !this_cpu_has(X86_FEATURE_SME_COHERENT));
-+	}
- 
- 	ret = __change_page_attr_set_clr(&cpa, 1);
- 
-@@ -2027,8 +2059,8 @@ static int __set_memory_enc_pgtable(unsigned long addr, int numpages, bool enc)
- 	 * Notify hypervisor that a given memory range is mapped encrypted
- 	 * or decrypted.
- 	 */
--	notify_range_enc_status_changed(addr, numpages, enc);
--
-+	if (!ret)
-+		ret =  notify_range_enc_status_changed(addr, numpages, enc);
- 	return ret;
- }
- 
-diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-index 691494bbaf5a..16c0ad925bf0 100644
---- a/include/linux/cc_platform.h
-+++ b/include/linux/cc_platform.h
-@@ -82,6 +82,15 @@ enum cc_attr {
- 	 * Examples include TDX Guest.
- 	 */
- 	CC_ATTR_HOTPLUG_DISABLED,
-+
-+	/**
-+	 * @CC_ATTR_GUEST_TDX: Trust Domain Extension Support
-+	 *
-+	 * The platform/OS is running as a TDX guest/virtual machine.
-+	 *
-+	 * Examples include Intel TDX.
-+	 */
-+	CC_ATTR_GUEST_TDX = 0x100,
- };
- 
- #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
 -- 
 2.34.1
 
