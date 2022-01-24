@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D70EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB82BC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573627AbiAXVpZ (ORCPT
+        id S1573646AbiAXVp2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60508 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446680AbiAXVJP (ORCPT
+        Mon, 24 Jan 2022 16:45:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446768AbiAXVJW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:15 -0500
+        Mon, 24 Jan 2022 16:09:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E68C02B87B;
+        Mon, 24 Jan 2022 12:08:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58639B8121C;
-        Mon, 24 Jan 2022 21:09:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87833C340E5;
-        Mon, 24 Jan 2022 21:09:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3C960FEA;
+        Mon, 24 Jan 2022 20:08:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92FD2C340E5;
+        Mon, 24 Jan 2022 20:08:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058547;
-        bh=51eI2EFraOmrDDmkbCFXQ04zdEEOQk0+6ysjBoTS5iI=;
+        s=korg; t=1643054923;
+        bh=m7+b9VcktRHgCdFUxLCkctlmFH1mbIqL1qYB29VHNVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O2nyTiGp7wG1cJAaQcd7T2p7Op12WS2lVicnogAqIWwbPkpVKbyb9CJQeAR87Fwg0
-         EbTG6UeO77MQQCrLp2NKukxMpj9nHXgXy1dSj8iGzKemrrdNYhvwIx+fCd/IbYzHB6
-         pGrjJez3HUYWQyu4b2wOgzDP6YgwQzDBMQrFEFVw=
+        b=m791pyJEKT/nvEqPY2/FtDAe867OPv3EhMYshJjNi4lqr6DTKociTRJH7FUJPzlJY
+         F6NbGYqZ5X/L1FWMEh2C05yerr9VVqE2GcrNdaAyKQlWtIzjyVzjNRE4auynDiM+7U
+         XMJ7Sc26FhC1bd6ydRdQPNXNH2TrewgmXTKhwRWM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0324/1039] wilc1000: fix double free error in probe()
-Date:   Mon, 24 Jan 2022 19:35:13 +0100
-Message-Id: <20220124184136.186749730@linuxfoundation.org>
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.10 548/563] arm64: dts: qcom: msm8996: drop not documented adreno properties
+Date:   Mon, 24 Jan 2022 19:45:13 +0100
+Message-Id: <20220124184043.386258247@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,78 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: David Heidelberg <david@ixit.cz>
 
-[ Upstream commit 4894edacfa93d7046bec4fc61fc402ac6a2ac9e8 ]
+commit c41910f257a22dc406c60d8826b4a3b5398003a3 upstream.
 
-Smatch complains that there is a double free in probe:
+These properties aren't documented nor implemented in the driver.
+Drop them.
 
-drivers/net/wireless/microchip/wilc1000/spi.c:186 wilc_bus_probe() error: double free of 'spi_priv'
-drivers/net/wireless/microchip/wilc1000/sdio.c:163 wilc_sdio_probe() error: double free of 'sdio_priv'
+Fixes warnings as:
+$ make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/display/msm/gpu.yaml
+...
+arch/arm64/boot/dts/qcom/msm8996-mtp.dt.yaml: gpu@b00000: 'qcom,gpu-quirk-fault-detect-mask', 'qcom,gpu-quirk-two-pass-use-wfi' do not match any of the regexes: 'pinctrl-[0-9]+'
+	From schema: Documentation/devicetree/bindings/display/msm/gpu.yaml
+...
 
-The problem is that wilc_netdev_cleanup() function frees "wilc->bus_data".
-That's confusing and a layering violation.  Leave the frees in probe(),
-delete the free in wilc_netdev_cleanup(), and add some new frees to the
-remove() functions.
-
-Fixes: dc8b338f3bcd ("wilc1000: use goto labels on error path")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211217150311.GC16611@kili
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 69cc3114ab0f ("arm64: dts: Add Adreno GPU definitions")
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211030100413.28370-1-david@ixit.cz
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/microchip/wilc1000/netdev.c | 1 -
- drivers/net/wireless/microchip/wilc1000/sdio.c   | 2 ++
- drivers/net/wireless/microchip/wilc1000/spi.c    | 2 ++
- 3 files changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/msm8996.dtsi |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index 690572e01a2a7..b5fe2a7cd8dcc 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.c
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -905,7 +905,6 @@ void wilc_netdev_cleanup(struct wilc *wilc)
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -645,9 +645,6 @@
+ 			nvmem-cells = <&gpu_speed_bin>;
+ 			nvmem-cell-names = "speed_bin";
  
- 	wilc_wlan_cfg_deinit(wilc);
- 	wlan_deinit_locks(wilc);
--	kfree(wilc->bus_data);
- 	wiphy_unregister(wilc->wiphy);
- 	wiphy_free(wilc->wiphy);
- }
-diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c b/drivers/net/wireless/microchip/wilc1000/sdio.c
-index 26ebf66643425..ec595dbd89592 100644
---- a/drivers/net/wireless/microchip/wilc1000/sdio.c
-+++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
-@@ -167,9 +167,11 @@ free:
- static void wilc_sdio_remove(struct sdio_func *func)
- {
- 	struct wilc *wilc = sdio_get_drvdata(func);
-+	struct wilc_sdio *sdio_priv = wilc->bus_data;
+-			qcom,gpu-quirk-two-pass-use-wfi;
+-			qcom,gpu-quirk-fault-detect-mask;
+-
+ 			operating-points-v2 = <&gpu_opp_table>;
  
- 	clk_disable_unprepare(wilc->rtc_clk);
- 	wilc_netdev_cleanup(wilc);
-+	kfree(sdio_priv);
- }
- 
- static int wilc_sdio_reset(struct wilc *wilc)
-diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
-index 640850f989dd9..d8e893f4dab4f 100644
---- a/drivers/net/wireless/microchip/wilc1000/spi.c
-+++ b/drivers/net/wireless/microchip/wilc1000/spi.c
-@@ -190,9 +190,11 @@ free:
- static int wilc_bus_remove(struct spi_device *spi)
- {
- 	struct wilc *wilc = spi_get_drvdata(spi);
-+	struct wilc_spi *spi_priv = wilc->bus_data;
- 
- 	clk_disable_unprepare(wilc->rtc_clk);
- 	wilc_netdev_cleanup(wilc);
-+	kfree(spi_priv);
- 
- 	return 0;
- }
--- 
-2.34.1
-
+ 			gpu_opp_table: opp-table {
 
 
