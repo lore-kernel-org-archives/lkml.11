@@ -2,176 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAAFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236911AbiAXJ61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:58:27 -0500
-Received: from mga03.intel.com ([134.134.136.65]:22907 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236891AbiAXJ6X (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:58:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643018303; x=1674554303;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=pFHG41JM0nvv6a4TItM3bNI8xvbIjo4y2cQ0uX8UmyQ=;
-  b=d6kz1kOdtC+tKNqfYsG7M80n/WRFePQm/zU1EBt2Cvst4Cm0sp3aZj60
-   /zTRDwv09Qz5HHJEEZQgSBU8YiY1juW1kxiRAkd2CLVFS48PVnyOybOrI
-   019OBfQ+andq7HtRvDIFLiiIZxpoZrrZTGT9CeHD27gmh7LlU1t0DPyaz
-   sD4xeN58qCvjOdSqCtbtC9+iHY4opLpn8/dmZ59Eb3JNYWfpEwx7CdYsg
-   zT6qz7xHbFwKQWp7SRyaLvlJpD3Kdl0cZZskKdrZzVLf5pNLjzSmFOl3X
-   lZM+9owpsqSng0ECSgAyRVbB9pQ2j5Tryc/Q54GHbDiiL+9vJBwuo7QUJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245955534"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="245955534"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 01:58:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="695368535"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by orsmga005.jf.intel.com with ESMTP; 24 Jan 2022 01:58:21 -0800
-Received: from fmsmsx608.amr.corp.intel.com (10.18.126.88) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 24 Jan 2022 01:58:21 -0800
-Received: from fmsmsx604.amr.corp.intel.com (10.18.126.84) by
- fmsmsx608.amr.corp.intel.com (10.18.126.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 24 Jan 2022 01:58:20 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Mon, 24 Jan 2022 01:58:20 -0800
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (104.47.70.107)
- by edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Mon, 24 Jan 2022 01:58:20 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gtb3xApDkGBPuBQVnTgJq9+bRdfAlb3kFJ+gumTz4O7Q5XKrhtpWhsIJfmKpDfsGecnzRvCRbv/PC8DA16V/S2OVcoxLqRPVZJAPhbyh6VFM9oZos8fezHRB0eH16GTVLRqECqJZq9E3KlsNXaf8ByPh/9+/6g5Kslqxxpi7FRiuDo818P6jMRz5Z9kUaOVOGj5z0r8P2z6ws/jfF33YaYsnSfk1yT/cb8RtzYCFxGaxS8hXmrAmFx7mmMUlVoUVlkcIDNG6RwGTlLLWR24d7RPe/zcLYJuBxynucc/xPgfjdMlJx+GCmOI3YOJ/NqOVEd1zz+ZxyE2w0YcyIhnUyA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=um0cfd+Dp6gHJ/rPGPUR90bXqhdqiMr0cyTORRjUz2E=;
- b=P10kSmGXS64FQ/ri7gAgbsjiyVTll7sBS9xqUxzNgftFlSR/w26J3CtpR25maGDB2PczlUNQ87EDaet3pnjC3fmebY3WHCmYIVmzxjr1+sHBHMjTHRWCxT3pBQwXacXgqRgNhSdfWCd7YCx1SndAtYgFRGRScMz74v4oYXaAkbxkJXyPludmBSKlfXho/s4sU71CsmXHnuOLnzIzvuGDTSJeJb6O/zOnFeI19xV2MTYv90v8T4kLKaUkiFqInYF5NllL2REri3snqi1ZlwrR9LsbFRlFm91K+8Oug5Ucg5wRPGciY8xaNRQGjivqOAF6fKkUXO7ZuXdDx4XMlgjdEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com (2603:10b6:408:135::18)
- by CH2PR11MB4375.namprd11.prod.outlook.com (2603:10b6:610:47::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Mon, 24 Jan
- 2022 09:58:18 +0000
-Received: from BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e46b:a312:2f85:76dc]) by BN9PR11MB5276.namprd11.prod.outlook.com
- ([fe80::e46b:a312:2f85:76dc%5]) with mapi id 15.20.4909.017; Mon, 24 Jan 2022
- 09:58:18 +0000
-From:   "Tian, Kevin" <kevin.tian@intel.com>
-To:     Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "Jason Gunthorpe" <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        "Raj, Ashok" <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>
-CC:     Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Liu, Yi L" <yi.l.liu@intel.com>,
-        "Pan, Jacob jun" <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        "iommu@lists.linux-foundation.org" <iommu@lists.linux-foundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
-Thread-Topic: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
-Thread-Index: AQHYEPHVdqbh5j+v9U2GKt1N4SJ4Aqxx7Uag
-Date:   Mon, 24 Jan 2022 09:58:18 +0000
-Message-ID: <BN9PR11MB5276BE30652988271878E78C8C5E9@BN9PR11MB5276.namprd11.prod.outlook.com>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-8-baolu.lu@linux.intel.com>
-In-Reply-To: <20220124071103.2097118-8-baolu.lu@linux.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a1fd1ea6-66f2-46ae-3985-08d9df200c2b
-x-ms-traffictypediagnostic: CH2PR11MB4375:EE_
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-microsoft-antispam-prvs: <CH2PR11MB43750DE5083B3C0B7869D5198C5E9@CH2PR11MB4375.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: hwFUVrwp9ugH6LKJAS1e1z1/SyM828cr1OAU2f5XH1Fx7fDIruqKvg/QKRgyoVJ0rNCOApJC7bnqd9zq2bgwGr6ulrGE+dEW0iDwojz5UPZ+GGDZGA7Q5ikcQ1R1CmoKmyjgIG/NAGMWvRUSrtIIjG/RRNFpPXwHv9zbhdx2SX92IUOw4jXjcKCR7miYTBHvcpZRd6+5rRyBuVIgqxPWujtrLIueHvMoILRZKdH4Gc4+j7zjFCblE2pufFKO9eP5ldCgsmNGWYVZ3otvtmMV3uxv4jzBGLsFOgj/8PXlLr7SBEn2yo448OOx8HGQ/Tb35qAomp1KSAX6c6Y4jCJ7llnaCUKFekyLK92zIvV1mEGUuU/Pz/xhtbejnWFCBX1WqRk1lg05Ws6pOau3fTgf5YUJUHWxgaS22OEUGNWcMuRAqtUJ3ayUfhcD/A6r6ttPm7NHcIoLijQ1dPPhkafkuqMI8yCtfVXV9W2o7oboDG4k988fYAHt0lcVdGlvIhYJxM6CwBlM31lpITo1sVFfFE985pFI/GnFXTqJjjs+rs6ZNRblUpwHFHWPn5oiTJoiGyWf4tiLGYTDDWBs/UfVBTtwbBE/xz9MccpQLgCberfbawnqbP5XdM5p+Q1BoDZE/dvjOw0A8nB/bmHd+UFIteXccF5mID2LPp2KbThthIv9XV85Z2thmSivSDjofp6ADgDSQsY1lCyftgBVfGjGIw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN9PR11MB5276.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(38070700005)(82960400001)(33656002)(71200400001)(54906003)(6506007)(9686003)(7696005)(26005)(4326008)(8676002)(7416002)(38100700002)(110136005)(316002)(4744005)(8936002)(52536014)(5660300002)(83380400001)(76116006)(2906002)(66556008)(66446008)(66946007)(66476007)(64756008)(508600001)(122000001)(86362001)(186003)(55016003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TrL4L1jbmZCj1IB82GfSzZXcx4BQZHqS1X+gX4uOAlmr1BNYcRCjkZ5laRob?=
- =?us-ascii?Q?GLZLPDR8TAj6tY4tbRoY6ZmJ1kAqoG8CIbMNRsH8O1XMhD3EXMRBxbDJGnIC?=
- =?us-ascii?Q?DqENXMqoxN9PW8ZyO1SAd4Z/SxNh5pncjVyiRLl2G0s8JWdpl2JifiJuX3Jp?=
- =?us-ascii?Q?aidvn/+7G/orhqkIUr4SivFil5vpG5mwNuBqNjcz4pcNQSWqog2QWf0hGrQZ?=
- =?us-ascii?Q?HnBt95CUm+YPCsT9Jmmt2wZC/UZJBTEGyNlFffzH41F85nsEJy0fcErlWVRO?=
- =?us-ascii?Q?NWI61uq1RQAQKNJWf43sbu0aUIkx2ndCupkoyUqJC/fhUeHecipi/COFJvtB?=
- =?us-ascii?Q?yt4BfaCml+Vqj8630pU6/v4GfecpZV48rWCZFNh8KkvlRWdfSQAx9LONerXz?=
- =?us-ascii?Q?nXIVl4gnHuhFAyIVAxzmuHDjr7O9k0QUWvCgljXc3itOOGEmOvT5uv6wY7zu?=
- =?us-ascii?Q?JUFClzvIvT1BI5qYoa8oJMrX8cxlwROdfOSXilwxL+QQjMbFUyfNs97AtJo9?=
- =?us-ascii?Q?5O4wYnL9hf/ye/vp4z0W1BaRdYPKhAPsfLgSnHcvjsQC/i9tUbydgx28rBiL?=
- =?us-ascii?Q?4+sWN/TQgOeHvC0TAwILhOown4fJvd9gP16qDYjk7rYuzvFpHU9yR8g8FZO5?=
- =?us-ascii?Q?bUp8289NNqCS+w6WU1dTDV6FEQ/orvptyi0UkFLVYAmAt07StNJtr1yqGw8V?=
- =?us-ascii?Q?Era8W7D35PHPqsRlilG3cWDmS/0OSqPWjen5VN9mIZKCl+Sgnh3EFfOUCWpl?=
- =?us-ascii?Q?X458/9g4vlBxYusn2xmisJFvQsGyv3+tjMYSPM4D+uz/k+MC0IM5wgpI5Ekt?=
- =?us-ascii?Q?30Q/FZt7qCg3sVSLNC0//n4yTkdpBzbWbEjs2UbIiS+Hl6v8NlUTOP3FjN/W?=
- =?us-ascii?Q?zKFs+HqQ/m+Czk2JSj++noEwDpiu5cw7LmAq4AR48olx/RG8jpr7NMw4KVNq?=
- =?us-ascii?Q?WuO3A7iRxKqzcMqemgjBU+gSLXycQmSxwQJ30REWPHv6IqbUaReABmjxmgED?=
- =?us-ascii?Q?JkoCHJ0NXSYK6h405FHyciAK93YIUiGAXKyHOXPn0Dje4TeD5lD4gAlvARVY?=
- =?us-ascii?Q?MpylASdkWdJP6QuTtYQprg0ie/CK6yUEiq9YKdG3s4agsGPzljmSKpQanOo9?=
- =?us-ascii?Q?UFwE8QFZMb+z25CEN1pAYlezOtPt172Eeza6k/70InDeF3rGle2gkEkloFxz?=
- =?us-ascii?Q?vA5XGfDCLz5v3xc8Ms/+AJYhP7RwX5I42m8uIHedjog0SeHYP5ioNOxFfC6D?=
- =?us-ascii?Q?mgdFyafs0cV/zMjGKHB7U37mEK9w8R0eWRtgb93oj475eiYXkuyNEmdAD77V?=
- =?us-ascii?Q?iRRT3doOkaXYz5a/LP22vqXItjUIAwUFh6a9+PCgrUzjlC+olIR6M6tFU1iN?=
- =?us-ascii?Q?xVNJhSS9vM34dCwGef0Y9isLhWQ0h5TWI+ZpLypH68o/IgFmWC7shvf8Hivj?=
- =?us-ascii?Q?ma+IKNxg1d/j/6W17POgif6oHHiaMfLn4ipvNorx7/1vG7pflX3GHX2JVrpM?=
- =?us-ascii?Q?1JUYRXf7c4V1NzC5IktCoC9KKyxFJmoQ6zdJe3TJQ51HYy36OMRoUvECXRjj?=
- =?us-ascii?Q?qXfFKq0B8vDNHznoh8fzac3J7PC0NYrXwLRUTOQ7HvoluRVKcqjh5rTxDRYQ?=
- =?us-ascii?Q?QhFKQkv//8mGeNeF6+7sa48=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S236916AbiAXJ7x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:59:53 -0500
+Received: from perceval.ideasonboard.com ([213.167.242.64]:51508 "EHLO
+        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236758AbiAXJ7v (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 04:59:51 -0500
+Received: from pendragon.ideasonboard.com (cpc89244-aztw30-2-0-cust3082.18-1.cable.virginm.net [86.31.172.11])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id E80718E7;
+        Mon, 24 Jan 2022 10:59:49 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1643018390;
+        bh=zikyjJ6eavrl7X8+8F5Jt2Gv2ZdrXPqzPkYSSY0eaaM=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=C1rIlJzCSLnS5M5A30ZSdfU1RPxjQHqc6t/s0i6doKpmJw2aPJHM+3qHalmUZyW7+
+         f1o/4+GoTVP0m+sFp2zPCpc8EdXDzEu1dqVzfM6LX8E3q19qSHE1GByycJsa67dTfj
+         rcTQBXV5nXB9sUv6iBrFOF56riHPYFEIJVkVv9GY=
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN9PR11MB5276.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a1fd1ea6-66f2-46ae-3985-08d9df200c2b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2022 09:58:18.4948
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1cs42OTR/EKlqpNF/omUW4KV3g79fFljV13w8BKqoLQYXsV5hNRKBMJDipVpheaM6ug461yk/DqIGeSAs+jVcg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR11MB4375
-X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220120081530.799399-1-nikita.yoush@cogentembedded.com>
+References: <20220120081530.799399-1-nikita.yoush@cogentembedded.com>
+Subject: Re: [PATCH v2] media: vsp1: mask interrupts before enabling
+From:   Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Cc:     linux-media@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+Date:   Mon, 24 Jan 2022 09:59:47 +0000
+Message-ID: <164301838774.10801.3973367832884627893@Monstersaurus>
+User-Agent: alot/0.10
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> From: Lu Baolu <baolu.lu@linux.intel.com>
-> Sent: Monday, January 24, 2022 3:11 PM
-> +/**
-> + * struct domain_ops - per-domain ops
-> + * @attach_dev: attach an iommu domain to a device
-> + * @detach_dev: detach an iommu domain from a device
+Hi Nikita,
 
-What is the criteria about whether an op should be iommu_ops or domain_ops
-when it requires both domain and device pointers like above two (and future
-PASID-based attach)?
+Thank you for the v2,
 
-Other examples include:
-	@apply_resv_region
-	@is_attach_deferred
+Quoting Nikita Yushchenko (2022-01-20 08:15:30)
+> VSP hardware could be used (e.g. by the bootloader) before driver load,
+> and some interrupts could be left in enabled and pending state. In this
+> case, setting up VSP interrupt handler without masking interrupts before
+> causes interrupt handler to be immediately called (and crash due to null
+> vsp->info dereference).
+>=20
+> Fix that by explicitly masking all interrupts before setting the interrupt
+> handler. To do so, have to set the interrupt handler later, after hw
+> revision is already detected and number of interrupts to mask gets
+> known.
+>=20
+> Based on patch by Koji Matsuoka <koji.matsuoka.xm@renesas.com> included
+> in the Renesas BSP kernel.
+>=20
+> Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
+> ---
+> v1: https://lore.kernel.org/all/20210926155356.23861-1-nikita.yoush@cogen=
+tembedded.com/
+> Changes since v1:
+> - move interrupt masking to a dedicated routine
+> - update comments and patch description
+>=20
+> > I think I would rather see the code to reset them done in
+> > vsp1_reset_wpf(), rather than in probe directly as that is what we are
+> > doing, and is I believe already in the call path.
+>=20
+> First, vsp1_reset_wpf() does not get called on driver early init.
+>=20
+> It is normally called from within vsp1_device_get() when device is powered
+> on, but vsp1_probe() calls vsp1_device_get() when vsp1->info is not yet s=
+et,
+> and in this case call from vsp1_pm_runtime_resume() to vsp1_device_init()=
+=20
+> is skipped.
 
-Thanks
-Kevin
+aha, I seem to have a long mail to you stuck in my drafts that didn't
+make it out to reply to your last mail. I'm sorry about that, but it
+looks like we're progressing anyway.
+
+But in that draft, I agreed that yes, we have catch 22 around setting
+that ->info, as we need to power up to determine the specific model.
+
+> I've tried to add extra vsp1_device_put() / vsp1_device_get() calls to the
+> probe path, and dumped related registers in vsp1_pm_runtime_resume() after
+> return from vsp1_device_init(), and got
+>=20
+> [    2.477315][    T1] vsp1 fea28000.vsp: VI6_DISP_IRQ_ENB(0) =3D 0x00000=
+100
+> [    2.483933][    T1] vsp1 fea28000.vsp: VI6_DISP_IRQ_STA(0) =3D 0x00000=
+121
+> [    2.490556][    T1] vsp1 fea28000.vsp: VI6_WPF_IRQ_ENB(0) =3D 0x000100=
+02
+> [    2.497088][    T1] vsp1 fea28000.vsp: VI6_WPF_IRQ_STA(0) =3D 0x000100=
+03
+> [    2.503618][    T1] vsp1 fea28000.vsp: VI6_WPF_IRQ_ENB(1) =3D 0x000000=
+00
+> [    2.510148][    T1] vsp1 fea28000.vsp: VI6_WPF_IRQ_STA(1) =3D 0x000000=
+00
+>=20
+> which shows that
+> (1) WPF interrupt is not cleared by WPF reset,
+> (2) also DISP interrupt is enabled and pending, and driver does not seem
+> to control it at all.
+>=20
+> Given that, I think it is safer to explicitly mask all interrupts before
+> setting the handler. I've moved interrupt masking to a separate routine.
+
+Thankyou, at least being a separate function makes it a bit cleaner and
+clear that it's not specifically a part of probe() but something we act
+upon to clean up.
+
+
+> > (But I'm reallly ... reallly concerned that the hardware is not really
+> > getting reset when it should, and that might merit some further
+> > investigation).
+>=20
+> The documentation for WFP reset bit has notes that under some situations,
+> reset is postponed for a long time, and reported via interrupt. I'm not
+> sure what exactly goes on there, but I'd assume that such logic implies
+> that interrupt subsystem is not reset.
+>=20
+> I agree that not having exact understand of hardware state is not good.
+> But, given that no signs of misfunction have been detected for a long time
+> (the patch was in vendor BSP for years), I think we can assume it is
+> "safe enough".
+
+Yes, well I think this is adding the safety by re-asserting our
+assumptions on probe time. Which sounds like a good thing given the
+circumstances.
+
+
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+
+>  drivers/media/platform/vsp1/vsp1_drv.c | 34 ++++++++++++++++++++------
+>  1 file changed, 26 insertions(+), 8 deletions(-)
+>=20
+> diff --git a/drivers/media/platform/vsp1/vsp1_drv.c b/drivers/media/platf=
+orm/vsp1/vsp1_drv.c
+> index c9044785b903..92a95e2c21c7 100644
+> --- a/drivers/media/platform/vsp1/vsp1_drv.c
+> +++ b/drivers/media/platform/vsp1/vsp1_drv.c
+> @@ -550,6 +550,16 @@ static int vsp1_device_init(struct vsp1_device *vsp1)
+>         return 0;
+>  }
+> =20
+> +static void vsp1_mask_all_interrupts(struct vsp1_device *vsp1)
+> +{
+> +       int i;
+> +
+> +       for (i =3D 0; i < vsp1->info->lif_count; ++i)
+> +               vsp1_write(vsp1, VI6_DISP_IRQ_ENB(i), 0);
+> +       for (i =3D 0; i < vsp1->info->wpf_count; ++i)
+> +               vsp1_write(vsp1, VI6_WPF_IRQ_ENB(i), 0);
+> +}
+> +
+>  /*
+>   * vsp1_device_get - Acquire the VSP1 device
+>   *
+> @@ -819,13 +829,6 @@ static int vsp1_probe(struct platform_device *pdev)
+>                 return -EINVAL;
+>         }
+> =20
+> -       ret =3D devm_request_irq(&pdev->dev, irq->start, vsp1_irq_handler,
+> -                             IRQF_SHARED, dev_name(&pdev->dev), vsp1);
+> -       if (ret < 0) {
+> -               dev_err(&pdev->dev, "failed to request IRQ\n");
+> -               return ret;
+> -       }
+> -
+>         /* FCP (optional). */
+>         fcp_node =3D of_parse_phandle(pdev->dev.of_node, "renesas,fcp", 0=
+);
+>         if (fcp_node) {
+> @@ -855,7 +858,6 @@ static int vsp1_probe(struct platform_device *pdev)
+>                 goto done;
+> =20
+>         vsp1->version =3D vsp1_read(vsp1, VI6_IP_VERSION);
+> -       vsp1_device_put(vsp1);
+> =20
+>         for (i =3D 0; i < ARRAY_SIZE(vsp1_device_infos); ++i) {
+>                 if ((vsp1->version & VI6_IP_VERSION_MODEL_MASK) =3D=3D
+> @@ -868,12 +870,28 @@ static int vsp1_probe(struct platform_device *pdev)
+>         if (!vsp1->info) {
+>                 dev_err(&pdev->dev, "unsupported IP version 0x%08x\n",
+>                         vsp1->version);
+> +               vsp1_device_put(vsp1);
+>                 ret =3D -ENXIO;
+>                 goto done;
+>         }
+> =20
+>         dev_dbg(&pdev->dev, "IP version 0x%08x\n", vsp1->version);
+> =20
+> +       /*
+> +        * Previous use of the hardware (e.g. by the bootloader) could le=
+ave
+> +        * some interrupts enabled and pending.
+> +        */
+> +       vsp1_mask_all_interrupts(vsp1);
+> +
+> +       vsp1_device_put(vsp1);
+> +
+> +       ret =3D devm_request_irq(&pdev->dev, irq->start, vsp1_irq_handler,
+> +                              IRQF_SHARED, dev_name(&pdev->dev), vsp1);
+> +       if (ret < 0) {
+> +               dev_err(&pdev->dev, "failed to request IRQ\n");
+> +               goto done;
+> +       }
+> +
+>         /* Instantiate entities. */
+>         ret =3D vsp1_create_entities(vsp1);
+>         if (ret < 0) {
+> --=20
+> 2.30.2
+>
