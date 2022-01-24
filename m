@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54ACDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF681C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:19:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345104AbiAXTTP (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:19:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35354 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346740AbiAXTJ1 (ORCPT
+        id S231466AbiAXTTW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:19:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36936 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347384AbiAXTKV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:09:27 -0500
+        Mon, 24 Jan 2022 14:10:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69B1D60917;
-        Mon, 24 Jan 2022 19:09:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FE0EC340E5;
-        Mon, 24 Jan 2022 19:09:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCC9EB8122A;
+        Mon, 24 Jan 2022 19:10:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C1E6C340E7;
+        Mon, 24 Jan 2022 19:10:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051365;
-        bh=yNneMOoQvQQmJG7O7bWEOtcq/cm7Q7vMIAyMICcbcwk=;
+        s=korg; t=1643051418;
+        bh=WGNVpAlelXoXa7YIBX5GGnhU0Tj3kAZDb3k7l8hJze8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GUL0Rb1HHBhFrYHWRlwEjnDu1/H5qD+jxgSTDiBJbjBQhFbLqsnYvKedfvK93TpZR
-         pr6uu9oO/hScMJYg6fE3WiTpT6aa2W4EaTHhl/QMg0vz90pZIj8bKi7nsLc6rC6SQM
-         xGHfj8lDEzMfeyM3aj42dB+MvjxAjwZBgcxU8lsU=
+        b=mpmGC/LKDX1fylYeEfjq2Xz92WX7JuNvWp/KXj9ei2+FmfdCq1tZTOy+MuX5wcYyL
+         6k1Rj7Amm7dR+iWTxQt465nP3XPJSgJ+mOhMeEzhFfVypBDhhWfJgHukGaK1X+gR/o
+         mgmC+tTEuX2H3yusdxdbL93iOL35IntI4mZmrdnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 137/186] i2c: i801: Dont silently correct invalid transfer size
-Date:   Mon, 24 Jan 2022 19:43:32 +0100
-Message-Id: <20220124183941.512341856@linuxfoundation.org>
+        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
+        Lukas Czerner <lczerner@redhat.com>, stable@kernel.org
+Subject: [PATCH 4.14 156/186] ext4: dont use the orphan list when migrating an inode
+Date:   Mon, 24 Jan 2022 19:43:51 +0100
+Message-Id: <20220124183942.116336411@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,63 +45,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Theodore Ts'o <tytso@mit.edu>
 
-[ Upstream commit effa453168a7eeb8a562ff4edc1dbf9067360a61 ]
+commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055 upstream.
 
-If an invalid block size is provided, reject it instead of silently
-changing it to a supported value. Especially critical I see the case of
-a write transfer with block length 0. In this case we have no guarantee
-that the byte we would write is valid. When silently reducing a read to
-32 bytes then we don't return an error and the caller may falsely
-assume that we returned the full requested data.
+We probably want to remove the indirect block to extents migration
+feature after a deprecation window, but until then, let's fix a
+potential data loss problem caused by the fact that we put the
+tmp_inode on the orphan list.  In the unlikely case where we crash and
+do a journal recovery, the data blocks belonging to the inode being
+migrated are also represented in the tmp_inode on the orphan list ---
+and so its data blocks will get marked unallocated, and available for
+reuse.
 
-If this change should break any (broken) caller, then I think we should
-fix the caller.
+Instead, stop putting the tmp_inode on the oprhan list.  So in the
+case where we crash while migrating the inode, we'll leak an inode,
+which is not a disaster.  It will be easily fixed the next time we run
+fsck, and it's better than potentially having blocks getting claimed
+by two different files, and losing data as a result.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-i801.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ fs/ext4/migrate.c |   19 ++++---------------
+ 1 file changed, 4 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index 7b1654b0fb6db..c817e3d4b52b8 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -769,6 +769,11 @@ static int i801_block_transaction(struct i801_priv *priv,
- 	int result = 0;
- 	unsigned char hostc;
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -462,12 +462,12 @@ int ext4_ext_migrate(struct inode *inode
+ 	percpu_down_write(&sbi->s_writepages_rwsem);
  
-+	if (read_write == I2C_SMBUS_READ && command == I2C_SMBUS_BLOCK_DATA)
-+		data->block[0] = I2C_SMBUS_BLOCK_MAX;
-+	else if (data->block[0] < 1 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
-+		return -EPROTO;
-+
- 	if (command == I2C_SMBUS_I2C_BLOCK_DATA) {
- 		if (read_write == I2C_SMBUS_WRITE) {
- 			/* set I2C_EN bit in configuration register */
-@@ -782,16 +787,6 @@ static int i801_block_transaction(struct i801_priv *priv,
- 		}
+ 	/*
+-	 * Worst case we can touch the allocation bitmaps, a bgd
+-	 * block, and a block to link in the orphan list.  We do need
+-	 * need to worry about credits for modifying the quota inode.
++	 * Worst case we can touch the allocation bitmaps and a block
++	 * group descriptor block.  We do need need to worry about
++	 * credits for modifying the quota inode.
+ 	 */
+ 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE,
+-		4 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
++		3 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
+ 
+ 	if (IS_ERR(handle)) {
+ 		retval = PTR_ERR(handle);
+@@ -488,10 +488,6 @@ int ext4_ext_migrate(struct inode *inode
+ 	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
+ 	 * is so that the metadata blocks will have the correct checksum after
+ 	 * the migration.
+-	 *
+-	 * Note however that, if a crash occurs during the migration process,
+-	 * the recovery process is broken because the tmp_inode checksums will
+-	 * be wrong and the orphans cleanup will fail.
+ 	 */
+ 	ei = EXT4_I(inode);
+ 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+@@ -503,7 +499,6 @@ int ext4_ext_migrate(struct inode *inode
+ 	clear_nlink(tmp_inode);
+ 
+ 	ext4_ext_tree_init(handle, tmp_inode);
+-	ext4_orphan_add(handle, tmp_inode);
+ 	ext4_journal_stop(handle);
+ 
+ 	/*
+@@ -528,12 +523,6 @@ int ext4_ext_migrate(struct inode *inode
+ 
+ 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
+ 	if (IS_ERR(handle)) {
+-		/*
+-		 * It is impossible to update on-disk structures without
+-		 * a handle, so just rollback in-core changes and live other
+-		 * work to orphan_list_cleanup()
+-		 */
+-		ext4_orphan_del(NULL, tmp_inode);
+ 		retval = PTR_ERR(handle);
+ 		goto out_tmp_inode;
  	}
- 
--	if (read_write == I2C_SMBUS_WRITE
--	 || command == I2C_SMBUS_I2C_BLOCK_DATA) {
--		if (data->block[0] < 1)
--			data->block[0] = 1;
--		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
--			data->block[0] = I2C_SMBUS_BLOCK_MAX;
--	} else {
--		data->block[0] = 32;	/* max for SMBus block reads */
--	}
--
- 	/* Experience has shown that the block buffer can only be used for
- 	   SMBus (not I2C) block transactions, even though the datasheet
- 	   doesn't mention this limitation. */
--- 
-2.34.1
-
 
 
