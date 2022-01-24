@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 759FDC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94827C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381952AbiAXUY6 (ORCPT
+        id S1382094AbiAXUZL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:24:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60078 "EHLO
+        Mon, 24 Jan 2022 15:25:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377242AbiAXUFL (ORCPT
+        with ESMTP id S1377247AbiAXUFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:05:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942EAC061361;
-        Mon, 24 Jan 2022 11:31:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75D2CC06135D;
+        Mon, 24 Jan 2022 11:31:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35645614BE;
-        Mon, 24 Jan 2022 19:31:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01CCFC340E5;
-        Mon, 24 Jan 2022 19:31:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1443260917;
+        Mon, 24 Jan 2022 19:31:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE52FC340E5;
+        Mon, 24 Jan 2022 19:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052676;
-        bh=0KD1eiKFQZ+15lvlwGjcpA2CZ9608oocxiXbhgHw+rM=;
+        s=korg; t=1643052661;
+        bh=QIyd7AmQlyQIzFlmmWqrWVw2aKTPMcJgj11z4fSzelI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vv/cFJ0Co0+aD+XeOLEpIF0qYJEDS6P2V5xFB6HSKliPvfkxhekNRNWhAnaxt/I+d
-         uU1JNqtY81HMxT+WRgiE5sHcO08XZinZ2dKuaSMSjG1Z5CRUIk4bpa2gvYiivHjJCY
-         e0qD17fWqHIrlIyDtDoNkiBcFKLX9QcP4N971bQs=
+        b=WV2V45wl4kRDANKFjenzAB8hocD8El1rmI/BMFpN8YukKGhGIRoSsnKgTOpAEYciU
+         agLcExrFdk4e4mMQ6DxbSGztr5FxbVR7/ExnasXssqFCE5ZfcV0nDVDy5XsQc1Zbys
+         sgoIsURtvJjVVVCUK5q9hFxnOTQP3ZM9O63+bc7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 131/320] char/mwave: Adjust io port register size
-Date:   Mon, 24 Jan 2022 19:41:55 +0100
-Message-Id: <20220124183958.124282838@linuxfoundation.org>
+Subject: [PATCH 5.4 100/320] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
+Date:   Mon, 24 Jan 2022 19:41:24 +0100
+Message-Id: <20220124183957.128914925@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,49 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
+[ Upstream commit 977d2e7c63c3d04d07ba340b39987742e3241554 ]
 
-Using MKWORD() on a byte-sized variable results in OOB read. Expand the
-size of the reserved area so both MKWORD and MKBYTE continue to work
-without overflow. Silences this warning on a -Warray-bounds build:
+In nonstatic_find_mem_region(), pcmcia_make_resource() is assigned to
+res and used in pci_bus_alloc_resource(). There a dereference of res
+in pci_bus_alloc_resource(), which could lead to a NULL pointer
+dereference on failure of pcmcia_make_resource().
 
-drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
-  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
-      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
-  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
-      |                                        ^~~~~
-drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
-  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
-      |                                         ^~~~~~
-drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
-  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
-      |                               ^~~~~~~~~~~~~
+Fix this bug by adding a check of res.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/mwave/3780i.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pcmcia/rsrc_nonstatic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
-index 9ccb6b270b071..95164246afd1a 100644
---- a/drivers/char/mwave/3780i.h
-+++ b/drivers/char/mwave/3780i.h
-@@ -68,7 +68,7 @@ typedef struct {
- 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
- 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
- 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
--	unsigned char Reserved:5;	/* 0: Reserved */
-+	unsigned short Reserved:13;	/* 0: Reserved */
- } DSP_ISA_SLAVE_CONTROL;
+diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
+index 03ae998675e87..3a512513cb32f 100644
+--- a/drivers/pcmcia/rsrc_nonstatic.c
++++ b/drivers/pcmcia/rsrc_nonstatic.c
+@@ -812,6 +812,9 @@ static struct resource *nonstatic_find_mem_region(u_long base, u_long num,
+ 	unsigned long min, max;
+ 	int ret, i, j;
  
++	if (!res)
++		return NULL;
++
+ 	low = low || !(s->features & SS_CAP_PAGE_REGS);
  
+ 	data.mask = align - 1;
 -- 
 2.34.1
 
