@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DF2C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A6C8C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379813AbiAXUPF (ORCPT
+        id S1379872AbiAXUPN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:15:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41894 "EHLO
+        Mon, 24 Jan 2022 15:15:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42064 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358277AbiAXTyr (ORCPT
+        with ESMTP id S1358435AbiAXTzM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:54:47 -0500
+        Mon, 24 Jan 2022 14:55:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57CCBB8122F;
-        Mon, 24 Jan 2022 19:54:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE7FC340E5;
-        Mon, 24 Jan 2022 19:54:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1DE37B81247;
+        Mon, 24 Jan 2022 19:55:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CAEDC340E5;
+        Mon, 24 Jan 2022 19:55:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054084;
-        bh=PlU0BGXYhEPw+yxn5LNeHuz6RZoUF0+GF9AQ5NrEnq0=;
+        s=korg; t=1643054108;
+        bh=hAIdkZCY+ok1pRLnYWR59O3Yuc/U9rnIQHy6AiirbO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bc61rIyCtgE3Y3eb6rGqotXfZlMgN3OoG09ENsVc7Xz/ljcUaCGxTlwJ63xN/f9ej
-         WEshwVCJrLUUhBYdG1h99t24jGGbmI3/FlD/MqGiFxTiJQ12anqOWBVWylORbSPCAJ
-         hZ1vQhHdoF6tf4nHyhMdDYgXbFFFTznulXEor6us=
+        b=WgeS+0lOjHJ7ZDCfavc7duewwlnkbT2xUyWwKJDvZPEatUayu4UezJm+hivaHHjo5
+         Tz+r6FZ72EwgDxoDVUHOhukNMK6lx+/XfK5iczRVXpf13mX1jw0O2xaxn5s8kDjhPU
+         1m4fJCtDRuc5zWaBjQOpl2i/9TOv7hoVR2hPWHZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 273/563] clk: stm32: Fix ltdcs clock turn off by clk_disable_unused() after system enter shell
-Date:   Mon, 24 Jan 2022 19:40:38 +0100
-Message-Id: <20220124184033.880776185@linuxfoundation.org>
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 280/563] iommu/iova: Fix race between FQ timeout and teardown
+Date:   Mon, 24 Jan 2022 19:40:45 +0100
+Message-Id: <20220124184034.126466350@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,71 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
 
-[ Upstream commit 6fc058a72f3b7b07fc4de6d66ad1f68951b00f6e ]
+[ Upstream commit d7061627d701c90e1cac1e1e60c45292f64f3470 ]
 
-stm32's clk driver register two ltdc gate clk to clk core by
-clk_hw_register_gate() and clk_hw_register_composite()
+It turns out to be possible for hotplugging out a device to reach the
+stage of tearing down the device's group and default domain before the
+domain's flush queue has drained naturally. At this point, it is then
+possible for the timeout to expire just before the del_timer() call
+in free_iova_flush_queue(), such that we then proceed to free the FQ
+resources while fq_flush_timeout() is still accessing them on another
+CPU. Crashes due to this have been observed in the wild while removing
+NVMe devices.
 
-first: 'stm32f429_gates[]', clk name is 'ltdc', which no user to use.
-second: 'stm32f429_aux_clk[]', clk name is 'lcd-tft', used by ltdc driver
+Close the race window by using del_timer_sync() to safely wait for any
+active timeout handler to finish before we start to free things. We
+already avoid any locking in free_iova_flush_queue() since the FQ is
+supposed to be inactive anyway, so the potential deadlock scenario does
+not apply.
 
-both of them point to the same offset of stm32's RCC register. after
-kernel enter console, clk core turn off ltdc's clk as 'stm32f429_gates[]'
-is no one to use. but, actually 'stm32f429_aux_clk[]' is in use.
-
-stm32f469/746/769 have the same issue, fix it.
-
-Fixes: daf2d117cbca ("clk: stm32f4: Add lcd-tft clock")
-Link: https://lore.kernel.org/linux-arm-kernel/1590564453-24499-7-git-send-email-dillon.minfei@gmail.com/
-Link: https://lore.kernel.org/lkml/CAPTRvHkf0cK_4ZidM17rPo99gWDmxgqFt4CDUjqFFwkOeQeFDg@mail.gmail.com/
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Acked-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Link: https://lore.kernel.org/r/1635232282-3992-10-git-send-email-dillon.minfei@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 9a005a800ae8 ("iommu/iova: Add flush timer")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+[ rm: rewrite commit message ]
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/0a365e5b07f14b7344677ad6a9a734966a8422ce.1639753638.git.robin.murphy@arm.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-stm32f4.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/iommu/iova.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/clk/clk-stm32f4.c b/drivers/clk/clk-stm32f4.c
-index 5c75e3d906c20..682a18b392f08 100644
---- a/drivers/clk/clk-stm32f4.c
-+++ b/drivers/clk/clk-stm32f4.c
-@@ -129,7 +129,6 @@ static const struct stm32f4_gate_data stm32f429_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 20,	"spi5",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 30d969a4c5fde..1164d1a42cbc5 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -64,8 +64,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
+ 	if (!has_iova_flush_queue(iovad))
+ 		return;
  
- static const struct stm32f4_gate_data stm32f469_gates[] __initconst = {
-@@ -211,7 +210,6 @@ static const struct stm32f4_gate_data stm32f469_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 20,	"spi5",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
+-	if (timer_pending(&iovad->fq_timer))
+-		del_timer(&iovad->fq_timer);
++	del_timer_sync(&iovad->fq_timer);
  
- static const struct stm32f4_gate_data stm32f746_gates[] __initconst = {
-@@ -286,7 +284,6 @@ static const struct stm32f4_gate_data stm32f746_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 23,	"sai2",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
- 
- static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
-@@ -364,7 +361,6 @@ static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 23,	"sai2",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 30,	"mdio",		"apb2_div" },
- };
+ 	fq_destroy_all_entries(iovad);
  
 -- 
 2.34.1
