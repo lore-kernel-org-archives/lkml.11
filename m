@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D51C35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FB3FC4707E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362586AbiAXXmk (ORCPT
+        id S1357355AbiAXXpx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
+        Mon, 24 Jan 2022 18:45:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843730AbiAXXFi (ORCPT
+        with ESMTP id S1845326AbiAXXMF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:05:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E035CC02B77E;
-        Mon, 24 Jan 2022 13:16:35 -0800 (PST)
+        Mon, 24 Jan 2022 18:12:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A982C0A02B8;
+        Mon, 24 Jan 2022 13:19:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8836BB811A2;
-        Mon, 24 Jan 2022 21:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E02CBC340E4;
-        Mon, 24 Jan 2022 21:16:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ED0161469;
+        Mon, 24 Jan 2022 21:18:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08831C340E7;
+        Mon, 24 Jan 2022 21:18:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058994;
-        bh=n+2oQiECCDibeXeXVuzVRofAl5ID7Qq6aThu6u/Ccas=;
+        s=korg; t=1643059138;
+        bh=Onf+22GTqc/G0V7OktqFtzEvX9dOMso2ZB1VPCpd4NI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hpw+kscnvqiOeTJkcSs9J7R+i1V9wUtYgJpfxldzVuzxDH3GCyCmQymvwSRvljLgZ
-         ciBM576y4y7wAEe1ITg9NIot4FLUKTXHbYM2sgNPKVIOB/NpTUgR6kM0YGKNbtKnya
-         cVXWgvYagraN4iYiR7B8+sm7A5wmbN/J0bBcz5U0=
+        b=YMVdDZq5GK0zHswNs0GjxiiIIDuP55wlcUWI9HtmACRPK7I3m+dhmWCIjM47ZTVp4
+         9iU6ty0MTSlkklJgkrvOwTO9rtd2jCN/3CvYAOdK5qZEhP2Elh7ZbdkZqbldaZj5zp
+         kk+eGnTo9ZLB6WR1PXHUpLbhjM9DjtqZ0G26Me2k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0442/1039] amt: fix wrong return type of amt_send_membership_update()
-Date:   Mon, 24 Jan 2022 19:37:11 +0100
-Message-Id: <20220124184140.152117560@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0483/1039] iommu/arm-smmu-qcom: Fix TTBR0 read
+Date:   Mon, 24 Jan 2022 19:37:52 +0100
+Message-Id: <20220124184141.511596979@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,36 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Taehee Yoo <ap420073@gmail.com>
+From: Rob Clark <robdclark@chromium.org>
 
-[ Upstream commit dd3ca4c5184ea98e40acb8eb293d85b88ea04ee2 ]
+[ Upstream commit c31112fbd4077a51a14ff338038c82e9571dc821 ]
 
-amt_send_membership_update() would return -1 but it's return type is bool.
-So, it should be used TRUE instead of -1.
+It is a 64b register, lets not lose the upper bits.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-Link: https://lore.kernel.org/r/20220109163702.6331-1-ap420073@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ab5df7b953d8 ("iommu/arm-smmu-qcom: Add an adreno-smmu-priv callback to get pagefault info")
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211108171724.470973-1-robdclark@gmail.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/amt.c | 2 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index b732ee9a50ef9..d3a9dda6c7286 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -1106,7 +1106,7 @@ static bool amt_send_membership_query(struct amt_dev *amt,
- 	rt = ip_route_output_key(amt->net, &fl4);
- 	if (IS_ERR(rt)) {
- 		netdev_dbg(amt->dev, "no route to %pI4\n", &tunnel->ip4);
--		return -1;
-+		return true;
- 	}
+diff --git a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+index ca736b065dd0b..40c91dd368a4d 100644
+--- a/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
++++ b/drivers/iommu/arm/arm-smmu/arm-smmu-qcom.c
+@@ -51,7 +51,7 @@ static void qcom_adreno_smmu_get_fault_info(const void *cookie,
+ 	info->fsynr1 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_FSYNR1);
+ 	info->far = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_FAR);
+ 	info->cbfrsynra = arm_smmu_gr1_read(smmu, ARM_SMMU_GR1_CBFRSYNRA(cfg->cbndx));
+-	info->ttbr0 = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
++	info->ttbr0 = arm_smmu_cb_readq(smmu, cfg->cbndx, ARM_SMMU_CB_TTBR0);
+ 	info->contextidr = arm_smmu_cb_read(smmu, cfg->cbndx, ARM_SMMU_CB_CONTEXTIDR);
+ }
  
- 	amtmq		= skb_push(skb, sizeof(*amtmq));
 -- 
 2.34.1
 
