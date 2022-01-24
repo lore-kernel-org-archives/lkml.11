@@ -2,110 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 597ECC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0559BC35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392043AbiAXUuT (ORCPT
+        id S1392136AbiAXUub (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:50:19 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:53524 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381728AbiAXUWq (ORCPT
+        Mon, 24 Jan 2022 15:50:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34374 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383245AbiAXU1C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:46 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 0F6B41C0B76; Mon, 24 Jan 2022 21:22:35 +0100 (CET)
-Date:   Mon, 24 Jan 2022 21:22:34 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
-Message-ID: <20220124202234.GC16782@duo.ucw.cz>
-References: <20220124184024.407936072@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:27:02 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26994B8122F;
+        Mon, 24 Jan 2022 20:27:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD38C340E5;
+        Mon, 24 Jan 2022 20:26:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056019;
+        bh=yaoW4loiKLDQ8TDhfuDaLdRXEdMfMbdMT7Bt3+YHHRw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=AvhvfVrj83MQP2VMTGXyCcOGJ4M6MtAzlBzUDZNOVNlMMBhaznDF9vsrOn2ff9Enx
+         UPNXtYq38NJ6jpTkvuCQVecfFsI+FpeHrjYSkWyrGaggEs1QfbBeJfeyujmuMoX43i
+         xknBfTzcWj09vpKA6I8Yx8vpRq/7RVQc8hTpjhiM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
+        Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 344/846] net/mlx5e: Sync VXLAN udp ports during uplink representor profile change
+Date:   Mon, 24 Jan 2022 19:37:41 +0100
+Message-Id: <20220124184112.796364992@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="nmemrqcdn5VTmUEE"
-Content-Disposition: inline
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Maor Dickman <maord@nvidia.com>
 
---nmemrqcdn5VTmUEE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit 07f6dc4024ea1d2314b9c8b81fd4e492864fcca1 ]
 
-Hi!
+Currently during NIC profile disablement all VXLAN udp ports offloaded to the
+HW are flushed and during its enablement the driver send notification to
+the stack to inform the core that the entire UDP tunnel port state has been
+lost, uplink representor doesn't have the same behavior which can cause
+VXLAN udp ports offload to be in bad state while moving between modes while
+VXLAN interface exist.
 
-> This is the start of the stable review cycle for the 5.10.94 release.
-> There are 563 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+Fixed by aligning the uplink representor profile behavior to the NIC behavior.
 
-Our tests are unhappy, and it is more than gmp.h problem:
+Fixes: 84db66124714 ("net/mlx5e: Move set vxlan nic info to profile init")
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-5.10.y
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+index edecd149dcab3..161b60e1139b3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+@@ -50,6 +50,7 @@
+ #include "fs_core.h"
+ #include "lib/mlx5.h"
+ #include "lib/devcom.h"
++#include "lib/vxlan.h"
+ #define CREATE_TRACE_POINTS
+ #include "diag/en_rep_tracepoint.h"
+ #include "en_accel/ipsec.h"
+@@ -1016,6 +1017,7 @@ static void mlx5e_uplink_rep_enable(struct mlx5e_priv *priv)
+ 	rtnl_lock();
+ 	if (netif_running(netdev))
+ 		mlx5e_open(netdev);
++	udp_tunnel_nic_reset_ntf(priv->netdev);
+ 	netif_device_attach(netdev);
+ 	rtnl_unlock();
+ }
+@@ -1037,6 +1039,7 @@ static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
+ 	mlx5_notifier_unregister(mdev, &priv->events_nb);
+ 	mlx5e_rep_tc_disable(priv);
+ 	mlx5_lag_remove_netdev(mdev, priv->netdev);
++	mlx5_vxlan_reset_to_default(mdev->vxlan);
+ }
+ 
+ static MLX5E_DEFINE_STATS_GRP(sw_rep, 0);
+-- 
+2.34.1
 
-arm64_ctj:
 
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/201007=
-0033
 
-arch/arm64/mm/extable.c: In function 'fixup_exception':
-1095arch/arm64/mm/extable.c:17:6: error: implicit declaration of function '=
-in_bpf_jit' [-Werror=3Dimplicit-function-declaration]
-1096  if (in_bpf_jit(regs))
-1097      ^~~~~~~~~~
-1098cc1: some warnings being treated as errors
-1099scripts/Makefile.build:280: recipe for target 'arch/arm64/mm/extable.o'=
- failed
-1100make[2]: *** [arch/arm64/mm/extable.o] Error 1
-1101make[2]: *** Waiting for unfinished jobs....
-1102  CC      kernel/sched/loadavg.o
-1103  CC      arch/arm64/kernel/entry-common.o
-1104
-
-arm64_defconfig:
-
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/201007=
-0044
-
-arch/arm64/mm/extable.c: In function 'fixup_exception':
-1129arch/arm64/mm/extable.c:17:6: error: implicit declaration of function '=
-in_bpf_jit' [-Werror=3Dimplicit-function-declaration]
-1130  if (in_bpf_jit(regs))
-1131      ^~~~~~~~~~
-1132  CC      arch/arm64/crypto/ghash-ce-glue.o
-1133cc1: some warnings being treated as errors
-1134scripts/Makefile.build:280: recipe for target 'arch/arm64/mm/extable.o'=
- failed
-1135make[2]: *** [arch/arm64/mm/extable.o] Error 1
-1136make[2]: *** Waiting for unfinished jobs....
-1137  CC      arch/arm64/kvm/hyp/vhe/sysreg-sr.o
-1138
-
-Best regards,
-									Pavel
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---nmemrqcdn5VTmUEE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYe8KigAKCRAw5/Bqldv6
-8vwdAJ9DYr0MICHQaJW/2sq7Lc9vQCg6cgCgu3gXmPmjdfD78dlYcFxP1V2xOTY=
-=0YOT
------END PGP SIGNATURE-----
-
---nmemrqcdn5VTmUEE--
