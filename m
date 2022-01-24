@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C81FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4FD2C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835357AbiAXWgK (ORCPT
+        id S1835434AbiAXWg2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:36:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456713AbiAXVjy (ORCPT
+        Mon, 24 Jan 2022 17:36:28 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58300 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456705AbiAXVjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81078C0419C9;
-        Mon, 24 Jan 2022 12:26:31 -0800 (PST)
+        Mon, 24 Jan 2022 16:39:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EBD66150F;
-        Mon, 24 Jan 2022 20:26:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204DAC340E5;
-        Mon, 24 Jan 2022 20:26:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51D9E61502;
+        Mon, 24 Jan 2022 21:39:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC49CC340E4;
+        Mon, 24 Jan 2022 21:39:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055990;
-        bh=O59Wt/hOMkwJpFVVFf+WeiotE2h/uvQbmmOt8NKRTKo=;
+        s=korg; t=1643060391;
+        bh=Kg6lB8gyFX7ICKo3+KWCWKtc2SOVkFcVpBWAYHfLIk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Rs86k6QKrpdl8+0F2tbYq7Kh7KV1n9lge02wXZ16yw0VQEdPQiP2mH5O8d3tBX+bS
-         c7/GUuBqnf4e8S6h/YHIrnyObMRqWjhf++ilFUW/Qih6eFK2JBYobxbHukCn8EOCCJ
-         nhrc/DMC11ZrXqw7XarXj+RL8OYZvFUr6Ze+3IfM=
+        b=CPaQzegC4FOhIIzzXRuKp51hdxz9lWl3LPqNyMTpc0ItpPr+VNZjUB0j8nyingvAA
+         +gpozAC5lSZZAHxqY5C0Kmhd3XXwKrnE8lKyEciUk9kq1fV5tnxnoYmG4CQC4hz0bp
+         jzTnR8mgURNjgMd1I9bPMGrst/V9ybigymhvpw9E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        John Keeping <john@metanate.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 326/846] usb: dwc2: gadget: initialize max_speed from params
-Date:   Mon, 24 Jan 2022 19:37:23 +0100
-Message-Id: <20220124184112.151733041@linuxfoundation.org>
+        stable@vger.kernel.org, Julius Werner <jwerner@chromium.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.16 0905/1039] firmware: Update Kconfig help text for Google firmware
+Date:   Mon, 24 Jan 2022 19:44:54 +0100
+Message-Id: <20220124184155.711926419@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +46,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Keeping <john@metanate.com>
+From: Ben Hutchings <ben@decadent.org.uk>
 
-[ Upstream commit 92ef98a4caacad6d4a1490dda45d81ae5ccf5bc9 ]
+commit d185a3466f0cd5af8f1c5c782c53bc0e6f2e7136 upstream.
 
-DWC2 may be paired with a full-speed PHY which is not capable of
-high-speed operation.  Report this correctly to the gadget core by
-setting max_speed from the core parameters.
+The help text for GOOGLE_FIRMWARE states that it should only be
+enabled when building a kernel for Google's own servers.  However,
+many of the drivers dependent on it are also useful on Chromebooks or
+on any platform using coreboot.
 
-Prior to commit 5324bad66f09f ("usb: dwc2: gadget: implement
-udc_set_speed()") this didn't cause the hardware to be configured
-incorrectly, although the speed may have been reported incorrectly.  But
-after that commit params.speed is updated based on a value passed in by
-the gadget core which may set it to a faster speed than is supported by
-the hardware.  Initialising the max_speed parameter ensures the speed
-passed to dwc2_gadget_set_speed() will be one supported by the hardware.
+Update the help text to reflect this double duty.
 
-Fixes: 5324bad66f09f ("usb: dwc2: gadget: implement udc_set_speed()")
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: John Keeping <john@metanate.com>
-Link: https://lore.kernel.org/r/20220106115731.1473909-1-john@metanate.com
+Fixes: d384d6f43d1e ("firmware: google memconsole: Add coreboot support")
+Reviewed-by: Julius Werner <jwerner@chromium.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Link: https://lore.kernel.org/r/20180618225540.GD14131@decadent.org.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/firmware/google/Kconfig |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index 2190225bf3da2..ea0d2d6139a68 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -4974,7 +4974,18 @@ int dwc2_gadget_init(struct dwc2_hsotg *hsotg)
- 		hsotg->params.g_np_tx_fifo_size);
- 	dev_dbg(dev, "RXFIFO size: %d\n", hsotg->params.g_rx_fifo_size);
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -3,9 +3,9 @@ menuconfig GOOGLE_FIRMWARE
+ 	bool "Google Firmware Drivers"
+ 	default n
+ 	help
+-	  These firmware drivers are used by Google's servers.  They are
+-	  only useful if you are working directly on one of their
+-	  proprietary servers.  If in doubt, say "N".
++	  These firmware drivers are used by Google servers,
++	  Chromebooks and other devices using coreboot firmware.
++	  If in doubt, say "N".
  
--	hsotg->gadget.max_speed = USB_SPEED_HIGH;
-+	switch (hsotg->params.speed) {
-+	case DWC2_SPEED_PARAM_LOW:
-+		hsotg->gadget.max_speed = USB_SPEED_LOW;
-+		break;
-+	case DWC2_SPEED_PARAM_FULL:
-+		hsotg->gadget.max_speed = USB_SPEED_FULL;
-+		break;
-+	default:
-+		hsotg->gadget.max_speed = USB_SPEED_HIGH;
-+		break;
-+	}
-+
- 	hsotg->gadget.ops = &dwc2_hsotg_gadget_ops;
- 	hsotg->gadget.name = dev_name(dev);
- 	hsotg->remote_wakeup_allowed = 0;
--- 
-2.34.1
-
+ if GOOGLE_FIRMWARE
+ 
 
 
