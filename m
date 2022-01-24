@@ -2,88 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CB8C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 219ACC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840036AbiAXWw2 (ORCPT
+        id S1840017AbiAXWw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56164 "EHLO
+        Mon, 24 Jan 2022 17:52:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458053AbiAXVmo (ORCPT
+        with ESMTP id S1458067AbiAXVmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:42:44 -0500
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BF40C0419D5;
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14BAC0419D6;
         Mon, 24 Jan 2022 12:30:12 -0800 (PST)
-Received: by mail-lj1-x231.google.com with SMTP id a25so9722808lji.9;
-        Mon, 24 Jan 2022 12:30:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kzTVh1Uj9CB0rrMx8+UTj8sMwZ1dWsFJyOIw9wz4SCY=;
-        b=AgwNbDN/9SGFAevlHvPQ/SgZ48DjERb0nTmPJwXdtXAAuLCIokl7/JseIUBAd4W84X
-         HEYUhFreZsY2UvjiyMjQHjMCyvuRv8xjvjggx+dbc3tusfLA6a/Zl6T/1bq8nhoFqdmY
-         GUJkUlZdrkwDCedSbIli8+kDyBFU+AKdZbmTWRLD/CcXlTGRiLtUziI9GsQ1/X/KISIQ
-         HOsnzJTWNeY6vNIJR2GlDx8pw63DpeoEf5Axc7RGnJE9GprevHjNWEiglc5Ok77ENtk/
-         OSpR2WA/KlrYc5wZSMXEAwM5+tX35i8k6pD0Hb+vSoona8hlcKA/BPkur4D0aKI+48Ji
-         whnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kzTVh1Uj9CB0rrMx8+UTj8sMwZ1dWsFJyOIw9wz4SCY=;
-        b=25CFAHGZ1+o6Jzf3YfFM822m0fatMf1qA/LSzaqDKEDDgEk8FiKPb2OcSFrB5Me7S/
-         FrlFyJiG3eJSCUsdRxv95uLq0vHdg43j2jIXSpLDGp61hZSvIHW2tmj25JU/4dcfQhT3
-         9qem6VdBrZUCkUySxdNJnm8Bx8Q0hC/6rBciii1KAYllpppedbbXsxROLd8BK5uKd4EJ
-         hW308/PRhBY2qXdGMe0JDNqqkmFRLD1+6UD5zm7QLk7e9hKRUlpwWwUugtvWuxoV2eKS
-         vbhflR7s4VH7saBKSgy7lEq4poOgOB4KRUDoMHUI1mAQQ+SdKqB3N4yPuE4Hxj8A0HhX
-         nk6A==
-X-Gm-Message-State: AOAM530lyRrO0V3dXRi/Pj+aokg/flk/64ETPqMJOVvB7yEWUiRcsgi0
-        jD/qnqLyepYBHfc0K9Hea8fnRrRGnfZaZQ==
-X-Google-Smtp-Source: ABdhPJxAOu2G9kaRBdEwBp4Ira/soT1cXeusM2MEtCjGf39yHQRJpqBkb7ozy9McyqWZ21MTNVJkHw==
-X-Received: by 2002:a2e:9dce:: with SMTP id x14mr11534147ljj.33.1643056210946;
-        Mon, 24 Jan 2022 12:30:10 -0800 (PST)
-Received: from localhost.localdomain (h-155-4-221-129.NA.cust.bahnhof.se. [155.4.221.129])
-        by smtp.gmail.com with ESMTPSA id h6sm199125ljg.58.2022.01.24.12.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:30:10 -0800 (PST)
-From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Subject: [PATCH] KVM: vfio: Constify static kvm_device_ops
-Date:   Mon, 24 Jan 2022 21:30:06 +0100
-Message-Id: <20220124203006.11704-1-rikard.falkeborn@gmail.com>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C683B811F9;
+        Mon, 24 Jan 2022 20:30:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F1BC340E5;
+        Mon, 24 Jan 2022 20:30:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056209;
+        bh=FaB0y9HIYPaqAi9q7owR1nZqkiO+ArzL+57wSpMcVoE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=bkQvpRbkcpPgH1fbQgJ4J09iIbgDbZQ3SE/qzB4gMiiStpAwtDViq9R+XlUneT9jJ
+         vzBG6PtZwd6kCtFmdwgE4QjBWE5zv7dBK+VtAiTVdurJiA13yB+nOJm9x/80BFD05/
+         /3bA425sSLA3LzDMU1DjV9H+ZYOCEp+ZKKPomY3w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 408/846] powerpc/powermac: Add additional missing lockdep_register_key()
+Date:   Mon, 24 Jan 2022 19:38:45 +0100
+Message-Id: <20220124184115.038576142@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kvm_vfio_ops is never modified, so make it const to allow the compiler
-to put it in read-only memory.
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+[ Upstream commit b149d5d45ac9171ed699a256f026c8ebef901112 ]
+
+Commit df1f679d19ed ("powerpc/powermac: Add missing
+lockdep_register_key()") fixed a problem that was causing a WARNING.
+
+There are two other places in the same file with the same problem
+originating from commit 9e607f72748d ("i2c_powermac: shut up lockdep
+warning").
+
+Add missing lockdep_register_key()
+
+Fixes: 9e607f72748d ("i2c_powermac: shut up lockdep warning")
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Depends-on: df1f679d19ed ("powerpc/powermac: Add missing lockdep_register_key()")
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=200055
+Link: https://lore.kernel.org/r/2c7e421874e21b2fb87813d768cf662f630c2ad4.1638984999.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/vfio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/platforms/powermac/low_i2c.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/virt/kvm/vfio.c b/virt/kvm/vfio.c
-index 8fcbc50221c2..0b305f13489e 100644
---- a/virt/kvm/vfio.c
-+++ b/virt/kvm/vfio.c
-@@ -384,7 +384,7 @@ static void kvm_vfio_destroy(struct kvm_device *dev)
- 
- static int kvm_vfio_create(struct kvm_device *dev, u32 type);
- 
--static struct kvm_device_ops kvm_vfio_ops = {
-+static const struct kvm_device_ops kvm_vfio_ops = {
- 	.name = "kvm-vfio",
- 	.create = kvm_vfio_create,
- 	.destroy = kvm_vfio_destroy,
+diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
+index f77a59b5c2e1a..09bfe4b8f25aa 100644
+--- a/arch/powerpc/platforms/powermac/low_i2c.c
++++ b/arch/powerpc/platforms/powermac/low_i2c.c
+@@ -810,6 +810,7 @@ static void __init pmu_i2c_probe(void)
+ 		bus->hostdata = bus + 1;
+ 		bus->xfer = pmu_i2c_xfer;
+ 		mutex_init(&bus->mutex);
++		lockdep_register_key(&bus->lock_key);
+ 		lockdep_set_class(&bus->mutex, &bus->lock_key);
+ 		bus->flags = pmac_i2c_multibus;
+ 		list_add(&bus->link, &pmac_i2c_busses);
+@@ -933,6 +934,7 @@ static void __init smu_i2c_probe(void)
+ 		bus->hostdata = bus + 1;
+ 		bus->xfer = smu_i2c_xfer;
+ 		mutex_init(&bus->mutex);
++		lockdep_register_key(&bus->lock_key);
+ 		lockdep_set_class(&bus->mutex, &bus->lock_key);
+ 		bus->flags = 0;
+ 		list_add(&bus->link, &pmac_i2c_busses);
 -- 
 2.34.1
+
+
 
