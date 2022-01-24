@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C48C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C50C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353747AbiAXVqg (ORCPT
+        id S1450630AbiAXVrF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:46:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35602 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448372AbiAXVMc (ORCPT
+        Mon, 24 Jan 2022 16:47:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34022 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448405AbiAXVMg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:12:32 -0500
+        Mon, 24 Jan 2022 16:12:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F56C6131F;
-        Mon, 24 Jan 2022 21:12:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30496C340E5;
-        Mon, 24 Jan 2022 21:12:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E771B8123A;
+        Mon, 24 Jan 2022 21:12:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA87C340E5;
+        Mon, 24 Jan 2022 21:12:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058750;
-        bh=IjNxPGEtSYkVvnCwbHUvJvg0zijHBM+PZ9Fgl4BzepI=;
+        s=korg; t=1643058753;
+        bh=hmaQm9JcV2b+UORMYGh52WT9l5TZ+1UROquwJJVRB+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fDgPvDMxi5maui4pDfdzJp3zWSTYQRPMXKfTIhEhp89li4R6Sf3T0whgFEGwV2iEk
-         X6IQ/0Ng50oCOvCkyaJNBFFvXly0Rh40Hwwg9Lu9koYigRbehOHvK0tHHLMcS4mWVz
-         q997VIK41FdjCIPpdfLUR72zQcRLeXMnMZgjcovc=
+        b=EOCq9iVQ0jJcmVA/0hTVI13SjUpzMVsQ3vfbPVLsG4mLHtpKmNB0kT5l5IptSMktU
+         e5zs7bpiW6h/rn787/YZdTLZn85EDxRvQhp1sqfudK0PUGcqsyDK+bW8HfCEi7RAZG
+         YaYUfM7rkRWbF6BOiUQ+6KZxI2fZIaKHcbWAWBoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
+        John Keeping <john@metanate.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0390/1039] usb: dwc2: do not gate off the hardware if it does not support clock gating
-Date:   Mon, 24 Jan 2022 19:36:19 +0100
-Message-Id: <20220124184138.426988331@linuxfoundation.org>
+Subject: [PATCH 5.16 0391/1039] usb: dwc2: gadget: initialize max_speed from params
+Date:   Mon, 24 Jan 2022 19:36:20 +0100
+Message-Id: <20220124184138.458149131@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,43 +48,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+From: John Keeping <john@metanate.com>
 
-[ Upstream commit 34146c68083f1aef6709196b3dc888c1ceffd357 ]
+[ Upstream commit 92ef98a4caacad6d4a1490dda45d81ae5ccf5bc9 ]
 
-We should not be clearing the HCD_FLAG_HW_ACCESSIBLE bit if the hardware
-does not support clock gating.
+DWC2 may be paired with a full-speed PHY which is not capable of
+high-speed operation.  Report this correctly to the gadget core by
+setting max_speed from the core parameters.
 
-Fixes: 50fb0c128b6e ("usb: dwc2: Add clock gating entering flow by system suspend")
+Prior to commit 5324bad66f09f ("usb: dwc2: gadget: implement
+udc_set_speed()") this didn't cause the hardware to be configured
+incorrectly, although the speed may have been reported incorrectly.  But
+after that commit params.speed is updated based on a value passed in by
+the gadget core which may set it to a faster speed than is supported by
+the hardware.  Initialising the max_speed parameter ensures the speed
+passed to dwc2_gadget_set_speed() will be one supported by the hardware.
+
+Fixes: 5324bad66f09f ("usb: dwc2: gadget: implement udc_set_speed()")
 Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Link: https://lore.kernel.org/r/20220104135922.734776-1-dinguyen@kernel.org
+Signed-off-by: John Keeping <john@metanate.com>
+Link: https://lore.kernel.org/r/20220106115731.1473909-1-john@metanate.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/hcd.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/usb/dwc2/gadget.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
-index 13c779a28e94f..f63a27d11fac8 100644
---- a/drivers/usb/dwc2/hcd.c
-+++ b/drivers/usb/dwc2/hcd.c
-@@ -4399,11 +4399,12 @@ static int _dwc2_hcd_suspend(struct usb_hcd *hcd)
- 		 * If not hibernation nor partial power down are supported,
- 		 * clock gating is used to save power.
- 		 */
--		if (!hsotg->params.no_clock_gating)
-+		if (!hsotg->params.no_clock_gating) {
- 			dwc2_host_enter_clock_gating(hsotg);
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index ab8d7dad9f567..43cf49c4e5e59 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -4974,7 +4974,18 @@ int dwc2_gadget_init(struct dwc2_hsotg *hsotg)
+ 		hsotg->params.g_np_tx_fifo_size);
+ 	dev_dbg(dev, "RXFIFO size: %d\n", hsotg->params.g_rx_fifo_size);
  
--		/* After entering suspend, hardware is not accessible */
--		clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
-+			/* After entering suspend, hardware is not accessible */
-+			clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
-+		}
- 		break;
- 	default:
- 		goto skip_power_saving;
+-	hsotg->gadget.max_speed = USB_SPEED_HIGH;
++	switch (hsotg->params.speed) {
++	case DWC2_SPEED_PARAM_LOW:
++		hsotg->gadget.max_speed = USB_SPEED_LOW;
++		break;
++	case DWC2_SPEED_PARAM_FULL:
++		hsotg->gadget.max_speed = USB_SPEED_FULL;
++		break;
++	default:
++		hsotg->gadget.max_speed = USB_SPEED_HIGH;
++		break;
++	}
++
+ 	hsotg->gadget.ops = &dwc2_hsotg_gadget_ops;
+ 	hsotg->gadget.name = dev_name(dev);
+ 	hsotg->gadget.otg_caps = &hsotg->params.otg_caps;
 -- 
 2.34.1
 
