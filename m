@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E07DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F96C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442143AbiAXUxZ (ORCPT
+        id S1352472AbiAXUxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:53:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384767AbiAXUad (ORCPT
+        Mon, 24 Jan 2022 15:53:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54866 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384832AbiAXUai (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542D0C08B4D9;
-        Mon, 24 Jan 2022 11:42:54 -0800 (PST)
+        Mon, 24 Jan 2022 15:30:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2BE36135E;
-        Mon, 24 Jan 2022 19:42:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4073C340E5;
-        Mon, 24 Jan 2022 19:42:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF73614E2;
+        Mon, 24 Jan 2022 20:30:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7502BC340E5;
+        Mon, 24 Jan 2022 20:30:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053373;
-        bh=q06pqYo6uEXuUELP82UDgfcUYfD4+EybH2C9KbzgQ4I=;
+        s=korg; t=1643056236;
+        bh=mZ3TmLwV+XX3SCnqWrn6HwwnB01kskCiDLYtCvbS3mU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GcacAnTQH76Ha4NCVjylc/LJ/dIeHx73uBkXPtSUGhUvm9N+GcklEHii2GXzY18L8
-         Y7YTNYIcarxf2/KtWea6e4zCriTEQ9HJrg8iDNxohR1eQ8myCaSHA3jAwbXIq852Y9
-         q5Mcxr6J4fUCh6SHwZPL6o02BzyV0F1vt9+jVTQg=
+        b=s9YtnGrElkQ8nw/Hd0OrHxsMIDzGrBf/ZAZbqryCBJaqOD/mW6HFkqx8yj2s9AEGg
+         najxm0Xx0Yv+Gy31PJpT+P8SW74VSYqvtssYAgUsMXCdDktX3BRmaTFV5K++M4nomO
+         XcnvNX+voqlAUyihNolsaEn+GOphGgImgk84/Kd4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 044/563] drm: fix null-ptr-deref in drm_dev_init_release()
-Date:   Mon, 24 Jan 2022 19:36:49 +0100
-Message-Id: <20220124184025.937609654@linuxfoundation.org>
+Subject: [PATCH 5.15 416/846] mips: add SYS_HAS_CPU_MIPS64_R5 config for MIPS Release 5 support
+Date:   Mon, 24 Jan 2022 19:38:53 +0100
+Message-Id: <20220124184115.331045317@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,84 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit acf20ed020ffa4d6cc8347e8d356509b95df3cbe ]
+[ Upstream commit fd4eb90b164442cb1e9909f7845e12a0835ac699 ]
 
-I got a null-ptr-deref report:
+Commit ab7c01fdc3cf ("mips: Add MIPS Release 5 support") adds the two
+configs CPU_MIPS32_R5 and CPU_MIPS64_R5, which depend on the corresponding
+SYS_HAS_CPU_MIPS32_R5 and SYS_HAS_CPU_MIPS64_R5, respectively.
 
-[drm:drm_dev_init [drm]] *ERROR* Cannot allocate anonymous inode: -12
-==================================================================
-BUG: KASAN: null-ptr-deref in iput+0x3c/0x4a0
-...
-Call Trace:
- dump_stack_lvl+0x6c/0x8b
- kasan_report.cold+0x64/0xdb
- __asan_load8+0x69/0x90
- iput+0x3c/0x4a0
- drm_dev_init_release+0x39/0xb0 [drm]
- drm_managed_release+0x158/0x2d0 [drm]
- drm_dev_init+0x3a7/0x4c0 [drm]
- __devm_drm_dev_alloc+0x55/0xd0 [drm]
- mi0283qt_probe+0x8a/0x2b5 [mi0283qt]
- spi_probe+0xeb/0x130
-...
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+The config SYS_HAS_CPU_MIPS32_R5 was already introduced with commit
+c5b367835cfc ("MIPS: Add support for XPA."); the config
+SYS_HAS_CPU_MIPS64_R5, however, was never introduced.
 
-If drm_fs_inode_new() fails in drm_dev_init(), dev->anon_inode will point
-to PTR_ERR(...) instead of NULL. This will result in null-ptr-deref when
-drm_fs_inode_free(dev->anon_inode) is called.
+Hence, ./scripts/checkkconfigsymbols.py warns:
 
-drm_dev_init()
-	drm_fs_inode_new() // fail, dev->anon_inode = PTR_ERR(...)
-	drm_managed_release()
-		drm_dev_init_release()
-			drm_fs_inode_free() // access non-existent anon_inode
+  SYS_HAS_CPU_MIPS64_R5
+  Referencing files: arch/mips/Kconfig, arch/mips/include/asm/cpu-type.h
 
-Define a temp variable and assign it to dev->anon_inode if the temp
-variable is not PTR_ERR.
+Add the definition for config SYS_HAS_CPU_MIPS64_R5 under the assumption
+that SYS_HAS_CPU_MIPS64_R5 follows the same pattern as the existing
+SYS_HAS_CPU_MIPS32_R5 and SYS_HAS_CPU_MIPS64_R6.
 
-Fixes: 2cbf7fc6718b ("drm: Use drmm_ for drm_dev_init cleanup")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211013114139.4042207-1-wanghai38@huawei.com
+Fixes: ab7c01fdc3cf ("mips: Add MIPS Release 5 support")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_drv.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/mips/Kconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/gpu/drm/drm_drv.c b/drivers/gpu/drm/drm_drv.c
-index cd162d406078a..006e3b896caea 100644
---- a/drivers/gpu/drm/drm_drv.c
-+++ b/drivers/gpu/drm/drm_drv.c
-@@ -577,6 +577,7 @@ static int drm_dev_init(struct drm_device *dev,
- 			struct drm_driver *driver,
- 			struct device *parent)
- {
-+	struct inode *inode;
- 	int ret;
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 23654ccdbfb12..0200ebb7a0144 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -1993,6 +1993,10 @@ config SYS_HAS_CPU_MIPS64_R1
+ config SYS_HAS_CPU_MIPS64_R2
+ 	bool
  
- 	if (!drm_core_init_complete) {
-@@ -613,13 +614,15 @@ static int drm_dev_init(struct drm_device *dev,
- 	if (ret)
- 		return ret;
- 
--	dev->anon_inode = drm_fs_inode_new();
--	if (IS_ERR(dev->anon_inode)) {
--		ret = PTR_ERR(dev->anon_inode);
-+	inode = drm_fs_inode_new();
-+	if (IS_ERR(inode)) {
-+		ret = PTR_ERR(inode);
- 		DRM_ERROR("Cannot allocate anonymous inode: %d\n", ret);
- 		goto err;
- 	}
- 
-+	dev->anon_inode = inode;
++config SYS_HAS_CPU_MIPS64_R5
++	bool
++	select ARCH_HAS_SYNC_DMA_FOR_CPU if DMA_NONCOHERENT
 +
- 	if (drm_core_check_feature(dev, DRIVER_RENDER)) {
- 		ret = drm_minor_alloc(dev, DRM_MINOR_RENDER);
- 		if (ret)
+ config SYS_HAS_CPU_MIPS64_R6
+ 	bool
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU if DMA_NONCOHERENT
 -- 
 2.34.1
 
