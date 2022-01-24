@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 726F7C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05FB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354780AbiAXULR (ORCPT
+        id S1378022AbiAXUL1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:11:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57632 "EHLO
+        Mon, 24 Jan 2022 15:11:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344754AbiAXTxF (ORCPT
+        with ESMTP id S1357927AbiAXTxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:53:05 -0500
+        Mon, 24 Jan 2022 14:53:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BC2EC061340;
-        Mon, 24 Jan 2022 11:26:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0716C061254;
+        Mon, 24 Jan 2022 11:26:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1AE7F6149A;
-        Mon, 24 Jan 2022 19:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEB4DC340E5;
-        Mon, 24 Jan 2022 19:26:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F16161447;
+        Mon, 24 Jan 2022 19:26:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EDC2C340E7;
+        Mon, 24 Jan 2022 19:26:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052404;
-        bh=TwdPhdXhXkecM3Z8zXwBoX/gGUgexIZjp4FmZkHH3so=;
+        s=korg; t=1643052410;
+        bh=KIWtqTmSiuBT2qbKK6tGpxzLx9BdKMIp2SxoYq1fvlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XtJrgN1w+SOUYt6L9S4kkQcS4VbrYqRtMXktbxFMuBOOVyxhYWKB+ZpITpJRFrToD
-         wkBAw/sNi2IRRGbT/mRVhq+BbjHCYD3HVFFS4mM1xlgJpIvUHsOFs0ywkhzGH4N469
-         k3X751Mig6UDTcConL6tEi9buKv2xnGX/adtXz3s=
+        b=M5Dp3QuZBV6phYXLJRa2xperGyjZGTunKqr0qAq6dLmddLagMJpVdz0GiJG1+iTjP
+         mPPAzLcRfXC8AIXcMgqPC2jj1C0Yxn+JcfdjZ+Myta+vU50fQ4BZS2SoEAVxQLAc+s
+         iKk/Kc5gYUBtK7SAIaPsYidf09653xoubuWVDkDg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 047/320] arm64: dts: meson-gxbb-wetek: fix missing GPIO binding
-Date:   Mon, 24 Jan 2022 19:40:31 +0100
-Message-Id: <20220124183955.346783603@linuxfoundation.org>
+Subject: [PATCH 5.4 049/320] tee: fix put order in teedev_close_context()
+Date:   Mon, 24 Jan 2022 19:40:33 +0100
+Message-Id: <20220124183955.408084829@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -51,37 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-[ Upstream commit c019abb2feba3cbbd7cf7178f8e6499c4fa6fced ]
+[ Upstream commit f18397ab3ae23e8e43bba9986e66af6d4497f2ad ]
 
-The absence of this binding appears to be harmless in Linux but it breaks
-Ethernet support in mainline u-boot. So add the binding (which is present
-in all other u-boot supported GXBB device-trees).
+Prior to this patch was teedev_close_context() calling tee_device_put()
+before teedev_ctx_put() leading to teedev_ctx_release() accessing
+ctx->teedev just after the reference counter was decreased on the
+teedev. Fix this by calling teedev_ctx_put() before tee_device_put().
 
-Fixes: fb72c03e0e32 ("ARM64: dts: meson-gxbb-wetek: add a wetek specific dtsi to cleanup hub and play2")
-
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211012052522.30873-3-christianshewitt@gmail.com
+Fixes: 217e0250cccb ("tee: use reference counting for tee_context")
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tee/tee_core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-index d7d0b65713841..e94f09c2d4e32 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-@@ -6,6 +6,7 @@
-  */
+diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+index 0f16d9ffd8d12..85e0cef9e917e 100644
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -84,8 +84,10 @@ void teedev_ctx_put(struct tee_context *ctx)
  
- #include "meson-gxbb.dtsi"
-+#include <dt-bindings/gpio/gpio.h>
+ static void teedev_close_context(struct tee_context *ctx)
+ {
+-	tee_device_put(ctx->teedev);
++	struct tee_device *teedev = ctx->teedev;
++
+ 	teedev_ctx_put(ctx);
++	tee_device_put(teedev);
+ }
  
- / {
- 	aliases {
+ static int tee_open(struct inode *inode, struct file *filp)
 -- 
 2.34.1
 
