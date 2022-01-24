@@ -2,132 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7FDFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92FF2C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357800AbiAXTvx (ORCPT
+        id S1357847AbiAXTwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:51:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349134AbiAXTlB (ORCPT
+        Mon, 24 Jan 2022 14:52:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36706 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349170AbiAXTlG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62986C07A970;
-        Mon, 24 Jan 2022 11:20:28 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DAA6B810BD;
-        Mon, 24 Jan 2022 19:20:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43535C340E5;
-        Mon, 24 Jan 2022 19:20:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052025;
-        bh=6NDXrddUvSfe0I2HKh1EdO5J80jG1dYvDOHuf3zhnZE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wj1sMAt6hFpEqE5RRsxheTeF0Ws0EIZFFLZ/y0RBwqiLlchidPc3J3oej4uPvbijq
-         C7S+T0Hyf1tpEOimSyyGFtm/ym+uJAcS8ql3bq76UdiJQqlCn7PsRjkhO5IMHfsAkA
-         GWFOHgjTAEeBeinNMB8c1QJCGy4Lk3zsKX9K1MGw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bob Moore <robert.moore@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 163/239] ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
-Date:   Mon, 24 Jan 2022 19:43:21 +0100
-Message-Id: <20220124183948.281676149@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C648F6153C;
+        Mon, 24 Jan 2022 19:41:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260A1C36AE2;
+        Mon, 24 Jan 2022 19:41:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643053265;
+        bh=oprGMI/K+YqT86d7ztdKp23qNaPKO+vEI0XjzYsXDaw=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=X2M6cVNicD7eeYBg+29gG6dP2NJnkKavYPtaNgIcKaGYhgcvAMtQlDTNSn5R8rvcO
+         8Po8Od7KSdzu9afJjnDXYUT3RQ+2tIc+3Uv5xm3NsTOgeuwJHgbWWrgUrHCzDbUZPt
+         GdEZKjomjYMT+4xgXLmTtrMbsvBr8DjfwGOmkKbZgxslBiBdY6TWbs++fwZ5atZJVK
+         waRV+25l8Xg6tS5NK9hDCJGuW1qznGdcM/UdmTr1HfLqLOewdqvpi5inV+qbbAla/A
+         skPKA8GyQ4SfZrRYGgsUYQr4VYQERxYcCKReKsBMyjauHZdN31keMH2xO56o+lHfmd
+         GDuFiF5/aBD9g==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220124171415.12293-1-tdas@codeaurora.org>
+References: <20220124171415.12293-1-tdas@codeaurora.org>
+Subject: Re: [PATCH v1] clk: qcom: clk-rcg2: Update logic to calculate D value for RCG
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Taniya Das <tdas@codeaurora.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Taniya Das <tdas@codeaurora.org>
+Date:   Mon, 24 Jan 2022 11:41:03 -0800
+User-Agent: alot/0.10
+Message-Id: <20220124194105.260A1C36AE2@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Quoting Taniya Das (2022-01-24 09:14:15)
+> The current implementation does not check for D value is within
+> the accepted range for a given M & N value. Update the logic to
+> calculate the final D value based on the range. While at it, add
+> support for 2/3 divider in frac_table_pixel.
 
-[ Upstream commit 1d4e0b3abb168b2ee1eca99c527cffa1b80b6161 ]
-
-ACPICA commit 3dd7e1f3996456ef81bfe14cba29860e8d42949e
-
-According to ACPI 6.4, Section 16.2, the CPU cache flushing is
-required on entering to S1, S2, and S3, but the ACPICA code
-flushes the CPU cache regardless of the sleep state.
-
-Blind cache flush on entering S5 causes problems for TDX.
-
-Flushing happens with WBINVD that is not supported in the TDX
-environment.
-
-TDX only supports S5 and adjusting ACPICA code to conform to the
-spec more strictly fixes the issue.
-
-Link: https://github.com/acpica/acpica/commit/3dd7e1f3
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-[ rjw: Subject and changelog edits ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/acpi/acpica/hwesleep.c  | 4 +++-
- drivers/acpi/acpica/hwsleep.c   | 4 +++-
- drivers/acpi/acpica/hwxfsleep.c | 2 --
- 3 files changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/acpi/acpica/hwesleep.c b/drivers/acpi/acpica/hwesleep.c
-index 9516966124ae3..9380a5e214da4 100644
---- a/drivers/acpi/acpica/hwesleep.c
-+++ b/drivers/acpi/acpica/hwesleep.c
-@@ -104,7 +104,9 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
- 
- 	/* Flush caches, as per ACPI specification */
- 
--	ACPI_FLUSH_CPU_CACHE();
-+	if (sleep_state < ACPI_STATE_S4) {
-+		ACPI_FLUSH_CPU_CACHE();
-+	}
- 
- 	status = acpi_os_enter_sleep(sleep_state, sleep_control, 0);
- 	if (status == AE_CTRL_TERMINATE) {
-diff --git a/drivers/acpi/acpica/hwsleep.c b/drivers/acpi/acpica/hwsleep.c
-index f4282370947c8..6368ff544af1a 100644
---- a/drivers/acpi/acpica/hwsleep.c
-+++ b/drivers/acpi/acpica/hwsleep.c
-@@ -110,7 +110,9 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
- 
- 	/* Flush caches, as per ACPI specification */
- 
--	ACPI_FLUSH_CPU_CACHE();
-+	if (sleep_state < ACPI_STATE_S4) {
-+		ACPI_FLUSH_CPU_CACHE();
-+	}
- 
- 	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
- 	if (status == AE_CTRL_TERMINATE) {
-diff --git a/drivers/acpi/acpica/hwxfsleep.c b/drivers/acpi/acpica/hwxfsleep.c
-index dc1e44ccaae20..d0dca7dae080c 100644
---- a/drivers/acpi/acpica/hwxfsleep.c
-+++ b/drivers/acpi/acpica/hwxfsleep.c
-@@ -189,8 +189,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
- 		return_ACPI_STATUS(status);
- 	}
- 
--	ACPI_FLUSH_CPU_CACHE();
--
- 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
- 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
- 
--- 
-2.34.1
-
-
-
+Please split this into two patches (at the "while at it") and add
+Fixes tag.
