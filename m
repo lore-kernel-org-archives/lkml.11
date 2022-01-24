@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84080C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 712AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346603AbiAXTHE (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:07:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57774 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345676AbiAXTAy (ORCPT
+        id S236744AbiAXTHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:07:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59474 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345779AbiAXTBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:54 -0500
+        Mon, 24 Jan 2022 14:01:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5A08B81238;
-        Mon, 24 Jan 2022 19:00:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E114FC340E7;
-        Mon, 24 Jan 2022 19:00:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D860860915;
+        Mon, 24 Jan 2022 19:01:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C96AC340E5;
+        Mon, 24 Jan 2022 19:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050851;
-        bh=sGOvretFgauqF2/LGbvj1iZr7JxVo+3umuYUrti16Ho=;
+        s=korg; t=1643050864;
+        bh=Up43H3zYk3ZP2Hqn8ayRSbG3xGzWcLCx7omRLNqeFEY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h5khCtPti/6XMR/3WB6H+1EB5CMpD8XkH7Pn0WJGQGj5mNGEawyjAJMj3HC6SIDpQ
-         h0j35m6NP6UK3q3EwfomJ9vSyPSgU+mL+IXMYNX5s1S7b+PfYCFzpyIZshNgwoVtN5
-         yqI/O2UWvMBJFLa7kN1tP0nd4x2kCB8+vC8QrpPY=
+        b=v+glVPtiQ5nnr9QJKEPQckXmKaUF+tofXihrQ7HkpGmnt+6FKrGLIF72nxcnmWK98
+         hEo/T7zkYmsLDJoDE/vFzl+LUioWTo8GNMPBDK1r6LhxmIuBk56P0AKhBb/Nwx6zGe
+         kmvV7+YnWL34ikaqXH8d1q0tsjvLWZsubswDJItc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 4.9 132/157] parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
-Date:   Mon, 24 Jan 2022 19:43:42 +0100
-Message-Id: <20220124183936.967542931@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 136/157] netns: add schedule point in ops_exit_list()
+Date:   Mon, 24 Jan 2022 19:43:46 +0100
+Message-Id: <20220124183937.090378830@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -46,39 +46,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit d24846a4246b6e61ecbd036880a4adf61681d241 upstream.
+commit 2836615aa22de55b8fca5e32fe1b27a67cda625e upstream.
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+When under stress, cleanup_net() can have to dismantle
+netns in big numbers. ops_exit_list() currently calls
+many helpers [1] that have no schedule point, and we can
+end up with soft lockups, particularly on hosts
+with many cpus.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+Even for moderate amount of netns processed by cleanup_net()
+this patch avoids latency spikes.
 
-Fix memory leak by calling kobject_put().
+[1] Some of these helpers like fib_sync_up() and fib_sync_down_dev()
+are very slow because net/ipv4/fib_semantics.c uses host-wide hash tables,
+and ifindex is used as the only input of two hash functions.
+    ifindexes tend to be the same for all netns (lo.ifindex==1 per instance)
+    This will be fixed in a separate patch.
 
-Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use kobject_init_and_add")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 72ad937abd0a ("net: Add support for batching network namespace cleanups")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Eric W. Biederman <ebiederm@xmission.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/parisc/pdc_stable.c |    4 +++-
+ net/core/net_namespace.c |    4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/parisc/pdc_stable.c
-+++ b/drivers/parisc/pdc_stable.c
-@@ -992,8 +992,10 @@ pdcs_register_pathentries(void)
- 		entry->kobj.kset = paths_kset;
- 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
- 					   "%s", entry->name);
--		if (err)
-+		if (err) {
-+			kobject_put(&entry->kobj);
- 			return err;
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -132,8 +132,10 @@ static void ops_exit_list(const struct p
+ {
+ 	struct net *net;
+ 	if (ops->exit) {
+-		list_for_each_entry(net, net_exit_list, exit_list)
++		list_for_each_entry(net, net_exit_list, exit_list) {
+ 			ops->exit(net);
++			cond_resched();
 +		}
- 
- 		/* kobject is now registered */
- 		write_lock(&entry->rw_lock);
+ 	}
+ 	if (ops->exit_batch)
+ 		ops->exit_batch(net_exit_list);
 
 
