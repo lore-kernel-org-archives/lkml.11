@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0847FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB260C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345775AbiAXUXi (ORCPT
+        id S1346240AbiAXUXn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:23:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60596 "EHLO
+        Mon, 24 Jan 2022 15:23:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56682 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376878AbiAXUES (ORCPT
+        with ESMTP id S1346099AbiAXUA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:04:18 -0500
+        Mon, 24 Jan 2022 15:00:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A495611CD;
-        Mon, 24 Jan 2022 20:04:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E8FC340E7;
-        Mon, 24 Jan 2022 20:04:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4913612F0;
+        Mon, 24 Jan 2022 20:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8DDC340E8;
+        Mon, 24 Jan 2022 20:00:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054656;
-        bh=IvIQaEZt2ffRaMJJrLZuUpbFT8T8VG/ahiVl4TyEc7g=;
+        s=korg; t=1643054425;
+        bh=9zqniQmnmRj2EP7QeluyIKIoG9IT21ZtY1hW7QzQH5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j3mRs8GUiwWC6VDVYhxMtwxFCHgELilDZ6qA9IJF/CUo9l8qzyM6b0WhSVRqO5vZw
-         WSFIz9bbwbBrRsH8WT0vwqiuBAGCq8KaM+hYtA58nFTtcEtSnsbYckqZ7hhCCV4OTr
-         vatnzB2yCJRT2njGVGGExHitiQhPB8xGTTvS352Y=
+        b=FfVQ6AYg0Ov9apoImHL8kelULttcaV+qOqMh++Rb8hV95yRSq3ncHy1XSWcETYfhh
+         6i3K4QVT9Oxv7sI1NYNxCAJi8hF9PX9lHNVjkES0EhOQVw25woGsZWh4EHJzvbjf5a
+         WUOuIwxSHwPZIhjbJ62pqUxrM7vi6ATniNlCWQbw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.10 459/563] powerpc/64s/radix: Fix huge vmap false positive
-Date:   Mon, 24 Jan 2022 19:43:44 +0100
-Message-Id: <20220124184040.330083950@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 384/563] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
+Date:   Mon, 24 Jan 2022 19:42:29 +0100
+Message-Id: <20220124184037.702968319@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,95 +48,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
 
-commit 467ba14e1660b52a2f9338b484704c461bd23019 upstream.
+[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
 
-pmd_huge() is defined to false when HUGETLB_PAGE is not configured, but
-the vmap code still installs huge PMDs. This leads to false bad PMD
-errors when vunmapping because it is not seen as a huge PTE, and the bad
-PMD check catches it. The end result may not be much more serious than
-some bad pmd warning messages, because the pmd_none_or_clear_bad() does
-what we wanted and clears the huge PTE anyway.
+GC task can deadlock in read_cache_page() because it may attempt
+to release a page that is actually allocated by another task in
+jffs2_write_begin().
+The reason is that in jffs2_write_begin() there is a small window
+a cache page is allocated for use but not set Uptodate yet.
 
-Fix this by checking pmd_is_leaf(), which checks for a PTE regardless of
-config options. The whole huge/large/leaf stuff is a tangled mess but
-that's kernel-wide and not something we can improve much in arch/powerpc
-code.
+This ends up with a deadlock between two tasks:
+1) A task (e.g. file copy)
+   - jffs2_write_begin() locks a cache page
+   - jffs2_write_end() tries to lock "alloc_sem" from
+	 jffs2_reserve_space() <-- STUCK
+2) GC task (jffs2_gcd_mtd3)
+   - jffs2_garbage_collect_pass() locks "alloc_sem"
+   - try to lock the same cache page in read_cache_page() <-- STUCK
 
-pmd_page(), pud_page(), etc., called by vmalloc_to_page() on huge vmaps
-can similarly trigger a false VM_BUG_ON when CONFIG_HUGETLB_PAGE=n, so
-those checks are adjusted. The checks were added by commit d6eacedd1f0e
-("powerpc/book3s: Use config independent helpers for page table walk"),
-while implementing a similar fix for other page table walking functions.
+So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
+while reading data in a cache page.
 
-Fixes: d909f9109c30 ("powerpc/64s/radix: Enable HAVE_ARCH_HUGE_VMAP")
-Cc: stable@vger.kernel.org # v5.3+
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211216103342.609192-1-npiggin@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/book3s64/radix_pgtable.c |    4 ++--
- arch/powerpc/mm/pgtable_64.c             |   14 +++++++++++---
- 2 files changed, 13 insertions(+), 5 deletions(-)
+ fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
+ 1 file changed, 25 insertions(+), 15 deletions(-)
 
---- a/arch/powerpc/mm/book3s64/radix_pgtable.c
-+++ b/arch/powerpc/mm/book3s64/radix_pgtable.c
-@@ -1152,7 +1152,7 @@ int pud_set_huge(pud_t *pud, phys_addr_t
+diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
+index 4fc8cd698d1a4..bd7d58d27bfc6 100644
+--- a/fs/jffs2/file.c
++++ b/fs/jffs2/file.c
+@@ -136,20 +136,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 	struct page *pg;
+ 	struct inode *inode = mapping->host;
+ 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
++	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 	pgoff_t index = pos >> PAGE_SHIFT;
+ 	uint32_t pageofs = index << PAGE_SHIFT;
+ 	int ret = 0;
  
- int pud_clear_huge(pud_t *pud)
- {
--	if (pud_huge(*pud)) {
-+	if (pud_is_leaf(*pud)) {
- 		pud_clear(pud);
- 		return 1;
- 	}
-@@ -1199,7 +1199,7 @@ int pmd_set_huge(pmd_t *pmd, phys_addr_t
+-	pg = grab_cache_page_write_begin(mapping, index, flags);
+-	if (!pg)
+-		return -ENOMEM;
+-	*pagep = pg;
+-
+ 	jffs2_dbg(1, "%s()\n", __func__);
  
- int pmd_clear_huge(pmd_t *pmd)
- {
--	if (pmd_huge(*pmd)) {
-+	if (pmd_is_leaf(*pmd)) {
- 		pmd_clear(pmd);
- 		return 1;
+ 	if (pageofs > inode->i_size) {
+ 		/* Make new hole frag from old EOF to new page */
+-		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 		struct jffs2_raw_inode ri;
+ 		struct jffs2_full_dnode *fn;
+ 		uint32_t alloc_len;
+@@ -160,7 +155,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
+ 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
+ 		if (ret)
+-			goto out_page;
++			goto out_err;
+ 
+ 		mutex_lock(&f->sem);
+ 		memset(&ri, 0, sizeof(ri));
+@@ -190,7 +185,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			ret = PTR_ERR(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
+ 		if (f->metadata) {
+@@ -205,13 +200,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			jffs2_free_full_dnode(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		jffs2_complete_reservation(c);
+ 		inode->i_size = pageofs;
+ 		mutex_unlock(&f->sem);
  	}
---- a/arch/powerpc/mm/pgtable_64.c
-+++ b/arch/powerpc/mm/pgtable_64.c
-@@ -102,7 +102,8 @@ EXPORT_SYMBOL(__pte_frag_size_shift);
- struct page *p4d_page(p4d_t p4d)
- {
- 	if (p4d_is_leaf(p4d)) {
--		VM_WARN_ON(!p4d_huge(p4d));
-+		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
-+			VM_WARN_ON(!p4d_huge(p4d));
- 		return pte_page(p4d_pte(p4d));
+ 
++	/*
++	 * While getting a page and reading data in, lock c->alloc_sem until
++	 * the page is Uptodate. Otherwise GC task may attempt to read the same
++	 * page in read_cache_page(), which causes a deadlock.
++	 */
++	mutex_lock(&c->alloc_sem);
++	pg = grab_cache_page_write_begin(mapping, index, flags);
++	if (!pg) {
++		ret = -ENOMEM;
++		goto release_sem;
++	}
++	*pagep = pg;
++
+ 	/*
+ 	 * Read in the page if it wasn't already present. Cannot optimize away
+ 	 * the whole page write case until jffs2_write_end can handle the
+@@ -221,15 +229,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		mutex_lock(&f->sem);
+ 		ret = jffs2_do_readpage_nolock(inode, pg);
+ 		mutex_unlock(&f->sem);
+-		if (ret)
+-			goto out_page;
++		if (ret) {
++			unlock_page(pg);
++			put_page(pg);
++			goto release_sem;
++		}
  	}
- 	return virt_to_page(p4d_page_vaddr(p4d));
-@@ -112,7 +113,8 @@ struct page *p4d_page(p4d_t p4d)
- struct page *pud_page(pud_t pud)
- {
- 	if (pud_is_leaf(pud)) {
--		VM_WARN_ON(!pud_huge(pud));
-+		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
-+			VM_WARN_ON(!pud_huge(pud));
- 		return pte_page(pud_pte(pud));
- 	}
- 	return virt_to_page(pud_page_vaddr(pud));
-@@ -125,7 +127,13 @@ struct page *pud_page(pud_t pud)
- struct page *pmd_page(pmd_t pmd)
- {
- 	if (pmd_is_leaf(pmd)) {
--		VM_WARN_ON(!(pmd_large(pmd) || pmd_huge(pmd)));
-+		/*
-+		 * vmalloc_to_page may be called on any vmap address (not only
-+		 * vmalloc), and it uses pmd_page() etc., when huge vmap is
-+		 * enabled so these checks can't be used.
-+		 */
-+		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
-+			VM_WARN_ON(!(pmd_large(pmd) || pmd_huge(pmd)));
- 		return pte_page(pmd_pte(pmd));
- 	}
- 	return virt_to_page(pmd_page_vaddr(pmd));
+ 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
+-	return ret;
+ 
+-out_page:
+-	unlock_page(pg);
+-	put_page(pg);
++release_sem:
++	mutex_unlock(&c->alloc_sem);
++out_err:
+ 	return ret;
+ }
+ 
+-- 
+2.34.1
+
 
 
