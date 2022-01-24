@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3491C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E759C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343521AbiAXSuu (ORCPT
+        id S1343558AbiAXSu6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:50:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42922 "EHLO
+        Mon, 24 Jan 2022 13:50:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245375AbiAXStz (ORCPT
+        with ESMTP id S245516AbiAXSth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:49:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A32BC061759;
-        Mon, 24 Jan 2022 10:49:55 -0800 (PST)
+        Mon, 24 Jan 2022 13:49:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A4ECC061768;
+        Mon, 24 Jan 2022 10:49:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3268EB8121B;
-        Mon, 24 Jan 2022 18:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E125C340E7;
-        Mon, 24 Jan 2022 18:49:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28460614D8;
+        Mon, 24 Jan 2022 18:49:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D69A8C340E5;
+        Mon, 24 Jan 2022 18:49:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050193;
-        bh=1iwX9fiVdN109SENSvLbS9g6OOk2fPkxM7KXrvSR8zU=;
+        s=korg; t=1643050170;
+        bh=5NY77zdV9ozn/+VEAlvfkSk/XENHtvV6igQMct3x6Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B3I/OgOW5w8tqXNrkt1vSIwsGHsYx4WKwUsNOZk7PP8wgWdT78ujJHASRQ2NbEVk2
-         P0K2DRDOVNC9o+RgBlJAUiYunvtnbzSO6O2/hrlcuVxVYO1Rla6OkuC4vyCki1J181
-         5QIG5yBJaQp3MAYJU+bU170KbzKFaedqsrRXfprk=
+        b=Ah/ACyyZvfRyePn6l6DX0Y2wQI19zWNaz7yc5r7mh/Q32QnarlmufGmvUfLrYn3+1
+         S65y3gcQGfd0dtKEEM4/xjFPemksMCgBjPJgPEDufc4V/uDKB4nPh4xC5Jwcg5ZMCo
+         FbGtq5DQaS+TN8oX0amTQFF/EtwDP7N0ByvDlZoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 039/114] can: xilinx_can: xcan_probe(): check for error irq
-Date:   Mon, 24 Jan 2022 19:42:14 +0100
-Message-Id: <20220124183928.318364577@linuxfoundation.org>
+Subject: [PATCH 4.4 032/114] media: msi001: fix possible null-ptr-deref in msi001_probe()
+Date:   Mon, 24 Jan 2022 19:42:07 +0100
+Message-Id: <20220124183928.111280323@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -50,46 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit c6564c13dae25cd7f8e1de5127b4da4500ee5844 ]
+[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
+I got a null-ptr-deref report:
 
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq()
-effectively convert that into -EINVAL, even at probe time rather than
-later on. So it might be better to check just now.
+BUG: kernel NULL pointer dereference, address: 0000000000000060
+...
+RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
+...
+Call Trace:
+ msi001_probe+0x13b/0x24b [msi001]
+ spi_probe+0xeb/0x130
+...
+ do_syscall_64+0x35/0xb0
 
-Fixes: b1201e44f50b ("can: xilinx CAN controller support")
-Link: https://lore.kernel.org/all/20211224021324.1447494-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+In msi001_probe(), if the creation of control for bandwidth_auto
+fails, there will be a null-ptr-deref issue when it is used in
+v4l2_ctrl_auto_cluster().
+
+Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
+
+Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
+Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/xilinx_can.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/media/tuners/msi001.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 700b98d9c2500..19745e88774e2 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1284,7 +1284,12 @@ static int xcan_probe(struct platform_device *pdev)
- 	spin_lock_init(&priv->tx_lock);
- 
- 	/* Get IRQ for the device */
--	ndev->irq = platform_get_irq(pdev, 0);
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		goto err_free;
+diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
+index 3a12ef35682b5..64d98517f470f 100644
+--- a/drivers/media/tuners/msi001.c
++++ b/drivers/media/tuners/msi001.c
+@@ -464,6 +464,13 @@ static int msi001_probe(struct spi_device *spi)
+ 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
+ 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
+ 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
++	if (dev->hdl.error) {
++		ret = dev->hdl.error;
++		dev_err(&spi->dev, "Could not initialize controls\n");
++		/* control init failed, free handler */
++		goto err_ctrl_handler_free;
++	}
 +
-+	ndev->irq = ret;
-+
- 	ndev->flags |= IFF_ECHO;	/* We support local echo */
- 
- 	platform_set_drvdata(pdev, ndev);
+ 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
+ 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
+ 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
 -- 
 2.34.1
 
