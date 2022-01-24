@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8757DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:16:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B93C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234838AbiAXTQX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:16:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
+        id S1347712AbiAXTOe (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:14:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346254AbiAXTFO (ORCPT
+        with ESMTP id S1343848AbiAXTFg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:14 -0500
+        Mon, 24 Jan 2022 14:05:36 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172DEC0613EC;
-        Mon, 24 Jan 2022 11:00:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B25EDC061774;
+        Mon, 24 Jan 2022 11:01:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8178608D4;
-        Mon, 24 Jan 2022 19:00:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A27DC340E5;
-        Mon, 24 Jan 2022 19:00:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5142160C17;
+        Mon, 24 Jan 2022 19:01:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29D4AC340E5;
+        Mon, 24 Jan 2022 19:01:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050842;
-        bh=SqqKlmrkJD2ajJiHT7F53gMvsqqsiJfdubXqh3QjyAo=;
+        s=korg; t=1643050879;
+        bh=/5CAYepTBiNKnuaUxeDRApQltX0ss9gMvwPaaxbIzC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qPBcD5KGCssJ//76QRGd3RDtOQr4p6jdRd0ozCv4/HDgle9DL3S/DsCOld0sLdMUQ
-         m7QBpukZ1AKo1cqcGH6l8iKVS7NABN8Sswi1Gjz+OsrXoXGWNcj4/0ktuC7g5+993i
-         4D9qDUQ7FFr+GTKtSAMrZh4bXhsCTo3EwXa3Npig=
+        b=GLrPH7goNAJmkIZEIYtk1TWf2nhmJ0HTtLndcpD2ix5p/PMLOWFcONtoi/ifVHhKw
+         UkVJEgbAq6rtInksyQOUdFRJMbtyq1LVIA0PYtQmlQvdFKMspTV1Z7Fudn7Lg4TMtq
+         qE6BVtLy86wfoeBGFoghq/8C3XDAq8wfr9LUGnVA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.9 130/157] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
-Date:   Mon, 24 Jan 2022 19:43:40 +0100
-Message-Id: <20220124183936.908163451@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.9 141/157] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
+Date:   Mon, 24 Jan 2022 19:43:51 +0100
+Message-Id: <20220124183937.241489893@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -48,38 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 0d375d610fa96524e2ee2b46830a46a7bfa92a9f upstream.
+commit 912f7c6f7fac273f40e621447cf17d14b50d6e5b upstream.
 
-This block is used in (at least) T1024 and T1040, including their
-variants like T1023 etc.
+The hardware channel next descriptor view structure contains just
+fields of 32 bits, while dma_addr_t can be of type u64 or u32
+depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
+what the hardware expects.
 
-Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-11-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/dma/at_xdmac.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-@@ -78,6 +78,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfc000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -233,15 +233,15 @@ struct at_xdmac {
  
- 	xmdio0: mdio@fd000 {
-@@ -85,6 +86,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfd000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
+ /* Linked List Descriptor */
+ struct at_xdmac_lld {
+-	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
+-	u32		mbr_ubc;	/* Microblock Control Member */
+-	dma_addr_t	mbr_sa;		/* Source Address Member */
+-	dma_addr_t	mbr_da;		/* Destination Address Member */
+-	u32		mbr_cfg;	/* Configuration Register */
+-	u32		mbr_bc;		/* Block Control Register */
+-	u32		mbr_ds;		/* Data Stride Register */
+-	u32		mbr_sus;	/* Source Microblock Stride Register */
+-	u32		mbr_dus;	/* Destination Microblock Stride Register */
++	u32 mbr_nda;	/* Next Descriptor Member */
++	u32 mbr_ubc;	/* Microblock Control Member */
++	u32 mbr_sa;	/* Source Address Member */
++	u32 mbr_da;	/* Destination Address Member */
++	u32 mbr_cfg;	/* Configuration Register */
++	u32 mbr_bc;	/* Block Control Register */
++	u32 mbr_ds;	/* Data Stride Register */
++	u32 mbr_sus;	/* Source Microblock Stride Register */
++	u32 mbr_dus;	/* Destination Microblock Stride Register */
+ };
  
- 	ptp_timer0: ptp-timer@fe000 {
+ /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
 
 
