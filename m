@@ -2,44 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E6DC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA72DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344610AbiAXTHe (ORCPT
+        id S1344182AbiAXTHh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:07:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345879AbiAXTBO (ORCPT
+        Mon, 24 Jan 2022 14:07:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58270 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345828AbiAXTBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:01:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53369C061A83;
-        Mon, 24 Jan 2022 10:58:27 -0800 (PST)
+        Mon, 24 Jan 2022 14:01:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CD14B8121B;
-        Mon, 24 Jan 2022 18:58:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54BEAC340E5;
-        Mon, 24 Jan 2022 18:58:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1950B8121C;
+        Mon, 24 Jan 2022 19:01:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C81FCC340E7;
+        Mon, 24 Jan 2022 19:01:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050704;
-        bh=fkB1Uenr+wOd5Si9NwVeQ3Cj6i2+Q4Nx/VagxEJT/Tc=;
+        s=korg; t=1643050867;
+        bh=DthYjh+AUf6U0msGHmNsk3EuOaLtsWRn1QyFhfakDLQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KmRuewr7Xh+iiNhTMzLbA2CUGDG9jJkQz2VvIxZ6NfdVBac0dOuHZdCKRfPQP/Mok
-         cbE/v2Bsu9hVivdbFeb2qV90GUikfmH4kJdgy5z6JwosYjxqXJ41L0ML+ESlWRYoNH
-         5JKVTvSu3gx0MDjpwFrSXThVA1edSiHr5TyEJMc8=
+        b=YFSCilqkMJHcSTX1pWHLZ3sz3II/V5twquvf8qj6nvjhBgB/ExhaS54Xm9dZW2ZOe
+         DeDq+z64SvA3vO6TO2+VlJ51TYkW3bKraZL08AQ8GeeXRfCafSL3+fpds08lFH1dX/
+         JILezTZdUW6NFWi8hfdMsKA/gE83SLw+n8/ZOnHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Gottschall <s.gottschall@dd-wrt.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 087/157] ath10k: Fix tx hanging
-Date:   Mon, 24 Jan 2022 19:42:57 +0100
-Message-Id: <20220124183935.544944696@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.9 137/157] libcxgb: Dont accidentally set RTO_ONLINK in cxgb_find_route()
+Date:   Mon, 24 Jan 2022 19:43:47 +0100
+Message-Id: <20220124183937.121091212@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -51,56 +46,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
+commit a915deaa9abe4fb3a440312c954253a6a733608e upstream.
 
-While running stress tests in roaming scenarios (switching ap's every 5
-seconds, we discovered a issue which leads to tx hangings of exactly 5
-seconds while or after scanning for new accesspoints. We found out that
-this hanging is triggered by ath10k_mac_wait_tx_complete since the
-empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
-To fix this, we simply move the wake_up call to htt_tx_dec_pending,
-since this call was missed on several locations within the ath10k code.
+Mask the ECN bits before calling ip_route_output_ports(). The tos
+variable might be passed directly from an IPv4 header, so it may have
+the last ECN bit set. This interferes with the route lookup process as
+ip_route_output_key_hash() interpretes this bit specially (to restrict
+the route scope).
 
-Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Found by code inspection, compile tested only.
+
+Fixes: 804c2f3e36ef ("libcxgb,iw_cxgb4,cxgbit: add cxgb_find_route()")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
- drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index ae5b33fe5ba82..374ce35940d07 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -158,6 +158,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
- 	htt->num_pending_tx--;
- 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
- 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
-+
-+	if (htt->num_pending_tx == 0)
-+		wake_up(&htt->empty_tx_wq);
- }
+--- a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
++++ b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
+@@ -32,6 +32,7 @@
  
- int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index beeb6be06939b..b6c050452b757 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -89,8 +89,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
+ #include <linux/tcp.h>
+ #include <linux/ipv6.h>
++#include <net/inet_ecn.h>
+ #include <net/route.h>
+ #include <net/ip6_route.h>
  
- 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
- 	ath10k_htt_tx_dec_pending(htt);
--	if (htt->num_pending_tx == 0)
--		wake_up(&htt->empty_tx_wq);
- 	spin_unlock_bh(&htt->tx_lock);
+@@ -99,7 +100,7 @@ cxgb_find_route(struct cxgb4_lld_info *l
  
- 	dma_unmap_single(dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
--- 
-2.34.1
-
+ 	rt = ip_route_output_ports(&init_net, &fl4, NULL, peer_ip, local_ip,
+ 				   peer_port, local_port, IPPROTO_TCP,
+-				   tos, 0);
++				   tos & ~INET_ECN_MASK, 0);
+ 	if (IS_ERR(rt))
+ 		return NULL;
+ 	n = dst_neigh_lookup(&rt->dst, &peer_ip);
 
 
