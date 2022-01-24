@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E3FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B3DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245413AbiAXSug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:50:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48420 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245546AbiAXStr (ORCPT
+        id S245758AbiAXSuk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:50:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49624 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245531AbiAXStn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:49:47 -0500
+        Mon, 24 Jan 2022 13:49:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BBE1614C9;
-        Mon, 24 Jan 2022 18:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27344C340E5;
-        Mon, 24 Jan 2022 18:49:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B0DAB8121F;
+        Mon, 24 Jan 2022 18:49:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABB14C340E5;
+        Mon, 24 Jan 2022 18:49:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050186;
-        bh=u+aBQpTuCtY9LJk5bEHF2dL9U4aLOFqYV4b54fbW9AY=;
+        s=korg; t=1643050180;
+        bh=WwExldU9G39L2ssPdcPuqzKK5FM6hA2PmC/gQghHkmE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gDnALDqm8Fbits8VUxpINVGxvgG/ewHq9slqwU0Av52W9ic/g+Ayxpu2A9l2bzWfV
-         CgFymSykZFW7/T6jlw8GV8EH621tVIjnT56F2qxLl6M4xDKFeOT3FeCntTEpEHzUcc
-         CX/YNotzuLz5nEURoGRjm1DxohU5Vc57m7/1nOQo=
+        b=arAFBWbzB20YeVvl/FNUtFmapyW62sezautw0WludFS7EAZcLzfz2byadfft56Xo8
+         ugSRB/G2uhNCiTMu/RcnjpiN1WOjVuSHkkVdN8zmWt32XUncanIaY6BakFnoJDui2t
+         WsshAdFYz/B1J2/pDFr6idCf6ic+IczZhph218ys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 037/114] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
-Date:   Mon, 24 Jan 2022 19:42:12 +0100
-Message-Id: <20220124183928.260103655@linuxfoundation.org>
+Subject: [PATCH 4.4 035/114] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
+Date:   Mon, 24 Jan 2022 19:42:10 +0100
+Message-Id: <20220124183928.201248888@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -46,35 +46,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
+[ Upstream commit 977d2e7c63c3d04d07ba340b39987742e3241554 ]
 
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for meson_spifc_probe.
+In nonstatic_find_mem_region(), pcmcia_make_resource() is assigned to
+res and used in pci_bus_alloc_resource(). There a dereference of res
+in pci_bus_alloc_resource(), which could lead to a NULL pointer
+dereference on failure of pcmcia_make_resource().
 
-Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fix this bug by adding a check of res.
+
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-meson-spifc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/pcmcia/rsrc_nonstatic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
-index 2465259f62411..8e662e7a35181 100644
---- a/drivers/spi/spi-meson-spifc.c
-+++ b/drivers/spi/spi-meson-spifc.c
-@@ -357,6 +357,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
- 	return 0;
- out_clk:
- 	clk_disable_unprepare(spifc->clk);
-+	pm_runtime_disable(spifc->dev);
- out_err:
- 	spi_master_put(master);
- 	return ret;
+diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
+index 4d244014f423f..2e96d9273b780 100644
+--- a/drivers/pcmcia/rsrc_nonstatic.c
++++ b/drivers/pcmcia/rsrc_nonstatic.c
+@@ -815,6 +815,9 @@ static struct resource *nonstatic_find_mem_region(u_long base, u_long num,
+ 	unsigned long min, max;
+ 	int ret, i, j;
+ 
++	if (!res)
++		return NULL;
++
+ 	low = low || !(s->features & SS_CAP_PAGE_REGS);
+ 
+ 	data.mask = align - 1;
 -- 
 2.34.1
 
