@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CDEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243304AbiAXPD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:03:26 -0500
-Received: from mga01.intel.com ([192.55.52.88]:64659 "EHLO mga01.intel.com"
+        id S240164AbiAXPDf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:03:35 -0500
+Received: from mga17.intel.com ([192.55.52.151]:63899 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240188AbiAXPCa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:02:30 -0500
+        id S239195AbiAXPC2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:02:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643036550; x=1674572550;
+  t=1643036548; x=1674572548;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cSRToTCHMEOWJc9OK9FLAffR3Q9AvG81cVXR2avjTXE=;
-  b=fhjCvstedb0/QedXgyGn6A1Axce3V3Gw7Mr0n0bv1Lj5LG11FCLBd51f
-   wCSxMn6MfewS7DL4SjSdSaUTwy0u72jm4QUfGy2cTAeX7G4tF1n5uo22R
-   n/vsAh/eFOdHvJPlj8iu0WACbdPBbzflxJPnu7zc/AWuhvfin94aXZCMR
-   7vWgJ5WngV4WuFjejlMOQl4ugokqHSA1Uo0qO0ClGVbcO3K09yOYxyWgc
-   OVPv/84YRexXlpGuqiPIElbpHwgRgo9Nla5R+4mLzTbg8mj+c3yYEJOft
-   +it4dGNPXaDr5HGXwGMmC839P/eJ0F8bXmpRReIN7BES8OjqDF3kMbo+3
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270498643"
+  bh=rz6Q1RPO6JdnPBoGEUw9pTSfnxOZX28u8jhsGtM79xQ=;
+  b=Lj9eNTrtVnaQUJ6w9bgmE7yfa06J8FS9YXhYqRoEP1fRofU+5fBiJJhG
+   wenCDBOX2kHy82Tk4n9Po0n9O/4Z275T6TcZNUlZt+1Mvld97Q59dbgCM
+   zghYRynmccCGDdTWEyL5ymS8zRG6hcEz5RKLQQ9cs+8lcho2IliRLMzKO
+   iS06HNCFJq8DIZr8BXS99sKF4MzrUXF9KkEo+rfGXbvtrgjAUK/ZRS8Tw
+   576H7FtR3twmIuhPbwB5JTTC004UlB4nsqumVCjSdHDtg10USebN2qN7e
+   KVK9rLJp/O1OCKkKzkduz8O2uHgK1DWIoKk5prAnqjsIkxpj4uUOxxXJa
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226734697"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="270498643"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:30 -0800
+   d="scan'208";a="226734697"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="479104733"
+   d="scan'208";a="617258453"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 07:02:20 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 24 Jan 2022 07:02:13 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 3D94CBF8; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
+        id 942654DB; Mon, 24 Jan 2022 17:02:19 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -46,10 +46,10 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv2 19/29] x86/topology: Disable CPU online/offline control for TDX guests
-Date:   Mon, 24 Jan 2022 18:02:05 +0300
-Message-Id: <20220124150215.36893-20-kirill.shutemov@linux.intel.com>
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Subject: [PATCHv2 06/29] x86/tdx: Add MSR support for TDX guests
+Date:   Mon, 24 Jan 2022 18:01:52 +0300
+Message-Id: <20220124150215.36893-7-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
 References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
@@ -59,98 +59,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Use hypercall to emulate MSR read/write for the TDX platform.
 
-Unlike regular VMs, TDX guests use the firmware hand-off wakeup method
-to wake up the APs during the boot process. This wakeup model uses a
-mailbox to communicate with firmware to bring up the APs. As per the
-design, this mailbox can only be used once for the given AP, which means
-after the APs are booted, the same mailbox cannot be used to
-offline/online the given AP. More details about this requirement can be
-found in Intel TDX Virtual Firmware Design Guide, sec titled "AP
-initialization in OS" and in sec titled "Hotplug Device".
+There are two viable approaches for doing MSRs in a TD guest:
 
-Since the architecture does not support any method of offlining the
-CPUs, disable CPU hotplug support in the kernel.
+1. Execute the RDMSR/WRMSR instructions like most VMs and bare metal
+   do. Some will succeed, others will cause a #VE. All of those that
+   cause a #VE will be handled with a TDCALL.
+2. Use paravirt infrastructure.  The paravirt hook has to keep a list
+   of which MSRs would cause a #VE and use a TDCALL.  All other MSRs
+   execute RDMSR/WRMSR instructions directly.
 
-Since this hotplug disable feature can be re-used by other VM guests,
-add a new CC attribute CC_ATTR_HOTPLUG_DISABLED and use it to disable
-the hotplug support.
+The second option can be ruled out because the list of MSRs was
+challenging to maintain. That leaves option #1 as the only viable
+solution for the minimal TDX support.
 
-With hotplug disabled, /sys/devices/system/cpu/cpuX/online sysfs option
-will not exist for TDX guests.
+For performance-critical MSR writes (like TSC_DEADLINE), future patches
+will replace the WRMSR/#VE sequence with the direct TDCALL.
 
+RDMSR and WRMSR specification details can be found in
+Guest-Host-Communication Interface (GHCI) for Intel Trust Domain
+Extensions (Intel TDX) specification, sec titled "TDG.VP.
+VMCALL<Instruction.RDMSR>" and "TDG.VP.VMCALL<Instruction.WRMSR>".
+
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Reviewed-by: Andi Kleen <ak@linux.intel.com>
 Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/kernel/cc_platform.c |  7 ++++++-
- include/linux/cc_platform.h   | 10 ++++++++++
- kernel/cpu.c                  |  3 +++
- 3 files changed, 19 insertions(+), 1 deletion(-)
+ arch/x86/kernel/tdx.c | 44 +++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 44 insertions(+)
 
-diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-index 8da246ab4339..dcb31d6a7554 100644
---- a/arch/x86/kernel/cc_platform.c
-+++ b/arch/x86/kernel/cc_platform.c
-@@ -17,8 +17,13 @@
- 
- static bool intel_cc_platform_has(enum cc_attr attr)
- {
--	if (attr == CC_ATTR_GUEST_UNROLL_STRING_IO)
-+	switch (attr) {
-+	case CC_ATTR_GUEST_UNROLL_STRING_IO:
-+	case CC_ATTR_HOTPLUG_DISABLED:
- 		return true;
-+	default:
-+		return false;
-+	}
- 
- 	return false;
+diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
+index eeb456631a65..29a03a4bdb53 100644
+--- a/arch/x86/kernel/tdx.c
++++ b/arch/x86/kernel/tdx.c
+@@ -91,6 +91,39 @@ void __cpuidle tdx_safe_halt(void)
+ 		WARN_ONCE(1, "HLT instruction emulation failed\n");
  }
-diff --git a/include/linux/cc_platform.h b/include/linux/cc_platform.h
-index efd8205282da..691494bbaf5a 100644
---- a/include/linux/cc_platform.h
-+++ b/include/linux/cc_platform.h
-@@ -72,6 +72,16 @@ enum cc_attr {
- 	 * Examples include TDX guest & SEV.
- 	 */
- 	CC_ATTR_GUEST_UNROLL_STRING_IO,
+ 
++static bool tdx_read_msr(unsigned int msr, u64 *val)
++{
++	struct tdx_hypercall_output out;
 +
-+	/**
-+	 * @CC_ATTR_HOTPLUG_DISABLED: Hotplug is not supported or disabled.
-+	 *
-+	 * The platform/OS is running as a guest/virtual machine does not
-+	 * support CPU hotplug feature.
-+	 *
-+	 * Examples include TDX Guest.
++	/*
++	 * Emulate the MSR read via hypercall. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface
++	 * (GHCI), sec titled "TDG.VP.VMCALL<Instruction.RDMSR>".
 +	 */
-+	CC_ATTR_HOTPLUG_DISABLED,
- };
- 
- #ifdef CONFIG_ARCH_HAS_CC_PLATFORM
-diff --git a/kernel/cpu.c b/kernel/cpu.c
-index 407a2568f35e..58fd06ebc2c8 100644
---- a/kernel/cpu.c
-+++ b/kernel/cpu.c
-@@ -34,6 +34,7 @@
- #include <linux/scs.h>
- #include <linux/percpu-rwsem.h>
- #include <linux/cpuset.h>
-+#include <linux/cc_platform.h>
- 
- #include <trace/events/power.h>
- #define CREATE_TRACE_POINTS
-@@ -1185,6 +1186,8 @@ static int __ref _cpu_down(unsigned int cpu, int tasks_frozen,
- 
- static int cpu_down_maps_locked(unsigned int cpu, enum cpuhp_state target)
++	if (_tdx_hypercall(EXIT_REASON_MSR_READ, msr, 0, 0, 0, &out))
++		return false;
++
++	*val = out.r11;
++
++	return true;
++}
++
++static bool tdx_write_msr(unsigned int msr, unsigned int low,
++			       unsigned int high)
++{
++	u64 ret;
++
++	/*
++	 * Emulate the MSR write via hypercall. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface
++	 * (GHCI) sec titled "TDG.VP.VMCALL<Instruction.WRMSR>".
++	 */
++	ret = _tdx_hypercall(EXIT_REASON_MSR_WRITE, msr, (u64)high << 32 | low,
++			     0, 0, NULL);
++
++	return ret ? false : true;
++}
++
+ bool tdx_get_ve_info(struct ve_info *ve)
  {
-+	if (cc_platform_has(CC_ATTR_HOTPLUG_DISABLED))
-+		return -EOPNOTSUPP;
- 	if (cpu_hotplug_disabled)
- 		return -EBUSY;
- 	return _cpu_down(cpu, 0, target);
+ 	struct tdx_module_output out;
+@@ -132,11 +165,22 @@ static bool tdx_virt_exception_user(struct pt_regs *regs, struct ve_info *ve)
+ static bool tdx_virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+ {
+ 	bool ret = false;
++	u64 val;
+ 
+ 	switch (ve->exit_reason) {
+ 	case EXIT_REASON_HLT:
+ 		ret = tdx_halt();
+ 		break;
++	case EXIT_REASON_MSR_READ:
++		ret = tdx_read_msr(regs->cx, &val);
++		if (ret) {
++			regs->ax = lower_32_bits(val);
++			regs->dx = upper_32_bits(val);
++		}
++		break;
++	case EXIT_REASON_MSR_WRITE:
++		ret = tdx_write_msr(regs->cx, regs->ax, regs->dx);
++		break;
+ 	default:
+ 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
+ 		break;
 -- 
 2.34.1
 
