@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB6FC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A1A9C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348983AbiAXTUA (ORCPT
+        id S1349176AbiAXTUY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344994AbiAXTLX (ORCPT
+        Mon, 24 Jan 2022 14:20:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41504 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345572AbiAXTLz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563BCC061378;
-        Mon, 24 Jan 2022 11:03:20 -0800 (PST)
+        Mon, 24 Jan 2022 14:11:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 13AC3B81236;
-        Mon, 24 Jan 2022 19:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECEF2C340E5;
-        Mon, 24 Jan 2022 19:03:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0859F60B88;
+        Mon, 24 Jan 2022 19:11:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D801EC340E5;
+        Mon, 24 Jan 2022 19:11:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050997;
-        bh=mzOXgJWu4huwItt9Jb9pt1M7G82FlnWck1CgOhpFlsE=;
+        s=korg; t=1643051514;
+        bh=/WuAenPvtHoOYxe2cLjzMTFFnpRHp7Hh7oLwX6A9/98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qtEoQNoSFaf9oLSWJ1BPMLli775ix9f50ryABUOrTKF5r5ccliVvYnfLm57a7t2dW
-         W4vKPgFh2z/aaJyybNiWAbybRQXLLzoo447HuLpPKrcX8drPYNe+EbQGI7uzEt/jXU
-         Rt8oUw+Q3Yf/dEOJj+HcktLzkGS0GBfTmmSMfUE8=
+        b=i1B2hcmrfZl/9itxVcIjxgloFuPEY+YmS6MwZoNDdqBliFMb6BGUdChLsYZkFEOyc
+         1n0mjCfyyixj4n1Gd6KNkemZ1vW/H3T2m4jtXyDORu6yeVBE7rKkT81thqfeD8yIYB
+         nXVV1fAGura4qv9MKCA/JwKOhtYP1j7l03mWooQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.14 021/186] media: flexcop-usb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:36 +0100
-Message-Id: <20220124183937.802649871@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.14 179/186] lib82596: Fix IRQ check in sni_82596_probe
+Date:   Mon, 24 Jan 2022 19:44:14 +0100
+Message-Id: <20220124183942.866953540@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -50,95 +46,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
+commit 99218cbf81bf21355a3de61cd46a706d36e900e6 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-Note that the driver was multiplying some of the timeout values with HZ
-twice resulting in 3000-second timeouts with HZ=1000.
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Also note that two of the timeout defines are currently unused.
+Fix the check of return value to catch errors correctly.
 
-Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
-Cc: stable@vger.kernel.org      # 3.0
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 115978859272 ("i825xx: Move the Intel 82586/82593/82596 based drivers")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
- drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/net/ethernet/i825xx/sni_82596.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/media/usb/b2c2/flexcop-usb.c
-+++ b/drivers/media/usb/b2c2/flexcop-usb.c
-@@ -86,7 +86,7 @@ static int flexcop_usb_readwrite_dw(stru
- 			0,
- 			fc_usb->data,
- 			sizeof(u32),
--			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
-+			B2C2_WAIT_FOR_OPERATION_RDW);
+--- a/drivers/net/ethernet/i825xx/sni_82596.c
++++ b/drivers/net/ethernet/i825xx/sni_82596.c
+@@ -122,9 +122,10 @@ static int sni_82596_probe(struct platfo
+ 	netdevice->dev_addr[5] = readb(eth_addr + 0x06);
+ 	iounmap(eth_addr);
  
- 	if (ret != sizeof(u32)) {
- 		err("error while %s dword from %d (%d).", read ? "reading" :
-@@ -154,7 +154,7 @@ static int flexcop_usb_v8_memory_req(str
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 	if (ret != buflen)
- 		ret = -EIO;
+-	if (!netdevice->irq) {
++	if (netdevice->irq < 0) {
+ 		printk(KERN_ERR "%s: IRQ not found for i82596 at 0x%lx\n",
+ 			__FILE__, netdevice->base_addr);
++		retval = netdevice->irq;
+ 		goto probe_failed;
+ 	}
  
-@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
- 		/* DKT 020208 - add this to support special case of DiSEqC */
- 	case USB_FUNC_I2C_CHECKWRITE:
- 		pipe = B2C2_USB_CTRL_PIPE_OUT;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_OUT;
- 		break;
- 	case USB_FUNC_I2C_READ:
- 	case USB_FUNC_I2C_REPEATREAD:
- 		pipe = B2C2_USB_CTRL_PIPE_IN;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_IN;
- 		break;
- 	default:
-@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 
- 	if (ret != buflen)
- 		ret = -EIO;
---- a/drivers/media/usb/b2c2/flexcop-usb.h
-+++ b/drivers/media/usb/b2c2/flexcop-usb.h
-@@ -91,13 +91,13 @@ typedef enum {
- 	UTILITY_SRAM_TESTVERIFY     = 0x16,
- } flexcop_usb_utility_function_t;
- 
--#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
--#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_RW 1000
-+#define B2C2_WAIT_FOR_OPERATION_RDW 3000
-+#define B2C2_WAIT_FOR_OPERATION_WDW 1000
- 
--#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
- 
- typedef enum {
- 	V8_MEMORY_PAGE_DVB_CI = 0x20,
 
 
