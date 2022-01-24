@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EDCC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B65C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378666AbiAYCfl (ORCPT
+        id S1345625AbiAYCf5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:35:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54792 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384748AbiAXUac (ORCPT
+        Mon, 24 Jan 2022 21:35:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35468 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384986AbiAXUbK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:32 -0500
+        Mon, 24 Jan 2022 15:31:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 891E561534;
-        Mon, 24 Jan 2022 20:30:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67D4BC340E5;
-        Mon, 24 Jan 2022 20:30:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D325EB81249;
+        Mon, 24 Jan 2022 20:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B41DC340E5;
+        Mon, 24 Jan 2022 20:31:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056230;
-        bh=OVzwfhHa7Q06DLO2v8bPDfakvQ8TrsmIfo76CKfzYyg=;
+        s=korg; t=1643056268;
+        bh=6EkDRNGlfa2QskW110D63DdZZVgyjLqd5vMfMotBes4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dev97sv+dlTwPp8fnm4Up+Ago+6OFvbI2gAp3bIShZ+1Orq+5/aHd/WGD12La5uOs
-         vWPI2u9InkBcg+Hjra4SNjl/tLetaJHAhYPy+MlBeTZN8HPEXw3QEwC3lD2S0WNcYN
-         vJIuoXoGodWKQb9zPUUVaI0j944CKYDFiNPD+iUM=
+        b=0PXLdrYULCgQ6NLSCLaL7hzGj0dSGuSThWgI+WVlFPLhvneshrloqpMIbmtKF6U3N
+         ZIKoBhyZd71po4DzcUQLlZbABLGo1VBHxa8FuRfwDWHVNfbDJ9APr0r7lGayr7rgNO
+         G2VRB6PnqtrYydktUo9FOPwFvt9lw2rZmeeBReFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        Gabriel Fernandez <gabriel.fernandez@foss.st.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Trevor Wu <trevor.wu@mediatek.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 415/846] clk: stm32: Fix ltdcs clock turn off by clk_disable_unused() after system enter shell
-Date:   Mon, 24 Jan 2022 19:38:52 +0100
-Message-Id: <20220124184115.292450401@linuxfoundation.org>
+Subject: [PATCH 5.15 426/846] ASoC: mediatek: mt8195: correct default value
+Date:   Mon, 24 Jan 2022 19:39:03 +0100
+Message-Id: <20220124184115.669005237@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,72 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Trevor Wu <trevor.wu@mediatek.com>
 
-[ Upstream commit 6fc058a72f3b7b07fc4de6d66ad1f68951b00f6e ]
+[ Upstream commit 30e693ee82d20361f2caacca3b68c79e1a7cb16c ]
 
-stm32's clk driver register two ltdc gate clk to clk core by
-clk_hw_register_gate() and clk_hw_register_composite()
+mt8195_cg_patch is used to reset the default value of audio cg, so the
+register value could be consistent with CCF reference count.
+Nevertheless, AUDIO_TOP_CON1[1:0] is used to control an internal mux,
+and it's expected to keep the default value 0.
 
-first: 'stm32f429_gates[]', clk name is 'ltdc', which no user to use.
-second: 'stm32f429_aux_clk[]', clk name is 'lcd-tft', used by ltdc driver
+This patch corrects the default value in case an unexpected behavior
+happens in the future.
 
-both of them point to the same offset of stm32's RCC register. after
-kernel enter console, clk core turn off ltdc's clk as 'stm32f429_gates[]'
-is no one to use. but, actually 'stm32f429_aux_clk[]' is in use.
-
-stm32f469/746/769 have the same issue, fix it.
-
-Fixes: daf2d117cbca ("clk: stm32f4: Add lcd-tft clock")
-Link: https://lore.kernel.org/linux-arm-kernel/1590564453-24499-7-git-send-email-dillon.minfei@gmail.com/
-Link: https://lore.kernel.org/lkml/CAPTRvHkf0cK_4ZidM17rPo99gWDmxgqFt4CDUjqFFwkOeQeFDg@mail.gmail.com/
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Reviewed-by: Patrice Chotard <patrice.chotard@foss.st.com>
-Acked-by: Gabriel Fernandez <gabriel.fernandez@foss.st.com>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Link: https://lore.kernel.org/r/1635232282-3992-10-git-send-email-dillon.minfei@gmail.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 6746cc8582599 ("ASoC: mediatek: mt8195: add platform driver")
+Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
+Link: https://lore.kernel.org/r/20211216022424.28470-1-trevor.wu@mediatek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-stm32f4.c | 4 ----
- 1 file changed, 4 deletions(-)
+ sound/soc/mediatek/mt8195/mt8195-afe-pcm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/clk-stm32f4.c b/drivers/clk/clk-stm32f4.c
-index af46176ad0539..473dfe632cc57 100644
---- a/drivers/clk/clk-stm32f4.c
-+++ b/drivers/clk/clk-stm32f4.c
-@@ -129,7 +129,6 @@ static const struct stm32f4_gate_data stm32f429_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 20,	"spi5",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
+diff --git a/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c b/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
+index 6635c3f72eccc..2edb40fe27ccb 100644
+--- a/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
++++ b/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
+@@ -3028,7 +3028,7 @@ static const struct reg_sequence mt8195_afe_reg_defaults[] = {
+ 
+ static const struct reg_sequence mt8195_cg_patch[] = {
+ 	{ AUDIO_TOP_CON0, 0xfffffffb },
+-	{ AUDIO_TOP_CON1, 0xfffffffa },
++	{ AUDIO_TOP_CON1, 0xfffffff8 },
  };
  
- static const struct stm32f4_gate_data stm32f469_gates[] __initconst = {
-@@ -211,7 +210,6 @@ static const struct stm32f4_gate_data stm32f469_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 20,	"spi5",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
- 
- static const struct stm32f4_gate_data stm32f746_gates[] __initconst = {
-@@ -286,7 +284,6 @@ static const struct stm32f4_gate_data stm32f746_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 23,	"sai2",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- };
- 
- static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
-@@ -364,7 +361,6 @@ static const struct stm32f4_gate_data stm32f769_gates[] __initconst = {
- 	{ STM32F4_RCC_APB2ENR, 21,	"spi6",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 22,	"sai1",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 23,	"sai2",		"apb2_div" },
--	{ STM32F4_RCC_APB2ENR, 26,	"ltdc",		"apb2_div" },
- 	{ STM32F4_RCC_APB2ENR, 30,	"mdio",		"apb2_div" },
- };
- 
+ static int mt8195_afe_init_registers(struct mtk_base_afe *afe)
 -- 
 2.34.1
 
