@@ -2,132 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDDAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EA5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344318AbiAXTng (ORCPT
+        id S1350042AbiAXTnp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:43:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51954 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345683AbiAXTb3 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97428C028BE3;
-        Mon, 24 Jan 2022 11:14:36 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54FC7B81235;
-        Mon, 24 Jan 2022 19:14:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 696EFC340E5;
-        Mon, 24 Jan 2022 19:14:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051674;
-        bh=25Ko4hpiWyy/zvu15EXPbYLOPKyb4DyarnzWm4qNq5I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mkg9+6uegJMj4yEP6PdvYLvLhWME6uMKRFscxs4aHZTIqXi5Zuz47cv7zRNMHcpB1
-         W+QWIYVbwDFZ6IEPkJ6m4olNjc0a9tGdJ5BTFUocw4BT9TRu/Zs92HfMT3OOvL9ezT
-         m1GCDzHMaXCgKmhbvt1pesgWuvVSnocW7Rer/yw4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 051/239] media: em28xx: fix memory leak in em28xx_init_dev
-Date:   Mon, 24 Jan 2022 19:41:29 +0100
-Message-Id: <20220124183944.759591047@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 14:43:45 -0500
+Received: from mga12.intel.com ([192.55.52.136]:30783 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1352906AbiAXTbP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 14:31:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643052675; x=1674588675;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=q1Bhf6Ww5I5xdm+fU1OBOpYVFdM2uPYEpZ7nHNC3PiA=;
+  b=Lexm2id+2HKUofb3FzC+8ASFmdnxltByiQGu2JWZ6NyK9v/EHR/iinwm
+   P2NwOS5rl7dHKS7YDQs1YDCqUaRbvUYf+Ox41nRKF5wzINJCKsFXy5T81
+   i7Us3SbEFurTkXvTjDLLYmvMr7jqs1OG8v3pgav4hkhSCPuAEFYrHgA3Y
+   9TZ3X3+MOxyVubYXzA4lQPajdEcdUfMZgwBR/zwkXizmdZb48vTM6RcPA
+   lVvX4v8cJHOcF9V97Dtq8cYySXbc+l7EJxjWyTLc9/YCmtQ/j9dMATXYu
+   C+25wX7rgza673rcynPXZo2m3DrSAF1JD/XakW8c8PpJMBwn0x+/DjiiJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226108566"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="226108566"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 11:25:04 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="476834099"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 24 Jan 2022 11:25:03 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC4xa-000IoL-Nn; Mon, 24 Jan 2022 19:25:02 +0000
+Date:   Tue, 25 Jan 2022 03:24:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 2040/2384]
+ arch/mips/sgi-ip30/ip30-setup.c:136:9: error: 'ioport_resource' undeclared
+Message-ID: <202201250357.V6BlaZ0J-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   4c707c1c0de83967079b4e385012fa5b00e2cd11
+commit: abe1ece6c06895bf5e7c8f03d10061f5712d8326 [2040/2384] headers/deps: dev/core: Optimize <linux/device.h> dependencies, remove <linux/device_api.h> inclusion
+config: mips-randconfig-m031-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250357.V6BlaZ0J-lkp@intel.com/config)
+compiler: mips64-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=abe1ece6c06895bf5e7c8f03d10061f5712d8326
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout abe1ece6c06895bf5e7c8f03d10061f5712d8326
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/pci/ arch/mips/sgi-ip30/ drivers/media/test-drivers/vidtv/ drivers/usb/chipidea/ drivers/usb/usbip/
 
-[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
-to deallocate the media_dev allocated in the em28xx_media_device_init.
+All errors (new ones prefixed by >>):
 
-Fix this by adding em28xx_unregister_media_device to free media_dev.
+   arch/mips/sgi-ip30/ip30-setup.c:123:13: warning: no previous prototype for 'plat_mem_setup' [-Wmissing-prototypes]
+     123 | void __init plat_mem_setup(void)
+         |             ^~~~~~~~~~~~~~
+   arch/mips/sgi-ip30/ip30-setup.c: In function 'plat_mem_setup':
+>> arch/mips/sgi-ip30/ip30-setup.c:136:9: error: 'ioport_resource' undeclared (first use in this function)
+     136 |         ioport_resource.start = 0;
+         |         ^~~~~~~~~~~~~~~
+   arch/mips/sgi-ip30/ip30-setup.c:136:9: note: each undeclared identifier is reported only once for each function it appears in
 
-BTW, this patch is tested in my local syzkaller instance, and it can
-prevent the memory leak from occurring again.
 
-CC: Pavel Skripkin <paskripkin@gmail.com>
-Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+vim +/ioport_resource +136 arch/mips/sgi-ip30/ip30-setup.c
+
+7505576d1c1ac0 Thomas Bogendoerfer 2019-10-24  135  
+7505576d1c1ac0 Thomas Bogendoerfer 2019-10-24 @136  	ioport_resource.start = 0;
+
+:::::: The code at line 136 was first introduced by commit
+:::::: 7505576d1c1ac0cfe85fdf90999433dd8b673012 MIPS: add support for SGI Octane (IP30)
+
+:::::: TO: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+:::::: CC: Paul Burton <paulburton@kernel.org>
+
 ---
- drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index ec608f60d2c75..06da08f8efdb1 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -3515,8 +3515,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 
- 	if (dev->is_audio_only) {
- 		retval = em28xx_audio_setup(dev);
--		if (retval)
--			return -ENODEV;
-+		if (retval) {
-+			retval = -ENODEV;
-+			goto err_deinit_media;
-+		}
- 		em28xx_init_extension(dev);
- 
- 		return 0;
-@@ -3535,7 +3537,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 		dev_err(&dev->intf->dev,
- 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
- 		       __func__, retval);
--		return retval;
-+		goto err_deinit_media;
- 	}
- 
- 	/* register i2c bus 1 */
-@@ -3551,9 +3553,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 				"%s: em28xx_i2c_register bus 1 - error [%d]!\n",
- 				__func__, retval);
- 
--			em28xx_i2c_unregister(dev, 0);
--
--			return retval;
-+			goto err_unreg_i2c;
- 		}
- 	}
- 
-@@ -3561,6 +3561,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 	em28xx_card_setup(dev);
- 
- 	return 0;
-+
-+err_unreg_i2c:
-+	em28xx_i2c_unregister(dev, 0);
-+err_deinit_media:
-+	em28xx_unregister_media_device(dev);
-+	return retval;
- }
- 
- static int em28xx_duplicate_dev(struct em28xx *dev)
--- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
