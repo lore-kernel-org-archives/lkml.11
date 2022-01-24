@@ -2,142 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3019AC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:24:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381632AbiAXWY3 (ORCPT
+        id S1585599AbiAXWXt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:24:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447543AbiAXVK6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:10:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8AFC09D326;
-        Mon, 24 Jan 2022 12:09:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98B68B8122C;
-        Mon, 24 Jan 2022 20:09:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2782C340E5;
-        Mon, 24 Jan 2022 20:09:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054941;
-        bh=r8GhSghsTWhs/kPYweBGTn+V7itGNTAEK1ngaeBmVa4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CzUXSVPVkV6kzN9cwHe9FW41GizXazz4rfaqvLwAY76PTe1R5fig+xoWNrIgZRCTV
-         XM3hpdigPno6om4joDqTAPkPDtJcUug2yJlBynZYTDmVNRmf/oO+bcF72Bg5LRx9gs
-         PzP6zJC3FXPrQz5q6TfX+V2aQPkkgg6m5o5ZYzrk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?=E7=85=A7=E5=B1=B1=E5=91=A8=E4=B8=80=E9=83=8E?= 
-        <teruyama@springboard-inc.jp>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 553/563] net: sfp: fix high power modules without diagnostic monitoring
-Date:   Mon, 24 Jan 2022 19:45:18 +0100
-Message-Id: <20220124184043.566189264@linuxfoundation.org>
+        Mon, 24 Jan 2022 17:23:49 -0500
+Received: from msg-1.mailo.com ([213.182.54.11]:58568 "EHLO msg-1.mailo.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1452811AbiAXV0n (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 16:26:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
+        t=1643059591; bh=mO3tb05cTOuphZIg+//I0d2+WBV6Mo6nP+Raa7qVyLU=;
+        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding;
+        b=aavmcYzUiTcrUa2uhgeT/11Be6+nmmqwMJX0WPxhnRAawWU2s9nBjrVZX+EDH8Xmc
+         gxl3PmhQSGV+lX2dlF95NJBpiOfi9x+xX7ER01R/VDYlupH65MQPt/pg+ratKt2uLY
+         asg3BNW4O/lpXqNlH1VAc1yVrJQiRVwiV8MFTGXw=
+Received: by b-5.in.mailobj.net [192.168.90.15] with ESMTP
+        via proxy.mailoo.org [213.182.55.207]
+        Mon, 24 Jan 2022 22:26:30 +0100 (CET)
+X-EA-Auth: Ep7f231bQs2/hCSEasO0ZuSaPoVnrxqhx/Rbloia8kUNCbHzrvMdwyMgEtDePtetgZgP9oi76FV6Bzn1LVSZKwLmz5ceZ3Rp/+tjdBDj+IU=
+From:   Vincent Knecht <vincent.knecht@mailoo.org>
+To:     dmitry.torokhov@gmail.com, stephan@gerhold.net
+Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Vincent Knecht <vincent.knecht@mailoo.org>
+Subject: [PATCH v2 3/5] Input: msg2638 - Add support for msg2138
+Date:   Mon, 24 Jan 2022 22:26:09 +0100
+Message-Id: <20220124212611.752603-4-vincent.knecht@mailoo.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220124212611.752603-1-vincent.knecht@mailoo.org>
+References: <20220124212611.752603-1-vincent.knecht@mailoo.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+msg2138 only supports 2 fingers presses, and needs different processing
+since second finger press is encoded as a delta position wrt. first one
+and the packet/touch_event structs are not the same as msg2638.
 
-commit 5765cee119bf5a36c94d20eceb37c445508934be upstream.
+Add support for it by implementing distinct structs and irq handler.
 
-Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
-modules") unintetionally changed the semantics for high power modules
-without the digital diagnostics monitoring. We repeatedly attempt to
-read the power status from the non-existing 0xa2 address in a futile
-hope this failure is temporary:
-
-[    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev 0000  sn 0000000000000000 dc 160408
-[    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-x link mode
-[    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
-[    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
-[    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
-
-We previosuly assumed such modules were powered up in the correct mode,
-continuing without further configuration as long as the required power
-class was supported by the host.
-
-Restore this behaviour, while preserving the intent of subsequent
-patches to avoid the "Address Change Sequence not supported" warning
-if we are not going to be accessing the DDM address.
-
-Fixes: 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change modules")
-Reported-by: 照山周一郎 <teruyama@springboard-inc.jp>
-Tested-by: 照山周一郎 <teruyama@springboard-inc.jp>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
 ---
- drivers/net/phy/sfp.c |   25 +++++++++++++++++++++----
- 1 file changed, 21 insertions(+), 4 deletions(-)
+v2:
+- no change
+---
+ drivers/input/touchscreen/msg2638.c | 93 +++++++++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
 
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -1589,17 +1589,20 @@ static int sfp_sm_probe_for_phy(struct s
- static int sfp_module_parse_power(struct sfp *sfp)
+diff --git a/drivers/input/touchscreen/msg2638.c b/drivers/input/touchscreen/msg2638.c
+index 222adedf78bf..73e1b4d550fb 100644
+--- a/drivers/input/touchscreen/msg2638.c
++++ b/drivers/input/touchscreen/msg2638.c
+@@ -26,6 +26,7 @@
+ 
+ #define MODE_DATA_RAW			0x5A
+ 
++#define MSG2138_MAX_FINGERS		2
+ #define MSG2638_MAX_FINGERS		5
+ 
+ #define CHIP_ON_DELAY_MS		15
+@@ -38,6 +39,18 @@ struct msg_chip_data {
+ 	unsigned int max_fingers;
+ };
+ 
++struct msg2138_packet {
++	u8	xy_hi; /* higher bits of x and y coordinates */
++	u8	x_low;
++	u8	y_low;
++};
++
++struct msg2138_touch_event {
++	u8	magic;
++	struct	msg2138_packet pkt[MSG2138_MAX_FINGERS];
++	u8	checksum;
++};
++
+ struct msg2638_packet {
+ 	u8	xy_hi; /* higher bits of x and y coordinates */
+ 	u8	x_low;
+@@ -72,6 +85,80 @@ static u8 msg2638_checksum(u8 *data, u32 length)
+ 	return (u8)((-sum) & 0xFF);
+ }
+ 
++static irqreturn_t msg2138_ts_irq_handler(int irq, void *msg2638_handler)
++{
++	struct msg2638_ts_data *msg2638 = msg2638_handler;
++	struct i2c_client *client = msg2638->client;
++	struct input_dev *input = msg2638->input_dev;
++	struct msg2138_touch_event touch_event;
++	u32 len = sizeof(touch_event);
++	struct i2c_msg msg[] = {
++		{
++			.addr	= client->addr,
++			.flags	= I2C_M_RD,
++			.len	= sizeof(touch_event),
++			.buf	= (u8 *)&touch_event,
++		},
++	};
++	struct msg2138_packet *p0, *p1;
++	u16 x, y, delta_x, delta_y;
++	int ret;
++
++	ret = i2c_transfer(client->adapter, msg, ARRAY_SIZE(msg));
++	if (ret != ARRAY_SIZE(msg)) {
++		dev_err(&client->dev,
++			"Failed I2C transfer in irq handler: %d\n",
++			ret < 0 ? ret : -EIO);
++		goto out;
++	}
++
++	if (msg2638_checksum((u8 *)&touch_event, len - 1) !=
++						touch_event.checksum) {
++		dev_err(&client->dev, "Failed checksum!\n");
++		goto out;
++	}
++
++	p0 = &touch_event.pkt[0];
++	p1 = &touch_event.pkt[1];
++
++	/* Ignore non-pressed finger data */
++	if (p0->xy_hi == 0xFF && p0->x_low == 0xFF && p0->y_low == 0xFF)
++		goto report;
++
++	x = (((p0->xy_hi & 0xF0) << 4) | p0->x_low);
++	y = (((p0->xy_hi & 0x0F) << 8) | p0->y_low);
++
++	input_mt_slot(input, 0);
++	input_mt_report_slot_state(input, MT_TOOL_FINGER, true);
++	touchscreen_report_pos(input, &msg2638->prop, x, y, true);
++
++	/* Ignore non-pressed finger data */
++	if (p1->xy_hi == 0xFF && p1->x_low == 0xFF && p1->y_low == 0xFF)
++		goto report;
++
++	/* Second finger is reported as a delta position */
++	delta_x = (((p1->xy_hi & 0xF0) << 4) | p1->x_low);
++	delta_y = (((p1->xy_hi & 0x0F) << 8) | p1->y_low);
++
++	/* Ignore second finger if both deltas equal 0 */
++	if (delta_x == 0 && delta_y == 0)
++		goto report;
++
++	x += delta_x;
++	y += delta_y;
++
++	input_mt_slot(input, 1);
++	input_mt_report_slot_state(input, MT_TOOL_FINGER, true);
++	touchscreen_report_pos(input, &msg2638->prop, x, y, true);
++
++report:
++	input_mt_sync_frame(msg2638->input_dev);
++	input_sync(msg2638->input_dev);
++
++out:
++	return IRQ_HANDLED;
++}
++
+ static irqreturn_t msg2638_ts_irq_handler(int irq, void *msg2638_handler)
  {
- 	u32 power_mW = 1000;
-+	bool supports_a2;
+ 	struct msg2638_ts_data *msg2638 = msg2638_handler;
+@@ -331,12 +418,18 @@ static int __maybe_unused msg2638_resume(struct device *dev)
  
- 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
- 		power_mW = 1500;
- 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
- 		power_mW = 2000;
+ static SIMPLE_DEV_PM_OPS(msg2638_pm_ops, msg2638_suspend, msg2638_resume);
  
-+	supports_a2 = sfp->id.ext.sff8472_compliance !=
-+				SFP_SFF8472_COMPLIANCE_NONE ||
-+		      sfp->id.ext.diagmon & SFP_DIAGMON_DDM;
++static const struct msg_chip_data msg2138_data = {
++	.irq_handler = msg2138_ts_irq_handler,
++	.max_fingers = MSG2138_MAX_FINGERS,
++};
 +
- 	if (power_mW > sfp->max_power_mW) {
- 		/* Module power specification exceeds the allowed maximum. */
--		if (sfp->id.ext.sff8472_compliance ==
--			SFP_SFF8472_COMPLIANCE_NONE &&
--		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
-+		if (!supports_a2) {
- 			/* The module appears not to implement bus address
- 			 * 0xa2, so assume that the module powers up in the
- 			 * indicated mode.
-@@ -1616,11 +1619,25 @@ static int sfp_module_parse_power(struct
- 		}
- 	}
+ static const struct msg_chip_data msg2638_data = {
+ 	.irq_handler = msg2638_ts_irq_handler,
+ 	.max_fingers = MSG2638_MAX_FINGERS,
+ };
  
-+	if (power_mW <= 1000) {
-+		/* Modules below 1W do not require a power change sequence */
-+		sfp->module_power_mW = power_mW;
-+		return 0;
-+	}
-+
-+	if (!supports_a2) {
-+		/* The module power level is below the host maximum and the
-+		 * module appears not to implement bus address 0xa2, so assume
-+		 * that the module powers up in the indicated mode.
-+		 */
-+		return 0;
-+	}
-+
- 	/* If the module requires a higher power mode, but also requires
- 	 * an address change sequence, warn the user that the module may
- 	 * not be functional.
- 	 */
--	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE && power_mW > 1000) {
-+	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE) {
- 		dev_warn(sfp->dev,
- 			 "Address Change Sequence not supported but module requires %u.%uW, module may not be functional\n",
- 			 power_mW / 1000, (power_mW / 100) % 10);
+ static const struct of_device_id msg2638_of_match[] = {
++	{ .compatible = "mstar,msg2138", .data = &msg2138_data },
+ 	{ .compatible = "mstar,msg2638", .data = &msg2638_data },
+ 	{ }
+ };
+-- 
+2.34.1
+
 
 
