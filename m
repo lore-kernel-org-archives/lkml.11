@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF91FC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99453C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355165AbiAXTkF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:40:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52530 "EHLO
+        id S242845AbiAXTkf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:40:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346601AbiAXTb5 (ORCPT
+        with ESMTP id S1352901AbiAXTbO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:57 -0500
+        Mon, 24 Jan 2022 14:31:14 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1E84C0604CE;
-        Mon, 24 Jan 2022 11:14:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F311C028C31;
+        Mon, 24 Jan 2022 11:14:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 913DF612A5;
-        Mon, 24 Jan 2022 19:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 491E6C340E5;
-        Mon, 24 Jan 2022 19:14:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1AD260917;
+        Mon, 24 Jan 2022 19:14:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FD49C340E5;
+        Mon, 24 Jan 2022 19:14:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051696;
-        bh=Q28q87FmmGX2wFzBQMk/IK9QBCSY7CNqvceSIi454Ug=;
+        s=korg; t=1643051655;
+        bh=mhPuVfgRFd2RapL/z1cdkOW64XqvZopmkecBub3MIng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MZN5gZpRQZPFYkQDoiR40IMHGsetREDcON5coLNs+NCgV0ewCQ8mcN/CEuT04nnZb
-         P3VDf/IYyhQgk/MByncViZDUCEPysbhY1xVrH/M8hZ5PgjvRHtrDSqfgrnUjQneOis
-         dpGgfe3gxEd6gInmPnhHshe5Ssu0r6xhb0i9B+1A=
+        b=HjsqYz1FdDjhsLklY47MDvWJ/wX0YosZxgchYxqnJmL0Cy2lKU/5IdbZG87zsHm1h
+         PRaDyxdE6nj81JZwR02rQs/ji+3gZSsE5A30tW3QkZb/9375XnFFNYNEt1Lu79xT5K
+         FqlkuLOIvg7/5UAg31aNpGJEUZiSdHOnxmCwAkts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 057/239] tty: serial: atmel: Check return code of dmaengine_submit()
-Date:   Mon, 24 Jan 2022 19:41:35 +0100
-Message-Id: <20220124183944.948043434@linuxfoundation.org>
+Subject: [PATCH 4.19 045/239] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
+Date:   Mon, 24 Jan 2022 19:41:23 +0100
+Message-Id: <20220124183944.571590635@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -51,57 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
+[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
 
-The tx_submit() method of struct dma_async_tx_descriptor is entitled
-to do sanity checks and return errors if encountered. It's not the
-case for the DMA controller drivers that this client is using
-(at_h/xdmac), because they currently don't do sanity checks and always
-return a positive cookie at tx_submit() method. In case the controller
-drivers will implement sanity checks and return errors, print a message
-so that the client will be informed that something went wrong at
-tx_submit() level.
+I got a kernel BUG report when doing fault injection test:
 
-Fixes: 08f738be88bb ("serial: at91: add tx dma support")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:45!
+...
+RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
+...
+Call Trace:
+ proto_unregister+0x83/0x220
+ cmtp_cleanup_sockets+0x37/0x40 [cmtp]
+ cmtp_exit+0xe/0x1f [cmtp]
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
+success. This will cause a kernel bug when accessing uncreated ctmp
+related data when the module exits.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/atmel_serial.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ net/bluetooth/cmtp/core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 936d401f20b95..f6287d76b2984 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -918,6 +918,11 @@ static void atmel_tx_dma(struct uart_port *port)
- 		desc->callback = atmel_complete_tx_dma;
- 		desc->callback_param = atmel_port;
- 		atmel_port->cookie_tx = dmaengine_submit(desc);
-+		if (dma_submit_error(atmel_port->cookie_tx)) {
-+			dev_err(port->dev, "dma_submit_error %d\n",
-+				atmel_port->cookie_tx);
-+			return;
-+		}
- 	}
+diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
+index 9873684a9d8ff..4764ed73f33bf 100644
+--- a/net/bluetooth/cmtp/core.c
++++ b/net/bluetooth/cmtp/core.c
+@@ -499,9 +499,7 @@ static int __init cmtp_init(void)
+ {
+ 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
  
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-@@ -1176,6 +1181,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	desc->callback_param = port;
- 	atmel_port->desc_rx = desc;
- 	atmel_port->cookie_rx = dmaengine_submit(desc);
-+	if (dma_submit_error(atmel_port->cookie_rx)) {
-+		dev_err(port->dev, "dma_submit_error %d\n",
-+			atmel_port->cookie_rx);
-+		goto chan_err;
-+	}
+-	cmtp_init_sockets();
+-
+-	return 0;
++	return cmtp_init_sockets();
+ }
  
- 	return 0;
- 
+ static void __exit cmtp_exit(void)
 -- 
 2.34.1
 
