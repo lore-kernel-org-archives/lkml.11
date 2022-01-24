@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA2FC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50642C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575972AbiAXVwt (ORCPT
+        id S1575875AbiAXVwk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37966 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377498AbiAXVTA (ORCPT
+        Mon, 24 Jan 2022 16:52:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43196 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450438AbiAXVUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:00 -0500
+        Mon, 24 Jan 2022 16:20:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1E06B8123A;
-        Mon, 24 Jan 2022 21:18:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26D51C340E4;
-        Mon, 24 Jan 2022 21:18:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D6066136E;
+        Mon, 24 Jan 2022 21:20:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0EE8C340E4;
+        Mon, 24 Jan 2022 21:20:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059135;
-        bh=FaB0y9HIYPaqAi9q7owR1nZqkiO+ArzL+57wSpMcVoE=;
+        s=korg; t=1643059230;
+        bh=uJoyLqhseUQJo0ZE3D2WIiitPdPERSXYICGFZS49XR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fyNIE7iBTyVbZr2OOVH2YW4MLr2aJumoGAqSgLGYSPQwpi9YvdFAkOqku86d8+lgR
-         /AM/o7Y3pH+Sa+bxqmD60gUTopFx0Mm/pirui2/63WBo4PfjeB7FAsQ1p+v/IRbmDt
-         a84F6WfU+c1GCJs0sStRsEu14obCqUkr7r0A8Pl8=
+        b=GoYOEfdWmvoTF0f/suooNNsHfrgkVIULeKab2raE1L9fC/+0xOs/2dgohRSzBg3X2
+         0fma0SFl2h5NAZNi7/hSZGjJC/rYghgJMiolr4RTnfRXptLEWMY5zWPbzQl8uSHoFW
+         hnv7J0Z5S53xlr7NlkZLK0jH0qMngnin0V1oT12Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0482/1039] powerpc/powermac: Add additional missing lockdep_register_key()
-Date:   Mon, 24 Jan 2022 19:37:51 +0100
-Message-Id: <20220124184141.475710269@linuxfoundation.org>
+Subject: [PATCH 5.16 0545/1039] fs: dlm: filter user dlm messages for kernel locks
+Date:   Mon, 24 Jan 2022 19:38:54 +0100
+Message-Id: <20220124184143.593711274@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,51 +47,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit b149d5d45ac9171ed699a256f026c8ebef901112 ]
+[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
 
-Commit df1f679d19ed ("powerpc/powermac: Add missing
-lockdep_register_key()") fixed a problem that was causing a WARNING.
+This patch fixes the following crash by receiving a invalid message:
 
-There are two other places in the same file with the same problem
-originating from commit 9e607f72748d ("i2c_powermac: shut up lockdep
-warning").
+[  160.672220] ==================================================================
+[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
+[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
+[  160.681447]
+[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
+[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
+[  160.685574] Workqueue: dlm_recv process_recv_sockets
+[  160.686721] Call Trace:
+[  160.687310]  dump_stack_lvl+0x56/0x6f
+[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
+[  160.689116]  kasan_report.cold.14+0x116/0x11b
+[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
+[  160.690832]  dlm_user_add_ast+0xc3/0x370
+[  160.691502]  _receive_unlock_reply+0x103/0x170
+[  160.692241]  _receive_message+0x11df/0x1ec0
+[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.694427]  ? lock_acquire+0x175/0x400
+[  160.695058]  ? do_purge.isra.51+0x200/0x200
+[  160.695744]  ? lock_acquired+0x360/0x5d0
+[  160.696400]  ? lock_contended+0x6a0/0x6a0
+[  160.697055]  ? lock_release+0x21d/0x5e0
+[  160.697686]  ? lock_is_held_type+0xe0/0x110
+[  160.698352]  ? lock_is_held_type+0xe0/0x110
+[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
+[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
+[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
+[  160.701249]  ? down_write_killable+0x2b0/0x2b0
+[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
+[  160.702690]  dlm_receive_buffer+0x1a5/0x210
+[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
+[  160.704210]  receive_from_sock+0x1c0/0x3b0
+[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
+[  160.705561]  ? lock_acquire+0x175/0x400
+[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.707681]  process_recv_sockets+0x32/0x40
+[  160.708366]  process_one_work+0x55e/0xad0
+[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
+[  160.709820]  worker_thread+0x65/0x5e0
+[  160.710423]  ? process_one_work+0xad0/0xad0
+[  160.711087]  kthread+0x1ed/0x220
+[  160.711628]  ? set_kthread_struct+0x80/0x80
+[  160.712314]  ret_from_fork+0x22/0x30
 
-Add missing lockdep_register_key()
+The issue is that we received a DLM message for a user lock but the
+destination lock is a kernel lock. Note that the address which is trying
+to derefence is 00000000deadbeef, which is in a kernel lock
+lkb->lkb_astparam, this field should never be derefenced by the DLM
+kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
+(memory is shared by a union field). The struct lkb_ua will be handled
+by the DLM kernel stack but on a kernel lock it will contain invalid
+data and ends in most likely crashing the kernel.
 
-Fixes: 9e607f72748d ("i2c_powermac: shut up lockdep warning")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Depends-on: df1f679d19ed ("powerpc/powermac: Add missing lockdep_register_key()")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=200055
-Link: https://lore.kernel.org/r/2c7e421874e21b2fb87813d768cf662f630c2ad4.1638984999.git.christophe.leroy@csgroup.eu
+It can be reproduced with two cluster nodes.
+
+node 2:
+dlm_tool join test
+echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
+echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
+
+node 1:
+dlm_tool join test
+
+python:
+foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
+          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
+newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
+newFile.write(bytes(foo))
+
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powermac/low_i2c.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/dlm/lock.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
-index f77a59b5c2e1a..09bfe4b8f25aa 100644
---- a/arch/powerpc/platforms/powermac/low_i2c.c
-+++ b/arch/powerpc/platforms/powermac/low_i2c.c
-@@ -810,6 +810,7 @@ static void __init pmu_i2c_probe(void)
- 		bus->hostdata = bus + 1;
- 		bus->xfer = pmu_i2c_xfer;
- 		mutex_init(&bus->mutex);
-+		lockdep_register_key(&bus->lock_key);
- 		lockdep_set_class(&bus->mutex, &bus->lock_key);
- 		bus->flags = pmac_i2c_multibus;
- 		list_add(&bus->link, &pmac_i2c_busses);
-@@ -933,6 +934,7 @@ static void __init smu_i2c_probe(void)
- 		bus->hostdata = bus + 1;
- 		bus->xfer = smu_i2c_xfer;
- 		mutex_init(&bus->mutex);
-+		lockdep_register_key(&bus->lock_key);
- 		lockdep_set_class(&bus->mutex, &bus->lock_key);
- 		bus->flags = 0;
- 		list_add(&bus->link, &pmac_i2c_busses);
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index c502c065d0075..28d1f35b11a4d 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -3973,6 +3973,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 	int from = ms->m_header.h_nodeid;
+ 	int error = 0;
+ 
++	/* currently mixing of user/kernel locks are not supported */
++	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
++		log_error(lkb->lkb_resource->res_ls,
++			  "got user dlm message for a kernel lock");
++		error = -EINVAL;
++		goto out;
++	}
++
+ 	switch (ms->m_type) {
+ 	case DLM_MSG_CONVERT:
+ 	case DLM_MSG_UNLOCK:
+@@ -4001,6 +4009,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 		error = -EINVAL;
+ 	}
+ 
++out:
+ 	if (error)
+ 		log_error(lkb->lkb_resource->res_ls,
+ 			  "ignore invalid message %d from %d %x %x %x %d",
 -- 
 2.34.1
 
