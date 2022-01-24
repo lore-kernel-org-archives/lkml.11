@@ -2,87 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA422C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:37:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5423BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241255AbiAXRhF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:37:05 -0500
-Received: from mga04.intel.com ([192.55.52.120]:39507 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244706AbiAXRhC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:37:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643045822; x=1674581822;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FUZC/e5xkZGN112lLRWuyS219UiLmaVqnCFLWTG+TYk=;
-  b=ZpKhtT2BS1GKl/bG+HYZIzDBFCS6B0JESRkcbABNc7fEP/EVKDcR1WKT
-   sr0Sl1EsxfmBe7DsVqcQXPz+Jo8AE/KMNB1lC2bJM4Z1Zm2BWmug409K4
-   y4KFQwLbyqQm9dmHvd6HS3Ya9nYRgtXSxXKrph/iCgi7OCBhTbfz82mj/
-   YeNH4StPne/l/0BdQa5AT/vA4henhvkcWHeJq9ZaFKBXBHcufUfRKhAab
-   GFPwdr+XP3JVxlqzqAd+SFSDcA5T+UjjrpRpT5XU6c/yBv4ZwsEmTgDtT
-   i1VBmDXysXsqe19hVWYljy8pyHWsxeM3LPhlL3txmoLU0LURpLGAsgTNG
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="244936597"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="244936597"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 09:37:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="673697723"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2022 09:36:59 -0800
-Received: from newjersey.igk.intel.com (newjersey.igk.intel.com [10.102.20.203])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 20OHawV0011179;
-        Mon, 24 Jan 2022 17:36:58 GMT
-From:   Alexander Lobakin <alexandr.lobakin@intel.com>
-To:     intel-wired-lan@lists.osuosl.org
-Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: ice: Add support for inner etype in switchdev
-Date:   Mon, 24 Jan 2022 18:35:19 +0100
-Message-Id: <20220124173519.739323-1-alexandr.lobakin@intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124173116.739083-6-alexandr.lobakin@intel.com>
-References: <20220124173116.739083-1-alexandr.lobakin@intel.com> <20220124173116.739083-6-alexandr.lobakin@intel.com>
+        id S244703AbiAXRiM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:38:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241578AbiAXRiK (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 12:38:10 -0500
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1EFC06173D;
+        Mon, 24 Jan 2022 09:38:10 -0800 (PST)
+Received: by mail-io1-xd2b.google.com with SMTP id y84so4062739iof.0;
+        Mon, 24 Jan 2022 09:38:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9PC3NeMELC1XD6IFEvl0tImz7mUzi6DrIvhNgtCXheg=;
+        b=r3W2o3FbK8Po9p5t9DKi/hM9uqDYDGKCZAI1sHFgfyGCY4wwhyY98OXAuMF6IdpkZb
+         c/rGYTdAPqbfzZMwr0XyNrlMnlGcWLc4gz44291eU8oERgzhJg5YyFWQ2MsBRSQV9NqI
+         YvgTo69DQeTu17hTODXR9xxiuw9j2iE1Rqq3AI3xm3b/lGWCXIrrMmkF6pVkIM8DnOoA
+         /xOJeIVot2b74mIishr1uty9wkFBQ8MNphJrpakA14QRl6MCgygV6kKmvSr1AaD8mVPm
+         ILUVGnzEomtWsL6yreWjWfZOAuFFTyBZUXIwEOeVAMlj+h0KorsJijDssRichvSERbtn
+         Drtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9PC3NeMELC1XD6IFEvl0tImz7mUzi6DrIvhNgtCXheg=;
+        b=JjGA8i5ZocSBkzMAB08G1KaFWAF6jHHleGbeBq3KtPYDAd3adZV3l46eJYpt5ErID6
+         /S8Hqh/TwxF7OyMHPgaKuV5jzvEskSH0qERaDTsb1/AETVf1WGySaCURQoKNnUxIw2zL
+         odjcS/omXq6npk1V93bDJv6dMAG+0U1VpoLtLtmgw0ht+CrFbdwvwmL5/kRE8AWD2LaG
+         +Y3ghEEOrsIn2KTsH60Pp6tnq41qlmxrChcBMEvpOHZ3gsL6aXV4ZPU5EBTTfo2xOply
+         1GOviSNvv8slp1WGWAm34ENeIFN18DimYKG5DQ8hLhC9RlcbdNzmtXPBnpIbdWQgXm6k
+         kX8w==
+X-Gm-Message-State: AOAM531eI5IKadKjMLMP5GgYgRZL5e3GB/RBIxRcTwbsjbf1mHcaW+52
+        9OO8tS7L5wESdXEYOgTcL1dueLYShJroGpEqv0lGRLkCjMo=
+X-Google-Smtp-Source: ABdhPJxqyiT0PPFpA0fk5ZVw2UJp+Mt7/NILaDDSxDYChAcP9uwMjItN1NgZ6EKo9iCRfF7hQBQ1H8jJ8B4YIwuKyNo=
+X-Received: by 2002:a05:6638:32a5:: with SMTP id f37mr7394048jav.208.1643045890072;
+ Mon, 24 Jan 2022 09:38:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHTsKTdSyC7Jwk56tDR8QwM_oO13ByBRaA78VpHymOZ7J4NQ9Q@mail.gmail.com>
+In-Reply-To: <CAHTsKTdSyC7Jwk56tDR8QwM_oO13ByBRaA78VpHymOZ7J4NQ9Q@mail.gmail.com>
+From:   John Stultz <john.stultz@linaro.org>
+Date:   Mon, 24 Jan 2022 09:37:59 -0800
+Message-ID: <CANcMJZA16b5gT++73a8hjA=6OeLsPLQM-X+ps3kEsYHVyariGg@mail.gmail.com>
+Subject: Re: [RFC] PM: suspend: Upstreaming wakeup reason capture support
+To:     Kelly Rossmoyer <krossmo@google.com>,
+        Zichar Zhang <zichar.zhang@linaro.org>
+Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Len Brown <len.brown@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Vijay Nayak <nayakvij@google.com>, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Sumit Semwal <sumit.semwal@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
-Date: Mon, 24 Jan 2022 18:31:16 +0100
+On Tue, Jan 11, 2022 at 5:06 AM Kelly Rossmoyer <krossmo@google.com> wrote:
+>
+> # Introduction
+>
+> To aid optimization, troubleshooting, and attribution of battery life, the
+> Android kernel currently includes a set of patches which provide enhanced
+> visibility into kernel suspend/resume/abort behaviors.  The capabilities
+> and implementation of this feature have evolved significantly since an
+> unsuccessful attempt to upstream the original code
+> (https://lkml.org/lkml/2014/3/10/716), and we would like to (re)start a
+> conversation about upstreaming, starting with the central question: is
+> there support for upstreaming this set of features?
+>
+> # Motivation
+>
+> Of the many factors influencing battery life on Linux-powered mobile
+> devices, kernel suspend tends to be amongst the most impactful.  Maximizing
+> time spent in suspend and minimizing the frequency of net-negative suspend
+> cycles are both important contributors to battery life optimization.  But
+> enabling that optimization - and troubleshooting when things go wrong -
+> requires more observability of suspend/resume/abort behavior than Linux
+> currently provides.  While mechanisms like `/sys/power/pm_wakeup_irq` and
+> wakeup_source stats are useful, they are incomplete and scattered.  The
+> Android kernel wakeup reason patches implement significant improvements in
+> that area.
+>
+> # Features
+>
+> As of today, the active set of patches surface the following
+> suspend-related data:
+>
+> * wakeup IRQs, including:
+>    * multiple IRQs if more than one is pending during resume flow
+>    * unmapped HW IRQs (wakeup-capable in HW) that should not be
+>      occurring
+>    * misconfigured IRQs (e.g. both enable_irq_wake() and
+>      IRQF_NO_SUSPEND)
+>    * threaded IRQs (not just the parent chip's IRQ)
+>
+> * non-IRQ wakeups, including:
+>    * wakeups caused by an IRQ that was consumed by lower-level SW
+>    * wakeups from SOC architecture that don't manifest as IRQs
+>
+> * abort reasons, including:
+>    * wakeup_source activity
+>    * failure to freeze userspace
+>    * failure to suspend devices
+>    * failed syscore_suspend callback
+>
+> * durations from the most recent cycle, including:
+>    * time spent doing suspend/resume work
+>    * time spent in suspend
+>
+> In addition to battery life optimization and troubleshooting, some of these
+> capabilities also lay the groundwork for efforts around improving
+> attribution of wakeups/aborts (e.g. to specific processes, device features,
+> external devices, etc).
+>
+> # Shortcomings
+>
+> While the core implementation (see below) is relatively straightforward and
+> localized, calls into that core are somewhat widely spread in order to
+> capture the breadth of events of interest.  The pervasiveness of those
+> hooks is clearly an area where improvement would be beneficial, especially
+> if a cleaner solution preserved equivalent capabilities.
+>
+> # Existing Code
+>
+> As a reference for how Android currently implements the core code for these
+> features (which would need a bit of work before submission even if all
+> features were included), see the following link:
+>
+> https://android.googlesource.com/kernel/common/+/refs/heads/android-mainline/kernel/power/wakeup_reason.c
+>
 
-> From: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>
-> 
-> Enable support for adding TC rules that filter on the inner
-> EtherType field of tunneled packet headers.
-> 
-> Signed-off-by: Martyna Szapar-Mudlaw <martyna.szapar-mudlaw@intel.com>
-> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Hey Kelly!
+  So Zichar (added to the thread here) has been working for a little
+while on his own approach to upstream a simplified version of the
+wakeup_reason functionality. He's just gotten it to a place where it
+can be shared, so I wanted to pull him in so he could reply with his
+proposal.
 
-That one was included by mistake, sorry :c
-
-> ---
->  drivers/net/ethernet/intel/ice/ice_protocol_type.h |   2 +
->  drivers/net/ethernet/intel/ice/ice_switch.c        | 272 ++++++++++++++++++++-
->  drivers/net/ethernet/intel/ice/ice_tc_lib.c        |  15 +-
->  3 files changed, 277 insertions(+), 12 deletions(-)
-> 
-
---- 8< ---
-
-> -- 
-> cgit 1.2.3-1.el7
-
-Thanks,
-Al
+thanks
+-john
