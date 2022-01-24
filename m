@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD5BC35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B032C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838589AbiAXWqx (ORCPT
+        id S1382179AbiAXWsU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
+        Mon, 24 Jan 2022 17:48:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357688AbiAXVhM (ORCPT
+        with ESMTP id S1458140AbiAXVmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:12 -0500
+        Mon, 24 Jan 2022 16:42:47 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CEAC0BD118;
-        Mon, 24 Jan 2022 12:23:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C210C0612AB;
+        Mon, 24 Jan 2022 12:30:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E354B81239;
-        Mon, 24 Jan 2022 20:23:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33AA5C340E5;
-        Mon, 24 Jan 2022 20:23:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38EAEB8119E;
+        Mon, 24 Jan 2022 20:30:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66175C340E5;
+        Mon, 24 Jan 2022 20:30:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055789;
-        bh=I83jkJq/WrYb2koe1pfNdBN/QukfSOV9ISZf16cQILE=;
+        s=korg; t=1643056238;
+        bh=PqkSAnQ+TpeSlwQ/kMZ40aT8mDkYSbgSAXARGL2d10c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qldjHC7H8e3Y/CwUgeMJwRtScg3ZB4NPwfNx9da/Xm4abCLnQF5PAshqfJ/c1LxhS
-         pPekF8YLqWxgbcOG8yu7bbLzGOgNsjx7hssic1tqEhLyEeEhpp26KRe+fDBrK08FTQ
-         9fWZ/UoDRYLJmeZkXFcoBmPUbcNLk+He/b83yW5M=
+        b=nbK742EC7MX3q1EmVOxibw0TKWYSA0TTMmSBbhhVpKx6YtuuxJmb3mYGcA9BrmS8B
+         6pb9k7H40Kh6Crg/TjSmJ1CFPuMY0WYu/2YFmruGi07l/Bqzk1rnVQuX3tkxX1+bJf
+         s7j9xYghxOvpB+aajC16F6g4uxxuoZTEx+Ins+4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 267/846] wilc1000: fix double free error in probe()
-Date:   Mon, 24 Jan 2022 19:36:24 +0100
-Message-Id: <20220124184110.139459629@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 417/846] mips: fix Kconfig reference to PHYS_ADDR_T_64BIT
+Date:   Mon, 24 Jan 2022 19:38:54 +0100
+Message-Id: <20220124184115.362381445@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,76 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit 4894edacfa93d7046bec4fc61fc402ac6a2ac9e8 ]
+[ Upstream commit a670c82d9ca4f1e7385d9d6f26ff41a50fbdd944 ]
 
-Smatch complains that there is a double free in probe:
+Commit d4a451d5fc84 ("arch: remove the ARCH_PHYS_ADDR_T_64BIT config
+symbol") removes config ARCH_PHYS_ADDR_T_64BIT with all instances of that
+config refactored appropriately. Since then, it is recommended to use the
+config PHYS_ADDR_T_64BIT instead.
 
-drivers/net/wireless/microchip/wilc1000/spi.c:186 wilc_bus_probe() error: double free of 'spi_priv'
-drivers/net/wireless/microchip/wilc1000/sdio.c:163 wilc_sdio_probe() error: double free of 'sdio_priv'
+Commit 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
+introduces the expression "!(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))"
+for config CPU_SUPPORTS_HUGEPAGES, which unintentionally refers to the
+non-existing symbol ARCH_PHYS_ADDR_T_64BIT instead of the intended
+PHYS_ADDR_T_64BIT.
 
-The problem is that wilc_netdev_cleanup() function frees "wilc->bus_data".
-That's confusing and a layering violation.  Leave the frees in probe(),
-delete the free in wilc_netdev_cleanup(), and add some new frees to the
-remove() functions.
+Fix this Kconfig reference to the intended PHYS_ADDR_T_64BIT.
 
-Fixes: dc8b338f3bcd ("wilc1000: use goto labels on error path")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211217150311.GC16611@kili
+This issue was identified with the script ./scripts/checkkconfigsymbols.py.
+I then reported it on the mailing list and Paul confirmed the mistake in
+the linked email thread.
+
+Link: https://lore.kernel.org/lkml/H8IU3R.H5QVNRA077PT@crapouillou.net/
+Suggested-by: Paul Cercueil <paul@crapouillou.net>
+Fixes: 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/microchip/wilc1000/netdev.c | 1 -
- drivers/net/wireless/microchip/wilc1000/sdio.c   | 2 ++
- drivers/net/wireless/microchip/wilc1000/spi.c    | 2 ++
- 3 files changed, 4 insertions(+), 1 deletion(-)
+ arch/mips/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
-index 7e4d9235251cb..9dfb1a285e6a4 100644
---- a/drivers/net/wireless/microchip/wilc1000/netdev.c
-+++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
-@@ -901,7 +901,6 @@ void wilc_netdev_cleanup(struct wilc *wilc)
- 
- 	wilc_wlan_cfg_deinit(wilc);
- 	wlan_deinit_locks(wilc);
--	kfree(wilc->bus_data);
- 	wiphy_unregister(wilc->wiphy);
- 	wiphy_free(wilc->wiphy);
- }
-diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c b/drivers/net/wireless/microchip/wilc1000/sdio.c
-index 42e03a701ae16..8b3b735231085 100644
---- a/drivers/net/wireless/microchip/wilc1000/sdio.c
-+++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
-@@ -167,9 +167,11 @@ free:
- static void wilc_sdio_remove(struct sdio_func *func)
- {
- 	struct wilc *wilc = sdio_get_drvdata(func);
-+	struct wilc_sdio *sdio_priv = wilc->bus_data;
- 
- 	clk_disable_unprepare(wilc->rtc_clk);
- 	wilc_netdev_cleanup(wilc);
-+	kfree(sdio_priv);
- }
- 
- static int wilc_sdio_reset(struct wilc *wilc)
-diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
-index dd481dc0b5ce0..c98c0999a6b67 100644
---- a/drivers/net/wireless/microchip/wilc1000/spi.c
-+++ b/drivers/net/wireless/microchip/wilc1000/spi.c
-@@ -182,9 +182,11 @@ free:
- static int wilc_bus_remove(struct spi_device *spi)
- {
- 	struct wilc *wilc = spi_get_drvdata(spi);
-+	struct wilc_spi *spi_priv = wilc->bus_data;
- 
- 	clk_disable_unprepare(wilc->rtc_clk);
- 	wilc_netdev_cleanup(wilc);
-+	kfree(spi_priv);
- 
- 	return 0;
- }
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 0200ebb7a0144..393eb2133243f 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -2161,7 +2161,7 @@ config CPU_SUPPORTS_ADDRWINCFG
+ 	bool
+ config CPU_SUPPORTS_HUGEPAGES
+ 	bool
+-	depends on !(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))
++	depends on !(32BIT && (PHYS_ADDR_T_64BIT || EVA))
+ config MIPS_PGD_C0_CONTEXT
+ 	bool
+ 	depends on 64BIT
 -- 
 2.34.1
 
