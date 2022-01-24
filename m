@@ -2,163 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE161C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1595C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354214AbiAXTgN (ORCPT
+        id S1354230AbiAXTgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:59679 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352379AbiAXTaQ (ORCPT
+        Mon, 24 Jan 2022 14:36:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57524 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352416AbiAXTaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:30:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643052615;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RHI1zYWE7ZBUFpjcj0IWzH5yW083pieg5iHQ/MGsgn8=;
-        b=cFWe6UElcKji79MndCnQqz+TNt1gMCI1YsK1zlSEMSiOfnpSeD3kZduPSPXSR5FznJ/lD2
-        bFydRwnKzzoHYdq50USNAES8do27soMLVR4415sgCEeNJCIe0IezJstcgePcOTLzzsXM0H
-        yMLOtAhA/Uthy/AHvq62iJS/UedMBKc=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-520-OqjoEoCYMemTi4sjR2-gEw-1; Mon, 24 Jan 2022 14:30:14 -0500
-X-MC-Unique: OqjoEoCYMemTi4sjR2-gEw-1
-Received: by mail-qt1-f198.google.com with SMTP id e14-20020ac84b4e000000b002cfbbdf8206so2192009qts.10
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:30:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RHI1zYWE7ZBUFpjcj0IWzH5yW083pieg5iHQ/MGsgn8=;
-        b=cDKM/aekuKmY2O+7FALM0UTZYUCwF5j/2MHFKph5sTuC2KJa46JIbrcICFARqTmJ1V
-         XgezsfavCY8gStTKnhoSGn+G+Y+brYFvgjTqBovaSSOSEeowSuPa7zoh8nM8K4sqbvUU
-         eLJqNVfquyKe2U0H0E6y68uQQYsUTXlQkaEhl/ncOGeJV4z/JSPZhJxNxyGUDQYaLW07
-         N9znjG1F1r5X8q5e6xxxvQsQLlja9GMKVZGm/iamReIFoa/9E+NKC+BnBjnvwwdM8xzD
-         673Xy+H13f8a0UyAWy3PiQkeYeVjIgDRCK5Yr+GUM2LKE6H3Apf0FEz2TH0Y/KB+SJSf
-         mVzw==
-X-Gm-Message-State: AOAM532SWZRXLcXyjg0TJXHSzrxNJOe7KfP7tUNRevy5jVTXLML8O9L7
-        hWcdvCCewSDwEz6JxamhgctEM+xa1yBmFHrnP0VuBnaFt4qdd1C6WPYo/rkrLyGm7/CFrft6m6Y
-        0HG7Ph573eQZtGwFNlEeE4vOR
-X-Received: by 2002:a05:622a:1191:: with SMTP id m17mr14115094qtk.388.1643052613515;
-        Mon, 24 Jan 2022 11:30:13 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzaZ+1xfwk4bbykDfhG642lehNgBGSgQR7LEbKmwUEDOCDQEGekRURA6mmaTf0d996Z/X1AsQ==
-X-Received: by 2002:a05:622a:1191:: with SMTP id m17mr14115062qtk.388.1643052613247;
-        Mon, 24 Jan 2022 11:30:13 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::45])
-        by smtp.gmail.com with ESMTPSA id r7sm7590762qtw.25.2022.01.24.11.30.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 11:30:12 -0800 (PST)
-Date:   Mon, 24 Jan 2022 11:30:08 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, knsathya@kernel.org, pbonzini@redhat.com,
-        sdeep@vmware.com, seanjc@google.com, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 08/29] x86/tdx: Handle in-kernel MMIO
-Message-ID: <20220124193008.gfaq5ppegx5nfomd@treble>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-9-kirill.shutemov@linux.intel.com>
+        Mon, 24 Jan 2022 14:30:23 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 541336141C;
+        Mon, 24 Jan 2022 19:30:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FB22C340E5;
+        Mon, 24 Jan 2022 19:30:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643052622;
+        bh=g6pSpn2i0X05d9/e/pvWbJQ995pdOEPCyDaWB64n2Dw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=XlcS/rNx5fPFfurIxYotnFNZ9SMPOxivxLk/3b/QdqDs34kSG4qgCqRspnH8RG1v+
+         b/LO7kCyyTNoKtI7RSpHoQqmWDW/OoL6P+f3RE7XSoyW1keqPDqi/5JogGHd08Y63U
+         pZdXoU4IgUUJCqm7iwRdTDEtosRjnjJXQUCaeORc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Al Viro <viro@ZenIV.linux.org.uk>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 120/320] pcmcia: fix setting of kthread task states
+Date:   Mon, 24 Jan 2022 19:41:44 +0100
+Message-Id: <20220124183957.767107188@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220124150215.36893-9-kirill.shutemov@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 06:01:54PM +0300, Kirill A. Shutemov wrote:
-> +static bool tdx_mmio(int size, bool write, unsigned long addr,
-> +		     unsigned long *val)
-> +{
-> +	struct tdx_hypercall_output out;
-> +	u64 err;
-> +
-> +	err = _tdx_hypercall(EXIT_REASON_EPT_VIOLATION, size, write,
-> +			     addr, *val, &out);
-> +	if (err)
-> +		return true;
-> +
-> +	*val = out.r11;
-> +	return false;
-> +}
-> +
-> +static bool tdx_mmio_read(int size, unsigned long addr, unsigned long *val)
-> +{
-> +	return tdx_mmio(size, false, addr, val);
-> +}
-> +
-> +static bool tdx_mmio_write(int size, unsigned long addr, unsigned long *val)
-> +{
-> +	return tdx_mmio(size, true, addr, val);
-> +}
-> +
-> +static int tdx_handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-> +{
-> +	char buffer[MAX_INSN_SIZE];
-> +	unsigned long *reg, val = 0;
-> +	struct insn insn = {};
-> +	enum mmio_type mmio;
-> +	int size;
-> +	bool err;
-> +
-> +	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
-> +		return -EFAULT;
-> +
-> +	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
-> +		return -EFAULT;
-> +
-> +	mmio = insn_decode_mmio(&insn, &size);
-> +	if (WARN_ON_ONCE(mmio == MMIO_DECODE_FAILED))
-> +		return -EFAULT;
-> +
-> +	if (mmio != MMIO_WRITE_IMM && mmio != MMIO_MOVS) {
-> +		reg = insn_get_modrm_reg_ptr(&insn, regs);
-> +		if (!reg)
-> +			return -EFAULT;
-> +	}
-> +
-> +	switch (mmio) {
-> +	case MMIO_WRITE:
-> +		memcpy(&val, reg, size);
-> +		err = tdx_mmio_write(size, ve->gpa, &val);
-> +		break;
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-The return code conventions are still all mismatched and confusing:
+[ Upstream commit fbb3485f1f931102d8ba606f1c28123f5b48afa3 ]
 
-- Most tdx_handle_*() handlers return bool (success == true)
+We need to set TASK_INTERRUPTIBLE before calling kthread_should_stop().
+Otherwise, kthread_stop() might see that the pccardd thread is still
+in TASK_RUNNING state and fail to wake it up.
 
-- tdx_handle_mmio() returns int (success > 0)
+Additionally, we only need to set the state back to TASK_RUNNING if
+kthread_should_stop() breaks the loop.
 
-- tdx_mmio*() helpers return bool (success == false)
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Al Viro <viro@ZenIV.linux.org.uk>
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Fixes: d3046ba809ce ("pcmcia: fix a boot time warning in pcmcia cs code")
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pcmcia/cs.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-I still don't see any benefit in arbitrarily mixing three different
-return conventions, none of which matches the typical kernel style for
-returning errors, unless the goal is to confuse the reader and invite
-bugs.
-
-There is precedent in traps.c for some handle_*() functions to return
-bool (success == true), so if the goal is to align with that
-semi-convention, that's ok.  But at the very least, please do it
-consistently:
-
-  - change tdx_mmio*() to return true on success;
-
-  - change tdx_handle_mmio() to return bool, with 'len' passed as an
-    argument.
-
-Or, even better, just change them all to return 0 on success like 99+%
-of error-returning kernel functions.
-
+diff --git a/drivers/pcmcia/cs.c b/drivers/pcmcia/cs.c
+index e211e2619680c..f70197154a362 100644
+--- a/drivers/pcmcia/cs.c
++++ b/drivers/pcmcia/cs.c
+@@ -666,18 +666,16 @@ static int pccardd(void *__skt)
+ 		if (events || sysfs_events)
+ 			continue;
+ 
++		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (kthread_should_stop())
+ 			break;
+ 
+-		set_current_state(TASK_INTERRUPTIBLE);
+-
+ 		schedule();
+ 
+-		/* make sure we are running */
+-		__set_current_state(TASK_RUNNING);
+-
+ 		try_to_freeze();
+ 	}
++	/* make sure we are running before we exit */
++	__set_current_state(TASK_RUNNING);
+ 
+ 	/* shut down socket, if a device is still present */
+ 	if (skt->state & SOCKET_PRESENT) {
 -- 
-Josh
+2.34.1
+
+
 
