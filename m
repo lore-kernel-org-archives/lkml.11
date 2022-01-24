@@ -2,123 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A55FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8614CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374801AbiAYASR (ORCPT
+        id S2374238AbiAYAQf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:18:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
+        Mon, 24 Jan 2022 19:16:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2359437AbiAXXch (ORCPT
+        with ESMTP id S1385512AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:32:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455ECC019B11;
-        Mon, 24 Jan 2022 11:52:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7BA760BA1;
-        Mon, 24 Jan 2022 19:52:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AD3C340E5;
-        Mon, 24 Jan 2022 19:52:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053939;
-        bh=BLuA5+HRtipvLUDV44kxQsi5XLKyu1GrNFQ4hzvmezk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GrrYteh85/bBML5Q/1K7hfJ14U+XPpbW5cVpr4P2bWVmtFcBnqp5XXqqYmQzGI4yy
-         tjs+7kPhcsp0trFYcLwR0+016a5t6ATuCn3Go+GUOdHaJz3hgRVEGBxlzGjJvEynl3
-         LA6/a/0fR4K91eFLp2FK63yx7oYDVk2sx8oNSjF4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+        Mon, 24 Jan 2022 18:28:04 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648D4C01D7F5;
+        Mon, 24 Jan 2022 13:31:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=0s5qsJ6CO8DHG5dILS8ndyGrYhqvc3LsWkk+L8HKEI0=; b=gJFxnAsU44AByjE9wITE9i1Tjw
+        FJwXhpBr5nd/5sGygmwrjDEglZZaBdUDof9zwV6r2VI3sFRCXlTH+vkU4BLoRJRR9ZFFxsMPt0S0D
+        hAfl2O+bJNZp4cNOKTYPYW9CSKYwC5QQt0WMY3wZp6KBbetSaf5z+KgQdoERNWcGBBG3IrcSpHkDx
+        kDPVaa7rSpVcSGvnLexZCuqzPQgOcZ4MZ5oUufxETQuZfoMSmHtzdJp4vgN9w3YN5+zujDh7S8GrK
+        JF5t9Fp2icGJt/Hx5/uxP/c1yciGxw+uS0A6jRe9ftYdUQ7AFQnclzNQQUcB3CCyE3CUWCvJ109AS
+        Plb+5iEA==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nC6vy-005Kjw-Dl; Mon, 24 Jan 2022 21:31:30 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 227/563] ax25: uninitialized variable in ax25_setsockopt()
-Date:   Mon, 24 Jan 2022 19:39:52 +0100
-Message-Id: <20220124184032.295666377@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-ia64@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        kernel test robot <lkp@intel.com>,
+        Christoph Hellwig <hch@infradead.org>
+Subject: [PATCH -next v2] ia64: make IA64_MCA_RECOVERY bool instead of tristate
+Date:   Mon, 24 Jan 2022 13:31:29 -0800
+Message-Id: <20220124213129.29306-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+In linux-next, IA64_MCA_RECOVERY uses the (new) function make_task_dead(),
+which is not exported for use by modules. Instead of exporting it for
+one user, convert IA64_MCA_RECOVERY to be a bool Kconfig symbol.
 
-[ Upstream commit 9371937092d5fd502032c1bb4475b36b39b1f1b3 ]
+In a config file from "kernel test robot <lkp@intel.com>" for a
+different problem, this linker error was exposed when
+CONFIG_IA64_MCA_RECOVERY=m.
 
-The "opt" variable is unsigned long but we only copy 4 bytes from
-the user so the lower 4 bytes are uninitialized.
+Fixes this build error:
 
-I have changed the integer overflow checks from ULONG to UINT as well.
-This is a slight API change but I don't expect it to break anything.
+ERROR: modpost: "make_task_dead" [arch/ia64/kernel/mca_recovery.ko] undefined!
 
-Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0e25498f8cd4 ("exit: Add and use make_task_dead.")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: "Eric W. Biederman" <ebiederm@xmission.com>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-ia64@vger.kernel.org
+Cc: Tony Luck <tony.luck@intel.com>
+Cc: kernel test robot <lkp@intel.com>
+Suggested-by: Christoph Hellwig <hch@infradead.org>
 ---
- net/ax25/af_ax25.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+v1 was [PATCH -next] exit: export make_task_dead().
+Christoph suggests and prefers that IA64 MCA recovery code just be
+forced to be builtin if it is enabled.
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index 22278807b3f36..5e84dce5ff7ae 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -536,7 +536,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 	ax25_cb *ax25;
- 	struct net_device *dev;
- 	char devname[IFNAMSIZ];
--	unsigned long opt;
-+	unsigned int opt;
- 	int res = 0;
- 
- 	if (level != SOL_AX25)
-@@ -568,7 +568,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T1:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -577,7 +577,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T2:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -593,7 +593,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T3:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -601,7 +601,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_IDLE:
--		if (opt > ULONG_MAX / (60 * HZ)) {
-+		if (opt > UINT_MAX / (60 * HZ)) {
- 			res = -EINVAL;
- 			break;
- 		}
--- 
-2.34.1
+ arch/ia64/Kconfig |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-
+--- linux-next-20220121.orig/arch/ia64/Kconfig
++++ linux-next-20220121/arch/ia64/Kconfig
+@@ -318,7 +318,7 @@ config ARCH_PROC_KCORE_TEXT
+ 	depends on PROC_KCORE
+ 
+ config IA64_MCA_RECOVERY
+-	tristate "MCA recovery from errors other than TLB."
++	bool "MCA recovery from errors other than TLB."
+ 
+ config IA64_PALINFO
+ 	tristate "/proc/pal support"
