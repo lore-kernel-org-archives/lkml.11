@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3651C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AFEC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3408174AbiAYAVx (ORCPT
+        id S3408223AbiAYAWD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:21:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54466 "EHLO
+        Mon, 24 Jan 2022 19:22:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2360379AbiAXXgk (ORCPT
+        with ESMTP id S1385259AbiAXXeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:36:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 921E9C0ADFD7;
-        Mon, 24 Jan 2022 13:37:38 -0800 (PST)
+        Mon, 24 Jan 2022 18:34:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 112DDC07597B;
+        Mon, 24 Jan 2022 13:36:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BF4DB81188;
-        Mon, 24 Jan 2022 21:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9303BC340E4;
-        Mon, 24 Jan 2022 21:37:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A51B061028;
+        Mon, 24 Jan 2022 21:36:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AB43C340E4;
+        Mon, 24 Jan 2022 21:36:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060256;
-        bh=0/1uQfnW40fQCtD/TrAwPiBVSZy/dooJp7W8kuvZi2U=;
+        s=korg; t=1643060164;
+        bh=A2EUI144kMYsLayEJBAsTA84cPoFnieVulthcDcdZcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LTnhflvFVp5yUNAwUtJ3hmckzTjRuISdfT5/DOiE13nJy+R+uwzGcJRWJ4gGE8pKE
-         SMsiLa92k4SgUD+FDrefAq9r7ozvSlGdqY9z0Ji5Zqny2SE0EcknGNG37gcpgMs/eH
-         AdLZoeiNrKC2P6YKArIshDXXdxz3jEnzJ+yeuJGM=
+        b=CMNyH+U1Y1Iii6a0Cf4eJxXfhlY7TEJTLQjZVoVibRxmSF91hjny+zLCll5Lyz//b
+         biwAeXW79WDqE6daTtJcRK9zm/iQqIdNLWR5ib6dgdR+MI/A0Gs34NFPj8hrhlAnYc
+         jTYYZNfcgeobyVPdkSQrLdldHyU2vM+uY8VloFoA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>,
-        syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
-Subject: [PATCH 5.16 0889/1039] ext4: make sure to reset inode lockdep class when quota enabling fails
-Date:   Mon, 24 Jan 2022 19:44:38 +0100
-Message-Id: <20220124184155.174086253@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>
+Subject: [PATCH 5.16 0860/1039] drm/etnaviv: limit submit sizes
+Date:   Mon, 24 Jan 2022 19:44:09 +0100
+Message-Id: <20220124184154.205642921@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,49 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit 4013d47a5307fdb5c13370b5392498b00fedd274 upstream.
+commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
 
-When we succeed in enabling some quota type but fail to enable another
-one with quota feature, we correctly disable all enabled quota types.
-However we forget to reset i_data_sem lockdep class. When the inode gets
-freed and reused, it will inherit this lockdep class (i_data_sem is
-initialized only when a slab is created) and thus eventually lockdep
-barfs about possible deadlocks.
+Currently we allow rediculous amounts of kernel memory being allocated
+via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
+some reasonable limits in to fix this.
 
-Reported-and-tested-by: syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
-Cc: stable@kernel.org
-Link: https://lore.kernel.org/r/20211007155336.12493-3-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+The commandstream size is limited to 64KB, which was already a soft limit
+on older kernels after which the kernel only took submits on a best effort
+base, so there is no userspace that tries to submit commandstreams larger
+than this. Even if the whole commandstream is a single incrementing address
+load, the size limit also limits the number of potential relocs and
+referenced buffers to slightly under 64K, so use the same limit for those
+arguments. The performance monitoring infrastructure currently supports
+less than 50 performance counter signals, so limiting them to 128 on a
+single submit seems like a reasonably future-proof number for now. This
+number can be bumped if needed without breaking the interface.
+
+Cc: stable@vger.kernel.org
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6361,8 +6361,19 @@ int ext4_enable_quotas(struct super_bloc
- 					"Failed to enable quota tracking "
- 					"(type=%d, err=%d). Please run "
- 					"e2fsck to fix.", type, err);
--				for (type--; type >= 0; type--)
-+				for (type--; type >= 0; type--) {
-+					struct inode *inode;
-+
-+					inode = sb_dqopt(sb)->files[type];
-+					if (inode)
-+						inode = igrab(inode);
- 					dquot_quota_off(sb, type);
-+					if (inode) {
-+						lockdep_set_quota_inode(inode,
-+							I_DATA_SEM_NORMAL);
-+						iput(inode);
-+					}
-+				}
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
+@@ -469,6 +469,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
+ 		return -EINVAL;
+ 	}
  
- 				return err;
- 			}
++	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
++	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
++		DRM_ERROR("submit arguments out of size limits\n");
++		return -EINVAL;
++	}
++
+ 	/*
+ 	 * Copy the command submission and bo array to kernel space in
+ 	 * one go, and do this outside of any locks.
 
 
