@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77B44C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B22DC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1313316AbiAYCsT (ORCPT
+        id S1313559AbiAYCss (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:48:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55406 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353476AbiAXVDJ (ORCPT
+        Mon, 24 Jan 2022 21:48:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359523AbiAXVDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:09 -0500
+        Mon, 24 Jan 2022 16:03:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899D2C06B5A2;
+        Mon, 24 Jan 2022 12:03:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4758A61330;
-        Mon, 24 Jan 2022 21:03:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F37C340E8;
-        Mon, 24 Jan 2022 21:03:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A77161333;
+        Mon, 24 Jan 2022 20:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A9FC340E5;
+        Mon, 24 Jan 2022 20:03:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058186;
-        bh=v6/FXpNGzXAE6TYf3fSLBuAkE9l9oQwNd47fnT/FRjA=;
+        s=korg; t=1643054616;
+        bh=lRlIHxLA+FhWCYJVfDqIdzQVSQrZgqEhG2DBKd2bWcQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=crUKKgIScQfakz6m85UahN/T+kKgZHdyhYnJ4bEjAEzBilkqHsmH1YjJzHDeB3F4p
-         NscIcschExw1c0agGjbHctp5Lm8CzHIYBRIA3BAK6jbjFFBF2iOiCmzd9tCh9hMTz0
-         tk4C3Z0+8aPp6ZtZO7pXl12T7S0fpaYrd+IhyO1M=
+        b=ugOUh+ratmJmDOWIFfv5Vq/CF5vAKogQlUyQS+kawCwA9W9czIWmUi1qxyPUmXi+N
+         ALWR8S7JpfKuekQDosr01GZgHZAImyFL/B2BoF/BRVFNgVG6Ay9rAfFfMpmkjTWq97
+         zNUeF0cilW+VJfKJLEhnUQediNk0l44kmxJasQJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        William Kucharski <william.kucharski@oracle.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0208/1039] cgroup: Trace event cgroup id fields should be u64
-Date:   Mon, 24 Jan 2022 19:33:17 +0100
-Message-Id: <20220124184132.315640037@linuxfoundation.org>
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.10 447/563] xen/gntdev: fix unmap notification order
+Date:   Mon, 24 Jan 2022 19:43:32 +0100
+Message-Id: <20220124184039.913055821@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,86 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Kucharski <william.kucharski@oracle.com>
+From: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
 
-[ Upstream commit e14da77113bb890d7bf9e5d17031bdd476a7ce5e ]
+commit ce2f46f3531a03781181b7f4bd1ff9f8c5086e7e upstream.
 
-Various trace event fields that store cgroup IDs were declared as
-ints, but cgroup_id(() returns a u64 and the structures and associated
-TP_printk() calls were not updated to reflect this.
+While working with Xen's libxenvchan library I have faced an issue with
+unmap notifications sent in wrong order if both UNMAP_NOTIFY_SEND_EVENT
+and UNMAP_NOTIFY_CLEAR_BYTE were requested: first we send an event channel
+notification and then clear the notification byte which renders in the below
+inconsistency (cli_live is the byte which was requested to be cleared on unmap):
 
-Fixes: 743210386c03 ("cgroup: use cgrp->kn->id as the cgroup ID")
-Signed-off-by: William Kucharski <william.kucharski@oracle.com>
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[  444.514243] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
+libxenvchan_is_open cli_live 1
+[  444.515239] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
+
+Thus it is not possible to reliably implement the checks like
+- wait for the notification (UNMAP_NOTIFY_SEND_EVENT)
+- check the variable (UNMAP_NOTIFY_CLEAR_BYTE)
+because it is possible that the variable gets checked before it is cleared
+by the kernel.
+
+To fix that we need to re-order the notifications, so the variable is first
+gets cleared and then the event channel notification is sent.
+With this fix I can see the correct order of execution:
+
+[   54.522611] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
+[   54.537966] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
+libxenvchan_is_open cli_live 0
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20211210092817.580718-1-andr2000@gmail.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/cgroup.h | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/xen/gntdev.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/trace/events/cgroup.h b/include/trace/events/cgroup.h
-index 7f42a3de59e6b..dd7d7c9efecdf 100644
---- a/include/trace/events/cgroup.h
-+++ b/include/trace/events/cgroup.h
-@@ -59,8 +59,8 @@ DECLARE_EVENT_CLASS(cgroup,
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -240,13 +240,13 @@ void gntdev_put_map(struct gntdev_priv *
+ 	if (!refcount_dec_and_test(&map->users))
+ 		return;
  
- 	TP_STRUCT__entry(
- 		__field(	int,		root			)
--		__field(	int,		id			)
- 		__field(	int,		level			)
-+		__field(	u64,		id			)
- 		__string(	path,		path			)
- 	),
++	if (map->pages && !use_ptemod)
++		unmap_grant_pages(map, 0, map->count);
++
+ 	if (map->notify.flags & UNMAP_NOTIFY_SEND_EVENT) {
+ 		notify_remote_via_evtchn(map->notify.event);
+ 		evtchn_put(map->notify.event);
+ 	}
+-
+-	if (map->pages && !use_ptemod)
+-		unmap_grant_pages(map, 0, map->count);
+ 	gntdev_free_map(map);
+ }
  
-@@ -71,7 +71,7 @@ DECLARE_EVENT_CLASS(cgroup,
- 		__assign_str(path, path);
- 	),
- 
--	TP_printk("root=%d id=%d level=%d path=%s",
-+	TP_printk("root=%d id=%llu level=%d path=%s",
- 		  __entry->root, __entry->id, __entry->level, __get_str(path))
- );
- 
-@@ -126,8 +126,8 @@ DECLARE_EVENT_CLASS(cgroup_migrate,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		dst_root		)
--		__field(	int,		dst_id			)
- 		__field(	int,		dst_level		)
-+		__field(	u64,		dst_id			)
- 		__field(	int,		pid			)
- 		__string(	dst_path,	path			)
- 		__string(	comm,		task->comm		)
-@@ -142,7 +142,7 @@ DECLARE_EVENT_CLASS(cgroup_migrate,
- 		__assign_str(comm, task->comm);
- 	),
- 
--	TP_printk("dst_root=%d dst_id=%d dst_level=%d dst_path=%s pid=%d comm=%s",
-+	TP_printk("dst_root=%d dst_id=%llu dst_level=%d dst_path=%s pid=%d comm=%s",
- 		  __entry->dst_root, __entry->dst_id, __entry->dst_level,
- 		  __get_str(dst_path), __entry->pid, __get_str(comm))
- );
-@@ -171,8 +171,8 @@ DECLARE_EVENT_CLASS(cgroup_event,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		root			)
--		__field(	int,		id			)
- 		__field(	int,		level			)
-+		__field(	u64,		id			)
- 		__string(	path,		path			)
- 		__field(	int,		val			)
- 	),
-@@ -185,7 +185,7 @@ DECLARE_EVENT_CLASS(cgroup_event,
- 		__entry->val = val;
- 	),
- 
--	TP_printk("root=%d id=%d level=%d path=%s val=%d",
-+	TP_printk("root=%d id=%llu level=%d path=%s val=%d",
- 		  __entry->root, __entry->id, __entry->level, __get_str(path),
- 		  __entry->val)
- );
--- 
-2.34.1
-
 
 
