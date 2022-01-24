@@ -2,102 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3976BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:20:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08431C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245192AbiAXSUF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:20:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35946 "EHLO
+        id S245219AbiAXSUg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:20:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245189AbiAXSUC (ORCPT
+        with ESMTP id S241869AbiAXSUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:20:02 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C654C06173B;
-        Mon, 24 Jan 2022 10:20:02 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id g2so16118316pgo.9;
-        Mon, 24 Jan 2022 10:20:02 -0800 (PST)
+        Mon, 24 Jan 2022 13:20:23 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4121C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:20:22 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id x37so12822543pfh.8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:20:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OV/KakYBUwiYtspMCEnyhQi3Nwwqu8YQJvyXMpbEBCE=;
-        b=nc9DDY2ts77US2x1jGKsIIYBnX38A+eaMHKVdn175fL11NhRLvEwFKFVJaZ/CrtMwm
-         sAXP5xXaC7+Wae9nSdS3UocXVjRvNJ91dzDMBAq0M5ExxTihnvgsLmvLlnWP9Pim9pM3
-         fN7l6e/yscTJ+7PieUQisdaiU3lFhP42w2q9lfur7vvwFy8Cc7Evh3Rsd3gLVjcYt/nE
-         Cd3H4ujrZqiK62dUy7OWnDtUazwPFngKvZApSRWgHOVjOR2QwZwSEyCDx7jfo8hE6gKD
-         48JtltV2fddEDXBzyN5QFevriucNFVGW9fuksi12XFV10kjyt1YjWsFpYArBJUBbal2a
-         HSYQ==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :mime-version;
+        bh=dD7dOLXb+YQYq589HrH7forsalWY8+LJ4rBHpm/SHRw=;
+        b=gRTdqJHKCLMkSZ3bmFhgUlfkqnsGok83Bdw5ohbB+I4EGKL6koKg7mnrTsh5YuMBLa
+         GKVPoF7oCPhLtG/voaI0hrXtEDgvwdvX9ISnG4Co2a5itSLEAKDL4E6DmN8zOpsfwmNq
+         c+RR9Pzr/NoDUNdSUiTg3T+GaucTB45uBXKpK7LHeRF2sDhEkjwk6UcdD4kB4221HScc
+         V1Sfw3DzXLotVi01fh06jyDfTnUzIJ9DmoO/4r7Gh0MvqQx3wsDe7Mw9xj1KK9JEqhsB
+         GH9cThxBfs6YAdrp63S8R3uwKE4MIutDdJa0hJSb5kYB7fuNcyX7gcbggWsNZgCM8AH2
+         n/Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OV/KakYBUwiYtspMCEnyhQi3Nwwqu8YQJvyXMpbEBCE=;
-        b=CzFbsMUzr9Pyrr5KorllifzTcVbTOBGonhSKDAbBuSorzRdYf7pM/oKeksJVhvzXOz
-         9db0bpX7XOBQTbI29T8K/6ONY2NPiOrqdQt5v6AbH+KY0J3zJDFagomOlbXdrz2Iak+l
-         FvGWnpu+5PW5kOkXttN/rSucuRvVUW1tmL+UzWGD3IrBbCvq8EjZk8nkxIUpvY+gNi0/
-         r1EYRcwtGAKqWhYaX97StoVkA3sh/Er5SFODPPIhKm2j01P+KZLWVH6iBuHUyBMroH0I
-         S6EeLqW0CGkGF3JPIyjPN93ID3cq/u3wU5ncBzyax1VS60knU6coPWsr8nwHpL2Wbz7J
-         05hA==
-X-Gm-Message-State: AOAM531rbOGhzijgCVbeES0cuoYLLyUw1zoS/QaX3CoHZNPakiBrutWY
-        61RV5bgYjkvEEyNN5/tLAtw=
-X-Google-Smtp-Source: ABdhPJx/UbjQ6nzJrH5RU1hc83JH6lexUNrwVpYUT4tDSz1UEuMzg6YNnHUAfXAsU3AsWwQFsQDrUQ==
-X-Received: by 2002:a63:924c:: with SMTP id s12mr12553165pgn.536.1643048401561;
-        Mon, 24 Jan 2022 10:20:01 -0800 (PST)
-Received: from tong-desktop.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
-        by smtp.googlemail.com with ESMTPSA id ha11sm366667pjb.3.2022.01.24.10.20.00
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:mime-version;
+        bh=dD7dOLXb+YQYq589HrH7forsalWY8+LJ4rBHpm/SHRw=;
+        b=o2taO6/lu9blQ2gutKypT99yAtYQ///9zaHKwnwUyOyDw3yRm3rQEP94RjXM5n/LdR
+         be0o5gatm4+40Tz5OoSTwGRXOY2amOCeS98w2r2wV+imCsUAfTCjdx4aWQ+tlqQrt8OZ
+         vgQdWN/LFA0r/OGgDsoWini99jujOcXZvcmN8wQOj7e8ijfNd4xV7v2GzEX0cJWQkvp3
+         93nFOYlLWtuTZJQ4qy4/PzYJywWyj7e2VQaLOBzFWlMfEa5Fmg+O5XieEOIcG0BsAyMG
+         gXYKN0EM0Wy5Wkj0GzkPIBaOMXilrWw6oYYUBuZxF81VEjY19ZlNfmzfrk3tePr1IUE9
+         e5Cg==
+X-Gm-Message-State: AOAM530U+OitkstZAV8OilWci9bpC7yYEPkgvihsqngHntWWUoZetSwP
+        lZC6Uod6/4obbM5hxwvBGxallA==
+X-Google-Smtp-Source: ABdhPJwLIGzTlfukShqfyFMX/Z6h5Q8RTwu9HHBQUuZApv0356SMbN+8i8h6wUvDuRXC5+uOphr6QQ==
+X-Received: by 2002:a63:ea51:: with SMTP id l17mr6080241pgk.450.1643048421931;
+        Mon, 24 Jan 2022 10:20:21 -0800 (PST)
+Received: from [2620:15c:29:204:1f99:bd65:fcbb:146c] ([2620:15c:29:204:1f99:bd65:fcbb:146c])
+        by smtp.gmail.com with ESMTPSA id x12sm12678911pge.58.2022.01.24.10.20.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 10:20:01 -0800 (PST)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Kees Cook <keescook@chromium.org>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Iurii Zaikin <yzaikin@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Tong Zhang <ztong0001@gmail.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH v2 2/2] sysctl: fix return type to make compiler happy
-Date:   Mon, 24 Jan 2022 10:18:13 -0800
-Message-Id: <20220124181812.1869535-3-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124104012.nblfd6b5on4kojgi@wittgenstein>
-References: <20220124104012.nblfd6b5on4kojgi@wittgenstein>
+        Mon, 24 Jan 2022 10:20:21 -0800 (PST)
+Date:   Mon, 24 Jan 2022 10:20:20 -0800 (PST)
+From:   David Rientjes <rientjes@google.com>
+To:     Baolin Wang <baolin.wang@linux.alibaba.com>
+cc:     sj@kernel.org, akpm@linux-foundation.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] mm/damon: Remove redundant page validation
+In-Reply-To: <6d32f7d201b8970d53f51b6c5717d472aed2987c.1642386715.git.baolin.wang@linux.alibaba.com>
+Message-ID: <bdc7a556-b826-8d82-91b-8664f8a655e@google.com>
+References: <6d32f7d201b8970d53f51b6c5717d472aed2987c.1642386715.git.baolin.wang@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When CONFIG_SYSCTL=n and CONFIG_BINFMT_MISC={y,m}, compiler will
-complain due to return type not matching. Fix the return type in
-register_sysctl_mount_point() to make compiler happy
+On Mon, 17 Jan 2022, Baolin Wang wrote:
 
-fs/binfmt_misc.c: In function ‘init_misc_binfmt’:
-fs/binfmt_misc.c:827:21: error: assignment to ‘struct ctl_table_header *’ from incompatible pointer type ‘struct sysctl_header *’ [-Werror=incompatible-pointer-types]
-  827 |  binfmt_misc_header = register_sysctl_mount_point("fs/binfmt_misc");
+> It will never get a NULL page by pte_page() as discussed in thread [1],
+> thus remove the redundant page validation to fix below Smatch static
+> checker warning.
+> 
+>     mm/damon/vaddr.c:405 damon_hugetlb_mkold()
+>     warn: 'page' can't be NULL.
+> 
+> [1] https://lore.kernel.org/linux-mm/20220106091200.GA14564@kili/
+> 
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Baolin Wang <baolin.wang@linux.alibaba.com>
+> Reviewed-by: SeongJae Park <sj@kernel.org>
 
-Fixes: ee9efac48a08("sysctl: add helper to register a sysctl mount point")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
- include/linux/sysctl.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
-index 180adf7da785..6353d6db69b2 100644
---- a/include/linux/sysctl.h
-+++ b/include/linux/sysctl.h
-@@ -265,7 +265,7 @@ static inline struct ctl_table_header *register_sysctl_table(struct ctl_table *
- 	return NULL;
- }
- 
--static inline struct sysctl_header *register_sysctl_mount_point(const char *path)
-+static inline struct ctl_table_header *register_sysctl_mount_point(const char *path)
- {
- 	return NULL;
- }
--- 
-2.25.1
-
+Acked-by: David Rientjes <rientjes@google.com>
