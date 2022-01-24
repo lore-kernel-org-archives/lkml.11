@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8579CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAA9C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353867AbiAXTfa (ORCPT
+        id S1353943AbiAXTfh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344991AbiAXT3K (ORCPT
+        Mon, 24 Jan 2022 14:35:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49014 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348197AbiAXT2L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 312ADC061368;
-        Mon, 24 Jan 2022 11:13:21 -0800 (PST)
+        Mon, 24 Jan 2022 14:28:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3B71B8122F;
-        Mon, 24 Jan 2022 19:13:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A15C340E5;
-        Mon, 24 Jan 2022 19:13:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62A72B8121A;
+        Mon, 24 Jan 2022 19:28:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90400C340E5;
+        Mon, 24 Jan 2022 19:28:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051598;
-        bh=MouureKsaSP7tMgNm+xCoUVff72Se1F9IIFgBjduPQ8=;
+        s=korg; t=1643052488;
+        bh=8x76DRlB8IfR/34mTMkzRlPwJKUqVUcLK23r2U2ikrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=twigKzCqWOw5A9z4hJheS98Mj3Kr6jE2AHoh+thrGpNC8p9H2X6jT5YdZd69/r+mG
-         nf/VpzypxUYWdPto1mRqs49N7N6QL/gGArVB44X2KQ7CH+p2jq3Pv9tOgTOQeQJdNG
-         fuRj5bknIURqwX/0tQEn95s9VT/oRaeilQg7KfaE=
+        b=ndXtwCZU80x33cDBMe/2cFS9/OwN9DGSZIIaL9AVS32uuCcPEhr3flajYPSHN5ITB
+         2nSl2Y/z7r4Hjta+6gCK+ZT8zh6ymVSJFm2r3hTpMkbR8MpQK8rd+dK6ingvc8E/D8
+         kRkAOohrZ+nRvAtuw2Bs+JufSO5bEHtjnK++lnfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 4.19 026/239] f2fs: fix to do sanity check in is_alive()
-Date:   Mon, 24 Jan 2022 19:41:04 +0100
-Message-Id: <20220124183943.957395248@linuxfoundation.org>
+        stable@vger.kernel.org, Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 076/320] rcu/exp: Mark current CPU as exp-QS in IPI loop second pass
+Date:   Mon, 24 Jan 2022 19:41:00 +0100
+Message-Id: <20220124183956.321184458@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +52,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Frederic Weisbecker <frederic@kernel.org>
 
-commit 77900c45ee5cd5da63bd4d818a41dbdf367e81cd upstream.
+[ Upstream commit 81f6d49cce2d2fe507e3fddcc4a6db021d9c2e7b ]
 
-In fuzzed image, SSA table may indicate that a data block belongs to
-invalid node, which node ID is out-of-range (0, 1, 2 or max_nid), in
-order to avoid migrating inconsistent data in such corrupted image,
-let's do sanity check anyway before data block migration.
+Expedited RCU grace periods invoke sync_rcu_exp_select_node_cpus(), which
+takes two passes over the leaf rcu_node structure's CPUs.  The first
+pass gathers up the current CPU and CPUs that are in dynticks idle mode.
+The workqueue will report a quiescent state on their behalf later.
+The second pass sends IPIs to the rest of the CPUs, but excludes the
+current CPU, incorrectly assuming it has been included in the first
+pass's list of CPUs.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Unfortunately the current CPU may have changed between the first and
+second pass, due to the fact that the various rcu_node structures'
+->lock fields have been dropped, thus momentarily enabling preemption.
+This means that if the second pass's CPU was not on the first pass's
+list, it will be ignored completely.  There will be no IPI sent to
+it, and there will be no reporting of quiescent states on its behalf.
+Unfortunately, the expedited grace period will nevertheless be waiting
+for that CPU to report a quiescent state, but with that CPU having no
+reason to believe that such a report is needed.
+
+The result will be an expedited grace period stall.
+
+Fix this by no longer excluding the current CPU from consideration during
+the second pass.
+
+Fixes: b9ad4d6ed18e ("rcu: Avoid self-IPI in sync_rcu_exp_select_node_cpus()")
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Uladzislau Rezki <urezki@gmail.com>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/gc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ kernel/rcu/tree_exp.h | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -589,6 +589,9 @@ static bool is_alive(struct f2fs_sb_info
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
- 	}
- 
-+	if (f2fs_check_nid_range(sbi, dni->ino))
-+		return false;
-+
- 	*nofs = ofs_of_node(node_page);
- 	source_blkaddr = datablock_addr(NULL, node_page, ofs_in_node);
- 	f2fs_put_page(node_page, 1);
+diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+index 4c4d7683a4e5b..173e3ce607900 100644
+--- a/kernel/rcu/tree_exp.h
++++ b/kernel/rcu/tree_exp.h
+@@ -382,6 +382,7 @@ retry_ipi:
+ 			continue;
+ 		}
+ 		if (get_cpu() == cpu) {
++			mask_ofl_test |= mask;
+ 			put_cpu();
+ 			continue;
+ 		}
+-- 
+2.34.1
+
 
 
