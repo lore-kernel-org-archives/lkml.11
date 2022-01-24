@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84494C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAF6BC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449650AbiAXVP4 (ORCPT
+        id S1356691AbiAXVQ3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:15:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43164 "EHLO
+        Mon, 24 Jan 2022 16:16:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43884 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352486AbiAXUt1 (ORCPT
+        with ESMTP id S1391988AbiAXUuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:27 -0500
+        Mon, 24 Jan 2022 15:50:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8859060916;
-        Mon, 24 Jan 2022 20:49:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A173C340E5;
-        Mon, 24 Jan 2022 20:49:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB05860C2A;
+        Mon, 24 Jan 2022 20:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAB58C340E5;
+        Mon, 24 Jan 2022 20:50:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057359;
-        bh=bvHOw9ERgB7iEz1yUKq8HHn8qQmBpOq3NOnQT7Kd3hg=;
+        s=korg; t=1643057410;
+        bh=rTzjsPOM+kVOAAhf7w4z3TQ9XVsck917kVkeBLIXDsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gB3SZQ8pZip0M74uqCWBrTsv5iOvt04MFWvklg1a8Be9ZEbaOx0fE83LgMZMFFsV+
-         6mpxr3H34Pqd/kNOeOroGj4NsESyGrqvrygYM8qb0j9j70SZRBNS9kpaLIKBBTnWWM
-         mUA9NTFuE719c+QW62+9YCYZo6a8bi3bdCwoqAg4=
+        b=hRof/DEkF/7ryjJKdcOfyk8T6sz09DFgp5FAiAwJI44xEoIQF3bChx5itjwTrA+kb
+         SMFd1cp05+Cz0gA2HbJVdq+SMfo9Bv3yYrmhDnv/kWnk3dmBDUIeCkg1UgJ5fznG19
+         AxwSlsmli4HbEODkUMzJhQrqBmE40qLJO25b/PQ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: [PATCH 5.15 785/846] clk: Emit a stern warning with writable debugfs enabled
-Date:   Mon, 24 Jan 2022 19:45:02 +0100
-Message-Id: <20220124184128.029688795@linuxfoundation.org>
+        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: [PATCH 5.15 804/846] vdpa/mlx5: Fix wrong configuration of virtio_version_1_0
+Date:   Mon, 24 Jan 2022 19:45:21 +0100
+Message-Id: <20220124184128.673051881@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,51 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <sboyd@kernel.org>
+From: Eli Cohen <elic@nvidia.com>
 
-commit 489a71964f9d74e697a12cd0ace20ed829eb1f93 upstream.
+commit 97143b70aa847f2b0a1f959dde126b76ff7b5376 upstream.
 
-We don't want vendors to be enabling this part of the clk code and
-shipping it to customers. Exposing the ability to change clk frequencies
-and parents via debugfs is potentially damaging to the system if folks
-don't know what they're doing. Emit a strong warning so that the message
-is clear: don't enable this outside of development systems.
+Remove overriding of virtio_version_1_0 which forced the virtqueue
+object to version 1.
 
-Fixes: 37215da5553e ("clk: Add support for setting clk_rate via debugfs")
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20211210014237.2130300-1-sboyd@kernel.org
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Link: https://lore.kernel.org/r/20211230142024.142979-1-elic@nvidia.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/clk.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3340,6 +3340,24 @@ static int __init clk_debug_init(void)
- {
- 	struct clk_core *core;
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -873,8 +873,6 @@ static int create_virtqueue(struct mlx5_
+ 	MLX5_SET(virtio_q, vq_ctx, umem_3_id, mvq->umem3.id);
+ 	MLX5_SET(virtio_q, vq_ctx, umem_3_size, mvq->umem3.size);
+ 	MLX5_SET(virtio_q, vq_ctx, pd, ndev->mvdev.res.pdn);
+-	if (MLX5_CAP_DEV_VDPA_EMULATION(ndev->mvdev.mdev, eth_frame_offload_type))
+-		MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0, 1);
  
-+#ifdef CLOCK_ALLOW_WRITE_DEBUGFS
-+	pr_warn("\n");
-+	pr_warn("********************************************************************\n");
-+	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("**  WRITEABLE clk DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("** This means that this kernel is built to expose clk operations  **\n");
-+	pr_warn("** such as parent or rate setting, enabling, disabling, etc.      **\n");
-+	pr_warn("** to userspace, which may compromise security on your system.    **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("** If you see this message and you are not debugging the          **\n");
-+	pr_warn("** kernel, report this immediately to your vendor!                **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
-+	pr_warn("********************************************************************\n");
-+#endif
-+
- 	rootdir = debugfs_create_dir("clk", NULL);
- 
- 	debugfs_create_file("clk_summary", 0444, rootdir, &all_lists,
+ 	err = mlx5_cmd_exec(ndev->mvdev.mdev, in, inlen, out, sizeof(out));
+ 	if (err)
 
 
