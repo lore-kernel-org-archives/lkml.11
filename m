@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FFE8C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31F6CC4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358630AbiAXTzd (ORCPT
+        id S1358700AbiAXTzl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54242 "EHLO
+        Mon, 24 Jan 2022 14:55:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349082AbiAXTlA (ORCPT
+        with ESMTP id S1346586AbiAXTk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:00 -0500
+        Mon, 24 Jan 2022 14:40:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CDAC07A96C;
-        Mon, 24 Jan 2022 11:20:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250A6C0613EB;
+        Mon, 24 Jan 2022 11:19:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3EBA3B81215;
-        Mon, 24 Jan 2022 19:20:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58DDFC340E5;
-        Mon, 24 Jan 2022 19:20:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D7507B8121C;
+        Mon, 24 Jan 2022 19:19:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01305C340E5;
+        Mon, 24 Jan 2022 19:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052004;
-        bh=1Qg4OYv91lGRhtfStxqbwAGY3ECUEntVoppTLd+0S4o=;
+        s=korg; t=1643051991;
+        bh=kvwgCkmFoSxmqbuxq0+LLTbOC4PKAA/V/FrSQ2rRFSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A9Uj6CFTTfXzpr6fdOM4jkksHmxEN7CzXaaBNvuTXoq8rhbtiZJctfW/iAuWWflIz
-         ch3ScCfMPiJoTOZqvLM451Qflm9X1Yb2eYJhFlejTXNKZNXF/mNPJI4u+Ji8GVOoAq
-         LXUbIyRBGvGe9U/0YJmFT6IxVj7AlO/2ckjYZJqc=
+        b=N1T5XmYI88nrh6aRIVxS8LTOQ1wuOKY3R17XjtRTs72FhKimXtIoWwrzw1IEbpZ0h
+         b4RggGDuchJX4HcUSIEwx+7yKjwO1BCjOVfWYl+RKnJASy7aIcsVaf/wohXD/lcQ03
+         5CAOCnu0sikNXP7xfeqnBzEfnoWKtR65Qd57o5WQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 157/239] iwlwifi: mvm: Fix calculation of frame length
-Date:   Mon, 24 Jan 2022 19:43:15 +0100
-Message-Id: <20220124183948.089617963@linuxfoundation.org>
+Subject: [PATCH 4.19 153/239] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
+Date:   Mon, 24 Jan 2022 19:43:11 +0100
+Message-Id: <20220124183947.959125470@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -50,70 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 40a0b38d7a7f91a6027287e0df54f5f547e8d27e ]
+[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
 
-The RADA might include in the Rx frame the MIC and CRC bytes.
-These bytes should be removed for non monitor interfaces and
-should not be passed to mac80211.
+When a new USB device gets plugged to nested hubs, the affected hub,
+which connects to usb 2-1.4-port2, doesn't report there's any change,
+hence the nested hubs go back to runtime suspend like nothing happened:
+[  281.032951] usb usb2: usb wakeup-resume
+[  281.032959] usb usb2: usb auto-resume
+[  281.032974] hub 2-0:1.0: hub_resume
+[  281.033011] usb usb2-port1: status 0263 change 0000
+[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.049797] usb 2-1: usb wakeup-resume
+[  281.069800] usb 2-1: Waited 0ms for CONNECT
+[  281.069810] usb 2-1: finish resume
+[  281.070026] hub 2-1:1.0: hub_resume
+[  281.070250] usb 2-1-port4: status 0203 change 0000
+[  281.070272] usb usb2-port1: resume, status 0
+[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
+[  281.089813] usb 2-1.4: usb wakeup-resume
+[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
+[  281.109801] usb 2-1.4: finish resume
+[  281.109991] hub 2-1.4:1.0: hub_resume
+[  281.110147] usb 2-1.4-port2: status 0263 change 0000
+[  281.110234] usb 2-1-port4: resume, status 0
+[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
+[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.110426] hub 2-1.4:1.0: hub_suspend
+[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
+[  281.130998] hub 2-1:1.0: hub_suspend
+[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
+[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.177828] usb 2-1: usb wakeup-resume
+[  281.197839] usb 2-1: Waited 0ms for CONNECT
+[  281.197850] usb 2-1: finish resume
+[  281.197984] hub 2-1:1.0: hub_resume
+[  281.198203] usb 2-1-port4: status 0203 change 0000
+[  281.198228] usb usb2-port1: resume, status 0
+[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
+[  281.217835] usb 2-1.4: usb wakeup-resume
+[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
+[  281.237845] usb 2-1.4: finish resume
+[  281.237990] hub 2-1.4:1.0: hub_resume
+[  281.238067] usb 2-1.4-port2: status 0263 change 0000
+[  281.238148] usb 2-1-port4: resume, status 0
+[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
+[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.238385] hub 2-1.4:1.0: hub_suspend
+[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
+[  281.258076] hub 2-1:1.0: hub_suspend
+[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
+[  281.285976] hub 2-0:1.0: hub_suspend
+[  281.285988] usb usb2: bus auto-suspend, wakeup 1
 
-Fix the Rx processing to remove the extra bytes on non monitor
-cases.
+USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
+the link is in a non-U0 state, then the device must transition the link
+to U0 prior to sending the remote wake message", but the hub only
+transits the link to U0 after signaling remote wakeup.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219121514.098be12c801e.I1d81733d8a75b84c3b20eb6e0d14ab3405ca6a86@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+So be more forgiving and use a 20ms delay to let the link transit to U0
+for remote wakeup.
+
+Suggested-by: Alan Stern <stern@rowland.harvard.edu>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 27 +++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/usb/core/hub.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-index 77e3694536421..9a4848d69e9e1 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-@@ -151,12 +151,39 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
- 	struct iwl_rx_mpdu_desc *desc = (void *)pkt->data;
- 	unsigned int headlen, fraglen, pad_len = 0;
- 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
-+	u8 mic_crc_len = u8_get_bits(desc->mac_flags1,
-+				     IWL_RX_MPDU_MFLG1_MIC_CRC_LEN_MASK) << 1;
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 7feb25559e079..29cc2aa5abff5 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -1082,7 +1082,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
+ 		} else {
+ 			hub_power_on(hub, true);
+ 		}
+-	}
++	/* Give some time on remote wakeup to let links to transit to U0 */
++	} else if (hub_is_superspeed(hub->hdev))
++		msleep(20);
++
+  init2:
  
- 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
- 		len -= 2;
- 		pad_len = 2;
- 	}
- 
-+	/*
-+	 * For non monitor interface strip the bytes the RADA might not have
-+	 * removed. As monitor interface cannot exist with other interfaces
-+	 * this removal is safe.
-+	 */
-+	if (mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS)) {
-+		u32 pkt_flags = le32_to_cpu(pkt->len_n_flags);
-+
-+		/*
-+		 * If RADA was not enabled then decryption was not performed so
-+		 * the MIC cannot be removed.
-+		 */
-+		if (!(pkt_flags & FH_RSCSR_RADA_EN)) {
-+			if (WARN_ON(crypt_len > mic_crc_len))
-+				return -EINVAL;
-+
-+			mic_crc_len -= crypt_len;
-+		}
-+
-+		if (WARN_ON(mic_crc_len > len))
-+			return -EINVAL;
-+
-+		len -= mic_crc_len;
-+	}
-+
- 	/* If frame is small enough to fit in skb->head, pull it completely.
- 	 * If not, only pull ieee80211_hdr (including crypto if present, and
- 	 * an additional 8 bytes for SNAP/ethertype, see below) so that
+ 	/*
 -- 
 2.34.1
 
