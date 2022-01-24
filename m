@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D35B4C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41521C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245414AbiAXSxK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50702 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245509AbiAXSvj (ORCPT
+        id S245474AbiAXSxO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:53:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343720AbiAXSvh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:51:39 -0500
+        Mon, 24 Jan 2022 13:51:37 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F23EC061759;
+        Mon, 24 Jan 2022 10:51:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 06740614E3;
-        Mon, 24 Jan 2022 18:51:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28FCC340E5;
-        Mon, 24 Jan 2022 18:51:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37D20B81227;
+        Mon, 24 Jan 2022 18:51:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9693DC340E5;
+        Mon, 24 Jan 2022 18:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050298;
-        bh=ypGe6ZiPObWziSfTo04HOWAK/HNjCmpuxDJ2gVqG6As=;
+        s=korg; t=1643050286;
+        bh=jfkLL6rXolBMxv55YyFzWn2CWtcA4vLhtAVsUilZUhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LJiPRyOYfYRQ40CQ9xX0+bAS7cEN84nMmPiK/xQ5YqW3aWH9o7tkh4/suK+mZwsVs
-         z72ldc7GxXlss+iFhIv2qdmEGCkFECYH2L6qp8rV1yzkWaBKAxDmx2HCGPeK/0ks53
-         JPGq7rtnYowDzH9wuANcvB/9Oxw7T9D2rEZslsoI=
+        b=ThIk+aW/NpGrWPJupeat7WFTrwMVmRGfnrHeIQOBydxutk8ebL2YAbsbmn6GfwRnG
+         0dkyp2AKc+1ijltv7J36C+L6+LxdzidWXlFYBBzzVJ4K5GrDQC2qME2A2EpHipoFvu
+         9kPXaLtSpFFN1KbHwKkJrsGVojolomKU/2DOclAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 073/114] um: registers: Rename function names to avoid conflicts and build problems
-Date:   Mon, 24 Jan 2022 19:42:48 +0100
-Message-Id: <20220124183929.351144409@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 069/114] media: igorplugusb: receiver overflow should be reported
+Date:   Mon, 24 Jan 2022 19:42:44 +0100
+Message-Id: <20220124183929.230821748@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -48,101 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Sean Young <sean@mess.org>
 
-[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
+[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
 
-The function names init_registers() and restore_registers() are used
-in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
-calls to UML functions), so rename them.
+Without this, some IR will be missing mid-stream and we might decode
+something which never really occurred.
 
-This fixes multiple build errors.
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: linux-um@lists.infradead.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/shared/registers.h | 4 ++--
- arch/um/os-Linux/registers.c       | 4 ++--
- arch/um/os-Linux/start_up.c        | 2 +-
- arch/x86/um/syscalls_64.c          | 3 ++-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/media/rc/igorplugusb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
-index f5b76355ad71a..089f979e112e3 100644
---- a/arch/um/include/shared/registers.h
-+++ b/arch/um/include/shared/registers.h
-@@ -14,8 +14,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
- extern int save_fpx_registers(int pid, unsigned long *fp_regs);
- extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
- extern int save_registers(int pid, struct uml_pt_regs *regs);
--extern int restore_registers(int pid, struct uml_pt_regs *regs);
--extern int init_registers(int pid);
-+extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
-+extern int init_pid_registers(int pid);
- extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
- extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
- extern int get_fp_registers(int pid, unsigned long *regs);
-diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
-index 2ff8d4fe83c4f..34a5963bd7efd 100644
---- a/arch/um/os-Linux/registers.c
-+++ b/arch/um/os-Linux/registers.c
-@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
- 	return 0;
- }
+diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
+index b36e51576f8e4..645ea00c472ab 100644
+--- a/drivers/media/rc/igorplugusb.c
++++ b/drivers/media/rc/igorplugusb.c
+@@ -73,9 +73,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
+ 	if (start >= len) {
+ 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
+ 	} else {
+-		if (overflow > 0)
++		if (overflow > 0) {
+ 			dev_warn(ir->dev, "receive overflow, at least %u lost",
+ 								overflow);
++			ir_raw_event_reset(ir->rc);
++		}
  
--int restore_registers(int pid, struct uml_pt_regs *regs)
-+int restore_pid_registers(int pid, struct uml_pt_regs *regs)
- {
- 	int err;
- 
-@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
- static unsigned long exec_regs[MAX_REG_NR];
- static unsigned long exec_fp_regs[FP_SIZE];
- 
--int init_registers(int pid)
-+int init_pid_registers(int pid)
- {
- 	int err;
- 
-diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
-index 22a358ef1b0cd..dc06933ba63d9 100644
---- a/arch/um/os-Linux/start_up.c
-+++ b/arch/um/os-Linux/start_up.c
-@@ -334,7 +334,7 @@ void __init os_early_checks(void)
- 	check_tmpexec();
- 
- 	pid = start_ptraced_child();
--	if (init_registers(pid))
-+	if (init_pid_registers(pid))
- 		fatal("Failed to initialize default registers");
- 	stop_ptraced_child(pid, 1, 1);
- }
-diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
-index e6552275320bc..40ecacb2c54b3 100644
---- a/arch/x86/um/syscalls_64.c
-+++ b/arch/x86/um/syscalls_64.c
-@@ -9,6 +9,7 @@
- #include <linux/uaccess.h>
- #include <asm/prctl.h> /* XXX This should get the constants from libc */
- #include <os.h>
-+#include <registers.h>
- 
- long arch_prctl(struct task_struct *task, int code, unsigned long __user *addr)
- {
-@@ -32,7 +33,7 @@ long arch_prctl(struct task_struct *task, int code, unsigned long __user *addr)
- 	switch (code) {
- 	case ARCH_SET_FS:
- 	case ARCH_SET_GS:
--		ret = restore_registers(pid, &current->thread.regs.regs);
-+		ret = restore_pid_registers(pid, &current->thread.regs.regs);
- 		if (ret)
- 			return ret;
- 		break;
+ 		do {
+ 			rawir.duration = ir->buf_in[i] * 85333;
 -- 
 2.34.1
 
