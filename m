@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AB3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3738DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412372AbiAYAgp (ORCPT
+        id S3412428AbiAYAg4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:36:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        Mon, 24 Jan 2022 19:36:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2365366AbiAXXuq (ORCPT
+        with ESMTP id S2366246AbiAXXwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:50:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83383C0FE6A4;
-        Mon, 24 Jan 2022 13:44:37 -0800 (PST)
+        Mon, 24 Jan 2022 18:52:33 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1B0C047CFC;
+        Mon, 24 Jan 2022 13:45:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE98B811A9;
-        Mon, 24 Jan 2022 21:44:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84918C340E4;
-        Mon, 24 Jan 2022 21:44:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C68B60917;
+        Mon, 24 Jan 2022 21:45:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 243C2C340E4;
+        Mon, 24 Jan 2022 21:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060675;
-        bh=yu+IE5+gItyP4e2FuDlpjTgxMD8d6Lf0tXsdlecCLis=;
+        s=korg; t=1643060730;
+        bh=Fr/LKWtC4UyTPQgHsHi1fEAW/E12tFtoUubYw4q27BA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dvcUD1Dk9ZSL/l+2y58bpKVv6JAsBry7YQngUj3ZLtqWkdq/0hzSPAKVhulOKkejM
-         d7pUHZmxLtLzaIoZDpk9VvjGa4bjgB6UQ14WR1gws6tf7a2fXk/hrIfSb61AnsSr6i
-         gpTkonziGbhjGdjvJqYSAv1xm8FWub/K9zgnzXKg=
+        b=HO/slpzrqBNDA/9Zn8+FjhamuHxH0vSK5IMXIv2W4xUARQCFvc4A/NHOcuztWcNph
+         NioWHizEP/8QSJguwrtULXW6/FVZdBBk/w2CsaV6aEeZp7QsPbVzTgX8G+60PsIGIO
+         8oWFJoZ3SwRShgIsKuMbdhwoLmMwBtddl0gs/1ac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.16 1027/1039] scripts/dtc: dtx_diff: remove broken example from help text
-Date:   Mon, 24 Jan 2022 19:46:56 +0100
-Message-Id: <20220124184159.816262393@linuxfoundation.org>
+        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 1016/1039] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
+Date:   Mon, 24 Jan 2022 19:46:45 +0100
+Message-Id: <20220124184159.451000912@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,46 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Tom Rix <trix@redhat.com>
 
-commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
+commit 214b3369ab9b0a6f28d6c970220c209417edbc65 upstream.
 
-dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
-this has never worked: The /proc/self/fds/... paths passed by the shell
-will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
-but even with this check removed, the function cannot work: hexdump will
-eat up the DTB magic, making the subsequent dtc call fail, as a pipe
-cannot be rewound.
+Clang static analysis reports this problem
+mtk_eth_soc.c:394:7: warning: Branch condition evaluates
+  to a garbage value
+                if (err)
+                    ^~~
 
-Simply remove this broken example, as there is already an alternative one
-that works fine.
+err is not initialized and only conditionally set.
+So intitialize err.
 
-Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
+Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
+Signed-off-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- scripts/dtc/dtx_diff |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/scripts/dtc/dtx_diff
-+++ b/scripts/dtc/dtx_diff
-@@ -59,12 +59,8 @@ Otherwise DTx is treated as a dts source
-    or '/include/' to be processed.
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -224,7 +224,7 @@ static void mtk_mac_config(struct phylin
+ 					   phylink_config);
+ 	struct mtk_eth *eth = mac->hw;
+ 	u32 mcr_cur, mcr_new, sid, i;
+-	int val, ge_mode, err;
++	int val, ge_mode, err = 0;
  
-    If DTx_1 and DTx_2 are in different architectures, then this script
--   may not work since \${ARCH} is part of the include path.  Two possible
--   workarounds:
--
--      `basename $0` \\
--          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
--          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
-+   may not work since \${ARCH} is part of the include path.  The following
-+   workaround can be used:
- 
-       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
-       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
+ 	/* MT76x8 has no hardware settings between for the MAC */
+ 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
 
 
