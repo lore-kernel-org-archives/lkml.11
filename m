@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD70C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F73DC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245353AbiAXULo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:11:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41030 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357912AbiAXTxW (ORCPT
+        id S1379542AbiAXULh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:11:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356682AbiAXTxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:53:22 -0500
+        Mon, 24 Jan 2022 14:53:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1824C0613A6;
+        Mon, 24 Jan 2022 11:26:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00E51B8122C;
-        Mon, 24 Jan 2022 19:53:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0DAC340E5;
-        Mon, 24 Jan 2022 19:53:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D6CCB81240;
+        Mon, 24 Jan 2022 19:26:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6E1DC339CC;
+        Mon, 24 Jan 2022 19:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053997;
-        bh=6O4ixEgbR8ruLiZx+ckm3RWsZX2EjjJUpSSMui6IHzA=;
+        s=korg; t=1643052398;
+        bh=lUHBLmJPWPHY9xfX0f7oW/LhUvOKBWyNMSXZN69tKvo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Ru9wGlPbhVVwZbT9WuzwCKDPIEDbweuQwXvlwhzJ39JzskVUz+A1E0Ev3X4ulMih
-         Gdn63lZ9fjuSIoxho7pTyeMTAkaKuZRYToob2GwRzMDh9+Xb0OiWgiJ4rqzCev25fR
-         82crgsbf4kpmG3QIBgS092fI/nBd2jvhrZf/XRvo=
+        b=J1esuzkOf5o2e8ciRTwNfR4YdyyQ6fV3vkARvZxCqG0npTBw/jUuMLUnCF9fLYfuI
+         Gx8XXGsjtdYWpRMeZuFdOhkF4W/dspi4seoyCxlkw9Mj9B1CDF4bX8orH4BizaPRLw
+         YadGTTkNl23zjDvDyqbolR2bLgKRK0NsNcwHoYN4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vishakha Channapattan <vishakhavc@google.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Igor Pylypiv <ipylypiv@google.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 244/563] scsi: pm80xx: Update WARN_ON check in pm8001_mpi_build_cmd()
-Date:   Mon, 24 Jan 2022 19:40:09 +0100
-Message-Id: <20220124184032.865459407@linuxfoundation.org>
+Subject: [PATCH 5.4 045/320] media: aspeed: Update signal status immediately to ensure sane hw state
+Date:   Mon, 24 Jan 2022 19:40:29 +0100
+Message-Id: <20220124183955.277750504@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Igor Pylypiv <ipylypiv@google.com>
+From: Jammy Huang <jammy_huang@aspeedtech.com>
 
-[ Upstream commit 606c54ae975ad3af540b505b46b55a687501711f ]
+[ Upstream commit af6d1bde395cac174ee71adcd3fa43f6435c7206 ]
 
-Starting from commit 05c6c029a44d ("scsi: pm80xx: Increase number of
-supported queues") driver initializes only max_q_num queues.  Do not use an
-invalid queue if the WARN_ON condition is true.
+If res-chg, VE_INTERRUPT_MODE_DETECT_WD irq will be raised. But
+v4l2_input_status won't be updated to no-signal immediately until
+aspeed_video_get_resolution() in aspeed_video_resolution_work().
 
-Link: https://lore.kernel.org/r/20211101232825.2350233-4-ipylypiv@google.com
-Fixes: 7640e1eb8c5d ("scsi: pm80xx: Make mpi_build_cmd locking consistent")
-Reviewed-by: Vishakha Channapattan <vishakhavc@google.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+During the period of time, aspeed_video_start_frame() could be called
+because it doesn't know signal becomes unstable now. If it goes with
+aspeed_video_init_regs() of aspeed_video_irq_res_change()
+simultaneously, it will mess up hw state.
+
+To fix this problem, v4l2_input_status is updated to no-signal
+immediately for VE_INTERRUPT_MODE_DETECT_WD irq.
+
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/media/platform/aspeed-video.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 5d751628a6340..9b318958d78cc 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1323,7 +1323,9 @@ int pm8001_mpi_build_cmd(struct pm8001_hba_info *pm8001_ha,
- 	int q_index = circularQ - pm8001_ha->inbnd_q_tbl;
- 	int rv = -1;
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index be1238f22b8ae..1e0867016bf37 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -533,6 +533,8 @@ static void aspeed_video_irq_res_change(struct aspeed_video *video, ulong delay)
+ 	set_bit(VIDEO_RES_CHANGE, &video->flags);
+ 	clear_bit(VIDEO_FRAME_INPRG, &video->flags);
  
--	WARN_ON(q_index >= PM8001_MAX_INB_NUM);
-+	if (WARN_ON(q_index >= pm8001_ha->max_q_num))
-+		return -EINVAL;
++	video->v4l2_input_status = V4L2_IN_ST_NO_SIGNAL;
 +
- 	spin_lock_irqsave(&circularQ->iq_lock, flags);
- 	rv = pm8001_mpi_msg_free_get(circularQ, pm8001_ha->iomb_size,
- 			&pMessage);
+ 	aspeed_video_off(video);
+ 	aspeed_video_bufs_done(video, VB2_BUF_STATE_ERROR);
+ 
+@@ -1315,7 +1317,6 @@ static void aspeed_video_resolution_work(struct work_struct *work)
+ 	struct delayed_work *dwork = to_delayed_work(work);
+ 	struct aspeed_video *video = container_of(dwork, struct aspeed_video,
+ 						  res_work);
+-	u32 input_status = video->v4l2_input_status;
+ 
+ 	aspeed_video_on(video);
+ 
+@@ -1328,8 +1329,7 @@ static void aspeed_video_resolution_work(struct work_struct *work)
+ 	aspeed_video_get_resolution(video);
+ 
+ 	if (video->detected_timings.width != video->active_timings.width ||
+-	    video->detected_timings.height != video->active_timings.height ||
+-	    input_status != video->v4l2_input_status) {
++	    video->detected_timings.height != video->active_timings.height) {
+ 		static const struct v4l2_event ev = {
+ 			.type = V4L2_EVENT_SOURCE_CHANGE,
+ 			.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION,
 -- 
 2.34.1
 
