@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5FBC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B69CC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350342AbiAYC4C (ORCPT
+        id S1314008AbiAYCuL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:56:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        Mon, 24 Jan 2022 21:50:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3413920AbiAYAlU (ORCPT
+        with ESMTP id S1445371AbiAXVDQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:41:20 -0500
+        Mon, 24 Jan 2022 16:03:16 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A695DC06F8C1;
-        Mon, 24 Jan 2022 12:12:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79DA9C06B5B3;
+        Mon, 24 Jan 2022 12:04:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E188B811FB;
-        Mon, 24 Jan 2022 20:12:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC00C340E5;
-        Mon, 24 Jan 2022 20:12:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 307E3B81218;
+        Mon, 24 Jan 2022 20:03:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63BB5C340E5;
+        Mon, 24 Jan 2022 20:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055168;
-        bh=P3mP2RwBxJp/EBT6OaLms76ZlqOs6NnvvLLYqQRsXt0=;
+        s=korg; t=1643054637;
+        bh=RaPK8Eyr4HE56rbewWn9cmr8Bv4VqvqGAd5d/J3fTwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gHUA8STDh5vtodANNM32prNOIkTT4K9p/J40NrxScIqnkebr9L+pyiFBgna7QgtKC
-         GUWAwWdyN4sof0sog8aiJFpEp4qkQjnvWEv7sn2gUjmvW2iVux24sBrlC/Hbf415wC
-         lfCpTRJ/l4Ums0cxhG391kn7ZgHaF7UhcvKyZmzg=
+        b=cRB2HHyUF7be83aSlFQIe6AX3kKbjHY6XT6gkLHbX3ZDVw5pfeg9o8HxKvURo196t
+         31OnVBqL0gVuPQOfUYCa47lfDzkqEN0LWuYiHY5REs69BEaChuOWXRQaPJIlCn68aw
+         HdUjlK4ugOSdELlFdyNMTyi77tFY5sX4FCeRuc+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Hari Prasath <Hari.PrasathGE@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH 5.15 063/846] ARM: dts: at91: update alternate function of signal PD20
-Date:   Mon, 24 Jan 2022 19:33:00 +0100
-Message-Id: <20220124184103.143884503@linuxfoundation.org>
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 454/563] device property: Fix fwnode_graph_devcon_match() fwnode leak
+Date:   Mon, 24 Jan 2022 19:43:39 +0100
+Message-Id: <20220124184040.143479590@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Prasath <Hari.PrasathGE@microchip.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 12f332d2dd3187472f595b678246adb10d886bd0 upstream.
+commit 4a7f4110f79163fd53ea65438041994ed615e3af upstream.
 
-The alternate function of PD20 is 4 as per the datasheet of
-sama7g5 and not 5 as defined earlier.
+For each endpoint it encounters, fwnode_graph_devcon_match() checks
+whether the endpoint's remote port parent device is available. If it is
+not, it ignores the endpoint but does not put the reference to the remote
+endpoint port parent fwnode. For available devices the fwnode handle
+reference is put as expected.
 
-Signed-off-by: Hari Prasath <Hari.PrasathGE@microchip.com>
-Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
-Cc: <stable@vger.kernel.org> # v5.15+
-Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-Link: https://lore.kernel.org/r/20211208063553.19807-1-Hari.PrasathGE@microchip.com
+Put the reference for unavailable devices now.
+
+Fixes: 637e9e52b185 ("device connection: Find device connections also from device graphs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/sama7g5-pinfunc.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/base/property.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/arm/boot/dts/sama7g5-pinfunc.h
-+++ b/arch/arm/boot/dts/sama7g5-pinfunc.h
-@@ -765,7 +765,7 @@
- #define PIN_PD20__PCK0			PINMUX_PIN(PIN_PD20, 1, 3)
- #define PIN_PD20__FLEXCOM2_IO3		PINMUX_PIN(PIN_PD20, 2, 2)
- #define PIN_PD20__PWMH3			PINMUX_PIN(PIN_PD20, 3, 4)
--#define PIN_PD20__CANTX4		PINMUX_PIN(PIN_PD20, 5, 2)
-+#define PIN_PD20__CANTX4		PINMUX_PIN(PIN_PD20, 4, 2)
- #define PIN_PD20__FLEXCOM5_IO0		PINMUX_PIN(PIN_PD20, 6, 5)
- #define PIN_PD21			117
- #define PIN_PD21__GPIO			PINMUX_PIN(PIN_PD21, 0, 0)
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1195,8 +1195,10 @@ fwnode_graph_devcon_match(struct fwnode_
+ 
+ 	fwnode_graph_for_each_endpoint(fwnode, ep) {
+ 		node = fwnode_graph_get_remote_port_parent(ep);
+-		if (!fwnode_device_is_available(node))
++		if (!fwnode_device_is_available(node)) {
++			fwnode_handle_put(node);
+ 			continue;
++		}
+ 
+ 		ret = match(node, con_id, data);
+ 		fwnode_handle_put(node);
 
 
