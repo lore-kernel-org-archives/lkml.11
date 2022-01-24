@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3135BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A560C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:07:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444306AbiAXVG5 (ORCPT
+        id S1345835AbiAXVHD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:06:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
+        Mon, 24 Jan 2022 16:07:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390166AbiAXUpD (ORCPT
+        with ESMTP id S1390235AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16915C0617BC;
-        Mon, 24 Jan 2022 11:54:22 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E6BCC0613A6;
+        Mon, 24 Jan 2022 11:55:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D217BB81229;
-        Mon, 24 Jan 2022 19:54:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B12C340E5;
-        Mon, 24 Jan 2022 19:54:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0B8960B56;
+        Mon, 24 Jan 2022 19:55:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A25BBC340E5;
+        Mon, 24 Jan 2022 19:55:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054059;
-        bh=1yWpEKWsnxvzT9qXhc23Xqk5jPQ5wA/WL2CuYle5s9Y=;
+        s=korg; t=1643054143;
+        bh=PgU5/HgFGDp/MIMNYfxiJlEP6GPrvT3oRWfVLrJRIoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vSqtI6WQBOkbn7uqz0o5zwgtz9lmp/u1OU2/gzHgYRwNR2UOpN0b/xf2Q0bfFEAS3
-         iihx8PtZzjgsCPWPiDmsfuJjBJuAtS/QD1RD/fdMKvzC1NjTHaQWhigoOBSAhUffTl
-         ooxA6hMl2zF9VMPkuO9yimlpZUL0bBGPf3YJDShs=
+        b=MdzTBkhkguYTa89AYOnKMM3lWMalR5riuRh0svrELFsEjviCqOmQoTxs3nGaqfqja
+         shl/EC48zPmR5KTXn5WJfbMEHsrNQj39cZzgK7t6pZn0kINJI1nh3J9oFRsqKXeaaT
+         iSXBP6VZhdUUd6g+KmVqiqQDX0iu5W6pxUM1YrSA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 248/563] dt-bindings: thermal: Fix definition of cooling-maps contribution property
-Date:   Mon, 24 Jan 2022 19:40:13 +0100
-Message-Id: <20220124184032.992904339@linuxfoundation.org>
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 293/563] RDMA/cxgb4: Set queue pair state when being queried
+Date:   Mon, 24 Jan 2022 19:40:58 +0100
+Message-Id: <20220124184034.578172665@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -52,61 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-[ Upstream commit 49bcb1506f2e095262c01bda7fd1c0db524c91e2 ]
+[ Upstream commit e375b9c92985e409c4bb95dd43d34915ea7f5e28 ]
 
-When converting the thermal-zones bindings to yaml the definition of the
-contribution property changed. The intention is the same, an integer
-value expressing a ratio of a sum on how much cooling is provided by the
-device to the zone. But after the conversion the integer value is
-limited to the range 0 to 100 and expressed as a percentage.
+The API for ib_query_qp requires the driver to set cur_qp_state on return,
+add the missing set.
 
-This is problematic for two reasons.
-
-- This do not match how the binding is used. Out of the 18 files that
-  make use of the property only two (ste-dbx5x0.dtsi and
-  ste-hrefv60plus.dtsi) sets it at a value that satisfy the binding,
-  100. The remaining 16 files set the value higher and fail to validate.
-
-- Expressing the value as a percentage instead of a ratio of the sum is
-  confusing as there is nothing to enforce the sum in the zone is not
-  greater then 100.
-
-This patch restore the pre yaml conversion description and removes the
-value limitation allowing the usage of the bindings to validate.
-
-Fixes: 1202a442a31fd2e5 ("dt-bindings: thermal: Add yaml bindings for thermal zones")
-Reported-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Link: https://lore.kernel.org/r/20211109103045.1403686-1-niklas.soderlund+renesas@ragnatech.se
-Signed-off-by: Rob Herring <robh@kernel.org>
+Fixes: 67bbc05512d8 ("RDMA/cxgb4: Add query_qp support")
+Link: https://lore.kernel.org/r/20211220152530.60399-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/thermal/thermal-zones.yaml       | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/infiniband/hw/cxgb4/qp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/thermal/thermal-zones.yaml b/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-index 164f71598c595..1b3954aa71c15 100644
---- a/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-+++ b/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-@@ -199,12 +199,11 @@ patternProperties:
- 
-               contribution:
-                 $ref: /schemas/types.yaml#/definitions/uint32
--                minimum: 0
--                maximum: 100
-                 description:
--                  The percentage contribution of the cooling devices at the
--                  specific trip temperature referenced in this map
--                  to this thermal zone
-+                  The cooling contribution to the thermal zone of the referred
-+                  cooling device at the referred trip point. The contribution is
-+                  a ratio of the sum of all cooling contributions within a
-+                  thermal zone.
- 
-             required:
-               - trip
+diff --git a/drivers/infiniband/hw/cxgb4/qp.c b/drivers/infiniband/hw/cxgb4/qp.c
+index 861e19fdfeb46..12e5461581cb4 100644
+--- a/drivers/infiniband/hw/cxgb4/qp.c
++++ b/drivers/infiniband/hw/cxgb4/qp.c
+@@ -2469,6 +2469,7 @@ int c4iw_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
+ 	memset(attr, 0, sizeof(*attr));
+ 	memset(init_attr, 0, sizeof(*init_attr));
+ 	attr->qp_state = to_ib_qp_state(qhp->attr.state);
++	attr->cur_qp_state = to_ib_qp_state(qhp->attr.state);
+ 	init_attr->cap.max_send_wr = qhp->attr.sq_num_entries;
+ 	init_attr->cap.max_recv_wr = qhp->attr.rq_num_entries;
+ 	init_attr->cap.max_send_sge = qhp->attr.sq_max_sges;
 -- 
 2.34.1
 
