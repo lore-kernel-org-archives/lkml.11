@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 020D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E44C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383279AbiAXU1E (ORCPT
+        id S1383298AbiAXU1G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:27:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48466 "EHLO
+        Mon, 24 Jan 2022 15:27:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42094 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377085AbiAXUEz (ORCPT
+        with ESMTP id S1352176AbiAXT5R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:04:55 -0500
+        Mon, 24 Jan 2022 14:57:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26F3CB8119E;
-        Mon, 24 Jan 2022 20:04:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE63C340E5;
-        Mon, 24 Jan 2022 20:04:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB54CB811FB;
+        Mon, 24 Jan 2022 19:57:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF375C340E5;
+        Mon, 24 Jan 2022 19:57:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054692;
-        bh=1LRY7Hc5xtjb83pWWXrGzUxDQvG9QongWQv+GtMJcTY=;
+        s=korg; t=1643054234;
+        bh=Qbnpal6S+UxOf65CG/ERZROcEXBzaAoH3S2RJUPcGq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kyy7XG4vtS8pRQ793/7MnU2HJbsREvqwXNrlC6h6PNnViIvKl1wTOaW3BJUHMRx13
-         7M2xncIRzQJaWCG4IYv/TrfNUt4yWj9VuODTIsO7/UPn97aT+KF4Ddvb/gc26wJkQr
-         LsFDWuQf8u8Wz4SHb9SJ6HeTq7YM9/L9mosJWD10=
+        b=lKmDTKwSKKx+k9xWQVpkoi2Zrts/e9ist8g0ha93Im7bryycYQaU7t9L8dyVVaW14
+         8ckgWWVmB2cIFKMh2jOW52/b6khYOiTZA1+bBKQCAt9Dn3++FFtKQAEgYwQhrYJOJD
+         8wLW2LEopzb7ugxX80DFvnoWprDjlXql3IDRWLoo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.10 473/563] ext4: make sure quota gets properly shutdown on error
-Date:   Mon, 24 Jan 2022 19:43:58 +0100
-Message-Id: <20220124184040.829568391@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 289/563] mips: lantiq: add support for clk_set_parent()
+Date:   Mon, 24 Jan 2022 19:40:54 +0100
+Message-Id: <20220124184034.446478280@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,51 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 15fc69bbbbbc8c72e5f6cc4e1be0f51283c5448e upstream.
+[ Upstream commit 76f66dfd60dc5d2f9dec22d99091fea1035c5d03 ]
 
-When we hit an error when enabling quotas and setting inode flags, we do
-not properly shutdown quota subsystem despite returning error from
-Q_QUOTAON quotactl. This can lead to some odd situations like kernel
-using quota file while it is still writeable for userspace. Make sure we
-properly cleanup the quota subsystem in case of error.
+Provide a simple implementation of clk_set_parent() in the lantiq
+subarch so that callers of it will build without errors.
 
-Signed-off-by: Jan Kara <jack@suse.cz>
-Cc: stable@kernel.org
-Link: https://lore.kernel.org/r/20211007155336.12493-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes these build errors:
+
+ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
+ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
+
+Fixes: 171bb2f19ed6 ("MIPS: Lantiq: Add initial support for Lantiq SoCs")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+--to=linux-mips@vger.kernel.org --cc="John Crispin <john@phrozen.org>" --cc="Jonathan Cameron <jic23@kernel.org>" --cc="Russell King <linux@armlinux.org.uk>" --cc="Andy Shevchenko <andy.shevchenko@gmail.com>" --cc=alsa-devel@alsa-project.org --to="Thomas Bogendoerfer <tsbogend@alpha.franken.de>"
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/super.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/mips/lantiq/clk.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6341,10 +6341,7 @@ static int ext4_quota_on(struct super_bl
- 
- 	lockdep_set_quota_inode(path->dentry->d_inode, I_DATA_SEM_QUOTA);
- 	err = dquot_quota_on(sb, type, format_id, path);
--	if (err) {
--		lockdep_set_quota_inode(path->dentry->d_inode,
--					     I_DATA_SEM_NORMAL);
--	} else {
-+	if (!err) {
- 		struct inode *inode = d_inode(path->dentry);
- 		handle_t *handle;
- 
-@@ -6364,7 +6361,12 @@ static int ext4_quota_on(struct super_bl
- 		ext4_journal_stop(handle);
- 	unlock_inode:
- 		inode_unlock(inode);
-+		if (err)
-+			dquot_quota_off(sb, type);
- 	}
-+	if (err)
-+		lockdep_set_quota_inode(path->dentry->d_inode,
-+					     I_DATA_SEM_NORMAL);
- 	return err;
+diff --git a/arch/mips/lantiq/clk.c b/arch/mips/lantiq/clk.c
+index 4916cccf378fd..7a623684d9b5e 100644
+--- a/arch/mips/lantiq/clk.c
++++ b/arch/mips/lantiq/clk.c
+@@ -164,6 +164,12 @@ struct clk *clk_get_parent(struct clk *clk)
  }
+ EXPORT_SYMBOL(clk_get_parent);
  
++int clk_set_parent(struct clk *clk, struct clk *parent)
++{
++	return 0;
++}
++EXPORT_SYMBOL(clk_set_parent);
++
+ static inline u32 get_counter_resolution(void)
+ {
+ 	u32 res;
+-- 
+2.34.1
+
 
 
