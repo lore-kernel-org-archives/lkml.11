@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:18:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC262C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583515AbiAXWS0 (ORCPT
+        id S1582928AbiAXWQL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:18:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33686 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447918AbiAXVLo (ORCPT
+        Mon, 24 Jan 2022 17:16:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453887AbiAXVbI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:44 -0500
+        Mon, 24 Jan 2022 16:31:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304CCC0AD1AD;
+        Mon, 24 Jan 2022 12:20:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B936B81233;
-        Mon, 24 Jan 2022 21:11:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C161BC340E5;
-        Mon, 24 Jan 2022 21:11:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9822B811F9;
+        Mon, 24 Jan 2022 20:19:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07AF6C340E5;
+        Mon, 24 Jan 2022 20:19:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058702;
-        bh=nbudAHV5Id/HIQCDuN+n30CdC18eMXg3cLWyw/aOG2Q=;
+        s=korg; t=1643055598;
+        bh=vHsytlRuhEniNKYDf87eMNzzcRoTpH3g1LK1qlpI8Lw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2D2AFof3BofQ3g9/IWo4SVqQ8pKfVXZC0HRt+DwaQVXI8Q+4mSlheueNfi/ITubsJ
-         jKh0e7Q0HFs+omrvWGOJXtADkvnGhd9MB6AeehUxoNEzxyoGgmOImitcuCBM6NoOta
-         lv29Q1tA3f4+Cz6VKlOwjxxj61aDRkKc0CbMTLQY=
+        b=IkJK1YTAszWW44OV2qJss/MjH3RAadO1t/2rbK1XXw3US1SLbwD9Uvd0RuGWGkB7p
+         9U6yPO9g5sbUcjBAPyQWu36ZNl7SVqktHqhhzrF1yY4Krif/qFUJx7upwgECNWAyqb
+         SpPXeeEuMJmyUYj4dbx0a1IjWYTCyk6uVJ6Uy6uQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        Kajol Jain <kjain@linux.ibm.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0342/1039] Bluetooth: L2CAP: Fix using wrong mode
-Date:   Mon, 24 Jan 2022 19:35:31 +0100
-Message-Id: <20220124184136.798730800@linuxfoundation.org>
+Subject: [PATCH 5.15 203/846] bpf: Remove config check to enable bpf support for branch records
+Date:   Mon, 24 Jan 2022 19:35:20 +0100
+Message-Id: <20220124184107.938110220@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,52 +51,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kajol Jain <kjain@linux.ibm.com>
 
-[ Upstream commit 30d57722732d9736554f85f75f9d7ad5402d192e ]
+[ Upstream commit db52f57211b4e45f0ebb274e2c877b211dc18591 ]
 
-If user has a set to use SOCK_STREAM the socket would default to
-L2CAP_MODE_ERTM which later needs to be adjusted if the destination
-address is LE which doesn't support such mode.
+Branch data available to BPF programs can be very useful to get stack traces
+out of userspace application.
 
-Fixes: 15f02b9105625 ("Bluetooth: L2CAP: Add initial code for Enhanced Credit Based Mode")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Commit fff7b64355ea ("bpf: Add bpf_read_branch_records() helper") added BPF
+support to capture branch records in x86. Enable this feature also for other
+architectures as well by removing checks specific to x86.
+
+If an architecture doesn't support branch records, bpf_read_branch_records()
+still has appropriate checks and it will return an -EINVAL in that scenario.
+Based on UAPI helper doc in include/uapi/linux/bpf.h, unsupported architectures
+should return -ENOENT in such case. Hence, update the appropriate check to
+return -ENOENT instead.
+
+Selftest 'perf_branches' result on power9 machine which has the branch stacks
+support:
+
+ - Before this patch:
+
+  [command]# ./test_progs -t perf_branches
+   #88/1 perf_branches/perf_branches_hw:FAIL
+   #88/2 perf_branches/perf_branches_no_hw:OK
+   #88 perf_branches:FAIL
+  Summary: 0/1 PASSED, 0 SKIPPED, 1 FAILED
+
+ - After this patch:
+
+  [command]# ./test_progs -t perf_branches
+   #88/1 perf_branches/perf_branches_hw:OK
+   #88/2 perf_branches/perf_branches_no_hw:OK
+   #88 perf_branches:OK
+  Summary: 1/2 PASSED, 0 SKIPPED, 0 FAILED
+
+Selftest 'perf_branches' result on power9 machine which doesn't have branch
+stack report:
+
+ - After this patch:
+
+  [command]# ./test_progs -t perf_branches
+   #88/1 perf_branches/perf_branches_hw:SKIP
+   #88/2 perf_branches/perf_branches_no_hw:OK
+   #88 perf_branches:OK
+  Summary: 1/1 PASSED, 1 SKIPPED, 0 FAILED
+
+Fixes: fff7b64355eac ("bpf: Add bpf_read_branch_records() helper")
+Suggested-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211206073315.77432-1-kjain@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ kernel/trace/bpf_trace.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index 4574c5cb1b596..251017c69ab7f 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -161,7 +161,11 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
- 		break;
- 	}
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 6c1038526d1fc..5a18b861fcf75 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -1322,9 +1322,6 @@ static const struct bpf_func_proto bpf_perf_prog_read_value_proto = {
+ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
+ 	   void *, buf, u32, size, u64, flags)
+ {
+-#ifndef CONFIG_X86
+-	return -ENOENT;
+-#else
+ 	static const u32 br_entry_size = sizeof(struct perf_branch_entry);
+ 	struct perf_branch_stack *br_stack = ctx->data->br_stack;
+ 	u32 to_copy;
+@@ -1333,7 +1330,7 @@ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
+ 		return -EINVAL;
  
--	if (chan->psm && bdaddr_type_is_le(chan->src_type))
-+	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
-+	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
-+	 */
-+	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
-+	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+ 	if (unlikely(!br_stack))
+-		return -EINVAL;
++		return -ENOENT;
  
- 	chan->state = BT_BOUND;
-@@ -255,7 +259,11 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 			return -EINVAL;
- 	}
+ 	if (flags & BPF_F_GET_BRANCH_RECORDS_SIZE)
+ 		return br_stack->nr * br_entry_size;
+@@ -1345,7 +1342,6 @@ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
+ 	memcpy(buf, br_stack->entries, to_copy);
  
--	if (chan->psm && bdaddr_type_is_le(chan->src_type) && !chan->mode)
-+	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
-+	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
-+	 */
-+	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
-+	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+ 	return to_copy;
+-#endif
+ }
  
- 	l2cap_sock_init_pid(sk);
+ static const struct bpf_func_proto bpf_read_branch_records_proto = {
 -- 
 2.34.1
 
