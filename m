@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23974C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E8AC2BA4C
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422407AbiAYCbH (ORCPT
+        id S3422453AbiAYCbP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36016 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379630AbiAXUSc (ORCPT
+        Mon, 24 Jan 2022 21:31:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42724 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347363AbiAXUSp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:18:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F519C075953;
-        Mon, 24 Jan 2022 11:38:35 -0800 (PST)
+        Mon, 24 Jan 2022 15:18:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 182CCB8122A;
-        Mon, 24 Jan 2022 19:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41097C340E7;
-        Mon, 24 Jan 2022 19:38:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC3C61383;
+        Mon, 24 Jan 2022 20:18:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B1CC36AE7;
+        Mon, 24 Jan 2022 20:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053112;
-        bh=J3h6L2kwUZJ7G0s0Kn2R/BUw7Zxwyn30CVsABOeUez4=;
+        s=korg; t=1643055521;
+        bh=zcjD8IIt5isRClkbcim/RGr754lvpzzmkoiQMRcYT3o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MnQ2o+rCDG+eV3jR4yMSFYxbFT7XyNfKfzSNN9CKs/iIz3ZJgTMlmy7Cb8XlSNXUk
-         tVCJbKxS9cJsfE1SlPb1KnZziOOBNnVwDbwkdZ9g0qHKtiDlOeLpt+HlR/T0Dcdh13
-         ayaPe2FTUMGJZaxk83hYYp3iRKkipiHpI7aRpz5E=
+        b=s9ibgw77QVe9/3LZTLQQNMr8ZmGeX1eocyQ8aLvyFZ+4WNp3kVlWg5N35dQMoC4Ae
+         5+RxmGle/8j/O77Yw+hCAcFUocn8YFe/ku4VoVgQp7OxM4C6ucSqCIWHwgGATiiBgZ
+         40L2gXqBYzkJkNuro6RW9gASQIp28Yaj8vjiX4bk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.4 273/320] drm/radeon: fix error handling in radeon_driver_open_kms
-Date:   Mon, 24 Jan 2022 19:44:17 +0100
-Message-Id: <20220124184003.262333170@linuxfoundation.org>
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 177/846] arm64: dts: qcom: msm8916: fix MMC controller aliases
+Date:   Mon, 24 Jan 2022 19:34:54 +0100
+Message-Id: <20220124184107.075270852@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,86 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-commit 4722f463896cc0ef1a6f1c3cb2e171e949831249 upstream.
+[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
 
-The return value was never initialized so the cleanup code executed when
-it isn't even necessary.
+Change sdhcN aliases to mmcN to make them actually work. Currently the
+board uses non-standard aliases sdhcN, which do not work, resulting in
+mmc0 and mmc1 hosts randomly changing indices between boots.
 
-Just add proper error handling.
-
-Fixes: ab50cb9df889 ("drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()")
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Tested-by: Jan Stancek <jstancek@redhat.com>
-Tested-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_kms.c |   22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/radeon/radeon_kms.c
-+++ b/drivers/gpu/drm/radeon/radeon_kms.c
-@@ -652,18 +652,18 @@ int radeon_driver_open_kms(struct drm_de
- 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
- 		if (unlikely(!fpriv)) {
- 			r = -ENOMEM;
--			goto out_suspend;
-+			goto err_suspend;
- 		}
+diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+index 427bb20626549..8b27242724641 100644
+--- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
+@@ -19,8 +19,8 @@
+ 	#size-cells = <2>;
  
- 		if (rdev->accel_working) {
- 			vm = &fpriv->vm;
- 			r = radeon_vm_init(rdev, vm);
- 			if (r)
--				goto out_fpriv;
-+				goto err_fpriv;
+ 	aliases {
+-		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
+-		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
++		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
++		mmc1 = &sdhc_2; /* SDC2 SD card slot */
+ 	};
  
- 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
- 			if (r)
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 
- 			/* map the ib pool buffer read only into
- 			 * virtual address space */
-@@ -671,7 +671,7 @@ int radeon_driver_open_kms(struct drm_de
- 							rdev->ring_tmp_bo.bo);
- 			if (!vm->ib_bo_va) {
- 				r = -ENOMEM;
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 			}
- 
- 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
-@@ -679,19 +679,21 @@ int radeon_driver_open_kms(struct drm_de
- 						  RADEON_VM_PAGE_READABLE |
- 						  RADEON_VM_PAGE_SNOOPED);
- 			if (r)
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 		}
- 		file_priv->driver_priv = fpriv;
- 	}
- 
--	if (!r)
--		goto out_suspend;
-+	pm_runtime_mark_last_busy(dev->dev);
-+	pm_runtime_put_autosuspend(dev->dev);
-+	return 0;
- 
--out_vm_fini:
-+err_vm_fini:
- 	radeon_vm_fini(rdev, vm);
--out_fpriv:
-+err_fpriv:
- 	kfree(fpriv);
--out_suspend:
-+
-+err_suspend:
- 	pm_runtime_mark_last_busy(dev->dev);
- 	pm_runtime_put_autosuspend(dev->dev);
- 	return r;
+ 	chosen { };
+-- 
+2.34.1
+
 
 
