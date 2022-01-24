@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07181C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38377C35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366966AbiAXXxw (ORCPT
+        id S2366853AbiAXXxl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        Mon, 24 Jan 2022 18:53:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846001AbiAXXON (ORCPT
+        with ESMTP id S1846022AbiAXXOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A453C067A76;
-        Mon, 24 Jan 2022 13:21:02 -0800 (PST)
+        Mon, 24 Jan 2022 18:14:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DEEC067A78;
+        Mon, 24 Jan 2022 13:22:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31509B8105C;
-        Mon, 24 Jan 2022 21:21:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57DDBC340E4;
-        Mon, 24 Jan 2022 21:20:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A22B561469;
+        Mon, 24 Jan 2022 21:22:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77B64C340E5;
+        Mon, 24 Jan 2022 21:22:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059259;
-        bh=vIl/gclyF80YoCxy9zzgOrGGbUlqzJB+spj0los22ZY=;
+        s=korg; t=1643059334;
+        bh=S72zmxOG0k3L7U4zKehJLaSpMyumIyBnV8FZbTgUH0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BLzxC/8g/zsOQCNz407z33fPHuwTV8pQ5ncGigyQSQoUSla446Uh0mGB49rg3LezO
-         +JPv41Q4qpdqlEpkPfISqF9vDYus/r+r5SjPtEj3vK2xBoS0L/xTX/qJjh9IUk/NkT
-         spVVAbUOX08lnUaOmb8fMrusVG6aXyK1zmHRy5T0=
+        b=avMkpndoVQuWigQsiY/V/OP5DG0njWSTlVoPRUy9ODjnAuH5O1KCjX3k1HVRmhs9q
+         o1gF8NX/CtnRlvK0yF1QT7Y/AoDwdre0h58Al2+MJkAsM31yc/b3Z5e/Ha1ISOGR5y
+         zQh+tefodzTSfsbtS6IyH76I3tYHzkFBI5CQhmak=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0557/1039] media: atomisp: set per-devices default mode
-Date:   Mon, 24 Jan 2022 19:39:06 +0100
-Message-Id: <20220124184144.030411964@linuxfoundation.org>
+Subject: [PATCH 5.16 0580/1039] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
+Date:   Mon, 24 Jan 2022 19:39:29 +0100
+Message-Id: <20220124184144.841835919@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,156 +50,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit 2c45e343c581091835c9047ed5298518aa133163 ]
+[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
 
-The atomisp driver originally used the s_parm command to
-initialize the run_mode type to the driver. So, before start
-setting up the streaming, s_parm should be called.
+Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
+DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
 
-So, even having 5 "normal" video devices, one meant to be used
-for each type, the run_mode was actually selected when
-s_parm is called.
+So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
+Kconfig and rename the definitions to IMX27 as further clean-up.
 
-Without setting the run mode, applications that don't call
-VIDIOC_SET_PARM with a custom atomisp parameters won't work, as
-the pipeline won't be set:
+This issue was discovered with ./scripts/checkkconfigsymbols.py, which
+reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
+SOC_IMX21.
 
-	atomisp-isp2 0000:00:03.0: can't create streams
-	atomisp-isp2 0000:00:03.0: __get_frame_info 1600x1200 (padded to 0) returned -22
-
-However, commit 8a7c5594c020 ("media: v4l2-ioctl: clear fields in s_parm")
-broke support for it, with a good reason, as drivers shoudn't be
-extending the API for their own purposes.
-
-So, as an step to allow generic apps to use this driver, put
-the device's run_mode in preview after open.
-
-After this patch, using v4l2grab starts to work on preview
-mode (/dev/video2):
-
-	$ v4l2grab -f YUYV -x 1600 -y 1200 -d /dev/video2 -n 1 -u
-	$ feh out000.pnm
-
-So, let's just setup the default run_mode that each video devnode
-should assume, setting it at open() time.
-
-Reported-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/atomisp_fops.c  |  5 +++++
- .../staging/media/atomisp/pci/atomisp_subdev.c    | 15 ++++++++++-----
- .../staging/media/atomisp/pci/atomisp_subdev.h    |  3 +++
- drivers/staging/media/atomisp/pci/atomisp_v4l2.c  |  4 +++-
- drivers/staging/media/atomisp/pci/atomisp_v4l2.h  |  3 ++-
- 5 files changed, 23 insertions(+), 7 deletions(-)
+ arch/arm/Kconfig.debug            | 14 +++++++-------
+ arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_fops.c b/drivers/staging/media/atomisp/pci/atomisp_fops.c
-index 02c19b92bdccb..18fff47bd25d2 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_fops.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_fops.c
-@@ -877,6 +877,11 @@ done:
- 	else
- 		pipe->users++;
- 	rt_mutex_unlock(&isp->mutex);
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 98436702e0c7e..644875d73ba15 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -410,12 +410,12 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on i.MX25.
+ 
+-	config DEBUG_IMX21_IMX27_UART
+-		bool "i.MX21 and i.MX27 Debug UART"
+-		depends on SOC_IMX21 || SOC_IMX27
++	config DEBUG_IMX27_UART
++		bool "i.MX27 Debug UART"
++		depends on SOC_IMX27
+ 		help
+ 		  Say Y here if you want kernel low-level debugging support
+-		  on i.MX21 or i.MX27.
++		  on i.MX27.
+ 
+ 	config DEBUG_IMX28_UART
+ 		bool "i.MX28 Debug UART"
+@@ -1481,7 +1481,7 @@ config DEBUG_IMX_UART_PORT
+ 	int "i.MX Debug UART Port Selection"
+ 	depends on DEBUG_IMX1_UART || \
+ 		   DEBUG_IMX25_UART || \
+-		   DEBUG_IMX21_IMX27_UART || \
++		   DEBUG_IMX27_UART || \
+ 		   DEBUG_IMX31_UART || \
+ 		   DEBUG_IMX35_UART || \
+ 		   DEBUG_IMX50_UART || \
+@@ -1540,12 +1540,12 @@ config DEBUG_LL_INCLUDE
+ 	default "debug/icedcc.S" if DEBUG_ICEDCC
+ 	default "debug/imx.S" if DEBUG_IMX1_UART || \
+ 				 DEBUG_IMX25_UART || \
+-				 DEBUG_IMX21_IMX27_UART || \
++				 DEBUG_IMX27_UART || \
+ 				 DEBUG_IMX31_UART || \
+ 				 DEBUG_IMX35_UART || \
+ 				 DEBUG_IMX50_UART || \
+ 				 DEBUG_IMX51_UART || \
+-				 DEBUG_IMX53_UART ||\
++				 DEBUG_IMX53_UART || \
+ 				 DEBUG_IMX6Q_UART || \
+ 				 DEBUG_IMX6SL_UART || \
+ 				 DEBUG_IMX6SX_UART || \
+diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
+index c8eb83d4b8964..3edbb3c5b42bf 100644
+--- a/arch/arm/include/debug/imx-uart.h
++++ b/arch/arm/include/debug/imx-uart.h
+@@ -11,13 +11,6 @@
+ #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
+ #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
+ 
+-#define IMX21_UART1_BASE_ADDR	0x1000a000
+-#define IMX21_UART2_BASE_ADDR	0x1000b000
+-#define IMX21_UART3_BASE_ADDR	0x1000c000
+-#define IMX21_UART4_BASE_ADDR	0x1000d000
+-#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
+-#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
+-
+ #define IMX25_UART1_BASE_ADDR	0x43f90000
+ #define IMX25_UART2_BASE_ADDR	0x43f94000
+ #define IMX25_UART3_BASE_ADDR	0x5000c000
+@@ -26,6 +19,13 @@
+ #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
+ #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
+ 
++#define IMX27_UART1_BASE_ADDR	0x1000a000
++#define IMX27_UART2_BASE_ADDR	0x1000b000
++#define IMX27_UART3_BASE_ADDR	0x1000c000
++#define IMX27_UART4_BASE_ADDR	0x1000d000
++#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
++#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
 +
-+	/* Ensure that a mode is set */
-+	if (asd)
-+		v4l2_ctrl_s_ctrl(asd->run_mode, pipe->default_run_mode);
-+
- 	return 0;
+ #define IMX31_UART1_BASE_ADDR	0x43f90000
+ #define IMX31_UART2_BASE_ADDR	0x43f94000
+ #define IMX31_UART3_BASE_ADDR	0x5000c000
+@@ -112,10 +112,10 @@
  
- css_error:
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_subdev.c b/drivers/staging/media/atomisp/pci/atomisp_subdev.c
-index 12f22ad007c73..ffaf11e0b0ad8 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_subdev.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_subdev.c
-@@ -1164,23 +1164,28 @@ static int isp_subdev_init_entities(struct atomisp_sub_device *asd)
- 
- 	atomisp_init_acc_pipe(asd, &asd->video_acc);
- 
--	ret = atomisp_video_init(&asd->video_in, "MEMORY");
-+	ret = atomisp_video_init(&asd->video_in, "MEMORY",
-+				 ATOMISP_RUN_MODE_SDV);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_capture, "CAPTURE");
-+	ret = atomisp_video_init(&asd->video_out_capture, "CAPTURE",
-+				 ATOMISP_RUN_MODE_STILL_CAPTURE);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_vf, "VIEWFINDER");
-+	ret = atomisp_video_init(&asd->video_out_vf, "VIEWFINDER",
-+				 ATOMISP_RUN_MODE_CONTINUOUS_CAPTURE);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_preview, "PREVIEW");
-+	ret = atomisp_video_init(&asd->video_out_preview, "PREVIEW",
-+				 ATOMISP_RUN_MODE_PREVIEW);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_video_capture, "VIDEO");
-+	ret = atomisp_video_init(&asd->video_out_video_capture, "VIDEO",
-+				 ATOMISP_RUN_MODE_VIDEO);
- 	if (ret < 0)
- 		return ret;
- 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_subdev.h b/drivers/staging/media/atomisp/pci/atomisp_subdev.h
-index d6fcfab6352d7..a8d210ea5f8be 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_subdev.h
-+++ b/drivers/staging/media/atomisp/pci/atomisp_subdev.h
-@@ -81,6 +81,9 @@ struct atomisp_video_pipe {
- 	/* the link list to store per_frame parameters */
- 	struct list_head per_frame_params;
- 
-+	/* Store here the initial run mode */
-+	unsigned int default_run_mode;
-+
- 	unsigned int buffers_in_css;
- 
- 	/* irq_lock is used to protect video buffer state change operations and
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-index 7982cc143374a..14c39b8987c95 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-@@ -447,7 +447,8 @@ const struct atomisp_dfs_config dfs_config_cht_soc = {
- 	.dfs_table_size = ARRAY_SIZE(dfs_rules_cht_soc),
- };
- 
--int atomisp_video_init(struct atomisp_video_pipe *video, const char *name)
-+int atomisp_video_init(struct atomisp_video_pipe *video, const char *name,
-+		       unsigned int run_mode)
- {
- 	int ret;
- 	const char *direction;
-@@ -478,6 +479,7 @@ int atomisp_video_init(struct atomisp_video_pipe *video, const char *name)
- 		 "ATOMISP ISP %s %s", name, direction);
- 	video->vdev.release = video_device_release_empty;
- 	video_set_drvdata(&video->vdev, video->isp);
-+	video->default_run_mode = run_mode;
- 
- 	return 0;
- }
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.h b/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
-index 81bb356b81720..72611b8286a4a 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
-+++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
-@@ -27,7 +27,8 @@ struct v4l2_device;
- struct atomisp_device;
- struct firmware;
- 
--int atomisp_video_init(struct atomisp_video_pipe *video, const char *name);
-+int atomisp_video_init(struct atomisp_video_pipe *video, const char *name,
-+		       unsigned int run_mode);
- void atomisp_acc_init(struct atomisp_acc_pipe *video, const char *name);
- void atomisp_video_unregister(struct atomisp_video_pipe *video);
- void atomisp_acc_unregister(struct atomisp_acc_pipe *video);
+ #ifdef CONFIG_DEBUG_IMX1_UART
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
+-#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
+-#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
+ #elif defined(CONFIG_DEBUG_IMX25_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
++#elif defined(CONFIG_DEBUG_IMX27_UART)
++#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
+ #elif defined(CONFIG_DEBUG_IMX31_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
+ #elif defined(CONFIG_DEBUG_IMX35_UART)
 -- 
 2.34.1
 
