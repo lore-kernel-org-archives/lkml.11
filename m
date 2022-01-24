@@ -2,249 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02969C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCACCC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848740AbiAXXXM (ORCPT
+        id S1848713AbiAXXXI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:23:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40484 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588672AbiAXWdl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:33:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378DDC0E5330;
-        Mon, 24 Jan 2022 12:57:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFD1E61320;
-        Mon, 24 Jan 2022 20:57:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80AE8C340E7;
-        Mon, 24 Jan 2022 20:57:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057869;
-        bh=Ldv1IgbXLpEOmnG7o28Dn2DVNZGLVTN6NNClYfU6V8A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkY4CHn6PAFEoMrroFySU+dxyojWqTd6+njgPdGgYeNlTU9WOOzhM61rNsmLrdrRE
-         3B02KlgutjAL6vYkdKSfKEljpKUpEfO3HrNbn5u/5zWaNx0IXbISS6xrUQSOKdyOpu
-         K1F657TFzfzYNa/cJ/C5ypJxaFn2aDMNOU8vUNck=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0105/1039] wcn36xx: ensure pairing of init_scan/finish_scan and start_scan/end_scan
-Date:   Mon, 24 Jan 2022 19:31:34 +0100
-Message-Id: <20220124184128.681330389@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:23:08 -0500
+Received: from mga06.intel.com ([134.134.136.31]:63722 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1589198AbiAXWfS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:35:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643063716; x=1674599716;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=gs5uFgkarw9TrpxSXanR98HstBe7M+jbd4pZwSe/TDA=;
+  b=eGBlceNs3vwAthJZMi902BjXo5ZAau7U48CAiDhPpkjb/7/M1KF3Ylpp
+   aNQGEXMY6b8urGq39pPDML3qLji5Ev4LNOKa4htrENh91ISIkJqTubGRl
+   kkFQgdR23R2xXGCbRkwq+EY1rNdORS/6GJUGgg7mbpxQmHCbX7F211yUz
+   znWgbew10zUs98j3tEwwIbyAduw9a1v9ErOEpZCjiXMBwqw5wGk5Zg0DT
+   1o8oF9G/AqqLZOZQstp8WRUlv/k4MpPq9GIPFA/D5Zt2n8eDZS/53sS5q
+   fbB39xuuwLZii33M6kEIy13sNZofFJqdVqV6hhiylmeFsiTNXbMicgW9D
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306877364"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="306877364"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:25:12 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="627671702"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 14:25:10 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC7lt-000J0O-QV; Mon, 24 Jan 2022 22:25:09 +0000
+Date:   Tue, 25 Jan 2022 06:24:44 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Brian Vazquez <brianvv@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyjilinux@gmail.com, jeffreyji <jeffreyji@google.com>
+Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
+Message-ID: <202201250449.tTXEfxm8-lkp@intel.com>
+References: <20220122000301.1872828-1-jeffreyji@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220122000301.1872828-1-jeffreyji@google.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Li <benl@squareup.com>
+Hi Jeffrey,
 
-[ Upstream commit 8f1ba8b0ee2679f0b3d22d2a5c1bc70c436fd872 ]
+Thank you for the patch! Perhaps something to improve:
 
-An SMD capture from the downstream prima driver on WCN3680B shows the
-following command sequence for connected scans:
+[auto build test WARNING on net-next/master]
 
-- init_scan_req
-    - start_scan_req, channel 1
-    - end_scan_req, channel 1
-    - start_scan_req, channel 2
-    - ...
-    - end_scan_req, channel 3
-- finish_scan_req
-- init_scan_req
-    - start_scan_req, channel 4
-    - ...
-    - end_scan_req, channel 6
-- finish_scan_req
-- ...
-    - end_scan_req, channel 165
-- finish_scan_req
+url:    https://github.com/0day-ci/linux/commits/Jeffrey-Ji/net-core-add-InMacErrors-counter/20220122-080455
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 8aaaf2f3af2ae212428f4db1af34214225f5cec3
+config: mips-maltaaprp_defconfig (https://download.01.org/0day-ci/archive/20220125/202201250449.tTXEfxm8-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://github.com/0day-ci/linux/commit/f8ea346d278c116f830459bae2a910fdc5e96a35
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Jeffrey-Ji/net-core-add-InMacErrors-counter/20220122-080455
+        git checkout f8ea346d278c116f830459bae2a910fdc5e96a35
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash net/ipv6/
 
-Upstream currently never calls wcn36xx_smd_end_scan, and in some cases[1]
-still sends finish_scan_req twice in a row or before init_scan_req. A
-typical connected scan looks like this:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-- init_scan_req
-    - start_scan_req, channel 1
-- finish_scan_req
-- init_scan_req
-    - start_scan_req, channel 2
-- ...
-    - start_scan_req, channel 165
-- finish_scan_req
-- finish_scan_req
+All warnings (new ones prefixed by >>):
 
-This patch cleans up scanning so that init/finish and start/end are always
-paired together and correctly nested.
+>> net/ipv6/ip6_input.c:153:24: warning: variable 'idev' is uninitialized when used here [-Wuninitialized]
+                   __IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
+                                        ^~~~
+   include/net/ipv6.h:256:26: note: expanded from macro '__IP6_INC_STATS'
+                   _DEVINC(net, ipv6, __, idev, field)
+                                          ^~~~
+   include/net/ipv6.h:211:29: note: expanded from macro '_DEVINC'
+           struct inet6_dev *_idev = (idev);                               \
+                                      ^~~~
+   net/ipv6/ip6_input.c:150:24: note: initialize the variable 'idev' to silence this warning
+           struct inet6_dev *idev;
+                                 ^
+                                  = NULL
+   1 warning generated.
 
-- init_scan_req
-    - start_scan_req, channel 1
-    - end_scan_req, channel 1
-- finish_scan_req
-- init_scan_req
-    - start_scan_req, channel 2
-    - end_scan_req, channel 2
-- ...
-    - start_scan_req, channel 165
-    - end_scan_req, channel 165
-- finish_scan_req
 
-Note that upstream will not do batching of 3 active-probe scans before
-returning to the operating channel, and this patch does not change that.
-To match downstream in this aspect, adjust IEEE80211_PROBE_DELAY and/or
-the 125ms max off-channel time in ieee80211_scan_state_decision.
+vim +/idev +153 net/ipv6/ip6_input.c
 
-[1]: commit d195d7aac09b ("wcn36xx: Ensure finish scan is not requested
-before start scan") addressed one case of finish_scan_req being sent
-without a preceding init_scan_req (the case of the operating channel
-coinciding with the first scan channel); two other cases are:
-1) if SW scan is started and aborted immediately, without scanning any
-   channels, we send a finish_scan_req without ever sending init_scan_req,
-   and
-2) as SW scan logic always returns us to the operating channel before
-   calling wcn36xx_sw_scan_complete, finish_scan_req is always sent twice
-   at the end of a SW scan
+   144	
+   145	static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
+   146					    struct net *net)
+   147	{
+   148		const struct ipv6hdr *hdr;
+   149		u32 pkt_len;
+   150		struct inet6_dev *idev;
+   151	
+   152		if (skb->pkt_type == PACKET_OTHERHOST) {
+ > 153			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INMACERRORS);
+   154			kfree_skb(skb);
+   155			return NULL;
+   156		}
+   157	
+   158		rcu_read_lock();
+   159	
+   160		idev = __in6_dev_get(skb->dev);
+   161	
+   162		__IP6_UPD_PO_STATS(net, idev, IPSTATS_MIB_IN, skb->len);
+   163	
+   164		if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL ||
+   165		    !idev || unlikely(idev->cnf.disable_ipv6)) {
+   166			__IP6_INC_STATS(net, idev, IPSTATS_MIB_INDISCARDS);
+   167			goto drop;
+   168		}
+   169	
+   170		memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
+   171	
+   172		/*
+   173		 * Store incoming device index. When the packet will
+   174		 * be queued, we cannot refer to skb->dev anymore.
+   175		 *
+   176		 * BTW, when we send a packet for our own local address on a
+   177		 * non-loopback interface (e.g. ethX), it is being delivered
+   178		 * via the loopback interface (lo) here; skb->dev = loopback_dev.
+   179		 * It, however, should be considered as if it is being
+   180		 * arrived via the sending interface (ethX), because of the
+   181		 * nature of scoping architecture. --yoshfuji
+   182		 */
+   183		IP6CB(skb)->iif = skb_valid_dst(skb) ? ip6_dst_idev(skb_dst(skb))->dev->ifindex : dev->ifindex;
+   184	
+   185		if (unlikely(!pskb_may_pull(skb, sizeof(*hdr))))
+   186			goto err;
+   187	
+   188		hdr = ipv6_hdr(skb);
+   189	
+   190		if (hdr->version != 6)
+   191			goto err;
+   192	
+   193		__IP6_ADD_STATS(net, idev,
+   194				IPSTATS_MIB_NOECTPKTS +
+   195					(ipv6_get_dsfield(hdr) & INET_ECN_MASK),
+   196				max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
+   197		/*
+   198		 * RFC4291 2.5.3
+   199		 * The loopback address must not be used as the source address in IPv6
+   200		 * packets that are sent outside of a single node. [..]
+   201		 * A packet received on an interface with a destination address
+   202		 * of loopback must be dropped.
+   203		 */
+   204		if ((ipv6_addr_loopback(&hdr->saddr) ||
+   205		     ipv6_addr_loopback(&hdr->daddr)) &&
+   206		    !(dev->flags & IFF_LOOPBACK) &&
+   207		    !netif_is_l3_master(dev))
+   208			goto err;
+   209	
+   210		/* RFC4291 Errata ID: 3480
+   211		 * Interface-Local scope spans only a single interface on a
+   212		 * node and is useful only for loopback transmission of
+   213		 * multicast.  Packets with interface-local scope received
+   214		 * from another node must be discarded.
+   215		 */
+   216		if (!(skb->pkt_type == PACKET_LOOPBACK ||
+   217		      dev->flags & IFF_LOOPBACK) &&
+   218		    ipv6_addr_is_multicast(&hdr->daddr) &&
+   219		    IPV6_ADDR_MC_SCOPE(&hdr->daddr) == 1)
+   220			goto err;
+   221	
+   222		/* If enabled, drop unicast packets that were encapsulated in link-layer
+   223		 * multicast or broadcast to protected against the so-called "hole-196"
+   224		 * attack in 802.11 wireless.
+   225		 */
+   226		if (!ipv6_addr_is_multicast(&hdr->daddr) &&
+   227		    (skb->pkt_type == PACKET_BROADCAST ||
+   228		     skb->pkt_type == PACKET_MULTICAST) &&
+   229		    idev->cnf.drop_unicast_in_l2_multicast)
+   230			goto err;
+   231	
+   232		/* RFC4291 2.7
+   233		 * Nodes must not originate a packet to a multicast address whose scope
+   234		 * field contains the reserved value 0; if such a packet is received, it
+   235		 * must be silently dropped.
+   236		 */
+   237		if (ipv6_addr_is_multicast(&hdr->daddr) &&
+   238		    IPV6_ADDR_MC_SCOPE(&hdr->daddr) == 0)
+   239			goto err;
+   240	
+   241		/*
+   242		 * RFC4291 2.7
+   243		 * Multicast addresses must not be used as source addresses in IPv6
+   244		 * packets or appear in any Routing header.
+   245		 */
+   246		if (ipv6_addr_is_multicast(&hdr->saddr))
+   247			goto err;
+   248	
+   249		skb->transport_header = skb->network_header + sizeof(*hdr);
+   250		IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
+   251	
+   252		pkt_len = ntohs(hdr->payload_len);
+   253	
+   254		/* pkt_len may be zero if Jumbo payload option is present */
+   255		if (pkt_len || hdr->nexthdr != NEXTHDR_HOP) {
+   256			if (pkt_len + sizeof(struct ipv6hdr) > skb->len) {
+   257				__IP6_INC_STATS(net,
+   258						idev, IPSTATS_MIB_INTRUNCATEDPKTS);
+   259				goto drop;
+   260			}
+   261			if (pskb_trim_rcsum(skb, pkt_len + sizeof(struct ipv6hdr))) {
+   262				__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
+   263				goto drop;
+   264			}
+   265			hdr = ipv6_hdr(skb);
+   266		}
+   267	
+   268		if (hdr->nexthdr == NEXTHDR_HOP) {
+   269			if (ipv6_parse_hopopts(skb) < 0) {
+   270				__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
+   271				rcu_read_unlock();
+   272				return NULL;
+   273			}
+   274		}
+   275	
+   276		rcu_read_unlock();
+   277	
+   278		/* Must drop socket now because of tproxy. */
+   279		if (!skb_sk_is_prefetched(skb))
+   280			skb_orphan(skb);
+   281	
+   282		return skb;
+   283	err:
+   284		__IP6_INC_STATS(net, idev, IPSTATS_MIB_INHDRERRORS);
+   285	drop:
+   286		rcu_read_unlock();
+   287		kfree_skb(skb);
+   288		return NULL;
+   289	}
+   290	
 
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Benjamin Li <benl@squareup.com>
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211027170306.555535-4-benl@squareup.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/main.c    | 34 +++++++++++++++++-----
- drivers/net/wireless/ath/wcn36xx/smd.c     |  4 +++
- drivers/net/wireless/ath/wcn36xx/wcn36xx.h |  1 +
- 3 files changed, 32 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/wcn36xx/main.c b/drivers/net/wireless/ath/wcn36xx/main.c
-index b04533bbc3a45..0747c27f3bd75 100644
---- a/drivers/net/wireless/ath/wcn36xx/main.c
-+++ b/drivers/net/wireless/ath/wcn36xx/main.c
-@@ -402,6 +402,7 @@ static void wcn36xx_change_opchannel(struct wcn36xx *wcn, int ch)
- static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
- {
- 	struct wcn36xx *wcn = hw->priv;
-+	int ret;
- 
- 	wcn36xx_dbg(WCN36XX_DBG_MAC, "mac config changed 0x%08x\n", changed);
- 
-@@ -417,17 +418,31 @@ static int wcn36xx_config(struct ieee80211_hw *hw, u32 changed)
- 			 * want to receive/transmit regular data packets, then
- 			 * simply stop the scan session and exit PS mode.
- 			 */
--			wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
--						wcn->sw_scan_vif);
--			wcn->sw_scan_channel = 0;
-+			if (wcn->sw_scan_channel)
-+				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-+			if (wcn->sw_scan_init) {
-+				wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-+							wcn->sw_scan_vif);
-+			}
- 		} else if (wcn->sw_scan) {
- 			/* A scan is ongoing, do not change the operating
- 			 * channel, but start a scan session on the channel.
- 			 */
--			wcn36xx_smd_init_scan(wcn, HAL_SYS_MODE_SCAN,
--					      wcn->sw_scan_vif);
-+			if (wcn->sw_scan_channel)
-+				wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-+			if (!wcn->sw_scan_init) {
-+				/* This can fail if we are unable to notify the
-+				 * operating channel.
-+				 */
-+				ret = wcn36xx_smd_init_scan(wcn,
-+							    HAL_SYS_MODE_SCAN,
-+							    wcn->sw_scan_vif);
-+				if (ret) {
-+					mutex_unlock(&wcn->conf_mutex);
-+					return -EIO;
-+				}
-+			}
- 			wcn36xx_smd_start_scan(wcn, ch);
--			wcn->sw_scan_channel = ch;
- 		} else {
- 			wcn36xx_change_opchannel(wcn, ch);
- 		}
-@@ -722,7 +737,12 @@ static void wcn36xx_sw_scan_complete(struct ieee80211_hw *hw,
- 	struct wcn36xx *wcn = hw->priv;
- 
- 	/* ensure that any scan session is finished */
--	wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN, wcn->sw_scan_vif);
-+	if (wcn->sw_scan_channel)
-+		wcn36xx_smd_end_scan(wcn, wcn->sw_scan_channel);
-+	if (wcn->sw_scan_init) {
-+		wcn36xx_smd_finish_scan(wcn, HAL_SYS_MODE_SCAN,
-+					wcn->sw_scan_vif);
-+	}
- 	wcn->sw_scan = false;
- 	wcn->sw_scan_opchannel = 0;
- }
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index ed45e2cf039be..e44506e4f1d5f 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -722,6 +722,7 @@ int wcn36xx_smd_init_scan(struct wcn36xx *wcn, enum wcn36xx_hal_sys_mode mode,
- 		wcn36xx_err("hal_init_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_init = true;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-@@ -752,6 +753,7 @@ int wcn36xx_smd_start_scan(struct wcn36xx *wcn, u8 scan_channel)
- 		wcn36xx_err("hal_start_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_channel = scan_channel;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-@@ -782,6 +784,7 @@ int wcn36xx_smd_end_scan(struct wcn36xx *wcn, u8 scan_channel)
- 		wcn36xx_err("hal_end_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_channel = 0;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-@@ -823,6 +826,7 @@ int wcn36xx_smd_finish_scan(struct wcn36xx *wcn,
- 		wcn36xx_err("hal_finish_scan response failed err=%d\n", ret);
- 		goto out;
- 	}
-+	wcn->sw_scan_init = false;
- out:
- 	mutex_unlock(&wcn->hal_mutex);
- 	return ret;
-diff --git a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-index 1c8d918137da2..fbd0558c2c196 100644
---- a/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-+++ b/drivers/net/wireless/ath/wcn36xx/wcn36xx.h
-@@ -248,6 +248,7 @@ struct wcn36xx {
- 	struct cfg80211_scan_request *scan_req;
- 	bool			sw_scan;
- 	u8			sw_scan_opchannel;
-+	bool			sw_scan_init;
- 	u8			sw_scan_channel;
- 	struct ieee80211_vif	*sw_scan_vif;
- 	struct mutex		scan_lock;
--- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
