@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD683C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21891C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347957AbiAXTOi (ORCPT
+        id S1348140AbiAXTO4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:14:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35572 "EHLO
+        Mon, 24 Jan 2022 14:14:56 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34170 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345483AbiAXTFo (ORCPT
+        with ESMTP id S1345535AbiAXTGB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:44 -0500
+        Mon, 24 Jan 2022 14:06:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64F8D60917;
-        Mon, 24 Jan 2022 19:05:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF69C340E5;
-        Mon, 24 Jan 2022 19:05:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 871F3611A9;
+        Mon, 24 Jan 2022 19:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF4EC340E7;
+        Mon, 24 Jan 2022 19:05:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051143;
-        bh=gUBygmoEBQDPFQekCp2li5xY7NKosJ7ZgGesRhBIraQ=;
+        s=korg; t=1643051159;
+        bh=NwEJ0PB5cZ2ip0qOlfnhIKiVZi9O8XhUde8Vry+zIXc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2OtncbY9G1m/Z3Y01GYouL82l6YDa3tvcqF73UtvPftN2DQrzXHj+mRhksPgpdVNN
-         TTfDny4R5vu3fB8plnbNNfbZ/rIy0RsqSew+SBIPeN+DiZBv/ZOUluB4JQDpWJuwG8
-         ywOdYp5lZT/z9IMr5zzJsWNvLTfuxo2jivGK/e/I=
+        b=V4rSC2OL2frE5tzL5YPErYSUA58U28wXKe1rKPYXzJHT/CXK7EgUIQGo603Uws74u
+         jpPv3EJuuueH00s0NPuIm55UG6Xy3Zxpe5VEYoYuD9nvWVvjUWvXxC9w6FtNcqkTFQ
+         MdFAws5gMpkULkrmSeg0x/SbjLi3eyfqtbOQQSxw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Subject: [PATCH 4.14 067/186] net: mcs7830: handle usb read errors properly
-Date:   Mon, 24 Jan 2022 19:42:22 +0100
-Message-Id: <20220124183939.276113106@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 041/186] tty: serial: atmel: Check return code of dmaengine_submit()
+Date:   Mon, 24 Jan 2022 19:41:56 +0100
+Message-Id: <20220124183938.446310620@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -49,54 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
+[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
 
-Syzbot reported uninit value in mcs7830_bind(). The problem was in
-missing validation check for bytes read via usbnet_read_cmd().
+The tx_submit() method of struct dma_async_tx_descriptor is entitled
+to do sanity checks and return errors if encountered. It's not the
+case for the DMA controller drivers that this client is using
+(at_h/xdmac), because they currently don't do sanity checks and always
+return a positive cookie at tx_submit() method. In case the controller
+drivers will implement sanity checks and return errors, print a message
+so that the client will be informed that something went wrong at
+tx_submit() level.
 
-usbnet_read_cmd() internally calls usb_control_msg(), that returns
-number of bytes read. Code should validate that requested number of bytes
-was actually read.
-
-So, this patch adds missing size validation check inside
-mcs7830_get_reg() to prevent uninit value bugs
-
-Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/mcs7830.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
-index 5a47e5510ca82..c0f52a622964f 100644
---- a/drivers/net/usb/mcs7830.c
-+++ b/drivers/net/usb/mcs7830.c
-@@ -121,8 +121,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index a00227d312d3f..9a56b88df95f8 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -925,6 +925,11 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		desc->callback = atmel_complete_tx_dma;
+ 		desc->callback_param = atmel_port;
+ 		atmel_port->cookie_tx = dmaengine_submit(desc);
++		if (dma_submit_error(atmel_port->cookie_tx)) {
++			dev_err(port->dev, "dma_submit_error %d\n",
++				atmel_port->cookie_tx);
++			return;
++		}
+ 	}
  
- static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
- {
--	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
--				0x0000, index, data, size);
-+	int ret;
-+
-+	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
-+			      0x0000, index, data, size);
-+	if (ret < 0)
-+		return ret;
-+	else if (ret < size)
-+		return -ENODATA;
-+
-+	return ret;
- }
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1183,6 +1188,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	desc->callback_param = port;
+ 	atmel_port->desc_rx = desc;
+ 	atmel_port->cookie_rx = dmaengine_submit(desc);
++	if (dma_submit_error(atmel_port->cookie_rx)) {
++		dev_err(port->dev, "dma_submit_error %d\n",
++			atmel_port->cookie_rx);
++		goto chan_err;
++	}
  
- static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
+ 	return 0;
+ 
 -- 
 2.34.1
 
