@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51C50C3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA86C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450630AbiAXVrF (ORCPT
+        id S1378854AbiAXVrT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:47:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34022 "EHLO
+        Mon, 24 Jan 2022 16:47:19 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33722 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448405AbiAXVMg (ORCPT
+        with ESMTP id S1447975AbiAXVLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:12:36 -0500
+        Mon, 24 Jan 2022 16:11:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E771B8123A;
-        Mon, 24 Jan 2022 21:12:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA87C340E5;
-        Mon, 24 Jan 2022 21:12:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4C37B80FA1;
+        Mon, 24 Jan 2022 21:11:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3C6EC340E5;
+        Mon, 24 Jan 2022 21:11:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058753;
-        bh=hmaQm9JcV2b+UORMYGh52WT9l5TZ+1UROquwJJVRB+E=;
+        s=korg; t=1643058705;
+        bh=LkP5wPAOSpGkOD6OaRU0ev13KEb6uw1g3WHDaHfng7s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EOCq9iVQ0jJcmVA/0hTVI13SjUpzMVsQ3vfbPVLsG4mLHtpKmNB0kT5l5IptSMktU
-         e5zs7bpiW6h/rn787/YZdTLZn85EDxRvQhp1sqfudK0PUGcqsyDK+bW8HfCEi7RAZG
-         YaYUfM7rkRWbF6BOiUQ+6KZxI2fZIaKHcbWAWBoY=
+        b=pwk4rdp3frub+YrOnsN34vV6keJb0khLp0UzlD6sXe+zzrOzOBqLv2mRzvN0FaaQk
+         7y1/NhmmFUcItZxVz7QIJN4xsOv1kQriDLs7H8vCQ+mDw0oZmuwaKJx3gL2btysB0F
+         wD9X8UAH/nCQU8wYkRVhxPrli+N5kjnG/R++25Og=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
-        John Keeping <john@metanate.com>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0391/1039] usb: dwc2: gadget: initialize max_speed from params
-Date:   Mon, 24 Jan 2022 19:36:20 +0100
-Message-Id: <20220124184138.458149131@linuxfoundation.org>
+Subject: [PATCH 5.16 0333/1039] mmc: meson-mx-sdio: add IRQ check
+Date:   Mon, 24 Jan 2022 19:35:22 +0100
+Message-Id: <20220124184136.500983288@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,56 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Keeping <john@metanate.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-[ Upstream commit 92ef98a4caacad6d4a1490dda45d81ae5ccf5bc9 ]
+[ Upstream commit 8fc9a77bc64e1f23d07953439817d8402ac9706f ]
 
-DWC2 may be paired with a full-speed PHY which is not capable of
-high-speed operation.  Report this correctly to the gadget core by
-setting max_speed from the core parameters.
+The driver neglects to check the result of platform_get_irq()'s call and
+blithely passes the negative error codes to devm_request_threaded_irq()
+(which takes *unsigned* IRQ #), causing it to fail with -EINVAL, overriding
+an original error code. Stop calling devm_request_threaded_irq() with the
+invalid IRQ #s.
 
-Prior to commit 5324bad66f09f ("usb: dwc2: gadget: implement
-udc_set_speed()") this didn't cause the hardware to be configured
-incorrectly, although the speed may have been reported incorrectly.  But
-after that commit params.speed is updated based on a value passed in by
-the gadget core which may set it to a faster speed than is supported by
-the hardware.  Initialising the max_speed parameter ensures the speed
-passed to dwc2_gadget_set_speed() will be one supported by the hardware.
-
-Fixes: 5324bad66f09f ("usb: dwc2: gadget: implement udc_set_speed()")
-Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
-Signed-off-by: John Keeping <john@metanate.com>
-Link: https://lore.kernel.org/r/20220106115731.1473909-1-john@metanate.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ed80a13bb4c4 ("mmc: meson-mx-sdio: Add a driver for the Amlogic Meson8 and Meson8b SoC")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Link: https://lore.kernel.org/r/20211217202717.10041-3-s.shtylyov@omp.ru
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc2/gadget.c | 13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ drivers/mmc/host/meson-mx-sdio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
-index ab8d7dad9f567..43cf49c4e5e59 100644
---- a/drivers/usb/dwc2/gadget.c
-+++ b/drivers/usb/dwc2/gadget.c
-@@ -4974,7 +4974,18 @@ int dwc2_gadget_init(struct dwc2_hsotg *hsotg)
- 		hsotg->params.g_np_tx_fifo_size);
- 	dev_dbg(dev, "RXFIFO size: %d\n", hsotg->params.g_rx_fifo_size);
+diff --git a/drivers/mmc/host/meson-mx-sdio.c b/drivers/mmc/host/meson-mx-sdio.c
+index d4a48916bfb67..3a19a05ef55a7 100644
+--- a/drivers/mmc/host/meson-mx-sdio.c
++++ b/drivers/mmc/host/meson-mx-sdio.c
+@@ -662,6 +662,11 @@ static int meson_mx_mmc_probe(struct platform_device *pdev)
+ 	}
  
--	hsotg->gadget.max_speed = USB_SPEED_HIGH;
-+	switch (hsotg->params.speed) {
-+	case DWC2_SPEED_PARAM_LOW:
-+		hsotg->gadget.max_speed = USB_SPEED_LOW;
-+		break;
-+	case DWC2_SPEED_PARAM_FULL:
-+		hsotg->gadget.max_speed = USB_SPEED_FULL;
-+		break;
-+	default:
-+		hsotg->gadget.max_speed = USB_SPEED_HIGH;
-+		break;
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		ret = irq;
++		goto error_free_mmc;
 +	}
 +
- 	hsotg->gadget.ops = &dwc2_hsotg_gadget_ops;
- 	hsotg->gadget.name = dev_name(dev);
- 	hsotg->gadget.otg_caps = &hsotg->params.otg_caps;
+ 	ret = devm_request_threaded_irq(host->controller_dev, irq,
+ 					meson_mx_mmc_irq,
+ 					meson_mx_mmc_irq_thread, IRQF_ONESHOT,
 -- 
 2.34.1
 
