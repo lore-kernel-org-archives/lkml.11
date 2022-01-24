@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78265C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A25C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354877AbiAXTjd (ORCPT
+        id S1354941AbiAXTjn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:39:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:32808 "EHLO
+        Mon, 24 Jan 2022 14:39:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60064 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350901AbiAXTdx (ORCPT
+        with ESMTP id S1345636AbiAXTcl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:33:53 -0500
+        Mon, 24 Jan 2022 14:32:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5183F61488;
-        Mon, 24 Jan 2022 19:33:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25EB0C340E5;
-        Mon, 24 Jan 2022 19:33:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BFB07612A5;
+        Mon, 24 Jan 2022 19:32:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1C39C340E5;
+        Mon, 24 Jan 2022 19:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052832;
-        bh=tZM5TML74UbfSY7dpcQg47KWZMIdishfAIuWtvqaerk=;
+        s=korg; t=1643052760;
+        bh=VKtWU7N1EdLQFZ82cUPjVOMgCStG3PuUh+WUdBvaBIg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XyS/jJCEXFQxvrCr/DY6Ulf9zZ+7hlFhckzP+6ORs7HzQJtOMleBApEENWrcbBDUp
-         qCmA4W5QXFTXxJRc2QWuEGZdMTJAep/vto6FVFhlHmlAIw1p0uK+v4mIu3EdxuPKjw
-         GWTmPQNIWfXhkEnheBuLI0cm2jgzzyvKgShtiQMI=
+        b=IDL9ryiZ5UapeP9g2Mv5Pcoo95Eli7SDSW/MSaCnweiMiZRgHhnCRNvjWyBRyRL0p
+         qSdchBxS0xhBHZsHhsVbm3kbF/dHjgVz5lg0xuYiWnIYMsu/InYO/PUd/RjjHm8SH1
+         sracNhOaNsphrRy+l7dgRdMlQ6rK/YjrjkQrULR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Michal Simek <michal.simek@xilinx.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 188/320] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Mon, 24 Jan 2022 19:42:52 +0100
-Message-Id: <20220124184000.041545255@linuxfoundation.org>
+Subject: [PATCH 5.4 164/320] EDAC/synopsys: Use the quirk for version instead of ddr version
+Date:   Mon, 24 Jan 2022 19:42:28 +0100
+Message-Id: <20220124183959.233834958@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,45 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
+[ Upstream commit bd1d6da17c296bd005bfa656952710d256e77dd3 ]
 
-The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
-any bugged program, and even attaching a correct program to a NIC
-not supporting the given action.
+Version 2.40a supports DDR_ECC_INTR_SUPPORT for a quirk, so use that
+quirk to determine a call to setup_address_map().
 
-The resulting splat, beyond polluting the logs, fouls automated tools:
-e.g. a syzkaller reproducers using an XDP program returning an
-unsupported action will never pass validation.
-
-Replace the WARN_ONCE with a less intrusive pr_warn_once().
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Michal Simek <michal.simek@xilinx.com>
+Link: https://lkml.kernel.org/r/20211012190709.1504152-1-dinguyen@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/edac/synopsys_edac.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index b90c0b5a10112..92ce4d46f02e4 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6912,9 +6912,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
- {
- 	const u32 act_max = XDP_REDIRECT;
+diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
+index 6becf3363ad57..d23a0782fb49c 100644
+--- a/drivers/edac/synopsys_edac.c
++++ b/drivers/edac/synopsys_edac.c
+@@ -1351,8 +1351,7 @@ static int mc_probe(struct platform_device *pdev)
+ 		}
+ 	}
  
--	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
--		  act > act_max ? "Illegal" : "Driver unsupported",
--		  act);
-+	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+		     act > act_max ? "Illegal" : "Driver unsupported",
-+		     act);
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+-	if (of_device_is_compatible(pdev->dev.of_node,
+-				    "xlnx,zynqmp-ddrc-2.40a"))
++	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT)
+ 		setup_address_map(priv);
+ #endif
  
 -- 
 2.34.1
