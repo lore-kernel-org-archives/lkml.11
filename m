@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8667C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F0ECC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362996AbiAXXnU (ORCPT
+        id S2363020AbiAXXnW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:43:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46720 "EHLO
+        Mon, 24 Jan 2022 18:43:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843473AbiAXXED (ORCPT
+        with ESMTP id S1843483AbiAXXED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:04:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6AEC06C5B3;
-        Mon, 24 Jan 2022 13:15:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0714EC061A7D;
+        Mon, 24 Jan 2022 13:15:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0F6261484;
-        Mon, 24 Jan 2022 21:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6B2C340E4;
-        Mon, 24 Jan 2022 21:15:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 995CB61484;
+        Mon, 24 Jan 2022 21:15:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E609C340E5;
+        Mon, 24 Jan 2022 21:15:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058936;
-        bh=XiEZal2TU1ajBjFbZzAocbQPIe4D4ZjRyO1MiTh+6rw=;
+        s=korg; t=1643058902;
+        bh=NoDvo/YxdOUEGYfupMkbOcp1Kt4K78zDsvMM0GHU8sQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vCqRP5jkIoFVAM1p5P2Q5fcjHFQIindRnGr1pDIZ9lp3o9BGAekVa67iFadg7xva8
-         r/qnHzHl6Nz+N9ykD+ji/QnFlfGa1iOHSzqa05RyxM/ttzk5JKK8Pyi3hn8RWn+rfp
-         mbyiEAVkYnuBjw0HnX0LVDZvI7whc8fHqvuFTAGs=
+        b=bqJJ6NRAYw/o4+4TBKEzuP54M07BHVA4GKBGFQVGmpyqDJs4jEt976ICmD9z6XbSd
+         ye/67VpIiMkxqRYvOJ557wEEJtu8f9XHCV+28RrsT3Iz+BxHkPdxUV3nIXNKgB3W3d
+         PYnAgR/mMFFm4z8siU5sqj6GecywtOuQfSHquCYY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vishakha Channapattan <vishakhavc@google.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Igor Pylypiv <ipylypiv@google.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0451/1039] scsi: pm80xx: Update WARN_ON check in pm8001_mpi_build_cmd()
-Date:   Mon, 24 Jan 2022 19:37:20 +0100
-Message-Id: <20220124184140.452294711@linuxfoundation.org>
+Subject: [PATCH 5.16 0438/1039] net: openvswitch: Fix ct_state nat flags for conns arriving from tc
+Date:   Mon, 24 Jan 2022 19:37:07 +0100
+Message-Id: <20220124184140.017948811@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -53,40 +51,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Igor Pylypiv <ipylypiv@google.com>
+From: Paul Blakey <paulb@nvidia.com>
 
-[ Upstream commit 606c54ae975ad3af540b505b46b55a687501711f ]
+[ Upstream commit 6f022c2ddbcefaee79502ce5386dfe351d457070 ]
 
-Starting from commit 05c6c029a44d ("scsi: pm80xx: Increase number of
-supported queues") driver initializes only max_q_num queues.  Do not use an
-invalid queue if the WARN_ON condition is true.
+Netfilter conntrack maintains NAT flags per connection indicating
+whether NAT was configured for the connection. Openvswitch maintains
+NAT flags on the per packet flow key ct_state field, indicating
+whether NAT was actually executed on the packet.
 
-Link: https://lore.kernel.org/r/20211101232825.2350233-4-ipylypiv@google.com
-Fixes: 7640e1eb8c5d ("scsi: pm80xx: Make mpi_build_cmd locking consistent")
-Reviewed-by: Vishakha Channapattan <vishakhavc@google.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+When a packet misses from tc to ovs the conntrack NAT flags are set.
+However, NAT was not necessarily executed on the packet because the
+connection's state might still be in NEW state. As such, openvswitch
+wrongly assumes that NAT was executed and sets an incorrect flow key
+NAT flags.
+
+Fix this, by flagging to openvswitch which NAT was actually done in
+act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
+the packet flow key NAT flags will be correctly set.
+
+Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Link: https://lore.kernel.org/r/20220106153804.26451-1-paulb@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/linux/skbuff.h  |  4 +++-
+ include/net/pkt_sched.h |  4 +++-
+ net/openvswitch/flow.c  | 16 +++++++++++++---
+ net/sched/act_ct.c      |  6 ++++++
+ net/sched/cls_api.c     |  2 ++
+ 5 files changed, 27 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 124cb69740c67..4390c8b9170cd 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1325,7 +1325,9 @@ int pm8001_mpi_build_cmd(struct pm8001_hba_info *pm8001_ha,
- 	int q_index = circularQ - pm8001_ha->inbnd_q_tbl;
- 	int rv;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 4507d77d6941f..60ab0c2fe5674 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -287,7 +287,9 @@ struct tc_skb_ext {
+ 	__u32 chain;
+ 	__u16 mru;
+ 	__u16 zone;
+-	bool post_ct;
++	u8 post_ct:1;
++	u8 post_ct_snat:1;
++	u8 post_ct_dnat:1;
+ };
+ #endif
  
--	WARN_ON(q_index >= PM8001_MAX_INB_NUM);
-+	if (WARN_ON(q_index >= pm8001_ha->max_q_num))
-+		return -EINVAL;
-+
- 	spin_lock_irqsave(&circularQ->iq_lock, flags);
- 	rv = pm8001_mpi_msg_free_get(circularQ, pm8001_ha->iomb_size,
- 			&pMessage);
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 9e71691c491b7..9e7b21c0b3a6d 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -197,7 +197,9 @@ struct tc_skb_cb {
+ 	struct qdisc_skb_cb qdisc_cb;
+ 
+ 	u16 mru;
+-	bool post_ct;
++	u8 post_ct:1;
++	u8 post_ct_snat:1;
++	u8 post_ct_dnat:1;
+ 	u16 zone; /* Only valid if post_ct = true */
+ };
+ 
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index 6d262d9aa10ea..02096f2ec6784 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -859,7 +859,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	struct tc_skb_ext *tc_ext;
+ #endif
+-	bool post_ct = false;
++	bool post_ct = false, post_ct_snat = false, post_ct_dnat = false;
+ 	int res, err;
+ 	u16 zone = 0;
+ 
+@@ -900,6 +900,8 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
+ 		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
+ 		post_ct = tc_ext ? tc_ext->post_ct : false;
++		post_ct_snat = post_ct ? tc_ext->post_ct_snat : false;
++		post_ct_dnat = post_ct ? tc_ext->post_ct_dnat : false;
+ 		zone = post_ct ? tc_ext->zone : 0;
+ 	} else {
+ 		key->recirc_id = 0;
+@@ -911,8 +913,16 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 	err = key_extract(skb, key);
+ 	if (!err) {
+ 		ovs_ct_fill_key(skb, key, post_ct);   /* Must be after key_extract(). */
+-		if (post_ct && !skb_get_nfct(skb))
+-			key->ct_zone = zone;
++		if (post_ct) {
++			if (!skb_get_nfct(skb)) {
++				key->ct_zone = zone;
++			} else {
++				if (!post_ct_dnat)
++					key->ct_state &= ~OVS_CS_F_DST_NAT;
++				if (!post_ct_snat)
++					key->ct_state &= ~OVS_CS_F_SRC_NAT;
++			}
++		}
+ 	}
+ 	return err;
+ }
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index ab3591408419f..2a17eb77c9049 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -839,6 +839,12 @@ static int ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
+ 	}
+ 
+ 	err = nf_nat_packet(ct, ctinfo, hooknum, skb);
++	if (err == NF_ACCEPT) {
++		if (maniptype == NF_NAT_MANIP_SRC)
++			tc_skb_cb(skb)->post_ct_snat = 1;
++		if (maniptype == NF_NAT_MANIP_DST)
++			tc_skb_cb(skb)->post_ct_dnat = 1;
++	}
+ out:
+ 	return err;
+ }
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 35c74bdde848e..cc9409aa755eb 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1625,6 +1625,8 @@ int tcf_classify(struct sk_buff *skb,
+ 		ext->chain = last_executed_chain;
+ 		ext->mru = cb->mru;
+ 		ext->post_ct = cb->post_ct;
++		ext->post_ct_snat = cb->post_ct_snat;
++		ext->post_ct_dnat = cb->post_ct_dnat;
+ 		ext->zone = cb->zone;
+ 	}
+ 
 -- 
 2.34.1
 
