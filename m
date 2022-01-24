@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D8DCC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA490C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412095AbiAYAfo (ORCPT
+        id S3411947AbiAYAfO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:35:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56854 "EHLO
+        Mon, 24 Jan 2022 19:35:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2364068AbiAXXqo (ORCPT
+        with ESMTP id S2364046AbiAXXqi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:46:44 -0500
+        Mon, 24 Jan 2022 18:46:38 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D10C0613AB;
-        Mon, 24 Jan 2022 13:41:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDADC0613A7;
+        Mon, 24 Jan 2022 13:41:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1F7FB811A2;
-        Mon, 24 Jan 2022 21:41:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25606C340E4;
-        Mon, 24 Jan 2022 21:41:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDB88B8105C;
+        Mon, 24 Jan 2022 21:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A12C340E4;
+        Mon, 24 Jan 2022 21:41:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060514;
-        bh=z/kUukaJylcFxGt8AABs3R9KeYEcCOvB/8aKXDK3HDc=;
+        s=korg; t=1643060505;
+        bh=+xKvTa4o3uapaDC5MbBlg9DwFPgbwt6w97UiymgDyMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBvJgj0Dmi3qHFTcbfbUFioC5B18frerxn/ta61Yxtwxw8Xm/OpwOxSh2AkcAc7SG
-         v8KWKOPC35e/6eoibY9C2gDx/X2VzNjeaAEadnk7MZCy4KkGjV7zvZuhD5MfifwvKT
-         aF+a+W3aFqynKljaZosbQLOnVIEtIbxQU+GNzHtk=
+        b=Qbau/ox+x+9oAWI2Z2qOTLOi9gth4ZR6jh8swySEZpL2vd9kXEOH64QSJd+kZ/K1B
+         Nxyevixh5w5B3RpvA07XWFSZef3Z9sOsVWu6VKI6RsiW4jfD4jkQHx9gJFyEeOLxmx
+         rAmT1tYC6ePFWWcTjuyGhuHQnthxTtO6Kkk0bH5o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 0972/1039] net: axienet: Fix TX ring slot available check
-Date:   Mon, 24 Jan 2022 19:46:01 +0100
-Message-Id: <20220124184157.963023294@linuxfoundation.org>
+Subject: [PATCH 5.16 0969/1039] net: axienet: reset core on initialization prior to MDIO access
+Date:   Mon, 24 Jan 2022 19:45:58 +0100
+Message-Id: <20220124184157.863231207@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,49 +52,38 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Robert Hancock <robert.hancock@calian.com>
 
-commit 996defd7f8b5dafc1d480b7585c7c62437f80c3c upstream.
+commit 04cc2da39698efd7eb2e30c112538922d26f848e upstream.
 
-The check for whether a TX ring slot was available was incorrect,
-since a slot which had been loaded with transmit data but the device had
-not started transmitting would be treated as available, potentially
-causing non-transmitted slots to be overwritten. The control field in
-the descriptor should be checked, rather than the status field (which may
-only be updated when the device completes the entry).
+In some cases where the Xilinx Ethernet core was used in 1000Base-X or
+SGMII modes, which use the internal PCS/PMA PHY, and the MGT
+transceiver clock source for the PCS was not running at the time the
+FPGA logic was loaded, the core would come up in a state where the
+PCS could not be found on the MDIO bus. To fix this, the Ethernet core
+(including the PCS) should be reset after enabling the clocks, prior to
+attempting to access the PCS using of_mdio_find_device.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Fixes: 1a02556086fc (net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode)
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -643,7 +643,6 @@ static int axienet_free_tx_chain(struct
- 		if (cur_p->skb && (status & XAXIDMA_BD_STS_COMPLETE_MASK))
- 			dev_consume_skb_irq(cur_p->skb);
+@@ -2089,6 +2089,11 @@ static int axienet_probe(struct platform
+ 	lp->coalesce_count_rx = XAXIDMA_DFT_RX_THRESHOLD;
+ 	lp->coalesce_count_tx = XAXIDMA_DFT_TX_THRESHOLD;
  
--		cur_p->cntrl = 0;
- 		cur_p->app0 = 0;
- 		cur_p->app1 = 0;
- 		cur_p->app2 = 0;
-@@ -651,6 +650,7 @@ static int axienet_free_tx_chain(struct
- 		cur_p->skb = NULL;
- 		/* ensure our transmit path and device don't prematurely see status cleared */
- 		wmb();
-+		cur_p->cntrl = 0;
- 		cur_p->status = 0;
- 
- 		if (sizep)
-@@ -713,7 +713,7 @@ static inline int axienet_check_tx_bd_sp
- 	/* Ensure we see all descriptor updates from device or TX IRQ path */
- 	rmb();
- 	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
--	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
-+	if (cur_p->cntrl)
- 		return NETDEV_TX_BUSY;
- 	return 0;
- }
++	/* Reset core now that clocks are enabled, prior to accessing MDIO */
++	ret = __axienet_device_reset(lp);
++	if (ret)
++		goto cleanup_clk;
++
+ 	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 	if (lp->phy_node) {
+ 		ret = axienet_mdio_setup(lp);
 
 
