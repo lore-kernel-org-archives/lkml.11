@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBD8C35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84414C35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382904AbiAXU03 (ORCPT
+        id S1383246AbiAXU1C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:29 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44306 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353131AbiAXUAp (ORCPT
+        Mon, 24 Jan 2022 15:27:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352349AbiAXT5Y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:00:45 -0500
+        Mon, 24 Jan 2022 14:57:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3047FC047CD2;
+        Mon, 24 Jan 2022 11:27:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32398B80FA1;
-        Mon, 24 Jan 2022 20:00:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62427C36AEB;
-        Mon, 24 Jan 2022 20:00:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC56DB8122F;
+        Mon, 24 Jan 2022 19:27:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2019C340E5;
+        Mon, 24 Jan 2022 19:27:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054440;
-        bh=zA1vUZ3qOrUG9ozfGNzjuB1i+/p5YXJFjtVkvmVp47k=;
+        s=korg; t=1643052463;
+        bh=7XPshxeoNpqnYhbFwujpf2lKWjymnt6lMU5HFqfZ5xU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jjc6107ueyZgwc+kXKR/GMxc9dzpNU9Ab4vWHeDAcown23Gyl3OBVp0XJsfkZX+G9
-         FZ31SRKUhsb76bqTFi+OK8sqB+EqZo33Emc7fECv+kyWuRZPXGx5d2NA9jR0uVIA55
-         6GQYB9RMSs0pLLFQQmrfbmFs5Md/VgqijLz8wNL8=
+        b=FJ2IFaZI5S/u1rd3Bh3Iugv/kCNqN3UOBiy0Btc0WvM2vPAuR8VcXDas9afYgnsc+
+         umSIrQNSOK0rTvSwjvb1Edzea3nSrG7UK5WfjyWYPMFx9wb0PKL7VBCzbM/pXwo3R+
+         ZZ25vkcXuyzr6ppS9dzbBxMZ5yJF2T1EBy0X9BqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 358/563] x86/mce: Mark mce_end() noinstr
-Date:   Mon, 24 Jan 2022 19:42:03 +0100
-Message-Id: <20220124184036.798384907@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, Amish Chana <amish@3g.co.za>
+Subject: [PATCH 5.4 060/320] netfilter: bridge: add support for pppoe filtering
+Date:   Mon, 24 Jan 2022 19:40:44 +0100
+Message-Id: <20220124183955.776948917@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,64 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
+[ Upstream commit 28b78ecffea8078d81466b2e01bb5a154509f1ba ]
 
-It is called by the #MC handler which is noinstr.
+This makes 'bridge-nf-filter-pppoe-tagged' sysctl work for
+bridged traffic.
 
-Fixes
+Looking at the original commit it doesn't appear this ever worked:
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
+ static unsigned int br_nf_post_routing(unsigned int hook, struct sk_buff **pskb,
+[..]
+        if (skb->protocol == htons(ETH_P_8021Q)) {
+                skb_pull(skb, VLAN_HLEN);
+                skb->network_header += VLAN_HLEN;
++       } else if (skb->protocol == htons(ETH_P_PPP_SES)) {
++               skb_pull(skb, PPPOE_SES_HLEN);
++               skb->network_header += PPPOE_SES_HLEN;
+        }
+ [..]
+	NF_HOOK(... POST_ROUTING, ...)
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
+... but the adjusted offsets are never restored.
+
+The alternative would be to rip this code out for good,
+but otoh we'd have to keep this anyway for the vlan handling
+(which works because vlan tag info is in the skb, not the packet
+ payload).
+
+Reported-and-tested-by: Amish Chana <amish@3g.co.za>
+Fixes: 516299d2f5b6f97 ("[NETFILTER]: bridge-nf: filter bridged IPv4/IPv6 encapsulated in pppoe traffic")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ net/bridge/br_netfilter_hooks.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 64d8a96a2bf1e..2a608f0819765 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1070,10 +1070,13 @@ static int mce_start(int *no_way_out)
-  * Synchronize between CPUs after main scanning loop.
-  * This invokes the bulk of the Monarch processing.
-  */
--static int mce_end(int order)
-+static noinstr int mce_end(int order)
- {
--	int ret = -1;
- 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
-+	int ret = -1;
-+
-+	/* Allow instrumentation around external facilities. */
-+	instrumentation_begin();
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index 2371b833b2bcd..480e4111b24c1 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -743,6 +743,9 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 	if (nf_bridge->frag_max_size && nf_bridge->frag_max_size < mtu)
+ 		mtu = nf_bridge->frag_max_size;
  
- 	if (!timeout)
- 		goto reset;
-@@ -1117,7 +1120,8 @@ static int mce_end(int order)
- 		/*
- 		 * Don't reset anything. That's done by the Monarch.
- 		 */
--		return 0;
-+		ret = 0;
-+		goto out;
- 	}
- 
- 	/*
-@@ -1132,6 +1136,10 @@ reset:
- 	 * Let others run again.
- 	 */
- 	atomic_set(&mce_executing, 0);
++	nf_bridge_update_protocol(skb);
++	nf_bridge_push_encap_header(skb);
 +
-+out:
-+	instrumentation_end();
-+
- 	return ret;
- }
+ 	if (skb_is_gso(skb) || skb->len + mtu_reserved <= mtu) {
+ 		nf_bridge_info_free(skb);
+ 		return br_dev_queue_push_xmit(net, sk, skb);
+@@ -760,8 +763,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
  
+ 		IPCB(skb)->frag_max_size = nf_bridge->frag_max_size;
+ 
+-		nf_bridge_update_protocol(skb);
+-
+ 		data = this_cpu_ptr(&brnf_frag_data_storage);
+ 
+ 		if (skb_vlan_tag_present(skb)) {
+@@ -789,8 +790,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 
+ 		IP6CB(skb)->frag_max_size = nf_bridge->frag_max_size;
+ 
+-		nf_bridge_update_protocol(skb);
+-
+ 		data = this_cpu_ptr(&brnf_frag_data_storage);
+ 		data->encap_size = nf_bridge_encap_header_len(skb);
+ 		data->size = ETH_HLEN + data->encap_size;
 -- 
 2.34.1
 
