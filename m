@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E39C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6FBFC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840198AbiAXWwx (ORCPT
+        id S1840238AbiAXWw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57030 "EHLO
+        Mon, 24 Jan 2022 17:52:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452445AbiAXVsu (ORCPT
+        with ESMTP id S1379384AbiAXVtF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:48:50 -0500
+        Mon, 24 Jan 2022 16:49:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183F4C081197;
-        Mon, 24 Jan 2022 12:32:56 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6609EC07A972;
+        Mon, 24 Jan 2022 12:33:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE1B26153A;
-        Mon, 24 Jan 2022 20:32:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D43F5C340E5;
-        Mon, 24 Jan 2022 20:32:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0655E61536;
+        Mon, 24 Jan 2022 20:33:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB0AAC340E5;
+        Mon, 24 Jan 2022 20:33:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056375;
-        bh=bvRgmzztybuxgeiocEHbhGy+hF9oTXJZSdyxIsdtvhY=;
+        s=korg; t=1643056408;
+        bh=4F+FoEJCjA5dc535C82+wg9z4q7LEbCQMztv5Eb7YX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qG3OFeHORoese6DMlw7khWFIT4h5SxVWwhwoSiUtwWJqmK+8eNS5/2aiV9YPXjMzc
-         ABNtl4bocVxZS3tWnNtB9JsZUjokS9LJ+BYNakhomNtxLKh8RJ+afWACepNf6SitrA
-         yK9Jc6SDYQIKrZRe3eFm7IFXbUOHpnzq0limcy1c=
+        b=lr47FUoYbcd3GQhA//ZCh+UCvZM2QLvc3BXUml73BHV5ylvmeoYimLcjL5WyRteS0
+         Y5G/RljycoHWIZ8ZDfVfB2BSC3wLMUUHdT8Xg2WCgZCagv8JniE4vrtiqU6AosSspU
+         kDek/qWkduNkcTk8oVRe2XQZYwnafgO477le/lc0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Archie Pusaka <apusaka@chromium.org>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 462/846] Bluetooth: Fix removing adv when processing cmd complete
-Date:   Mon, 24 Jan 2022 19:39:39 +0100
-Message-Id: <20220124184116.918866562@linuxfoundation.org>
+Subject: [PATCH 5.15 431/846] ASoC: mediatek: Check for error clk pointer
+Date:   Mon, 24 Jan 2022 19:39:08 +0100
+Message-Id: <20220124184115.850880321@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,45 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 2128939fe2e771645dd88e1938c27fdf96bd1cd0 ]
+[ Upstream commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e ]
 
-If we remove one instance of adv using Set Extended Adv Enable, there
-is a possibility of issue occurs when processing the Command Complete
-event. Especially, the adv_info might not be found since we already
-remove it in hci_req_clear_adv_instance() -> hci_remove_adv_instance().
-If that's the case, we will mistakenly proceed to remove all adv
-instances instead of just one single instance.
+Yes, you are right and now the return code depending on the
+init_clks().
 
-This patch fixes the issue by checking the content of the HCI command
-instead of checking whether the adv_info is found.
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Fixes: 6078c651947a ("soc: mediatek: Refine scpsys to support multiple platform")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20211222015157.1025853-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/soc/mediatek/mtk-scpsys.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 50d1d62c15ec8..20e36126bbdae 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1325,8 +1325,10 @@ static void hci_cc_le_set_ext_adv_enable(struct hci_dev *hdev,
- 					   &conn->le_conn_timeout,
- 					   conn->conn_timeout);
- 	} else {
--		if (adv) {
--			adv->enabled = false;
-+		if (cp->num_of_sets) {
-+			if (adv)
-+				adv->enabled = false;
+diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
+index ca75b14931ec9..670cc82d17dc2 100644
+--- a/drivers/soc/mediatek/mtk-scpsys.c
++++ b/drivers/soc/mediatek/mtk-scpsys.c
+@@ -411,12 +411,17 @@ out:
+ 	return ret;
+ }
+ 
+-static void init_clks(struct platform_device *pdev, struct clk **clk)
++static int init_clks(struct platform_device *pdev, struct clk **clk)
+ {
+ 	int i;
+ 
+-	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
++	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
++		if (IS_ERR(clk[i]))
++			return PTR_ERR(clk[i]);
++	}
 +
- 			/* If just one instance was disabled check if there are
- 			 * any other instance enabled before clearing HCI_LE_ADV
- 			 */
++	return 0;
+ }
+ 
+ static struct scp *init_scp(struct platform_device *pdev,
+@@ -426,7 +431,7 @@ static struct scp *init_scp(struct platform_device *pdev,
+ {
+ 	struct genpd_onecell_data *pd_data;
+ 	struct resource *res;
+-	int i, j;
++	int i, j, ret;
+ 	struct scp *scp;
+ 	struct clk *clk[CLK_MAX];
+ 
+@@ -481,7 +486,9 @@ static struct scp *init_scp(struct platform_device *pdev,
+ 
+ 	pd_data->num_domains = num;
+ 
+-	init_clks(pdev, clk);
++	ret = init_clks(pdev, clk);
++	if (ret)
++		return ERR_PTR(ret);
+ 
+ 	for (i = 0; i < num; i++) {
+ 		struct scp_domain *scpd = &scp->domains[i];
 -- 
 2.34.1
 
