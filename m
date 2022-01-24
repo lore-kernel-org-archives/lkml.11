@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2D6C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E324C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579544AbiAXWFz (ORCPT
+        id S1579607AbiAXWGE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:05:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451799AbiAXVXg (ORCPT
+        Mon, 24 Jan 2022 17:06:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45388 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1451880AbiAXVXn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46451C09B060;
-        Mon, 24 Jan 2022 12:17:44 -0800 (PST)
+        Mon, 24 Jan 2022 16:23:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA3CF61497;
-        Mon, 24 Jan 2022 20:17:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB5BC340E8;
-        Mon, 24 Jan 2022 20:17:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B99C60C44;
+        Mon, 24 Jan 2022 21:23:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E9B2C340E4;
+        Mon, 24 Jan 2022 21:23:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055463;
-        bh=ckyorOORVsIp70Q+mkMHGOBzftHyZMq+cQA994k0QLc=;
+        s=korg; t=1643059423;
+        bh=+bH8S50HUOJv3r/LvFSv6imiapSYgEoH4Jcf7BfElYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ig7ub3xRW0Gel/f17JUAIQB80Phg5755om/lEaAyQM9vcfeByQGB8Ueg4/Pnhu3JM
-         IaP7GPJOeJ49dvvo0Swhmzv37J7/V6Ug57BMr+IPE5rsw7jKCUjYL+0aE+LALZqiAJ
-         8AmxnKdNsVG/zFcTH5/WA2Tsg1MepNlh+AiVXsVI=
+        b=Zz71QydKz5+9oqVV3gNQrZ4Y3YEzcZsmU5Nj9h1VmB6Urbx8wcbuuxKv+cUsEvA6T
+         aVDaTnurEGZMf+JAaOkDDP+7D5H/Yrm3ONwPD7g/LmUTNnmEzQiQiy5AEXFIRBZOyn
+         H34SgBjDPMZMHIrvH0NWLL1g1lOoVg1F/dAuYL0s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Vlad Zahorodnii <vlad.zahorodnii@kde.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 160/846] media: i2c: imx274: fix s_frame_interval runtime resume not requested
-Date:   Mon, 24 Jan 2022 19:34:37 +0100
-Message-Id: <20220124184106.503558732@linuxfoundation.org>
+Subject: [PATCH 5.16 0610/1039] drm/amd/display: Use oriented source size when checking cursor scaling
+Date:   Mon, 24 Jan 2022 19:39:59 +0100
+Message-Id: <20220124184145.846608151@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,75 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eugen Hristev <eugen.hristev@microchip.com>
+From: Vlad Zahorodnii <vlad.zahorodnii@kde.org>
 
-[ Upstream commit da653498c20ba5b185214d8ae43b4e8e9594f520 ]
+[ Upstream commit 69cb56290d9d10cdcc461aa2685e67e540507a96 ]
 
-pm_runtime_resume_and_get should be called when the s_frame_interval
-is called.
+dm_check_crtc_cursor() doesn't take into account plane transforms when
+calculating plane scaling, this can result in false positives.
 
-The driver will try to access device registers to configure VMAX, coarse
-time and exposure.
+For example, if there's an output with resolution 3840x2160 and the
+output is rotated 90 degrees, CRTC_W and CRTC_H will be 3840 and 2160,
+respectively, but SRC_W and SRC_H will be 2160 and 3840, respectively.
 
-Currently if the runtime is not resumed, this fails:
- # media-ctl -d /dev/media0 --set-v4l2 '"IMX274 1-001a":0[fmt:SRGGB10_1X10/3840x2
-160@1/10]'
+Since the cursor plane usually has a square buffer attached to it, the
+dm_check_crtc_cursor() will think that there's a scale factor mismatch
+even though there isn't really.
 
-IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 3840x2160, goodness 0
-IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 1920x1080, goodness -3000
-IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 1280x720, goodness -4000
-IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 1280x540, goodness -4180
-IMX274 1-001a: __imx274_change_compose: selected 1x1 binning
-IMX274 1-001a: imx274_set_frame_interval: input frame interval = 1 / 10
-IMX274 1-001a: imx274_read_mbreg : addr 0x300e, val=0x1 (2 bytes)
-IMX274 1-001a: imx274_set_frame_interval : register SVR = 1
-IMX274 1-001a: imx274_read_mbreg : addr 0x30f6, val=0x6a8 (2 bytes)
-IMX274 1-001a: imx274_set_frame_interval : register HMAX = 1704
-IMX274 1-001a: imx274_set_frame_length : input length = 2112
-IMX274 1-001a: imx274_write_mbreg : i2c bulk write failed, 30f8 = 884 (3 bytes)
-IMX274 1-001a: imx274_set_frame_length error = -121
-IMX274 1-001a: imx274_set_frame_interval error = -121
-Unable to setup formats: Remote I/O error (121)
+This fixes an issue where kwin fails to use hardware plane transforms.
 
-The device is not resumed thus the remote I/O error.
+Changes since version 1:
+- s/orientated/oriented/g
 
-Setting the frame interval works at streaming time, because
-pm_runtime_resume_and_get is called at s_stream time before sensor setup.
-The failure happens when only the s_frame_interval is called separately
-independently on streaming time.
-
-Fixes: ad97bc37426c ("media: i2c: imx274: Add IMX274 power on and off sequence")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reviewed-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Vlad Zahorodnii <vlad.zahorodnii@kde.org>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/imx274.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 35 ++++++++++++++-----
+ 1 file changed, 27 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/media/i2c/imx274.c b/drivers/media/i2c/imx274.c
-index 0dce92872176d..4d9b64c61f603 100644
---- a/drivers/media/i2c/imx274.c
-+++ b/drivers/media/i2c/imx274.c
-@@ -1367,6 +1367,10 @@ static int imx274_s_frame_interval(struct v4l2_subdev *sd,
- 	int min, max, def;
- 	int ret;
- 
-+	ret = pm_runtime_resume_and_get(&imx274->client->dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	mutex_lock(&imx274->lock);
- 	ret = imx274_set_frame_interval(imx274, fi->interval);
- 
-@@ -1398,6 +1402,7 @@ static int imx274_s_frame_interval(struct v4l2_subdev *sd,
- 
- unlock:
- 	mutex_unlock(&imx274->lock);
-+	pm_runtime_put(&imx274->client->dev);
- 
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index e12f841d1d110..46d38d528468c 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -10662,6 +10662,24 @@ static int dm_update_plane_state(struct dc *dc,
  	return ret;
  }
+ 
++static void dm_get_oriented_plane_size(struct drm_plane_state *plane_state,
++				       int *src_w, int *src_h)
++{
++	switch (plane_state->rotation & DRM_MODE_ROTATE_MASK) {
++	case DRM_MODE_ROTATE_90:
++	case DRM_MODE_ROTATE_270:
++		*src_w = plane_state->src_h >> 16;
++		*src_h = plane_state->src_w >> 16;
++		break;
++	case DRM_MODE_ROTATE_0:
++	case DRM_MODE_ROTATE_180:
++	default:
++		*src_w = plane_state->src_w >> 16;
++		*src_h = plane_state->src_h >> 16;
++		break;
++	}
++}
++
+ static int dm_check_crtc_cursor(struct drm_atomic_state *state,
+ 				struct drm_crtc *crtc,
+ 				struct drm_crtc_state *new_crtc_state)
+@@ -10670,6 +10688,8 @@ static int dm_check_crtc_cursor(struct drm_atomic_state *state,
+ 	struct drm_plane_state *new_cursor_state, *new_underlying_state;
+ 	int i;
+ 	int cursor_scale_w, cursor_scale_h, underlying_scale_w, underlying_scale_h;
++	int cursor_src_w, cursor_src_h;
++	int underlying_src_w, underlying_src_h;
+ 
+ 	/* On DCE and DCN there is no dedicated hardware cursor plane. We get a
+ 	 * cursor per pipe but it's going to inherit the scaling and
+@@ -10681,10 +10701,9 @@ static int dm_check_crtc_cursor(struct drm_atomic_state *state,
+ 		return 0;
+ 	}
+ 
+-	cursor_scale_w = new_cursor_state->crtc_w * 1000 /
+-			 (new_cursor_state->src_w >> 16);
+-	cursor_scale_h = new_cursor_state->crtc_h * 1000 /
+-			 (new_cursor_state->src_h >> 16);
++	dm_get_oriented_plane_size(new_cursor_state, &cursor_src_w, &cursor_src_h);
++	cursor_scale_w = new_cursor_state->crtc_w * 1000 / cursor_src_w;
++	cursor_scale_h = new_cursor_state->crtc_h * 1000 / cursor_src_h;
+ 
+ 	for_each_new_plane_in_state_reverse(state, underlying, new_underlying_state, i) {
+ 		/* Narrow down to non-cursor planes on the same CRTC as the cursor */
+@@ -10695,10 +10714,10 @@ static int dm_check_crtc_cursor(struct drm_atomic_state *state,
+ 		if (!new_underlying_state->fb)
+ 			continue;
+ 
+-		underlying_scale_w = new_underlying_state->crtc_w * 1000 /
+-				     (new_underlying_state->src_w >> 16);
+-		underlying_scale_h = new_underlying_state->crtc_h * 1000 /
+-				     (new_underlying_state->src_h >> 16);
++		dm_get_oriented_plane_size(new_underlying_state,
++					   &underlying_src_w, &underlying_src_h);
++		underlying_scale_w = new_underlying_state->crtc_w * 1000 / underlying_src_w;
++		underlying_scale_h = new_underlying_state->crtc_h * 1000 / underlying_src_h;
+ 
+ 		if (cursor_scale_w != underlying_scale_w ||
+ 		    cursor_scale_h != underlying_scale_h) {
 -- 
 2.34.1
 
