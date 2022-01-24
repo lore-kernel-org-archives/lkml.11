@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24330C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0DFC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451639AbiAXVXP (ORCPT
+        id S1451617AbiAXVXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442868AbiAXUzf (ORCPT
+        Mon, 24 Jan 2022 16:23:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48414 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442551AbiAXUyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D432C09543D;
-        Mon, 24 Jan 2022 12:00:32 -0800 (PST)
+        Mon, 24 Jan 2022 15:54:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1CF9F611C8;
-        Mon, 24 Jan 2022 20:00:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB9DBC36AF6;
-        Mon, 24 Jan 2022 20:00:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB33660C17;
+        Mon, 24 Jan 2022 20:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F91C340E5;
+        Mon, 24 Jan 2022 20:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054431;
-        bh=DwA8F4zgidWixlK9aMmqBvtZBvHnXYpCKUEafJu47RM=;
+        s=korg; t=1643057687;
+        bh=AuyhCT3B2V3UEEjSkj4AqU0jUqp3l0eUqnqkXQA3DdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i8pB0MosULBx/4t8yhyWQF49YArfYo2mCqKJOs6KMNbrPyyzeXW++YK7I8+lLRbJq
-         i67SjjALmO+l8j7Lx1GRDg6tolGMXU7YG9cmQXECJB7H76MT98I6miN9g1CdVVJMoi
-         LCUk0RuaYqA8LIg3padR4xZje0SjDXBcOSH5g4Xo=
+        b=ndwoz32Yvh/GTVdEurq4l/FnH+XYpn5QQa77Pfk/lk/Wcu9rM/SMVfCanKuAkHR0j
+         KmBp8rkK7sB2vdNN6yRHjCe3D0B5X0TJ0EEFCk71S+2oEd4xA4BhszN7JTa50yBkbI
+         QDS8u4y9628MpKgPRhcmTHFoMUHfEX09RLgc8Apo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mark Asselstine <mark.asselstine@windriver.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bob Moore <robert.moore@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 386/563] ACPICA: Utilities: Avoid deleting the same object twice in a row
-Date:   Mon, 24 Jan 2022 19:42:31 +0100
-Message-Id: <20220124184037.781017181@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0045/1039] media: flexcop-usb: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:30:34 +0100
+Message-Id: <20220124184126.659770435@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +47,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
+commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
 
-ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-If original_count is 0 in acpi_ut_update_ref_count (),
-acpi_ut_delete_internal_obj () is invoked for the target object, which is
-incorrect, because that object has been deleted once already and the
-memory allocated to store it may have been reclaimed and allocated
-for a different purpose by the host OS.  Moreover, a confusing debug
-message following the "Reference Count is already zero, cannot
-decrement" warning is printed in that case.
+Note that the driver was multiplying some of the timeout values with HZ
+twice resulting in 3000-second timeouts with HZ=1000.
 
-To fix this issue, make acpi_ut_update_ref_count () return after finding
-that original_count is 0 and printing the above warning.
+Also note that two of the timeout defines are currently unused.
 
-Link: https://github.com/acpica/acpica/commit/c11af67d
-Link: https://github.com/acpica/acpica/pull/652
-Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/acpica/utdelete.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
+ drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
-index 72d2c0b656339..cb1750e7a6281 100644
---- a/drivers/acpi/acpica/utdelete.c
-+++ b/drivers/acpi/acpica/utdelete.c
-@@ -422,6 +422,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
- 			ACPI_WARNING((AE_INFO,
- 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
- 				      object));
-+			return;
- 		}
+--- a/drivers/media/usb/b2c2/flexcop-usb.c
++++ b/drivers/media/usb/b2c2/flexcop-usb.c
+@@ -87,7 +87,7 @@ static int flexcop_usb_readwrite_dw(stru
+ 			0,
+ 			fc_usb->data,
+ 			sizeof(u32),
+-			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
++			B2C2_WAIT_FOR_OPERATION_RDW);
  
- 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_ALLOCATIONS,
--- 
-2.34.1
-
+ 	if (ret != sizeof(u32)) {
+ 		err("error while %s dword from %d (%d).", read ? "reading" :
+@@ -155,7 +155,7 @@ static int flexcop_usb_v8_memory_req(str
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 	if (ret != buflen)
+ 		ret = -EIO;
+ 
+@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
+ 		/* DKT 020208 - add this to support special case of DiSEqC */
+ 	case USB_FUNC_I2C_CHECKWRITE:
+ 		pipe = B2C2_USB_CTRL_PIPE_OUT;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_OUT;
+ 		break;
+ 	case USB_FUNC_I2C_READ:
+ 	case USB_FUNC_I2C_REPEATREAD:
+ 		pipe = B2C2_USB_CTRL_PIPE_IN;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_IN;
+ 		break;
+ 	default:
+@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 
+ 	if (ret != buflen)
+ 		ret = -EIO;
+--- a/drivers/media/usb/b2c2/flexcop-usb.h
++++ b/drivers/media/usb/b2c2/flexcop-usb.h
+@@ -91,13 +91,13 @@ typedef enum {
+ 	UTILITY_SRAM_TESTVERIFY     = 0x16,
+ } flexcop_usb_utility_function_t;
+ 
+-#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
++#define B2C2_WAIT_FOR_OPERATION_RW 1000
++#define B2C2_WAIT_FOR_OPERATION_RDW 3000
++#define B2C2_WAIT_FOR_OPERATION_WDW 1000
+ 
+-#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
++#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
++#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
++#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
+ 
+ typedef enum {
+ 	V8_MEMORY_PAGE_DVB_CI = 0x20,
 
 
