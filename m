@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 933B4C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66A3AC46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236286AbiAYCgV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:36:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385105AbiAXUb0 (ORCPT
+        id S3423664AbiAYCfi (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:35:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36182 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384665AbiAXUaX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:31:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFEBCC06175E;
-        Mon, 24 Jan 2022 11:43:19 -0800 (PST)
+        Mon, 24 Jan 2022 15:30:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CF3EB811FB;
-        Mon, 24 Jan 2022 19:43:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB211C340E8;
-        Mon, 24 Jan 2022 19:43:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37CF5B80FA1;
+        Mon, 24 Jan 2022 20:30:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC31C340E5;
+        Mon, 24 Jan 2022 20:30:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053397;
-        bh=qLM9D+upM06dDkWRzpDwXfJwaCBmj2fiCs77Q3WGh3c=;
+        s=korg; t=1643056221;
+        bh=Dmxk9fDbPs1CmD33CldiOBsy/ISVKgliYCC0qptzz6k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EdVXV5UmIW3ISshZUc/toBLR3nY4fi2vIFte7Shrq91BlVFZFtXdHCX1i4Gx35jMO
-         pN2Ii8ldv1ehi5tZ44NXeC1PwW62JZqzwkq9dycnuKWX8WEOqj0GPijORWB3R+chOa
-         RFZ0xMvzaeDDN1PpF3ZKSbrogTLe+IdAzhF2SpfM=
+        b=E6cMqDXU3pQuiPuxwaS/sXng5jh08hPw3auPx6Hsbb5vqxaWJUH4bvzlD3gCosCYh
+         gK0aDlC8YlqDfi7A/xJjUCmHkvTq1dz8fkZAjDbz53/sYZ18ZzQl48epQpww73aD1Z
+         vwQ/ZZLxmsUy2fbw0rI193eGFBmYfoYDdi6OCmXo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 052/563] clk: bcm-2835: Pick the closest clock rate
-Date:   Mon, 24 Jan 2022 19:36:57 +0100
-Message-Id: <20220124184026.223043474@linuxfoundation.org>
+Subject: [PATCH 5.15 412/846] ASoC: rt5663: Handle device_property_read_u32_array error codes
+Date:   Mon, 24 Jan 2022 19:38:49 +0100
+Message-Id: <20220124184115.184179460@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 5517357a4733d7cf7c17fc79d0530cfa47add372 ]
+[ Upstream commit 2167c0b205960607fb136b4bb3c556a62be1569a ]
 
-The driver currently tries to pick the closest rate that is lower than
-the rate being requested.
+The return value of device_property_read_u32_array() is not always 0.
+To catch the exception in case that devm_kzalloc failed and the
+rt5663->imp_table was NULL, which caused the failure of
+device_property_read_u32_array.
 
-This causes an issue with clk_set_min_rate() since it actively checks
-for the rounded rate to be above the minimum that was just set.
-
-Let's change the logic a bit to pick the closest rate to the requested
-rate, no matter if it's actually higher or lower.
-
-Fixes: 6d18b8adbe67 ("clk: bcm2835: Support for clock parent selection")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-2-maxime@cerno.tech
+Fixes: 450f0f6a8fb4 ("ASoC: rt5663: Add the manual offset field to compensate the DC offset")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20211215031550.70702-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/bcm/clk-bcm2835.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/rt5663.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index 1ac803e14fa3e..a919ee9c3fcb8 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -1217,7 +1217,7 @@ static int bcm2835_clock_determine_rate(struct clk_hw *hw,
- 		rate = bcm2835_clock_choose_div_and_prate(hw, i, req->rate,
- 							  &div, &prate,
- 							  &avgrate);
--		if (rate > best_rate && rate <= req->rate) {
-+		if (abs(req->rate - rate) < abs(req->rate - best_rate)) {
- 			best_parent = parent;
- 			best_prate = prate;
- 			best_rate = rate;
+diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
+index be9fc58ff6812..ee09ccd448dcd 100644
+--- a/sound/soc/codecs/rt5663.c
++++ b/sound/soc/codecs/rt5663.c
+@@ -3461,6 +3461,7 @@ static void rt5663_calibrate(struct rt5663_priv *rt5663)
+ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ {
+ 	int table_size;
++	int ret;
+ 
+ 	device_property_read_u32(dev, "realtek,dc_offset_l_manual",
+ 		&rt5663->pdata.dc_offset_l_manual);
+@@ -3477,9 +3478,11 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+ 		table_size = sizeof(struct impedance_mapping_table) *
+ 			rt5663->pdata.impedance_sensing_num;
+ 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
+-		device_property_read_u32_array(dev,
++		ret = device_property_read_u32_array(dev,
+ 			"realtek,impedance_sensing_table",
+ 			(u32 *)rt5663->imp_table, table_size);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	return 0;
+@@ -3504,8 +3507,11 @@ static int rt5663_i2c_probe(struct i2c_client *i2c,
+ 
+ 	if (pdata)
+ 		rt5663->pdata = *pdata;
+-	else
+-		rt5663_parse_dp(rt5663, &i2c->dev);
++	else {
++		ret = rt5663_parse_dp(rt5663, &i2c->dev);
++		if (ret)
++			return ret;
++	}
+ 
+ 	for (i = 0; i < ARRAY_SIZE(rt5663->supplies); i++)
+ 		rt5663->supplies[i].supply = rt5663_supply_names[i];
 -- 
 2.34.1
 
