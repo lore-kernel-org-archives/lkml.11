@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0037DC35296
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C89C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448147AbiAXVMF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40618 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390399AbiAXUpS (ORCPT
+        id S229593AbiAXVNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 16:13:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387549AbiAXUgz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:45:18 -0500
+        Mon, 24 Jan 2022 15:36:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76737C02B8CE;
+        Mon, 24 Jan 2022 11:50:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28DCF60C13;
-        Mon, 24 Jan 2022 20:45:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C131C340E5;
-        Mon, 24 Jan 2022 20:45:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDBACB811F9;
+        Mon, 24 Jan 2022 19:50:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B2AC340E5;
+        Mon, 24 Jan 2022 19:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057117;
-        bh=YcFsUeslYa8xYA7haRFrlwUsZXiclWBMo3itOg4vcr0=;
+        s=korg; t=1643053807;
+        bh=Z4WqW7aiWhpSpvVTjLKFKzmmQSWflf5Gz0MzVnFB0Xs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hdVrYnzUZSmIl9D9nQP48Q5L8SW2IA5A9KSlRWFRzJaPUawng5wz2c0GeyHoQ0A6i
-         DkwBeNM9GKLbHniFXO75jVagbNp+rVJseZt6UBZEiMG1bmJNtSm524gd4j/4mcflVm
-         ACk2gkRU+i4I1vyV/VS00K0OLKIMhdhCZlS34Iqk=
+        b=r345/yzNxGFQa7OADeUtBrjg7IZY1Oil2SEMPU+FjbOmm9x8akedWawS9hyYPWJXw
+         Z/3lcfwSwFbJrjpvjUjyDsaFqLooZRk0bXOzDGd5mjbfacojHBNnbK4WEG/3mZ1iGv
+         etZihHhNrZyIgk6RSf7GYOgKuPerhOlUHhgHrq9M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.15 707/846] PCI: pci-bridge-emul: Set PCI_STATUS_CAP_LIST for PCIe device
-Date:   Mon, 24 Jan 2022 19:43:44 +0100
-Message-Id: <20220124184125.431779033@linuxfoundation.org>
+        stable@vger.kernel.org, Bernard Zhao <bernard@vivo.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 184/563] selinux: fix potential memleak in selinux_add_opt()
+Date:   Mon, 24 Jan 2022 19:39:09 +0100
+Message-Id: <20220124184030.782697105@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,35 +49,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Bernard Zhao <bernard@vivo.com>
 
-commit 3be9d243b21724d49b65043d4520d688b6040b36 upstream.
+[ Upstream commit 2e08df3c7c4e4e74e3dd5104c100f0bf6288aaa8 ]
 
-Since all PCI Express device Functions are required to implement the PCI
-Express Capability structure, Capabilities List bit in PCI Status Register
-must be hardwired to 1b. Capabilities Pointer register (which is already
-set by pci-bride-emul.c driver) is valid only when Capabilities List is set
-to 1b.
+This patch try to fix potential memleak in error branch.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-7-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ba6418623385 ("selinux: new helper - selinux_add_opt()")
+Signed-off-by: Bernard Zhao <bernard@vivo.com>
+[PM: tweak the subject line, add Fixes tag]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/pci-bridge-emul.c |    1 +
- 1 file changed, 1 insertion(+)
+ security/selinux/hooks.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -296,6 +296,7 @@ int pci_bridge_emul_init(struct pci_brid
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index ff2191ae53528..86159b32921cc 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -947,18 +947,22 @@ out:
+ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = *mnt_opts;
++	bool is_alloc_opts = false;
  
- 	if (bridge->has_pcie) {
- 		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
-+		bridge->conf.status |= cpu_to_le16(PCI_STATUS_CAP_LIST);
- 		bridge->pcie_conf.cap_id = PCI_CAP_ID_EXP;
- 		bridge->pcie_conf.cap |= cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4);
- 		bridge->pcie_cap_regs_behavior =
+ 	if (token == Opt_seclabel)	/* eaten and completely ignored */
+ 		return 0;
+ 
++	if (!s)
++		return -ENOMEM;
++
+ 	if (!opts) {
+ 		opts = kzalloc(sizeof(struct selinux_mnt_opts), GFP_KERNEL);
+ 		if (!opts)
+ 			return -ENOMEM;
+ 		*mnt_opts = opts;
++		is_alloc_opts = true;
+ 	}
+-	if (!s)
+-		return -ENOMEM;
++
+ 	switch (token) {
+ 	case Opt_context:
+ 		if (opts->context || opts->defcontext)
+@@ -983,6 +987,10 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 	}
+ 	return 0;
+ Einval:
++	if (is_alloc_opts) {
++		kfree(opts);
++		*mnt_opts = NULL;
++	}
+ 	pr_warn(SEL_MOUNT_FAIL_MSG);
+ 	return -EINVAL;
+ }
+-- 
+2.34.1
+
 
 
