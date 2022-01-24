@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EC08C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0192C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441898AbiAXUwQ (ORCPT
+        id S1441941AbiAXUwZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:52:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53886 "EHLO
+        Mon, 24 Jan 2022 15:52:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51138 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356917AbiAXU3N (ORCPT
+        with ESMTP id S1384314AbiAXU33 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:29:13 -0500
+        Mon, 24 Jan 2022 15:29:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D50061382;
-        Mon, 24 Jan 2022 20:29:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51F65C340E5;
-        Mon, 24 Jan 2022 20:29:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32CEF61502;
+        Mon, 24 Jan 2022 20:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A89CC340E5;
+        Mon, 24 Jan 2022 20:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056152;
-        bh=rtpLZA/dEdKmmCJ55vX9tk3oGIr36nPawB5/HexGmQA=;
+        s=korg; t=1643056167;
+        bh=th4VKO5Ug+nK9IqtFEODJ6OwStYjXRjMQK8H8lx4WDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vl3+Qg2oN6cbMRxZ4L3+Hgxv9vr32h36J6L8N4j0SdjJzBvkc8NCpuuKX8gx+4SUG
-         7QsdGRr24YvcSIaM+aj4gsaJe6oQ3zycD60KhAOygHR8idM0Svj8hBorF8ZRL2xv+2
-         UgBJ+/pqQi9Z8vbn6OJBTThB1AY4z3zjlTos7j2U=
+        b=H/uYKVDakIY6izgRp23TaOjmuR7h4nwOSvpOc89iLfAN2heZladNdckLFvbCngVp+
+         SBiH1lsoNBCfhz7sP0mZvclxGJSwpoYufebGEu0drNe3JNSNWMdjQO6PUVAg6uweF5
+         7xZ9IkJvEicPuHp0p83cjnbqn2ItuS/JfDypTyw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 388/846] ALSA: hda: Make proper use of timecounter
-Date:   Mon, 24 Jan 2022 19:38:25 +0100
-Message-Id: <20220124184114.326151138@linuxfoundation.org>
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 392/846] powerpc/32s: Fix shift-out-of-bounds in KASAN init
+Date:   Mon, 24 Jan 2022 19:38:29 +0100
+Message-Id: <20220124184114.464732347@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,121 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 6dd21ad81bf96478db3403b1bbe251c0612d0431 ]
+[ Upstream commit af11dee4361b3519981fa04d014873f9d9edd6ac ]
 
-HDA uses a timecounter to read a hardware clock running at 24 MHz. The
-conversion factor is set with a mult value of 125 and a shift value of 0,
-which is not converting the hardware clock to nanoseconds, it is converting
-to 1/3 nanoseconds because the conversion factor from 24Mhz to nanoseconds
-is 125/3. The usage sites divide the "nanoseconds" value returned by
-timecounter_read() by 3 to get a real nanoseconds value.
+================================================================================
+UBSAN: shift-out-of-bounds in arch/powerpc/mm/kasan/book3s_32.c:22:23
+shift exponent -1 is negative
+CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.5-gentoo-PowerMacG4 #9
+Call Trace:
+[c214be60] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
+[c214be80] [c0b99288] ubsan_epilogue+0x10/0x5c
+[c214be90] [c0b98fe0] __ubsan_handle_shift_out_of_bounds+0x94/0x138
+[c214bf00] [c1c0f010] kasan_init_region+0xd8/0x26c
+[c214bf30] [c1c0ed84] kasan_init+0xc0/0x198
+[c214bf70] [c1c08024] setup_arch+0x18/0x54c
+[c214bfc0] [c1c037f0] start_kernel+0x90/0x33c
+[c214bff0] [00003610] 0x3610
+================================================================================
 
-There is a lengthy comment in azx_timecounter_init() explaining this
-choice. That comment makes blatantly wrong assumptions about how
-timecounters work and what can overflow.
+This happens when the directly mapped memory is a power of 2.
 
-The comment says:
+Fix it by checking the shift and set the result to 0 when shift is -1
 
-     * Applying the 1/3 factor as part of the multiplication
-     * requires at least 20 bits for a decent precision, however
-     * overflows occur after about 4 hours or less, not a option.
-
-timecounters operate on time deltas between two readouts of a clock and use
-the mult/shift pair to calculate a precise nanoseconds value:
-
-    delta_nsec = (delta_clock * mult) >> shift;
-
-The fractional part is also taken into account and preserved to prevent
-accumulated rounding errors. For details see cyclecounter_cyc2ns().
-
-The mult/shift pair has to be chosen so that the multiplication of the
-maximum expected delta value does not result in a 64bit overflow. As the
-counter wraps around on 32bit, the maximum observable delta between two
-reads is (1 << 32) - 1 which is about 178.9 seconds.
-
-That in turn means the maximum multiplication factor which fits into an u32
-will not cause a 64bit overflow ever because it's guaranteed that:
-
-     ((1 << 32) - 1) ^ 2 < (1 << 64)
-
-The resulting correct multiplication factor is 2796202667 and the shift
-value is 26, i.e. 26 bit precision. The overflow of the multiplication
-would happen exactly at a clock readout delta of 6597069765 which is way
-after the wrap around of the hardware clock at around 274.8 seconds which
-is off from the claimed 4 hours by more than an order of magnitude.
-
-If the counter ever wraps around the last read value then the calculation
-is off by the number of wrap arounds times 178.9 seconds because the
-overflow cannot be observed.
-
-Use clocks_calc_mult_shift(), which calculates the most accurate mult/shift
-pair based on the given clock frequency, and remove the bogus comment along
-with the divisions at the readout sites.
-
-Fixes: 5d890f591d15 ("ALSA: hda: support for wallclock timestamps")
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/871r35kwji.ffs@tglx
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215169
+Link: https://lore.kernel.org/r/15cbc3439d4ad988b225e2119ec99502a5cc6ad3.1638261744.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/hda/hdac_stream.c           | 14 ++++----------
- sound/pci/hda/hda_controller.c    |  1 -
- sound/soc/intel/skylake/skl-pcm.c |  1 -
- 3 files changed, 4 insertions(+), 12 deletions(-)
+ arch/powerpc/mm/kasan/book3s_32.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/sound/hda/hdac_stream.c b/sound/hda/hdac_stream.c
-index 9867555883c34..aa7955fdf68a0 100644
---- a/sound/hda/hdac_stream.c
-+++ b/sound/hda/hdac_stream.c
-@@ -534,17 +534,11 @@ static void azx_timecounter_init(struct hdac_stream *azx_dev,
- 	cc->mask = CLOCKSOURCE_MASK(32);
+diff --git a/arch/powerpc/mm/kasan/book3s_32.c b/arch/powerpc/mm/kasan/book3s_32.c
+index 202bd260a0095..35b287b0a8da4 100644
+--- a/arch/powerpc/mm/kasan/book3s_32.c
++++ b/arch/powerpc/mm/kasan/book3s_32.c
+@@ -19,7 +19,8 @@ int __init kasan_init_region(void *start, size_t size)
+ 	block = memblock_alloc(k_size, k_size_base);
  
- 	/*
--	 * Converting from 24 MHz to ns means applying a 125/3 factor.
--	 * To avoid any saturation issues in intermediate operations,
--	 * the 125 factor is applied first. The division is applied
--	 * last after reading the timecounter value.
--	 * Applying the 1/3 factor as part of the multiplication
--	 * requires at least 20 bits for a decent precision, however
--	 * overflows occur after about 4 hours or less, not a option.
-+	 * Calculate the optimal mult/shift values. The counter wraps
-+	 * around after ~178.9 seconds.
- 	 */
--
--	cc->mult = 125; /* saturation after 195 years */
--	cc->shift = 0;
-+	clocks_calc_mult_shift(&cc->mult, &cc->shift, 24000000,
-+			       NSEC_PER_SEC, 178);
+ 	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
+-		int k_size_more = 1 << (ffs(k_size - k_size_base) - 1);
++		int shift = ffs(k_size - k_size_base);
++		int k_size_more = shift ? 1 << (shift - 1) : 0;
  
- 	nsec = 0; /* audio time is elapsed time since trigger */
- 	timecounter_init(tc, cc, nsec);
-diff --git a/sound/pci/hda/hda_controller.c b/sound/pci/hda/hda_controller.c
-index 930ae4002a818..75dcb14ff20ad 100644
---- a/sound/pci/hda/hda_controller.c
-+++ b/sound/pci/hda/hda_controller.c
-@@ -504,7 +504,6 @@ static int azx_get_time_info(struct snd_pcm_substream *substream,
- 		snd_pcm_gettime(substream->runtime, system_ts);
- 
- 		nsec = timecounter_read(&azx_dev->core.tc);
--		nsec = div_u64(nsec, 3); /* can be optimized */
- 		if (audio_tstamp_config->report_delay)
- 			nsec = azx_adjust_codec_delay(substream, nsec);
- 
-diff --git a/sound/soc/intel/skylake/skl-pcm.c b/sound/soc/intel/skylake/skl-pcm.c
-index 9ecaf6a1e8475..e4aa366d356eb 100644
---- a/sound/soc/intel/skylake/skl-pcm.c
-+++ b/sound/soc/intel/skylake/skl-pcm.c
-@@ -1251,7 +1251,6 @@ static int skl_platform_soc_get_time_info(
- 		snd_pcm_gettime(substream->runtime, system_ts);
- 
- 		nsec = timecounter_read(&hstr->tc);
--		nsec = div_u64(nsec, 3); /* can be optimized */
- 		if (audio_tstamp_config->report_delay)
- 			nsec = skl_adjust_codec_delay(substream, nsec);
- 
+ 		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
+ 		if (k_size_more >= SZ_128K)
 -- 
 2.34.1
 
