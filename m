@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10074C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D64C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358226AbiAXTyj (ORCPT
+        id S1358318AbiAXTyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:54:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40964 "EHLO
+        Mon, 24 Jan 2022 14:54:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34990 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244676AbiAXTn2 (ORCPT
+        with ESMTP id S1349360AbiAXTle (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:43:28 -0500
+        Mon, 24 Jan 2022 14:41:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EA99614B8;
-        Mon, 24 Jan 2022 19:43:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05A1EC340E5;
-        Mon, 24 Jan 2022 19:43:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B2CC660909;
+        Mon, 24 Jan 2022 19:41:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 921A3C340E5;
+        Mon, 24 Jan 2022 19:41:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053406;
-        bh=w+VyngdW9N3dWCPVF+tKJ1n0N9r4Bcc/n6v1odHf5TQ=;
+        s=korg; t=1643053293;
+        bh=YjlPCUQsX6ZOi4P4YXnLzathnCSeTn8OqQk/kDirQX8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uhGyC1zvPHUP8xj9GGV7kvYGhSSVaSrqWgzZIVUOhdarXEfRcbmUB6au/llGIxerH
-         Zx3QXbfESg4e1Jag1UDymrNh+gtmFMAHD+V1sjnv9LqTRnBn5XtP0CcuO02nl0DxON
-         4Ab/AsB9nKbb7hntvx6Tw5M9Xaoq0hU85dokYgfQ=
+        b=EXnAgrr4NYgsYjODuLP8D477icX5JHmlseOTNg5keQjrsJeuTFAIIw/XHbYaa5o6A
+         ZfYqD5siDWHQaLkSCRUsFFqfvce+U8eW4pOsi/kq3Jk1UMQDA/cOw4vgQtNePEUgI7
+         NvTcNGoKgx/O+1hPxbg1Qp/zPXTqmvOMv0hYH3bY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 054/563] drm/vc4: hdmi: Set a default HSM rate
-Date:   Mon, 24 Jan 2022 19:36:59 +0100
-Message-Id: <20220124184026.285848868@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.10 019/563] media: v4l2-ioctl.c: readbuffers depends on V4L2_CAP_READWRITE
+Date:   Mon, 24 Jan 2022 19:36:24 +0100
+Message-Id: <20220124184025.078488823@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,61 +46,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-[ Upstream commit 3e85b81591609bb794bb00cd619b20965b5b38cd ]
+commit cd9d9377ed235b294a492a094e1666178a5e78fd upstream.
 
-When the firmware doesn't setup the HSM rate (such as when booting
-without an HDMI cable plugged in), its rate is 0 and thus any register
-access results in a CPU stall, even though HSM is enabled.
+If V4L2_CAP_READWRITE is not set, then readbuffers must be set to 0,
+otherwise v4l2-compliance will complain.
 
-Let's enforce a minimum rate at boot to avoid this issue.
+A note on the Fixes tag below: this patch does not really fix that commit,
+but it can be applied from that commit onwards. For older code there is no
+guarantee that device_caps is set, so even though this patch would apply,
+it will not work reliably.
 
-Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-4-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 049e684f2de9 (media: v4l2-dev: fix WARN_ON(!vdev->device_caps))
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/media/v4l2-core/v4l2-ioctl.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index ee293f061f0a8..5d5c4e9a86218 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -79,6 +79,7 @@
- # define VC4_HD_M_SW_RST			BIT(2)
- # define VC4_HD_M_ENABLE			BIT(0)
- 
-+#define HSM_MIN_CLOCK_FREQ	120000000
- #define CEC_CLOCK_FREQ 40000
- #define VC4_HSM_MID_CLOCK 149985000
- 
-@@ -1806,6 +1807,19 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- 	vc4_hdmi->disable_wifi_frequencies =
- 		of_property_read_bool(dev->of_node, "wifi-2.4ghz-coexistence");
- 
-+	/*
-+	 * If we boot without any cable connected to the HDMI connector,
-+	 * the firmware will skip the HSM initialization and leave it
-+	 * with a rate of 0, resulting in a bus lockup when we're
-+	 * accessing the registers even if it's enabled.
-+	 *
-+	 * Let's put a sensible default at runtime_resume so that we
-+	 * don't end up in this situation.
-+	 */
-+	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
-+	if (ret)
-+		goto err_put_ddc;
-+
- 	if (vc4_hdmi->variant->reset)
- 		vc4_hdmi->variant->reset(vc4_hdmi);
- 
--- 
-2.34.1
-
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -2127,6 +2127,7 @@ static int v4l_prepare_buf(const struct
+ static int v4l_g_parm(const struct v4l2_ioctl_ops *ops,
+ 				struct file *file, void *fh, void *arg)
+ {
++	struct video_device *vfd = video_devdata(file);
+ 	struct v4l2_streamparm *p = arg;
+ 	v4l2_std_id std;
+ 	int ret = check_fmt(file, p->type);
+@@ -2138,7 +2139,8 @@ static int v4l_g_parm(const struct v4l2_
+ 	if (p->type != V4L2_BUF_TYPE_VIDEO_CAPTURE &&
+ 	    p->type != V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
+ 		return -EINVAL;
+-	p->parm.capture.readbuffers = 2;
++	if (vfd->device_caps & V4L2_CAP_READWRITE)
++		p->parm.capture.readbuffers = 2;
+ 	ret = ops->vidioc_g_std(file, fh, &std);
+ 	if (ret == 0)
+ 		v4l2_video_std_frame_period(std, &p->parm.capture.timeperframe);
 
 
