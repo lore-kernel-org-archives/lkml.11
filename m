@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B46C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3B0DC2BA4C
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315018AbiAYCwR (ORCPT
+        id S1315176AbiAYCwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:52:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58586 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446041AbiAXVGO (ORCPT
+        Mon, 24 Jan 2022 21:52:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59086 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391795AbiAXVGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:06:14 -0500
+        Mon, 24 Jan 2022 16:06:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0AD5FB80CCF;
-        Mon, 24 Jan 2022 21:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35949C340E5;
-        Mon, 24 Jan 2022 21:06:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C22F60C17;
+        Mon, 24 Jan 2022 21:06:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86F38C340E8;
+        Mon, 24 Jan 2022 21:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058370;
-        bh=mMOviML6d2B2nz9G6cNtiKt2sKzaa74z8yvSpCvSpoU=;
+        s=korg; t=1643058389;
+        bh=SW3LaOTkedTk7adcIdVcisEywFdafNAxlRBLboYCbE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zF3hqJqleIZ6GWftlyCX+7QQI7xcy4AI6xy6AzT0QasZ+9cRCLsxNpwpowlf4G5gB
-         bLNR9XXftDjap79J31GaKkk9ZxwFzB5N3wQO4ZcuM3BkH4VsRtFJkbcgW6mqtn2AYz
-         AwvWEh2etZevkjk58fRIlyIPrRZiP38PuqUlF+bU=
+        b=uqJv7ijdE1fVsB4tvS7WFyLxNF7dKMXAKHb0jEfRxol3c8FOJHIFY9oWVprM7QWS+
+         eW2HEL5LFbGKDZaypadQ/54IE6cTisc93Nk0/eaLbnt3qv7Y1D+LeMh506d4yxK6+n
+         8KPALjCBoQwSStgPhMx1pexMnvhd70cqpYUEquWU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0235/1039] drm: rcar-du: Add DSI support to rcar_du_output_name
-Date:   Mon, 24 Jan 2022 19:33:44 +0100
-Message-Id: <20220124184133.216456115@linuxfoundation.org>
+Subject: [PATCH 5.16 0274/1039] crypto: stm32/cryp - fix double pm exit
+Date:   Mon, 24 Jan 2022 19:34:23 +0100
+Message-Id: <20220124184134.501263197@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,44 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit e0e4c64a64780a8672480618142776de8bf98d07 ]
+[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
 
-The DSI output names were not added when the DSI pipeline support was
-introduced.
+Delete extraneous lines in probe error handling code: pm was
+disabled twice.
 
-Add the correct labels for these outputs, and fix the sort order to
-match 'enum rcar_du_output' while we are here.
+Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
 
-Fixes: b291fdcf5114 ("drm: rcar-du: Add r8a779a0 device support")
-Suggested-by: Biju Das <biju.das.jz@bp.renesas.com>
-Signed-off-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Reported-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rcar-du/rcar_du_drv.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/rcar-du/rcar_du_drv.c b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
-index 5612a9e7a9056..5a8131ef81d5a 100644
---- a/drivers/gpu/drm/rcar-du/rcar_du_drv.c
-+++ b/drivers/gpu/drm/rcar-du/rcar_du_drv.c
-@@ -544,10 +544,12 @@ const char *rcar_du_output_name(enum rcar_du_output output)
- 	static const char * const names[] = {
- 		[RCAR_DU_OUTPUT_DPAD0] = "DPAD0",
- 		[RCAR_DU_OUTPUT_DPAD1] = "DPAD1",
--		[RCAR_DU_OUTPUT_LVDS0] = "LVDS0",
--		[RCAR_DU_OUTPUT_LVDS1] = "LVDS1",
-+		[RCAR_DU_OUTPUT_DSI0] = "DSI0",
-+		[RCAR_DU_OUTPUT_DSI1] = "DSI1",
- 		[RCAR_DU_OUTPUT_HDMI0] = "HDMI0",
- 		[RCAR_DU_OUTPUT_HDMI1] = "HDMI1",
-+		[RCAR_DU_OUTPUT_LVDS0] = "LVDS0",
-+		[RCAR_DU_OUTPUT_LVDS1] = "LVDS1",
- 		[RCAR_DU_OUTPUT_TCON] = "TCON",
- 	};
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index fd7fb73a4d450..061db567908ae 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -2134,8 +2134,6 @@ err_engine1:
+ 	list_del(&cryp->list);
+ 	spin_unlock(&cryp_list.lock);
+ 
+-	pm_runtime_disable(dev);
+-	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_put_noidle(dev);
  
 -- 
 2.34.1
