@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9246C2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88499C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354626AbiAXTgw (ORCPT
+        id S1354565AbiAXTgq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59380 "EHLO
+        Mon, 24 Jan 2022 14:36:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57134 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346571AbiAXTcB (ORCPT
+        with ESMTP id S242058AbiAXTbv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:32:01 -0500
+        Mon, 24 Jan 2022 14:31:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34AC66121F;
-        Mon, 24 Jan 2022 19:32:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FBFC340E5;
-        Mon, 24 Jan 2022 19:31:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9840614F0;
+        Mon, 24 Jan 2022 19:31:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95700C340E5;
+        Mon, 24 Jan 2022 19:31:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052719;
-        bh=1qafoHmQHzEeYvZZ5mPQtfK7V5ZbfodQBUKQCPnWoO0=;
+        s=korg; t=1643052710;
+        bh=rD5AOzkXpRUJUGlmyD4mjgmBS/IZeXJBNqa5eZZZftQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z1vDJuXvfXWFIXdmxt2V+JEvXAggnDSeS3cMJ3gFfIpgDLkqo7Bv3QCpBP+DZR5x0
-         AWGTAl1A689kn2uXywkQUASiFyI/rCKMx4uTouLnhhIG7BlfxYepJY+hlEhzjPanuZ
-         NOiXepZFPBLw5oprbYyype/M0XsaiFRGdklQNN5o=
+        b=SiFyuThU5MbVToAAB0c6JJLKtr4Aycv/P6T1gx1xFongMIedCGxgFByAcF1Kf5CCa
+         Peg7cPzshqGZTI4+Paj9nl+BpCgIcobKF3OeDN5c+PML9/YjQWrB3V4U3Wb7h80ap+
+         95B/W2vgVbYg0s+TNP+v2Dola/9v4nmUOUDPHIEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 152/320] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 24 Jan 2022 19:42:16 +0100
-Message-Id: <20220124183958.807958146@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Todd Kjos <tkjos@google.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 132/320] binder: fix handling of error during copy
+Date:   Mon, 24 Jan 2022 19:41:56 +0100
+Message-Id: <20220124183958.155863213@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,38 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Todd Kjos <tkjos@google.com>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit fe6b1869243f23a485a106c214bcfdc7aa0ed593 ]
 
-Fault injection test report debugfs entry leak as follows:
+If a memory copy function fails to copy the whole buffer,
+a positive integar with the remaining bytes is returned.
+In binder_translate_fd_array() this can result in an fd being
+skipped due to the failed copy, but the loop continues
+processing fds since the early return condition expects a
+negative integer on error.
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+Fix by returning "ret > 0 ? -EINVAL : ret" to handle this case.
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
-
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: bb4a2e48d510 ("binder: return errors from buffer copy functions")
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Todd Kjos <tkjos@google.com>
+Link: https://lore.kernel.org/r/20211130185152.437403-2-tkjos@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/android/binder.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index c50e3e8afbd34..2edaa601df13a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3387,6 +3387,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
- 
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index 0512af0f04646..b9fb2a9269443 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -2660,8 +2660,8 @@ static int binder_translate_fd_array(struct binder_fd_array_object *fda,
+ 		if (!ret)
+ 			ret = binder_translate_fd(fd, offset, t, thread,
+ 						  in_reply_to);
+-		if (ret < 0)
+-			return ret;
++		if (ret)
++			return ret > 0 ? -EINVAL : ret;
+ 	}
+ 	return 0;
+ }
 -- 
 2.34.1
 
