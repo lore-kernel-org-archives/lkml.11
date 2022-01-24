@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3EDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C492C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344074AbiAXUn3 (ORCPT
+        id S1348431AbiAXUnd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:43:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353874AbiAXUYc (ORCPT
+        Mon, 24 Jan 2022 15:43:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50630 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381911AbiAXUYx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:24:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8963C00666A;
-        Mon, 24 Jan 2022 11:40:57 -0800 (PST)
+        Mon, 24 Jan 2022 15:24:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 68972614BB;
-        Mon, 24 Jan 2022 19:40:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50E8BC340EA;
-        Mon, 24 Jan 2022 19:40:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC0F26150E;
+        Mon, 24 Jan 2022 20:24:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95CA3C340E7;
+        Mon, 24 Jan 2022 20:24:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053256;
-        bh=qlT3vnluDMsRouKx8Jpg9yt05ismtEnGetjEo7q+Ykw=;
+        s=korg; t=1643055892;
+        bh=mcKndVCkrQs2y0FsFcaS2J9ZrpVOg2ArGukaawojnpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oDU4YRz5vLa5GEEiL8AZtZvh+k4zzaWns80/u09qFHua1JwJmrvi+vO6l07fYJLr5
-         tmo6tnUBCwZppv8D/wSoZpP/COasD+tJolA3WAnydoQrVNNbXsiLDFx4wBNQq+8d5z
-         pWS8OWF4rr16gN5hf2YmbuFsP9ZmcqMSzg1Si6JA=
+        b=h5y5vxPzYonYbOqfiP5bO49SA3snwxSKQVuuZUtritKVeb5mpkSCqo2zahFhJJ+ms
+         FozWa+4MHINk1K9tL0VYbPEMOnJzvGdy4HYzoc6jlI/Z7X9UEl+QV89hOIQkYEat7Y
+         Xt3eFDJq73FzvVTiMLZJtSdAMvI5Md+BT7RV32PY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 317/320] lib82596: Fix IRQ check in sni_82596_probe
-Date:   Mon, 24 Jan 2022 19:45:01 +0100
-Message-Id: <20220124184004.719495777@linuxfoundation.org>
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 301/846] ACPI: scan: Create platform device for BCM4752 and LNV4752 ACPI nodes
+Date:   Mon, 24 Jan 2022 19:36:58 +0100
+Message-Id: <20220124184111.291619529@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +47,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-commit 99218cbf81bf21355a3de61cd46a706d36e900e6 upstream.
+[ Upstream commit f85196bdd5a50da74670250564740fc852b3c239 ]
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+BCM4752 and LNV4752 ACPI nodes describe a Broadcom 4752 GPS module
+attached to an UART of the system.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
+The GPS modules talk a custom protocol which only works with a closed-
+source Android gpsd daemon which knows this protocol.
 
-Fix the check of return value to catch errors correctly.
+The ACPI nodes also describe GPIOs to turn the GPS on/off these are
+handled by the net/rfkill/rfkill-gpio.c code. This handling predates the
+addition of enumeration of ACPI instantiated serdevs to the kernel and
+was broken by that addition, because the ACPI scan code now no longer
+instantiates platform_device-s for these nodes.
 
-Fixes: 115978859272 ("i825xx: Move the Intel 82586/82593/82596 based drivers")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Rename the i2c_multi_instantiate_ids HID list to ignore_serial_bus_ids
+and add the BCM4752 and LNV4752 HIDs, so that rfkill-gpio gets
+a platform_device to bind to again; and so that a tty cdev for gpsd
+gets created for these.
+
+Fixes: e361d1f85855 ("ACPI / scan: Fix enumeration for special UART devices")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/i825xx/sni_82596.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/acpi/scan.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/i825xx/sni_82596.c
-+++ b/drivers/net/ethernet/i825xx/sni_82596.c
-@@ -123,9 +123,10 @@ static int sni_82596_probe(struct platfo
- 	netdevice->dev_addr[5] = readb(eth_addr + 0x06);
- 	iounmap(eth_addr);
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 5b54c80b9d32a..6e9cd41c5f9b1 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1690,6 +1690,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ {
+ 	struct list_head resource_list;
+ 	bool is_serial_bus_slave = false;
++	static const struct acpi_device_id ignore_serial_bus_ids[] = {
+ 	/*
+ 	 * These devices have multiple I2cSerialBus resources and an i2c-client
+ 	 * must be instantiated for each, each with its own i2c_device_id.
+@@ -1698,11 +1699,18 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	 * drivers/platform/x86/i2c-multi-instantiate.c driver, which knows
+ 	 * which i2c_device_id to use for each resource.
+ 	 */
+-	static const struct acpi_device_id i2c_multi_instantiate_ids[] = {
+ 		{"BSG1160", },
+ 		{"BSG2150", },
+ 		{"INT33FE", },
+ 		{"INT3515", },
++	/*
++	 * HIDs of device with an UartSerialBusV2 resource for which userspace
++	 * expects a regular tty cdev to be created (instead of the in kernel
++	 * serdev) and which have a kernel driver which expects a platform_dev
++	 * such as the rfkill-gpio driver.
++	 */
++		{"BCM4752", },
++		{"LNV4752", },
+ 		{}
+ 	};
  
--	if (!netdevice->irq) {
-+	if (netdevice->irq < 0) {
- 		printk(KERN_ERR "%s: IRQ not found for i82596 at 0x%lx\n",
- 			__FILE__, netdevice->base_addr);
-+		retval = netdevice->irq;
- 		goto probe_failed;
- 	}
+@@ -1716,8 +1724,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	     fwnode_property_present(&device->fwnode, "baud")))
+ 		return true;
  
+-	/* Instantiate a pdev for the i2c-multi-instantiate drv to bind to */
+-	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
++	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
+ 		return false;
+ 
+ 	INIT_LIST_HEAD(&resource_list);
+-- 
+2.34.1
+
 
 
