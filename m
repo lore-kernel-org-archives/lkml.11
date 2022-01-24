@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE6AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51761C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343492AbiAXVYh (ORCPT
+        id S1351730AbiAXVYl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52044 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443683AbiAXU6f (ORCPT
+        Mon, 24 Jan 2022 16:24:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45162 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443767AbiAXU7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:35 -0500
+        Mon, 24 Jan 2022 15:59:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E0DC047CFD;
+        Mon, 24 Jan 2022 12:01:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC9D7B812A7;
-        Mon, 24 Jan 2022 20:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF58FC340E5;
-        Mon, 24 Jan 2022 20:58:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4376B8124B;
+        Mon, 24 Jan 2022 20:01:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28A4C340ED;
+        Mon, 24 Jan 2022 20:01:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057911;
-        bh=UhT0JaI55mgQA7ptyJJ/KmDglLAZ1One7Pak05Uef7I=;
+        s=korg; t=1643054462;
+        bh=gftabYyXkMadHg19oaBWLurzEcg5g5knoVByzQVVmhk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q3Gaa+XJGqXrLntATQXF0kvSFAsT9tg6LuC6aWEf3YeLFqQZF/HasKWmMUWIj7Wqz
-         dEZ1PlzdbATyFWzVYro3UQvXLQUMwtcKZSW/ScbMHeqx0qOhXEfVswwvOmn7p7Jgd4
-         pya/ylo8teOv+iQh12u3Ofgek/wbP/NG7l3/z3y8=
+        b=F7/zu80a3Bopj72SBDmJCSs5oCV3NSpsysnYFI2ocvhfQTK0CyC8b+k4RfIHiO5QI
+         r/riSSqJ3ZDVNzfmTxFZ1FGg9gCeb4FrQfC1IgkGBw8VJuQmjtkgbCj3ObKC10SBhY
+         ShlkRy/cy9c6x/xO19sfLaZa3XQ37E33Cflp0N/g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Zongmin Zhou <zhouzongmin@kylinos.cn>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0118/1039] mtd: hyperbus: rpc-if: Check return value of rpcif_sw_init()
-Date:   Mon, 24 Jan 2022 19:31:47 +0100
-Message-Id: <20220124184129.107940134@linuxfoundation.org>
+Subject: [PATCH 5.10 390/563] drm/amdgpu: fixup bad vram size on gmc v8
+Date:   Mon, 24 Jan 2022 19:42:35 +0100
+Message-Id: <20220124184037.921732618@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Zongmin Zhou <zhouzongmin@kylinos.cn>
 
-[ Upstream commit 981387ed06b96908223a607f5fba6efa42728fc2 ]
+[ Upstream commit 11544d77e3974924c5a9c8a8320b996a3e9b2f8b ]
 
-rpcif_sw_init() can fail so make sure we check the return value
-of it and on error exit rpcif_hb_probe() callback with error code.
+Some boards(like RX550) seem to have garbage in the upper
+16 bits of the vram size register.  Check for
+this and clamp the size properly.  Fixes
+boards reporting bogus amounts of vram.
 
-Fixes: 5de15b610f78 ("mtd: hyperbus: add Renesas RPC-IF driver")
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20211025205631.21151-5-prabhakar.mahadev-lad.rj@bp.renesas.com
+after add this patch,the maximum GPU VRAM size is 64GB,
+otherwise only 64GB vram size will be used.
+
+Signed-off-by: Zongmin Zhou<zhouzongmin@kylinos.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/hyperbus/rpc-if.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/mtd/hyperbus/rpc-if.c b/drivers/mtd/hyperbus/rpc-if.c
-index ecb050ba95cdf..367b0d72bf622 100644
---- a/drivers/mtd/hyperbus/rpc-if.c
-+++ b/drivers/mtd/hyperbus/rpc-if.c
-@@ -124,7 +124,9 @@ static int rpcif_hb_probe(struct platform_device *pdev)
- 	if (!hyperbus)
- 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+index 9ab65ca7df777..873bc33912e23 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+@@ -524,10 +524,10 @@ static void gmc_v8_0_mc_program(struct amdgpu_device *adev)
+ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ {
+ 	int r;
++	u32 tmp;
  
--	rpcif_sw_init(&hyperbus->rpc, pdev->dev.parent);
-+	error = rpcif_sw_init(&hyperbus->rpc, pdev->dev.parent);
-+	if (error)
-+		return error;
+ 	adev->gmc.vram_width = amdgpu_atombios_get_vram_width(adev);
+ 	if (!adev->gmc.vram_width) {
+-		u32 tmp;
+ 		int chansize, numchan;
  
- 	platform_set_drvdata(pdev, hyperbus);
+ 		/* Get VRAM informations */
+@@ -571,8 +571,15 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ 		adev->gmc.vram_width = numchan * chansize;
+ 	}
+ 	/* size in MB on si */
+-	adev->gmc.mc_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
+-	adev->gmc.real_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
++	tmp = RREG32(mmCONFIG_MEMSIZE);
++	/* some boards may have garbage in the upper 16 bits */
++	if (tmp & 0xffff0000) {
++		DRM_INFO("Probable bad vram size: 0x%08x\n", tmp);
++		if (tmp & 0xffff)
++			tmp &= 0xffff;
++	}
++	adev->gmc.mc_vram_size = tmp * 1024ULL * 1024ULL;
++	adev->gmc.real_vram_size = adev->gmc.mc_vram_size;
  
+ 	if (!(adev->flags & AMD_IS_APU)) {
+ 		r = amdgpu_device_resize_fb_bar(adev);
 -- 
 2.34.1
 
