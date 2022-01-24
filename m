@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C005C35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 529A3C47081
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443434AbiAXU4z (ORCPT
+        id S1443417AbiAXU4y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346411AbiAXUdy (ORCPT
+        Mon, 24 Jan 2022 15:56:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38894 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385738AbiAXUeR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FCEC07E2B0;
-        Mon, 24 Jan 2022 11:47:17 -0800 (PST)
+        Mon, 24 Jan 2022 15:34:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 582E2B811F9;
-        Mon, 24 Jan 2022 19:47:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC77C340E5;
-        Mon, 24 Jan 2022 19:47:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 337C8B8121A;
+        Mon, 24 Jan 2022 20:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E0CBC340E5;
+        Mon, 24 Jan 2022 20:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053636;
-        bh=OHhwjXkBsD5R4QcwYkR1d17e/ZJhJIHy3HA4FGFsKoM=;
+        s=korg; t=1643056453;
+        bh=nWfx+5I8ePLDtAMpHsHpCuInFeM3n1fhygFY6A3KG1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GsvC99UCzd/1n+Z2JJZdAlMsyBYTDveoWL1llMW8IP0vMvx/BguaIM6x5oR9267JU
-         UJudlHFCwl4d/z5ZMEWgtSmYpCnnkx0sTPe49uOoIhSagg28xL2dxIFPE6+Vg7pD+b
-         TCMuS1Ibjtr7VI/QSbXCVtp2mvZFCKTLOKK4SsM0=
+        b=gkbvTp8PJEGzkv/ksLKXB7dzBEckWkPIoBnoe3hvz6i/oZowVQnKDS29QmpSKFMAm
+         OEMbeZodYkaikKg990SMLt+CDRKABPEBjIoYrMYBAoOiwHL01cETRJNJbzo1xWnocZ
+         kSb6sG2MP6v8TaExtdFFuQqEV+tyxACliFyM9pGU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 128/563] tty: serial: uartlite: allow 64 bit address
-Date:   Mon, 24 Jan 2022 19:38:13 +0100
-Message-Id: <20220124184028.827395757@linuxfoundation.org>
+Subject: [PATCH 5.15 489/846] ethernet: renesas: Use div64_ul instead of do_div
+Date:   Mon, 24 Jan 2022 19:40:06 +0100
+Message-Id: <20220124184117.878667952@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,37 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lizhi Hou <lizhi.hou@xilinx.com>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit 3672fb65155530b5eea6225685c75329b6debec3 ]
+[ Upstream commit d9f31aeaa1e5aefa68130878af3c3513d41c1e2d ]
 
-The base address of uartlite registers could be 64 bit address which is from
-device resource. When ulite_probe() calls ulite_assign(), this 64 bit
-address is casted to 32-bit. The fix is to replace "u32" type with
-"phys_addr_t" type for the base address in ulite_assign() argument list.
+do_div() does a 64-by-32 division. Here the divisor is an
+unsigned long which on some platforms is 64 bit wide. So use
+div64_ul instead of do_div to avoid a possible truncation.
 
-Fixes: 8fa7b6100693 ("[POWERPC] Uartlite: Separate the bus binding from the driver proper")
-Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
-Link: https://lore.kernel.org/r/20211129202302.1319033-1-lizhi.hou@xilinx.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Eliminate the following coccicheck warning:
+./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING:
+do_div() does a 64-by-32 division, please consider using div64_ul
+instead.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/1637228883-100100-1-git-send-email-yang.lee@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/uartlite.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/renesas/ravb_main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 7081ab322b402..48923cd8c07d1 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -615,7 +615,7 @@ static struct uart_driver ulite_uart_driver = {
-  *
-  * Returns: 0 on success, <0 otherwise
-  */
--static int ulite_assign(struct device *dev, int id, u32 base, int irq,
-+static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
- 			struct uartlite_data *pdata)
- {
- 	struct uart_port *port;
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 0f85f2d97b18d..4e08b7219403c 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -30,8 +30,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/sys_soc.h>
+ #include <linux/reset.h>
+-
+-#include <asm/div64.h>
++#include <linux/math64.h>
+ 
+ #include "ravb.h"
+ 
+@@ -2061,8 +2060,7 @@ static int ravb_set_gti(struct net_device *ndev)
+ 	if (!rate)
+ 		return -EINVAL;
+ 
+-	inc = 1000000000ULL << 20;
+-	do_div(inc, rate);
++	inc = div64_ul(1000000000ULL << 20, rate);
+ 
+ 	if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
+ 		dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
 -- 
 2.34.1
 
