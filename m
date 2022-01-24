@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4575C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F0CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392180AbiAXUuf (ORCPT
+        id S1392206AbiAXUuj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:50:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34284 "EHLO
+        Mon, 24 Jan 2022 15:50:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34462 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383079AbiAXU0r (ORCPT
+        with ESMTP id S1383408AbiAXU1O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:26:47 -0500
+        Mon, 24 Jan 2022 15:27:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B57AB8123D;
-        Mon, 24 Jan 2022 20:26:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C819C340E5;
-        Mon, 24 Jan 2022 20:26:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3BC2B8122A;
+        Mon, 24 Jan 2022 20:27:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26C94C340E5;
+        Mon, 24 Jan 2022 20:27:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056004;
-        bh=NT3dQlqn3L5kXWshF8v8pQDahNIDvVSGsE62MASjpNo=;
+        s=korg; t=1643056031;
+        bh=l6Ni9v689sSDYi8RGWJ0Fvwu5bh71a7KQRIO9ThqCxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x4sdZS08khVEPBxrL8Ho10vTv9/qFcq1OfjFaxK7112rstnZv+Nc1JQljUz9SfbPS
-         f/y3UKIahrMFojGLG848bxbRVuZ01ZySPSQb9JATTcFPrphYLe+r0wlFNKYCXOUCx1
-         ffYM2/cxYFOVSEvRSaSL92wZhhlhlsGfs8T3skYQ=
+        b=2W+CSbBIlx7Kc9P40+y2szyvjXstEHHJsAuS2AN0xpa8IOgXtumYKar8Sv/LlkA0M
+         aL4RgdjgBidLaUC0bs/9+CHXVpv1C8emG7bOctmzTOQuToRTBq1sv28wEOOUZGC42v
+         BK7eMVxCJ2BJLLwEhKiSuIRJ6ojFyWa4uRNclXI4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 339/846] net/mlx5e: Dont block routes with nexthop objects in SW
-Date:   Mon, 24 Jan 2022 19:37:36 +0100
-Message-Id: <20220124184112.612659954@linuxfoundation.org>
+Subject: [PATCH 5.15 347/846] Bluetooth: L2CAP: uninitialized variables in l2cap_sock_setsockopt()
+Date:   Mon, 24 Jan 2022 19:37:44 +0100
+Message-Id: <20220124184112.919902810@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,46 +47,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 9e72a55a3c9d54b38a704bb7292d984574a81d9d ]
+[ Upstream commit 2b70d4f9b20635ac328836e50d183632e1930f94 ]
 
-Routes with nexthop objects is currently not supported by multipath offload
-and any attempts to use it is blocked, however this also block adding SW
-routes with nexthop.
+The "opt" variable is a u32, but on some paths only the top bytes
+were initialized and the others contained random stack data.
 
-Resolve this by returning NOTIFY_DONE instead of an error which will allow such
-a route to be created in SW but not offloaded.
-
-This fix also solve an issue which block adding such routes on different devices
-due to missing check if the route FIB device is one of multipath devices.
-
-Fixes: 6a87afc072c3 ("mlx5: Fail attempts to use routes with nexthop objects")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ net/bluetooth/l2cap_sock.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index 21fdaf708f1fe..30282d86e6b96 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -268,10 +268,8 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
- 		fen_info = container_of(info, struct fib_entry_notifier_info,
- 					info);
- 		fi = fen_info->fi;
--		if (fi->nh) {
--			NL_SET_ERR_MSG_MOD(info->extack, "IPv4 route with nexthop objects is not supported");
--			return notifier_from_errno(-EINVAL);
--		}
-+		if (fi->nh)
-+			return NOTIFY_DONE;
- 		fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
- 		if (fib_dev != ldev->pf[MLX5_LAG_P1].netdev &&
- 		    fib_dev != ldev->pf[MLX5_LAG_P2].netdev) {
+diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+index 251017c69ab7f..d2c6785205992 100644
+--- a/net/bluetooth/l2cap_sock.c
++++ b/net/bluetooth/l2cap_sock.c
+@@ -903,6 +903,8 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
+ 	struct l2cap_conn *conn;
+ 	int len, err = 0;
+ 	u32 opt;
++	u16 mtu;
++	u8 mode;
+ 
+ 	BT_DBG("sk %p", sk);
+ 
+@@ -1085,16 +1087,16 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
+ 			break;
+ 		}
+ 
+-		if (copy_from_sockptr(&opt, optval, sizeof(u16))) {
++		if (copy_from_sockptr(&mtu, optval, sizeof(u16))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
+ 
+ 		if (chan->mode == L2CAP_MODE_EXT_FLOWCTL &&
+ 		    sk->sk_state == BT_CONNECTED)
+-			err = l2cap_chan_reconfigure(chan, opt);
++			err = l2cap_chan_reconfigure(chan, mtu);
+ 		else
+-			chan->imtu = opt;
++			chan->imtu = mtu;
+ 
+ 		break;
+ 
+@@ -1116,14 +1118,14 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
+ 			break;
+ 		}
+ 
+-		if (copy_from_sockptr(&opt, optval, sizeof(u8))) {
++		if (copy_from_sockptr(&mode, optval, sizeof(u8))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
+ 
+-		BT_DBG("opt %u", opt);
++		BT_DBG("mode %u", mode);
+ 
+-		err = l2cap_set_mode(chan, opt);
++		err = l2cap_set_mode(chan, mode);
+ 		if (err)
+ 			break;
+ 
 -- 
 2.34.1
 
