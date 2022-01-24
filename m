@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 265DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27221C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345011AbiAXTNf (ORCPT
+        id S1346456AbiAXTNl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:13:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46074 "EHLO
+        Mon, 24 Jan 2022 14:13:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346179AbiAXTFJ (ORCPT
+        with ESMTP id S1346206AbiAXTFN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:09 -0500
+        Mon, 24 Jan 2022 14:05:13 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F48DC0401FA;
-        Mon, 24 Jan 2022 10:59:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53251C06176D;
+        Mon, 24 Jan 2022 11:00:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 495F6B81236;
-        Mon, 24 Jan 2022 18:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7511CC340EA;
-        Mon, 24 Jan 2022 18:59:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1BAB2B8119D;
+        Mon, 24 Jan 2022 18:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C9E8C340E5;
+        Mon, 24 Jan 2022 18:59:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050772;
-        bh=nRljK2iWbb10p4w6RFd1lQ40Hofhpav2Nn+BCIRYQ08=;
+        s=korg; t=1643050797;
+        bh=ytqGsn8MmYRAVpbzLdd12cjfjLBCERwhbxRlqhLvZ30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yrdujnL5g8LcruFa6Euut5oINMfQgOoiCk2e+zLYAL0y7ArGK6iWDqwn6NLOggbYP
-         CJD3cU6q1PUsk5rvRamJJPOSwDTkKI/tm9wqNVHUmf+8XIo6c0ILudAjx9Yn+jEp4g
-         neRizVS0+ySoI0zH/i2rG2aXzggoxOhIaePw5BtM=
+        b=XX3C2T7XakFqsaq1EPmfggB3fyQtqbJUCGOMfzccuIDnU3f6S2FjixYLj2O1vhYlE
+         6/ZeFuAyLGuLrUpvSH9N/q+9J0eiskDGKZQvb0gdONs6KNIcJb95v2ZMpEMH0H5dkM
+         J0gcln9gk9qEI9lihg6TG5DVnFliujEc7cDCU8E4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 106/157] powerpc/powernv: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:16 +0100
-Message-Id: <20220124183936.133978740@linuxfoundation.org>
+Subject: [PATCH 4.9 082/157] mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
+Date:   Mon, 24 Jan 2022 19:42:52 +0100
+Message-Id: <20220124183935.385431507@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -50,57 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
+[ Upstream commit 04d80663f67ccef893061b49ec8a42ff7045ae84 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Currently, with an unknown recv_type, mwifiex_usb_recv
+just return -1 without restoring the skb. Next time
+mwifiex_usb_rx_complete is invoked with the same skb,
+calling skb_put causes skb_over_panic.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+The bug is triggerable with a compromised/malfunctioning
+usb device. After applying the patch, skb_over_panic
+no longer shows up with the same input.
 
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
+Attached is the panic report from fuzzing.
+skbuff: skb_over_panic: text:000000003bf1b5fa
+ len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
+ tail:0x844 end:0x840 dev:<NULL>
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
+RIP: 0010:skb_panic+0x15f/0x161
+Call Trace:
+ <IRQ>
+ ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ skb_put.cold+0x24/0x24
+ mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+ </IRQ>
 
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
-index e4169d68cb328..d28c4a9269c38 100644
---- a/arch/powerpc/platforms/powernv/opal-lpc.c
-+++ b/arch/powerpc/platforms/powernv/opal-lpc.c
-@@ -401,6 +401,7 @@ void opal_lpc_init(void)
- 		if (!of_get_property(np, "primary", NULL))
- 			continue;
- 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
-+		of_node_put(np);
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 2c4225e57c396..3a26add665ca0 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -132,7 +132,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
+ 		}
  		break;
- 	}
- 	if (opal_lpc_chip_id < 0)
+ 	case MWIFIEX_USB_EP_DATA:
 -- 
 2.34.1
 
