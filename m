@@ -2,170 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36723C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:12:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9097CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:13:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbiAXMMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:12:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233792AbiAXMM2 (ORCPT
+        id S238406AbiAXMNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:13:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:40212 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233792AbiAXMNA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:12:28 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A289C06173D
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:12:28 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id s13so20808581ejy.3
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:12:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=monstr-eu.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=EF33JaMG+hm3D3rC4FKnXqraG6SkDY8uCv7rbWwdgXo=;
-        b=h9kOSUGdVE4gKL9s/LJMs1IPT3IbpeWYBrpfv+AuECTvZC/d9Mgmj+8/qzAF3eXbfK
-         m2PtizTIvCHLxd6Gr7Fy05dMKmmlLLy4fEUmMzmo48gVyiHxEhPLV4MLyO9oPA3wQplh
-         Vu1eRpEh9FNcwp+b/0xm/G3Q5QeqPlP25zblpv7pn1fhf7z/jOebqtlWaC7aW9HA3fhF
-         VjHo7lvhY7/oUqkPSCrDzarLxSsOAQnP9tESF52Jr02HUzNrium0qVdHZa1C0dYGAGE8
-         mDJhzJkStQMJW3cmp/Q9xzv797988P0T7BpUMuqWmKMM8P4QGKIRCVs93TY4AR01o66n
-         x2fw==
+        Mon, 24 Jan 2022 07:13:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643026379;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Jgo/S7sjlaPhT9Y19EsdD9p5FFY6hIgWybsEw2AdVf4=;
+        b=P3wQ5sM2qoKT/xc6P4kD6e4EKzdpbID7qLh6/M/Kity4ypPqgOxi9M9FHeqsBXzhfZMFYe
+        nM+OoPyZdwSZh8QxSgB2emMA5/aHNyNXBn482MMZIESDUrlHxzljbhQcywhvnHYCm+QSKX
+        /0z2oIYNlBELpMZKf2VNonDwJYQoCP4=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-44-_oBQ9XlTOnGQGi9V2A8Kxw-1; Mon, 24 Jan 2022 07:12:58 -0500
+X-MC-Unique: _oBQ9XlTOnGQGi9V2A8Kxw-1
+Received: by mail-ej1-f69.google.com with SMTP id rl11-20020a170907216b00b006b73a611c1aso1300297ejb.22
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:12:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=EF33JaMG+hm3D3rC4FKnXqraG6SkDY8uCv7rbWwdgXo=;
-        b=t+Zy6IDGt/3Mp08T1VvTcSljMn3jZLkjh5flyQr3hXf6aFawUGWSNRy+o1hFqp1lhE
-         Kbn5oIBkGiJFzDZXCeqG9T8QvI0Q/NGPWT0oDPye4QnnRbFHVQMZYb61pZCd9jMkZ8ZW
-         /+ZsBN7SlynIsFGKhyTcfQbpMBaEgire8r7zbm+pJmigCQTyUbQEUkVrs9gGJ74HXvEf
-         YdozkMwPaXYqp2czFshn3Qufk6IAGp0gLiKLVpJuP2UeXX41VzbkmphrZ9wnjfVl+cSz
-         RBu4bnv/wgzqpu8MNcivSmye/F4JPGQcDdmAUCfUXczFZqqk2L5uZpI12vda57gVJlk+
-         x1vw==
-X-Gm-Message-State: AOAM530In8MUkLfoOZzCU05iJ4LOBLG4cQUjeKavXwcsP+jQSUSMJiLB
-        o/jgbANtrQHybsUoOPXjbYIdfg==
-X-Google-Smtp-Source: ABdhPJyQSddN36xdAtpIRActuatI3ilXCh3FopeB7M5+U2SlQv66S7Fj/8y3ScreZHIH5mQGHDw6Ng==
-X-Received: by 2002:a17:906:c099:: with SMTP id f25mr12755359ejz.458.1643026346842;
-        Mon, 24 Jan 2022 04:12:26 -0800 (PST)
-Received: from ?IPV6:2a02:768:2307:40d6::f9e? ([2a02:768:2307:40d6::f9e])
-        by smtp.gmail.com with ESMTPSA id gu2sm4768438ejb.221.2022.01.24.04.12.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 04:12:26 -0800 (PST)
-Message-ID: <9e98c6c9-36a8-046a-b195-78942fdcafff@monstr.eu>
-Date:   Mon, 24 Jan 2022 13:12:25 +0100
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=Jgo/S7sjlaPhT9Y19EsdD9p5FFY6hIgWybsEw2AdVf4=;
+        b=s7b20BoKdoI6fqIUaD38o1oYUHok+WQRGwC7YRJDWh9BeRsm4JkJi1ahoRS5SpMqdm
+         GcGlyPX5+Wkggw/6lBTPEvZ90dXochZFcMZBdZs1JPSl/XFnB7cUs4p5X2pBz+OPbwks
+         80NL7rgP2uOFYqZkIvB1ip1icBu8ECaA/D3ooKNHeo93p6AWLIm/Wd/EGO1yEyz8u8En
+         WdM7WGqBW4mkNLgh+1Z8tdAsgDsbQTDzO0W14+2SuysAkooBqmMdRlQB94FLh4rLBCX8
+         6IqLxqGTZd/jMAOPUFnwLwf/Wg7ItYZJr+s7rdG91iyvBv1KVo12I4YnJq+yADhcvipE
+         TJ1A==
+X-Gm-Message-State: AOAM532B3rOddr0Z63DDxMSl1A7m5+LXKyG8HgSp7WhJKgpcinzQ8J2Z
+        rxbsAs1k7xNFo5+cnUm7utCpyTKhBW0iwe4TcYMEkVEQfWi/eTb3WBVAUfv8AdgVz6ye+KFuxg3
+        yrGynD6sMX2Q24fJ7Ej8gaSZ6
+X-Received: by 2002:a50:f60a:: with SMTP id c10mr15677284edn.244.1643026376217;
+        Mon, 24 Jan 2022 04:12:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzeAP+ilNlgL4BcKuLW9AzZIZHsF6UJc18boCsxUW/7gD4RQkhhDnrivWREc2YP+evP+Hm8iw==
+X-Received: by 2002:a50:f60a:: with SMTP id c10mr15677203edn.244.1643026374972;
+        Mon, 24 Jan 2022 04:12:54 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id bl12sm4786871ejb.75.2022.01.24.04.12.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 04:12:54 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id B0E2F18044B; Mon, 24 Jan 2022 13:12:53 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Colin Foster <colin.foster@in-advantage.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>
+Subject: Re: [net RFC v1 1/1] page_pool: fix NULL dereference crash
+In-Reply-To: <CAADnVQ+UqKMfn+ZxgOkBcXidBWUGJDugU7gCEV+rGS6wscZjJw@mail.gmail.com>
+References: <20220122005644.802352-1-colin.foster@in-advantage.com>
+ <20220122005644.802352-2-colin.foster@in-advantage.com>
+ <CAADnVQK8xrQ92+=wm8AoDkC93SEKz3G=CoOnkPgvs=spJk5UZA@mail.gmail.com>
+ <20220122022047.GA803138@euler>
+ <CAADnVQ+UqKMfn+ZxgOkBcXidBWUGJDugU7gCEV+rGS6wscZjJw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 24 Jan 2022 13:12:53 +0100
+Message-ID: <87mtjl5o3e.fsf@toke.dk>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v1] microblaze/PCI: Remove pci_phys_mem_access_prot() dead
- code
-Content-Language: en-US
-To:     Bjorn Helgaas <helgaas@kernel.org>
-Cc:     linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Bjorn Helgaas <bhelgaas@google.com>
-References: <20220121205150.1151607-1-helgaas@kernel.org>
-From:   Michal Simek <monstr@monstr.eu>
-In-Reply-To: <20220121205150.1151607-1-helgaas@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+
+> On Fri, Jan 21, 2022 at 6:20 PM Colin Foster
+> <colin.foster@in-advantage.com> wrote:
+>>
+>> On Fri, Jan 21, 2022 at 05:13:28PM -0800, Alexei Starovoitov wrote:
+>> > On Fri, Jan 21, 2022 at 4:57 PM Colin Foster
+>> > <colin.foster@in-advantage.com> wrote:
+>> > >
+>> > > Check for the existence of page pool params before dereferencing. This can
+>> > > cause crashes in certain conditions.
+>> >
+>> > In what conditions?
+>> > Out of tree driver?
+>>
+>> Hi Alexei,
+>>
+>> Thanks for the quick response.
+>>
+>> I'm actively working on a DSA driver that is currently out-of-tree, but
+>> trying to get it into mainline. But I'm not convinced that's the
+>> problem...
+>>
+>> I'm using a beagelebone black with the cpsw_new driver. There are two
+>> tweaks to that driver: the default vlan port is 10 and 11 so there's no
+>> conflict between cpsw_new and DSA, and the ndev->max_mtu / rx_packet_max
+>> have been increased to 1600 to allow for DSA frames larger than the
+>> standard MTU of 1500.
+>>
+>> My focus is on the DSA driver, but the crash happens as soon as I run
+>> "ip link set eth0 up" which is invoking the cpsw_new driver. Therefore I
+>> suspect that the issue is not directly related to the DSA section
+>> (ocelot / felix, much of which uses code that is mainline)
+>>
+>> As I suggested, I haven't dug into what is going on around the
+>> page_pool yet. If there is something that is pre-loading memory at 1500
+>> byte intervals and I broke that, that's entirely on me.
+>>
+>> [ removes 1600 byte MTU patch and pool patch ]
+>>
+>> I can confirm it still crashes when I don't modify the MTU in the
+>> cpsw_new driver... so that doesn't seem to be it. That crash log is
+>> below.
+>>
+>>
+>> # ip link set eth0 up
+>> [   18.074704] cpsw-switch 4a100000.switch: starting ndev. mode: dual_mac
+>> [   18.174286] SMSC LAN8710/LAN8720 4a101000.mdio:00: attached PHY driver (mii_bus:phy_addr=4a101000.mdio:00, irq=POLL)
+>> [   18.185458] 8<--- cut here ---
+>> [   18.188554] Unable to handle kernel paging request at virtual address c3104440
+>> [   18.195819] [c3104440] *pgd=8300041e(bad)
+>> [   18.199885] Internal error: Oops: 8000000d [#1] SMP ARM
+>> [   18.205148] Modules linked in:
+>> [   18.208233] CPU: 0 PID: 168 Comm: ip Not tainted 5.16.0-05302-g8bd405e6e8a0-dirty #265
+>> [   18.216201] Hardware name: Generic AM33XX (Flattened Device Tree)
+>> [   18.222328] PC is at 0xc3104440
+>> [   18.225500] LR is at __page_pool_alloc_pages_slow+0xbc/0x2e0
+>> [   18.231222] pc : [<c3104440>]    lr : [<c0ee06c8>]    psr: a00b0013
+>> [   18.237523] sp : c3104440  ip : 00000020  fp : c219e580
+>> [   18.242778] r10: c1a04d54  r9 : 00000000  r8 : 00000000
+>> [   18.248032] r7 : c36b9000  r6 : 00000000  r5 : c36b9084  r4 : 00000000
+>> [   18.254595] r3 : c07a399c  r2 : 00000000  r1 : c325784c  r0 : dfa48bc0
+>> [   18.261162] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+>> [   18.268343] Control: 10c5387d  Table: 836f0019  DAC: 00000051
+>> [   18.274119] Register r0 information: non-slab/vmalloc memory
+>> [   18.279825] Register r1 information: non-slab/vmalloc memory
+>> [   18.285523] Register r2 information: NULL pointer
+>> [   18.290260] Register r3 information: non-slab/vmalloc memory
+>> [   18.295957] Register r4 information: NULL pointer
+>> [   18.300693] Register r5 information: slab kmalloc-1k start c36b9000 pointer offset 132 size 1024
+>> [   18.309569] Register r6 information: NULL pointer
+>> [   18.314306] Register r7 information: slab kmalloc-1k start c36b9000 pointer offset 0 size 1024
+>> [   18.322999] Register r8 information: NULL pointer
+>> [   18.327736] Register r9 information: NULL pointer
+>> [   18.332473] Register r10 information: non-slab/vmalloc memory
+>> [   18.338257] Register r11 information: slab kmalloc-4k start c219e000 pointer offset 1408 size 4096
+>> [   18.347301] Register r12 information: non-paged memory
+>> [   18.352475] Process ip (pid: 168, stack limit = 0x7eb0d4ab)
+>> [   18.358089] Stack: (0xc3104440 to 0xc3258000)
+>> (too big a stack to show)
+>>
+>>
+>> I can confirm that it crashes on net-next/master as well:
+>> commit fe8152b38d3a, using the same DTB that defines the cpsw_new port
+>> as the DSA master. Relevant DTS snippet from my in-development driver:
+>>
+>> +&spi0 {
+>> +       #address-cells = <1>;
+>> +       #size-cells = <0>;
+>> +       status = "okay";
+>> +
+>> +       ocelot-chip@0 {
+>> +               compatible = "mscc,vsc7512_mfd_spi";
+>> +               spi-max-frequency = <2500000>;
+>> +               reg = <0>;
+>> +
+>> +               ethernet-switch@0 {
+>> +                       compatible = "mscc,vsc7512-ext-switch";
+>> +                       ports {
+>> +                               #address-cells = <1>;
+>> +                               #size-cells = <0>;
+>> +
+>> +                               port@0 {
+>> +                                       reg = <0>;
+>> +                                       label = "cpu";
+>> +                                       status = "okay";
+>> +                                       ethernet = <&mac_sw>;
+>> +                                       phy-handle = <&sw_phy0>;
+>> +                                       phy-mode = "internal";
+>> +                               };
+>>
+>>
+>> I was hoping for an "oh, if a switch is set up in DSA the page_pool gets
+>> set up this way" type scenario. I fully understand that might not be the
+>> case, and the issue could be in something I'm doing incorrectly - it
+>> certainly wouldn't be the first time.
+>>
+>> If this patch doesn't make sense I can look deeper. As mentioned, I'm
+>> working to get this accepted upstream, so I'll have to figure it out one
+>> way or another.
+>
+> With !pool tweak the patch makes sense.
+>
+> Toke, wdyt?
+
+I don't really see how page_pool_set_pp_info() can be called with a NULL
+'pool' pointer. There are only two callers:
+__page_pool_alloc_page_order() and __page_pool_alloc_pages_slow(). And
+both functions deref the pool pointer right before calling
+page_pool_set_pp_info(), so I don't really see how this patch would
+actually be a proper fix?
+
+Looking a bit closer, actually the fault seems like it lies with the
+driver; Colin, could you please check if the patch below fixes your
+issue?
+
+I'll go check all the other drivers as well and send a fix for all that
+are affected...
+
+-Toke
 
 
-On 1/21/22 21:51, Bjorn Helgaas wrote:
-> From: Bjorn Helgaas <bhelgaas@google.com>
-> 
-> pci_phys_mem_access_prot() is defined but never used.  Remove it.
-> 
-> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-> ---
->   arch/microblaze/include/asm/pci.h |  4 ---
->   arch/microblaze/pci/pci-common.c  | 49 -------------------------------
->   2 files changed, 53 deletions(-)
-> 
-> diff --git a/arch/microblaze/include/asm/pci.h b/arch/microblaze/include/asm/pci.h
-> index 7c4dc5d85f53..d90528064604 100644
-> --- a/arch/microblaze/include/asm/pci.h
-> +++ b/arch/microblaze/include/asm/pci.h
-> @@ -61,10 +61,6 @@ extern int pci_mmap_legacy_page_range(struct pci_bus *bus,
->   extern void pcibios_resource_survey(void);
->   
->   struct file;
-> -extern pgprot_t	pci_phys_mem_access_prot(struct file *file,
-> -					 unsigned long pfn,
-> -					 unsigned long size,
-> -					 pgprot_t prot);
->   
->   /* This part of code was originally in xilinx-pci.h */
->   #ifdef CONFIG_PCI_XILINX
-> diff --git a/arch/microblaze/pci/pci-common.c b/arch/microblaze/pci/pci-common.c
-> index 622a4867f9e9..33bab7eec731 100644
-> --- a/arch/microblaze/pci/pci-common.c
-> +++ b/arch/microblaze/pci/pci-common.c
-> @@ -165,55 +165,6 @@ int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma)
->   	return 0;
->   }
->   
-> -/*
-> - * This one is used by /dev/mem and fbdev who have no clue about the
-> - * PCI device, it tries to find the PCI device first and calls the
-> - * above routine
-> - */
-> -pgprot_t pci_phys_mem_access_prot(struct file *file,
-> -				  unsigned long pfn,
-> -				  unsigned long size,
-> -				  pgprot_t prot)
-> -{
-> -	struct pci_dev *pdev = NULL;
-> -	struct resource *found = NULL;
-> -	resource_size_t offset = ((resource_size_t)pfn) << PAGE_SHIFT;
-> -	int i;
-> -
-> -	if (page_is_ram(pfn))
-> -		return prot;
-> -
-> -	prot = pgprot_noncached(prot);
-> -	for_each_pci_dev(pdev) {
-> -		for (i = 0; i <= PCI_ROM_RESOURCE; i++) {
-> -			struct resource *rp = &pdev->resource[i];
-> -			int flags = rp->flags;
-> -
-> -			/* Active and same type? */
-> -			if ((flags & IORESOURCE_MEM) == 0)
-> -				continue;
-> -			/* In the range of this resource? */
-> -			if (offset < (rp->start & PAGE_MASK) ||
-> -			    offset > rp->end)
-> -				continue;
-> -			found = rp;
-> -			break;
-> -		}
-> -		if (found)
-> -			break;
-> -	}
-> -	if (found) {
-> -		if (found->flags & IORESOURCE_PREFETCH)
-> -			prot = pgprot_noncached_wc(prot);
-> -		pci_dev_put(pdev);
-> -	}
-> -
-> -	pr_debug("PCI: Non-PCI map for %llx, prot: %lx\n",
-> -		 (unsigned long long)offset, pgprot_val(prot));
-> -
-> -	return prot;
-> -}
-> -
->   /* This provides legacy IO read access on a bus */
->   int pci_legacy_read(struct pci_bus *bus, loff_t port, u32 *val, size_t size)
->   {
-
-Applied.
-M
-
--- 
-Michal Simek, Ing. (M.Eng), OpenPGP -> KeyID: FE3D1F91
-w: www.monstr.eu p: +42-0-721842854
-Maintainer of Linux kernel - Xilinx Microblaze
-Maintainer of Linux kernel - Xilinx Zynq ARM and ZynqMP ARM64 SoCs
-U-Boot custodian - Xilinx Microblaze/Zynq/ZynqMP/Versal SoCs
-
+diff --git a/drivers/net/ethernet/ti/cpsw_priv.c b/drivers/net/ethernet/ti/cpsw_priv.c
+index 3537502e5e8b..648c78ecf2a5 100644
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1146,7 +1146,7 @@ int cpsw_fill_rx_channels(struct cpsw_priv *priv)
+ static struct page_pool *cpsw_create_page_pool(struct cpsw_common *cpsw,
+                                               int size)
+ {
+-       struct page_pool_params pp_params;
++       struct page_pool_params pp_params = {};
+        struct page_pool *pool;
+ 
+        pp_params.order = 0;
 
