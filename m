@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FF51C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A5DC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358262AbiAXTyp (ORCPT
+        id S1358396AbiAXTzI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:54:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33954 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355509AbiAXTlj (ORCPT
+        Mon, 24 Jan 2022 14:55:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41252 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355789AbiAXTnp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:39 -0500
+        Mon, 24 Jan 2022 14:43:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2D3ECB8124C;
-        Mon, 24 Jan 2022 19:41:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 446FEC340E5;
-        Mon, 24 Jan 2022 19:41:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DB0561523;
+        Mon, 24 Jan 2022 19:43:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F437C340E5;
+        Mon, 24 Jan 2022 19:43:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053296;
-        bh=vSGR6VHbNUyq1gjucRiTGoZ958d6JifO3hYpyr6RMI8=;
+        s=korg; t=1643053424;
+        bh=hu1gV17cDebv5tvImuJ6Tjz/Hjil7NJhsdqGiuZJLm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VAen/YtkLGJrpIsbxQE9qnIYxk6DZ8Z0ENXv17dbbIyfetQxwc+ZhS/MD2Aeo+6XV
-         ZSS3zlJlCsJNX6uKRPKIAtNtVEUn6KQO9QtMpDy2+7bR4Oz+f+ILiQrpllDkwMFJCs
-         Q3kDdKpS1H4pHXYw9u6g0txs3IRS1t79luoRvhLo=
+        b=rO1BYi4an3xTJPV5sLC/vDv5pJsgf976cUIo+0RaSLpwIBykWExUu+O4v16BC9xtp
+         4IA05iw7WvXZlNDf2uzr3HFkywrqERzu+Qw8PrVylatFEOA2bHyaWYif00McsTCrru
+         T5TkDOUx497jAT1UphnviLzSb0ZORFKxrkk00Fsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.10 002/563] HID: uhid: Fix worker destroying device without any protection
-Date:   Mon, 24 Jan 2022 19:36:07 +0100
-Message-Id: <20220124184024.495331693@linuxfoundation.org>
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 060/563] wcn36xx: populate band before determining rate on RX
+Date:   Mon, 24 Jan 2022 19:37:05 +0100
+Message-Id: <20220124184026.490498079@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,101 +48,126 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Benjamin Li <benl@squareup.com>
 
-commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
+[ Upstream commit c9c5608fafe4dae975c9644c7d14c51ad3b0ed73 ]
 
-uhid has to run hid_add_device() from workqueue context while allowing
-parallel use of the userspace API (which is protected with ->devlock).
-But hid_add_device() can fail. Currently, that is handled by immediately
-destroying the associated HID device, without using ->devlock - but if
-there are concurrent requests from userspace, that's wrong and leads to
-NULL dereferences and/or memory corruption (via use-after-free).
+status.band is used in determination of status.rate -- for 5GHz on legacy
+rates there is a linear shift between the BD descriptor's rate field and
+the wcn36xx driver's rate table (wcn_5ghz_rates).
 
-Fix it by leaving the HID device as-is in the worker. We can clean it up
-later, either in the UHID_DESTROY command handler or in the ->release()
-handler.
+We have a special clause to populate status.band for hardware scan offload
+frames. However, this block occurs after status.rate is already populated.
+Correctly handle this dependency by moving the band block before the rate
+block.
 
-Cc: stable@vger.kernel.org
-Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch addresses kernel warnings & missing scan results for 5GHz APs
+that send their beacons/probe responses at the higher four legacy rates
+(24-54 Mbps), when using hardware scan offload:
+
+  ------------[ cut here ]------------
+  WARNING: CPU: 0 PID: 0 at net/mac80211/rx.c:4532 ieee80211_rx_napi+0x744/0x8d8
+  Modules linked in: wcn36xx [...]
+  CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         4.19.107-g73909fa #1
+  Hardware name: Square, Inc. T2 (all variants) (DT)
+  Call trace:
+  dump_backtrace+0x0/0x148
+  show_stack+0x14/0x1c
+  dump_stack+0xb8/0xf0
+  __warn+0x2ac/0x2d8
+  warn_slowpath_null+0x44/0x54
+  ieee80211_rx_napi+0x744/0x8d8
+  ieee80211_tasklet_handler+0xa4/0xe0
+  tasklet_action_common+0xe0/0x118
+  tasklet_action+0x20/0x28
+  __do_softirq+0x108/0x1ec
+  irq_exit+0xd4/0xd8
+  __handle_domain_irq+0x84/0xbc
+  gic_handle_irq+0x4c/0xb8
+  el1_irq+0xe8/0x190
+  lpm_cpuidle_enter+0x220/0x260
+  cpuidle_enter_state+0x114/0x1c0
+  cpuidle_enter+0x34/0x48
+  do_idle+0x150/0x268
+  cpu_startup_entry+0x20/0x24
+  rest_init+0xd4/0xe0
+  start_kernel+0x398/0x430
+  ---[ end trace ae28cb759352b403 ]---
+
+Fixes: 8a27ca394782 ("wcn36xx: Correct band/freq reporting on RX")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211104010548.1107405-2-benl@squareup.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 37 +++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
---- a/drivers/hid/uhid.c
-+++ b/drivers/hid/uhid.c
-@@ -28,11 +28,22 @@
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index bbd7194c82e27..f76de106570d2 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -259,8 +259,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	fc = __le16_to_cpu(hdr->frame_control);
+ 	sn = IEEE80211_SEQ_TO_SN(__le16_to_cpu(hdr->seq_ctrl));
  
- struct uhid_device {
- 	struct mutex devlock;
-+
-+	/* This flag tracks whether the HID device is usable for commands from
-+	 * userspace. The flag is already set before hid_add_device(), which
-+	 * runs in workqueue context, to allow hid_add_device() to communicate
-+	 * with userspace.
-+	 * However, if hid_add_device() fails, the flag is cleared without
-+	 * holding devlock.
-+	 * We guarantee that if @running changes from true to false while you're
-+	 * holding @devlock, it's still fine to access @hid.
-+	 */
- 	bool running;
+-	status.freq = WCN36XX_CENTER_FREQ(wcn);
+-	status.band = WCN36XX_BAND(wcn);
+ 	status.mactime = 10;
+ 	status.signal = -get_rssi0(bd);
+ 	status.antenna = 1;
+@@ -272,6 +270,25 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
  
- 	__u8 *rd_data;
- 	uint rd_size;
+ 	wcn36xx_dbg(WCN36XX_DBG_RX, "status.flags=%x\n", status.flag);
  
-+	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
- 	struct hid_device *hid;
- 	struct uhid_event input_buf;
- 
-@@ -63,9 +74,18 @@ static void uhid_device_add_worker(struc
- 	if (ret) {
- 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
- 
--		hid_destroy_device(uhid->hid);
--		uhid->hid = NULL;
-+		/* We used to call hid_destroy_device() here, but that's really
-+		 * messy to get right because we have to coordinate with
-+		 * concurrent writes from userspace that might be in the middle
-+		 * of using uhid->hid.
-+		 * Just leave uhid->hid as-is for now, and clean it up when
-+		 * userspace tries to close or reinitialize the uhid instance.
-+		 *
-+		 * However, we do have to clear the ->running flag and do a
-+		 * wakeup to make sure userspace knows that the device is gone.
++	if (bd->scan_learn) {
++		/* If packet originate from hardware scanning, extract the
++		 * band/channel from bd descriptor.
 +		 */
- 		uhid->running = false;
-+		wake_up_interruptible(&uhid->report_wait);
- 	}
- }
++		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
++
++		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
++			status.band = NL80211_BAND_5GHZ;
++			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
++								     status.band);
++		} else {
++			status.band = NL80211_BAND_2GHZ;
++			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
++		}
++	} else {
++		status.band = WCN36XX_BAND(wcn);
++		status.freq = WCN36XX_CENTER_FREQ(wcn);
++	}
++
+ 	if (bd->rate_id < ARRAY_SIZE(wcn36xx_rate_table)) {
+ 		rate = &wcn36xx_rate_table[bd->rate_id];
+ 		status.encoding = rate->encoding;
+@@ -298,22 +315,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	    ieee80211_is_probe_resp(hdr->frame_control))
+ 		status.boottime_ns = ktime_get_boottime_ns();
  
-@@ -474,7 +494,7 @@ static int uhid_dev_create2(struct uhid_
- 	void *rd_data;
- 	int ret;
+-	if (bd->scan_learn) {
+-		/* If packet originates from hardware scanning, extract the
+-		 * band/channel from bd descriptor.
+-		 */
+-		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
+-
+-		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
+-			status.band = NL80211_BAND_5GHZ;
+-			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
+-								     status.band);
+-		} else {
+-			status.band = NL80211_BAND_2GHZ;
+-			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
+-		}
+-	}
+-
+ 	memcpy(IEEE80211_SKB_RXCB(skb), &status, sizeof(status));
  
--	if (uhid->running)
-+	if (uhid->hid)
- 		return -EALREADY;
- 
- 	rd_size = ev->u.create2.rd_size;
-@@ -556,7 +576,7 @@ static int uhid_dev_create(struct uhid_d
- 
- static int uhid_dev_destroy(struct uhid_device *uhid)
- {
--	if (!uhid->running)
-+	if (!uhid->hid)
- 		return -EINVAL;
- 
- 	uhid->running = false;
-@@ -565,6 +585,7 @@ static int uhid_dev_destroy(struct uhid_
- 	cancel_work_sync(&uhid->worker);
- 
- 	hid_destroy_device(uhid->hid);
-+	uhid->hid = NULL;
- 	kfree(uhid->rd_data);
- 
- 	return 0;
+ 	if (ieee80211_is_beacon(hdr->frame_control)) {
+-- 
+2.34.1
+
 
 
