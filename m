@@ -2,92 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71015C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:04:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CC7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:04:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244957AbiAXSEQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:04:16 -0500
-Received: from mga07.intel.com ([134.134.136.100]:37145 "EHLO mga07.intel.com"
+        id S244983AbiAXSEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:04:21 -0500
+Received: from out2.migadu.com ([188.165.223.204]:13119 "EHLO out2.migadu.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241599AbiAXSEF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:04:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643047445; x=1674583445;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OYmRkE6V3p9QrcyPrJBbLnZSuFH1gmWgXsZXCzijVQU=;
-  b=hxotyViaIw/IvKY05yP3zyWyauFGtKTWRMQrn0fxkOh8yck/iFs2Ov9c
-   ycbSITN5OPHcceSanmVtlHoXIbX3dtak7xBxHJkU+LeN9XVnZ1dlX51wz
-   WSERPpVKn10vFsknt8FrM+A7OH01GXZRJQk0RjkGgwoVAhJ8/QCca4Y6Q
-   m8cFQE2744VgeLepK0T0aGN10dYPad+LhEcR0TvoeyUSpNoDQlyFUJuRW
-   y/1rQiS60BVKXq1wOEgByzCo24NiF0rjiaFT+N2sBiu6tng34W7pOJXaq
-   2diB7k9nuQf3P71I1g3ElsoBhuBru/MvgNgamqD3U3WmpmiMg/pJOelZe
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="309429841"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="309429841"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:04:05 -0800
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="494704523"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:04:03 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nC3g8-00Dz4t-FG;
-        Mon, 24 Jan 2022 20:02:56 +0200
-Date:   Mon, 24 Jan 2022 20:02:56 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Wei Ming Chen <jj251510319013@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Cc:     linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        tzimmermann@suse.de, robh@kernel.org, maxime@cerno.tech
-Subject: Re: [PATCH] fbdev: Fix file path that does not exist
-Message-ID: <Ye7p0Ccmy+lHaRM1@smile.fi.intel.com>
-References: <20211208144631.3710-1-jj251510319013@gmail.com>
+        id S241814AbiAXSEG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:04:06 -0500
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1643047445;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oezMiLyxVhF2aG84EFC26Sv8fZTyXG8nFAITNGxgkbE=;
+        b=hKYMToa+bujkmr7wgOye4l3cPA+GjY3bUtFPRBN2WYE9s8EdKZPcq64IcXtxwDWrW0lemI
+        qe0IUyEgHs651mz0vqmC86zcANUjhBwzJcW2aKxQwjw9Az9wQG/nAQ8lLB7Vn2ym1AeIAt
+        /DsOGDhODF3vwda1QrHbTAL1lJfuSuw=
+From:   andrey.konovalov@linux.dev
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Marco Elver <elver@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        kasan-dev@googlegroups.com, linux-mm@kvack.org,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Peter Collingbourne <pcc@google.com>,
+        Evgenii Stepanov <eugenis@google.com>,
+        linux-kernel@vger.kernel.org,
+        Andrey Konovalov <andreyknvl@google.com>
+Subject: [PATCH v6 14/39] kasan, page_alloc: rework kasan_unpoison_pages call site
+Date:   Mon, 24 Jan 2022 19:02:22 +0100
+Message-Id: <0ecebd0d7ccd79150e3620ea4185a32d3dfe912f.1643047180.git.andreyknvl@google.com>
+In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
+References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211208144631.3710-1-jj251510319013@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Cc: maintainer
+From: Andrey Konovalov <andreyknvl@google.com>
 
-On Wed, Dec 08, 2021 at 10:46:31PM +0800, Wei Ming Chen wrote:
-> pvr2fb.c should be under drivers/video/fbdev/
-> instead of drivers/video/
+Rework the checks around kasan_unpoison_pages() call in
+post_alloc_hook().
 
-LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The logical condition for calling this function is:
 
-> Signed-off-by: Wei Ming Chen <jj251510319013@gmail.com>
-> ---
->  drivers/video/fbdev/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/video/fbdev/Kconfig b/drivers/video/fbdev/Kconfig
-> index 6ed5e608dd04..93b8d84c34cf 100644
-> --- a/drivers/video/fbdev/Kconfig
-> +++ b/drivers/video/fbdev/Kconfig
-> @@ -829,7 +829,7 @@ config FB_PVR2
->  	  You can pass several parameters to the driver at boot time or at
->  	  module load time.  The parameters look like "video=pvr2:XXX", where
->  	  the meaning of XXX can be found at the end of the main source file
-> -	  (<file:drivers/video/pvr2fb.c>). Please see the file
-> +	  (<file:drivers/video/fbdev/pvr2fb.c>). Please see the file
->  	  <file:Documentation/fb/pvr2fb.rst>.
->  
->  config FB_OPENCORES
-> -- 
-> 2.25.1
-> 
+- If a software KASAN mode is enabled, we need to mark shadow memory.
+- Otherwise, HW_TAGS KASAN is enabled, and it only makes sense to
+  set tags if they haven't already been cleared by tag_clear_highpage(),
+  which is indicated by init_tags.
 
+This patch concludes the changes for post_alloc_hook().
+
+Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
+
+---
+
+Changes v3->v4:
+- Make the confition checks more explicit.
+- Update patch description.
+---
+ mm/page_alloc.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
+
+diff --git a/mm/page_alloc.c b/mm/page_alloc.c
+index 2784bd478942..3af38e323391 100644
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -2434,15 +2434,20 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 		/* Note that memory is already initialized by the loop above. */
+ 		init = false;
+ 	}
+-	if (kasan_has_integrated_init()) {
+-		if (!init_tags) {
+-			kasan_unpoison_pages(page, order, init);
++	/*
++	 * If either a software KASAN mode is enabled, or,
++	 * in the case of hardware tag-based KASAN,
++	 * if memory tags have not been cleared via tag_clear_highpage().
++	 */
++	if (IS_ENABLED(CONFIG_KASAN_GENERIC) ||
++	    IS_ENABLED(CONFIG_KASAN_SW_TAGS) ||
++	    kasan_hw_tags_enabled() && !init_tags) {
++		/* Mark shadow memory or set memory tags. */
++		kasan_unpoison_pages(page, order, init);
+ 
+-			/* Note that memory is already initialized by KASAN. */
++		/* Note that memory is already initialized by KASAN. */
++		if (kasan_has_integrated_init())
+ 			init = false;
+-		}
+-	} else {
+-		kasan_unpoison_pages(page, order, init);
+ 	}
+ 	/* If memory is still not initialized, do it now. */
+ 	if (init)
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.25.1
 
