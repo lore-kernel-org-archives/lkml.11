@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20EBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:19:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E05C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344765AbiAXUTc (ORCPT
+        id S1356507AbiAXUTi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:19:32 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56384 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347130AbiAXUCM (ORCPT
+        Mon, 24 Jan 2022 15:19:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47026 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354144AbiAXUCU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:02:12 -0500
+        Mon, 24 Jan 2022 15:02:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21480612FC;
-        Mon, 24 Jan 2022 20:02:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D7FAC340E5;
-        Mon, 24 Jan 2022 20:02:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00DD0B8119E;
+        Mon, 24 Jan 2022 20:02:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 273ADC340E5;
+        Mon, 24 Jan 2022 20:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054531;
-        bh=pA7FEnnPlBTN/gEJTGTmLjbB1t5AvBXv4YRugod206k=;
+        s=korg; t=1643054537;
+        bh=e21FpSYim1ygMkk92DWrzZG+FchegcpQRTza2xVC53M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vqCfbHpF2a5RtNT+Flz8YDknCkNad7KHdTXUtMmvYBvtcrtUk1EmdgUrWeUYGLe3o
-         9c4gSlvD77YnGJmXLjbaGkvpA7dhBQFs235HuHpcIjRBAH4JT3ifXu7afC3mlLvN1w
-         iXNg4WWvC42Wmwq7ztVlMH3EuGlEuogBKvUgsTD4=
+        b=vD5DOltpALMmFmalo5t2YDxcVjeGyDkpNyMy2SeN7ML2W5NxOWaldCZGs+QQ7zYEH
+         HzGIdj8DX1Hw/0pCvLMPh7KdRvGaJTD2EcB+cIqpiCa2aWpKkMPhd8s9oMBaqG02kQ
+         DttIORv1dxX+PQJnHaCSBSpNAyvatbexRrJ8S3Hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 392/563] ACPI: battery: Add the ThinkPad "Not Charging" quirk
-Date:   Mon, 24 Jan 2022 19:42:37 +0100
-Message-Id: <20220124184037.993195557@linuxfoundation.org>
+Subject: [PATCH 5.10 420/563] KVM: PPC: Book3S: Suppress failed alloc warning in H_COPY_TOFROM_GUEST
+Date:   Mon, 24 Jan 2022 19:43:05 +0100
+Message-Id: <20220124184038.983374046@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,79 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Weißschuh <linux@weissschuh.net>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
+[ Upstream commit 792020907b11c6f9246c21977cab3bad985ae4b6 ]
 
-The EC/ACPI firmware on Lenovo ThinkPads used to report a status
-of "Unknown" when the battery is between the charge start and
-charge stop thresholds. On Windows, it reports "Not Charging"
-so the quirk has been added to also report correctly.
+H_COPY_TOFROM_GUEST is an hcall for an upper level VM to access its nested
+VMs memory. The userspace can trigger WARN_ON_ONCE(!(gfp & __GFP_NOWARN))
+in __alloc_pages() by constructing a tiny VM which only does
+H_COPY_TOFROM_GUEST with a too big GPR9 (number of bytes to copy).
 
-Now the "status" attribute returns "Not Charging" when the
-battery on ThinkPads is not physicaly charging.
+This silences the warning by adding __GFP_NOWARN.
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Spotted by syzkaller.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210901084550.1658699-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/battery.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ arch/powerpc/kvm/book3s_hv_nested.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index e04352c1dc2ce..2376f57b3617a 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -59,6 +59,7 @@ static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
- static int battery_check_pmic = 1;
-+static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -222,6 +223,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (battery_quirk_notcharging)
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
- 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
- 		break;
-@@ -1105,6 +1108,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
- 	return 0;
- }
+diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
+index a5f1ae892ba68..d0b6c8c16c48a 100644
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -510,7 +510,7 @@ long kvmhv_copy_tofrom_guest_nested(struct kvm_vcpu *vcpu)
+ 	if (eaddr & (0xFFFUL << 52))
+ 		return H_PARAMETER;
  
-+static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
-+{
-+	battery_quirk_notcharging = 1;
-+	return 0;
-+}
-+
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1149,6 +1158,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
- 		},
- 	},
-+	{
-+		/*
-+		 * On Lenovo ThinkPads the BIOS specification defines
-+		 * a state when the bits for charging and discharging
-+		 * are both set to 0. That state is "Not Charging".
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Lenovo ThinkPad",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
-+		},
-+	},
- 	{},
- };
+-	buf = kzalloc(n, GFP_KERNEL);
++	buf = kzalloc(n, GFP_KERNEL | __GFP_NOWARN);
+ 	if (!buf)
+ 		return H_NO_MEM;
  
 -- 
 2.34.1
