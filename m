@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB21C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10441C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849783AbiAXX0h (ORCPT
+        id S1849803AbiAXX0m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:26:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41012 "EHLO
+        Mon, 24 Jan 2022 18:26:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835946AbiAXWhu (ORCPT
+        with ESMTP id S1835930AbiAXWhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:37:50 -0500
+        Mon, 24 Jan 2022 17:37:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968ECC0E9BB5;
-        Mon, 24 Jan 2022 13:00:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A846C02B86F;
+        Mon, 24 Jan 2022 12:59:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34F7360916;
-        Mon, 24 Jan 2022 21:00:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 080EFC340E5;
-        Mon, 24 Jan 2022 21:00:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27FDC61317;
+        Mon, 24 Jan 2022 20:59:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D51D4C340E5;
+        Mon, 24 Jan 2022 20:59:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058002;
-        bh=qWbXenzRRa+AVmkAUbR1x2EAU0jv0G6Wwnjuj0RyNZM=;
+        s=korg; t=1643057987;
+        bh=WZ3y8zEoAZCa0dRNCAuVij8BF5EdE9FA38K3vuCAJqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZYLSSztxDime/5P0sJkTujRg7aqg6W/Q/rOBTgTZsdLr2EOn497AkVIqgKjyj63NR
-         WWTh3LjD54kYGUXV5jHtyIz5LVRNpwhKi0QgikfOA6bI2fZlKJKwK5fURJm+lOED9L
-         E2p+1vsYEiU4PWO0X40Cm6aSB1ew29UlekiMUuQs=
+        b=JkszGgGnFvjZPy0qaamFfoJWYt47ArtFGWJgizq334c0rGXbjnMDxdMZ0EuzAPq4l
+         37Pr3x3tshQ8BoO03EmGzR66LOY7PXyGF6cSVYRquoecNeq01+fhAVqOAh8CqJW/Gs
+         AjShAvv4UuXT5AjiXu3fmmQOR0o8wNbqIuPzchmQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, oujiefeng <oujiefeng@huawei.com>,
+        Jay Fang <f.fangjian@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0122/1039] media: atomisp: fix punit_ddr_dvfs_enable() argument for mrfld_power up case
-Date:   Mon, 24 Jan 2022 19:31:51 +0100
-Message-Id: <20220124184129.240398177@linuxfoundation.org>
+Subject: [PATCH 5.16 0144/1039] spi: hisi-kunpeng: Fix the debugfs directory name incorrect
+Date:   Mon, 24 Jan 2022 19:32:13 +0100
+Message-Id: <20220124184130.014248113@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,86 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: oujiefeng <oujiefeng@huawei.com>
 
-[ Upstream commit 5bfbf65fcca7325e4d89d289b3c286e11220e386 ]
+[ Upstream commit 40fafc8eca3f0d41b9dade5c10afb2dad723aad7 ]
 
-When comparing with intel-aero atomisp [1], it looks like
-punit_ddr_dvfs_enable() should take `false` as an argument on mrfld_power
-up case.
+Change the debugfs directory name from hisi_spi65535 to hisi_spi0.
 
-Code from the intel-aero kernel [1]:
-
-        int atomisp_mrfld_power_down(struct atomisp_device *isp)
-        {
-        [...]
-		/*WA:Enable DVFS*/
-		if (IS_CHT)
-			punit_ddr_dvfs_enable(true);
-
-        int atomisp_mrfld_power_up(struct atomisp_device *isp)
-        {
-        [...]
-		/*WA for PUNIT, if DVFS enabled, ISP timeout observed*/
-		if (IS_CHT)
-			punit_ddr_dvfs_enable(false);
-
-This patch fixes the inverted argument as per the intel-aero code, as
-well as its comment. While here, fix space issues for comments in
-atomisp_mrfld_power().
-
-Note that it does not seem to be possible to unify the up/down cases for
-punit_ddr_dvfs_enable(), i.e., we can't do something like the following:
-
-        if (IS_CHT)
-		punit_ddr_dvfs_enable(!enable);
-
-because according to the intel-aero code [1], the DVFS is disabled
-before "writing 0x0 to ISPSSPM0 bit[1:0]" and the DVFS is enabled after
-"writing 0x3 to ISPSSPM0 bit[1:0]".
-
-[1] https://github.com/intel-aero/linux-kernel/blob/a1b673258feb915268377275130c5c5df0eafc82/drivers/media/pci/atomisp/atomisp_driver/atomisp_v4l2.c#L431-L514
-
-Fixes: 0f441fd70b1e ("media: atomisp: simplify the power down/up code")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 2b2142f247eb ("spi: hisi-kunpeng: Add debugfs support")
+Signed-off-by: oujiefeng <oujiefeng@huawei.com>
+Signed-off-by: Jay Fang <f.fangjian@huawei.com>
+Link: https://lore.kernel.org/r/20211117012119.55558-1-f.fangjian@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/atomisp_v4l2.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/spi/spi-hisi-kunpeng.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-index 0511c454e769d..7982cc143374a 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-@@ -711,15 +711,15 @@ static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
+diff --git a/drivers/spi/spi-hisi-kunpeng.c b/drivers/spi/spi-hisi-kunpeng.c
+index 58b823a16fc4d..525cc0143a305 100644
+--- a/drivers/spi/spi-hisi-kunpeng.c
++++ b/drivers/spi/spi-hisi-kunpeng.c
+@@ -127,7 +127,6 @@ struct hisi_spi {
+ 	void __iomem		*regs;
+ 	int			irq;
+ 	u32			fifo_len; /* depth of the FIFO buffer */
+-	u16			bus_num;
  
- 	dev_dbg(isp->dev, "IUNIT power-%s.\n", enable ? "on" : "off");
+ 	/* Current message transfer state info */
+ 	const void		*tx;
+@@ -165,7 +164,10 @@ static int hisi_spi_debugfs_init(struct hisi_spi *hs)
+ {
+ 	char name[32];
  
--	/*WA:Enable DVFS*/
-+	/* WA for P-Unit, if DVFS enabled, ISP timeout observed */
- 	if (IS_CHT && enable)
--		punit_ddr_dvfs_enable(true);
-+		punit_ddr_dvfs_enable(false);
+-	snprintf(name, 32, "hisi_spi%d", hs->bus_num);
++	struct spi_controller *master;
++
++	master = container_of(hs->dev, struct spi_controller, dev);
++	snprintf(name, 32, "hisi_spi%d", master->bus_num);
+ 	hs->debugfs = debugfs_create_dir(name, NULL);
+ 	if (!hs->debugfs)
+ 		return -ENOMEM;
+@@ -467,7 +469,6 @@ static int hisi_spi_probe(struct platform_device *pdev)
+ 	hs = spi_controller_get_devdata(master);
+ 	hs->dev = dev;
+ 	hs->irq = irq;
+-	hs->bus_num = pdev->id;
  
- 	/*
- 	 * FIXME:WA for ECS28A, with this sleep, CTS
- 	 * android.hardware.camera2.cts.CameraDeviceTest#testCameraDeviceAbort
- 	 * PASS, no impact on other platforms
--	*/
-+	 */
- 	if (IS_BYT && enable)
- 		msleep(10);
+ 	hs->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(hs->regs))
+@@ -490,7 +491,7 @@ static int hisi_spi_probe(struct platform_device *pdev)
+ 	master->use_gpio_descriptors = true;
+ 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LOOP;
+ 	master->bits_per_word_mask = SPI_BPW_RANGE_MASK(4, 32);
+-	master->bus_num = hs->bus_num;
++	master->bus_num = pdev->id;
+ 	master->setup = hisi_spi_setup;
+ 	master->cleanup = hisi_spi_cleanup;
+ 	master->transfer_one = hisi_spi_transfer_one;
+@@ -506,15 +507,15 @@ static int hisi_spi_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
-@@ -727,7 +727,7 @@ static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
- 	iosf_mbi_modify(BT_MBI_UNIT_PMC, MBI_REG_READ, MRFLD_ISPSSPM0,
- 			val, MRFLD_ISPSSPM0_ISPSSC_MASK);
+-	if (hisi_spi_debugfs_init(hs))
+-		dev_info(dev, "failed to create debugfs dir\n");
+-
+ 	ret = spi_register_controller(master);
+ 	if (ret) {
+ 		dev_err(dev, "failed to register spi master, ret=%d\n", ret);
+ 		return ret;
+ 	}
  
--	/*WA:Enable DVFS*/
-+	/* WA:Enable DVFS */
- 	if (IS_CHT && !enable)
- 		punit_ddr_dvfs_enable(true);
- 
++	if (hisi_spi_debugfs_init(hs))
++		dev_info(dev, "failed to create debugfs dir\n");
++
+ 	dev_info(dev, "hw version:0x%x max-freq:%u kHz\n",
+ 		readl(hs->regs + HISI_SPI_VERSION),
+ 		master->max_speed_hz / 1000);
 -- 
 2.34.1
 
