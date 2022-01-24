@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD865C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B400C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359562AbiAXXcw (ORCPT
+        id S2359644AbiAXXdE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:32:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41962 "EHLO
+        Mon, 24 Jan 2022 18:33:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353814AbiAXWjs (ORCPT
+        with ESMTP id S1354423AbiAXWlr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:39:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1F45C055A89;
-        Mon, 24 Jan 2022 13:03:27 -0800 (PST)
+        Mon, 24 Jan 2022 17:41:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0391C04D63F;
+        Mon, 24 Jan 2022 13:05:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A726DB80FA3;
-        Mon, 24 Jan 2022 21:03:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C70C9C340E5;
-        Mon, 24 Jan 2022 21:03:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90FDF60B03;
+        Mon, 24 Jan 2022 21:05:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6990EC340E5;
+        Mon, 24 Jan 2022 21:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058205;
-        bh=FCtfFY34iZEwAr7Qu9zfh7qbShfAkumL+e4sa31RBqc=;
+        s=korg; t=1643058300;
+        bh=F/hEJXjFztjsMlfPfO2E5y342r2bldbSUn26RRHGDXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PWNkcRAKYbjBtv1hch0EUCVCEF41O/GnF2p3DbHRUMdH9ofz+Qveyf+17pY/9rAoR
-         0lKiQE4U00MAOStlxXXMjEb6j7tvymLtoQdRy2c/jOC2gg9UoitSQAK7Syg4UYwkef
-         2rL8E+c0BtMqw+gmbMX4kyVdMFpMtaZH4VimxbsQ=
+        b=beR10tR+1/VatBFJHR3y45Lb027ac9sQu29J7xwxwOiiXKBZ6ViWuqlb4DKC7kKx0
+         xD36JtSzgKtVq1lffy6KSaHw+JTt908OOpm4nzX+uY/lpZVnjaH8asW3Yt0fg5zncQ
+         AQOSvr8BjG/vUmID9ggvf0ufyVszHGv1AJa8G9pM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Ricardo Ribalda <ribalda@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0213/1039] drm/amdgpu: Fix a NULL pointer dereference in amdgpu_connector_lcd_native_mode()
-Date:   Mon, 24 Jan 2022 19:33:22 +0100
-Message-Id: <20220124184132.500814873@linuxfoundation.org>
+Subject: [PATCH 5.16 0245/1039] media: uvcvideo: Avoid invalid memory access
+Date:   Mon, 24 Jan 2022 19:33:54 +0100
+Message-Id: <20220124184133.563200222@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,62 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Ricardo Ribalda <ribalda@chromium.org>
 
-[ Upstream commit b220110e4cd442156f36e1d9b4914bb9e87b0d00 ]
+[ Upstream commit f0577b1b6394f954903fcc67e12fe9e7001dafd6 ]
 
-In amdgpu_connector_lcd_native_mode(), the return value of
-drm_mode_duplicate() is assigned to mode, and there is a dereference
-of it in amdgpu_connector_lcd_native_mode(), which will lead to a NULL
-pointer dereference on failure of drm_mode_duplicate().
+If mappings points to an invalid memory, we will be invalid accessing
+it. Solve it by initializing the value of the variable mapping and by
+changing the order in the conditional statement (to avoid accessing
+mapping->id if not needed).
 
-Fix this bug add a check of mode.
+Fix:
+kasan: GPF could be caused by NULL-ptr deref or user memory access
+general protection fault: 0000 [#1] PREEMPT SMP KASAN NOPTI
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_DRM_AMDGPU=m show no new warnings, and
-our static analyzer no longer warns about this code.
-
-Fixes: d38ceaf99ed0 ("drm/amdgpu: add core driver (v4)")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: 6350d6a4ed487 ("media: uvcvideo: Set error_idx during ctrl_commit errors")
+Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/media/usb/uvc/uvc_ctrl.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
-index 0de66f59adb8a..df1f9b88a53f9 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
-@@ -387,6 +387,9 @@ amdgpu_connector_lcd_native_mode(struct drm_encoder *encoder)
- 	    native_mode->vdisplay != 0 &&
- 	    native_mode->clock != 0) {
- 		mode = drm_mode_duplicate(dev, native_mode);
-+		if (!mode)
-+			return NULL;
-+
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		drm_mode_set_name(mode);
+diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
+index 30bfe9069a1fb..9a25d60292558 100644
+--- a/drivers/media/usb/uvc/uvc_ctrl.c
++++ b/drivers/media/usb/uvc/uvc_ctrl.c
+@@ -1638,7 +1638,7 @@ static int uvc_ctrl_find_ctrl_idx(struct uvc_entity *entity,
+ 				  struct v4l2_ext_controls *ctrls,
+ 				  struct uvc_control *uvc_control)
+ {
+-	struct uvc_control_mapping *mapping;
++	struct uvc_control_mapping *mapping = NULL;
+ 	struct uvc_control *ctrl_found;
+ 	unsigned int i;
  
-@@ -401,6 +404,9 @@ amdgpu_connector_lcd_native_mode(struct drm_encoder *encoder)
- 		 * simpler.
- 		 */
- 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
-+		if (!mode)
-+			return NULL;
-+
- 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
- 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
- 	}
 -- 
 2.34.1
 
