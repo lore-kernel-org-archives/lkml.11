@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A51CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347490AbiAXTcA (ORCPT
+        id S1347511AbiAXTcC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:32:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52506 "EHLO
+        Mon, 24 Jan 2022 14:32:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52656 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348369AbiAXTYL (ORCPT
+        with ESMTP id S1345874AbiAXTYV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:24:11 -0500
+        Mon, 24 Jan 2022 14:24:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 701D760010;
-        Mon, 24 Jan 2022 19:24:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE41C340E5;
-        Mon, 24 Jan 2022 19:24:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97B7F61447;
+        Mon, 24 Jan 2022 19:24:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58207C340E5;
+        Mon, 24 Jan 2022 19:24:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052250;
-        bh=+CWjJhb3LHq2nkKWhUKIM9khMf6V6/hB/5bZ3Edscmk=;
+        s=korg; t=1643052260;
+        bh=hHYPuzQMlbi5BWrijAFproJ8AIh6hz9KF3iVdpWexwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XdLidgITTPvkiMhvT638G1YDoxJOlWinwWKOquAN6Zf8FIU1LAv2v2QJd5dcliS6P
-         oyNNV2rtOXbjzHmuIAnNYhr3x61CVSrMmQF5F0dg1oBt/EeULLwO+fHSLuJmyNPND9
-         EoPP4EyVzb5Es3zqMDaz8YkqZvULIHSNFsmaHzqQ=
+        b=jfTKlzHoNe7TQ130Uz55/1uhmoaqc1+qecy2drWgt0ypQnnEuWG7sNPzpWD7366eW
+         kiKPTO8XXs412t53ubLcGkefeonZgLUZu59OCaaEHGCBwNabDRp0RLXjgeMo8zW7KU
+         IxHq3xjh1338Ou/R+i5/lMDhryOOqoDuDAEx28f4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.19 237/239] mips,s390,sh,sparc: gup: Work around the "COW can break either way" issue
-Date:   Mon, 24 Jan 2022 19:44:35 +0100
-Message-Id: <20220124183950.633915249@linuxfoundation.org>
+        stable@vger.kernel.org, Yixing Liu <liuyixing1@huawei.com>,
+        Wenpeng Liang <liangwenpeng@huawei.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.19 215/239] RDMA/hns: Modify the mapping attribute of doorbell to device
+Date:   Mon, 24 Jan 2022 19:44:13 +0100
+Message-Id: <20220124183949.946783914@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -46,93 +47,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Yixing Liu <liuyixing1@huawei.com>
 
-In Linux 4.14 and 4.19 these architectures still have their own
-implementations of get_user_pages_fast().  These also need to force
-the write flag on when taking the fast path.
+commit 39d5534b1302189c809e90641ffae8cbdc42a8fc upstream.
 
-Fixes: 407faed92b4a ("gup: document and work around "COW can break either way" issue")
-Fixes: 5e24029791e8 ("gup: document and work around "COW can break either way" issue")
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+It is more general for ARM device drivers to use the device attribute to
+map PCI BAR spaces.
+
+Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
+Link: https://lore.kernel.org/r/20211206133652.27476-1-liangwenpeng@huawei.com
+Signed-off-by: Yixing Liu <liuyixing1@huawei.com>
+Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/mm/gup.c  |    9 ++++++++-
- arch/s390/mm/gup.c  |    9 ++++++++-
- arch/sh/mm/gup.c    |    9 ++++++++-
- arch/sparc/mm/gup.c |    9 ++++++++-
- 4 files changed, 32 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/hns/hns_roce_main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/mips/mm/gup.c
-+++ b/arch/mips/mm/gup.c
-@@ -274,7 +274,14 @@ int get_user_pages_fast(unsigned long st
- 		next = pgd_addr_end(addr, end);
- 		if (pgd_none(pgd))
- 			goto slow;
--		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
-+		/*
-+		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+		 * because get_user_pages() may need to cause an early COW in
-+		 * order to avoid confusing the normal COW routines. So only
-+		 * targets that are already writable are safe to do by just
-+		 * looking at the page tables.
-+		 */
-+		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
- 			goto slow;
- 	} while (pgdp++, addr = next, addr != end);
- 	local_irq_enable();
---- a/arch/s390/mm/gup.c
-+++ b/arch/s390/mm/gup.c
-@@ -287,7 +287,14 @@ int get_user_pages_fast(unsigned long st
+--- a/drivers/infiniband/hw/hns/hns_roce_main.c
++++ b/drivers/infiniband/hw/hns/hns_roce_main.c
+@@ -432,7 +432,7 @@ static int hns_roce_mmap(struct ib_ucont
+ 		return -EINVAL;
  
- 	might_sleep();
- 	start &= PAGE_MASK;
--	nr = __get_user_pages_fast(start, nr_pages, write, pages);
-+	/*
-+	 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+	 * because get_user_pages() may need to cause an early COW in
-+	 * order to avoid confusing the normal COW routines. So only
-+	 * targets that are already writable are safe to do by just
-+	 * looking at the page tables.
-+	 */
-+	nr = __get_user_pages_fast(start, nr_pages, 1, pages);
- 	if (nr == nr_pages)
- 		return nr;
- 
---- a/arch/sh/mm/gup.c
-+++ b/arch/sh/mm/gup.c
-@@ -242,7 +242,14 @@ int get_user_pages_fast(unsigned long st
- 		next = pgd_addr_end(addr, end);
- 		if (pgd_none(pgd))
- 			goto slow;
--		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
-+		/*
-+		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+		 * because get_user_pages() may need to cause an early COW in
-+		 * order to avoid confusing the normal COW routines. So only
-+		 * targets that are already writable are safe to do by just
-+		 * looking at the page tables.
-+		 */
-+		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
- 			goto slow;
- 	} while (pgdp++, addr = next, addr != end);
- 	local_irq_enable();
---- a/arch/sparc/mm/gup.c
-+++ b/arch/sparc/mm/gup.c
-@@ -303,7 +303,14 @@ int get_user_pages_fast(unsigned long st
- 		next = pgd_addr_end(addr, end);
- 		if (pgd_none(pgd))
- 			goto slow;
--		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
-+		/*
-+		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+		 * because get_user_pages() may need to cause an early COW in
-+		 * order to avoid confusing the normal COW routines. So only
-+		 * targets that are already writable are safe to do by just
-+		 * looking at the page tables.
-+		 */
-+		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
- 			goto slow;
- 	} while (pgdp++, addr = next, addr != end);
- 
+ 	if (vma->vm_pgoff == 0) {
+-		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
++		vma->vm_page_prot = pgprot_device(vma->vm_page_prot);
+ 		if (io_remap_pfn_range(vma, vma->vm_start,
+ 				       to_hr_ucontext(context)->uar.pfn,
+ 				       PAGE_SIZE, vma->vm_page_prot))
 
 
