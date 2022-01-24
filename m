@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E3ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23328C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581950AbiAXWMn (ORCPT
+        id S1581984AbiAXWMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:12:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46086 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377233AbiAXV3J (ORCPT
+        Mon, 24 Jan 2022 17:12:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44874 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453305AbiAXV3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:29:09 -0500
+        Mon, 24 Jan 2022 16:29:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DB37D614D9;
-        Mon, 24 Jan 2022 21:29:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C41EFC340F8;
-        Mon, 24 Jan 2022 21:29:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ABBEEB80CCF;
+        Mon, 24 Jan 2022 21:29:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1F57C340E4;
+        Mon, 24 Jan 2022 21:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059748;
-        bh=CZwN9XuDQUkbNMVEEIxVWPpXVAE2UgZwHjhnWnLbtBI=;
+        s=korg; t=1643059789;
+        bh=rfnii2i5sU04+NW982sp8A0gGiDGgjs8gxUSp7gBgk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bEkeCw1KDaLX3y0l/Mx19GMH+hOge4tM6E6UKj7SeD5Qt58TsQ++f9GiFaRkYhEUk
-         UQfTqC8UX+MrR68+wRZNFwlfrTtMBJwwv5UiCZapSaHm59vxrBUjpfdAHD0Pc7wVTI
-         U2P557Q5gqhhzXq12mtNa3XivpNGZxoylpDZPwiw=
+        b=tspMyoxbP3SCoSwMWHso/bDM9Ue/QNlyhNeLrTyPOMo16R7tstHFHsVm0c9Nyb0WE
+         QvXRpVlFlqXmH0D8Mipz+kA0OTmjly6BxSXx4iHDdTQ1M34RE6ys2rpIG50+RxTpXR
+         TSRjt2XYsFoflKRjVsGWc5yD8axwtjGf6qxNj1fU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0719/1039] net: gemini: allow any RGMII interface mode
-Date:   Mon, 24 Jan 2022 19:41:48 +0100
-Message-Id: <20220124184149.498059748@linuxfoundation.org>
+Subject: [PATCH 5.16 0735/1039] powerpc/powernv: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:42:04 +0100
+Message-Id: <20220124184150.030797507@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,69 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 4e4f325a0a55907b14f579e6b1a38c53755e3de2 ]
+[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
 
-The four RGMII interface modes take care of the required RGMII delay
-configuration at the PHY and should not be limited by the network MAC
-driver. Sadly, gemini was only permitting RGMII mode with no delays,
-which would require the required delay to be inserted via PCB tracking
-or by the MAC.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-However, there are designs that require the PHY to add the delay, which
-is impossible without Gemini permitting the other three PHY interface
-modes. Fix the driver to allow these.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Link: https://lore.kernel.org/r/E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+// <smpl>
+@@
+local idexpression n;
+expression e;
+@@
+
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cortina/gemini.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
-index 941f175fb911e..0ff40a9b06cec 100644
---- a/drivers/net/ethernet/cortina/gemini.c
-+++ b/drivers/net/ethernet/cortina/gemini.c
-@@ -305,21 +305,21 @@ static void gmac_speed_set(struct net_device *netdev)
- 	switch (phydev->speed) {
- 	case 1000:
- 		status.bits.speed = GMAC_SPEED_1000;
--		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
-+		if (phy_interface_mode_is_rgmii(phydev->interface))
- 			status.bits.mii_rmii = GMAC_PHY_RGMII_1000;
- 		netdev_dbg(netdev, "connect %s to RGMII @ 1Gbit\n",
- 			   phydev_name(phydev));
+diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
+index 1e5d51db40f84..5390c888db162 100644
+--- a/arch/powerpc/platforms/powernv/opal-lpc.c
++++ b/arch/powerpc/platforms/powernv/opal-lpc.c
+@@ -396,6 +396,7 @@ void __init opal_lpc_init(void)
+ 		if (!of_get_property(np, "primary", NULL))
+ 			continue;
+ 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
++		of_node_put(np);
  		break;
- 	case 100:
- 		status.bits.speed = GMAC_SPEED_100;
--		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
-+		if (phy_interface_mode_is_rgmii(phydev->interface))
- 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
- 		netdev_dbg(netdev, "connect %s to RGMII @ 100 Mbit\n",
- 			   phydev_name(phydev));
- 		break;
- 	case 10:
- 		status.bits.speed = GMAC_SPEED_10;
--		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
-+		if (phy_interface_mode_is_rgmii(phydev->interface))
- 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
- 		netdev_dbg(netdev, "connect %s to RGMII @ 10 Mbit\n",
- 			   phydev_name(phydev));
-@@ -389,6 +389,9 @@ static int gmac_setup_phy(struct net_device *netdev)
- 		status.bits.mii_rmii = GMAC_PHY_GMII;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
- 		netdev_dbg(netdev,
- 			   "RGMII: set GMAC0 and GMAC1 to MII/RGMII mode\n");
- 		status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 	}
+ 	if (opal_lpc_chip_id < 0)
 -- 
 2.34.1
 
