@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFBE4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90487C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354820AbiAXUMp (ORCPT
+        id S1354860AbiAXUMv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:12:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41620 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351561AbiAXTyQ (ORCPT
+        Mon, 24 Jan 2022 15:12:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355648AbiAXTyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:54:16 -0500
+        Mon, 24 Jan 2022 14:54:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B7FC041899;
+        Mon, 24 Jan 2022 11:27:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 92AC6B811F3;
-        Mon, 24 Jan 2022 19:54:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA15C340E5;
-        Mon, 24 Jan 2022 19:54:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 345E7B81238;
+        Mon, 24 Jan 2022 19:27:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 637A8C340E5;
+        Mon, 24 Jan 2022 19:27:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054053;
-        bh=gyHa6h3IF00eYz9MNCK5cW5GOUIyi5XlR9+BBKvvDCg=;
+        s=korg; t=1643052431;
+        bh=7qJYOBbowqh8wUi59F2Jgk5pd7lhjQA/WH7nAkqaXQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P9K1DZFwnkduB+HUVLggpDXLwSx8SNOaLoryM/2YI7vHjiO97Cq8f1suFSynivM9v
-         H8nlNYIh4VI/d+u9BsM33m7Nu0wofFr2pYliyFOWlmIMfhZ1ofCngGfVINQQh0MMO3
-         HNgUa3BtATgrt0TfVe4r5l02Uu/vOx9dmTnLoWhc=
+        b=IpuslQ5CnI+5T1RPM+OQEe8F134VabPRoiWHlKR7585AtNqaQ5myA4Z+nVkqFEuxf
+         nmK0XmvFmSxbMwG2+2CRM0tcgL+9vAZuTz5vmGSSM9qQ7kPpjRPesjnAfIT5K0jgDV
+         THNUTIxbyBB6C+GzNjSIcPrPHgtrumN0YXzGIHeI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
+        Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>,
+        Michael Rodin <mrodin@de.adit-jv.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 264/563] scsi: ufs: Fix race conditions related to driver data
-Date:   Mon, 24 Jan 2022 19:40:29 +0100
-Message-Id: <20220124184033.562806838@linuxfoundation.org>
+Subject: [PATCH 5.4 055/320] media: rcar-csi2: Correct the selection of hsfreqrange
+Date:   Mon, 24 Jan 2022 19:40:39 +0100
+Message-Id: <20220124183955.608113027@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,85 +55,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Suresh Udipi <sudipi@jp.adit-jv.com>
 
-[ Upstream commit 21ad0e49085deb22c094f91f9da57319a97188e4 ]
+[ Upstream commit cee44d4fbacbbdfe62697ec94e76c6e4f726c5df ]
 
-The driver data pointer must be set before any callbacks are registered
-that use that pointer. Hence move the initialization of that pointer from
-after the ufshcd_init() call to inside ufshcd_init().
+hsfreqrange should be chosen based on the calculated mbps which
+is closer to the default bit rate  and within the range as per
+table[1]. But current calculation always selects first value which
+is greater than or equal to the calculated mbps which may lead
+to chosing a wrong range in some cases.
 
-Link: https://lore.kernel.org/r/20211203231950.193369-7-bvanassche@acm.org
-Fixes: 3b1d05807a9a ("[SCSI] ufs: Segregate PCI Specific Code")
-Reported-by: Alexey Dobriyan <adobriyan@gmail.com>
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+For example for 360 mbps for H3/M3N
+Existing logic selects
+Calculated value 360Mbps : Default 400Mbps Range [368.125 -433.125 mbps]
+
+This hsfreqrange is out of range.
+
+The logic is changed to get the default value which is closest to the
+calculated value [1]
+
+Calculated value 360Mbps : Default 350Mbps  Range [320.625 -380.625 mpbs]
+
+[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.9]
+
+Please note that According to Renesas in Table 25.9 the range for
+220 default value is corrected as below
+
+ |Range (Mbps)     |  Default  Bit rate (Mbps) |
+ -----------------------------------------------
+ | 197.125-244.125 |     220                   |
+ -----------------------------------------------
+
+Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
+Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
+Signed-off-by: Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>
+Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/tc-dwc-g210-pci.c | 1 -
- drivers/scsi/ufs/ufshcd-pci.c      | 2 --
- drivers/scsi/ufs/ufshcd-pltfrm.c   | 2 --
- drivers/scsi/ufs/ufshcd.c          | 7 +++++++
- 4 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/media/platform/rcar-vin/rcar-csi2.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/tc-dwc-g210-pci.c b/drivers/scsi/ufs/tc-dwc-g210-pci.c
-index 67a6a61154b71..4e471484539d2 100644
---- a/drivers/scsi/ufs/tc-dwc-g210-pci.c
-+++ b/drivers/scsi/ufs/tc-dwc-g210-pci.c
-@@ -135,7 +135,6 @@ tc_dwc_g210_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return err;
+diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
+index e01f22bf826d4..99b28611eb12c 100644
+--- a/drivers/media/platform/rcar-vin/rcar-csi2.c
++++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
+@@ -430,16 +430,23 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv)
+ static int rcsi2_set_phypll(struct rcar_csi2 *priv, unsigned int mbps)
+ {
+ 	const struct rcsi2_mbps_reg *hsfreq;
++	const struct rcsi2_mbps_reg *hsfreq_prev = NULL;
+ 
+-	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++)
++	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++) {
+ 		if (hsfreq->mbps >= mbps)
+ 			break;
++		hsfreq_prev = hsfreq;
++	}
+ 
+ 	if (!hsfreq->mbps) {
+ 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
+ 		return -ERANGE;
  	}
  
--	pci_set_drvdata(pdev, hba);
- 	pm_runtime_put_noidle(&pdev->dev);
- 	pm_runtime_allow(&pdev->dev);
- 
-diff --git a/drivers/scsi/ufs/ufshcd-pci.c b/drivers/scsi/ufs/ufshcd-pci.c
-index fadd566025b86..4bf8ec88676ee 100644
---- a/drivers/scsi/ufs/ufshcd-pci.c
-+++ b/drivers/scsi/ufs/ufshcd-pci.c
-@@ -347,8 +347,6 @@ ufshcd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return err;
- 	}
- 
--	pci_set_drvdata(pdev, hba);
--
- 	hba->vops = (struct ufs_hba_variant_ops *)id->driver_data;
- 
- 	err = ufshcd_init(hba, mmio_base, pdev->irq);
-diff --git a/drivers/scsi/ufs/ufshcd-pltfrm.c b/drivers/scsi/ufs/ufshcd-pltfrm.c
-index 8c92d1bde64be..e49505534d498 100644
---- a/drivers/scsi/ufs/ufshcd-pltfrm.c
-+++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
-@@ -412,8 +412,6 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,
- 		goto dealloc_host;
- 	}
- 
--	platform_set_drvdata(pdev, hba);
--
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
- 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index e3a9a02cadf5a..bf302776340ce 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -9085,6 +9085,13 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
- 	struct device *dev = hba->dev;
- 	char eh_wq_name[sizeof("ufs_eh_wq_00")];
- 
-+	/*
-+	 * dev_set_drvdata() must be called before any callbacks are registered
-+	 * that use dev_get_drvdata() (frequency scaling, clock scaling, hwmon,
-+	 * sysfs).
-+	 */
-+	dev_set_drvdata(dev, hba);
++	if (hsfreq_prev &&
++	    ((mbps - hsfreq_prev->mbps) <= (hsfreq->mbps - mbps)))
++		hsfreq = hsfreq_prev;
 +
- 	if (!mmio_base) {
- 		dev_err(hba->dev,
- 		"Invalid memory reference for mmio_base is NULL\n");
+ 	rcsi2_write(priv, PHYPLL_REG, PHYPLL_HSFREQRANGE(hsfreq->reg));
+ 
+ 	return 0;
 -- 
 2.34.1
 
