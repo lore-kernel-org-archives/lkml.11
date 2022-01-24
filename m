@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 348A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9322C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344015AbiAXSxG (ORCPT
+        id S1344032AbiAXSxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:06 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50822 "EHLO
+        Mon, 24 Jan 2022 13:53:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50970 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245724AbiAXSve (ORCPT
+        with ESMTP id S1343755AbiAXSvn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:51:34 -0500
+        Mon, 24 Jan 2022 13:51:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44161B810BD;
-        Mon, 24 Jan 2022 18:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68654C36AE3;
-        Mon, 24 Jan 2022 18:51:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B098BB8121A;
+        Mon, 24 Jan 2022 18:51:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E46C340E5;
+        Mon, 24 Jan 2022 18:51:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050292;
-        bh=7aaGjrrgNJ1aKX+foSv3KxNFkbrvGSzDYPPjGLXPFQA=;
+        s=korg; t=1643050301;
+        bh=grI4u8o/65l7DGOuYfV+pUOSJnr68kyNlzxbNKNfxLY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ckt1/OQtWxdH4NJ/VU0XqqupKi0X0L3Twh5DfGvmmBGz7BhvTjpJ5v9mYQe3fQa39
-         jy/lLx15BEjEGVHE1edj5HVGd+tIhHKj+XoNjP62vObioIkMZNJnwR8EHTFS8O+a1X
-         Vvo9Szh+YdHTC45l2b+7M7MLNij0cKucaJWASla4=
+        b=1xvG0jiNchsAaaerZkIH686oNJcs2+BUEUyPSN/7kbir1pUmaiZmq3CDNgk4axvf3
+         1vG7hk/hWFZRJDc/Dqx0S0a7XE5VCqiAgTNjOhqm5j8oxTfIA8s6DKrfvadCbBM3Qp
+         1SqD4KTIo++h4KDHQ00M9h72/4TX0Wa2vr2GsTuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        stable@vger.kernel.org,
+        Mark Asselstine <mark.asselstine@windriver.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 071/114] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
-Date:   Mon, 24 Jan 2022 19:42:46 +0100
-Message-Id: <20220124183929.289646365@linuxfoundation.org>
+Subject: [PATCH 4.4 074/114] ACPICA: Utilities: Avoid deleting the same object twice in a row
+Date:   Mon, 24 Jan 2022 19:42:49 +0100
+Message-Id: <20220124183929.380763040@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -47,94 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
+[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
 
-When a new USB device gets plugged to nested hubs, the affected hub,
-which connects to usb 2-1.4-port2, doesn't report there's any change,
-hence the nested hubs go back to runtime suspend like nothing happened:
-[  281.032951] usb usb2: usb wakeup-resume
-[  281.032959] usb usb2: usb auto-resume
-[  281.032974] hub 2-0:1.0: hub_resume
-[  281.033011] usb usb2-port1: status 0263 change 0000
-[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.049797] usb 2-1: usb wakeup-resume
-[  281.069800] usb 2-1: Waited 0ms for CONNECT
-[  281.069810] usb 2-1: finish resume
-[  281.070026] hub 2-1:1.0: hub_resume
-[  281.070250] usb 2-1-port4: status 0203 change 0000
-[  281.070272] usb usb2-port1: resume, status 0
-[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.089813] usb 2-1.4: usb wakeup-resume
-[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
-[  281.109801] usb 2-1.4: finish resume
-[  281.109991] hub 2-1.4:1.0: hub_resume
-[  281.110147] usb 2-1.4-port2: status 0263 change 0000
-[  281.110234] usb 2-1-port4: resume, status 0
-[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.110426] hub 2-1.4:1.0: hub_suspend
-[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.130998] hub 2-1:1.0: hub_suspend
-[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
-[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.177828] usb 2-1: usb wakeup-resume
-[  281.197839] usb 2-1: Waited 0ms for CONNECT
-[  281.197850] usb 2-1: finish resume
-[  281.197984] hub 2-1:1.0: hub_resume
-[  281.198203] usb 2-1-port4: status 0203 change 0000
-[  281.198228] usb usb2-port1: resume, status 0
-[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.217835] usb 2-1.4: usb wakeup-resume
-[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
-[  281.237845] usb 2-1.4: finish resume
-[  281.237990] hub 2-1.4:1.0: hub_resume
-[  281.238067] usb 2-1.4-port2: status 0263 change 0000
-[  281.238148] usb 2-1-port4: resume, status 0
-[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.238385] hub 2-1.4:1.0: hub_suspend
-[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.258076] hub 2-1:1.0: hub_suspend
-[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
-[  281.285976] hub 2-0:1.0: hub_suspend
-[  281.285988] usb usb2: bus auto-suspend, wakeup 1
+ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
 
-USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
-the link is in a non-U0 state, then the device must transition the link
-to U0 prior to sending the remote wake message", but the hub only
-transits the link to U0 after signaling remote wakeup.
+If original_count is 0 in acpi_ut_update_ref_count (),
+acpi_ut_delete_internal_obj () is invoked for the target object, which is
+incorrect, because that object has been deleted once already and the
+memory allocated to store it may have been reclaimed and allocated
+for a different purpose by the host OS.  Moreover, a confusing debug
+message following the "Reference Count is already zero, cannot
+decrement" warning is printed in that case.
 
-So be more forgiving and use a 20ms delay to let the link transit to U0
-for remote wakeup.
+To fix this issue, make acpi_ut_update_ref_count () return after finding
+that original_count is 0 and printing the above warning.
 
-Suggested-by: Alan Stern <stern@rowland.harvard.edu>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://github.com/acpica/acpica/commit/c11af67d
+Link: https://github.com/acpica/acpica/pull/652
+Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hub.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/acpi/acpica/utdelete.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 97edc38eb8d2d..9b6d41740aaa6 100644
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1054,7 +1054,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
- 		} else {
- 			hub_power_on(hub, true);
+diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
+index 9f8b088e21d7e..d90b2cf310fb1 100644
+--- a/drivers/acpi/acpica/utdelete.c
++++ b/drivers/acpi/acpica/utdelete.c
+@@ -439,6 +439,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
+ 			ACPI_WARNING((AE_INFO,
+ 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
+ 				      object));
++			return;
  		}
--	}
-+	/* Give some time on remote wakeup to let links to transit to U0 */
-+	} else if (hub_is_superspeed(hub->hdev))
-+		msleep(20);
-+
-  init2:
  
- 	/*
+ 		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
 -- 
 2.34.1
 
