@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 907AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC028C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580267AbiAXWJK (ORCPT
+        id S1580395AbiAXWJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:09:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45782 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452251AbiAXVY0 (ORCPT
+        Mon, 24 Jan 2022 17:09:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40878 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452302AbiAXVYe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:24:26 -0500
+        Mon, 24 Jan 2022 16:24:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99970614D8;
-        Mon, 24 Jan 2022 21:24:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E80DC340E4;
-        Mon, 24 Jan 2022 21:24:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F642B815A2;
+        Mon, 24 Jan 2022 21:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 673CBC340E8;
+        Mon, 24 Jan 2022 21:24:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059465;
-        bh=3v1HE+aP+jyFLtVWiJY2W1IvFFukw8FwMDbrTfFOkGc=;
+        s=korg; t=1643059471;
+        bh=lt6mIJfzkqvFPg0u6qu+wckvaEO9qenNedKzRuOJshc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hHo8PGzq+IU4hyJFlLgS3jDOMSBuqIS8t0bnA8frwVI/UlRdrDHMuPdchflbcCCRy
-         iMn+/KWwe8V27kHkQHLS/xcPGcIBC+omKgk3S4qDvZXDgp/ih/YyJLPdBc+SSoFN9s
-         GyNaaOlTxbOr/0ZOgu8NWyy/k6sfnxicr9GQaoSg=
+        b=0ruWElD5SgVjL03n8GuggldIq/EU9wvnokGMO0FClsGkszijv/KbLIJ9dhuC3Yj9q
+         RwIvk1xQIjzH5LVPkKRkXxVGYisUp/XQwCDkgwPX4j3uFkIeVfoqZg2DsbPZRpawV9
+         PfjvZZpPcARJViAO9GZqkNfiriGQEUT8aTz5lDIY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Wander Lairson Costa <wander@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0582/1039] drm/amd/display: check top_pipe_to_program pointer
-Date:   Mon, 24 Jan 2022 19:39:31 +0100
-Message-Id: <20220124184144.909444563@linuxfoundation.org>
+Subject: [PATCH 5.16 0627/1039] rcutorture: Avoid soft lockup during cpu stall
+Date:   Mon, 24 Jan 2022 19:40:16 +0100
+Message-Id: <20220124184146.416346170@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,45 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: Wander Lairson Costa <wander@redhat.com>
 
-[ Upstream commit a689e8d1f80012f90384ebac9dcfac4201f9f77e ]
+[ Upstream commit 5ff7c9f9d7e3e0f6db5b81945fa11b69d62f433a ]
 
-Clang static analysis reports this error
+If we use the module stall_cpu option, we may get a soft lockup warning
+in case we also don't pass the stall_cpu_block option.
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2870:7: warning:
-Dereference of null pointer [clang-analyzer-core.NullDereference]
-                if
-(top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
-                    ^
+Introduce the stall_no_softlockup option to avoid a soft lockup on
+cpu stall even if we don't use the stall_cpu_block option.
 
-top_pipe_to_program being NULL is caught as an error
-But then it is used to report the error.
-
-So add a check before using it.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Wander Lairson Costa <wander@redhat.com>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ kernel/rcu/rcutorture.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index 0ded4decee05f..f0fbd8ad56229 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -2870,7 +2870,8 @@ static void commit_planes_for_stream(struct dc *dc,
- #endif
+diff --git a/kernel/rcu/rcutorture.c b/kernel/rcu/rcutorture.c
+index 8b410d982990c..05e4d6c28d1f5 100644
+--- a/kernel/rcu/rcutorture.c
++++ b/kernel/rcu/rcutorture.c
+@@ -46,6 +46,7 @@
+ #include <linux/oom.h>
+ #include <linux/tick.h>
+ #include <linux/rcupdate_trace.h>
++#include <linux/nmi.h>
  
- 	if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
--		if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
-+		if (top_pipe_to_program &&
-+			top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
- 			if (should_use_dmub_lock(stream->link)) {
- 				union dmub_hw_lock_flags hw_locks = { 0 };
- 				struct dmub_hw_lock_inst_flags inst_flags = { 0 };
+ #include "rcu.h"
+ 
+@@ -109,6 +110,8 @@ torture_param(int, shutdown_secs, 0, "Shutdown time (s), <= zero to disable.");
+ torture_param(int, stall_cpu, 0, "Stall duration (s), zero to disable.");
+ torture_param(int, stall_cpu_holdoff, 10,
+ 	     "Time to wait before starting stall (s).");
++torture_param(bool, stall_no_softlockup, false,
++	     "Avoid softlockup warning during cpu stall.");
+ torture_param(int, stall_cpu_irqsoff, 0, "Disable interrupts while stalling.");
+ torture_param(int, stall_cpu_block, 0, "Sleep while stalling.");
+ torture_param(int, stall_gp_kthread, 0,
+@@ -2052,6 +2055,8 @@ static int rcu_torture_stall(void *args)
+ #else
+ 				schedule_timeout_uninterruptible(HZ);
+ #endif
++			} else if (stall_no_softlockup) {
++				touch_softlockup_watchdog();
+ 			}
+ 		if (stall_cpu_irqsoff)
+ 			local_irq_enable();
 -- 
 2.34.1
 
