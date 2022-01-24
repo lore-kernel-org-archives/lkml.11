@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2A3C3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF5B7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457750AbiAXVmO (ORCPT
+        id S1457938AbiAXVmc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58320 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354151AbiAXVFt (ORCPT
+        Mon, 24 Jan 2022 16:42:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446546AbiAXVIr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:49 -0500
+        Mon, 24 Jan 2022 16:08:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAD21C034610;
+        Mon, 24 Jan 2022 12:08:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5F8B811FB;
-        Mon, 24 Jan 2022 21:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535D3C340E5;
-        Mon, 24 Jan 2022 21:05:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67EE8B8122D;
+        Mon, 24 Jan 2022 20:08:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8132DC340E5;
+        Mon, 24 Jan 2022 20:08:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058345;
-        bh=X6EgPPABSu9qIS8VsK+/BZjQrgBbZL9LjiIth+gV+38=;
+        s=korg; t=1643054905;
+        bh=XvKunCyUTqhoDJttVMh5EWZ4rnj0JNBQ0NSEL9yv4Ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D02rKWm/L+Nbuqn1eioq6F07MTd1pOyGPCoHKHPjHeuvgDIdCBEveGDmQCP9Cz80d
-         G9C/kUn925Ii7ujc+yBqc8NRthdYDgRFfXY0E9hzYSmMFFLjeKO12zBDhaS5fbj/7F
-         /Zd19ikI7/bEEyDHbE6K1WchiV8bUQdH2IZXOzXU=
+        b=KKPLzUt8ntv6MT1813HpeyS+g5VBvs4kOXYbCT44WC+idYaYU7TUO0gaoZdayCtSW
+         C03133t6VKCqeWUwntlcNzlurd1uNcKOfYMnRj/N7umByxg8zLQpWP9lKlsS0yB+l8
+         p7y540yd0RBoN98K7r7wYDwr5b7+cZVrrrcBLdB0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Pavle Kotarac <Pavle.Kotarac@amd.com>,
-        Wayne Lin <Wayne.Lin@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0258/1039] drm/amd/display: Fix bug in debugfs crc_win_update entry
-Date:   Mon, 24 Jan 2022 19:34:07 +0100
-Message-Id: <20220124184133.986450956@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 542/563] dmaengine: at_xdmac: Print debug message after realeasing the lock
+Date:   Mon, 24 Jan 2022 19:45:07 +0100
+Message-Id: <20220124184043.176567848@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wayne Lin <Wayne.Lin@amd.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit 4bef85d4c9491415b7931407b07f24841c1e0390 ]
+commit 5edc24ac876a928f36f407a0fcdb33b94a3a210f upstream.
 
-[Why]
-crc_rd_wrk shouldn't be null in crc_win_update_set(). Current programming
-logic is inconsistent in crc_win_update_set().
+It is desirable to do the prints without the lock held if possible, so
+move the print after the lock is released.
 
-[How]
-Initially, return if crc_rd_wrk is NULL. Later on, we can use member of
-crc_rd_wrk safely.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Fixes: 9a65df193108 ("drm/amd/display: Use PSP TA to read out crc")
-
-Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
-Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
-Signed-off-by: Wayne Lin <Wayne.Lin@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-4-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/dma/at_xdmac.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-index 9d43ecb1f692d..f4e829ec8e108 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
-@@ -2909,10 +2909,13 @@ static int crc_win_update_set(void *data, u64 val)
- 	struct amdgpu_device *adev = drm_to_adev(new_crtc->dev);
- 	struct crc_rd_work *crc_rd_wrk = adev->dm.crc_rd_wrk;
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -424,10 +424,12 @@ static dma_cookie_t at_xdmac_tx_submit(s
+ 	spin_lock_irqsave(&atchan->lock, irqflags);
+ 	cookie = dma_cookie_assign(tx);
  
-+	if (!crc_rd_wrk)
-+		return 0;
+-	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
+-		 __func__, atchan, desc);
+ 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
+ 	spin_unlock_irqrestore(&atchan->lock, irqflags);
 +
- 	if (val) {
- 		spin_lock_irq(&adev_to_drm(adev)->event_lock);
- 		spin_lock_irq(&crc_rd_wrk->crc_rd_work_lock);
--		if (crc_rd_wrk && crc_rd_wrk->crtc) {
-+		if (crc_rd_wrk->crtc) {
- 			old_crtc = crc_rd_wrk->crtc;
- 			old_acrtc = to_amdgpu_crtc(old_crtc);
- 		}
--- 
-2.34.1
-
++	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
++		 __func__, atchan, desc);
++
+ 	return cookie;
+ }
+ 
 
 
