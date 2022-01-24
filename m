@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3ECC3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AC4FC3526E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838481AbiAXWql (ORCPT
+        id S1838283AbiAXWqQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:41 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51920 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457260AbiAXVlS (ORCPT
+        Mon, 24 Jan 2022 17:46:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457591AbiAXVlz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:18 -0500
+        Mon, 24 Jan 2022 16:41:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAD9C07E33D;
+        Mon, 24 Jan 2022 12:30:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 600E0B81188;
-        Mon, 24 Jan 2022 21:41:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D7E0C340E4;
-        Mon, 24 Jan 2022 21:41:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B40B06152C;
+        Mon, 24 Jan 2022 20:30:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79BA8C340E5;
+        Mon, 24 Jan 2022 20:30:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060476;
-        bh=vaHrpZuT0SEiaCkxFuZmfH+VWUjcQY23cDzjyVIvb5I=;
+        s=korg; t=1643056203;
+        bh=Nx++IxS0UJhP8SAt2otJYlZchfSK6akqvdLG9B0Elx4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=buFIDdYovvdFdRrmxUcyaw2brz2we9rR8rZYgm3kJQ7Veph3C1By8lg7ckawHpXqX
-         twoUC0Cbnd2e97iMHi7YIuMchrbM1UI+dflnCsFEtnJb+CHl18aqyyZtloX4Xw7Vqq
-         tdZ+1rZCq8NEfhYTxExW5+0BzcrADnQErBDAtWp4=
+        b=GGc3bSRg3bzcjIiAbM+2QIa0dvPtDpkP2kYhmiFTvpQ3oQ7BTyrc3PJ0v3Ijr+5hV
+         zPEFrKWpe3slkQof69x/wHxnQp6NsZIytyBMdyVRldW84321dTQpYrhw7s8CVzVOP4
+         kXE5YMiitnL5PVV3lTMdUgv+WS7+AlbjuA6fX2Sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 0960/1039] af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
-Date:   Mon, 24 Jan 2022 19:45:49 +0100
-Message-Id: <20220124184157.563363721@linuxfoundation.org>
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 406/846] RDMA/qedr: Fix reporting max_{send/recv}_wr attrs
+Date:   Mon, 24 Jan 2022 19:38:43 +0100
+Message-Id: <20220124184114.967389389@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,128 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-commit 9d6d7f1cb67cdee15f1a0e85aacfb924e0e02435 upstream.
+[ Upstream commit b1a4da64bfc189510e08df1ccb1c589e667dc7a3 ]
 
-wait_for_unix_gc() reads unix_tot_inflight & gc_in_progress
-without synchronization.
+Fix the wrongly reported max_send_wr and max_recv_wr attributes for user
+QP by making sure to save their valuse on QP creation, so when query QP is
+called the attributes will be reported correctly.
 
-Adds READ_ONCE()/WRITE_ONCE() and their associated comments
-to better document the intent.
-
-BUG: KCSAN: data-race in unix_inflight / wait_for_unix_gc
-
-write to 0xffffffff86e2b7c0 of 4 bytes by task 9380 on cpu 0:
- unix_inflight+0x1e8/0x260 net/unix/scm.c:63
- unix_attach_fds+0x10c/0x1e0 net/unix/scm.c:121
- unix_scm_to_skb net/unix/af_unix.c:1674 [inline]
- unix_dgram_sendmsg+0x679/0x16b0 net/unix/af_unix.c:1817
- unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffffffff86e2b7c0 of 4 bytes by task 9375 on cpu 1:
- wait_for_unix_gc+0x24/0x160 net/unix/garbage.c:196
- unix_dgram_sendmsg+0x8e/0x16b0 net/unix/af_unix.c:1772
- unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000002 -> 0x00000004
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 9375 Comm: syz-executor.1 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 9915672d4127 ("af_unix: limit unix_tot_inflight")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220114164328.2038499-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
+Link: https://lore.kernel.org/r/20211206201314.124947-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/unix/garbage.c |   14 +++++++++++---
- net/unix/scm.c     |    6 ++++--
- 2 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/infiniband/hw/qedr/verbs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/net/unix/garbage.c
-+++ b/net/unix/garbage.c
-@@ -192,8 +192,11 @@ void wait_for_unix_gc(void)
- {
- 	/* If number of inflight sockets is insane,
- 	 * force a garbage collect right now.
-+	 * Paired with the WRITE_ONCE() in unix_inflight(),
-+	 * unix_notinflight() and gc_in_progress().
- 	 */
--	if (unix_tot_inflight > UNIX_INFLIGHT_TRIGGER_GC && !gc_in_progress)
-+	if (READ_ONCE(unix_tot_inflight) > UNIX_INFLIGHT_TRIGGER_GC &&
-+	    !READ_ONCE(gc_in_progress))
- 		unix_gc();
- 	wait_event(unix_gc_wait, gc_in_progress == false);
- }
-@@ -213,7 +216,9 @@ void unix_gc(void)
- 	if (gc_in_progress)
- 		goto out;
+diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
+index 3d4e4a766574a..f652d083ff20f 100644
+--- a/drivers/infiniband/hw/qedr/verbs.c
++++ b/drivers/infiniband/hw/qedr/verbs.c
+@@ -1941,6 +1941,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
+ 	/* db offset was calculated in copy_qp_uresp, now set in the user q */
+ 	if (qedr_qp_has_sq(qp)) {
+ 		qp->usq.db_addr = ctx->dpi_addr + uresp.sq_db_offset;
++		qp->sq.max_wr = attrs->cap.max_send_wr;
+ 		rc = qedr_db_recovery_add(dev, qp->usq.db_addr,
+ 					  &qp->usq.db_rec_data->db_data,
+ 					  DB_REC_WIDTH_32B,
+@@ -1951,6 +1952,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
  
--	gc_in_progress = true;
-+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
-+	WRITE_ONCE(gc_in_progress, true);
-+
- 	/* First, select candidates for garbage collection.  Only
- 	 * in-flight sockets are considered, and from those only ones
- 	 * which don't have any external reference.
-@@ -299,7 +304,10 @@ void unix_gc(void)
- 
- 	/* All candidates should have been detached by now. */
- 	BUG_ON(!list_empty(&gc_candidates));
--	gc_in_progress = false;
-+
-+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
-+	WRITE_ONCE(gc_in_progress, false);
-+
- 	wake_up(&unix_gc_wait);
- 
-  out:
---- a/net/unix/scm.c
-+++ b/net/unix/scm.c
-@@ -60,7 +60,8 @@ void unix_inflight(struct user_struct *u
- 		} else {
- 			BUG_ON(list_empty(&u->link));
- 		}
--		unix_tot_inflight++;
-+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
-+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight + 1);
- 	}
- 	user->unix_inflight++;
- 	spin_unlock(&unix_gc_lock);
-@@ -80,7 +81,8 @@ void unix_notinflight(struct user_struct
- 
- 		if (atomic_long_dec_and_test(&u->inflight))
- 			list_del_init(&u->link);
--		unix_tot_inflight--;
-+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
-+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight - 1);
- 	}
- 	user->unix_inflight--;
- 	spin_unlock(&unix_gc_lock);
+ 	if (qedr_qp_has_rq(qp)) {
+ 		qp->urq.db_addr = ctx->dpi_addr + uresp.rq_db_offset;
++		qp->rq.max_wr = attrs->cap.max_recv_wr;
+ 		rc = qedr_db_recovery_add(dev, qp->urq.db_addr,
+ 					  &qp->urq.db_rec_data->db_data,
+ 					  DB_REC_WIDTH_32B,
+-- 
+2.34.1
+
 
 
