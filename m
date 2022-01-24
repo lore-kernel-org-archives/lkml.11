@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FACCC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDAFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444711AbiAXVBU (ORCPT
+        id S1444760AbiAXVB3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:20 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40228 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387730AbiAXUhL (ORCPT
+        Mon, 24 Jan 2022 16:01:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387634AbiAXUhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:11 -0500
+        Mon, 24 Jan 2022 15:37:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD25C02B8D2;
+        Mon, 24 Jan 2022 11:50:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0E55B80CCF;
-        Mon, 24 Jan 2022 20:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BDA9C340E5;
-        Mon, 24 Jan 2022 20:37:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DB1660B11;
+        Mon, 24 Jan 2022 19:50:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A73CC340E5;
+        Mon, 24 Jan 2022 19:50:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056628;
-        bh=7qiHpWY6b91yG9hop6KulGGHHBXmIN0F62hQVZYDCn0=;
+        s=korg; t=1643053845;
+        bh=OJih1Jcf4b2viqGvfEjCDpa3eJtwp2vKJgAcrR28yf0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bL2f1et+PYdwJE2Z9NpGcNwwZCdmHSMbuzSDnja3HkNN+75p9J/g30/1wXmwdbEG5
-         Qx2qu9wuVvPvWa/v+Cs2DGaH9yUxgHavarHMnL7qQt3gtmaylfJrM/SWcuXkxetDIN
-         arZBK2sCgEM+ml4EG+jhOJcdgxeF01ZO0nPdlbCM=
+        b=YeZhf17qQ2NNAD+2ULRHdKpp+3CBJMtxI5jUwiukYDt0MqU+KAnOmtq1xf7WArn0I
+         YzVVtkngUHZnYQF/L/6iVF30tCW7T9iv+R4yfI61LJR3aT9t0HtUIFEEA6i8SkC6lo
+         KEWG1KRqAPl37xyyZxDbtP27hjI2e89PiS+Ih6rQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 548/846] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Mon, 24 Jan 2022 19:41:05 +0100
-Message-Id: <20220124184119.924004304@linuxfoundation.org>
+Subject: [PATCH 5.10 195/563] software node: fix wrong node passed to find nargs_prop
+Date:   Mon, 24 Jan 2022 19:39:20 +0100
+Message-Id: <20220124184031.178454245@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,46 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Clément Léger <clement.leger@bootlin.com>
 
-[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
+[ Upstream commit c5fc5ba8b6b7bebc05e45036a33405b4c5036c2f ]
 
-The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
-any bugged program, and even attaching a correct program to a NIC
-not supporting the given action.
+nargs_prop refers to a property located in the reference that is found
+within the nargs property. Use the correct reference node in call to
+property_entry_read_int_array() to retrieve the correct nargs value.
 
-The resulting splat, beyond polluting the logs, fouls automated tools:
-e.g. a syzkaller reproducers using an XDP program returning an
-unsupported action will never pass validation.
-
-Replace the WARN_ONCE with a less intrusive pr_warn_once().
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
+Fixes: b06184acf751 ("software node: Add software_node_get_reference_args()")
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Daniel Scally <djrscally@gmail.com>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/base/swnode.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 1e43ab413b62e..f207e4782bd0e 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8178,9 +8178,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
- {
- 	const u32 act_max = XDP_REDIRECT;
+diff --git a/drivers/base/swnode.c b/drivers/base/swnode.c
+index 206bd4d7d7e23..d2fb3eb5816c3 100644
+--- a/drivers/base/swnode.c
++++ b/drivers/base/swnode.c
+@@ -519,7 +519,7 @@ software_node_get_reference_args(const struct fwnode_handle *fwnode,
+ 		return -ENOENT;
  
--	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
--		  act > act_max ? "Illegal" : "Driver unsupported",
--		  act);
-+	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+		     act > act_max ? "Illegal" : "Driver unsupported",
-+		     act);
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
- 
+ 	if (nargs_prop) {
+-		error = property_entry_read_int_array(swnode->node->properties,
++		error = property_entry_read_int_array(ref->node->properties,
+ 						      nargs_prop, sizeof(u32),
+ 						      &nargs_prop_val, 1);
+ 		if (error)
 -- 
 2.34.1
 
