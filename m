@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 829DAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 876BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1313156AbiAYCrr (ORCPT
+        id S1313497AbiAYCsl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:47:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46944 "EHLO
+        Mon, 24 Jan 2022 21:48:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445194AbiAXVC3 (ORCPT
+        with ESMTP id S1359346AbiAXVDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:02:29 -0500
+        Mon, 24 Jan 2022 16:03:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1619CC04C078;
-        Mon, 24 Jan 2022 12:02:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76CDFC06B59A;
+        Mon, 24 Jan 2022 12:03:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A884D611C8;
-        Mon, 24 Jan 2022 20:02:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D950C340E5;
-        Mon, 24 Jan 2022 20:02:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16FDA61028;
+        Mon, 24 Jan 2022 20:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4D99C340E7;
+        Mon, 24 Jan 2022 20:03:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054565;
-        bh=Lqn3vSoFlKiqqZwJh+JyEU5SZY1cUlLW87QVRtDJf+c=;
+        s=korg; t=1643054601;
+        bh=6xbJmd6f01+fZLlPBClTdRN12VoLGcHc5990lZQbkJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T17Ry6vj/gm4pyMQt1pFD2VkiSJeLBxH1iSqDUnq5J43jiQGbIL/ExTtPbaW5iji6
-         pWq30mqgRJ8H/wInREmCb1UhbIZYuw0bfRJRvCKjufmm27jDpRgpqO3+iCl0PG2YXC
-         JSbhkmogNs9QYDKR37X19OLWHNqZ3FwBwX1FWq60=
+        b=M1mB4GP8Qng3KR9rsaznkilHLKrJUN2nOhPHJuU/WapKOdDQdQ/RHru5TPOcLOqOC
+         0BJ+f/ZvBr3twbi0+R/BzHNjmDmV0k33Pj0Jj2reTBCH9cqkzSq4iaanCJhcx/xuej
+         GkvRsg3iEfF7J0ECWxcDOyWDzJtGcFwv1HTG6KyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 397/563] dm btree: add a defensive bounds check to insert_at()
-Date:   Mon, 24 Jan 2022 19:42:42 +0100
-Message-Id: <20220124184038.157602599@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Li <Meng.Li@windriver.com>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.10 443/563] crypto: caam - replace this_cpu_ptr with raw_cpu_ptr
+Date:   Mon, 24 Jan 2022 19:43:28 +0100
+Message-Id: <20220124184039.770132103@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,45 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Thornber <ejt@redhat.com>
+From: Meng Li <Meng.Li@windriver.com>
 
-[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
+commit efd21e10fc3bf4c6da122470a5ae89ec4ed8d180 upstream.
 
-Corrupt metadata could trigger an out of bounds write.
+When enable the kernel debug config, there is below calltrace detected:
+BUG: using smp_processor_id() in preemptible [00000000] code: cryptomgr_test/339
+caller is debug_smp_processor_id+0x20/0x30
+CPU: 9 PID: 339 Comm: cryptomgr_test Not tainted 5.10.63-yocto-standard #1
+Hardware name: NXP Layerscape LX2160ARDB (DT)
+Call trace:
+ dump_backtrace+0x0/0x1a0
+ show_stack+0x24/0x30
+ dump_stack+0xf0/0x13c
+ check_preemption_disabled+0x100/0x110
+ debug_smp_processor_id+0x20/0x30
+ dpaa2_caam_enqueue+0x10c/0x25c
+ ......
+ cryptomgr_test+0x38/0x60
+ kthread+0x158/0x164
+ ret_from_fork+0x10/0x38
+According to the comment in commit ac5d15b4519f("crypto: caam/qi2
+ - use affine DPIOs "), because preemption is no longer disabled
+while trying to enqueue an FQID, it might be possible to run the
+enqueue on a different CPU(due to migration, when in process context),
+however this wouldn't be a functionality issue. But there will be
+above calltrace when enable kernel debug config. So, replace this_cpu_ptr
+with raw_cpu_ptr to avoid above call trace.
 
-Signed-off-by: Joe Thornber <ejt@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ac5d15b4519f ("crypto: caam/qi2 - use affine DPIOs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/md/persistent-data/dm-btree.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/crypto/caam/caamalg_qi2.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
-index ef6e78d45d5b8..ee3e63aa864bf 100644
---- a/drivers/md/persistent-data/dm-btree.c
-+++ b/drivers/md/persistent-data/dm-btree.c
-@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
- }
+--- a/drivers/crypto/caam/caamalg_qi2.c
++++ b/drivers/crypto/caam/caamalg_qi2.c
+@@ -5467,7 +5467,7 @@ int dpaa2_caam_enqueue(struct device *de
+ 	dpaa2_fd_set_len(&fd, dpaa2_fl_get_len(&req->fd_flt[1]));
+ 	dpaa2_fd_set_flc(&fd, req->flc_dma);
  
- static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
--		      uint64_t key, void *value)
--		      __dm_written_to_disk(value)
-+		     uint64_t key, void *value)
-+	__dm_written_to_disk(value)
- {
- 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
-+	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
- 	__le64 key_le = cpu_to_le64(key);
- 
- 	if (index > nr_entries ||
--	    index >= le32_to_cpu(node->header.max_entries)) {
-+	    index >= max_entries ||
-+	    nr_entries >= max_entries) {
- 		DMERR("too many entries in btree node for insert");
- 		__dm_unbless_for_disk(value);
- 		return -ENOMEM;
--- 
-2.34.1
-
+-	ppriv = this_cpu_ptr(priv->ppriv);
++	ppriv = raw_cpu_ptr(priv->ppriv);
+ 	for (i = 0; i < (priv->dpseci_attr.num_tx_queues << 1); i++) {
+ 		err = dpaa2_io_service_enqueue_fq(ppriv->dpio, ppriv->req_fqid,
+ 						  &fd);
 
 
