@@ -2,107 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44996C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315719AbiAYCyF (ORCPT
+        id S1315785AbiAYCyS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50435 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S3407874AbiAYAVG (ORCPT
+        Mon, 24 Jan 2022 21:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38198 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3408501AbiAYAWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:21:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643070064;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Ntjy8+chLJCGytFKA8pelsB5b8BrXmYg/+6iLbMlUec=;
-        b=NRI2RGiRoKkpeY+/Vz6gJ/rFEgGa7NH9YjtpjyKPw2ovKmHtEmkoulrPh9Vw8EPGgUSnQ6
-        J1mGFCaQBM5zps74scpKQxnpq9dqcrEu95IpfW+xYZrydjOr9ncprIeu/wFkf70eSQm1i/
-        jVvWr4tf+M2Gb/gZFLWKCDaCmb4xuAk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-175-kfJhdSBqNVeQGWVao-GqBA-1; Mon, 24 Jan 2022 19:21:00 -0500
-X-MC-Unique: kfJhdSBqNVeQGWVao-GqBA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 24 Jan 2022 19:22:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 352DBC036BE4;
+        Mon, 24 Jan 2022 14:06:30 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AB341100CCF2;
-        Tue, 25 Jan 2022 00:20:59 +0000 (UTC)
-Received: from agk-cloud1.hosts.prod.upshift.rdu2.redhat.com (agk-cloud1.hosts.prod.upshift.rdu2.redhat.com [10.0.13.154])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B3E05F90F;
-        Tue, 25 Jan 2022 00:20:25 +0000 (UTC)
-Received: by agk-cloud1.hosts.prod.upshift.rdu2.redhat.com (Postfix, from userid 3883)
-        id CDF2F424F088; Tue, 25 Jan 2022 00:20:25 +0000 (GMT)
-Date:   Tue, 25 Jan 2022 00:20:25 +0000
-From:   Alasdair G Kergon <agk@redhat.com>
-To:     Brian Geffon <bgeffon@google.com>
-Cc:     Alasdair Kergon <agk@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>, dm-devel@redhat.com,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dm: introduce a no open flag for deferred remove
-Message-ID: <20220125002025.GA21887@agk-cloud1.hosts.prod.upshift.rdu2.redhat.com>
-Mail-Followup-To: Brian Geffon <bgeffon@google.com>,
-        Alasdair Kergon <agk@redhat.com>, Mike Snitzer <snitzer@redhat.com>,
-        dm-devel@redhat.com, LKML <linux-kernel@vger.kernel.org>
-References: <20220124150209.22202-1-bgeffon@google.com>
- <20220124151434.GB20331@agk-cloud1.hosts.prod.upshift.rdu2.redhat.com>
- <CADyq12ykDCswWZw05OdyYfP-zT6afuhXbckii1m1egQ2fSwB4w@mail.gmail.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2767615CF;
+        Mon, 24 Jan 2022 22:06:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACCBC340F8;
+        Mon, 24 Jan 2022 22:06:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643061989;
+        bh=s0Q2iLX9dyK6zBfXvE6AmOg6Y4MPmiUDjoi2MZ8nbRI=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=BB8Mpx1LnwvDuTkbA0cXddeZ/rQmtoz8pUu0UU6grzafB6tLVMViJeDK0RQZji0pa
+         ALjXmDrGSFz3XxbxVxzAwQI37Jrd1WyjAs4m0uinFAz/wQMNAGxQ+XlElHAM7N9Z2O
+         CNuHrOf/n3Osqripl7Pwbn+uu34DRbgdl8p2qx+km9d9A51sLduueP3C2eCmviHrQM
+         kWhX/ZhSpD9LMiR/NvcdNf5eocL/fFS9RK/MFN7rIxhtS4ddTPaXsHQfQq7uGT86Nf
+         TVaZfoKOH0mQklFjLmq4GHpu0BEGXBmTNPAQqUG/7IbD9zXl2timujV65yhcCpbQFr
+         HTcL+lDGlz7Yg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id DDF295C0FCD; Mon, 24 Jan 2022 14:06:28 -0800 (PST)
+Date:   Mon, 24 Jan 2022 14:06:28 -0800
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, David Teigland <teigland@redhat.com>,
+        cluster-devel <cluster-devel@redhat.com>,
+        linux-sparse@vger.kernel.org, rcu@vger.kernel.org
+Subject: Re: fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32
+ degrades to integer
+Message-ID: <20220124220628.GL4285@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <202201221028.YKA8kSdm-lkp@intel.com>
+ <CAK-6q+h_hb94J3DSXPk=E44kCxiwZ+BE3kMJe09iShRzMb=vzQ@mail.gmail.com>
+ <91901e7b-7d82-116c-aaf2-c74c6a6b999c@infradead.org>
+ <CAK-6q+j2jc3pBmbvQ-DCmxveC-UMV75SFc2nC1zwXKe9wm4YPg@mail.gmail.com>
+ <20220124124530.GS1951@kadam>
+ <CAK-6q+iZfY=FyOxJfS7cY7MqScs+nU=U3B4NnLnvcLH3fofuAg@mail.gmail.com>
+ <CAK-6q+ga2zT2h4oY0=aCXFeU=oaFHbSXGzuVRptB8Hg-YKR7Gw@mail.gmail.com>
+ <CAK-6q+jfA2k1TFrLqK4YN2vshgLidD=6r_CCV6df_VRFMFO7ag@mail.gmail.com>
+ <20220124201417.GI4285@paulmck-ThinkPad-P17-Gen-1>
+ <CAK-6q+gGx68Wx8mBJAdo0ygpBWPoHW+L+HD11U6UQSOjSXVP3w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CADyq12ykDCswWZw05OdyYfP-zT6afuhXbckii1m1egQ2fSwB4w@mail.gmail.com>
-Organization: Red Hat UK Ltd. Registered in England and Wales, number
- 03798903. Registered Office: Amberley Place, 107-111 Peascod Street,
- Windsor, Berkshire, SL4 1TE.
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+In-Reply-To: <CAK-6q+gGx68Wx8mBJAdo0ygpBWPoHW+L+HD11U6UQSOjSXVP3w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 10:25:47AM -0500, Brian Geffon wrote:
-> Thank you for looking at this. There are a few reasons this might be
-> useful, the first is if you're trying to speed up a graceful teardown
-> of the device by informing userspace that this device is going to be
-> removed in the near future. Another might be on systems where it might
-> be worthwhile to not have users with CAP_DAC_OVERRIDE be able to open
-> the device. The logic on this second case is that, suppose you have a
-> dm-crypt block device which is backing swap, the data on this device
-> is ephemeral so a flow might be to setup swap followed by dmsetup
-> remove --deferred /dev/mapper/encrypted-swap. This will guarantee that
-> as soon as swap is torn down the encrypted block device is dropped,
-> additionally with this new flag you'll be guaranteed that there can be
-> no further opens on it.
- 
-And is that the reason you propose this?
-- You want a special exclusive 'one time open' device that 
-  self-destructs when closed?
+On Mon, Jan 24, 2022 at 04:36:55PM -0500, Alexander Aring wrote:
+> Hi,
+> 
+> On Mon, Jan 24, 2022 at 3:23 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+> >
+> > On Mon, Jan 24, 2022 at 12:41:04PM -0500, Alexander Aring wrote:
+> > > Hi,
+> > >
+> > > On Mon, Jan 24, 2022 at 12:36 PM Alexander Aring <aahringo@redhat.com> wrote:
+> > > >
+> > > > Hi,
+> > > >
+> > > > On Mon, Jan 24, 2022 at 12:21 PM Alexander Aring <aahringo@redhat.com> wrote:
+> > > > >
+> > > > > Hi,
+> > > > >
+> > > > > On Mon, Jan 24, 2022 at 7:46 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> > > > > >
+> > > > > > On Sun, Jan 23, 2022 at 01:41:52PM -0500, Alexander Aring wrote:
+> > > > > > >
+> > > > > > > I see also:
+> > > > > > >
+> > > > > > > fs/dlm/midcomms.c:213:1: sparse: sparse: symbol
+> > > > > > > '__srcu_struct_nodes_srcu' was not declared. Should it be static?
+> > > > > > >
+> > > > > >
+> > > > > > Why not just do this?  (Untested.  Maybe I don't understand?)
+> > > > > >
+> > > > > > diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
+> > > > > > index cb1f4351e8ba..a164089abec4 100644
+> > > > > > --- a/include/linux/srcutree.h
+> > > > > > +++ b/include/linux/srcutree.h
+> > > > > > @@ -121,7 +121,7 @@ struct srcu_struct {
+> > > > > >  #ifdef MODULE
+> > > > > >  # define __DEFINE_SRCU(name, is_static)                                        \
+> > > > > >         is_static struct srcu_struct name;                              \
+> > > > > > -       struct srcu_struct * const __srcu_struct_##name                 \
+> > > > > > +       is_static struct srcu_struct * const __srcu_struct_##name       \
+> > > > > >                 __section("___srcu_struct_ptrs") = &name
+> > > > > >  #else
+> > > > > >  # define __DEFINE_SRCU(name, is_static)                                        \
+> > > > > >
+> > > > >
+> > > > > I tried it and yes it will fix the issue and introduce another one
+> > > > > about "is_static struct srcu_struct * const __srcu_struct_##name" is
+> > > > > unused ("-Wunused-const-variable").
+> > > > > I added a __maybe_unused after the introduced is_static and it seems
+> > > > > to fix the introduced issue, now it compiles and sparse is happy. I am
+> > > > > not sure if this is the right fix?
+> > > >
+> > > > it is obviously unused, but it has something to do with
+> > > > "__section("___srcu_struct_ptrs")" and during module loading it, I
+> > > > suppose, srcu tries to access it to find whatever needs to be
+> > > > registered?
+> > >
+> > > Sorry, but if this is true then it can't be declared as static... and
+> > > we are at the beginning again.
+> >
+> > Welcome to my world!!!  ;-)
+> >
+> > More seriously, thank you for chasing this down.  But would it work to
+> > add a declaration just before?
+> >
+> 
+> only if I add an "extern" in front of the declaration before, so it looks like:
+> 
+> extern struct srcu_struct * const __srcu_struct_##name;
+> 
+> (compile and sparse tested only)
 
-> No, this is fully backwards compatible with the current deferred
-> remove behavior, it's not required. Additionally, since on the actual
-> remove userspace would receive an -ENXIO already once the remove
-> process has started it seems reasonable to return -ENXIO in the
-> deferred remove case when this flag is enabled.
- 
-Well I feel it does break existing semantics which is why we wrote
-the code the way we did.  The state can be long-lived, the code
-that has it open might legitimately want to open it again in
-parallel etc. - in general this seems a bad idea.
+If that works for everyone, it seems worth persuing.
 
-But if the reason for this is basically "make it harder for 
-anything else to access my encrypted swap" and to deliberately
-prevent access, then let's approach the requirement from that angle.
-Are there alternative implementations with interventions at different
-points?  Are there similar requirements for devices that don't need
-deferred remove?  If this is indeed the best place to insert this type
-of restriction, then we should label it and document it accordingly so
-people don't mistakenly use it for the 'normal' case.  (We always keep
-libdevmapper and dmsetup in sync with kernel interface extensions, so
-we'd seek a tiny patch to do that too.)
+One way to test this is as follows:
 
-Alasdair
+1.	Build a kernel with CONFIG_RCU_TORTURE_TEST=m.  Boot this and
+	type "modprobe rcutorture torture_type=srcu".
 
+	If you want to stop the torture test, type "rmmod rcutorture".
+
+	This will test DEFINE_SRCU() for the module case.
+
+2.	At the top-level directory of your Linux-kernel source tree,
+	type "tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 3 --configs 'SRCU-N' --trust-make"
+
+	This will test DEFINE_SRCU() for the non-module case.
+
+If those both work, and if there are no other objections or complications,
+please do send a patch.
+
+							Thanx, Paul
