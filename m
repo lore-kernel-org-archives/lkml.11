@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29767C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A58C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384745AbiAXUab (ORCPT
+        id S1384834AbiAXUai (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:30:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52018 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379215AbiAXUKg (ORCPT
+        Mon, 24 Jan 2022 15:30:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37168 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379242AbiAXUKr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:10:36 -0500
+        Mon, 24 Jan 2022 15:10:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4FEBDB8119E;
-        Mon, 24 Jan 2022 20:10:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 799E6C340E5;
-        Mon, 24 Jan 2022 20:10:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22B586090B;
+        Mon, 24 Jan 2022 20:10:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B60C340E5;
+        Mon, 24 Jan 2022 20:10:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055034;
-        bh=w6SHKE6jX4ZUVWOWECRb9u1Z6a+zZf7mElpRsXhmPcw=;
+        s=korg; t=1643055046;
+        bh=/GYrC+HBo36Zytf1mlcSf2lAscO9v2G3xF7pkIcsPd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lFcDVWb9kQuzWRWXzRQvsqMfTiocTmtQFymTvnk92mInjEAIMPDnIuPslLWSEh0gj
-         417eN6lngrFI0CgurwxnReTKgEIZa+nuvTEIq1tYOdt58qnoNvNB1xIeyPrRM/HHM9
-         Sx7+iD/+6zSg6ENJqbvkGNb6f7JI/H5cCK81+mTg=
+        b=DMo5txy8Mr7PqCgJyVcFeXkV+RR5XTWeNy8qOU68oi2HzqIG+3MqWLqWoEna4mTaY
+         LRkZnxG5lR6NVDjGhIdV01LeHEWDCR4InXZ3ysu90QjNCWU/UOdfHl2l0dVERs4Tbo
+         DQv1IqiI+QDHQQlY9GM2JZL4jPuJW6LAjFyHGa4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 020/846] mtd: rawnand: ingenic: JZ4740 needs oob_first read page function
-Date:   Mon, 24 Jan 2022 19:32:17 +0100
-Message-Id: <20220124184101.614244813@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 006/846] HID: wacom: Ignore the confidence flag when a touch is removed
+Date:   Mon, 24 Jan 2022 19:32:03 +0100
+Message-Id: <20220124184101.114647887@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,59 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Jason Gerecke <killertofu@gmail.com>
 
-commit 0171480007d64f663aae9226303f1b1e4621229e upstream.
+commit df03e9bd6d4806619b4cdc91a3d7695818a8e2b7 upstream.
 
-The ECC engine on the JZ4740 SoC requires the ECC data to be read before
-the page; using the default page reading function does not work. Indeed,
-the old JZ4740 NAND driver (removed in 5.4) did use the 'OOB first' flag
-that existed back then.
+AES hardware may internally re-classify a contact that it thought was
+intentional as a palm. Intentional contacts are reported as "down" with
+the confidence bit set. When this re-classification occurs, however, the
+state transitions to "up" with the confidence bit cleared. This kind of
+transition appears to be legal according to Microsoft docs, but we do
+not handle it correctly. Because the confidence bit is clear, we don't
+call `wacom_wac_finger_slot` and update userspace. This causes hung
+touches that confuse userspace and interfere with pen arbitration.
 
-Use the newly created nand_read_page_hwecc_oob_first() to address this
-issue.
+This commit adds a special case to ignore the confidence flag if a contact
+is reported as removed. This ensures we do not leave a hung touch if one
+of these re-classification events occured. Ideally we'd have some way to
+also let userspace know that the touch has been re-classified as a palm
+and needs to be canceled, but that's not possible right now :)
 
-This issue was not found when the new ingenic-nand driver was developed,
-most likely because the Device Tree used had the nand-ecc-mode set to
-"hw_oob_first", which seems to not be supported anymore.
-
-Cc: <stable@vger.kernel.org> # v5.2
-Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-5-paul@crapouillou.net
+Link: https://github.com/linuxwacom/input-wacom/issues/288
+Fixes: 7fb0413baa7f (HID: wacom: Use "Confidence" flag to prevent reporting invalid contacts)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/ingenic/ingenic_nand_drv.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/hid/wacom_wac.c |   29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
---- a/drivers/mtd/nand/raw/ingenic/ingenic_nand_drv.c
-+++ b/drivers/mtd/nand/raw/ingenic/ingenic_nand_drv.c
-@@ -32,6 +32,7 @@ struct jz_soc_info {
- 	unsigned long addr_offset;
- 	unsigned long cmd_offset;
- 	const struct mtd_ooblayout_ops *oob_layout;
-+	bool oob_first;
- };
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2588,6 +2588,24 @@ static void wacom_wac_finger_slot(struct
+ 	}
+ }
  
- struct ingenic_nand_cs {
-@@ -240,6 +241,9 @@ static int ingenic_nand_attach_chip(stru
- 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
- 		chip->bbt_options |= NAND_BBT_NO_OOB;
- 
-+	if (nfc->soc_info->oob_first)
-+		chip->ecc.read_page = nand_read_page_hwecc_oob_first;
++static bool wacom_wac_slot_is_active(struct input_dev *dev, int key)
++{
++	struct input_mt *mt = dev->mt;
++	struct input_mt_slot *s;
 +
- 	/* For legacy reasons we use a different layout on the qi,lb60 board. */
- 	if (of_machine_is_compatible("qi,lb60"))
- 		mtd_set_ooblayout(mtd, &qi_lb60_ooblayout_ops);
-@@ -534,6 +538,7 @@ static const struct jz_soc_info jz4740_s
- 	.data_offset = 0x00000000,
- 	.cmd_offset = 0x00008000,
- 	.addr_offset = 0x00010000,
-+	.oob_first = true,
- };
++	if (!mt)
++		return false;
++
++	for (s = mt->slots; s != mt->slots + mt->num_slots; s++) {
++		if (s->key == key &&
++			input_mt_get_value(s, ABS_MT_TRACKING_ID) >= 0) {
++			return true;
++		}
++	}
++
++	return false;
++}
++
+ static void wacom_wac_finger_event(struct hid_device *hdev,
+ 		struct hid_field *field, struct hid_usage *usage, __s32 value)
+ {
+@@ -2638,9 +2656,14 @@ static void wacom_wac_finger_event(struc
+ 	}
  
- static const struct jz_soc_info jz4725b_soc_info = {
+ 	if (usage->usage_index + 1 == field->report_count) {
+-		if (equivalent_usage == wacom_wac->hid_data.last_slot_field &&
+-		    wacom_wac->hid_data.confidence)
+-			wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
++		if (equivalent_usage == wacom_wac->hid_data.last_slot_field) {
++			bool touch_removed = wacom_wac_slot_is_active(wacom_wac->touch_input,
++				wacom_wac->hid_data.id) && !wacom_wac->hid_data.tipswitch;
++
++			if (wacom_wac->hid_data.confidence || touch_removed) {
++				wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
++			}
++		}
+ 	}
+ }
+ 
 
 
