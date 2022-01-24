@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B31C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7F8C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355691AbiAXTnK (ORCPT
+        id S1355711AbiAXTnS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:43:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        Mon, 24 Jan 2022 14:43:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345942AbiAXTb3 (ORCPT
+        with ESMTP id S1345943AbiAXTb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:31:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C121C028BE4;
-        Mon, 24 Jan 2022 11:14:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D172BC061A83;
+        Mon, 24 Jan 2022 11:14:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B829060917;
-        Mon, 24 Jan 2022 19:14:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93103C340E5;
-        Mon, 24 Jan 2022 19:14:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72D70612F4;
+        Mon, 24 Jan 2022 19:14:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69F04C340E5;
+        Mon, 24 Jan 2022 19:14:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051677;
-        bh=vnfzU01oU3K111HF/yhjplnZMUUJJyYhNA2FRFWaTUk=;
+        s=korg; t=1643051686;
+        bh=Z+3gYJluckRbcTIpsFaWUA0l42oo2yBU1kbM0QAyt5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=toPHgh3RXVPtHDj1Id5+g+mDB/Ks/CTiXFsRe2OlnkSF/h90Smom1KS3CI2X6DSG2
-         NxyfTYSUs/KEilwB5Q5XOJ/QPtr5jo0HgSyNRN9XObfTZ6OhBYOSd1q+5LrIhKtWrB
-         zC+0LcizHyBVQTB909RN0/GrWS9axpVVJAje2saQ=
+        b=hIbICPPq47JXHg9NM+iEn90meTYVv3QIo2OBrMg2G7Bp6ZZaYaqQPWoBeLfLG9FiP
+         eC1dXaYkjh8tgecLL/St1wZWjjf4Bs+yBTnA+XSkKyKUekAu8BrbIkaTcde7ghFLa3
+         Lv5jAp+Z5uZ5GOQRdMWWByp9+ummV/DEVj4Russk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 052/239] arm64: dts: meson-gxbb-wetek: fix missing GPIO binding
-Date:   Mon, 24 Jan 2022 19:41:30 +0100
-Message-Id: <20220124183944.791419739@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.19 037/239] media: redrat3: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:15 +0100
+Message-Id: <20220124183944.320737070@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -51,39 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit c019abb2feba3cbbd7cf7178f8e6499c4fa6fced ]
+commit 2adc965c8bfa224e11ecccf9c92fd458c4236428 upstream.
 
-The absence of this binding appears to be harmless in Linux but it breaks
-Ethernet support in mainline u-boot. So add the binding (which is present
-in all other u-boot supported GXBB device-trees).
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Fixes: fb72c03e0e32 ("ARM64: dts: meson-gxbb-wetek: add a wetek specific dtsi to cleanup hub and play2")
-
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211012052522.30873-3-christianshewitt@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/rc/redrat3.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-index 70325b273bd2b..c7f06692d6c2a 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-@@ -6,6 +6,7 @@
-  */
+--- a/drivers/media/rc/redrat3.c
++++ b/drivers/media/rc/redrat3.c
+@@ -415,7 +415,7 @@ static int redrat3_send_cmd(int cmd, str
+ 	udev = rr3->udev;
+ 	res = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0), cmd,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      0x0000, 0x0000, data, sizeof(u8), HZ * 10);
++			      0x0000, 0x0000, data, sizeof(u8), 10000);
  
- #include "meson-gxbb.dtsi"
-+#include <dt-bindings/gpio/gpio.h>
+ 	if (res < 0) {
+ 		dev_err(rr3->dev, "%s: Error sending rr3 cmd res %d, data %d",
+@@ -491,7 +491,7 @@ static u32 redrat3_get_timeout(struct re
+ 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
+ 	ret = usb_control_msg(rr3->udev, pipe, RR3_GET_IR_PARAM,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, HZ * 5);
++			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, 5000);
+ 	if (ret != len)
+ 		dev_warn(rr3->dev, "Failed to read timeout from hardware\n");
+ 	else {
+@@ -521,7 +521,7 @@ static int redrat3_set_timeout(struct rc
+ 	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), RR3_SET_IR_PARAM,
+ 		     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+ 		     RR3_IR_IO_SIG_TIMEOUT, 0, timeout, sizeof(*timeout),
+-		     HZ * 25);
++		     25000);
+ 	dev_dbg(dev, "set ir parm timeout %d ret 0x%02x\n",
+ 						be32_to_cpu(*timeout), ret);
  
- / {
- 	aliases {
--- 
-2.34.1
-
+@@ -553,32 +553,32 @@ static void redrat3_reset(struct redrat3
+ 	*val = 0x01;
+ 	rc = usb_control_msg(udev, rxpipe, RR3_RESET,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			     RR3_CPUCS_REG_ADDR, 0, val, len, HZ * 25);
++			     RR3_CPUCS_REG_ADDR, 0, val, len, 25000);
+ 	dev_dbg(dev, "reset returned 0x%02x\n", rc);
+ 
+ 	*val = length_fuzz;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, HZ * 25);
++			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm len fuzz %d rc 0x%02x\n", *val, rc);
+ 
+ 	*val = (65536 - (minimum_pause * 2000)) / 256;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_MIN_PAUSE, 0, val, len, HZ * 25);
++			     RR3_IR_IO_MIN_PAUSE, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm min pause %d rc 0x%02x\n", *val, rc);
+ 
+ 	*val = periods_measure_carrier;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_PERIODS_MF, 0, val, len, HZ * 25);
++			     RR3_IR_IO_PERIODS_MF, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm periods measure carrier %d rc 0x%02x", *val,
+ 									rc);
+ 
+ 	*val = RR3_DRIVER_MAXLENS;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, HZ * 25);
++			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm max lens %d rc 0x%02x\n", *val, rc);
+ 
+ 	kfree(val);
+@@ -596,7 +596,7 @@ static void redrat3_get_firmware_rev(str
+ 	rc = usb_control_msg(rr3->udev, usb_rcvctrlpipe(rr3->udev, 0),
+ 			     RR3_FW_VERSION,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			     0, 0, buffer, RR3_FW_VERSION_LEN, HZ * 5);
++			     0, 0, buffer, RR3_FW_VERSION_LEN, 5000);
+ 
+ 	if (rc >= 0)
+ 		dev_info(rr3->dev, "Firmware rev: %s", buffer);
+@@ -836,14 +836,14 @@ static int redrat3_transmit_ir(struct rc
+ 
+ 	pipe = usb_sndbulkpipe(rr3->udev, rr3->ep_out->bEndpointAddress);
+ 	ret = usb_bulk_msg(rr3->udev, pipe, irdata,
+-			    sendbuf_len, &ret_len, 10 * HZ);
++			    sendbuf_len, &ret_len, 10000);
+ 	dev_dbg(dev, "sent %d bytes, (ret %d)\n", ret_len, ret);
+ 
+ 	/* now tell the hardware to transmit what we sent it */
+ 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
+ 	ret = usb_control_msg(rr3->udev, pipe, RR3_TX_SEND_SIGNAL,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      0, 0, irdata, 2, HZ * 10);
++			      0, 0, irdata, 2, 10000);
+ 
+ 	if (ret < 0)
+ 		dev_err(dev, "Error: control msg send failed, rc %d\n", ret);
 
 
