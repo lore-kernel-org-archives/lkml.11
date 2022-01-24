@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AABAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70115C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382869AbiAXU0Z (ORCPT
+        id S1382920AbiAXU0b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46142 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376272AbiAXUBL (ORCPT
+        Mon, 24 Jan 2022 15:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359709AbiAXUAE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:11 -0500
+        Mon, 24 Jan 2022 15:00:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86D70C04D63F;
+        Mon, 24 Jan 2022 11:28:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 063BBB8124F;
-        Mon, 24 Jan 2022 20:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31808C340E5;
-        Mon, 24 Jan 2022 20:01:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2EB14B8119D;
+        Mon, 24 Jan 2022 19:28:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A984C340E5;
+        Mon, 24 Jan 2022 19:28:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054468;
-        bh=MOqpyLIQ3I/vv1y8J/7vIEClqtBU18OiiM0sN/pQ4eE=;
+        s=korg; t=1643052499;
+        bh=S5wGeD/UHHh8DIKXW9frLb7k6IW0Fo+4rr8C207b6Y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jOElBW9Pm3SkRaxePYkH5Sr7ZI7CANFZ5kDf5yHTxdAJ9VM/OFdbv5LeDZ4rjmaod
-         W+wNRv9LwYycjZ7SuDiLUjl218zAzKz6z1geu8ilH8aJCILZ1UpcY8dt6ckUG1SKwC
-         wttYlH9J+2JfJw7EVxSBiB0gcq2pDPrRCXKHlhQI=
+        b=R9tSQkDeR2SyTzk2oxqnRVrzmmSDUv87bqBEKMYfpsh/GgkXHRVkKvBInYl6HtB1D
+         vM9m5/MedjI75a4dHymwsiC958LedSHUjDyRfyh3sjH4Frkr6U0x8xOzRbdjpHP9Ic
+         NucM/WwmjlpmO5quao1yUkgQmyvNGowEovmx5pqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 400/563] net: phy: marvell: configure RGMII delays for 88E1118
-Date:   Mon, 24 Jan 2022 19:42:45 +0100
-Message-Id: <20220124184038.266854410@linuxfoundation.org>
+Subject: [PATCH 5.4 079/320] crypto: stm32/cryp - fix xts and race condition in crypto_engine requests
+Date:   Mon, 24 Jan 2022 19:41:03 +0100
+Message-Id: <20220124183956.427945438@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,53 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
+[ Upstream commit d703c7a994ee34b7fa89baf21631fca0aa9f17fc ]
 
-Corentin Labbe reports that the SSI 1328 does not work when allowing
-the PHY to operate at gigabit speeds, but does work with the generic
-PHY driver.
+Don't erase key:
+If key is erased before the crypto_finalize_.*_request() call, some
+pending process will run with a key={ 0 }.
+Moreover if the key is reset at end of request, it breaks xts chaining
+mode, as for last xts block (in case input len is not a multiple of
+block) a new AES request is started without calling again set_key().
 
-This appears to be because m88e1118_config_init() writes a fixed value
-to the MSCR register, claiming that this is to enable 1G speeds.
-However, this always sets bits 4 and 5, enabling RGMII transmit and
-receive delays. The suspicion is that the original board this was
-added for required the delays to make 1G speeds work.
+Fixes: 9e054ec21ef8 ("crypto: stm32 - Support for STM32 CRYP crypto module")
 
-Add the necessary configuration for RGMII delays for the 88E1118 to
-bring this into line with the requirements for RGMII support, and thus
-make the SSI 1328 work.
-
-Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
-
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 91616182c311f..4dda2ab19c265 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -1090,6 +1090,12 @@ static int m88e1118_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index 9b3511236ba25..92472a48c0454 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -669,8 +669,6 @@ static void stm32_cryp_finish_req(struct stm32_cryp *cryp, int err)
+ 	else
+ 		crypto_finalize_ablkcipher_request(cryp->engine, cryp->req,
+ 						   err);
+-
+-	memset(cryp->ctx->key, 0, cryp->ctx->keylen);
+ }
  
-+	if (phy_interface_is_rgmii(phydev)) {
-+		err = m88e1121_config_aneg_rgmii_delays(phydev);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	/* Adjust LED Control */
- 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
- 		err = phy_write(phydev, 0x10, 0x1100);
+ static int stm32_cryp_cpu_start(struct stm32_cryp *cryp)
 -- 
 2.34.1
 
