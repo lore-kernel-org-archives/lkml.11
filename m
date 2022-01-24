@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4D4C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9273BC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366367AbiAXXwo (ORCPT
+        id S2366387AbiAXXwp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
+        Mon, 24 Jan 2022 18:52:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845911AbiAXXNz (ORCPT
+        with ESMTP id S1845907AbiAXXNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:13:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C482C067A71;
-        Mon, 24 Jan 2022 13:19:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DB8C09F4BF;
+        Mon, 24 Jan 2022 13:19:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ECA06B80FA1;
-        Mon, 24 Jan 2022 21:19:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A26C340E4;
-        Mon, 24 Jan 2022 21:19:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AAC58B80FA1;
+        Mon, 24 Jan 2022 21:19:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFE25C340E4;
+        Mon, 24 Jan 2022 21:19:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059196;
-        bh=4oYtsRdFJt3wVgx1zVbt/5z4Ff6BZH8Q/KvrbYGrPQ0=;
+        s=korg; t=1643059178;
+        bh=4n20CruvaLm92Dk2ViJNwsid1IZpIeyuGIIo5tTJCkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ytk/ZkDHJDbflDRDf2bJqNcFzit6MO/bEePrWIzkrmq+o0tSSGo4eE+wSQYldBVfX
-         aAyfZ398kfEMEOUSf1vg989oK+JD6y0SfEvxdRKhDVnFLdWdzYv7YIwPU5ENTKSgxj
-         p7BxQ+HO1bpB1OEmMfA+i6vzm3k0q8rtgnZ5hBts=
+        b=wG5rGyhGeT+vA6zMXs96jRJODmzh4F+1f+yZv8Z4MjfJp0dPP++jGx91VtkiAjwrm
+         5sefpIWh4YbeJbfPVB5/PHMoRP2nqZo84WcR55d92op1wnkUtOPidwZuZt40/d2KiY
+         6jw/YdN3FcIwfxO1vrbbq1eB3ecprK6vpWRxbPOI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jassi Brar <jassisinghbrar@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0535/1039] mailbox: pcc: Avoid using the uninitialized variable dev
-Date:   Mon, 24 Jan 2022 19:38:44 +0100
-Message-Id: <20220124184143.265198128@linuxfoundation.org>
+Subject: [PATCH 5.16 0512/1039] misc: lattice-ecp3-config: Fix task hung when firmware load failed
+Date:   Mon, 24 Jan 2022 19:38:21 +0100
+Message-Id: <20220124184142.494965616@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,41 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 960c4056aadcf61983f8eaac159927a052f8cf01 ]
+[ Upstream commit fcee5ce50bdb21116711e38635e3865594af907e ]
 
-Smatch static checker warns:
+When firmware load failed, kernel report task hung as follows:
 
-  |  drivers/mailbox/pcc.c:292 pcc_mbox_request_channel()
-  |  error: uninitialized symbol 'dev'.
+INFO: task xrun:5191 blocked for more than 147 seconds.
+      Tainted: G        W         5.16.0-rc5-next-20211220+ #11
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:xrun            state:D stack:    0 pid: 5191 ppid:   270 flags:0x00000004
+Call Trace:
+ __schedule+0xc12/0x4b50 kernel/sched/core.c:4986
+ schedule+0xd7/0x260 kernel/sched/core.c:6369 (discriminator 1)
+ schedule_timeout+0x7aa/0xa80 kernel/time/timer.c:1857
+ wait_for_completion+0x181/0x290 kernel/sched/completion.c:85
+ lattice_ecp3_remove+0x32/0x40 drivers/misc/lattice-ecp3-config.c:221
+ spi_remove+0x72/0xb0 drivers/spi/spi.c:409
 
-Fix the same by using pr_err instead of dev_err as the variable 'dev'
-is uninitialized at that stage.
+lattice_ecp3_remove() wait for signals from firmware loading, but when
+load failed, firmware_load() does not send this signal. This cause
+device remove hung. Fix it by sending signal even if load failed.
 
-Fixes: ce028702ddbc ("mailbox: pcc: Move bulk of PCCT parsing into pcc_mbox_probe")
-Cc: Jassi Brar <jassisinghbrar@gmail.com>
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Fixes: 781551df57c7 ("misc: Add Lattice ECP3 FPGA configuration via SPI")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Link: https://lore.kernel.org/r/20211228125522.3122284-1-weiyongjun1@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/pcc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/misc/lattice-ecp3-config.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/mailbox/pcc.c b/drivers/mailbox/pcc.c
-index 887a3704c12ec..e0a1ab3861f0d 100644
---- a/drivers/mailbox/pcc.c
-+++ b/drivers/mailbox/pcc.c
-@@ -289,7 +289,7 @@ pcc_mbox_request_channel(struct mbox_client *cl, int subspace_id)
- 	pchan = chan_info + subspace_id;
- 	chan = pchan->chan.mchan;
- 	if (IS_ERR(chan) || chan->cl) {
--		dev_err(dev, "Channel not found for idx: %d\n", subspace_id);
-+		pr_err("Channel not found for idx: %d\n", subspace_id);
- 		return ERR_PTR(-EBUSY);
+diff --git a/drivers/misc/lattice-ecp3-config.c b/drivers/misc/lattice-ecp3-config.c
+index 0f54730c7ed56..98828030b5a4d 100644
+--- a/drivers/misc/lattice-ecp3-config.c
++++ b/drivers/misc/lattice-ecp3-config.c
+@@ -76,12 +76,12 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 
+ 	if (fw == NULL) {
+ 		dev_err(&spi->dev, "Cannot load firmware, aborting\n");
+-		return;
++		goto out;
  	}
- 	dev = chan->mbox->dev;
+ 
+ 	if (fw->size == 0) {
+ 		dev_err(&spi->dev, "Error: Firmware size is 0!\n");
+-		return;
++		goto out;
+ 	}
+ 
+ 	/* Fill dummy data (24 stuffing bits for commands) */
+@@ -103,7 +103,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 		dev_err(&spi->dev,
+ 			"Error: No supported FPGA detected (JEDEC_ID=%08x)!\n",
+ 			jedec_id);
+-		return;
++		goto out;
+ 	}
+ 
+ 	dev_info(&spi->dev, "FPGA %s detected\n", ecp3_dev[i].name);
+@@ -116,7 +116,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 	buffer = kzalloc(fw->size + 8, GFP_KERNEL);
+ 	if (!buffer) {
+ 		dev_err(&spi->dev, "Error: Can't allocate memory!\n");
+-		return;
++		goto out;
+ 	}
+ 
+ 	/*
+@@ -155,7 +155,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 			"Error: Timeout waiting for FPGA to clear (status=%08x)!\n",
+ 			status);
+ 		kfree(buffer);
+-		return;
++		goto out;
+ 	}
+ 
+ 	dev_info(&spi->dev, "Configuring the FPGA...\n");
+@@ -181,7 +181,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 	release_firmware(fw);
+ 
+ 	kfree(buffer);
+-
++out:
+ 	complete(&data->fw_loaded);
+ }
+ 
 -- 
 2.34.1
 
