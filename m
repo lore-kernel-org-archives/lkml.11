@@ -2,71 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D669C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 07:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52562C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 07:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241533AbiAXHLs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 02:11:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229776AbiAXHLo (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 02:11:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7F44C06173B
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 23:11:43 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 02CC1B80CCF
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 07:11:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90202C340E1;
-        Mon, 24 Jan 2022 07:11:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643008299;
-        bh=qWez0wGob8vUCQuD2t7DHnXvuj3jt1kWScf2tXdwuFA=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=hGBRrWiEj5quo0WjhP2nfBn6wWQKfe7oJ6Aw8P8ZvvVBo1r5MQpB/uP2CnWbnFDyx
-         EExcWEqhDJksWvlgML+F4OLcsNhiaDW3J/0f15MgGYV5AbtMD23Wru8UDiP6xj2qnN
-         he/RCQsZSFYm9FRU/PMMCmU1nw7kE8BY0DtJJfuMVa3WWnqgX28E5z9pzhaES1vR/y
-         WJZO9ZlFdqfHicxsFyc0eqvEsydrM21U/VQJgTuhXL+cbA4a8pOPGrzg7sYCaaFQJL
-         hgpZkv9eXXMqBb/VUHFj6AUhPbixTy5akR4R2cB7YmuZm9eiYgD2yJ69KJBV01V2uG
-         uvcmCUDv8eU5g==
-Message-ID: <d424369b-c559-bf63-bbb3-71886f1799c9@kernel.org>
-Date:   Mon, 24 Jan 2022 15:11:35 +0800
+        id S241581AbiAXHM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 02:12:26 -0500
+Received: from mga04.intel.com ([192.55.52.120]:53043 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229776AbiAXHMZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 02:12:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643008345; x=1674544345;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Uz8nnVAfjL27meYo3jRGFNPYe6YwRskFjRkD9zDxGkk=;
+  b=PLOTZlfaVHuODGNizVoOVJ6hs1w913xLxMsliPqI6aoGtsYMJE67s1fb
+   IClVeAzo255FFNYGfCGuVI9D3FeYrZxq2RPCwwI5/3PFnMat/C7Sy+W7P
+   oHxenuvBWqzDKX0SjwBYjEfz3W7WKhVmcPG0tIzyTbam6Q01ms1iuMgd/
+   4m9DTJppqg5g9jHIVXdA1mz634PpnORya8mnssBg7qsn6H6wOGs6vHHVC
+   Y96sfAdjJQ6oXJZQ18b15GUxIoVsKQy+yP88LvR8dI6Sj/tXyjH0FeL3l
+   Yu1HZ25QfUZURjVpcJ0Tj4GZGn1wzp+8TFMP8SkWvFoQj5rD5YYfN9j1z
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="244814184"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="244814184"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 23:12:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="627387741"
+Received: from allen-box.sh.intel.com ([10.239.159.118])
+  by orsmga004.jf.intel.com with ESMTP; 23 Jan 2022 23:12:20 -0800
+From:   Lu Baolu <baolu.lu@linux.intel.com>
+To:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
+        Lu Baolu <baolu.lu@linux.intel.com>
+Subject: [PATCH 0/7] iommu cleanup and refactoring
+Date:   Mon, 24 Jan 2022 15:10:55 +0800
+Message-Id: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH] erofs: fix fsdax partition offset handling
-Content-Language: en-US
-To:     Gao Xiang <hsiangkao@linux.alibaba.com>,
-        linux-erofs@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>
-Cc:     LKML <linux-kernel@vger.kernel.org>
-References: <20220113051845.244461-1-hsiangkao@linux.alibaba.com>
-From:   Chao Yu <chao@kernel.org>
-In-Reply-To: <20220113051845.244461-1-hsiangkao@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/1/13 13:18, Gao Xiang wrote:
-> After seeking time on testing today upstream fsdax, I found it
-> actually doesn't work well as below:
-> 
-> [  186.492983] ------------[ cut here ]------------
-> [  186.493629] WARNING: CPU: 1 PID: 205 at fs/iomap/iter.c:33 iomap_iter+0x2f6/0x310
-> 
-> The problem is that m_dax_part_off should be applied to physical
-> addresses and very sorry about that I didn't catch this eariler.
-> 
-> Anyway, let's fix it up now. Also, I need to find a way to set up
-> a standalone testcase to look after this later.
-> 
-> Fixes: de2051147771 ("fsdax: shift partition offset handling into the file systems")
-> Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
+Hi,
 
-Reviewed-by: Chao Yu <chao@kernel.org>
+The guest pasid and aux-domain related code are dead code in current
+iommu subtree. As we have reached a consensus that all these features
+should be based on the new iommufd framework (which is under active
+development), the first part of this series removes and cleanups all
+the dead code.
 
-Thanks,
+The second part of this series refactors the iommu_domain by moving all
+domain-specific ops from iommu_ops to a new domain_ops. This makes an
+iommu_domain self-contained and represent the abstraction of an I/O
+translation table in the IOMMU subsystem. With different type of
+iommu_domain providing different set of ops, it's easier to support more
+types of I/O translation tables.
+
+Please help to review and comment.
+
+Best regards,
+baolu
+
+Lu Baolu (7):
+  iommu/vt-d: Remove guest pasid related callbacks
+  iommu: Remove guest pasid related interfaces and definitions
+  iommu/vt-d: Remove aux-domain related callbacks
+  iommu: Remove aux-domain related interfaces and iommu_ops
+  drm/nouveau/device: Get right pgsize_bitmap of iommu_domain
+  iommu: Use right way to retrieve iommu_ops
+  iommu: Add iommu_domain::domain_ops
+
+ include/linux/intel-iommu.h                   |  27 -
+ include/linux/intel-svm.h                     |  12 -
+ include/linux/iommu.h                         | 174 ++----
+ drivers/iommu/intel/pasid.h                   |   4 -
+ include/uapi/linux/iommu.h                    | 181 ------
+ .../drm/nouveau/nvkm/engine/device/tegra.c    |   2 +-
+ drivers/iommu/amd/iommu.c                     |  21 +-
+ drivers/iommu/apple-dart.c                    |  24 +-
+ drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c   |  22 +-
+ drivers/iommu/arm/arm-smmu/arm-smmu.c         |  23 +-
+ drivers/iommu/arm/arm-smmu/qcom_iommu.c       |  17 +-
+ drivers/iommu/exynos-iommu.c                  |  17 +-
+ drivers/iommu/fsl_pamu_domain.c               |  13 +-
+ drivers/iommu/intel/debugfs.c                 |   3 +-
+ drivers/iommu/intel/iommu.c                   | 542 +-----------------
+ drivers/iommu/intel/pasid.c                   | 161 ------
+ drivers/iommu/intel/svm.c                     | 209 -------
+ drivers/iommu/iommu.c                         | 296 +---------
+ drivers/iommu/ipmmu-vmsa.c                    |  21 +-
+ drivers/iommu/msm_iommu.c                     |  17 +-
+ drivers/iommu/mtk_iommu.c                     |  24 +-
+ drivers/iommu/mtk_iommu_v1.c                  |  19 +-
+ drivers/iommu/omap-iommu.c                    |  15 +-
+ drivers/iommu/rockchip-iommu.c                |  17 +-
+ drivers/iommu/s390-iommu.c                    |  15 +-
+ drivers/iommu/sprd-iommu.c                    |  19 +-
+ drivers/iommu/sun50i-iommu.c                  |  18 +-
+ drivers/iommu/tegra-gart.c                    |  15 +-
+ drivers/iommu/tegra-smmu.c                    |  16 +-
+ drivers/iommu/virtio-iommu.c                  |  18 +-
+ 30 files changed, 331 insertions(+), 1631 deletions(-)
+
+-- 
+2.25.1
+
