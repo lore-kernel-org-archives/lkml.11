@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F183C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBD8C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410500AbiAYA3V (ORCPT
+        id S3410523AbiAYA31 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449430AbiAXVyz (ORCPT
+        Mon, 24 Jan 2022 19:29:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53744 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573122AbiAXVo3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:54:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225E8C08B4FE;
-        Mon, 24 Jan 2022 12:34:50 -0800 (PST)
+        Mon, 24 Jan 2022 16:44:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6B0D614FF;
-        Mon, 24 Jan 2022 20:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0E2AC340E5;
-        Mon, 24 Jan 2022 20:34:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A81BFB815A2;
+        Mon, 24 Jan 2022 21:44:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC2AC340E4;
+        Mon, 24 Jan 2022 21:44:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056489;
-        bh=kvtpMf09zNVnWWbXCIVl9s/7VjcLSSErZYuDPGmkE3A=;
+        s=korg; t=1643060662;
+        bh=Q+kbtrSzN3sW0F+y05oRP18A4WGq9IVLlwKWgshlVIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ENRsXtafjEu++/ViKDqoO+I/NV2dNjYINFeQ7pl7v4CX1LpMTOLJmvMo72mRWDOyW
-         U0uT3Cn4EaZc4jEcMisrsKFtDM+U7pt31AIdN4915MyPhyH7YRTvY9rFgqYJWmRZTE
-         pHsa9epCaYOwaUR0Kau8t+WsfjAPsSCn/FTjBjvA=
+        b=1GbOkb+G5A3W13F6hvzJOQoSf18AaT+/IX74meYhGZGsrQEC+oACTuhJVB5GUwCjQ
+         lJCXv3v1Ek8ax/sLmuBux3A+Jzew7SxGRCOxFY2+rTglAvC9Rsc810HMCHb8391PHz
+         yH+bSlZ19Nv1KP0H8HoCRUFa+ZqeWSNdF9BLzcsU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 500/846] mxser: keep only !tty test in ISR
-Date:   Mon, 24 Jan 2022 19:40:17 +0100
-Message-Id: <20220124184118.277897472@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@mailbox.org>,
+        Rob Herring <robh@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 5.16 1023/1039] dt-bindings: display: meson-vpu: Add missing amlogic,canvas property
+Date:   Mon, 24 Jan 2022 19:46:52 +0100
+Message-Id: <20220124184159.682617668@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,69 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-[ Upstream commit 274ab58dc2b460cc474ffc7ccfcede4b2be1a3f5 ]
+commit 640f35b871d29cd685ce0ea0762636381beeb98a upstream.
 
-The others are superfluous with tty refcounting in place now. And they
-are racy in fact:
-* tty_port_initialized() reports false for a small moment after
-  interrupts are enabled.
-* closing is 1 while the port is still alive.
+This property was already mentioned in the old textual bindings
+amlogic,meson-vpu.txt, but got dropped during conversion.
+Adding it back similar to amlogic,gx-vdec.yaml.
 
-The queues are flushed later during close anyway. So there is no need
-for this special handling. Actually, the ISR should not flush the
-queues. It should behave as every other driver, just queue the chars
-into tty buffer and go on. But this will be changed later. There is
-still a lot code depending on having tty in ISR (and not only tty_port).
-
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211118073125.12283-4-jslaby@suse.cz
+Fixes: 6b9ebf1e0e67 ("dt-bindings: display: amlogic, meson-vpu: convert to yaml")
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211219094155.177206-1-alexander.stein@mailbox.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/mxser.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 1216f3985e18e..da375851af4e6 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -261,7 +261,6 @@ struct mxser_port {
- 	unsigned int xmit_head;
- 	unsigned int xmit_tail;
- 	unsigned int xmit_cnt;
--	int closing;
+--- a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
++++ b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
+@@ -78,6 +78,10 @@ properties:
+   interrupts:
+     maxItems: 1
  
- 	spinlock_t slock;
- };
-@@ -923,7 +922,6 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
- 		return;
- 	if (tty_port_close_start(port, tty, filp) == 0)
- 		return;
--	info->closing = 1;
- 	mutex_lock(&port->mutex);
- 	mxser_close_port(port);
- 	mxser_flush_buffer(tty);
-@@ -932,7 +930,6 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
- 	mxser_shutdown_port(port);
- 	tty_port_set_initialized(port, 0);
- 	mutex_unlock(&port->mutex);
--	info->closing = 0;
- 	/* Right now the tty_port set is done outside of the close_end helper
- 	   as we don't yet have everyone using refcounts */	
- 	tty_port_close_end(port, tty);
-@@ -1693,7 +1690,7 @@ static bool mxser_port_isr(struct mxser_port *port)
++  amlogic,canvas:
++    description: should point to a canvas provider node
++    $ref: /schemas/types.yaml#/definitions/phandle
++
+   power-domains:
+     maxItems: 1
+     description: phandle to the associated power domain
+@@ -106,6 +110,7 @@ required:
+   - port@1
+   - "#address-cells"
+   - "#size-cells"
++  - amlogic,canvas
  
- 	iir &= MOXA_MUST_IIR_MASK;
- 	tty = tty_port_tty_get(&port->port);
--	if (!tty || port->closing || !tty_port_initialized(&port->port)) {
-+	if (!tty) {
- 		status = inb(port->ioaddr + UART_LSR);
- 		outb(MOXA_MUST_FCR_GDA_MODE_ENABLE | UART_FCR_ENABLE_FIFO |
- 				UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
--- 
-2.34.1
-
+ additionalProperties: false
+ 
+@@ -118,6 +123,7 @@ examples:
+         interrupts = <3>;
+         #address-cells = <1>;
+         #size-cells = <0>;
++        amlogic,canvas = <&canvas>;
+ 
+         /* CVBS VDAC output port */
+         port@0 {
 
 
