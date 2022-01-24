@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 456C6C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B18A6C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384427AbiAXU3n (ORCPT
+        id S1345937AbiAXU3E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:29:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33698 "EHLO
+        Mon, 24 Jan 2022 15:29:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33840 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348836AbiAXUIs (ORCPT
+        with ESMTP id S1378402AbiAXUG7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:08:48 -0500
+        Mon, 24 Jan 2022 15:06:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC24F6131F;
-        Mon, 24 Jan 2022 20:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93A5AC340E5;
-        Mon, 24 Jan 2022 20:08:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72BF160B89;
+        Mon, 24 Jan 2022 20:06:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55DBDC340E5;
+        Mon, 24 Jan 2022 20:06:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054926;
-        bh=QYooLD2Iy4Ex5XNIjipp54FHDkWtZ0Nl+hc6wluX0oI=;
+        s=korg; t=1643054818;
+        bh=aaHOJV8MOIdHgFB4aY/Fq/gj7JNcclxTGHGizhQJaHs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sb7bDZvEOJ/CuWmeXwywSTsTcAmvO0G+NyEISXub9Almwv0Bgsruj8N8shpHo8O7f
-         Px8mWQRwTpXcs2hp3FjRvs3ZFElalzGBPjME4CYfGV0CLI0fIl879yifaxT/gPyUPN
-         hoAbLCfrbsbgZO/A8P9QObG1jaQSxfeqyKLHhvbk=
+        b=MT49/35v/9MTMlXxTHpMCf3p2eMs8hOBCKvVQg7Bz4hs/474l/nsD31NpsSyTE/bK
+         2ZILgOFCA/fc9X41wkxROwVYqdny/bRcR2H2u9GHlLE0pl9KUISG71CCG55gk9gUoA
+         syvuzX2N2riSb5WlxVmdtAfqWFC51t+jJNVLglCY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jie Wang <wangjie125@huawei.com>,
-        Guangbin Huang <huangguangbin2@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 549/563] net: bonding: fix bond_xmit_broadcast return value error bug
-Date:   Mon, 24 Jan 2022 19:45:14 +0100
-Message-Id: <20220124184043.423578112@linuxfoundation.org>
+        stable@vger.kernel.org, Hyeong-Jun Kim <hj514.kim@samsung.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Youngjin Gil <youngjin.gil@samsung.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.10 514/563] f2fs: compress: fix potential deadlock of compress file
+Date:   Mon, 24 Jan 2022 19:44:39 +0100
+Message-Id: <20220124184042.229711221@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,110 +48,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jie Wang <wangjie125@huawei.com>
+From: Hyeong-Jun Kim <hj514.kim@samsung.com>
 
-commit 4e5bd03ae34652cd932ab4c91c71c511793df75c upstream.
+commit 7377e853967ba45bf409e3b5536624d2cbc99f21 upstream.
 
-In Linux bonding scenario, one packet is copied to several copies and sent
-by all slave device of bond0 in mode 3(broadcast mode). The mode 3 xmit
-function bond_xmit_broadcast() only ueses the last slave device's tx result
-as the final result. In this case, if the last slave device is down, then
-it always return NET_XMIT_DROP, even though the other slave devices xmit
-success. It may cause the tx statistics error, and cause the application
-(e.g. scp) consider the network is unreachable.
+There is a potential deadlock between writeback process and a process
+performing write_begin() or write_cache_pages() while trying to write
+same compress file, but not compressable, as below:
 
-For example, use the following command to configure server A.
+[Process A] - doing checkpoint
+[Process B]                     [Process C]
+f2fs_write_cache_pages()
+- lock_page() [all pages in cluster, 0-31]
+- f2fs_write_multi_pages()
+ - f2fs_write_raw_pages()
+  - f2fs_write_single_data_page()
+   - f2fs_do_write_data_page()
+     - return -EAGAIN [f2fs_trylock_op() failed]
+   - unlock_page(page) [e.g., page 0]
+                                - generic_perform_write()
+                                 - f2fs_write_begin()
+                                  - f2fs_prepare_compress_overwrite()
+                                   - prepare_compress_overwrite()
+                                    - lock_page() [e.g., page 0]
+                                    - lock_page() [e.g., page 1]
+   - lock_page(page) [e.g., page 0]
 
-echo 3 > /sys/class/net/bond0/bonding/mode
-ifconfig bond0 up
-ifenslave bond0 eth0 eth1
-ifconfig bond0 192.168.1.125
-ifconfig eth0 up
-ifconfig eth1 down
-The slave device eth0 and eth1 are connected to server B(192.168.1.107).
-Run the ping 192.168.1.107 -c 3 -i 0.2 command, the following information
-is displayed.
+Since there is no compress process, it is no longer necessary to hold
+locks on every pages in cluster within f2fs_write_raw_pages().
 
-PING 192.168.1.107 (192.168.1.107) 56(84) bytes of data.
-64 bytes from 192.168.1.107: icmp_seq=1 ttl=64 time=0.077 ms
-64 bytes from 192.168.1.107: icmp_seq=2 ttl=64 time=0.056 ms
-64 bytes from 192.168.1.107: icmp_seq=3 ttl=64 time=0.051 ms
+This patch changes f2fs_write_raw_pages() to release all locks first
+and then perform write same as the non-compress file in
+f2fs_write_cache_pages().
 
- 192.168.1.107 ping statistics
-0 packets transmitted, 3 received
-
-Actually, the slave device eth0 of the bond successfully sends three
-ICMP packets, but the result shows that 0 packets are transmitted.
-
-Also if we use scp command to get remote files, the command end with the
-following printings.
-
-ssh_exchange_identification: read: Connection timed out
-
-So this patch modifies the bond_xmit_broadcast to return NET_XMIT_SUCCESS
-if one slave device in the bond sends packets successfully. If all slave
-devices send packets fail, the discarded packets stats is increased. The
-skb is released when there is no slave device in the bond or the last slave
-device is down.
-
-Fixes: ae46f184bc1f ("bonding: propagate transmit status")
-Signed-off-by: Jie Wang <wangjie125@huawei.com>
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 4c8ff7095bef ("f2fs: support data compression")
+Signed-off-by: Hyeong-Jun Kim <hj514.kim@samsung.com>
+Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Youngjin Gil <youngjin.gil@samsung.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/bonding/bond_main.c |   30 ++++++++++++++++++++++--------
- 1 file changed, 22 insertions(+), 8 deletions(-)
+ fs/f2fs/compress.c |   50 ++++++++++++++++++++++----------------------------
+ 1 file changed, 22 insertions(+), 28 deletions(-)
 
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -4562,25 +4562,39 @@ static netdev_tx_t bond_xmit_broadcast(s
- 	struct bonding *bond = netdev_priv(bond_dev);
- 	struct slave *slave = NULL;
- 	struct list_head *iter;
-+	bool xmit_suc = false;
-+	bool skb_used = false;
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -1362,25 +1362,38 @@ static int f2fs_write_raw_pages(struct c
+ 					enum iostat_type io_type)
+ {
+ 	struct address_space *mapping = cc->inode->i_mapping;
+-	int _submitted, compr_blocks, ret;
+-	int i = -1, err = 0;
++	int _submitted, compr_blocks, ret, i;
  
- 	bond_for_each_slave_rcu(bond, slave, iter) {
--		if (bond_is_last_slave(bond, slave))
--			break;
--		if (bond_slave_is_up(slave) && slave->link == BOND_LINK_UP) {
--			struct sk_buff *skb2 = skb_clone(skb, GFP_ATOMIC);
-+		struct sk_buff *skb2;
- 
-+		if (!(bond_slave_is_up(slave) && slave->link == BOND_LINK_UP))
+ 	compr_blocks = f2fs_compressed_blocks(cc);
+-	if (compr_blocks < 0) {
+-		err = compr_blocks;
+-		goto out_err;
++
++	for (i = 0; i < cc->cluster_size; i++) {
++		if (!cc->rpages[i])
 +			continue;
 +
-+		if (bond_is_last_slave(bond, slave)) {
-+			skb2 = skb;
-+			skb_used = true;
-+		} else {
-+			skb2 = skb_clone(skb, GFP_ATOMIC);
- 			if (!skb2) {
- 				net_err_ratelimited("%s: Error: %s: skb_clone() failed\n",
- 						    bond_dev->name, __func__);
- 				continue;
- 			}
--			bond_dev_queue_xmit(bond, skb2, slave->dev);
- 		}
-+
-+		if (bond_dev_queue_xmit(bond, skb2, slave->dev) == NETDEV_TX_OK)
-+			xmit_suc = true;
++		redirty_page_for_writepage(wbc, cc->rpages[i]);
++		unlock_page(cc->rpages[i]);
  	}
--	if (slave && bond_slave_is_up(slave) && slave->link == BOND_LINK_UP)
--		return bond_dev_queue_xmit(bond, skb, slave->dev);
  
--	return bond_tx_drop(bond_dev, skb);
-+	if (!skb_used)
-+		dev_kfree_skb_any(skb);
++	if (compr_blocks < 0)
++		return compr_blocks;
 +
-+	if (xmit_suc)
-+		return NETDEV_TX_OK;
+ 	for (i = 0; i < cc->cluster_size; i++) {
+ 		if (!cc->rpages[i])
+ 			continue;
+ retry_write:
++		lock_page(cc->rpages[i]);
 +
-+	atomic_long_inc(&bond_dev->tx_dropped);
-+	return NET_XMIT_DROP;
+ 		if (cc->rpages[i]->mapping != mapping) {
++continue_unlock:
+ 			unlock_page(cc->rpages[i]);
+ 			continue;
+ 		}
+ 
+-		BUG_ON(!PageLocked(cc->rpages[i]));
++		if (!PageDirty(cc->rpages[i]))
++			goto continue_unlock;
++
++		if (!clear_page_dirty_for_io(cc->rpages[i]))
++			goto continue_unlock;
+ 
+ 		ret = f2fs_write_single_data_page(cc->rpages[i], &_submitted,
+ 						NULL, NULL, wbc, io_type,
+@@ -1395,26 +1408,15 @@ retry_write:
+ 				 * avoid deadlock caused by cluster update race
+ 				 * from foreground operation.
+ 				 */
+-				if (IS_NOQUOTA(cc->inode)) {
+-					err = 0;
+-					goto out_err;
+-				}
++				if (IS_NOQUOTA(cc->inode))
++					return 0;
+ 				ret = 0;
+ 				cond_resched();
+ 				congestion_wait(BLK_RW_ASYNC,
+ 						DEFAULT_IO_TIMEOUT);
+-				lock_page(cc->rpages[i]);
+-
+-				if (!PageDirty(cc->rpages[i])) {
+-					unlock_page(cc->rpages[i]);
+-					continue;
+-				}
+-
+-				clear_page_dirty_for_io(cc->rpages[i]);
+ 				goto retry_write;
+ 			}
+-			err = ret;
+-			goto out_err;
++			return ret;
+ 		}
+ 
+ 		*submitted += _submitted;
+@@ -1423,14 +1425,6 @@ retry_write:
+ 	f2fs_balance_fs(F2FS_M_SB(mapping), true);
+ 
+ 	return 0;
+-out_err:
+-	for (++i; i < cc->cluster_size; i++) {
+-		if (!cc->rpages[i])
+-			continue;
+-		redirty_page_for_writepage(wbc, cc->rpages[i]);
+-		unlock_page(cc->rpages[i]);
+-	}
+-	return err;
  }
  
- /*------------------------- Device initialization ---------------------------*/
+ int f2fs_write_multi_pages(struct compress_ctx *cc,
 
 
