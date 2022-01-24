@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A2E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F5BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343608AbiAXSxt (ORCPT
+        id S1344199AbiAXSxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49716 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343517AbiAXSwE (ORCPT
+        Mon, 24 Jan 2022 13:53:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51124 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245499AbiAXSv7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:04 -0500
+        Mon, 24 Jan 2022 13:51:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01FEF614F0;
-        Mon, 24 Jan 2022 18:52:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB91CC340E5;
-        Mon, 24 Jan 2022 18:52:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51BF8B81223;
+        Mon, 24 Jan 2022 18:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C14C340E5;
+        Mon, 24 Jan 2022 18:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050323;
-        bh=PE5eRi3IE9VNLlQ1ed9CSr4cABoF8ehAGM5W/x8b8/k=;
+        s=korg; t=1643050317;
+        bh=ohSD3H6PwcHAXjnc8cPnR0pRDWhhFXJoW7p+x+J3LEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nX8iKJ20S5qK6FiN8tZR0g3XTlf0gRIIua4AsCabxCSFbriJtJSlMJpjDKmbk7wVx
-         VHNr7KaqE5gMtlqTS/Cg6dLuUUphqdCZ41Ftmbm8FviK8RUmSyY6/SvhxtUrc+HwiD
-         Yip3K2OB2tn3Q4Xlcg8W9y+nUolsZs9xC42/T01s=
+        b=D75OLag6it4UaXI9wqqdiVSivpaCgWxPkFbAzHfXgh4BnfS0ySFmtcsG2YMhCz9zp
+         KEEYoUU8F2HUVg13MKE6BgakENf9iQfBNmHn8d/uMZues5j8nmaxqF3xOfuisC9vrR
+         rQ5FuGV5RGqvfVD86YHPHKncTnO/9eCw8QV5rc5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 080/114] dm space map common: add bounds check to sm_ll_lookup_bitmap()
-Date:   Mon, 24 Jan 2022 19:42:55 +0100
-Message-Id: <20220124183929.580137882@linuxfoundation.org>
+Subject: [PATCH 4.4 078/114] net: mdio: Demote probed message to debug print
+Date:   Mon, 24 Jan 2022 19:42:53 +0100
+Message-Id: <20220124183929.500442597@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -47,35 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Thornber <ejt@redhat.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit cba23ac158db7f3cd48a923d6861bee2eb7a2978 ]
+[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
 
-Corrupted metadata could warrant returning error from sm_ll_lookup_bitmap().
+On systems with large numbers of MDIO bus/muxes the message indicating
+that a given MDIO bus has been successfully probed is repeated for as
+many buses we have, which can eat up substantial boot time for no
+reason, demote to a debug print.
 
-Signed-off-by: Joe Thornber <ejt@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/persistent-data/dm-space-map-common.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/phy/mdio_bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/persistent-data/dm-space-map-common.c b/drivers/md/persistent-data/dm-space-map-common.c
-index ca09ad2a639c4..6fa4a68e78b0d 100644
---- a/drivers/md/persistent-data/dm-space-map-common.c
-+++ b/drivers/md/persistent-data/dm-space-map-common.c
-@@ -279,6 +279,11 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result)
- 	struct disk_index_entry ie_disk;
- 	struct dm_block *blk;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 4066fb5a935a7..2fb95cca33183 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -295,7 +295,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	}
  
-+	if (b >= ll->nr_blocks) {
-+		DMERR_LIMIT("metadata block out of bounds");
-+		return -EINVAL;
-+	}
-+
- 	b = do_div(index, ll->entries_per_block);
- 	r = ll->load_ie(ll, index, &ie_disk);
- 	if (r < 0)
+ 	bus->state = MDIOBUS_REGISTERED;
+-	pr_info("%s: probed\n", bus->name);
++	dev_dbg(&bus->dev, "probed\n");
+ 	return 0;
+ 
+ error:
 -- 
 2.34.1
 
