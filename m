@@ -2,64 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 218C9C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF874C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360273AbiAXXgW (ORCPT
+        id S2360444AbiAXXgr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:36:22 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:50958 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1383911AbiAXWs2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:48:28 -0500
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
+        Mon, 24 Jan 2022 18:36:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1839744AbiAXWvx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:51:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B97FBC09D9F0;
+        Mon, 24 Jan 2022 13:07:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id C90FE1EC02DD;
-        Mon, 24 Jan 2022 23:48:22 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1643064502;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=i3ynX/3WyXL+RIfj1UToTdc8PkhLwkgiGCcTadCCkMY=;
-        b=gVtVcine7JJA4nWZ+l9gsKrWP0huJ2VGNVQQM0s7mdqyMK59z8o2N0Nzb+TN11jeCU94hU
-        X13uUgORFoSIl82EqnY2FEOi5hl+y+z8NWtImSFyRCxA3jOQaK8vSx6nUKxFEpyYjm/Ezo
-        XVkIoGU6T74ygiaQTqTcVX992KuTtow=
-Date:   Mon, 24 Jan 2022 23:48:17 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     dave.hansen@intel.com, benh@amazon.com,
-        dave.hansen@linux.intel.com, kuni1840@gmail.com,
-        linux-kernel@vger.kernel.org, mingo@redhat.com, tglx@linutronix.de,
-        x86@kernel.org
-Subject: Re: [PATCH] x86/boot: Avoid redundant address overlap tests in
- memcpy().
-Message-ID: <Ye8ssRJEpau57jKj@zn.tnic>
-References: <bd7c111c-8bd4-9c4d-4715-c0fb5fd034ee@intel.com>
- <20220124221447.1030-1-kuniyu@amazon.co.jp>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81A99B811FB;
+        Mon, 24 Jan 2022 21:07:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FFE3C340E5;
+        Mon, 24 Jan 2022 21:07:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058476;
+        bh=iOwbgegqT26I6orDq8beuiWOLFK1+X2f+sFwzIToXCw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dtLpkQMbi+nYL042ZCwqzyVpzMok3cY3EZ7z3wnggWVnWz86UiTAYV5P1yckulCOj
+         O+9BIY+F3inWjW1HxsjQssMX77bEWSEe23IXcXGXPkALj2P2EMexW7WiWiKh0Ms2PA
+         LJzE6IZJ+Ubwn6y88eNPE+i9A55OiaGLnw01mqC4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shuyi Cheng <chengshuyi@linux.alibaba.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0268/1039] libbpf: Add "bool skipped" to struct bpf_map
+Date:   Mon, 24 Jan 2022 19:34:17 +0100
+Message-Id: <20220124184134.312014386@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220124221447.1030-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 25, 2022 at 07:14:47AM +0900, Kuniyuki Iwashima wrote:
-> > Also, is this worth the churn?  It probably saves less than 10 
-> > instructions, all of which are ridiculously cheap.  Is there a *reason* 
-> > for this other than being a pure cleanup?
-> 
-> This is just for cleanup.
+From: Shuyi Cheng <chengshuyi@linux.alibaba.com>
 
-Was wondering the same thing, whether this is even worth the trouble.
-I'm sure you can find real bugs to fix.
+[ Upstream commit 229fae38d0fc0d6ff58d57cbeb1432da55e58d4f ]
 
-:-)
+Fix error: "failed to pin map: Bad file descriptor, path:
+/sys/fs/bpf/_rodata_str1_1."
 
+In the old kernel, the global data map will not be created, see [0]. So
+we should skip the pinning of the global data map to avoid
+bpf_object__pin_maps returning error. Therefore, when the map is not
+created, we mark “map->skipped" as true and then check during relocation
+and during pinning.
+
+Fixes: 16e0c35c6f7a ("libbpf: Load global data maps lazily on legacy kernels")
+Signed-off-by: Shuyi Cheng <chengshuyi@linux.alibaba.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/lib/bpf/libbpf.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 4050a0f8dad66..fd25e30e70cc2 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -400,6 +400,7 @@ struct bpf_map {
+ 	char *pin_path;
+ 	bool pinned;
+ 	bool reused;
++	bool skipped;
+ 	__u64 map_extra;
+ };
+ 
+@@ -5003,8 +5004,10 @@ bpf_object__create_maps(struct bpf_object *obj)
+ 		 * kernels.
+ 		 */
+ 		if (bpf_map__is_internal(map) &&
+-		    !kernel_supports(obj, FEAT_GLOBAL_DATA))
++		    !kernel_supports(obj, FEAT_GLOBAL_DATA)) {
++			map->skipped = true;
+ 			continue;
++		}
+ 
+ 		retried = false;
+ retry:
+@@ -5607,8 +5610,7 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
+ 			} else {
+ 				const struct bpf_map *map = &obj->maps[relo->map_idx];
+ 
+-				if (bpf_map__is_internal(map) &&
+-				    !kernel_supports(obj, FEAT_GLOBAL_DATA)) {
++				if (map->skipped) {
+ 					pr_warn("prog '%s': relo #%d: kernel doesn't support global data\n",
+ 						prog->name, i);
+ 					return -ENOTSUP;
+@@ -7733,6 +7735,9 @@ int bpf_object__pin_maps(struct bpf_object *obj, const char *path)
+ 		char *pin_path = NULL;
+ 		char buf[PATH_MAX];
+ 
++		if (map->skipped)
++			continue;
++
+ 		if (path) {
+ 			int len;
+ 
 -- 
-Regards/Gruss,
-    Boris.
+2.34.1
 
-https://people.kernel.org/tglx/notes-about-netiquette
+
+
