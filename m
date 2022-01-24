@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9E39C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D6ADC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839502AbiAXWvG (ORCPT
+        id S1839529AbiAXWvO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:51:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
+        Mon, 24 Jan 2022 17:51:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572900AbiAXVmu (ORCPT
+        with ESMTP id S1458155AbiAXVms (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:50 -0500
+        Mon, 24 Jan 2022 16:42:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD133C0419DE;
-        Mon, 24 Jan 2022 12:31:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0254EC07A95C;
+        Mon, 24 Jan 2022 12:31:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CA8B61382;
-        Mon, 24 Jan 2022 20:31:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F4BAC340E5;
-        Mon, 24 Jan 2022 20:31:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 956ED61505;
+        Mon, 24 Jan 2022 20:31:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AF02C340E5;
+        Mon, 24 Jan 2022 20:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056282;
-        bh=8Yt00TSqkUG5zmPCAKbAEstzXYANjL5hTNzJAqPXA70=;
+        s=korg; t=1643056280;
+        bh=eBtV3ryZiXUZattGsksT7BmwOVTZlzKcXHsLCTSvJcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j6RDx0NuYT+Bs4UDoMak/YyMZaSj4vsFNkg3U7OmjeisSsKZI29x90sE+IIHSAiiN
-         DHJZB1M2gj9c+Q0jT+aXLLKYTgUMfqoFl6/OTf63Iz9C28zLMYLJWo7K26WAaU1BEK
-         n4yH6M4oEPhrEIe8STZXXpn1PDKNmUe0CfoYRvfQ=
+        b=mu9ANdvXh7NsOvVONejRR6ig2OfyrIg+yfVQB8E1OnX0XZgfUK91xFewbbKCbiqqL
+         NNN0PUKrEuiWLK5M2667pI4guEse51IUOSUDsYZFCXJs9+50LU29WtgwqyKeql2gES
+         LkcmVrMfvRglI1ST/DLlcExGvokRP14LpjXBMNnY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Landley <rob@landley.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Stafford Horne <shorne@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 400/846] openrisc: Add clone3 ABI wrapper
-Date:   Mon, 24 Jan 2022 19:38:37 +0100
-Message-Id: <20220124184114.751113365@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 430/846] phy: uniphier-usb3ss: fix unintended writing zeros to PHY register
+Date:   Mon, 24 Jan 2022 19:39:07 +0100
+Message-Id: <20220124184115.814621705@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,61 +51,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stafford Horne <shorne@gmail.com>
+From: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
 
-[ Upstream commit 433fe39f674d58bc7a3e8254a5d2ffc290b7e04e ]
+[ Upstream commit 898c7a9ec81620125f2463714a0f4dea18ad6e54 ]
 
-Like fork and clone the clone3 syscall needs a wrapper to save callee
-saved registers, which is required by the OpenRISC ABI.  This came up
-after auditing code following a discussion with Rob Landley and Arnd
-Bergmann [0].
+Similar to commit 4a90bbb478db ("phy: uniphier-pcie: Fix updating phy
+parameters"), in function uniphier_u3ssphy_set_param(), unintentionally
+write zeros to other fields when writing PHY registers.
 
-Tested with the clone3 kselftests and there were no issues.
-
-[0] https://lore.kernel.org/all/41206fc7-f8ce-98aa-3718-ba3e1431e320@landley.net/T/#m9c0cdb2703813b9df4da04cf6b30de1f1aa89944
-
-Fixes: 07e83dfbe16c ("openrisc: Enable the clone3 syscall")
-Cc: Rob Landley <rob@landley.net>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Stafford Horne <shorne@gmail.com>
+Fixes: 5ab43d0f8697 ("phy: socionext: add USB3 PHY driver for UniPhier SoC")
+Signed-off-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1640150369-4134-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/syscalls.h | 2 ++
- arch/openrisc/kernel/entry.S         | 5 +++++
- 2 files changed, 7 insertions(+)
+ drivers/phy/socionext/phy-uniphier-usb3ss.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/arch/openrisc/include/asm/syscalls.h b/arch/openrisc/include/asm/syscalls.h
-index 3a7eeae6f56a8..aa1c7e98722e3 100644
---- a/arch/openrisc/include/asm/syscalls.h
-+++ b/arch/openrisc/include/asm/syscalls.h
-@@ -22,9 +22,11 @@ asmlinkage long sys_or1k_atomic(unsigned long type, unsigned long *v1,
+diff --git a/drivers/phy/socionext/phy-uniphier-usb3ss.c b/drivers/phy/socionext/phy-uniphier-usb3ss.c
+index 6700645bcbe6b..3b5ffc16a6947 100644
+--- a/drivers/phy/socionext/phy-uniphier-usb3ss.c
++++ b/drivers/phy/socionext/phy-uniphier-usb3ss.c
+@@ -22,11 +22,13 @@
+ #include <linux/reset.h>
  
- asmlinkage long __sys_clone(unsigned long clone_flags, unsigned long newsp,
- 			void __user *parent_tid, void __user *child_tid, int tls);
-+asmlinkage long __sys_clone3(struct clone_args __user *uargs, size_t size);
- asmlinkage long __sys_fork(void);
+ #define SSPHY_TESTI		0x0
+-#define SSPHY_TESTO		0x4
+ #define TESTI_DAT_MASK		GENMASK(13, 6)
+ #define TESTI_ADR_MASK		GENMASK(5, 1)
+ #define TESTI_WR_EN		BIT(0)
  
- #define sys_clone __sys_clone
-+#define sys_clone3 __sys_clone3
- #define sys_fork __sys_fork
- 
- #endif /* __ASM_OPENRISC_SYSCALLS_H */
-diff --git a/arch/openrisc/kernel/entry.S b/arch/openrisc/kernel/entry.S
-index edaa775a648e6..c68f3349c1741 100644
---- a/arch/openrisc/kernel/entry.S
-+++ b/arch/openrisc/kernel/entry.S
-@@ -1170,6 +1170,11 @@ ENTRY(__sys_clone)
- 	l.j	_fork_save_extra_regs_and_call
- 	 l.nop
- 
-+ENTRY(__sys_clone3)
-+	l.movhi	r29,hi(sys_clone3)
-+	l.j	_fork_save_extra_regs_and_call
-+	 l.ori	r29,r29,lo(sys_clone3)
++#define SSPHY_TESTO		0x4
++#define TESTO_DAT_MASK		GENMASK(7, 0)
 +
- ENTRY(__sys_fork)
- 	l.movhi	r29,hi(sys_fork)
- 	l.ori	r29,r29,lo(sys_fork)
+ #define PHY_F(regno, msb, lsb) { (regno), (msb), (lsb) }
+ 
+ #define CDR_CPD_TRIM	PHY_F(7, 3, 0)	/* RxPLL charge pump current */
+@@ -84,12 +86,12 @@ static void uniphier_u3ssphy_set_param(struct uniphier_u3ssphy_priv *priv,
+ 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
+ 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
+ 	uniphier_u3ssphy_testio_write(priv, val);
+-	val = readl(priv->base + SSPHY_TESTO);
++	val = readl(priv->base + SSPHY_TESTO) & TESTO_DAT_MASK;
+ 
+ 	/* update value */
+-	val &= ~FIELD_PREP(TESTI_DAT_MASK, field_mask);
++	val &= ~field_mask;
+ 	data = field_mask & (p->value << p->field.lsb);
+-	val  = FIELD_PREP(TESTI_DAT_MASK, data);
++	val  = FIELD_PREP(TESTI_DAT_MASK, data | val);
+ 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
+ 	uniphier_u3ssphy_testio_write(priv, val);
+ 	uniphier_u3ssphy_testio_write(priv, val | TESTI_WR_EN);
 -- 
 2.34.1
 
