@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD26C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D315C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384988AbiAXUbK (ORCPT
+        id S1385136AbiAXUb0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:31:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379369AbiAXULV (ORCPT
+        Mon, 24 Jan 2022 15:31:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38048 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243990AbiAXUL2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA51C06F8E2;
-        Mon, 24 Jan 2022 11:33:28 -0800 (PST)
+        Mon, 24 Jan 2022 15:11:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DCC161504;
-        Mon, 24 Jan 2022 19:33:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EA3C340E5;
-        Mon, 24 Jan 2022 19:33:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3BB86091B;
+        Mon, 24 Jan 2022 20:11:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5947C36AF9;
+        Mon, 24 Jan 2022 20:11:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052807;
-        bh=9aYQODP5szAojPD5WJTQP+8gls/HiWPful1vla/RVVY=;
+        s=korg; t=1643055086;
+        bh=MM6JVk+Uapq/hQtW5GIQkGoyXljUX4rnKq+QBWgsLxM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5sMzs0k5IrgxWb2Iu8ZgxWcC68zEGo6FZrUQm9wBXJnk4Zz4qschzkWEvThmK//L
-         IVPCHZzIU+Xx6VwKFt3CY6mH76r6sd0DAWifmgLMqCfGh49fUdllGsTCI6DrQIkF59
-         VQ54o4A9mp7+B0o3ZL5ac/5bqBCwb4oUiqn9uAuw=
+        b=H6Pp1LZVksR5zuhOG0640yByXnlB9T2lA3R3ovtVB1C+ddwTdoXX/sYauBzQPJSzz
+         d7atiUyynKaak+TAIVH+6NmaGZv/Rh8OV/MPE8N2ghg5BrIscILnK8tSoWr0aLY5Tp
+         YVHK8+2+bwzx4G0KrljwQKn2GNYTFvVAgksSZhSE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 181/320] net-sysfs: update the queue counts in the unregistration path
-Date:   Mon, 24 Jan 2022 19:42:45 +0100
-Message-Id: <20220124183959.824749734@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 035/846] ksmbd: fix guest connection failure with nautilus
+Date:   Mon, 24 Jan 2022 19:32:32 +0100
+Message-Id: <20220124184102.155872424@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +46,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
+commit ac090d9c90b087d6fb714e54b2a6dd1e6c373ed6 upstream.
 
-When updating Rx and Tx queue kobjects, the queue count should always be
-updated to match the queue kobjects count. This was not done in the net
-device unregistration path, fix it. Tracking all queue count updates
-will allow in a following up patch to detect illegal updates.
+MS-SMB2 describe session sign like the following.
+Session.SigningRequired MUST be set to TRUE under the following conditions:
+ - If the SMB2_NEGOTIATE_SIGNING_REQUIRED bit is set in the SecurityMode
+   field of the client request.
+ - If the SMB2_SESSION_FLAG_IS_GUEST bit is not set in the SessionFlags
+   field and Session.IsAnonymous is FALSE and either Connection.ShouldSign
+   or global RequireMessageSigning is TRUE.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+When trying guest account connection using nautilus, The login failure
+happened on session setup. ksmbd does not allow this connection
+when the user is a guest and the connection sign is set. Just do not set
+session sign instead of error response as described in the specification.
+And this change improves the guest connection in Nautilus.
+
+Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/net-sysfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ fs/ksmbd/smb2pdu.c |   64 ++++++++++++++++++++++++-----------------------------
+ 1 file changed, 30 insertions(+), 34 deletions(-)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index 05b0c60bfba2b..bcad7028bbf45 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -1661,6 +1661,9 @@ static void remove_queue_kobjects(struct net_device *dev)
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -1457,11 +1457,6 @@ static int ntlm_authenticate(struct ksmb
  
- 	net_rx_queue_update_kobjects(dev, real_rx, 0);
- 	netdev_queue_update_kobjects(dev, real_tx, 0);
+ 	sess->user = user;
+ 	if (user_guest(sess->user)) {
+-		if (conn->sign) {
+-			ksmbd_debug(SMB, "Guest login not allowed when signing enabled\n");
+-			return -EPERM;
+-		}
+-
+ 		rsp->SessionFlags = SMB2_SESSION_FLAG_IS_GUEST_LE;
+ 	} else {
+ 		struct authenticate_message *authblob;
+@@ -1474,38 +1469,39 @@ static int ntlm_authenticate(struct ksmb
+ 			ksmbd_debug(SMB, "authentication failed\n");
+ 			return -EPERM;
+ 		}
++	}
+ 
+-		/*
+-		 * If session state is SMB2_SESSION_VALID, We can assume
+-		 * that it is reauthentication. And the user/password
+-		 * has been verified, so return it here.
+-		 */
+-		if (sess->state == SMB2_SESSION_VALID) {
+-			if (conn->binding)
+-				goto binding_session;
+-			return 0;
+-		}
++	/*
++	 * If session state is SMB2_SESSION_VALID, We can assume
++	 * that it is reauthentication. And the user/password
++	 * has been verified, so return it here.
++	 */
++	if (sess->state == SMB2_SESSION_VALID) {
++		if (conn->binding)
++			goto binding_session;
++		return 0;
++	}
+ 
+-		if ((conn->sign || server_conf.enforced_signing) ||
+-		    (req->SecurityMode & SMB2_NEGOTIATE_SIGNING_REQUIRED))
+-			sess->sign = true;
+-
+-		if (smb3_encryption_negotiated(conn) &&
+-		    !(req->Flags & SMB2_SESSION_REQ_FLAG_BINDING)) {
+-			rc = conn->ops->generate_encryptionkey(sess);
+-			if (rc) {
+-				ksmbd_debug(SMB,
+-					    "SMB3 encryption key generation failed\n");
+-				return -EINVAL;
+-			}
+-			sess->enc = true;
+-			rsp->SessionFlags = SMB2_SESSION_FLAG_ENCRYPT_DATA_LE;
+-			/*
+-			 * signing is disable if encryption is enable
+-			 * on this session
+-			 */
+-			sess->sign = false;
++	if ((rsp->SessionFlags != SMB2_SESSION_FLAG_IS_GUEST_LE &&
++	     (conn->sign || server_conf.enforced_signing)) ||
++	    (req->SecurityMode & SMB2_NEGOTIATE_SIGNING_REQUIRED))
++		sess->sign = true;
 +
-+	dev->real_num_rx_queues = 0;
-+	dev->real_num_tx_queues = 0;
- #ifdef CONFIG_SYSFS
- 	kset_unregister(dev->queues_kset);
- #endif
--- 
-2.34.1
-
++	if (smb3_encryption_negotiated(conn) &&
++			!(req->Flags & SMB2_SESSION_REQ_FLAG_BINDING)) {
++		rc = conn->ops->generate_encryptionkey(sess);
++		if (rc) {
++			ksmbd_debug(SMB,
++					"SMB3 encryption key generation failed\n");
++			return -EINVAL;
+ 		}
++		sess->enc = true;
++		rsp->SessionFlags = SMB2_SESSION_FLAG_ENCRYPT_DATA_LE;
++		/*
++		 * signing is disable if encryption is enable
++		 * on this session
++		 */
++		sess->sign = false;
+ 	}
+ 
+ binding_session:
 
 
