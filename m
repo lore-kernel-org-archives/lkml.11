@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1977C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DDD6C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1313778AbiAYCtS (ORCPT
+        id S1313965AbiAYCuC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:49:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46136 "EHLO
+        Mon, 24 Jan 2022 21:50:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359323AbiAXVDK (ORCPT
+        with ESMTP id S1387203AbiAXVDP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A7BCC06B598;
-        Mon, 24 Jan 2022 12:03:19 -0800 (PST)
+        Mon, 24 Jan 2022 16:03:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 501C1C06B5AE;
+        Mon, 24 Jan 2022 12:03:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14F3761028;
-        Mon, 24 Jan 2022 20:03:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BE73C340E5;
-        Mon, 24 Jan 2022 20:03:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CF80B811FB;
+        Mon, 24 Jan 2022 20:03:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1741BC340E8;
+        Mon, 24 Jan 2022 20:03:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054598;
-        bh=8FTpx20CPyOOXFtNwPoa4MCozejgitLRpKaNV6dHwN8=;
+        s=korg; t=1643054628;
+        bh=C0SHw/HBGJeYO40tcsni0/1HVx1c5uqo7CZO59eKrpo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2uXhrS5LYE7aqHTgB7Vo5vnahaQrEHrsLMtXU2KdGbMqgq4rD71hOJax6vk6AgXd4
-         52KwkKF+wE5MsKD3bL+ok0xU+JaOVqgCfKdGMhZe2qD33XFh8jSUWjAkS/NvRT8+Md
-         DaGEaBsQ/McaZgTyxNDHqWgABllFAR6wpxgRbWSc=
+        b=tavopEPZxX4z99dK4v3mfaOUtCnxcEmA51k8qw+ydS6kl4Uy+q14mfHN/SJ7kAuT1
+         YN0LKHL6lea8gMdYDvjQuPmBpQ/jLeu7Ve7Dz4N5WyXk/aK+F0Y5D4vFWM+UCRDL3J
+         kREggO16RP+OxpsW99S/fVUiU4nAabqkY+utDdVQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabien Dessenne <fabien.dessenne@st.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Lionel Debieve <lionel.debieve@st.com>,
-        Nicolas Toromanoff <nicolas.toromanoff@st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Subject: [PATCH 5.10 442/563] crypto: stm32/crc32 - Fix kernel BUG triggered in probe()
-Date:   Mon, 24 Jan 2022 19:43:27 +0100
-Message-Id: <20220124184039.729742844@linuxfoundation.org>
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        Xiangyang Zhang <xyz.sun.ok@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.10 451/563] tracing/kprobes: nmissed not showed correctly for kretprobe
+Date:   Mon, 24 Jan 2022 19:43:36 +0100
+Message-Id: <20220124184040.047274925@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -56,64 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Xiangyang Zhang <xyz.sun.ok@gmail.com>
 
-commit 29009604ad4e3ef784fd9b9fef6f23610ddf633d upstream.
+commit dfea08a2116fe327f79d8f4d4b2cf6e0c88be11f upstream.
 
-The include/linux/crypto.h struct crypto_alg field cra_driver_name description
-states "Unique name of the transformation provider. " ... " this contains the
-name of the chip or provider and the name of the transformation algorithm."
+The 'nmissed' column of the 'kprobe_profile' file for kretprobe is
+not showed correctly, kretprobe can be skipped by two reasons,
+shortage of kretprobe_instance which is counted by tk->rp.nmissed,
+and kprobe itself is missed by some reason, so to show the sum.
 
-In case of the stm32-crc driver, field cra_driver_name is identical for all
-registered transformation providers and set to the name of the driver itself,
-which is incorrect. This patch fixes it by assigning a unique cra_driver_name
-to each registered transformation provider.
+Link: https://lkml.kernel.org/r/20220107150242.5019-1-xyz.sun.ok@gmail.com
 
-The kernel crash is triggered when the driver calls crypto_register_shashes()
-which calls crypto_register_shash(), which calls crypto_register_alg(), which
-calls __crypto_register_alg(), which returns -EEXIST, which is propagated
-back through this call chain. Upon -EEXIST from crypto_register_shash(), the
-crypto_register_shashes() starts unregistering the providers back, and calls
-crypto_unregister_shash(), which calls crypto_unregister_alg(), and this is
-where the BUG() triggers due to incorrect cra_refcnt.
-
-Fixes: b51dbe90912a ("crypto: stm32 - Support for STM32 CRC32 crypto module")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: <stable@vger.kernel.org> # 4.12+
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Fabien Dessenne <fabien.dessenne@st.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Lionel Debieve <lionel.debieve@st.com>
-Cc: Nicolas Toromanoff <nicolas.toromanoff@st.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-To: linux-crypto@vger.kernel.org
-Acked-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: stable@vger.kernel.org
+Fixes: 4a846b443b4e ("tracing/kprobes: Cleanup kprobe tracer code")
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Xiangyang Zhang <xyz.sun.ok@gmail.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/stm32/stm32-crc32.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ kernel/trace/trace_kprobe.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/crypto/stm32/stm32-crc32.c
-+++ b/drivers/crypto/stm32/stm32-crc32.c
-@@ -279,7 +279,7 @@ static struct shash_alg algs[] = {
- 		.digestsize     = CHKSUM_DIGEST_SIZE,
- 		.base           = {
- 			.cra_name               = "crc32",
--			.cra_driver_name        = DRIVER_NAME,
-+			.cra_driver_name        = "stm32-crc32-crc32",
- 			.cra_priority           = 200,
- 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
- 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
-@@ -301,7 +301,7 @@ static struct shash_alg algs[] = {
- 		.digestsize     = CHKSUM_DIGEST_SIZE,
- 		.base           = {
- 			.cra_name               = "crc32c",
--			.cra_driver_name        = DRIVER_NAME,
-+			.cra_driver_name        = "stm32-crc32-crc32c",
- 			.cra_priority           = 200,
- 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
- 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -1183,15 +1183,18 @@ static int probes_profile_seq_show(struc
+ {
+ 	struct dyn_event *ev = v;
+ 	struct trace_kprobe *tk;
++	unsigned long nmissed;
+ 
+ 	if (!is_trace_kprobe(ev))
+ 		return 0;
+ 
+ 	tk = to_trace_kprobe(ev);
++	nmissed = trace_kprobe_is_return(tk) ?
++		tk->rp.kp.nmissed + tk->rp.nmissed : tk->rp.kp.nmissed;
+ 	seq_printf(m, "  %-44s %15lu %15lu\n",
+ 		   trace_probe_name(&tk->tp),
+ 		   trace_kprobe_nhit(tk),
+-		   tk->rp.kp.nmissed);
++		   nmissed);
+ 
+ 	return 0;
+ }
 
 
