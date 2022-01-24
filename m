@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE44C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CEDC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366667AbiAXXxQ (ORCPT
+        id S2366756AbiAXXxa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        Mon, 24 Jan 2022 18:53:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846008AbiAXXOO (ORCPT
+        with ESMTP id S1846018AbiAXXOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:14:14 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B852C061A82;
-        Mon, 24 Jan 2022 13:21:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 644B6C0617A9;
+        Mon, 24 Jan 2022 13:21:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B205614D7;
-        Mon, 24 Jan 2022 21:21:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DB2CC340E4;
-        Mon, 24 Jan 2022 21:21:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0526D60C60;
+        Mon, 24 Jan 2022 21:21:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4CF3C340E5;
+        Mon, 24 Jan 2022 21:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059292;
-        bh=K/eWSfljgcMu7/mLCM+m/uhl8K632G9yFcOz1ichPVw=;
+        s=korg; t=1643059307;
+        bh=wgi+j8udB1hBs2lDS+VQzIfA/QubZozAoFQHsIgrftA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b7Zj3ZfUfX6v0H9cyqxmksu7gEG9ghYPaViczv31gJG3rBGuicNHCJWKZHyx3EHn9
-         gB0CaqN5MHs/2XS+PIQdDui5LpOZw/9mglcrE46u+bh2CiB8W0c++CG+vTpEUKq/43
-         cn37bajq3BRmM88MMBb5bqwAlEZS4UfsH81QPzyw=
+        b=BiWCvn+1Vp1PMO77BqQhUtOTqLzcwz04OeoZ/s0r6woMZOSSUxnm0HLuqaTxjqA1h
+         lwk9VkUzy2NVNVYov8K031n6m/N79zElMDXfHmf6Op/JRvgMhEpt7AjGfH7XIrh/SM
+         33rf0Biay2nFQx0iXtyy8Mkhrea+B+CIRLIW6ueY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
-        Haimin Zhang <tcs.kernel@gmail.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0567/1039] USB: ehci_brcm_hub_control: Improve port index sanitizing
-Date:   Mon, 24 Jan 2022 19:39:16 +0100
-Message-Id: <20220124184144.386514080@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0572/1039] HID: apple: Do not reset quirks when the Fn key is not found
+Date:   Mon, 24 Jan 2022 19:39:21 +0100
+Message-Id: <20220124184144.565739409@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,43 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs.kernel@gmail.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 9933698f6119886c110750e67c10ac66f12b730f ]
+[ Upstream commit a5fe7864d8ada170f19cc47d176bf8260ffb4263 ]
 
-Due to (wIndex & 0xff) - 1 can get an integer greater than 15, this
-can cause array index to be out of bounds since the size of array
-port_status is 15. This change prevents a possible out-of-bounds
-pointer computation by forcing the use of a valid port number.
+When a keyboard without a function key is detected, instead of removing
+all quirks, remove only the APPLE_HAS_FN quirk.
 
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs.kernel@gmail.com>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/20211113165320.GA59686@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/ehci-brcm.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/hid/hid-apple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/host/ehci-brcm.c b/drivers/usb/host/ehci-brcm.c
-index d3626bfa966b4..6a0f64c9e5e88 100644
---- a/drivers/usb/host/ehci-brcm.c
-+++ b/drivers/usb/host/ehci-brcm.c
-@@ -62,8 +62,12 @@ static int ehci_brcm_hub_control(
- 	u32 __iomem	*status_reg;
- 	unsigned long flags;
- 	int retval, irq_disabled = 0;
-+	u32 temp;
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 2c9c5faa74a97..a4ca5ed00e5f5 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -428,7 +428,7 @@ static int apple_input_configured(struct hid_device *hdev,
  
--	status_reg = &ehci->regs->port_status[(wIndex & 0xff) - 1];
-+	temp = (wIndex & 0xff) - 1;
-+	if (temp >= HCS_N_PORTS_MAX)	/* Avoid index-out-of-bounds warning */
-+		temp = 0;
-+	status_reg = &ehci->regs->port_status[temp];
+ 	if ((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) {
+ 		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
+-		asc->quirks = 0;
++		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
  
- 	/*
- 	 * RESUME is cleared when GetPortStatus() is called 20ms after start
+ 	return 0;
 -- 
 2.34.1
 
