@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F871C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DE45C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457241AbiAXVlP (ORCPT
+        id S1457286AbiAXVlW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55874 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445481AbiAXVDj (ORCPT
+        Mon, 24 Jan 2022 16:41:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54560 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349038AbiAXVDq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:39 -0500
+        Mon, 24 Jan 2022 16:03:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F37F36135E;
-        Mon, 24 Jan 2022 21:03:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC0BFC340E5;
-        Mon, 24 Jan 2022 21:03:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE630B80FA3;
+        Mon, 24 Jan 2022 21:03:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBC72C340E5;
+        Mon, 24 Jan 2022 21:03:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058217;
-        bh=+GukFv+UmmsfgFRsXbDyesdwasvKERbn/wIBoWXygSw=;
+        s=korg; t=1643058223;
+        bh=ADv0iZs0sl/IyTkiljN2Vy1lVQBg5V8EIXUeP+R8lTo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qJn3qcG2H4QbqJYIXyg12LovNdCqxZB1wk+Y7sDIeV8q2SQTYtd7AIobTSsmy7nlD
-         +92qgXUkdPzQY9Lo9a0YoUk7Xh8g6aiAqzDMDHKb/xpSJ0EN+hIHGUW9QJfvGTovTK
-         lEt8l6HyAoA8/cIIrnBl5p4E1jSpRcJFyBf8ZoAs=
+        b=Qu8GIGKZytjBZtEBlqLmYN/tvgl2A0Qev16GrrXBo89CwM7yamIJM7ELBU7M4o12+
+         j6L8yzUiFMtSIakoNPuSHMPiYKb0eOsvNKIoN+7CJZgZhOTU16X3ZKiWniwK7P7geD
+         T4Uxh1MsPAEa6EbAxl5hkqjaZPehEg1VMnmGWj4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaurav Jain <gaurav.jain@nxp.com>,
-        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Nishanth Menon <nm@ti.com>, Pratyush Yadav <p.yadav@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0217/1039] crypto: caam - save caam memory to support crypto engine retry mechanism.
-Date:   Mon, 24 Jan 2022 19:33:26 +0100
-Message-Id: <20220124184132.637954486@linuxfoundation.org>
+Subject: [PATCH 5.16 0219/1039] arm64: dts: ti: k3-j7200: Fix the L2 cache sets
+Date:   Mon, 24 Jan 2022 19:33:28 +0100
+Message-Id: <20220124184132.698679219@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,83 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gaurav Jain <gaurav.jain@nxp.com>
+From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit 087e1d715bccf25dc0e83294576e416b0386ba20 ]
+[ Upstream commit d0c826106f3fc11ff97285102b576b65576654ae ]
 
-When caam queue is full (-ENOSPC), caam frees descriptor memory.
-crypto-engine checks if retry support is true and h/w queue
-is full(-ENOSPC), then requeue the crypto request.
-During processing the requested descriptor again, caam gives below error.
-(caam_jr 30902000.jr: 40000006: DECO: desc idx 0: Invalid KEY Command).
+A72's L2 cache[1] on J7200[2] is 1MB. A72's L2 is fixed line length of
+64 bytes and 16-way set-associative cache structure.
 
-This patch adds a check to return when caam input ring is full
-and retry support is true. so descriptor memory is not freed
-and requeued request can be processed again.
+1MB of L2 / 64 (line length) = 16384 ways
+16384 ways / 16 = 1024 sets
 
-Fixes: 2d653936eb2cf ("crypto: caam - enable crypto-engine retry mechanism")
-Signed-off-by: Gaurav Jain <gaurav.jain@nxp.com>
-Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fix the l2 cache-sets.
+
+[1] https://developer.arm.com/documentation/100095/0003/Level-2-Memory-System/About-the-L2-memory-system
+[2] https://www.ti.com/lit/pdf/spruiu1
+
+Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
+Reported-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20211113043638.4358-1-nm@ti.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/caam/caamalg.c  | 6 ++++++
- drivers/crypto/caam/caamhash.c | 3 +++
- drivers/crypto/caam/caampkc.c  | 3 +++
- 3 files changed, 12 insertions(+)
+ arch/arm64/boot/dts/ti/k3-j7200.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/caam/caamalg.c b/drivers/crypto/caam/caamalg.c
-index 8697ae53b0633..d3d8bb0a69900 100644
---- a/drivers/crypto/caam/caamalg.c
-+++ b/drivers/crypto/caam/caamalg.c
-@@ -1533,6 +1533,9 @@ static int aead_do_one_req(struct crypto_engine *engine, void *areq)
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200.dtsi b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+index 47567cb260c2b..a99a4d305b7ec 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+@@ -86,7 +86,7 @@
+ 		cache-level = <2>;
+ 		cache-size = <0x100000>;
+ 		cache-line-size = <64>;
+-		cache-sets = <2048>;
++		cache-sets = <1024>;
+ 		next-level-cache = <&msmc_l3>;
+ 	};
  
- 	ret = caam_jr_enqueue(ctx->jrdev, desc, aead_crypt_done, req);
- 
-+	if (ret == -ENOSPC && engine->retry_support)
-+		return ret;
-+
- 	if (ret != -EINPROGRESS) {
- 		aead_unmap(ctx->jrdev, rctx->edesc, req);
- 		kfree(rctx->edesc);
-@@ -1762,6 +1765,9 @@ static int skcipher_do_one_req(struct crypto_engine *engine, void *areq)
- 
- 	ret = caam_jr_enqueue(ctx->jrdev, desc, skcipher_crypt_done, req);
- 
-+	if (ret == -ENOSPC && engine->retry_support)
-+		return ret;
-+
- 	if (ret != -EINPROGRESS) {
- 		skcipher_unmap(ctx->jrdev, rctx->edesc, req);
- 		kfree(rctx->edesc);
-diff --git a/drivers/crypto/caam/caamhash.c b/drivers/crypto/caam/caamhash.c
-index e8a6d8bc43b5d..36ef738e4a181 100644
---- a/drivers/crypto/caam/caamhash.c
-+++ b/drivers/crypto/caam/caamhash.c
-@@ -765,6 +765,9 @@ static int ahash_do_one_req(struct crypto_engine *engine, void *areq)
- 
- 	ret = caam_jr_enqueue(jrdev, desc, state->ahash_op_done, req);
- 
-+	if (ret == -ENOSPC && engine->retry_support)
-+		return ret;
-+
- 	if (ret != -EINPROGRESS) {
- 		ahash_unmap(jrdev, state->edesc, req, 0);
- 		kfree(state->edesc);
-diff --git a/drivers/crypto/caam/caampkc.c b/drivers/crypto/caam/caampkc.c
-index bf6275ffc4aad..8867275767101 100644
---- a/drivers/crypto/caam/caampkc.c
-+++ b/drivers/crypto/caam/caampkc.c
-@@ -380,6 +380,9 @@ static int akcipher_do_one_req(struct crypto_engine *engine, void *areq)
- 
- 	ret = caam_jr_enqueue(jrdev, desc, req_ctx->akcipher_op_done, req);
- 
-+	if (ret == -ENOSPC && engine->retry_support)
-+		return ret;
-+
- 	if (ret != -EINPROGRESS) {
- 		rsa_pub_unmap(jrdev, req_ctx->edesc, req);
- 		rsa_io_unmap(jrdev, req_ctx->edesc, req);
 -- 
 2.34.1
 
