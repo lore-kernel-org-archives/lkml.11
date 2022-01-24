@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A34C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:49:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E39C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359193AbiAXUtR (ORCPT
+        id S1388660AbiAXUto (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:49:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33514 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382135AbiAXUZP (ORCPT
+        Mon, 24 Jan 2022 15:49:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382143AbiAXUZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:25:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37741C0D9401;
+        Mon, 24 Jan 2022 11:41:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F354CB811FB;
-        Mon, 24 Jan 2022 20:25:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28472C340E5;
-        Mon, 24 Jan 2022 20:25:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00438B81188;
+        Mon, 24 Jan 2022 19:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D60FC340E7;
+        Mon, 24 Jan 2022 19:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055912;
-        bh=v3CmNcQuVcLWxRTsj4bwVZeaXhS0Z8OOc7cj1SIMdtw=;
+        s=korg; t=1643053265;
+        bh=Hu92IHuIu7s4YMY6zsMPO0Pu53VdOmAY8WOxRWr2+s0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b/OroVOPtNvXPY/5tTh0E+jigHIWLisjzgUdyalt3PUSyU5N8lWnJqrM+DaLdmEP4
-         QHE7VBwxEj3fM65nxKjA11j9XtcqecfR1xLEADzeiXJMYR2sB00f6Qv1uLMzHNihoJ
-         wwpr/UuNQx6g8YQjoWXAktJz3bFimtz0VvWHEmbM=
+        b=jrcrmInZ3HwJ1sjuuco4N097n5uHUEszy7cEd8AyT5GoW/sWOX45lSeBL+/zM0pcl
+         NavxtRxMFYbjLzu7LLPVHqWU0DhXNWvxgcPDIL9uTmOJ/6B8UIOw5rTBINZ2CAs1KD
+         tIsVTYUr/cRKJYvUObzPv0S+QVMcvwImkgnpq4to=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 308/846] netfilter: ipt_CLUSTERIP: fix refcount leak in clusterip_tg_check()
-Date:   Mon, 24 Jan 2022 19:37:05 +0100
-Message-Id: <20220124184111.534886909@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andreas Oetken <andreas.oetken@siemens-energy.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.10 010/563] mtd: Fixed breaking list in __mtd_del_partition.
+Date:   Mon, 24 Jan 2022 19:36:15 +0100
+Message-Id: <20220124184024.772483033@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Xiong <xiongx18@fudan.edu.cn>
+From: Andreas Oetken <ennoerlangen@gmail.com>
 
-[ Upstream commit d94a69cb2cfa77294921aae9afcfb866e723a2da ]
+commit 2966daf7d253d9904b337b040dd7a43472858b8a upstream.
 
-The issue takes place in one error path of clusterip_tg_check(). When
-memcmp() returns nonzero, the function simply returns the error code,
-forgetting to decrease the reference count of a clusterip_config
-object, which is bumped earlier by clusterip_config_find_get(). This
-may incur reference count leak.
+Not the child partition should be removed from the partition list
+but the partition itself. Otherwise the partition list gets broken
+and any subsequent remove operations leads to a kernel panic.
 
-Fix this issue by decrementing the refcount of the object in specific
-error path.
-
-Fixes: 06aa151ad1fc74 ("netfilter: ipt_CLUSTERIP: check MAC address when duplicate config is set")
-Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
-Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 46b5889cc2c5 ("mtd: implement proper partition handling")
+Signed-off-by: Andreas Oetken <andreas.oetken@siemens-energy.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211102172604.2921065-1-andreas.oetken@siemens-energy.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/netfilter/ipt_CLUSTERIP.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/mtd/mtdpart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/netfilter/ipt_CLUSTERIP.c b/net/ipv4/netfilter/ipt_CLUSTERIP.c
-index 8fd1aba8af31c..b518f20c9a244 100644
---- a/net/ipv4/netfilter/ipt_CLUSTERIP.c
-+++ b/net/ipv4/netfilter/ipt_CLUSTERIP.c
-@@ -520,8 +520,11 @@ static int clusterip_tg_check(const struct xt_tgchk_param *par)
- 			if (IS_ERR(config))
- 				return PTR_ERR(config);
- 		}
--	} else if (memcmp(&config->clustermac, &cipinfo->clustermac, ETH_ALEN))
-+	} else if (memcmp(&config->clustermac, &cipinfo->clustermac, ETH_ALEN)) {
-+		clusterip_config_entry_put(config);
-+		clusterip_config_put(config);
- 		return -EINVAL;
-+	}
+--- a/drivers/mtd/mtdpart.c
++++ b/drivers/mtd/mtdpart.c
+@@ -313,7 +313,7 @@ static int __mtd_del_partition(struct mt
+ 	if (err)
+ 		return err;
  
- 	ret = nf_ct_netns_get(par->net, par->family);
- 	if (ret < 0) {
--- 
-2.34.1
-
+-	list_del(&child->part.node);
++	list_del(&mtd->part.node);
+ 	free_partition(mtd);
+ 
+ 	return 0;
 
 
