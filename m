@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A247C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F68EC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838333AbiAXWqX (ORCPT
+        id S1838353AbiAXWqZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        Mon, 24 Jan 2022 17:46:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457579AbiAXVly (ORCPT
+        with ESMTP id S1457340AbiAXVlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:54 -0500
+        Mon, 24 Jan 2022 16:41:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1635EC07E336;
-        Mon, 24 Jan 2022 12:29:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73391C0419D3;
+        Mon, 24 Jan 2022 12:28:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFE5BB8122A;
-        Mon, 24 Jan 2022 20:29:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BBADC340E5;
-        Mon, 24 Jan 2022 20:29:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F560B81239;
+        Mon, 24 Jan 2022 20:28:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 828C0C340E5;
+        Mon, 24 Jan 2022 20:28:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056179;
-        bh=lq3hf89fjyCLhDkpQ9WdaE1sdfeZJVi7g3LIOu5gNf8=;
+        s=korg; t=1643056081;
+        bh=jbqkzaLPuG7F9MJqasxivM+Wt50FAHFkrTX3lFvAvtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kRiKaOKe7iNwfZe5gMAiXnblL4J0Hlz27WoZVg489kN21IZLH1ISxWf1V8qVanW1n
-         YHGtTpArQSUpjDUhTqX0UFCD2hFwWDnnF6whvwVcsv70qSaRofpIxMQeR1b8dNMVTW
-         6opLLijQjuuEciLWwaCmri3p3gIbc17MJahWn2Ho=
+        b=aiuDda5KXWRc2pZbL6dRHuhF8U9oVJWodm5D8cN8Wm+0cTQEHXjyIBTyZVNi1cIL/
+         /rxAqlDXJ3JGg/oKvTXxDoCCNTD2d+iQO++Wdvu3wuAehE4APuxPS37AmYQdtc2oN8
+         Zii6YV0irPCZNfDGFBWowNI4+ZKDxhZTugaFPnlc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 365/846] net: openvswitch: Fix matching zone id for invalid conns arriving from tc
-Date:   Mon, 24 Jan 2022 19:38:02 +0100
-Message-Id: <20220124184113.531656257@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 331/846] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_frame_init_v1_buttonpad
+Date:   Mon, 24 Jan 2022 19:37:28 +0100
+Message-Id: <20220124184112.325119198@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,91 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Blakey <paulb@nvidia.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 635d448a1cce4b4ebee52b351052c70434fa90ea ]
+[ Upstream commit aa320fdbbbb482c19100f51461bd0069753ce3d7 ]
 
-Zone id is not restored if we passed ct and ct rejected the connection,
-as there is no ct info on the skb.
+The function performs a check on the hdev input parameters, however, it
+is used before the check.
 
-Save the zone from tc skb cb to tc skb extension and pass it on to
-ovs, use that info to restore the zone id for invalid connections.
+Initialize the udev variable after the sanity check to avoid a
+possible NULL pointer dereference.
 
-Fixes: d29334c15d33 ("net/sched: act_api: fix miss set post_ct for ovs after do conntrack in act_ct")
-Signed-off-by: Paul Blakey <paulb@nvidia.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
+Addresses-Coverity-ID: 1443763 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/skbuff.h | 1 +
- net/openvswitch/flow.c | 8 +++++++-
- net/sched/cls_api.c    | 1 +
- 3 files changed, 9 insertions(+), 1 deletion(-)
+ drivers/hid/hid-uclogic-params.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4f31ca71a82a7..f92839b726dc2 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -286,6 +286,7 @@ struct nf_bridge_info {
- struct tc_skb_ext {
- 	__u32 chain;
- 	__u16 mru;
-+	__u16 zone;
- 	bool post_ct;
- };
- #endif
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index 9713035b89e3a..6d262d9aa10ea 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -34,6 +34,7 @@
- #include <net/mpls.h>
- #include <net/ndisc.h>
- #include <net/nsh.h>
-+#include <net/netfilter/nf_conntrack_zones.h>
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index 4136837e4d158..3e70f969fb849 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -452,7 +452,7 @@ static int uclogic_params_frame_init_v1_buttonpad(
+ {
+ 	int rc;
+ 	bool found = false;
+-	struct usb_device *usb_dev = hid_to_usb_dev(hdev);
++	struct usb_device *usb_dev;
+ 	char *str_buf = NULL;
+ 	const size_t str_len = 16;
  
- #include "conntrack.h"
- #include "datapath.h"
-@@ -860,6 +861,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- #endif
- 	bool post_ct = false;
- 	int res, err;
-+	u16 zone = 0;
- 
- 	/* Extract metadata from packet. */
- 	if (tun_info) {
-@@ -898,6 +900,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
- 		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
- 		post_ct = tc_ext ? tc_ext->post_ct : false;
-+		zone = post_ct ? tc_ext->zone : 0;
- 	} else {
- 		key->recirc_id = 0;
- 	}
-@@ -906,8 +909,11 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
- #endif
- 
- 	err = key_extract(skb, key);
--	if (!err)
-+	if (!err) {
- 		ovs_ct_fill_key(skb, key, post_ct);   /* Must be after key_extract(). */
-+		if (post_ct && !skb_get_nfct(skb))
-+			key->ct_zone = zone;
-+	}
- 	return err;
- }
- 
-diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index ff8a9383bf1c4..35c74bdde848e 100644
---- a/net/sched/cls_api.c
-+++ b/net/sched/cls_api.c
-@@ -1625,6 +1625,7 @@ int tcf_classify(struct sk_buff *skb,
- 		ext->chain = last_executed_chain;
- 		ext->mru = cb->mru;
- 		ext->post_ct = cb->post_ct;
-+		ext->zone = cb->zone;
+@@ -462,6 +462,8 @@ static int uclogic_params_frame_init_v1_buttonpad(
+ 		goto cleanup;
  	}
  
- 	return ret;
++	usb_dev = hid_to_usb_dev(hdev);
++
+ 	/*
+ 	 * Enable generic button mode
+ 	 */
 -- 
 2.34.1
 
