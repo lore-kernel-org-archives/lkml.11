@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70571C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7422C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380532AbiAXUQ1 (ORCPT
+        id S1380746AbiAXUQv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53998 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348009AbiAXT5h (ORCPT
+        Mon, 24 Jan 2022 15:16:51 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43330 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353083AbiAXT7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:37 -0500
+        Mon, 24 Jan 2022 14:59:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2D1560B89;
-        Mon, 24 Jan 2022 19:57:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C99D1C340E5;
-        Mon, 24 Jan 2022 19:57:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1272BB8119D;
+        Mon, 24 Jan 2022 19:59:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461DDC340E5;
+        Mon, 24 Jan 2022 19:59:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054256;
-        bh=Jf2jqJkMT9XhVYOHueT6/brMJFdC5+zm2vIMbJgJbm8=;
+        s=korg; t=1643054352;
+        bh=FMHYx2XBoKvpWK72As1cxGEVQ+XWXjh/vSjCyMexVUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tQ094Jerhvr+HKZqW4n6/OlG1g2wvAWJjQKCDB6cqCap7HJh4L1KFm6wKJXay8zHX
-         qUrth/yqloe0HakUXteEO4JRJz6xjzGfKv6UlG6ouKwc2PJWUbv5UdjJWNPQ5gvaBO
-         75Igzt7bmG7EVhAM4PnfFyb95k8xxEIiOx7ElTb4=
+        b=yGZG13DO1WXUDoUeJm5mhhPGFCdiw29CwAFpIYb2HOQNKdUVr8kHIhQcUe7Jd781d
+         xCYa0VIY2c4s2TqLMtz1hXXBU9KNqD70fAFAmLc1wRvllAtuqCaZGo3AFGywQlRwo6
+         zPm9f7ece5uQf3f+iKNtCEl9GnFfEYyBinJN/IYo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 330/563] rsi: Fix out-of-bounds read in rsi_read_pkt()
-Date:   Mon, 24 Jan 2022 19:41:35 +0100
-Message-Id: <20220124184035.841947926@linuxfoundation.org>
+Subject: [PATCH 5.10 318/563] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
+Date:   Mon, 24 Jan 2022 19:41:23 +0100
+Message-Id: <20220124184035.430426801@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,106 +47,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
+[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
 
-rsi_get_* functions rely on an offset variable from usb
-input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
-while 2-byte offset can be up to 0xFFFF. Thus a large offset
-can cause out-of-bounds read.
+Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
+DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
 
-The patch adds a bound checking condition when rcv_pkt_len is 0,
-indicating it's USB. It's unclear whether this is triggerable
-from other type of bus. The following check might help in that case.
-offset > rcv_pkt_len - FRAME_DESC_SZ
+So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
+Kconfig and rename the definitions to IMX27 as further clean-up.
 
-The bug is trigerrable with conpromised/malfunctioning USB devices.
-I tested the patch with the crashing input and got no more bug report.
+This issue was discovered with ./scripts/checkkconfigsymbols.py, which
+reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
+SOC_IMX21.
 
-Attached is the KASAN report from fuzzing.
-
-BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
-Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
-
-CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
-Call Trace:
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
- ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
- __kasan_report.cold+0x37/0x7c
- ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
- kasan_report+0xe/0x20
- rsi_read_pkt+0x42e/0x500 [rsi_91x]
- rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
- ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __wake_up_common+0x10b/0x520
- ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
- kthread+0x2b5/0x3b0
- ? kthread_create_on_node+0xd0/0xd0
- ret_from_fork+0x22/0x40
-
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
- drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
- drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ arch/arm/Kconfig.debug            | 14 +++++++-------
+ arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
-index 8c638cfeac52f..fe8aed58ac088 100644
---- a/drivers/net/wireless/rsi/rsi_91x_main.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_main.c
-@@ -23,6 +23,7 @@
- #include "rsi_common.h"
- #include "rsi_coex.h"
- #include "rsi_hal.h"
-+#include "rsi_usb.h"
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 8986a91a6f31b..dd1cf70353986 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -400,12 +400,12 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on i.MX25.
  
- u32 rsi_zone_enabled = /* INFO_ZONE |
- 			INIT_ZONE |
-@@ -168,6 +169,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
- 		frame_desc = &rx_pkt[index];
- 		actual_length = *(u16 *)&frame_desc[0];
- 		offset = *(u16 *)&frame_desc[2];
-+		if (!rcv_pkt_len && offset >
-+			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
-+			goto fail;
+-	config DEBUG_IMX21_IMX27_UART
+-		bool "i.MX21 and i.MX27 Debug UART"
+-		depends on SOC_IMX21 || SOC_IMX27
++	config DEBUG_IMX27_UART
++		bool "i.MX27 Debug UART"
++		depends on SOC_IMX27
+ 		help
+ 		  Say Y here if you want kernel low-level debugging support
+-		  on i.MX21 or i.MX27.
++		  on i.MX27.
  
- 		queueno = rsi_get_queueno(frame_desc, offset);
- 		length = rsi_get_length(frame_desc, offset);
-diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
-index 7f34148c7dfe5..11388a1469621 100644
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -328,7 +328,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
- 	struct sk_buff *skb;
- 	u8 dword_align_bytes = 0;
+ 	config DEBUG_IMX28_UART
+ 		bool "i.MX28 Debug UART"
+@@ -1523,7 +1523,7 @@ config DEBUG_IMX_UART_PORT
+ 	int "i.MX Debug UART Port Selection"
+ 	depends on DEBUG_IMX1_UART || \
+ 		   DEBUG_IMX25_UART || \
+-		   DEBUG_IMX21_IMX27_UART || \
++		   DEBUG_IMX27_UART || \
+ 		   DEBUG_IMX31_UART || \
+ 		   DEBUG_IMX35_UART || \
+ 		   DEBUG_IMX50_UART || \
+@@ -1591,12 +1591,12 @@ config DEBUG_LL_INCLUDE
+ 	default "debug/icedcc.S" if DEBUG_ICEDCC
+ 	default "debug/imx.S" if DEBUG_IMX1_UART || \
+ 				 DEBUG_IMX25_UART || \
+-				 DEBUG_IMX21_IMX27_UART || \
++				 DEBUG_IMX27_UART || \
+ 				 DEBUG_IMX31_UART || \
+ 				 DEBUG_IMX35_UART || \
+ 				 DEBUG_IMX50_UART || \
+ 				 DEBUG_IMX51_UART || \
+-				 DEBUG_IMX53_UART ||\
++				 DEBUG_IMX53_UART || \
+ 				 DEBUG_IMX6Q_UART || \
+ 				 DEBUG_IMX6SL_UART || \
+ 				 DEBUG_IMX6SX_UART || \
+diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
+index c8eb83d4b8964..3edbb3c5b42bf 100644
+--- a/arch/arm/include/debug/imx-uart.h
++++ b/arch/arm/include/debug/imx-uart.h
+@@ -11,13 +11,6 @@
+ #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
+ #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
  
--#define RSI_MAX_RX_USB_PKT_SIZE	3000
- 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
- 	if (!skb)
- 		return -ENOMEM;
-diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
-index 8702f434b5699..ad88f8c70a351 100644
---- a/drivers/net/wireless/rsi/rsi_usb.h
-+++ b/drivers/net/wireless/rsi/rsi_usb.h
-@@ -44,6 +44,8 @@
- #define RSI_USB_BUF_SIZE	     4096
- #define RSI_USB_CTRL_BUF_SIZE	     0x04
+-#define IMX21_UART1_BASE_ADDR	0x1000a000
+-#define IMX21_UART2_BASE_ADDR	0x1000b000
+-#define IMX21_UART3_BASE_ADDR	0x1000c000
+-#define IMX21_UART4_BASE_ADDR	0x1000d000
+-#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
+-#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
+-
+ #define IMX25_UART1_BASE_ADDR	0x43f90000
+ #define IMX25_UART2_BASE_ADDR	0x43f94000
+ #define IMX25_UART3_BASE_ADDR	0x5000c000
+@@ -26,6 +19,13 @@
+ #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
+ #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
  
-+#define RSI_MAX_RX_USB_PKT_SIZE	3000
++#define IMX27_UART1_BASE_ADDR	0x1000a000
++#define IMX27_UART2_BASE_ADDR	0x1000b000
++#define IMX27_UART3_BASE_ADDR	0x1000c000
++#define IMX27_UART4_BASE_ADDR	0x1000d000
++#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
++#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
 +
- struct rx_usb_ctrl_block {
- 	u8 *data;
- 	struct urb *rx_urb;
+ #define IMX31_UART1_BASE_ADDR	0x43f90000
+ #define IMX31_UART2_BASE_ADDR	0x43f94000
+ #define IMX31_UART3_BASE_ADDR	0x5000c000
+@@ -112,10 +112,10 @@
+ 
+ #ifdef CONFIG_DEBUG_IMX1_UART
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
+-#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
+-#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
+ #elif defined(CONFIG_DEBUG_IMX25_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
++#elif defined(CONFIG_DEBUG_IMX27_UART)
++#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
+ #elif defined(CONFIG_DEBUG_IMX31_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
+ #elif defined(CONFIG_DEBUG_IMX35_UART)
 -- 
 2.34.1
 
