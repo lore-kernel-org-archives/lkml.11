@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2024C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBB6C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380371AbiAXUQO (ORCPT
+        id S1380460AbiAXUQW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57926 "EHLO
+        Mon, 24 Jan 2022 15:16:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351616AbiAXTwN (ORCPT
+        with ESMTP id S1352132AbiAXT5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F643C061798;
-        Mon, 24 Jan 2022 11:24:56 -0800 (PST)
+        Mon, 24 Jan 2022 14:57:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1915C047CCC;
+        Mon, 24 Jan 2022 11:27:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57A30B811F9;
-        Mon, 24 Jan 2022 19:24:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F9BFC340E5;
-        Mon, 24 Jan 2022 19:24:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51A7261489;
+        Mon, 24 Jan 2022 19:27:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30CD5C340E5;
+        Mon, 24 Jan 2022 19:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052294;
-        bh=tnquIfwjFSaSHoBT6nlIb3zGDOprX5TOViH63Z84QzQ=;
+        s=korg; t=1643052457;
+        bh=tCpkJdo/lVhf/9FgRTea5S8mpKM/e4FwMDtYImGTn0k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YkbP8XLOUFqs36NdXJBR3KecphSoFkomaJ1onTmfqqS60OykIHxea+RkAPH8RxzTf
-         JCorUG39Ora1fm2IChSwPPfPUNf0KZin6sRQFKf9iMYz3gnQBcl09nDYHMp/4QXYRy
-         osy4FiWj71hJStlfmgNCv2ugRzFOickCWetKm3TY=
+        b=EaFy3bWH26c/tYxvVmdMe4mRrDjAc9l1Dj7cCiqIaLsZ5P84ENm6BFtGaCF7Hih3c
+         vSzuDTSsqr3DEpVpWlxbNsUKCEpvqJPqTvXI1VXD2oCQKwpsw8W/kYqiGak231WWnC
+         xXNchRwQvppQfF2/dWdxudjS9aG39r4betxmd05c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
-        Willy Tarreau <w@1wt.eu>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.4 012/320] tools/nolibc: fix incorrect truncation of exit code
-Date:   Mon, 24 Jan 2022 19:39:56 +0100
-Message-Id: <20220124183954.174372703@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.4 033/320] drm/rockchip: dsi: Reconfigure hardware on resume()
+Date:   Mon, 24 Jan 2022 19:40:17 +0100
+Message-Id: <20220124183954.879107046@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -51,91 +51,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Brian Norris <briannorris@chromium.org>
 
-commit de0244ae40ae91145faaf164a4252347607c3711 upstream.
+commit e584cdc1549932f87a2707b56bc588cfac5d89e0 upstream.
 
-Ammar Faizi reported that our exit code handling is wrong. We truncate
-it to the lowest 8 bits but the syscall itself is expected to take a
-regular 32-bit signed integer, not an unsigned char. It's the kernel
-that later truncates it to the lowest 8 bits. The difference is visible
-in strace, where the program below used to show exit(255) instead of
-exit(-1):
+Since commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
+LCDC mux to bind()"), we perform most HW configuration in the bind()
+function. This configuration may be lost on suspend/resume, so we
+need to call it again. That may lead to errors like this after system
+suspend/resume:
 
-  int main(void)
-  {
-        return -1;
-  }
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
 
-This patch applies the fix to all archs. x86_64, i386, arm64, armv7 and
-mips were all tested and confirmed to work fine now. Risc-v was not
-tested but the change is trivial and exactly the same as for other archs.
+Tested on Acer Chromebook Tab 10 (RK3399 Gru-Scarlet).
 
-Reported-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
-Cc: stable@vger.kernel.org
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Note that early mailing list versions of this driver borrowed Rockchip's
+downstream/BSP solution, to do HW configuration in mode_set() (which
+*is* called at the appropriate pre-enable() times), but that was
+discarded along the way. I've avoided that still, because mode_set()
+documentation doesn't suggest this kind of purpose as far as I can tell.
+
+Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.2.I4e9d93aadb00b1ffc7d506e3186a25492bf0b732@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/include/nolibc/nolibc.h |   13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -437,7 +437,7 @@ asm(".section .text\n"
-     "xor %ebp, %ebp\n"          // zero the stack frame
-     "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
-     "call main\n"               // main() returns the status code, we'll exit with it.
--    "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
-+    "mov %eax, %edi\n"          // retrieve exit code (32 bit)
-     "mov $60, %rax\n"           // NR_exit == 60
-     "syscall\n"                 // really exit
-     "hlt\n"                     // ensure it does not return
-@@ -625,9 +625,9 @@ asm(".section .text\n"
-     "push %ebx\n"               // support both regparm and plain stack modes
-     "push %eax\n"
-     "call main\n"               // main() returns the status code in %eax
--    "movzbl %al, %ebx\n"        // retrieve exit code from lower 8 bits
--    "movl   $1, %eax\n"         // NR_exit == 1
--    "int    $0x80\n"            // exit now
-+    "mov %eax, %ebx\n"          // retrieve exit code (32-bit int)
-+    "movl $1, %eax\n"           // NR_exit == 1
-+    "int $0x80\n"               // exit now
-     "hlt\n"                     // ensure it does not
-     "");
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -231,6 +231,8 @@ struct dw_mipi_dsi_rockchip {
+ 	struct dw_mipi_dsi *dmd;
+ 	const struct rockchip_dw_dsi_chip_data *cdata;
+ 	struct dw_mipi_dsi_plat_data pdata;
++
++	bool dsi_bound;
+ };
  
-@@ -811,7 +811,6 @@ asm(".section .text\n"
-     "and %r3, %r1, $-8\n"         // AAPCS : sp must be 8-byte aligned in the
-     "mov %sp, %r3\n"              //         callee, an bl doesn't push (lr=pc)
-     "bl main\n"                   // main() returns the status code, we'll exit with it.
--    "and %r0, %r0, $0xff\n"       // limit exit code to 8 bits
-     "movs r7, $1\n"               // NR_exit == 1
-     "svc $0x00\n"
-     "");
-@@ -1008,7 +1007,6 @@ asm(".section .text\n"
-     "add x2, x2, x1\n"            //           + argv
-     "and sp, x1, -16\n"           // sp must be 16-byte aligned in the callee
-     "bl main\n"                   // main() returns the status code, we'll exit with it.
--    "and x0, x0, 0xff\n"          // limit exit code to 8 bits
-     "mov x8, 93\n"                // NR_exit == 93
-     "svc #0\n"
-     "");
-@@ -1213,7 +1211,7 @@ asm(".section .text\n"
-     "addiu $sp,$sp,-16\n"         // the callee expects to save a0..a3 there!
-     "jal main\n"                  // main() returns the status code, we'll exit with it.
-     "nop\n"                       // delayed slot
--    "and $a0, $v0, 0xff\n"        // limit exit code to 8 bits
-+    "move $a0, $v0\n"             // retrieve 32-bit exit code from v0
-     "li $v0, 4001\n"              // NR_exit == 4001
-     "syscall\n"
-     ".end __start\n"
-@@ -1411,7 +1409,6 @@ asm(".section .text\n"
-     "add   a2,a2,a1\n"           //             + argv
-     "andi  sp,a1,-16\n"          // sp must be 16-byte aligned
-     "call  main\n"               // main() returns the status code, we'll exit with it.
--    "andi  a0, a0, 0xff\n"       // limit exit code to 8 bits
-     "li a7, 93\n"                // NR_exit == 93
-     "ecall\n"
-     "");
+ struct dphy_pll_parameter_map {
+@@ -821,6 +823,8 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 		goto out_pm_runtime;
+ 	}
+ 
++	dsi->dsi_bound = true;
++
+ 	return 0;
+ 
+ out_pm_runtime:
+@@ -840,6 +844,8 @@ static void dw_mipi_dsi_rockchip_unbind(
+ 	if (dsi->is_slave)
+ 		return;
+ 
++	dsi->dsi_bound = false;
++
+ 	dw_mipi_dsi_unbind(dsi->dmd);
+ 
+ 	clk_disable_unprepare(dsi->pllref_clk);
+@@ -904,6 +910,36 @@ static const struct dw_mipi_dsi_host_ops
+ 	.detach = dw_mipi_dsi_rockchip_host_detach,
+ };
+ 
++static int __maybe_unused dw_mipi_dsi_rockchip_resume(struct device *dev)
++{
++	struct dw_mipi_dsi_rockchip *dsi = dev_get_drvdata(dev);
++	int ret;
++
++	/*
++	 * Re-configure DSI state, if we were previously initialized. We need
++	 * to do this before rockchip_drm_drv tries to re-enable() any panels.
++	 */
++	if (dsi->dsi_bound) {
++		ret = clk_prepare_enable(dsi->grf_clk);
++		if (ret) {
++			DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
++			return ret;
++		}
++
++		dw_mipi_dsi_rockchip_config(dsi);
++		if (dsi->slave)
++			dw_mipi_dsi_rockchip_config(dsi->slave);
++
++		clk_disable_unprepare(dsi->grf_clk);
++	}
++
++	return 0;
++}
++
++static const struct dev_pm_ops dw_mipi_dsi_rockchip_pm_ops = {
++	SET_LATE_SYSTEM_SLEEP_PM_OPS(NULL, dw_mipi_dsi_rockchip_resume)
++};
++
+ static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -1089,6 +1125,7 @@ struct platform_driver dw_mipi_dsi_rockc
+ 	.remove		= dw_mipi_dsi_rockchip_remove,
+ 	.driver		= {
+ 		.of_match_table = dw_mipi_dsi_rockchip_dt_ids,
++		.pm	= &dw_mipi_dsi_rockchip_pm_ops,
+ 		.name	= "dw-mipi-dsi-rockchip",
+ 	},
+ };
 
 
