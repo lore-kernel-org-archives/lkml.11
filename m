@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F2CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A09C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbiAXVqE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:46:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35284 "EHLO
+        id S1573674AbiAXVpf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 16:45:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33566 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448046AbiAXVLz (ORCPT
+        with ESMTP id S1446902AbiAXVJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:55 -0500
+        Mon, 24 Jan 2022 16:09:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3ADD861451;
-        Mon, 24 Jan 2022 21:11:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132CDC340E5;
-        Mon, 24 Jan 2022 21:11:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E766131F;
+        Mon, 24 Jan 2022 21:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58730C340E5;
+        Mon, 24 Jan 2022 21:09:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058714;
-        bh=tZoRqKshpb0jYNvvz3638yINcJjRi1Ic87BJvrzDhSM=;
+        s=korg; t=1643058577;
+        bh=sfLZiX02BJ5cJ5jesEuIRjHJpSQs6iwfZWTLM8msD+o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZK5JmYtm34pamy+HKlwb9Bep+hRqSn46QRoQ3cSy0sYQUit3PnLQ1sS99egt1n4Yw
-         Fz/v5NY4QMUctYMJ8fLy5TFfPMbjBfO6Vse3TVvldECtXNYC4FgpmY7FW/IEf5JRTP
-         8SJJW1xGYjV+qFU1/qPTzpiWnv9AmawboRiOqXoE=
+        b=JLG84KrXYqW81gHyoXl/MWNcRx/6Xsude0XoPyl1RaInZYfzdv3DzzFyRZHAU5vmb
+         MEUYgKtCbR1qi2DbugsoJ0zlidXpO9JvrKXAAjGalJzNl5CWFoULrgrUT/4OJaP1v7
+         GGB6hodEayK0IcEeIsOTZHWaCsVm+3tNuwQ1ODS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        Steffen Weinreich <steve@weinreich.org>
-Subject: [PATCH 5.16 0379/1039] netfilter: nft_payload: do not update layer 4 checksum when mangling fragments
-Date:   Mon, 24 Jan 2022 19:36:08 +0100
-Message-Id: <20220124184138.051803190@linuxfoundation.org>
+        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0301/1039] xfrm: interface with if_id 0 should return error
+Date:   Mon, 24 Jan 2022 19:34:50 +0100
+Message-Id: <20220124184135.429986884@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,35 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pablo Neira Ayuso <pablo@netfilter.org>
+From: Antony Antony <antony.antony@secunet.com>
 
-[ Upstream commit 4e1860a3863707e8177329c006d10f9e37e097a8 ]
+[ Upstream commit 8dce43919566f06e865f7e8949f5c10d8c2493f5 ]
 
-IP fragments do not come with the transport header, hence skip bogus
-layer 4 checksum updates.
+xfrm interface if_id = 0 would cause xfrm policy lookup errors since
+Commit 9f8550e4bd9d.
 
-Fixes: 1814096980bb ("netfilter: nft_payload: layer 4 checksum adjustment for pseudoheader fields")
-Reported-and-tested-by: Steffen Weinreich <steve@weinreich.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Now explicitly fail to create an xfrm interface when if_id = 0
+
+With this commit:
+ ip link add ipsec0  type xfrm dev lo  if_id 0
+ Error: if_id must be non zero.
+
+v1->v2 change:
+ - add Fixes: tag
+
+Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_payload.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/xfrm/xfrm_interface.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nft_payload.c b/net/netfilter/nft_payload.c
-index bd689938a2e0c..58e96a0fe0b4c 100644
---- a/net/netfilter/nft_payload.c
-+++ b/net/netfilter/nft_payload.c
-@@ -546,6 +546,9 @@ static int nft_payload_l4csum_offset(const struct nft_pktinfo *pkt,
- 				     struct sk_buff *skb,
- 				     unsigned int *l4csum_offset)
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 41de46b5ffa94..57448fc519fcd 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -637,11 +637,16 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 			struct netlink_ext_ack *extack)
  {
-+	if (pkt->fragoff)
-+		return -1;
+ 	struct net *net = dev_net(dev);
+-	struct xfrm_if_parms p;
++	struct xfrm_if_parms p = {};
+ 	struct xfrm_if *xi;
+ 	int err;
+ 
+ 	xfrmi_netlink_parms(data, &p);
++	if (!p.if_id) {
++		NL_SET_ERR_MSG(extack, "if_id must be non zero");
++		return -EINVAL;
++	}
 +
- 	switch (pkt->tprot) {
- 	case IPPROTO_TCP:
- 		*l4csum_offset = offsetof(struct tcphdr, check);
+ 	xi = xfrmi_locate(net, &p);
+ 	if (xi)
+ 		return -EEXIST;
+@@ -666,7 +671,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+ 	struct net *net = xi->net;
+-	struct xfrm_if_parms p;
++	struct xfrm_if_parms p = {};
++
++	if (!p.if_id) {
++		NL_SET_ERR_MSG(extack, "if_id must be non zero");
++		return -EINVAL;
++	}
+ 
+ 	xfrmi_netlink_parms(data, &p);
+ 	xi = xfrmi_locate(net, &p);
 -- 
 2.34.1
 
