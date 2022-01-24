@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D45FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2331C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345313AbiAXTJC (ORCPT
+        id S1345214AbiAXTJI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:09:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57424 "EHLO
+        Mon, 24 Jan 2022 14:09:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59458 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344292AbiAXTBh (ORCPT
+        with ESMTP id S1345129AbiAXTCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:01:37 -0500
+        Mon, 24 Jan 2022 14:02:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 16B2AB8124C;
-        Mon, 24 Jan 2022 19:01:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B1DEC36AE3;
-        Mon, 24 Jan 2022 19:01:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB7C0B81240;
+        Mon, 24 Jan 2022 19:02:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0813EC340E5;
+        Mon, 24 Jan 2022 19:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050894;
-        bh=/WuAenPvtHoOYxe2cLjzMTFFnpRHp7Hh7oLwX6A9/98=;
+        s=korg; t=1643050963;
+        bh=9cL7YfU2Tl2x+HNhay8gNcf5LyL2e/h7o6fZeBMPIRg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VEAExKlJK+BY8HbC0FnodvMf8jWneI4MD0q3Lh71/s2VY7c3ghZLS8ys8OKgAHLXa
-         UNndaEtCOYLHyR8FG6M3MNf3YP4dh9+dVPtaBT6PO5f1meY0JHfrBXgg527N8uRDeM
-         YR3JkVMbIMr/dQcB8UlhNwHd1KWBfa6oOWCTkzrI=
+        b=aj0IAuDcg7EhRUo7UZz6YdppdiqUXXytAXq7bMHZ8BwwUd/kRi54vUoUR0RwXDqjB
+         3cia4tgbG4WIig+d4K58Ys/NwTssRJC6qOOV+6f169dCXz3ZToX9bWfPFKmutRZ3n6
+         Ne64RAsTFTRkojLua3cbktq1oEJslRS+I0L8zVgc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 145/157] lib82596: Fix IRQ check in sni_82596_probe
-Date:   Mon, 24 Jan 2022 19:43:55 +0100
-Message-Id: <20220124183937.364307472@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mike Marshall <hubcap@omnibond.com>
+Subject: [PATCH 4.14 011/186] orangefs: Fix the size of a memory allocation in orangefs_bufmap_alloc()
+Date:   Mon, 24 Jan 2022 19:41:26 +0100
+Message-Id: <20220124183937.477418496@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,40 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 99218cbf81bf21355a3de61cd46a706d36e900e6 upstream.
+commit 40a74870b2d1d3d44e13b3b73c6571dd34f5614d upstream.
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+'buffer_index_array' really looks like a bitmap. So it should be allocated
+as such.
+When kzalloc is called, a number of bytes is expected, but a number of
+longs is passed instead.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
+In get(), if not enough memory is allocated, un-allocated memory may be
+read or written.
 
-Fix the check of return value to catch errors correctly.
+So use bitmap_zalloc() to safely allocate the correct memory size and
+avoid un-expected behavior.
 
-Fixes: 115978859272 ("i825xx: Move the Intel 82586/82593/82596 based drivers")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+While at it, change the corresponding kfree() into bitmap_free() to keep
+the semantic.
+
+Fixes: ea2c9c9f6574 ("orangefs: bufmap rewrite")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Mike Marshall <hubcap@omnibond.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/i825xx/sni_82596.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/orangefs/orangefs-bufmap.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/i825xx/sni_82596.c
-+++ b/drivers/net/ethernet/i825xx/sni_82596.c
-@@ -122,9 +122,10 @@ static int sni_82596_probe(struct platfo
- 	netdevice->dev_addr[5] = readb(eth_addr + 0x06);
- 	iounmap(eth_addr);
+--- a/fs/orangefs/orangefs-bufmap.c
++++ b/fs/orangefs/orangefs-bufmap.c
+@@ -179,7 +179,7 @@ orangefs_bufmap_free(struct orangefs_buf
+ {
+ 	kfree(bufmap->page_array);
+ 	kfree(bufmap->desc_array);
+-	kfree(bufmap->buffer_index_array);
++	bitmap_free(bufmap->buffer_index_array);
+ 	kfree(bufmap);
+ }
  
--	if (!netdevice->irq) {
-+	if (netdevice->irq < 0) {
- 		printk(KERN_ERR "%s: IRQ not found for i82596 at 0x%lx\n",
- 			__FILE__, netdevice->base_addr);
-+		retval = netdevice->irq;
- 		goto probe_failed;
- 	}
+@@ -243,8 +243,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
+ 	bufmap->desc_size = user_desc->size;
+ 	bufmap->desc_shift = ilog2(bufmap->desc_size);
  
+-	bufmap->buffer_index_array =
+-		kzalloc(DIV_ROUND_UP(bufmap->desc_count, BITS_PER_LONG), GFP_KERNEL);
++	bufmap->buffer_index_array = bitmap_zalloc(bufmap->desc_count, GFP_KERNEL);
+ 	if (!bufmap->buffer_index_array)
+ 		goto out_free_bufmap;
+ 
+@@ -267,7 +266,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
+ out_free_desc_array:
+ 	kfree(bufmap->desc_array);
+ out_free_index_array:
+-	kfree(bufmap->buffer_index_array);
++	bitmap_free(bufmap->buffer_index_array);
+ out_free_bufmap:
+ 	kfree(bufmap);
+ out:
 
 
