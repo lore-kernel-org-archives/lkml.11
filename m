@@ -2,40 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC2FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87C3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839868AbiAXWwC (ORCPT
+        id S1839893AbiAXWwG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33472 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379034AbiAXVoI (ORCPT
+        Mon, 24 Jan 2022 17:52:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52814 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359781AbiAXVnY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:08 -0500
+        Mon, 24 Jan 2022 16:43:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D638C61534;
-        Mon, 24 Jan 2022 21:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6A88C340E4;
-        Mon, 24 Jan 2022 21:44:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5F0EBB811A2;
+        Mon, 24 Jan 2022 21:43:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 826F0C340E4;
+        Mon, 24 Jan 2022 21:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060647;
-        bh=157YON3ewFpZewgxjqxaCDDdcCeplABo9eTS1EJvvBU=;
+        s=korg; t=1643060598;
+        bh=fhcehs13K324S4NcYX+VvjBRl1SSEGNfMfH7EvgCHdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yjb5nDQIzmgEnWMfvXCY5T83twSZlgWVp1wP8nLDiqHlXJQifdBl4ap9K6191/t6g
-         tpI/5J/6DKWb2QC5Vvoo0syn949KYc+q6cQVMDlvaiMR5iXoarB+hE454j6UNqsbgX
-         kUCXKEzBcL8Yve7Xen/wK5NTCCv+bqP8+cUlZOeU=
+        b=2YEfBIsJmChaWyJWJeyJ1/ODb2a+6fEVafLWI/hwXtK/4VTSu0GWl1z5m0DdviLqi
+         oWmlaWBbywz6G26BWgTt2Ox1LgyK/PRwvEu8mDgpaWypcxg95dzNXFWLXanSPmGVou
+         1N9n7++DJznG9mzeLSC6DQdmWDc5h0wztUiucREI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
-        Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 1010/1039] net: ipa: fix atomic update in ipa_endpoint_replenish()
-Date:   Mon, 24 Jan 2022 19:46:39 +0100
-Message-Id: <20220124184159.242299257@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
+        Adrian Bunk <bunk@debian.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Branislav Rankov <branislav.rankov@arm.com>,
+        Diederik de Haas <didi.debian@cknow.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 1001/1039] perf tools: Drop requirement for libstdc++.so for libopencsd check
+Date:   Mon, 24 Jan 2022 19:46:30 +0100
+Message-Id: <20220124184158.935216954@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,54 +55,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Uwe Kleine-König <uwe@kleine-koenig.org>
 
-commit 6c0e3b5ce94947b311348c367db9e11dcb2ccc93 upstream.
+commit ed17b1914978eddb2b01f2d34577f1c82518c650 upstream.
 
-In ipa_endpoint_replenish(), if an error occurs when attempting to
-replenish a receive buffer, we just quit and try again later.  In
-that case we increment the backlog count to reflect that the attempt
-was unsuccessful.  Then, if the add_one flag was true we increment
-the backlog again.
+It's possible to link against libopencsd_c_api without having
+libstdc++.so available, only libstdc++.so.6.0.28 (or whatever version is
+in use) needs to be available. The same holds true for libopencsd.so.
+When -lstdc++ (or -lopencsd) is explicitly passed to the linker however
+the .so file must be available.
 
-This second increment is not included in the backlog local variable
-though, and its value determines whether delayed work should be
-scheduled.  This is a bug.
+So wrap adding the dependencies into a check for static linking that
+actually requires adding them all. The same construct is already used
+for some other tests in the same file to reduce dependencies in the
+dynamic linking case.
 
-Fix this by determining whether 1 or 2 should be added to the
-backlog before adding it in a atomic_add_return() call.
-
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 573cf5c9a152 ("perf build: Add missing -lstdc++ when linking with libopencsd")
+Reviewed-by: James Clark <james.clark@arm.com>
+Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+Cc: Adrian Bunk <bunk@debian.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Branislav Rankov <branislav.rankov@arm.com>
+Cc: Diederik de Haas <didi.debian@cknow.org>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/all/20211203210544.1137935-1-uwe@kleine-koenig.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ tools/perf/Makefile.config |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1067,6 +1067,7 @@ static void ipa_endpoint_replenish(struc
- {
- 	struct gsi *gsi;
- 	u32 backlog;
-+	int delta;
- 
- 	if (!endpoint->replenish_enabled) {
- 		if (add_one)
-@@ -1084,10 +1085,8 @@ static void ipa_endpoint_replenish(struc
- 
- try_again_later:
- 	/* The last one didn't succeed, so fix the backlog */
--	backlog = atomic_inc_return(&endpoint->replenish_backlog);
--
--	if (add_one)
--		atomic_inc(&endpoint->replenish_backlog);
-+	delta = add_one ? 2 : 1;
-+	backlog = atomic_add_return(delta, &endpoint->replenish_backlog);
- 
- 	/* Whenever a receive buffer transaction completes we'll try to
- 	 * replenish again.  It's unlikely, but if we fail to supply even
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -143,7 +143,10 @@ FEATURE_CHECK_LDFLAGS-libcrypto = -lcryp
+ ifdef CSINCLUDES
+   LIBOPENCSD_CFLAGS := -I$(CSINCLUDES)
+ endif
+-OPENCSDLIBS := -lopencsd_c_api -lopencsd -lstdc++
++OPENCSDLIBS := -lopencsd_c_api
++ifeq ($(findstring -static,${LDFLAGS}),-static)
++  OPENCSDLIBS += -lopencsd -lstdc++
++endif
+ ifdef CSLIBS
+   LIBOPENCSD_LDFLAGS := -L$(CSLIBS)
+ endif
 
 
