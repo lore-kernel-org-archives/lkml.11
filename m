@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 388DDC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C855C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349402AbiAXTUl (ORCPT
+        id S1349376AbiAXTUi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42048 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346038AbiAXTMX (ORCPT
+        Mon, 24 Jan 2022 14:20:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37974 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345368AbiAXTMK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:12:23 -0500
+        Mon, 24 Jan 2022 14:12:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 123996130B;
-        Mon, 24 Jan 2022 19:12:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE045C340E5;
-        Mon, 24 Jan 2022 19:12:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07733B81215;
+        Mon, 24 Jan 2022 19:12:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2419BC340E5;
+        Mon, 24 Jan 2022 19:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051542;
-        bh=CBPENbkco7iWTiGBptNuAshMijpXyfLZVEct9/ZpMIs=;
+        s=korg; t=1643051526;
+        bh=LNtD9UZWvbmDOw7paLtYgM/qBbS/NqI14rCQ7TsFR8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xOm6hkhL7r2ErUvPJgpL0u+pIfF6fz2tIR97BhyHR4j6J96RWU8+ntkyPKSkMl/WP
-         pwJb275lbTOs4MSBrpTw4XlhScx76dO0661tPL/4DWIQg8DVBUWvNT5D0pH5x8Mw3F
-         t7PMLU2uY0/YNqUC2rEZoVCHIOo/l8+ok0LkhaXE=
+        b=ZQghJyv3b6ziiak7yNrofbh4oPEmZdjjW3rp94Cun0KCeu/YFalhoQxvI32D9Z/G7
+         nY7uIRWlzcFvCipX4xrosNgnPNrZ3v4e4R253OUHEsqhDJNnhh3iZJLsQWgkzcBMrx
+         neRRqv0Y4eaWLQcFn958ZjTE63lFfglng63yvleY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Marcel Holtmann <marcel@holtmann.org>
-Subject: [PATCH 4.19 001/239] Bluetooth: bfusb: fix division by zero in send path
-Date:   Mon, 24 Jan 2022 19:40:39 +0100
-Message-Id: <20220124183943.163048809@linuxfoundation.org>
+        Amir Goldstein <amir73il@gmail.com>,
+        Miklos Szeredi <mszeredi@redhat.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.14 183/186] fuse: fix live lock in fuse_iget()
+Date:   Mon, 24 Jan 2022 19:44:18 +0100
+Message-Id: <20220124183942.988636950@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -48,38 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Amir Goldstein <amir73il@gmail.com>
 
-commit b5e6fa7a12572c82f1e7f2f51fbb02a322291291 upstream.
+commit 775c5033a0d164622d9d10dd0f0a5531639ed3ed upstream.
 
-Add the missing bulk-out endpoint sanity check to probe() to avoid
-division by zero in bfusb_send_frame() in case a malicious device has
-broken descriptors (or when doing descriptor fuzz testing).
+Commit 5d069dbe8aaf ("fuse: fix bad inode") replaced make_bad_inode()
+in fuse_iget() with a private implementation fuse_make_bad().
 
-Note that USB core will reject URBs submitted for endpoints with zero
-wMaxPacketSize but that drivers doing packet-size calculations still
-need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
-endpoint descriptors with maxpacket=0")).
+The private implementation fails to remove the bad inode from inode
+cache, so the retry loop with iget5_locked() finds the same bad inode
+and marks it bad forever.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+kmsg snip:
+
+[ ] rcu: INFO: rcu_sched self-detected stall on CPU
+...
+[ ]  ? bit_wait_io+0x50/0x50
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ? find_inode.isra.32+0x60/0xb0
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ilookup5_nowait+0x65/0x90
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ilookup5.part.36+0x2e/0x80
+[ ]  ? fuse_init_file_inode+0x70/0x70
+[ ]  ? fuse_inode_eq+0x20/0x20
+[ ]  iget5_locked+0x21/0x80
+[ ]  ? fuse_inode_eq+0x20/0x20
+[ ]  fuse_iget+0x96/0x1b0
+
+Fixes: 5d069dbe8aaf ("fuse: fix bad inode")
+Signed-off-by: Amir Goldstein <amir73il@gmail.com>
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/bfusb.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/fuse/fuse_i.h |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/bluetooth/bfusb.c
-+++ b/drivers/bluetooth/bfusb.c
-@@ -644,6 +644,9 @@ static int bfusb_probe(struct usb_interf
- 	data->bulk_out_ep   = bulk_out_ep->desc.bEndpointAddress;
- 	data->bulk_pkt_size = le16_to_cpu(bulk_out_ep->desc.wMaxPacketSize);
+--- a/fs/fuse/fuse_i.h
++++ b/fs/fuse/fuse_i.h
+@@ -691,6 +691,7 @@ static inline u64 get_node_id(struct ino
  
-+	if (!data->bulk_pkt_size)
-+		goto done;
-+
- 	rwlock_init(&data->lock);
+ static inline void fuse_make_bad(struct inode *inode)
+ {
++	remove_inode_hash(inode);
+ 	set_bit(FUSE_I_BAD, &get_fuse_inode(inode)->state);
+ }
  
- 	data->reassembly = NULL;
 
 
