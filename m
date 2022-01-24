@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F3FC47081
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D114FC35276
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448570AbiAXVND (ORCPT
+        id S1448518AbiAXVM7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:13:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39732 "EHLO
+        Mon, 24 Jan 2022 16:12:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387576AbiAXUg5 (ORCPT
+        with ESMTP id S1387577AbiAXUg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:36:57 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD113C038AF8;
-        Mon, 24 Jan 2022 11:50:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C346EC038AF9;
+        Mon, 24 Jan 2022 11:50:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DADA6091B;
-        Mon, 24 Jan 2022 19:50:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40DF8C340E5;
-        Mon, 24 Jan 2022 19:50:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 621A160915;
+        Mon, 24 Jan 2022 19:50:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ABB7C340E7;
+        Mon, 24 Jan 2022 19:50:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053822;
-        bh=pn09FPzboF/tVh8/0L5nmMFwe2Jrkb8T9pquQXiejis=;
+        s=korg; t=1643053825;
+        bh=ofhkGRnyirw/XhpznoA8KDxIxBrgG3dGGZoCS9L+msQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rth71vgbRoyhg1ZYqAlE/rdU93Inf4IKKUCr0eQNJVSwHAkCcPIuTvOVfvIRwDYp3
-         /WdgTJFyFBGsv8aKR7sNg5cGozoKPzxeL3LLraX9Lzuo8zL3m7QKwULNa2Q7THPM3o
-         RgfyEDe+SIAgmAQgBJDZ3USZ/SYq150Ieresjpf8=
+        b=kiHcprL3LQRkZjvFnZW9EEpU1YjQA8A/mMxWg4u5Xx9OaURYhi/kjt3imzslJDdss
+         NkReBl8nq1Kw6biMltn/W6OOaEbG7d6jqYAQ2xeFmy8sda2cTt/dFjTmLUmDLKK6Zp
+         xeYvN6EAZwTD3Pruq/jss1AMtk6ME3MehND7kjYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -40,9 +40,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Daniel Thompson <daniel.thompson@linaro.org>,
         Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 189/563] backlight: qcom-wled: Validate enabled string indices in DT
-Date:   Mon, 24 Jan 2022 19:39:14 +0100
-Message-Id: <20220124184030.959132141@linuxfoundation.org>
+Subject: [PATCH 5.10 190/563] backlight: qcom-wled: Pass number of elements to read to read_u32_array
+Date:   Mon, 24 Jan 2022 19:39:15 +0100
+Message-Id: <20220124184030.996356318@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -56,56 +56,51 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit c05b21ebc5bce3ecc78c2c71afd76d92c790a2ac ]
+[ Upstream commit e29e24bdabfeddbf8b1a4ecac1af439a85150438 ]
 
-The strings passed in DT may possibly cause out-of-bounds register
-accesses and should be validated before use.
+of_property_read_u32_array takes the number of elements to read as last
+argument. This does not always need to be 4 (sizeof(u32)) but should
+instead be the size of the array in DT as read just above with
+of_property_count_elems_of_size.
+
+To not make such an error go unnoticed again the driver now bails
+accordingly when of_property_read_u32_array returns an error.
+Surprisingly the indentation of newlined arguments is lining up again
+after prepending `rc = `.
 
 Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
 Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
 Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
 Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211115203459.1634079-2-marijn.suijten@somainline.org
+Link: https://lore.kernel.org/r/20211115203459.1634079-3-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/backlight/qcom-wled.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ drivers/video/backlight/qcom-wled.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
-index cd11c57764381..2c4290f082025 100644
+index 2c4290f082025..92df5a9f6ae51 100644
 --- a/drivers/video/backlight/qcom-wled.c
 +++ b/drivers/video/backlight/qcom-wled.c
-@@ -1528,12 +1528,28 @@ static int wled_configure(struct wled *wled)
- 	string_len = of_property_count_elems_of_size(dev->of_node,
- 						     "qcom,enabled-strings",
- 						     sizeof(u32));
--	if (string_len > 0)
-+	if (string_len > 0) {
-+		if (string_len > wled->max_string_count) {
-+			dev_err(dev, "Cannot have more than %d strings\n",
-+				wled->max_string_count);
-+			return -EINVAL;
-+		}
-+
- 		of_property_read_u32_array(dev->of_node,
+@@ -1535,10 +1535,15 @@ static int wled_configure(struct wled *wled)
+ 			return -EINVAL;
+ 		}
+ 
+-		of_property_read_u32_array(dev->of_node,
++		rc = of_property_read_u32_array(dev->of_node,
  						"qcom,enabled-strings",
  						wled->cfg.enabled_strings,
- 						sizeof(u32));
- 
-+		for (i = 0; i < string_len; ++i) {
-+			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
-+				dev_err(dev,
-+					"qcom,enabled-strings index %d at %d is out of bounds\n",
-+					wled->cfg.enabled_strings[i], i);
-+				return -EINVAL;
-+			}
+-						sizeof(u32));
++						string_len);
++		if (rc) {
++			dev_err(dev, "Failed to read %d elements from qcom,enabled-strings: %d\n",
++				string_len, rc);
++			return rc;
 +		}
-+	}
-+
- 	return 0;
- }
  
+ 		for (i = 0; i < string_len; ++i) {
+ 			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
 -- 
 2.34.1
 
