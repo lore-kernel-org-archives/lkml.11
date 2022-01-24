@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D89C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6924C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242186AbiAXTGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:06:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56912 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345661AbiAXTAt (ORCPT
+        id S1345183AbiAXTG4 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345668AbiAXTAw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:49 -0500
+        Mon, 24 Jan 2022 14:00:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351AEC061365;
+        Mon, 24 Jan 2022 10:58:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0224560010;
-        Mon, 24 Jan 2022 19:00:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB116C340E5;
-        Mon, 24 Jan 2022 19:00:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CDD59B81235;
+        Mon, 24 Jan 2022 18:58:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7471C340E5;
+        Mon, 24 Jan 2022 18:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050848;
-        bh=bpMBu5yH7MGhV8vmY6xchErCuexz35VkhDge5dgYqqc=;
+        s=korg; t=1643050695;
+        bh=l31NYPDy27HsQINdourGHA5+CrTxr1+qXptsDsZ7qy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJ866/vpa0FkVCchhimFZmQQkjcD8EGMF9zdtkzs49/clyGnSgPy46/E3+2514fgV
-         G18C2noDF3pZ4JIbjZ4faxNcD2E6fJg1vhYd+01lzNTqjkLmxFslprdTAA7udrjoeL
-         W6YvmIICGSK8RCgmoUc53xkLQpjdD3X7bf5atTIY=
+        b=ccBx9IZTM1ODMIgWTYkCquGhUf0RnSOZYpCkfgknrDFVtlhj8uuROS0XGA8qoZZGy
+         Mr2ENuGlUgEwpfhU6GDRsNkVeQ14PeComNjPgyZBnAAxkdTFcnYDjsQWJhJl/l0ykj
+         mFz3EIPLe71sqr/7lhZs5KagFCiITggITPPP2S/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 114/157] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-Date:   Mon, 24 Jan 2022 19:43:24 +0100
-Message-Id: <20220124183936.391505465@linuxfoundation.org>
+        stable@vger.kernel.org, Tasos Sahanidis <tasos@tasossah.com>,
+        Denis Efremov <efremov@linux.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 041/157] floppy: Fix hang in watchdog when disk is ejected
+Date:   Mon, 24 Jan 2022 19:42:11 +0100
+Message-Id: <20220124183934.101171195@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -48,41 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+From: Tasos Sahanidis <tasos@tasossah.com>
 
-[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
+[ Upstream commit fb48febce7e30baed94dd791e19521abd2c3fd83 ]
 
-The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
-It's better to have same data type in struct dw_scl_sda_cfg as well.
+When the watchdog detects a disk change, it calls cancel_activity(),
+which in turn tries to cancel the fd_timer delayed work.
 
-Reported-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+In the above scenario, fd_timer_fn is set to fd_watchdog(), meaning
+it is trying to cancel its own work.
+This results in a hang as cancel_delayed_work_sync() is waiting for the
+watchdog (itself) to return, which never happens.
+
+This can be reproduced relatively consistently by attempting to read a
+broken floppy, and ejecting it while IO is being attempted and retried.
+
+To resolve this, this patch calls cancel_delayed_work() instead, which
+cancels the work without waiting for the watchdog to return and finish.
+
+Before this regression was introduced, the code in this section used
+del_timer(), and not del_timer_sync() to delete the watchdog timer.
+
+Link: https://lore.kernel.org/r/399e486c-6540-db27-76aa-7a271b061f76@tasossah.com
+Fixes: 070ad7e793dc ("floppy: convert to delayed work and single-thread wq")
+Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
+Signed-off-by: Denis Efremov <efremov@linux.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/block/floppy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
-index 96f8230cd2d33..5c32a7ef476da 100644
---- a/drivers/i2c/busses/i2c-designware-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
-@@ -49,10 +49,10 @@ enum dw_pci_ctl_id_t {
- };
- 
- struct dw_scl_sda_cfg {
--	u32 ss_hcnt;
--	u32 fs_hcnt;
--	u32 ss_lcnt;
--	u32 fs_lcnt;
-+	u16 ss_hcnt;
-+	u16 fs_hcnt;
-+	u16 ss_lcnt;
-+	u16 fs_lcnt;
- 	u32 sda_hold;
- };
+diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
+index 4496e7a492352..d508dda49dee4 100644
+--- a/drivers/block/floppy.c
++++ b/drivers/block/floppy.c
+@@ -994,7 +994,7 @@ static DECLARE_DELAYED_WORK(fd_timer, fd_timer_workfn);
+ static void cancel_activity(void)
+ {
+ 	do_floppy = NULL;
+-	cancel_delayed_work_sync(&fd_timer);
++	cancel_delayed_work(&fd_timer);
+ 	cancel_work_sync(&floppy_work);
+ }
  
 -- 
 2.34.1
