@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 761E1C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8643CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586262AbiAXW0E (ORCPT
+        id S1586286AbiAXW0L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:26:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41684 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449207AbiAXV2W (ORCPT
+        Mon, 24 Jan 2022 17:26:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48094 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449160AbiAXV2I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:28:22 -0500
+        Mon, 24 Jan 2022 16:28:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34FA8B815B0;
-        Mon, 24 Jan 2022 21:28:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 618C3C340E8;
-        Mon, 24 Jan 2022 21:28:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7E096131F;
+        Mon, 24 Jan 2022 21:28:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A4D2C340E7;
+        Mon, 24 Jan 2022 21:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059691;
-        bh=35lOTX6cm3m1nD+3sw8XpEL6aINTmKJuCTuO6dclzwU=;
+        s=korg; t=1643059686;
+        bh=6YAm3CPq34GvsX3b4vYCVruJOM6/PYsnnpJpjUe6TT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bQuRHEZcTqyNPV91LVDf3kYVGiB7f8brIbslg0f7Q5nWAZq2xohyGBdz8F4bzfeEu
-         QqiF9FvyXiF/LUb1kJ/YNPhN3iVyt6uVR9OuVbZpo8hqJbr626/ftmqltGirqbB+w5
-         KuSi4k955uqne2Df+HpztccqaHZHKytO7Cg2aL8E=
+        b=nCq6X5Wn5cr7GXQVCBQllI5oVo8Y64dfGPvDN55mZKlGSBlJps32bjE9pxeZJuPsc
+         jnDmpTVP3efLZmGEm7TEktKplF1Sfo0YvNamqfykg4SvuBHpBvMxHB/csHsEzhtGtW
+         3B0M8nQt5iMcBgXHuLRN2Nvy0MeuL7CdlLNrTYHQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        David Yat Sin <david.yatsin@amd.com>,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0702/1039] drm/amdgpu: Dont inherit GEM object VMAs in child process
-Date:   Mon, 24 Jan 2022 19:41:31 +0100
-Message-Id: <20220124184148.931014095@linuxfoundation.org>
+Subject: [PATCH 5.16 0700/1039] ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
+Date:   Mon, 24 Jan 2022 19:41:29 +0100
+Message-Id: <20220124184148.869834985@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,55 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit fbcdbfde87509d523132b59f661a355c731139d0 ]
+[ Upstream commit 1d4e0b3abb168b2ee1eca99c527cffa1b80b6161 ]
 
-When an application having open file access to a node forks, its shared
-mappings also get reflected in the address space of child process even
-though it cannot access them with the object permissions applied. With the
-existing permission checks on the gem objects, it might be reasonable to
-also create the VMAs with VM_DONTCOPY flag so a user space application
-doesn't need to explicitly call the madvise(addr, len, MADV_DONTFORK)
-system call to prevent the pages in the mapped range to appear in the
-address space of the child process. It also prevents the memory leaks
-due to additional reference counts on the mapped BOs in the child
-process that prevented freeing the memory in the parent for which we had
-worked around earlier in the user space inside the thunk library.
+ACPICA commit 3dd7e1f3996456ef81bfe14cba29860e8d42949e
 
-Additionally, we faced this issue when using CRIU to checkpoint restore
-an application that had such inherited mappings in the child which
-confuse CRIU when it mmaps on restore. Having this flag set for the
-render node VMAs helps. VMAs mapped via KFD already take care of this so
-this is needed only for the render nodes.
+According to ACPI 6.4, Section 16.2, the CPU cache flushing is
+required on entering to S1, S2, and S3, but the ACPICA code
+flushes the CPU cache regardless of the sleep state.
 
-To limit the impact of the change to user space consumers such as OpenGL
-etc, limit it to KFD BOs only.
+Blind cache flush on entering S5 causes problems for TDX.
 
-Acked-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: David Yat Sin <david.yatsin@amd.com>
-Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Flushing happens with WBINVD that is not supported in the TDX
+environment.
+
+TDX only supports S5 and adjusting ACPICA code to conform to the
+spec more strictly fixes the issue.
+
+Link: https://github.com/acpica/acpica/commit/3dd7e1f3
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/acpi/acpica/hwesleep.c  | 4 +++-
+ drivers/acpi/acpica/hwsleep.c   | 4 +++-
+ drivers/acpi/acpica/hwxfsleep.c | 2 --
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-index a1e63ba4c54a5..630dc99e49086 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-@@ -264,6 +264,9 @@ static int amdgpu_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_str
- 	    !(vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
- 		vma->vm_flags &= ~VM_MAYWRITE;
+diff --git a/drivers/acpi/acpica/hwesleep.c b/drivers/acpi/acpica/hwesleep.c
+index 808fdf54aeebf..7ee2939c08cd4 100644
+--- a/drivers/acpi/acpica/hwesleep.c
++++ b/drivers/acpi/acpica/hwesleep.c
+@@ -104,7 +104,9 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
  
-+	if (bo->kfd_bo)
-+		vma->vm_flags |= VM_DONTCOPY;
-+
- 	return drm_gem_ttm_mmap(obj, vma);
- }
+ 	/* Flush caches, as per ACPI specification */
  
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, sleep_control, 0);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwsleep.c b/drivers/acpi/acpica/hwsleep.c
+index 34a3825f25d37..5efa3d8e483e0 100644
+--- a/drivers/acpi/acpica/hwsleep.c
++++ b/drivers/acpi/acpica/hwsleep.c
+@@ -110,7 +110,9 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
+ 
+ 	/* Flush caches, as per ACPI specification */
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwxfsleep.c b/drivers/acpi/acpica/hwxfsleep.c
+index e4cde23a29061..ba77598ee43e8 100644
+--- a/drivers/acpi/acpica/hwxfsleep.c
++++ b/drivers/acpi/acpica/hwxfsleep.c
+@@ -162,8 +162,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
+ 		return_ACPI_STATUS(status);
+ 	}
+ 
+-	ACPI_FLUSH_CPU_CACHE();
+-
+ 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
+ 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
+ 	if (ACPI_FAILURE(status)) {
 -- 
 2.34.1
 
