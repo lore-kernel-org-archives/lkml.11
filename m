@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C25EAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17FC2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581503AbiAXWL4 (ORCPT
+        id S1581550AbiAXWMA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46886 "EHLO
+        Mon, 24 Jan 2022 17:12:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46944 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452772AbiAXV0d (ORCPT
+        with ESMTP id S1452815AbiAXV0l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:26:33 -0500
+        Mon, 24 Jan 2022 16:26:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 31A3F61305;
-        Mon, 24 Jan 2022 21:26:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2956C340E4;
-        Mon, 24 Jan 2022 21:26:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6D1560C60;
+        Mon, 24 Jan 2022 21:26:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4675C340E4;
+        Mon, 24 Jan 2022 21:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059592;
-        bh=iGXKZ32ebADZo9uL3I0kpvf3SEJ+MzjnQoFC482YF+0=;
+        s=korg; t=1643059598;
+        bh=ziNTfB6MFkrrpKUiqMSsH39v3XYf+3hqHdG+XYLv7Ng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OSTtngvPIMC0mOFJRC/vKQDqDk3ufej/g6H7yhcXSIaxQrG/QZRRXiP/gOb/C0tT5
-         GxtoAh4NvFOPHUOlidsFVgaQh9R9YxET6tcvsJVLUX477r+gSFX8CDCvRI/7gUZXes
-         UM+DVA+OdFb5Wjqeg8awC5rO55MqAUsIvoLseHI0=
+        b=tTry/dcazDUc616yY3zyuh1J/dRMC+6QeQC1+Tl/n89SvpWGyBLDJgLfIFbkmqWEA
+         UPUnypGa2+m/VojYc6g/G0UmEo8+/BwU4LSIoQLr5Gkl6rr3Vt2Eag9wgYzDfRlr5S
+         Obnim2d+bJfN6sXQC4/oVW10DMrud2QCwPTZIzJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0668/1039] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
-Date:   Mon, 24 Jan 2022 19:40:57 +0100
-Message-Id: <20220124184147.829558688@linuxfoundation.org>
+        stable@vger.kernel.org, Fang Zhao <fang.zhao@mediatek.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0670/1039] mt76: mt7915: fix SMPS operation fail
+Date:   Mon, 24 Jan 2022 19:40:59 +0100
+Message-Id: <20220124184147.893810432@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,94 +47,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
+[ Upstream commit 8f05835425ce3f669e4b6d7c2c39a9aa22e1506c ]
 
-When a new USB device gets plugged to nested hubs, the affected hub,
-which connects to usb 2-1.4-port2, doesn't report there's any change,
-hence the nested hubs go back to runtime suspend like nothing happened:
-[  281.032951] usb usb2: usb wakeup-resume
-[  281.032959] usb usb2: usb auto-resume
-[  281.032974] hub 2-0:1.0: hub_resume
-[  281.033011] usb usb2-port1: status 0263 change 0000
-[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.049797] usb 2-1: usb wakeup-resume
-[  281.069800] usb 2-1: Waited 0ms for CONNECT
-[  281.069810] usb 2-1: finish resume
-[  281.070026] hub 2-1:1.0: hub_resume
-[  281.070250] usb 2-1-port4: status 0203 change 0000
-[  281.070272] usb usb2-port1: resume, status 0
-[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.089813] usb 2-1.4: usb wakeup-resume
-[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
-[  281.109801] usb 2-1.4: finish resume
-[  281.109991] hub 2-1.4:1.0: hub_resume
-[  281.110147] usb 2-1.4-port2: status 0263 change 0000
-[  281.110234] usb 2-1-port4: resume, status 0
-[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.110426] hub 2-1.4:1.0: hub_suspend
-[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.130998] hub 2-1:1.0: hub_suspend
-[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
-[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.177828] usb 2-1: usb wakeup-resume
-[  281.197839] usb 2-1: Waited 0ms for CONNECT
-[  281.197850] usb 2-1: finish resume
-[  281.197984] hub 2-1:1.0: hub_resume
-[  281.198203] usb 2-1-port4: status 0203 change 0000
-[  281.198228] usb usb2-port1: resume, status 0
-[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.217835] usb 2-1.4: usb wakeup-resume
-[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
-[  281.237845] usb 2-1.4: finish resume
-[  281.237990] hub 2-1.4:1.0: hub_resume
-[  281.238067] usb 2-1.4-port2: status 0263 change 0000
-[  281.238148] usb 2-1-port4: resume, status 0
-[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.238385] hub 2-1.4:1.0: hub_suspend
-[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.258076] hub 2-1:1.0: hub_suspend
-[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
-[  281.285976] hub 2-0:1.0: hub_suspend
-[  281.285988] usb usb2: bus auto-suspend, wakeup 1
+TGn fails sending SM power save mode action frame to the AP to switch
+from dynamic SMPS mode to static mode.
 
-USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
-the link is in a non-U0 state, then the device must transition the link
-to U0 prior to sending the remote wake message", but the hub only
-transits the link to U0 after signaling remote wakeup.
-
-So be more forgiving and use a 20ms delay to let the link transit to U0
-for remote wakeup.
-
-Suggested-by: Alan Stern <stern@rowland.harvard.edu>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Fang Zhao <fang.zhao@mediatek.com>
+Signed-off-by: Fang Zhao <fang.zhao@mediatek.com>
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hub.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ .../net/wireless/mediatek/mt76/mt7915/mcu.c   | 81 ++++++++++++-------
+ .../net/wireless/mediatek/mt76/mt7915/mcu.h   |  8 ++
+ 2 files changed, 61 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 3bc4a86c3d0a5..ac6c5ccfe1cb7 100644
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1110,7 +1110,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
- 		} else {
- 			hub_power_on(hub, true);
- 		}
--	}
-+	/* Give some time on remote wakeup to let links to transit to U0 */
-+	} else if (hub_is_superspeed(hub->hdev))
-+		msleep(20);
-+
-  init2:
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 852d5d97c70b1..8215b3d79bbdc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1752,33 +1752,6 @@ int mt7915_mcu_sta_update_hdr_trans(struct mt7915_dev *dev,
+ 				     true);
+ }
  
- 	/*
+-int mt7915_mcu_add_smps(struct mt7915_dev *dev, struct ieee80211_vif *vif,
+-			struct ieee80211_sta *sta)
+-{
+-	struct mt7915_vif *mvif = (struct mt7915_vif *)vif->drv_priv;
+-	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
+-	struct wtbl_req_hdr *wtbl_hdr;
+-	struct tlv *sta_wtbl;
+-	struct sk_buff *skb;
+-
+-	skb = mt7915_mcu_alloc_sta_req(dev, mvif, msta,
+-				       MT7915_STA_UPDATE_MAX_SIZE);
+-	if (IS_ERR(skb))
+-		return PTR_ERR(skb);
+-
+-	sta_wtbl = mt7915_mcu_add_tlv(skb, STA_REC_WTBL, sizeof(struct tlv));
+-
+-	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, sta_wtbl,
+-					     &skb);
+-	if (IS_ERR(wtbl_hdr))
+-		return PTR_ERR(wtbl_hdr);
+-
+-	mt7915_mcu_wtbl_smps_tlv(skb, sta, sta_wtbl, wtbl_hdr);
+-
+-	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
+-				     MCU_EXT_CMD(STA_REC_UPDATE), true);
+-}
+-
+ static inline bool
+ mt7915_is_ebf_supported(struct mt7915_phy *phy, struct ieee80211_vif *vif,
+ 			struct ieee80211_sta *sta, bool bfee)
+@@ -2049,6 +2022,21 @@ mt7915_mcu_sta_bfee_tlv(struct mt7915_dev *dev, struct sk_buff *skb,
+ 	bfee->fb_identity_matrix = (nrow == 1 && tx_ant == 2);
+ }
+ 
++static enum mcu_mmps_mode
++mt7915_mcu_get_mmps_mode(enum ieee80211_smps_mode smps)
++{
++	switch (smps) {
++	case IEEE80211_SMPS_OFF:
++		return MCU_MMPS_DISABLE;
++	case IEEE80211_SMPS_STATIC:
++		return MCU_MMPS_STATIC;
++	case IEEE80211_SMPS_DYNAMIC:
++		return MCU_MMPS_DYNAMIC;
++	default:
++		return MCU_MMPS_DISABLE;
++	}
++}
++
+ int mt7915_mcu_set_fixed_rate_ctrl(struct mt7915_dev *dev,
+ 				   struct ieee80211_vif *vif,
+ 				   struct ieee80211_sta *sta,
+@@ -2076,7 +2064,11 @@ int mt7915_mcu_set_fixed_rate_ctrl(struct mt7915_dev *dev,
+ 	case RATE_PARAM_FIXED_MCS:
+ 	case RATE_PARAM_FIXED_GI:
+ 	case RATE_PARAM_FIXED_HE_LTF:
+-		ra->phy = *phy;
++		if (phy)
++			ra->phy = *phy;
++		break;
++	case RATE_PARAM_MMPS_UPDATE:
++		ra->mmps_mode = mt7915_mcu_get_mmps_mode(sta->smps_mode);
+ 		break;
+ 	default:
+ 		break;
+@@ -2087,6 +2079,39 @@ int mt7915_mcu_set_fixed_rate_ctrl(struct mt7915_dev *dev,
+ 				     MCU_EXT_CMD(STA_REC_UPDATE), true);
+ }
+ 
++int mt7915_mcu_add_smps(struct mt7915_dev *dev, struct ieee80211_vif *vif,
++			struct ieee80211_sta *sta)
++{
++	struct mt7915_vif *mvif = (struct mt7915_vif *)vif->drv_priv;
++	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
++	struct wtbl_req_hdr *wtbl_hdr;
++	struct tlv *sta_wtbl;
++	struct sk_buff *skb;
++	int ret;
++
++	skb = mt7915_mcu_alloc_sta_req(dev, mvif, msta,
++				       MT7915_STA_UPDATE_MAX_SIZE);
++	if (IS_ERR(skb))
++		return PTR_ERR(skb);
++
++	sta_wtbl = mt7915_mcu_add_tlv(skb, STA_REC_WTBL, sizeof(struct tlv));
++
++	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, sta_wtbl,
++					     &skb);
++	if (IS_ERR(wtbl_hdr))
++		return PTR_ERR(wtbl_hdr);
++
++	mt7915_mcu_wtbl_smps_tlv(skb, sta, sta_wtbl, wtbl_hdr);
++
++	ret = mt76_mcu_skb_send_msg(&dev->mt76, skb,
++				    MCU_EXT_CMD(STA_REC_UPDATE), true);
++	if (ret)
++		return ret;
++
++	return mt7915_mcu_set_fixed_rate_ctrl(dev, vif, sta, NULL,
++					      RATE_PARAM_MMPS_UPDATE);
++}
++
+ static int
+ mt7915_mcu_add_rate_ctrl_fixed(struct mt7915_dev *dev,
+ 			       struct ieee80211_vif *vif,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h
+index 1f5a64ba9b59d..628e90d0c394e 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h
+@@ -365,6 +365,13 @@ enum {
+ 	MCU_PHY_STATE_OFDMLQ_CNINFO,
+ };
+ 
++enum mcu_mmps_mode {
++	MCU_MMPS_STATIC,
++	MCU_MMPS_DYNAMIC,
++	MCU_MMPS_RSV,
++	MCU_MMPS_DISABLE,
++};
++
+ #define STA_TYPE_STA			BIT(0)
+ #define STA_TYPE_AP			BIT(1)
+ #define STA_TYPE_ADHOC			BIT(2)
+@@ -960,6 +967,7 @@ struct sta_rec_ra_fixed {
+ 
+ enum {
+ 	RATE_PARAM_FIXED = 3,
++	RATE_PARAM_MMPS_UPDATE = 5,
+ 	RATE_PARAM_FIXED_HE_LTF = 7,
+ 	RATE_PARAM_FIXED_MCS,
+ 	RATE_PARAM_FIXED_GI = 11,
 -- 
 2.34.1
 
