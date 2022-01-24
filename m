@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20F09C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA09C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838940AbiAXWt2 (ORCPT
+        id S1839032AbiAXWtl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:49:28 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60776 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354114AbiAXVnN (ORCPT
+        Mon, 24 Jan 2022 17:49:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52876 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378515AbiAXVn2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:43:13 -0500
+        Mon, 24 Jan 2022 16:43:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EDAB361320;
-        Mon, 24 Jan 2022 21:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA4D0C340E4;
-        Mon, 24 Jan 2022 21:43:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E394B81136;
+        Mon, 24 Jan 2022 21:43:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7ECDC340E4;
+        Mon, 24 Jan 2022 21:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060589;
-        bh=+O6Zta3ruIVFCjjsQEmorm5Dt7LAqB65TAvz9UppKls=;
+        s=korg; t=1643060604;
+        bh=RAhbsxxG8YhgiPxl2yWSUjm73nfsyol775fPunTAP7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Is6zTwPFTsCqxpJCZdVgeCSxX/SwEOGfKWNL6jR4s7MvigJblbgtyG/BsSmIRWH1E
-         hQESr9NGV7hgBGvPBL/VbiyIzTUYV5I2rh4AhU4Bbiw00OU2vjkov/X0zix2ldhDnO
-         jdB2rd4lagFU23yzNB06vUY/vk50OVinBtq5mfAA=
+        b=LrnqEJJTXaywBKoR/lrwN4feGPfxBOGY3xIf2oQdPqXVFg7K/nfCcA6i0h34cBgaT
+         Wu01sdb9wfQRDkqAa7rC4uVFi+AfuDhpjlwL9iuyxNywAJRoPGmkVQlaXjPoc+s2tm
+         RCuLNDn2jsoV51FWV8oIo8KDd43Txlr5RRiXtqkc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.16 0998/1039] dmaengine: at_xdmac: Fix lld view setting
-Date:   Mon, 24 Jan 2022 19:46:27 +0100
-Message-Id: <20220124184158.832161985@linuxfoundation.org>
+        stable@vger.kernel.org, Yury Norov <yury.norov@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH 5.16 0976/1039] bitops: protect find_first_{,zero}_bit properly
+Date:   Mon, 24 Jan 2022 19:46:05 +0100
+Message-Id: <20220124184158.097950996@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,41 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Yury Norov <yury.norov@gmail.com>
 
-commit 1385eb4d14d447cc5d744bc2ac34f43be66c9963 upstream.
+commit b7ec62d7ee0f0b8af6ba190501dff7f9ee6545ca upstream.
 
-AT_XDMAC_CNDC_NDVIEW_NDV3 was set even for AT_XDMAC_MBR_UBC_NDV2,
-because of the wrong bit handling. Fix it.
+find_first_bit() and find_first_zero_bit() are not protected with
+ifdefs as other functions in find.h. It causes build errors on some
+platforms if CONFIG_GENERIC_FIND_FIRST_BIT is enabled.
 
-Fixes: ee0fe35c8dcd ("dmaengine: xdmac: Handle descriptor's view 3 registers")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-10-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Fixes: 2cc7b6a44ac2 ("lib: add fast path for find_first_*_bit() and find_last_bit()")
+Reported-by: kernel test robot <lkp@intel.com>
+Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ include/asm-generic/bitops/find.h |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -99,6 +99,7 @@
- #define		AT_XDMAC_CNDC_NDE		(0x1 << 0)		/* Channel x Next Descriptor Enable */
- #define		AT_XDMAC_CNDC_NDSUP		(0x1 << 1)		/* Channel x Next Descriptor Source Update */
- #define		AT_XDMAC_CNDC_NDDUP		(0x1 << 2)		/* Channel x Next Descriptor Destination Update */
-+#define		AT_XDMAC_CNDC_NDVIEW_MASK	GENMASK(28, 27)
- #define		AT_XDMAC_CNDC_NDVIEW_NDV0	(0x0 << 3)		/* Channel x Next Descriptor View 0 */
- #define		AT_XDMAC_CNDC_NDVIEW_NDV1	(0x1 << 3)		/* Channel x Next Descriptor View 1 */
- #define		AT_XDMAC_CNDC_NDVIEW_NDV2	(0x2 << 3)		/* Channel x Next Descriptor View 2 */
-@@ -402,7 +403,8 @@ static void at_xdmac_start_xfer(struct a
- 	 */
- 	if (at_xdmac_chan_is_cyclic(atchan))
- 		reg = AT_XDMAC_CNDC_NDVIEW_NDV1;
--	else if (first->lld.mbr_ubc & AT_XDMAC_MBR_UBC_NDV3)
-+	else if ((first->lld.mbr_ubc &
-+		  AT_XDMAC_CNDC_NDVIEW_MASK) == AT_XDMAC_MBR_UBC_NDV3)
- 		reg = AT_XDMAC_CNDC_NDVIEW_NDV3;
- 	else
- 		reg = AT_XDMAC_CNDC_NDVIEW_NDV2;
+--- a/include/asm-generic/bitops/find.h
++++ b/include/asm-generic/bitops/find.h
+@@ -97,6 +97,7 @@ unsigned long find_next_zero_bit(const u
+ 
+ #ifdef CONFIG_GENERIC_FIND_FIRST_BIT
+ 
++#ifndef find_first_bit
+ /**
+  * find_first_bit - find the first set bit in a memory region
+  * @addr: The address to start the search at
+@@ -116,7 +117,9 @@ unsigned long find_first_bit(const unsig
+ 
+ 	return _find_first_bit(addr, size);
+ }
++#endif
+ 
++#ifndef find_first_zero_bit
+ /**
+  * find_first_zero_bit - find the first cleared bit in a memory region
+  * @addr: The address to start the search at
+@@ -136,6 +139,8 @@ unsigned long find_first_zero_bit(const
+ 
+ 	return _find_first_zero_bit(addr, size);
+ }
++#endif
++
+ #else /* CONFIG_GENERIC_FIND_FIRST_BIT */
+ 
+ #ifndef find_first_bit
 
 
