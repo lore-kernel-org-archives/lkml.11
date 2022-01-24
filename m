@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 108D2C35274
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C11C35273
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409436AbiAYA0J (ORCPT
+        id S3409448AbiAYA0O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:26:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58522 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449681AbiAXVyz (ORCPT
+        Mon, 24 Jan 2022 19:26:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53938 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573435AbiAXVo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:54:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D847AC08ED7F;
-        Mon, 24 Jan 2022 12:34:57 -0800 (PST)
+        Mon, 24 Jan 2022 16:44:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 512ECB80FA1;
-        Mon, 24 Jan 2022 20:34:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 864A4C340E5;
-        Mon, 24 Jan 2022 20:34:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 59005B81233;
+        Mon, 24 Jan 2022 21:44:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AABFC340E4;
+        Mon, 24 Jan 2022 21:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056495;
-        bh=0tDVZXKr9K09AvgqRFA/1j1lSWqb13QUoRj3scev9K0=;
+        s=korg; t=1643060693;
+        bh=0m840cvT6xgkDwj13KN7JfbNhkL66SG8ih2oD6QU2Js=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Il6nmK+tgJ9Q8HRYc4b5jpz+c331C9d20wseQcX4Qgn3IzAWSs9pa6gnyTjpU9SpG
-         UC9yUC2XfHEYAhOO0KD3eMue97u4x7NLbPMbOIgVSJsNuMePSeO4s90qKB50Vd+dzX
-         RDcfnqnK/WW98Lv51fqjHM3erglDpEm9CB5fRAP8=
+        b=OkK4MrL60YvQ/ebZz/jNMVsSg+e2lD3cX76tNJtv6Hfhs4+8C78sF1ISGury/i4pm
+         zoBmG1sky5sUULgcB2jc9YE0l6oLrfo5N+Mo+6hbb9RsWqnwGyQhnSYUMqYWWdFFaF
+         mmngd6Cs8qoGllv4m5zJJg/GBxejvGQ6tzqMGVvs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Diego Viola <diego.viola@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 471/846] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
-Date:   Mon, 24 Jan 2022 19:39:48 +0100
-Message-Id: <20220124184117.255847140@linuxfoundation.org>
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 1032/1039] KVM: x86: Do runtime CPUID update before updating vcpu->arch.cpuid_entries
+Date:   Mon, 24 Jan 2022 19:47:01 +0100
+Message-Id: <20220124184159.980048786@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,103 +46,146 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Skeggs <bskeggs@redhat.com>
+From: Vitaly Kuznetsov <vkuznets@redhat.com>
 
-[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
+commit ee3a5f9e3d9bf94159f3cc80da542fbe83502dd8 upstream.
 
-There have been reports of the WFI timing out on some boards, and a
-patch was proposed to just remove it.  This stuff is rather fragile,
-and I believe the WFI might be needed with our FW prior to GM200.
+kvm_update_cpuid_runtime() mangles CPUID data coming from userspace
+VMM after updating 'vcpu->arch.cpuid_entries', this makes it
+impossible to compare an update with what was previously
+supplied. Introduce __kvm_update_cpuid_runtime() version which can be
+used to tweak the input before it goes to 'vcpu->arch.cpuid_entries'
+so the upcoming update check can compare tweaked data.
 
-However, we probably should not be touching PMU during init on GPUs
-where we depend on NVIDIA FW, outside of limited circumstances, so
-this should be a somewhat safer change that achieves the desired
-result.
+No functional change intended.
 
-Reported-by: Diego Viola <diego.viola@gmail.com>
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Message-Id: <20220117150542.2176196-2-vkuznets@redhat.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ arch/x86/kvm/cpuid.c |   54 ++++++++++++++++++++++++++++++++-------------------
+ 1 file changed, 34 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-index 24382875fb4f3..455e95a89259f 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-@@ -94,20 +94,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
- 	return 0;
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -125,14 +125,21 @@ static void kvm_update_kvm_cpuid_base(st
+ 	}
  }
  
--static int
-+static void
- nvkm_pmu_reset(struct nvkm_pmu *pmu)
+-static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
++static struct kvm_cpuid_entry2 *__kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu,
++					      struct kvm_cpuid_entry2 *entries, int nent)
  {
- 	struct nvkm_device *device = pmu->subdev.device;
+ 	u32 base = vcpu->arch.kvm_cpuid_base;
  
- 	if (!pmu->func->enabled(pmu))
--		return 0;
--
--	/* Inhibit interrupts, and wait for idle. */
--	nvkm_wr32(device, 0x10a014, 0x0000ffff);
--	nvkm_msec(device, 2000,
--		if (!nvkm_rd32(device, 0x10a04c))
--			break;
--	);
-+		return;
+ 	if (!base)
+ 		return NULL;
  
- 	/* Reset. */
- 	if (pmu->func->reset)
-@@ -118,25 +111,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
- 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
- 			break;
- 	);
--
--	return 0;
+-	return kvm_find_cpuid_entry(vcpu, base | KVM_CPUID_FEATURES, 0);
++	return cpuid_entry2_find(entries, nent, base | KVM_CPUID_FEATURES, 0);
++}
++
++static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
++{
++	return __kvm_find_kvm_cpuid_features(vcpu, vcpu->arch.cpuid_entries,
++					     vcpu->arch.cpuid_nent);
  }
  
- static int
- nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
+@@ -147,11 +154,12 @@ void kvm_update_pv_runtime(struct kvm_vc
+ 		vcpu->arch.pv_cpuid.features = best->eax;
+ }
+ 
+-void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
++static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
++				       int nent)
  {
- 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
--	return nvkm_pmu_reset(pmu);
-+	nvkm_pmu_reset(pmu);
+ 	struct kvm_cpuid_entry2 *best;
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 1, 0);
++	best = cpuid_entry2_find(entries, nent, 1, 0);
+ 	if (best) {
+ 		/* Update OSXSAVE bit */
+ 		if (boot_cpu_has(X86_FEATURE_XSAVE))
+@@ -162,33 +170,38 @@ void kvm_update_cpuid_runtime(struct kvm
+ 			   vcpu->arch.apic_base & MSR_IA32_APICBASE_ENABLE);
+ 	}
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 7, 0);
++	best = cpuid_entry2_find(entries, nent, 7, 0);
+ 	if (best && boot_cpu_has(X86_FEATURE_PKU) && best->function == 0x7)
+ 		cpuid_entry_change(best, X86_FEATURE_OSPKE,
+ 				   kvm_read_cr4_bits(vcpu, X86_CR4_PKE));
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 0xD, 0);
++	best = cpuid_entry2_find(entries, nent, 0xD, 0);
+ 	if (best)
+ 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
+ 
+-	best = kvm_find_cpuid_entry(vcpu, 0xD, 1);
++	best = cpuid_entry2_find(entries, nent, 0xD, 1);
+ 	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
+ 		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
+ 		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
+ 
+-	best = kvm_find_kvm_cpuid_features(vcpu);
++	best = __kvm_find_kvm_cpuid_features(vcpu, entries, nent);
+ 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
+ 		(best->eax & (1 << KVM_FEATURE_PV_UNHALT)))
+ 		best->eax &= ~(1 << KVM_FEATURE_PV_UNHALT);
+ 
+ 	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT)) {
+-		best = kvm_find_cpuid_entry(vcpu, 0x1, 0);
++		best = cpuid_entry2_find(entries, nent, 0x1, 0);
+ 		if (best)
+ 			cpuid_entry_change(best, X86_FEATURE_MWAIT,
+ 					   vcpu->arch.ia32_misc_enable_msr &
+ 					   MSR_IA32_MISC_ENABLE_MWAIT);
+ 	}
+ }
++
++void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
++{
++	__kvm_update_cpuid_runtime(vcpu, vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
++}
+ EXPORT_SYMBOL_GPL(kvm_update_cpuid_runtime);
+ 
+ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
+@@ -276,21 +289,22 @@ u64 kvm_vcpu_reserved_gpa_bits_raw(struc
+ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+                         int nent)
+ {
+-    int r;
++	int r;
++
++	__kvm_update_cpuid_runtime(vcpu, e2, nent);
+ 
+-    r = kvm_check_cpuid(e2, nent);
+-    if (r)
+-        return r;
++	r = kvm_check_cpuid(e2, nent);
++	if (r)
++		return r;
+ 
+-    kvfree(vcpu->arch.cpuid_entries);
+-    vcpu->arch.cpuid_entries = e2;
+-    vcpu->arch.cpuid_nent = nent;
++	kvfree(vcpu->arch.cpuid_entries);
++	vcpu->arch.cpuid_entries = e2;
++	vcpu->arch.cpuid_nent = nent;
+ 
+-    kvm_update_kvm_cpuid_base(vcpu);
+-    kvm_update_cpuid_runtime(vcpu);
+-    kvm_vcpu_after_set_cpuid(vcpu);
++	kvm_update_kvm_cpuid_base(vcpu);
++	kvm_vcpu_after_set_cpuid(vcpu);
+ 
+-    return 0;
 +	return 0;
  }
  
- static int
- nvkm_pmu_init(struct nvkm_subdev *subdev)
- {
- 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
--	int ret = nvkm_pmu_reset(pmu);
--	if (ret == 0 && pmu->func->init)
--		ret = pmu->func->init(pmu);
--	return ret;
-+	struct nvkm_device *device = pmu->subdev.device;
-+
-+	if (!pmu->func->init)
-+		return 0;
-+
-+	if (pmu->func->enabled(pmu)) {
-+		/* Inhibit interrupts, and wait for idle. */
-+		nvkm_wr32(device, 0x10a014, 0x0000ffff);
-+		nvkm_msec(device, 2000,
-+			if (!nvkm_rd32(device, 0x10a04c))
-+				break;
-+		);
-+
-+		nvkm_pmu_reset(pmu);
-+	}
-+
-+	return pmu->func->init(pmu);
- }
- 
- static void *
--- 
-2.34.1
-
+ /* when an old userspace process fills a new kernel module */
 
 
