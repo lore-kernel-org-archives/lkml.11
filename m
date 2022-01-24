@@ -2,136 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 181FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DB1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:53:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238282AbiAXOvh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:51:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52140 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229710AbiAXOvg (ORCPT
+        id S231204AbiAXOxR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:53:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231403AbiAXOxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:51:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643035895;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+1jqT3LbjlOuLyo0cMqyWpnoJ+Se41HIEzTNCOpBhUk=;
-        b=Mo+q0pb+8ML8ITCBov4jM3yNGyvb1xyaDOq4FDFk3eAUVhVJLTaYcIXv6C80TSM5QrKAEu
-        YNlLJ1JSgd6AUm/p1lnrgKZ659EbIGjuH29CdXiBiIxj4eEGhqqczSkFogOHJlYabl373e
-        P1Pg8VRfvU/46pVkUOQ13LEcpoM9iHE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-554-_-98kE0PMzurRtwPWJghzg-1; Mon, 24 Jan 2022 09:51:31 -0500
-X-MC-Unique: _-98kE0PMzurRtwPWJghzg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 24 Jan 2022 09:53:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D4E6C06173B;
+        Mon, 24 Jan 2022 06:53:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B9723101F7A3;
-        Mon, 24 Jan 2022 14:51:30 +0000 (UTC)
-Received: from jmeneghi.bos.com (unknown [10.22.34.217])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 948CF84A0E;
-        Mon, 24 Jan 2022 14:51:21 +0000 (UTC)
-From:   John Meneghini <jmeneghi@redhat.com>
-To:     skashyap@marvell.com
-Cc:     njavali@marvell.com, linux-scsi@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        GR-QLogic-Storage-Upstream@marvell.com, mlombard@redhat.com,
-        guazhang@redhat.com
-Subject: [PATCH] scsi: bnx2fc: make bnx2fc_recv_frame mp safe
-Date:   Mon, 24 Jan 2022 09:51:10 -0500
-Message-Id: <20220124145110.442335-1-jmeneghi@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2E7061388;
+        Mon, 24 Jan 2022 14:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66412C340E1;
+        Mon, 24 Jan 2022 14:53:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643035995;
+        bh=/UFZn2Ad3U5S5ZRsk1t55iYX+8gryJpTv4IG7nItYc4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Xe+iouwjWuuESsP10Y68t7k6Yk0aQoWI+HuNVas6ORg9ZrjsawOjAsOPr/UcJYHHP
+         8KaUShnoMa0TT84HpB0JojyeNbuzb3ASxINV9dHu0vCdSKtf0SHhXmLt/tRXALHGeH
+         kNHxM7wd3+mbK30y1aBXQgdcmwXIqlio39fvyBR7abnwt97CRijO52Dd0bPeuxxgzH
+         uzzwre5HvfOcH/Ammtj6B2l9pmj5l3rejzDyEGknm8J12LyVWYhlCH3X1SdutbN3Ol
+         uDOSgl/B6z0v6UHWegE87uCwSvf7pP376SuVTpFoSC2sJcEANI29Y7HdW2aW1NKUJK
+         IflS6HHNbnu0Q==
+Received: by mail-ej1-f49.google.com with SMTP id j2so21915432ejk.6;
+        Mon, 24 Jan 2022 06:53:15 -0800 (PST)
+X-Gm-Message-State: AOAM531vj7JY07noyNXohI8iVE7FMQLwBMeGaxQMJXh1DrIRxHcjQfyW
+        e1OG5oL4Hwu8QwxY56C4vCzpi3Pgh6k5w+dUBA==
+X-Google-Smtp-Source: ABdhPJzKZ0BrDSVscI7GTZTJD8z7zgb4zEFRYYwlxVZkor3vQWVirMqnVnt0UADo/U7N+2UHyxeeQ0FkuTip5UYte6I=
+X-Received: by 2002:a17:906:9503:: with SMTP id u3mr12559207ejx.423.1643035993766;
+ Mon, 24 Jan 2022 06:53:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20211217173908.3201517-1-robh@kernel.org>
+In-Reply-To: <20211217173908.3201517-1-robh@kernel.org>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 24 Jan 2022 08:53:02 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLYXYNHRKM9hAhxZjheJZUxiXN3zCwsmwo1kxVvhKn9VA@mail.gmail.com>
+Message-ID: <CAL_JsqLYXYNHRKM9hAhxZjheJZUxiXN3zCwsmwo1kxVvhKn9VA@mail.gmail.com>
+Subject: Re: [PATCH] arm64: dts: imx8qm: Drop CPU 'arm,armv8' compatible
+To:     Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-    Running tests with a debug kernel shows that bnx2fc_recv_frame is
-    modifying the per_cpu lport stats counters in a non-mpsafe way.
-    Just boot a debug kernel and run the bnx2fc driver with the hardware
-    enabled.
+On Fri, Dec 17, 2021 at 11:39 AM Rob Herring <robh@kernel.org> wrote:
+>
+> The CPU 'arm,armv8' compatible is only for s/w models, so remove it from
+> i.MX8QM CPU nodes.
+>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+> Cc: Fabio Estevam <festevam@gmail.com>
+> Cc: NXP Linux Team <linux-imx@nxp.com>
+> Cc: linux-arm-kernel@lists.infradead.org
+> Signed-off-by: Rob Herring <robh@kernel.org>
+> ---
+> Note that the PMU node is also wrong as it should have separate A72 and
+> A53 nodes to get uarch specific events, but that needs some GIC changes.
+> ---
+>  arch/arm64/boot/dts/freescale/imx8qm.dtsi | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
 
-    [ 1391.699147] BUG: using smp_processor_id() in preemptible [00000000] code: bnx2fc_
-    [ 1391.699160] caller is bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
-    [ 1391.699174] CPU: 2 PID: 4355 Comm: bnx2fc_l2_threa Kdump: loaded Tainted: G    B
-    [ 1391.699180] Hardware name: HP ProLiant DL120 G7, BIOS J01 07/01/2013
-    [ 1391.699183] Call Trace:
-    [ 1391.699188]  dump_stack_lvl+0x57/0x7d
-    [ 1391.699198]  check_preemption_disabled+0xc8/0xd0
-    [ 1391.699205]  bnx2fc_recv_frame+0xbf9/0x1760 [bnx2fc]
-    [ 1391.699215]  ? do_raw_spin_trylock+0xb5/0x180
-    [ 1391.699221]  ? bnx2fc_npiv_create_vports.isra.0+0x4e0/0x4e0 [bnx2fc]
-    [ 1391.699229]  ? bnx2fc_l2_rcv_thread+0xb7/0x3a0 [bnx2fc]
-    [ 1391.699240]  bnx2fc_l2_rcv_thread+0x1af/0x3a0 [bnx2fc]
-    [ 1391.699250]  ? bnx2fc_ulp_init+0xc0/0xc0 [bnx2fc]
-    [ 1391.699258]  kthread+0x364/0x420
-    [ 1391.699263]  ? _raw_spin_unlock_irq+0x24/0x50
-    [ 1391.699268]  ? set_kthread_struct+0x100/0x100
-    [ 1391.699273]  ret_from_fork+0x22/0x30
+Ping
 
-    To fix the problem: restore the old get_cpu/put_cpu code with some
-    modifications to reduce the size of the critical section.
-
-Fixes: d576a5e80cd0 ("bnx2fc: Improve stats update mechanism")
-Tested-by: Guangwu Zhang <guazhang@redhat.com>
-Signed-off-by: John Meneghini <jmeneghi@redhat.com>
----
- drivers/scsi/bnx2fc/bnx2fc_fcoe.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-index 71fa62bd3083..e41a94dc2d1f 100644
---- a/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-+++ b/drivers/scsi/bnx2fc/bnx2fc_fcoe.c
-@@ -508,7 +508,8 @@ static int bnx2fc_l2_rcv_thread(void *arg)
- 
- static void bnx2fc_recv_frame(struct sk_buff *skb)
- {
--	u32 fr_len;
-+	u64 crc_err;
-+	u32 fr_len, fr_crc;
- 	struct fc_lport *lport;
- 	struct fcoe_rcv_info *fr;
- 	struct fc_stats *stats;
-@@ -542,6 +543,11 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
- 	skb_pull(skb, sizeof(struct fcoe_hdr));
- 	fr_len = skb->len - sizeof(struct fcoe_crc_eof);
- 
-+	stats = per_cpu_ptr(lport->stats, get_cpu());
-+	stats->RxFrames++;
-+	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
-+	put_cpu();
-+
- 	fp = (struct fc_frame *)skb;
- 	fc_frame_init(fp);
- 	fr_dev(fp) = lport;
-@@ -624,16 +630,15 @@ static void bnx2fc_recv_frame(struct sk_buff *skb)
- 		return;
- 	}
- 
--	stats = per_cpu_ptr(lport->stats, smp_processor_id());
--	stats->RxFrames++;
--	stats->RxWords += fr_len / FCOE_WORD_TO_BYTE;
-+	fr_crc = le32_to_cpu(fr_crc(fp));
- 
--	if (le32_to_cpu(fr_crc(fp)) !=
--			~crc32(~0, skb->data, fr_len)) {
--		if (stats->InvalidCRCCount < 5)
-+	if (unlikely(fr_crc != ~crc32(~0, skb->data, fr_len))) {
-+		stats = per_cpu_ptr(lport->stats, get_cpu());
-+		crc_err = (stats->InvalidCRCCount++);
-+		put_cpu();
-+		if (crc_err < 5)
- 			printk(KERN_WARNING PFX "dropping frame with "
- 			       "CRC error\n");
--		stats->InvalidCRCCount++;
- 		kfree_skb(skb);
- 		return;
- 	}
--- 
-2.27.0
-
+>
+> diff --git a/arch/arm64/boot/dts/freescale/imx8qm.dtsi b/arch/arm64/boot/dts/freescale/imx8qm.dtsi
+> index aebbe2b84aa1..b13f09ca0404 100644
+> --- a/arch/arm64/boot/dts/freescale/imx8qm.dtsi
+> +++ b/arch/arm64/boot/dts/freescale/imx8qm.dtsi
+> @@ -54,7 +54,7 @@ core1 {
+>
+>                 A53_0: cpu@0 {
+>                         device_type = "cpu";
+> -                       compatible = "arm,cortex-a53", "arm,armv8";
+> +                       compatible = "arm,cortex-a53";
+>                         reg = <0x0 0x0>;
+>                         enable-method = "psci";
+>                         next-level-cache = <&A53_L2>;
+> @@ -62,7 +62,7 @@ A53_0: cpu@0 {
+>
+>                 A53_1: cpu@1 {
+>                         device_type = "cpu";
+> -                       compatible = "arm,cortex-a53", "arm,armv8";
+> +                       compatible = "arm,cortex-a53";
+>                         reg = <0x0 0x1>;
+>                         enable-method = "psci";
+>                         next-level-cache = <&A53_L2>;
+> @@ -70,7 +70,7 @@ A53_1: cpu@1 {
+>
+>                 A53_2: cpu@2 {
+>                         device_type = "cpu";
+> -                       compatible = "arm,cortex-a53", "arm,armv8";
+> +                       compatible = "arm,cortex-a53";
+>                         reg = <0x0 0x2>;
+>                         enable-method = "psci";
+>                         next-level-cache = <&A53_L2>;
+> @@ -78,7 +78,7 @@ A53_2: cpu@2 {
+>
+>                 A53_3: cpu@3 {
+>                         device_type = "cpu";
+> -                       compatible = "arm,cortex-a53", "arm,armv8";
+> +                       compatible = "arm,cortex-a53";
+>                         reg = <0x0 0x3>;
+>                         enable-method = "psci";
+>                         next-level-cache = <&A53_L2>;
+> @@ -86,7 +86,7 @@ A53_3: cpu@3 {
+>
+>                 A72_0: cpu@100 {
+>                         device_type = "cpu";
+> -                       compatible = "arm,cortex-a72", "arm,armv8";
+> +                       compatible = "arm,cortex-a72";
+>                         reg = <0x0 0x100>;
+>                         enable-method = "psci";
+>                         next-level-cache = <&A72_L2>;
+> @@ -94,7 +94,7 @@ A72_0: cpu@100 {
+>
+>                 A72_1: cpu@101 {
+>                         device_type = "cpu";
+> -                       compatible = "arm,cortex-a72", "arm,armv8";
+> +                       compatible = "arm,cortex-a72";
+>                         reg = <0x0 0x101>;
+>                         enable-method = "psci";
+>                         next-level-cache = <&A72_L2>;
+> --
+> 2.32.0
+>
