@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DECC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77061C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384854AbiAXUao (ORCPT
+        id S1384914AbiAXUaw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:30:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36982 "EHLO
+        Mon, 24 Jan 2022 15:30:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37400 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379187AbiAXUKc (ORCPT
+        with ESMTP id S1379284AbiAXULD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:10:32 -0500
+        Mon, 24 Jan 2022 15:11:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9F26611CD;
-        Mon, 24 Jan 2022 20:10:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B5DAC340E5;
-        Mon, 24 Jan 2022 20:10:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CD8C61371;
+        Mon, 24 Jan 2022 20:11:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56573C340E5;
+        Mon, 24 Jan 2022 20:11:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055031;
-        bh=m6ghTn5MEElojWEjAHfRtUFtSmV8Q58RWFp1gRVwjwA=;
+        s=korg; t=1643055062;
+        bh=coNUTtreSapjjg9ezr4KWHjBcWf3lunj23LcLPSUqUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dNkAfMZ8HlBrqF9sU7KMEocmgyQR21/JWGa20f53n8LdxI/Oh8DkvT9XFuouwCIQR
-         BSgAQI/kX1WRwhDge7KUxLoWrQnveb6510pYWzAeMYEZe+rmoWb38Vxtgtu1W3kfSW
-         tHbPXS/rPg0PNhxtyHu6HRMxbVLT8FSPn344jgNA=
+        b=pfSaHCQUBeDPGEaJieQ0T5AERxPeQvgeJct+569PwYqiMqIs28szylAJuOPQlx5jB
+         R7DnfTF7onHPe9KckNih9ZWi6EtsqRe2q5FgM3pLiwnmNb/0oWuTl4U/bfy2meST7s
+         WPHDl83eNAxCc7v1kcykexBoe3iXA0r2tOA8M55g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 019/846] mtd: rawnand: Export nand_read_page_hwecc_oob_first()
-Date:   Mon, 24 Jan 2022 19:32:16 +0100
-Message-Id: <20220124184101.583448151@linuxfoundation.org>
+        stable@vger.kernel.org, Bedirhan KURT <windowz414@gnuweeb.org>,
+        Louvian Lyndal <louvianlyndal@gmail.com>,
+        Peter Cordes <peter@cordes.ca>,
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.15 028/846] tools/nolibc: x86-64: Fix startup code bug
+Date:   Mon, 24 Jan 2022 19:32:25 +0100
+Message-Id: <20220124184101.893309402@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,197 +50,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
 
-commit d8466f73010faf71effb21228ae1cbf577dab130 upstream.
+commit 937ed91c712273131de6d2a02caafd3ee84e0c72 upstream.
 
-Move the function nand_read_page_hwecc_oob_first() (previously
-nand_davinci_read_page_hwecc_oob_first()) to nand_base.c, and export it
-as a GPL symbol, so that it can be used by more modules.
+Before this patch, the `_start` function looks like this:
+```
+0000000000001170 <_start>:
+    1170:	pop    %rdi
+    1171:	mov    %rsp,%rsi
+    1174:	lea    0x8(%rsi,%rdi,8),%rdx
+    1179:	and    $0xfffffffffffffff0,%rsp
+    117d:	sub    $0x8,%rsp
+    1181:	call   1000 <main>
+    1186:	movzbq %al,%rdi
+    118a:	mov    $0x3c,%rax
+    1191:	syscall
+    1193:	hlt
+    1194:	data16 cs nopw 0x0(%rax,%rax,1)
+    119f:	nop
+```
+Note the "and" to %rsp with $-16, it makes the %rsp be 16-byte aligned,
+but then there is a "sub" with $0x8 which makes the %rsp no longer
+16-byte aligned, then it calls main. That's the bug!
 
-Cc: <stable@vger.kernel.org> # v5.2
-Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-4-paul@crapouillou.net
+What actually the x86-64 System V ABI mandates is that right before the
+"call", the %rsp must be 16-byte aligned, not after the "call". So the
+"sub" with $0x8 here breaks the alignment. Remove it.
+
+An example where this rule matters is when the callee needs to align
+its stack at 16-byte for aligned move instruction, like `movdqa` and
+`movaps`. If the callee can't align its stack properly, it will result
+in segmentation fault.
+
+x86-64 System V ABI also mandates the deepest stack frame should be
+zero. Just to be safe, let's zero the %rbp on startup as the content
+of %rbp may be unspecified when the program starts. Now it looks like
+this:
+```
+0000000000001170 <_start>:
+    1170:	pop    %rdi
+    1171:	mov    %rsp,%rsi
+    1174:	lea    0x8(%rsi,%rdi,8),%rdx
+    1179:	xor    %ebp,%ebp                # zero the %rbp
+    117b:	and    $0xfffffffffffffff0,%rsp # align the %rsp
+    117f:	call   1000 <main>
+    1184:	movzbq %al,%rdi
+    1188:	mov    $0x3c,%rax
+    118f:	syscall
+    1191:	hlt
+    1192:	data16 cs nopw 0x0(%rax,%rax,1)
+    119d:	nopl   (%rax)
+```
+
+Cc: Bedirhan KURT <windowz414@gnuweeb.org>
+Cc: Louvian Lyndal <louvianlyndal@gmail.com>
+Reported-by: Peter Cordes <peter@cordes.ca>
+Signed-off-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+[wt: I did this on purpose due to a misunderstanding of the spec, other
+     archs will thus have to be rechecked, particularly i386]
+Cc: stable@vger.kernel.org
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/davinci_nand.c |   69 ------------------------------------
- drivers/mtd/nand/raw/nand_base.c    |   67 ++++++++++++++++++++++++++++++++++
- include/linux/mtd/rawnand.h         |    2 +
- 3 files changed, 70 insertions(+), 68 deletions(-)
+ tools/include/nolibc/nolibc.h |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/nand/raw/davinci_nand.c
-+++ b/drivers/mtd/nand/raw/davinci_nand.c
-@@ -371,73 +371,6 @@ correct:
- 	return corrected;
- }
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -399,14 +399,20 @@ struct stat {
+ })
  
--/**
-- * nand_davinci_read_page_hwecc_oob_first - Hardware ECC page read with ECC
-- *                                          data read from OOB area
-- * @chip: nand chip info structure
-- * @buf: buffer to store read data
-- * @oob_required: caller requires OOB data read to chip->oob_poi
-- * @page: page number to read
-- *
-- * Hardware ECC for large page chips, which requires the ECC data to be
-- * extracted from the OOB before the actual data is read.
-- */
--static int nand_davinci_read_page_hwecc_oob_first(struct nand_chip *chip,
--						  uint8_t *buf,
--						  int oob_required, int page)
--{
--	struct mtd_info *mtd = nand_to_mtd(chip);
--	int i, eccsize = chip->ecc.size, ret;
--	int eccbytes = chip->ecc.bytes;
--	int eccsteps = chip->ecc.steps;
--	uint8_t *p = buf;
--	uint8_t *ecc_code = chip->ecc.code_buf;
--	unsigned int max_bitflips = 0;
--
--	/* Read the OOB area first */
--	ret = nand_read_oob_op(chip, page, 0, chip->oob_poi, mtd->oobsize);
--	if (ret)
--		return ret;
--
--	/* Move read cursor to start of page */
--	ret = nand_change_read_column_op(chip, 0, NULL, 0, false);
--	if (ret)
--		return ret;
--
--	ret = mtd_ooblayout_get_eccbytes(mtd, ecc_code, chip->oob_poi, 0,
--					 chip->ecc.total);
--	if (ret)
--		return ret;
--
--	for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize) {
--		int stat;
--
--		chip->ecc.hwctl(chip, NAND_ECC_READ);
--
--		ret = nand_read_data_op(chip, p, eccsize, false, false);
--		if (ret)
--			return ret;
--
--		stat = chip->ecc.correct(chip, p, &ecc_code[i], NULL);
--		if (stat == -EBADMSG &&
--		    (chip->ecc.options & NAND_ECC_GENERIC_ERASED_CHECK)) {
--			/* check for empty pages with bitflips */
--			stat = nand_check_erased_ecc_chunk(p, eccsize,
--							   &ecc_code[i],
--							   eccbytes, NULL, 0,
--							   chip->ecc.strength);
--		}
--
--		if (stat < 0) {
--			mtd->ecc_stats.failed++;
--		} else {
--			mtd->ecc_stats.corrected += stat;
--			max_bitflips = max_t(unsigned int, max_bitflips, stat);
--		}
--	}
--	return max_bitflips;
--}
--
- /*----------------------------------------------------------------------*/
- 
- /* An ECC layout for using 4-bit ECC with small-page flash, storing
-@@ -647,7 +580,7 @@ static int davinci_nand_attach_chip(stru
- 			} else if (chunks == 4 || chunks == 8) {
- 				mtd_set_ooblayout(mtd,
- 						  nand_get_large_page_ooblayout());
--				chip->ecc.read_page = nand_davinci_read_page_hwecc_oob_first;
-+				chip->ecc.read_page = nand_read_page_hwecc_oob_first;
- 			} else {
- 				return -EIO;
- 			}
---- a/drivers/mtd/nand/raw/nand_base.c
-+++ b/drivers/mtd/nand/raw/nand_base.c
-@@ -3161,6 +3161,73 @@ static int nand_read_page_hwecc(struct n
- }
- 
- /**
-+ * nand_read_page_hwecc_oob_first - Hardware ECC page read with ECC
-+ *                                  data read from OOB area
-+ * @chip: nand chip info structure
-+ * @buf: buffer to store read data
-+ * @oob_required: caller requires OOB data read to chip->oob_poi
-+ * @page: page number to read
+ /* startup code */
++/*
++ * x86-64 System V ABI mandates:
++ * 1) %rsp must be 16-byte aligned right before the function call.
++ * 2) The deepest stack frame should be zero (the %rbp).
 + *
-+ * Hardware ECC for large page chips, which requires the ECC data to be
-+ * extracted from the OOB before the actual data is read.
 + */
-+int nand_read_page_hwecc_oob_first(struct nand_chip *chip, uint8_t *buf,
-+				   int oob_required, int page)
-+{
-+	struct mtd_info *mtd = nand_to_mtd(chip);
-+	int i, eccsize = chip->ecc.size, ret;
-+	int eccbytes = chip->ecc.bytes;
-+	int eccsteps = chip->ecc.steps;
-+	uint8_t *p = buf;
-+	uint8_t *ecc_code = chip->ecc.code_buf;
-+	unsigned int max_bitflips = 0;
-+
-+	/* Read the OOB area first */
-+	ret = nand_read_oob_op(chip, page, 0, chip->oob_poi, mtd->oobsize);
-+	if (ret)
-+		return ret;
-+
-+	/* Move read cursor to start of page */
-+	ret = nand_change_read_column_op(chip, 0, NULL, 0, false);
-+	if (ret)
-+		return ret;
-+
-+	ret = mtd_ooblayout_get_eccbytes(mtd, ecc_code, chip->oob_poi, 0,
-+					 chip->ecc.total);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; eccsteps; eccsteps--, i += eccbytes, p += eccsize) {
-+		int stat;
-+
-+		chip->ecc.hwctl(chip, NAND_ECC_READ);
-+
-+		ret = nand_read_data_op(chip, p, eccsize, false, false);
-+		if (ret)
-+			return ret;
-+
-+		stat = chip->ecc.correct(chip, p, &ecc_code[i], NULL);
-+		if (stat == -EBADMSG &&
-+		    (chip->ecc.options & NAND_ECC_GENERIC_ERASED_CHECK)) {
-+			/* check for empty pages with bitflips */
-+			stat = nand_check_erased_ecc_chunk(p, eccsize,
-+							   &ecc_code[i],
-+							   eccbytes, NULL, 0,
-+							   chip->ecc.strength);
-+		}
-+
-+		if (stat < 0) {
-+			mtd->ecc_stats.failed++;
-+		} else {
-+			mtd->ecc_stats.corrected += stat;
-+			max_bitflips = max_t(unsigned int, max_bitflips, stat);
-+		}
-+	}
-+	return max_bitflips;
-+}
-+EXPORT_SYMBOL_GPL(nand_read_page_hwecc_oob_first);
-+
-+/**
-  * nand_read_page_syndrome - [REPLACEABLE] hardware ECC syndrome based page read
-  * @chip: nand chip info structure
-  * @buf: buffer to store read data
---- a/include/linux/mtd/rawnand.h
-+++ b/include/linux/mtd/rawnand.h
-@@ -1539,6 +1539,8 @@ int nand_read_data_op(struct nand_chip *
- 		      bool force_8bit, bool check_only);
- int nand_write_data_op(struct nand_chip *chip, const void *buf,
- 		       unsigned int len, bool force_8bit);
-+int nand_read_page_hwecc_oob_first(struct nand_chip *chip, uint8_t *buf,
-+				   int oob_required, int page);
- 
- /* Scan and identify a NAND device */
- int nand_scan_with_ids(struct nand_chip *chip, unsigned int max_chips,
+ asm(".section .text\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %rdi\n"                // argc   (first arg, %rdi)
+     "mov %rsp, %rsi\n"          // argv[] (second arg, %rsi)
+     "lea 8(%rsi,%rdi,8),%rdx\n" // then a NULL then envp (third arg, %rdx)
+-    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned when
+-    "sub $8, %rsp\n"            // entering the callee
++    "xor %ebp, %ebp\n"          // zero the stack frame
++    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
+     "call main\n"               // main() returns the status code, we'll exit with it.
+     "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
+     "mov $60, %rax\n"           // NR_exit == 60
 
 
