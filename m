@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC3AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D67E9C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366983AbiAXXxy (ORCPT
+        id S2366931AbiAXXxr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49718 "EHLO
+        Mon, 24 Jan 2022 18:53:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846131AbiAXXOa (ORCPT
+        with ESMTP id S1846010AbiAXXOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:30 -0500
+        Mon, 24 Jan 2022 18:14:14 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55802C06176A;
-        Mon, 24 Jan 2022 13:23:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198C8C061755;
+        Mon, 24 Jan 2022 13:21:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E8ABB8105C;
-        Mon, 24 Jan 2022 21:23:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 390B6C340E4;
-        Mon, 24 Jan 2022 21:23:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBCB9B81061;
+        Mon, 24 Jan 2022 21:21:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08439C340E4;
+        Mon, 24 Jan 2022 21:21:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059401;
-        bh=6xvV/GFUTTbXguNm6jo1qvCc+irsly4Qs2GXu5oETWU=;
+        s=korg; t=1643059295;
+        bh=/8vqTdehX2rFsIR81hlKJ31cDN856d4O4/Em5efcq6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nK/ebRQaPOnh0FR5f4BetNJ6LJHAVowJIeBiAjObhg9yIqermBih771VvJL6VSIqZ
-         XZoYkfBCkXCRC/xlvXuFBzZIt3jCqMXNsjlEnzOgSa0hs821zkdS6bviCQnqbJ+4T4
-         bMsQZpBVh6zmx07soLfCbUKiFJXNmvmcq2ubf0pg=
+        b=SADURv+6HppuJ0C2VFNCIuw+A4daeBUDHUmKaPPFcjrkkHdqkKtEm+Qg62UIds7Dw
+         VwA39NyS0K4cGkIgyC0D4pl6EzAr6LcAMs4HuV2+0IKBpYMUOo9R/+/pOl3JoPS2wP
+         QiOHyY44DN6mjtdhNnqEBAfSQqfJE2+CB0qhOssg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0603/1039] drm/vmwgfx: Release ttm memory if probe fails
-Date:   Mon, 24 Jan 2022 19:39:52 +0100
-Message-Id: <20220124184145.605920205@linuxfoundation.org>
+Subject: [PATCH 5.16 0568/1039] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 24 Jan 2022 19:39:17 +0100
+Message-Id: <20220124184144.425317154@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,78 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-[ Upstream commit 28b5f3b6121b7db2a44be499cfca0b6b801588b6 ]
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-The ttm mem global state was leaking if the vmwgfx driver load failed.
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-In case of a driver load failure we have to make sure we also release
-the ttm mem global state.
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211105193845.258816-3-zackr@vmware.com
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
+
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_drv.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-index bfd71c86faa58..68f46f9e032dd 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-@@ -1617,34 +1617,40 @@ static int vmw_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index a7e069b185448..25ad1e97a4585 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
  
- 	ret = drm_aperture_remove_conflicting_pci_framebuffers(pdev, &driver);
- 	if (ret)
--		return ret;
-+		goto out_error;
- 
- 	ret = pcim_enable_device(pdev);
- 	if (ret)
--		return ret;
-+		goto out_error;
- 
- 	vmw = devm_drm_dev_alloc(&pdev->dev, &driver,
- 				 struct vmw_private, drm);
--	if (IS_ERR(vmw))
--		return PTR_ERR(vmw);
-+	if (IS_ERR(vmw)) {
-+		ret = PTR_ERR(vmw);
-+		goto out_error;
-+	}
- 
- 	pci_set_drvdata(pdev, &vmw->drm);
- 
- 	ret = ttm_mem_global_init(&ttm_mem_glob, &pdev->dev);
- 	if (ret)
--		return ret;
-+		goto out_error;
- 
- 	ret = vmw_driver_load(vmw, ent->device);
- 	if (ret)
--		return ret;
-+		goto out_release;
- 
- 	ret = drm_dev_register(&vmw->drm, 0);
--	if (ret) {
--		vmw_driver_unload(&vmw->drm);
--		return ret;
--	}
-+	if (ret)
-+		goto out_unload;
- 
- 	return 0;
-+out_unload:
-+	vmw_driver_unload(&vmw->drm);
-+out_release:
-+	ttm_mem_global_release(&ttm_mem_glob);
-+out_error:
-+	return ret;
+-	return 0;
++	return stream_open(inode, file);
  }
  
- static int __init vmwgfx_init(void)
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -1154,7 +1154,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
 -- 
 2.34.1
 
