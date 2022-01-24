@@ -2,52 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CB1C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05562C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376911AbiAXUEd (ORCPT
+        id S1376980AbiAXUEo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:04:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356359AbiAXTqB (ORCPT
+        Mon, 24 Jan 2022 15:04:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37400 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356659AbiAXTq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:46:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5713CC02417B;
-        Mon, 24 Jan 2022 11:22:41 -0800 (PST)
+        Mon, 24 Jan 2022 14:46:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA72E6143D;
-        Mon, 24 Jan 2022 19:22:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBBEBC340E8;
-        Mon, 24 Jan 2022 19:22:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 075E7B81188;
+        Mon, 24 Jan 2022 19:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 372BBC340E5;
+        Mon, 24 Jan 2022 19:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052160;
-        bh=T4/i0YuXX/RMcyoaCx/hrRoyWRKFKPUqGz9imKlq18w=;
+        s=korg; t=1643053614;
+        bh=YioIrWK00eK8p4E8Z+3YF3PMoxCkuzp94Hg/WoDjCC0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRbOcHXKXtDrWbwlXI3Ua5jakU8m74I/qmEPlu/m/X5WWFU0+5hdAgz/FsilPlU4c
-         9epGAVvKpjLmdTkIa/62ApY0scJYkuZ3rPLa2leoq/faic9f/0n8Ke+/3T/Aehu4gn
-         PEu2Xbdz5yLeQvBKC4posgKZw/VRGNKdo6tO/MHI=
+        b=SgJd+FCXYpQtynSqcUofE8ELr2sTiHyIJX3v1cD+8LwjbSRG4vwnbVsYfHgWXEoPU
+         GKoBxSZBH3GOu3fyVRy3S3nIY8htkVaOYnfYL3KJAL6+RA7RAB6jJrOLqzhhGzFxid
+         Qm4Thsk1f3VmG4fiJ/br058//HI+EsLVZ/IaiRlE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabien Dessenne <fabien.dessenne@st.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Lionel Debieve <lionel.debieve@st.com>,
-        Nicolas Toromanoff <nicolas.toromanoff@st.com>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Subject: [PATCH 4.19 207/239] crypto: stm32/crc32 - Fix kernel BUG triggered in probe()
-Date:   Mon, 24 Jan 2022 19:44:05 +0100
-Message-Id: <20220124183949.688480674@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Gerber <Paul.Gerber@tq-group.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 122/563] thermal/drivers/imx8mm: Enable ADC when enabling monitor
+Date:   Mon, 24 Jan 2022 19:38:07 +0100
+Message-Id: <20220124184028.624462702@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -56,64 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Paul Gerber <Paul.Gerber@tq-group.com>
 
-commit 29009604ad4e3ef784fd9b9fef6f23610ddf633d upstream.
+[ Upstream commit 3de89d8842a2b5d3dd22ebf97dd561ae0a330948 ]
 
-The include/linux/crypto.h struct crypto_alg field cra_driver_name description
-states "Unique name of the transformation provider. " ... " this contains the
-name of the chip or provider and the name of the transformation algorithm."
+The i.MX 8MP has a ADC_PD bit in the TMU_TER register that controls the
+operating mode of the ADC:
+* 0 means normal operating mode
+* 1 means power down mode
 
-In case of the stm32-crc driver, field cra_driver_name is identical for all
-registered transformation providers and set to the name of the driver itself,
-which is incorrect. This patch fixes it by assigning a unique cra_driver_name
-to each registered transformation provider.
+When enabling/disabling the TMU, the ADC operating mode must be set
+accordingly.
 
-The kernel crash is triggered when the driver calls crypto_register_shashes()
-which calls crypto_register_shash(), which calls crypto_register_alg(), which
-calls __crypto_register_alg(), which returns -EEXIST, which is propagated
-back through this call chain. Upon -EEXIST from crypto_register_shash(), the
-crypto_register_shashes() starts unregistering the providers back, and calls
-crypto_unregister_shash(), which calls crypto_unregister_alg(), and this is
-where the BUG() triggers due to incorrect cra_refcnt.
+i.MX 8M Mini & Nano are lacking this bit.
 
-Fixes: b51dbe90912a ("crypto: stm32 - Support for STM32 CRC32 crypto module")
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: <stable@vger.kernel.org> # 4.12+
-Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
-Cc: Fabien Dessenne <fabien.dessenne@st.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Lionel Debieve <lionel.debieve@st.com>
-Cc: Nicolas Toromanoff <nicolas.toromanoff@st.com>
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-To: linux-crypto@vger.kernel.org
-Acked-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Paul Gerber <Paul.Gerber@tq-group.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Fixes: 2b8f1f0337c5 ("thermal: imx8mm: Add i.MX8MP support")
+Link: https://lore.kernel.org/r/20211122114225.196280-1-alexander.stein@ew.tq-group.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/stm32/stm32_crc32.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/thermal/imx8mm_thermal.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/crypto/stm32/stm32_crc32.c
-+++ b/drivers/crypto/stm32/stm32_crc32.c
-@@ -230,7 +230,7 @@ static struct shash_alg algs[] = {
- 		.digestsize     = CHKSUM_DIGEST_SIZE,
- 		.base           = {
- 			.cra_name               = "crc32",
--			.cra_driver_name        = DRIVER_NAME,
-+			.cra_driver_name        = "stm32-crc32-crc32",
- 			.cra_priority           = 200,
- 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
- 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
-@@ -252,7 +252,7 @@ static struct shash_alg algs[] = {
- 		.digestsize     = CHKSUM_DIGEST_SIZE,
- 		.base           = {
- 			.cra_name               = "crc32c",
--			.cra_driver_name        = DRIVER_NAME,
-+			.cra_driver_name        = "stm32-crc32-crc32c",
- 			.cra_priority           = 200,
- 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
- 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
+diff --git a/drivers/thermal/imx8mm_thermal.c b/drivers/thermal/imx8mm_thermal.c
+index a1e4f9bb4cb01..0f4cabd2a8c62 100644
+--- a/drivers/thermal/imx8mm_thermal.c
++++ b/drivers/thermal/imx8mm_thermal.c
+@@ -21,6 +21,7 @@
+ #define TPS			0x4
+ #define TRITSR			0x20	/* TMU immediate temp */
+ 
++#define TER_ADC_PD		BIT(30)
+ #define TER_EN			BIT(31)
+ #define TRITSR_TEMP0_VAL_MASK	0xff
+ #define TRITSR_TEMP1_VAL_MASK	0xff0000
+@@ -113,6 +114,8 @@ static void imx8mm_tmu_enable(struct imx8mm_tmu *tmu, bool enable)
+ 
+ 	val = readl_relaxed(tmu->base + TER);
+ 	val = enable ? (val | TER_EN) : (val & ~TER_EN);
++	if (tmu->socdata->version == TMU_VER2)
++		val = enable ? (val & ~TER_ADC_PD) : (val | TER_ADC_PD);
+ 	writel_relaxed(val, tmu->base + TER);
+ }
+ 
+-- 
+2.34.1
+
 
 
