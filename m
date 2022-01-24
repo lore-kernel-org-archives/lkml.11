@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8076AC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 951EDC3527A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386516AbiAXUff (ORCPT
+        id S1386681AbiAXUfv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38048 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355322AbiAXUNa (ORCPT
+        Mon, 24 Jan 2022 15:35:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348595AbiAXUNT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:30 -0500
+        Mon, 24 Jan 2022 15:13:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B954C028C34;
+        Mon, 24 Jan 2022 11:34:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 80F1E60B56;
-        Mon, 24 Jan 2022 20:13:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585E3C340E5;
-        Mon, 24 Jan 2022 20:13:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 051A8B81232;
+        Mon, 24 Jan 2022 19:34:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362BBC340E5;
+        Mon, 24 Jan 2022 19:34:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055208;
-        bh=AuyhCT3B2V3UEEjSkj4AqU0jUqp3l0eUqnqkXQA3DdE=;
+        s=korg; t=1643052850;
+        bh=ix7wDqJn/RxHYwks4UqY3CjF4nw8nPf/m6csEMp6k/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WnLRuokHuiilKPosSukICP9s4UKZlVwYuqkDbLc62VjqV55g1mQvkFKb9lCBY0zbq
-         xVuUZfGnHTBFnPZYxt2I8OCqR6/NEqp20vRFs30tHSgu9ErsfBitm863Eav74OVn7r
-         LE+7WFwbJYdQFkfgCN0iFeLsuu+1f8tRnif/5i80=
+        b=PYoIjwYMu0bu0bluoxCv+20bSQneqjUEMCK5KdODzs8JHktjRhES4xMPKb6L6j2b6
+         g0IhHvtv3D5PST5+PHN8dEnb8/iIlBEyn3TiPULUpaV9sggb5Z6jvWb8ojV9TQQlyt
+         nQrlYQqFvJ8lJCVNp7yKxUxJCfm7P8v11CYzfLYA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 043/846] media: flexcop-usb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:32:40 +0100
-Message-Id: <20220124184102.433594035@linuxfoundation.org>
+        stable@vger.kernel.org, Biwen Li <biwen.li@nxp.com>,
+        Li Yang <leoyang.lil@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 194/320] arm64: dts: ls1028a-qds: move rtc node to the correct i2c bus
+Date:   Mon, 24 Jan 2022 19:42:58 +0100
+Message-Id: <20220124184000.244014223@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,95 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Biwen Li <biwen.li@nxp.com>
 
-commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
+[ Upstream commit cbe9d948eadfe352ad45495a7cc5bf20a1b29d90 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+The i2c rtc is on i2c2 bus not i2c1 bus, so fix it in dts.
 
-Note that the driver was multiplying some of the timeout values with HZ
-twice resulting in 3000-second timeouts with HZ=1000.
-
-Also note that two of the timeout defines are currently unused.
-
-Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
-Cc: stable@vger.kernel.org      # 3.0
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Biwen Li <biwen.li@nxp.com>
+Signed-off-by: Li Yang <leoyang.lil@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
- drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
---- a/drivers/media/usb/b2c2/flexcop-usb.c
-+++ b/drivers/media/usb/b2c2/flexcop-usb.c
-@@ -87,7 +87,7 @@ static int flexcop_usb_readwrite_dw(stru
- 			0,
- 			fc_usb->data,
- 			sizeof(u32),
--			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
-+			B2C2_WAIT_FOR_OPERATION_RDW);
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+index 078a5010228cd..0b3a93c4155d2 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+@@ -161,11 +161,6 @@
+ 				vcc-supply = <&sb_3v3>;
+ 			};
  
- 	if (ret != sizeof(u32)) {
- 		err("error while %s dword from %d (%d).", read ? "reading" :
-@@ -155,7 +155,7 @@ static int flexcop_usb_v8_memory_req(str
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 	if (ret != buflen)
- 		ret = -EIO;
+-			rtc@51 {
+-				compatible = "nxp,pcf2129";
+-				reg = <0x51>;
+-			};
+-
+ 			eeprom@56 {
+ 				compatible = "atmel,24c512";
+ 				reg = <0x56>;
+@@ -209,6 +204,15 @@
  
-@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
- 		/* DKT 020208 - add this to support special case of DiSEqC */
- 	case USB_FUNC_I2C_CHECKWRITE:
- 		pipe = B2C2_USB_CTRL_PIPE_OUT;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_OUT;
- 		break;
- 	case USB_FUNC_I2C_READ:
- 	case USB_FUNC_I2C_REPEATREAD:
- 		pipe = B2C2_USB_CTRL_PIPE_IN;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_IN;
- 		break;
- 	default:
-@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
+ };
  
- 	if (ret != buflen)
- 		ret = -EIO;
---- a/drivers/media/usb/b2c2/flexcop-usb.h
-+++ b/drivers/media/usb/b2c2/flexcop-usb.h
-@@ -91,13 +91,13 @@ typedef enum {
- 	UTILITY_SRAM_TESTVERIFY     = 0x16,
- } flexcop_usb_utility_function_t;
- 
--#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
--#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_RW 1000
-+#define B2C2_WAIT_FOR_OPERATION_RDW 3000
-+#define B2C2_WAIT_FOR_OPERATION_WDW 1000
- 
--#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
- 
- typedef enum {
- 	V8_MEMORY_PAGE_DVB_CI = 0x20,
++&i2c1 {
++	status = "okay";
++
++	rtc@51 {
++		compatible = "nxp,pcf2129";
++		reg = <0x51>;
++	};
++};
++
+ &enetc_port1 {
+ 	phy-handle = <&qds_phy1>;
+ 	phy-connection-type = "rgmii-id";
+-- 
+2.34.1
+
 
 
