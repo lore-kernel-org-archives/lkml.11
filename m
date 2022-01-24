@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE920C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A51FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844730AbiAXXKK (ORCPT
+        id S1845039AbiAXXLH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:10:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36636 "EHLO
+        Mon, 24 Jan 2022 18:11:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581332AbiAXWRS (ORCPT
+        with ESMTP id S1577171AbiAXWRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:17:18 -0500
+        Mon, 24 Jan 2022 17:17:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24CB7C04A2DA;
-        Mon, 24 Jan 2022 12:45:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3672CC04A2CF;
+        Mon, 24 Jan 2022 12:45:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6E0160C19;
-        Mon, 24 Jan 2022 20:45:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FEDCC340E5;
-        Mon, 24 Jan 2022 20:45:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C735460C17;
+        Mon, 24 Jan 2022 20:45:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C783C340E5;
+        Mon, 24 Jan 2022 20:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057142;
-        bh=EdeKd8hYj4w686f57lxmjeNGU6Ybz4jy8tR2I583/b4=;
+        s=korg; t=1643057130;
+        bh=hfe/X2R1Opq4HzyJLzvdS46U19FqV7aHHRimDomOgMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JlwIbyWaXtYjBC8monGqjtzJyOhPAV1pc+zxu/mt21qKPaAbidMghyg91fEVN6Sh6
-         fmfJ9jG6vN//rQadYjKcA3I/2I03MRAA8o0PdEPAYAnupCgXh98wtL71zSWMjnJraA
-         Wp7FCsjH7tzr0xJlwhZEMVdEGKWYizy99z+1RJMk=
+        b=XhLiJGu5y80Vi19Kjb9scDHp22lz7D4IsLBvT+gWvEaYbGzHE8dOfl7jyteWvn8jC
+         +IrWVihdcErlvRlOgKJ+TXzV914eL51vuuzcMJvNiC+HBSKWuAeABs1hW60mfLM1He
+         QHnJMrG8TAmfCOQWJOTkwf5P/X8fv91PoN25eSfY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 5.15 714/846] ext4: make sure quota gets properly shutdown on error
-Date:   Mon, 24 Jan 2022 19:43:51 +0100
-Message-Id: <20220124184125.653471993@linuxfoundation.org>
+        stable@vger.kernel.org, Hao Sun <sunhao.th@gmail.com>,
+        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.15 710/846] btrfs: fix deadlock between quota enable and other quota operations
+Date:   Mon, 24 Jan 2022 19:43:47 +0100
+Message-Id: <20220124184125.524310732@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,51 +50,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Filipe Manana <fdmanana@suse.com>
 
-commit 15fc69bbbbbc8c72e5f6cc4e1be0f51283c5448e upstream.
+commit 232796df8c1437c41d308d161007f0715bac0a54 upstream.
 
-When we hit an error when enabling quotas and setting inode flags, we do
-not properly shutdown quota subsystem despite returning error from
-Q_QUOTAON quotactl. This can lead to some odd situations like kernel
-using quota file while it is still writeable for userspace. Make sure we
-properly cleanup the quota subsystem in case of error.
+When enabling quotas, we attempt to commit a transaction while holding the
+mutex fs_info->qgroup_ioctl_lock. This can result on a deadlock with other
+quota operations such as:
 
-Signed-off-by: Jan Kara <jack@suse.cz>
-Cc: stable@kernel.org
-Link: https://lore.kernel.org/r/20211007155336.12493-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+- qgroup creation and deletion, ioctl BTRFS_IOC_QGROUP_CREATE;
+
+- adding and removing qgroup relations, ioctl BTRFS_IOC_QGROUP_ASSIGN.
+
+This is because these operations join a transaction and after that they
+attempt to lock the mutex fs_info->qgroup_ioctl_lock. Acquiring that mutex
+after joining or starting a transaction is a pattern followed everywhere
+in qgroups, so the quota enablement operation is the one at fault here,
+and should not commit a transaction while holding that mutex.
+
+Fix this by making the transaction commit while not holding the mutex.
+We are safe from two concurrent tasks trying to enable quotas because
+we are serialized by the rw semaphore fs_info->subvol_sem at
+btrfs_ioctl_quota_ctl(), which is the only call site for enabling
+quotas.
+
+When this deadlock happens, it produces a trace like the following:
+
+  INFO: task syz-executor:25604 blocked for more than 143 seconds.
+  Not tainted 5.15.0-rc6 #4
+  "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+  task:syz-executor state:D stack:24800 pid:25604 ppid: 24873 flags:0x00004004
+  Call Trace:
+  context_switch kernel/sched/core.c:4940 [inline]
+  __schedule+0xcd9/0x2530 kernel/sched/core.c:6287
+  schedule+0xd3/0x270 kernel/sched/core.c:6366
+  btrfs_commit_transaction+0x994/0x2e90 fs/btrfs/transaction.c:2201
+  btrfs_quota_enable+0x95c/0x1790 fs/btrfs/qgroup.c:1120
+  btrfs_ioctl_quota_ctl fs/btrfs/ioctl.c:4229 [inline]
+  btrfs_ioctl+0x637e/0x7b70 fs/btrfs/ioctl.c:5010
+  vfs_ioctl fs/ioctl.c:51 [inline]
+  __do_sys_ioctl fs/ioctl.c:874 [inline]
+  __se_sys_ioctl fs/ioctl.c:860 [inline]
+  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+  RIP: 0033:0x7f86920b2c4d
+  RSP: 002b:00007f868f61ac58 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
+  RAX: ffffffffffffffda RBX: 00007f86921d90a0 RCX: 00007f86920b2c4d
+  RDX: 0000000020005e40 RSI: 00000000c0109428 RDI: 0000000000000008
+  RBP: 00007f869212bd80 R08: 0000000000000000 R09: 0000000000000000
+  R10: 0000000000000000 R11: 0000000000000246 R12: 00007f86921d90a0
+  R13: 00007fff6d233e4f R14: 00007fff6d233ff0 R15: 00007f868f61adc0
+  INFO: task syz-executor:25628 blocked for more than 143 seconds.
+  Not tainted 5.15.0-rc6 #4
+  "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+  task:syz-executor state:D stack:29080 pid:25628 ppid: 24873 flags:0x00004004
+  Call Trace:
+  context_switch kernel/sched/core.c:4940 [inline]
+  __schedule+0xcd9/0x2530 kernel/sched/core.c:6287
+  schedule+0xd3/0x270 kernel/sched/core.c:6366
+  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
+  __mutex_lock_common kernel/locking/mutex.c:669 [inline]
+  __mutex_lock+0xc96/0x1680 kernel/locking/mutex.c:729
+  btrfs_remove_qgroup+0xb7/0x7d0 fs/btrfs/qgroup.c:1548
+  btrfs_ioctl_qgroup_create fs/btrfs/ioctl.c:4333 [inline]
+  btrfs_ioctl+0x683c/0x7b70 fs/btrfs/ioctl.c:5014
+  vfs_ioctl fs/ioctl.c:51 [inline]
+  __do_sys_ioctl fs/ioctl.c:874 [inline]
+  __se_sys_ioctl fs/ioctl.c:860 [inline]
+  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
+  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+  entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Reported-by: Hao Sun <sunhao.th@gmail.com>
+Link: https://lore.kernel.org/linux-btrfs/CACkBjsZQF19bQ1C6=yetF3BvL10OSORpFUcWXTP6HErshDB4dQ@mail.gmail.com/
+Fixes: 340f1aa27f36 ("btrfs: qgroups: Move transaction management inside btrfs_quota_enable/disable")
+CC: stable@vger.kernel.org # 4.19
+Reviewed-by: Qu Wenruo <wqu@suse.com>
+Signed-off-by: Filipe Manana <fdmanana@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ fs/btrfs/qgroup.c |   19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6266,10 +6266,7 @@ static int ext4_quota_on(struct super_bl
+--- a/fs/btrfs/qgroup.c
++++ b/fs/btrfs/qgroup.c
+@@ -940,6 +940,14 @@ int btrfs_quota_enable(struct btrfs_fs_i
+ 	int ret = 0;
+ 	int slot;
  
- 	lockdep_set_quota_inode(path->dentry->d_inode, I_DATA_SEM_QUOTA);
- 	err = dquot_quota_on(sb, type, format_id, path);
--	if (err) {
--		lockdep_set_quota_inode(path->dentry->d_inode,
--					     I_DATA_SEM_NORMAL);
--	} else {
-+	if (!err) {
- 		struct inode *inode = d_inode(path->dentry);
- 		handle_t *handle;
- 
-@@ -6289,7 +6286,12 @@ static int ext4_quota_on(struct super_bl
- 		ext4_journal_stop(handle);
- 	unlock_inode:
- 		inode_unlock(inode);
-+		if (err)
-+			dquot_quota_off(sb, type);
++	/*
++	 * We need to have subvol_sem write locked, to prevent races between
++	 * concurrent tasks trying to enable quotas, because we will unlock
++	 * and relock qgroup_ioctl_lock before setting fs_info->quota_root
++	 * and before setting BTRFS_FS_QUOTA_ENABLED.
++	 */
++	lockdep_assert_held_write(&fs_info->subvol_sem);
++
+ 	mutex_lock(&fs_info->qgroup_ioctl_lock);
+ 	if (fs_info->quota_root)
+ 		goto out;
+@@ -1117,8 +1125,19 @@ out_add_root:
+ 		goto out_free_path;
  	}
-+	if (err)
-+		lockdep_set_quota_inode(path->dentry->d_inode,
-+					     I_DATA_SEM_NORMAL);
- 	return err;
- }
+ 
++	mutex_unlock(&fs_info->qgroup_ioctl_lock);
++	/*
++	 * Commit the transaction while not holding qgroup_ioctl_lock, to avoid
++	 * a deadlock with tasks concurrently doing other qgroup operations, such
++	 * adding/removing qgroups or adding/deleting qgroup relations for example,
++	 * because all qgroup operations first start or join a transaction and then
++	 * lock the qgroup_ioctl_lock mutex.
++	 * We are safe from a concurrent task trying to enable quotas, by calling
++	 * this function, since we are serialized by fs_info->subvol_sem.
++	 */
+ 	ret = btrfs_commit_transaction(trans);
+ 	trans = NULL;
++	mutex_lock(&fs_info->qgroup_ioctl_lock);
+ 	if (ret)
+ 		goto out_free_path;
  
 
 
