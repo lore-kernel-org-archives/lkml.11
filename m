@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85F14C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 775AAC3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457881AbiAXVmZ (ORCPT
+        id S1458040AbiAXVmn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59368 "EHLO
+        Mon, 24 Jan 2022 16:42:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58932 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345225AbiAXVH3 (ORCPT
+        with ESMTP id S230110AbiAXVIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:07:29 -0500
+        Mon, 24 Jan 2022 16:08:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43A5BB80FA1;
-        Mon, 24 Jan 2022 21:07:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58E7BC340E5;
-        Mon, 24 Jan 2022 21:07:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D21DDB80FA3;
+        Mon, 24 Jan 2022 21:08:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F258BC340E5;
+        Mon, 24 Jan 2022 21:08:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058445;
-        bh=nu01olkCxJuUw8m66Dp5sIuc0VHqWRn2P7ZjH/2o+yY=;
+        s=korg; t=1643058528;
+        bh=YjrVxM7CLUaCdnPq3WETDJ47sLozfT7aDhMUijcqU08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UdHM1mmESkkCw0UlYhMwwG2M1ihl8LdTlx0kU/OeG1xTsGJ5ETGsvtcImWc6Lt3Ej
-         pPr1viDe2rFWxfpDIRXAjEnGIpOeHDQvmdssCvtkNyWDIRVs15bcYanjI8H2iz2iFx
-         jcBGbjMtyi+v3Er16UvJFVw7j/Ym7uKBufm8Rvac=
+        b=CfOE1GmC2M/18GoO9qbgk/J6bJ0TRAbpDZP21DCaXRU/65dBiBJ5bRefVlEHaAO4P
+         W1fm+qyPwMfA59Mc98+UIxwohTEWeObqOM653cZEhfigaS7AhHTtxCusWZLQE9Or1r
+         QJlLrElDsZSlK1Qe2TdJUnhSA3FmCs9+mTf4aEkY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0264/1039] drm/msm/dsi: fix initialization in the bonded DSI case
-Date:   Mon, 24 Jan 2022 19:34:13 +0100
-Message-Id: <20220124184134.174887354@linuxfoundation.org>
+        stable@vger.kernel.org, YN Chen <YN.Chen@mediatek.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0318/1039] mt76: mt7921: fix possible resume failure
+Date:   Mon, 24 Jan 2022 19:35:07 +0100
+Message-Id: <20220124184135.983197973@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,94 +47,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Sean Wang <sean.wang@mediatek.com>
 
-[ Upstream commit 92cb1bedde9dba78d802fe2510949743a2581aed ]
+[ Upstream commit 5375001bb4ce22801bf3bb566cc3e67d2d3a5dc0 ]
 
-Commit 739b4e7756d3 ("drm/msm/dsi: Fix an error code in
-msm_dsi_modeset_init()") changed msm_dsi_modeset_init() to return an
-error code in case msm_dsi_manager_validate_current_config() returns
-false. However this is not an error case, but a slave DSI of the bonded
-DSI link. In this case msm_dsi_modeset_init() should return 0, but just
-skip connector and bridge initialization.
+Fix the possible resume failure due to mt76_connac_mcu_set_hif_suspend
+timeout.
 
-To reduce possible confusion, drop the
-msm_dsi_manager_validate_current_config() function, and specif 'bonded
-&& !master' condition directly in the msm_dsi_modeset_init().
+That is because clearing the flag pm->suspended too early opened up a race
+window, where mt7921_poll_tx/rx scheduled a ps_work to put the device in
+doze mode, that is unexpected for the device is being resumed from the
+suspend state and would make the remaining MCU comamnds in resume handler
+failed to execute.
 
-Fixes: 739b4e7756d3 ("drm/msm/dsi: Fix an error code in msm_dsi_modeset_init()")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20211125180114.561278-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: ffa1bf97425b ("mt76: mt7921: introduce PM support")
+Co-developed-by: YN Chen <YN.Chen@mediatek.com>
+Signed-off-by: YN Chen <YN.Chen@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/dsi/dsi.c         | 10 +++++++---
- drivers/gpu/drm/msm/dsi/dsi.h         |  1 -
- drivers/gpu/drm/msm/dsi/dsi_manager.c | 17 -----------------
- 3 files changed, 7 insertions(+), 21 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dsi/dsi.c b/drivers/gpu/drm/msm/dsi/dsi.c
-index 75ae3008b68f4..fc280cc434943 100644
---- a/drivers/gpu/drm/msm/dsi/dsi.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi.c
-@@ -215,9 +215,13 @@ int msm_dsi_modeset_init(struct msm_dsi *msm_dsi, struct drm_device *dev,
- 		goto fail;
- 	}
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+index c29dde23d4ab1..40186e6cd865e 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
+@@ -313,7 +313,6 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
+ 	struct mt76_connac_pm *pm = &dev->pm;
+ 	int i, err;
  
--	if (!msm_dsi_manager_validate_current_config(msm_dsi->id)) {
--		ret = -EINVAL;
--		goto fail;
-+	if (msm_dsi_is_bonded_dsi(msm_dsi) &&
-+	    !msm_dsi_is_master_dsi(msm_dsi)) {
-+		/*
-+		 * Do not return an eror here,
-+		 * Just skip creating encoder/connector for the slave-DSI.
-+		 */
-+		return 0;
- 	}
+-	pm->suspended = false;
+ 	err = pci_set_power_state(pdev, PCI_D0);
+ 	if (err)
+ 		return err;
+@@ -351,7 +350,13 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
+ 	if (!pm->ds_enable)
+ 		mt76_connac_mcu_set_deep_sleep(&dev->mt76, false);
  
- 	msm_dsi->encoder = encoder;
-diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
-index 569c8ff062ba4..a63666e59d19e 100644
---- a/drivers/gpu/drm/msm/dsi/dsi.h
-+++ b/drivers/gpu/drm/msm/dsi/dsi.h
-@@ -82,7 +82,6 @@ int msm_dsi_manager_cmd_xfer(int id, const struct mipi_dsi_msg *msg);
- bool msm_dsi_manager_cmd_xfer_trigger(int id, u32 dma_base, u32 len);
- int msm_dsi_manager_register(struct msm_dsi *msm_dsi);
- void msm_dsi_manager_unregister(struct msm_dsi *msm_dsi);
--bool msm_dsi_manager_validate_current_config(u8 id);
- void msm_dsi_manager_tpg_enable(void);
- 
- /* msm dsi */
-diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-index 20c4d650fd80c..e58ec5c1a4c37 100644
---- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
-+++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
-@@ -649,23 +649,6 @@ fail:
- 	return ERR_PTR(ret);
+-	return mt76_connac_mcu_set_hif_suspend(mdev, false);
++	err = mt76_connac_mcu_set_hif_suspend(mdev, false);
++	if (err)
++		return err;
++
++	pm->suspended = false;
++
++	return err;
  }
+ #endif /* CONFIG_PM */
  
--bool msm_dsi_manager_validate_current_config(u8 id)
--{
--	bool is_bonded_dsi = IS_BONDED_DSI();
--
--	/*
--	 * For bonded DSI, we only have one drm panel. For this
--	 * use case, we register only one bridge/connector.
--	 * Skip bridge/connector initialisation if it is
--	 * slave-DSI for bonded DSI configuration.
--	 */
--	if (is_bonded_dsi && !IS_MASTER_DSI_LINK(id)) {
--		DBG("Skip bridge registration for slave DSI->id: %d\n", id);
--		return false;
--	}
--	return true;
--}
--
- /* initialize bridge */
- struct drm_bridge *msm_dsi_manager_bridge_init(u8 id)
- {
 -- 
 2.34.1
 
