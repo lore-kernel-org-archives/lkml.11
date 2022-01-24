@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD672C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 392CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344404AbiAXTIa (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:08:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59026 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236937AbiAXTCJ (ORCPT
+        id S245009AbiAXTIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:08:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60844 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344517AbiAXTCP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:09 -0500
+        Mon, 24 Jan 2022 14:02:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E0912B81215;
-        Mon, 24 Jan 2022 19:02:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0089BC340E5;
-        Mon, 24 Jan 2022 19:02:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9132B60BAD;
+        Mon, 24 Jan 2022 19:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 468ACC340E5;
+        Mon, 24 Jan 2022 19:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050923;
-        bh=peYOOlMTmm+OyUGHt8OuEe9VzQ3EpRYmy3uRyqu9rOU=;
+        s=korg; t=1643050933;
+        bh=iWOkdgPCQQjl1CePs+iFke75cLkjFCy3GlkrB5GhPvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DWpuKXSfr/zvOv7+w+e6zyTRDQPMEVsfzK+RfHLOHiiTHnVxwZlkhd4FjTldcGO5C
-         6qxpYXJ+sjJSmln4IP6SSTvDYRTuXRRrPgDZ/QakDvBYxGyR2rjcyrRCk+HGpc6iwe
-         UkvF6duSfqcrPoVtkj8wrnEsMBW1N/cCwsL9Zb90=
+        b=sNqmBylp0bo4jKIcD+k2r49JSTlyIFdNWTKK6lT99xalI1NuUnxKcgBANkY5ieUPR
+         WUFDExrpAaS+QifRXqAqIi/JCtaG1QmQNv7o4zWNnxokfhWnlQgOQQfXr+Hj1nbLw8
+         RPmziA0DJkiaRptE5l1SYGOMSIpOeMuWpfAsvtAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Dave Airlie <airlied@redhat.com>,
+        stable@vger.kernel.org, Michael Braun <michael-dev@fami-braun.de>,
+        "David S. Miller" <davem@davemloft.net>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 148/157] drm/ttm/nouveau: dont call tt destroy callback on alloc failure.
-Date:   Mon, 24 Jan 2022 19:43:58 +0100
-Message-Id: <20220124183937.461801402@linuxfoundation.org>
+Subject: [PATCH 4.9 150/157] gianfar: fix jumbo packets+napi+rx overrun crash
+Date:   Mon, 24 Jan 2022 19:44:00 +0100
+Message-Id: <20220124183937.520465560@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -48,68 +46,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+From: Michael Braun <michael-dev@fami-braun.de>
 
-commit 5de5b6ecf97a021f29403aa272cb4e03318ef586 upstream.
+commit d8861bab48b6c1fc3cdbcab8ff9d1eaea43afe7f upstream.
 
-This is confusing, and from my reading of all the drivers only
-nouveau got this right.
+When using jumbo packets and overrunning rx queue with napi enabled,
+the following sequence is observed in gfar_add_rx_frag:
 
-Just make the API act under driver control of it's own allocation
-failing, and don't call destroy, if the page table fails to
-create there is nothing to cleanup here.
+   | lstatus                              |       | skb                   |
+t  | lstatus,  size, flags                | first | len, data_len, *ptr   |
+---+--------------------------------------+-------+-----------------------+
+13 | 18002348, 9032, INTERRUPT LAST       | 0     | 9600, 8000,  f554c12e |
+12 | 10000640, 1600, INTERRUPT            | 0     | 8000, 6400,  f554c12e |
+11 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  f554c12e |
+10 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  f554c12e |
+09 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  f554c12e |
+08 | 14000640, 1600, INTERRUPT FIRST      | 0     | 1600, 0,     f554c12e |
+07 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     f554c12e |
+06 | 1c000080, 128,  INTERRUPT LAST FIRST | 1     | 0,    0,     abf3bd6e |
+05 | 18002348, 9032, INTERRUPT LAST       | 0     | 8000, 6400,  c5a57780 |
+04 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  c5a57780 |
+03 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  c5a57780 |
+02 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  c5a57780 |
+01 | 10000640, 1600, INTERRUPT            | 0     | 1600, 0,     c5a57780 |
+00 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     c5a57780 |
 
-(I'm willing to believe I've missed something here, so please
-review deeply).
+So at t=7 a new packets is started but not finished, probably due to rx
+overrun - but rx overrun is not indicated in the flags. Instead a new
+packets starts at t=8. This results in skb->len to exceed size for the LAST
+fragment at t=13 and thus a negative fragment size added to the skb.
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20200728041736.20689-1-airlied@gmail.com
-[bwh: Backported to 4.14:
- - Drop change in ttm_sg_tt_init()
- - Adjust context]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+This then crashes:
+
+kernel BUG at include/linux/skbuff.h:2277!
+Oops: Exception in kernel mode, sig: 5 [#1]
+...
+NIP [c04689f4] skb_pull+0x2c/0x48
+LR [c03f62ac] gfar_clean_rx_ring+0x2e4/0x844
+Call Trace:
+[ec4bfd38] [c06a84c4] _raw_spin_unlock_irqrestore+0x60/0x7c (unreliable)
+[ec4bfda8] [c03f6a44] gfar_poll_rx_sq+0x48/0xe4
+[ec4bfdc8] [c048d504] __napi_poll+0x54/0x26c
+[ec4bfdf8] [c048d908] net_rx_action+0x138/0x2c0
+[ec4bfe68] [c06a8f34] __do_softirq+0x3a4/0x4fc
+[ec4bfed8] [c0040150] run_ksoftirqd+0x58/0x70
+[ec4bfee8] [c0066ecc] smpboot_thread_fn+0x184/0x1cc
+[ec4bff08] [c0062718] kthread+0x140/0x144
+[ec4bff38] [c0012350] ret_from_kernel_thread+0x14/0x1c
+
+This patch fixes this by checking for computed LAST fragment size, so a
+negative sized fragment is never added.
+In order to prevent the newer rx frame from getting corrupted, the FIRST
+flag is checked to discard the incomplete older frame.
+
+Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Cc: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_sgdma.c |    9 +++------
- drivers/gpu/drm/ttm/ttm_tt.c            |    2 --
- 2 files changed, 3 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/freescale/gianfar.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
---- a/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-@@ -105,12 +105,9 @@ nouveau_sgdma_create_ttm(struct ttm_bo_d
- 	else
- 		nvbe->ttm.ttm.func = &nv50_sgdma_backend;
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -2947,6 +2947,10 @@ static bool gfar_add_rx_frag(struct gfar
+ 		if (lstatus & BD_LFLAG(RXBD_LAST))
+ 			size -= skb->len;
  
--	if (ttm_dma_tt_init(&nvbe->ttm, bdev, size, page_flags, dummy_read_page))
--		/*
--		 * A failing ttm_dma_tt_init() will call ttm_tt_destroy()
--		 * and thus our nouveau_sgdma_destroy() hook, so we don't need
--		 * to free nvbe here.
--		 */
-+	if (ttm_dma_tt_init(&nvbe->ttm, bdev, size, page_flags, dummy_read_page)) {
-+		kfree(nvbe);
- 		return NULL;
-+	}
- 	return &nvbe->ttm.ttm;
- }
---- a/drivers/gpu/drm/ttm/ttm_tt.c
-+++ b/drivers/gpu/drm/ttm/ttm_tt.c
-@@ -195,7 +195,6 @@ int ttm_tt_init(struct ttm_tt *ttm, stru
++		WARN(size < 0, "gianfar: rx fragment size underflow");
++		if (size < 0)
++			return false;
++
+ 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
+ 				rxb->page_offset + RXBUF_ALIGNMENT,
+ 				size, GFAR_RXB_TRUESIZE);
+@@ -3108,6 +3112,17 @@ int gfar_clean_rx_ring(struct gfar_priv_
+ 		if (lstatus & BD_LFLAG(RXBD_EMPTY))
+ 			break;
  
- 	ttm_tt_alloc_page_directory(ttm);
- 	if (!ttm->pages) {
--		ttm_tt_destroy(ttm);
- 		pr_err("Failed allocating page table\n");
- 		return -ENOMEM;
- 	}
-@@ -228,7 +227,6 @@ int ttm_dma_tt_init(struct ttm_dma_tt *t
- 	INIT_LIST_HEAD(&ttm_dma->pages_list);
- 	ttm_dma_tt_alloc_page_directory(ttm_dma);
- 	if (!ttm->pages) {
--		ttm_tt_destroy(ttm);
- 		pr_err("Failed allocating page table\n");
- 		return -ENOMEM;
- 	}
++		/* lost RXBD_LAST descriptor due to overrun */
++		if (skb &&
++		    (lstatus & BD_LFLAG(RXBD_FIRST))) {
++			/* discard faulty buffer */
++			dev_kfree_skb(skb);
++			skb = NULL;
++			rx_queue->stats.rx_dropped++;
++
++			/* can continue normally */
++		}
++
+ 		/* order rx buffer descriptor reads */
+ 		rmb();
+ 
 
 
