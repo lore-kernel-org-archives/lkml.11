@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D1C3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57A27C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240742AbiAXTwN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:52:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
+        id S1351533AbiAXTwV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:52:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355414AbiAXTlQ (ORCPT
+        with ESMTP id S1355412AbiAXTlQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:41:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FF9EC061757;
-        Mon, 24 Jan 2022 11:20:58 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA50CC06175E;
+        Mon, 24 Jan 2022 11:21:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10264612FA;
-        Mon, 24 Jan 2022 19:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA563C340E8;
-        Mon, 24 Jan 2022 19:20:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90D17B811F9;
+        Mon, 24 Jan 2022 19:21:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7526C340E5;
+        Mon, 24 Jan 2022 19:21:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052057;
-        bh=+182Jy79sK9MXiS+S8hwpNplD7VC97KSLLO+0dqvPJc=;
+        s=korg; t=1643052080;
+        bh=TXblizUNnF0qFAWhKFQNE34d8SwkK57tLFPlgMicx4A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KyvvuwtTO0AU+jzur0E71fg9t0Gc7R9wpYkjgI5tMywTUzRXjG8WKvPJjf5k3l9X1
-         3g97vSm2NyVNql7Ej6e+y4v0CT4TKd0ZMz41f/6pWC/NumKuO/AkDCad47egPNFB8B
-         MjcAdQWPZQAcjj5hvVAui8N9vXGAXRz0KO9VJ4Tg=
+        b=1pFLRIZkgD9q9/Q6c8isODjLyFUcONKjEE6zW8P5HELxq3bx3vtcDK+J+/qE9eRqi
+         KSpsb/fyYhOU4URkPL3LnUTTzpVyq2TOKcKf76797nyzd+HYdZPwmuNn2wEfLbZMMq
+         P2u2SrWagMHFeuwMpa0bmzi/HDsxsg/Va2mCtRsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 173/239] net: gemini: allow any RGMII interface mode
-Date:   Mon, 24 Jan 2022 19:43:31 +0100
-Message-Id: <20220124183948.603778604@linuxfoundation.org>
+Subject: [PATCH 4.19 150/239] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 24 Jan 2022 19:43:08 +0100
+Message-Id: <20220124183947.864839011@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -52,69 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 4e4f325a0a55907b14f579e6b1a38c53755e3de2 ]
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
 
-The four RGMII interface modes take care of the required RGMII delay
-configuration at the PHY and should not be limited by the network MAC
-driver. Sadly, gemini was only permitting RGMII mode with no delays,
-which would require the required delay to be inserted via PCB tracking
-or by the MAC.
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
 
-However, there are designs that require the PHY to add the delay, which
-is impossible without Gemini permitting the other three PHY interface
-modes. Fix the driver to allow these.
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Link: https://lore.kernel.org/r/E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
+
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/cortina/gemini.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
-index 5242687060b44..f8a3d1fecb0a5 100644
---- a/drivers/net/ethernet/cortina/gemini.c
-+++ b/drivers/net/ethernet/cortina/gemini.c
-@@ -304,21 +304,21 @@ static void gmac_speed_set(struct net_device *netdev)
- 	switch (phydev->speed) {
- 	case 1000:
- 		status.bits.speed = GMAC_SPEED_1000;
--		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
-+		if (phy_interface_mode_is_rgmii(phydev->interface))
- 			status.bits.mii_rmii = GMAC_PHY_RGMII_1000;
- 		netdev_dbg(netdev, "connect %s to RGMII @ 1Gbit\n",
- 			   phydev_name(phydev));
- 		break;
- 	case 100:
- 		status.bits.speed = GMAC_SPEED_100;
--		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
-+		if (phy_interface_mode_is_rgmii(phydev->interface))
- 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
- 		netdev_dbg(netdev, "connect %s to RGMII @ 100 Mbit\n",
- 			   phydev_name(phydev));
- 		break;
- 	case 10:
- 		status.bits.speed = GMAC_SPEED_10;
--		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
-+		if (phy_interface_mode_is_rgmii(phydev->interface))
- 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
- 		netdev_dbg(netdev, "connect %s to RGMII @ 10 Mbit\n",
- 			   phydev_name(phydev));
-@@ -389,6 +389,9 @@ static int gmac_setup_phy(struct net_device *netdev)
- 		status.bits.mii_rmii = GMAC_PHY_GMII;
- 		break;
- 	case PHY_INTERFACE_MODE_RGMII:
-+	case PHY_INTERFACE_MODE_RGMII_ID:
-+	case PHY_INTERFACE_MODE_RGMII_TXID:
-+	case PHY_INTERFACE_MODE_RGMII_RXID:
- 		netdev_dbg(netdev,
- 			   "RGMII: set GMAC0 and GMAC1 to MII/RGMII mode\n");
- 		status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 4e72ad24322f7..5f1ee88aa7615 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -634,6 +634,8 @@ try_again:
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
+ 
++	card->ocr = ocr_card;
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -740,7 +742,7 @@ try_again:
+ 
+ 		card = oldcard;
+ 	}
+-	card->ocr = ocr_card;
++
+ 	mmc_fixup_device(card, sdio_fixup_methods);
+ 
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
 -- 
 2.34.1
 
