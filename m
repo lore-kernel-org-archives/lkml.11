@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C92FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6031EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365966AbiAXXwD (ORCPT
+        id S2365990AbiAXXwG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48584 "EHLO
+        Mon, 24 Jan 2022 18:52:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845252AbiAXXLz (ORCPT
+        with ESMTP id S1837278AbiAXW4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:11:55 -0500
+        Mon, 24 Jan 2022 17:56:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C412C0A02AE;
-        Mon, 24 Jan 2022 13:18:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D454C055ABA;
+        Mon, 24 Jan 2022 13:11:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E6CC3B811A2;
-        Mon, 24 Jan 2022 21:18:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1064DC340E4;
-        Mon, 24 Jan 2022 21:18:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDCB4B8121C;
+        Mon, 24 Jan 2022 21:11:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FD31C340E5;
+        Mon, 24 Jan 2022 21:11:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059128;
-        bh=vM/wn0gzeh2We6o+cpyhxuqY+/RcIVZXWMkfQnZOjK0=;
+        s=korg; t=1643058696;
+        bh=l7UtJdL8SBoqJm1jldU5+fDq8XyAWe8H5vJ8rXhBJ5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GHQ8mk2H6m42L/WyJg+wHVTMXoVrgwxb8IyUESXDa9zkiRPvilwq+F1kJWleaUsv5
-         zOuOX0OfAgAkSI8299wCxsNeDFBFB5UrndeOXn+mjkiuRENmcGhVF7qoIKr8d2nGkz
-         XUVvWntzZTI0V47eGo2uSik+2EiF/udsONHv35uU=
+        b=C54lZHw5OfMRM9wD6Iq+6boezM9ZNkuL1WpzKAzsnKEUp30j7dB5JTyLkI3bOQdgL
+         AUtOYnipAwSS8D4CSpyyqT0GthIBpkotR6tDh0VrFLCUb+jOUUb8lrhdpDHAnamQMp
+         vMdgkIZaq1iy36+ngzy7jzUjLX5ZknUjR9vJPT2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0480/1039] RDMA/qedr: Fix reporting max_{send/recv}_wr attrs
-Date:   Mon, 24 Jan 2022 19:37:49 +0100
-Message-Id: <20220124184141.404989772@linuxfoundation.org>
+Subject: [PATCH 5.16 0340/1039] lib/logic_iomem: Fix operation on 32-bit
+Date:   Mon, 24 Jan 2022 19:35:29 +0100
+Message-Id: <20220124184136.735914825@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,44 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit b1a4da64bfc189510e08df1ccb1c589e667dc7a3 ]
+[ Upstream commit 4e8a5edac5010820e7c5303fc96f5a262e096bb6 ]
 
-Fix the wrongly reported max_send_wr and max_recv_wr attributes for user
-QP by making sure to save their valuse on QP creation, so when query QP is
-called the attributes will be reported correctly.
+On 32-bit, the first entry might be at 0/NULL, but that's
+strange and leads to issues, e.g. where we check "if (ret)".
+Use a IOREMAP_BIAS/IOREMAP_MASK of 0x80000000UL to avoid
+this. This then requires reducing the number of areas (via
+MAX_AREAS), but we still have 128 areas, which is enough.
 
-Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
-Link: https://lore.kernel.org/r/20211206201314.124947-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: ca2e334232b6 ("lib: add iomem emulation (logic_iomem)")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/qedr/verbs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ lib/logic_iomem.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
-index 9100009f0a23d..a53476653b0d9 100644
---- a/drivers/infiniband/hw/qedr/verbs.c
-+++ b/drivers/infiniband/hw/qedr/verbs.c
-@@ -1931,6 +1931,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
- 	/* db offset was calculated in copy_qp_uresp, now set in the user q */
- 	if (qedr_qp_has_sq(qp)) {
- 		qp->usq.db_addr = ctx->dpi_addr + uresp.sq_db_offset;
-+		qp->sq.max_wr = attrs->cap.max_send_wr;
- 		rc = qedr_db_recovery_add(dev, qp->usq.db_addr,
- 					  &qp->usq.db_rec_data->db_data,
- 					  DB_REC_WIDTH_32B,
-@@ -1941,6 +1942,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
+diff --git a/lib/logic_iomem.c b/lib/logic_iomem.c
+index 54fa601f3300b..549b22d4bcde1 100644
+--- a/lib/logic_iomem.c
++++ b/lib/logic_iomem.c
+@@ -21,15 +21,15 @@ struct logic_iomem_area {
  
- 	if (qedr_qp_has_rq(qp)) {
- 		qp->urq.db_addr = ctx->dpi_addr + uresp.rq_db_offset;
-+		qp->rq.max_wr = attrs->cap.max_recv_wr;
- 		rc = qedr_db_recovery_add(dev, qp->urq.db_addr,
- 					  &qp->urq.db_rec_data->db_data,
- 					  DB_REC_WIDTH_32B,
+ #define AREA_SHIFT	24
+ #define MAX_AREA_SIZE	(1 << AREA_SHIFT)
+-#define MAX_AREAS	((1ULL<<32) / MAX_AREA_SIZE)
++#define MAX_AREAS	((1U << 31) / MAX_AREA_SIZE)
+ #define AREA_BITS	((MAX_AREAS - 1) << AREA_SHIFT)
+ #define AREA_MASK	(MAX_AREA_SIZE - 1)
+ #ifdef CONFIG_64BIT
+ #define IOREMAP_BIAS	0xDEAD000000000000UL
+ #define IOREMAP_MASK	0xFFFFFFFF00000000UL
+ #else
+-#define IOREMAP_BIAS	0
+-#define IOREMAP_MASK	0
++#define IOREMAP_BIAS	0x80000000UL
++#define IOREMAP_MASK	0x80000000UL
+ #endif
+ 
+ static DEFINE_MUTEX(regions_mtx);
 -- 
 2.34.1
 
