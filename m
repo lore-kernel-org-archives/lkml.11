@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D65C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49444C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365713AbiAXXvb (ORCPT
+        id S2365742AbiAXXvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
+        Mon, 24 Jan 2022 18:51:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383497AbiAXXEV (ORCPT
+        with ESMTP id S1843492AbiAXXED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:04:21 -0500
+        Mon, 24 Jan 2022 18:04:03 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB516C02B77C;
-        Mon, 24 Jan 2022 13:16:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E073C06C5B8;
+        Mon, 24 Jan 2022 13:16:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4159B8123A;
-        Mon, 24 Jan 2022 21:16:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03218C340E4;
-        Mon, 24 Jan 2022 21:16:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14CDAB80CCF;
+        Mon, 24 Jan 2022 21:16:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B99C340E4;
+        Mon, 24 Jan 2022 21:16:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058991;
-        bh=kO9zzbykNvCY4rMFSnfyyyarik+GEjCV89BpyAmECy4=;
+        s=korg; t=1643058960;
+        bh=+FIhuV+QFoMc3kFprresSPzAW2LFZqusS4F4IERQ6gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tKdM25WUNw4wWiF5bRpZKo4mSts/s8W51miLE0sCu66GIKOY3LLYbUb50yJisugMO
-         xQeOT1xWfFlj+80cYGAFq8be8kMNdKmvEwTxBQmZF7jGOEEkYgfbExKqfML2GIdzlB
-         npov/h2wp9VUaOukz/EY57Db5fZGtpvf+r8A/kvE=
+        b=yqjFp+OdE9pcMwpzpoZub27eyFdXsQSeVAlr7s5LL/yK+n+JPgrW5pEQpNV7O/goE
+         BDAf1t25i0ZPxTsZKHieUU/GpxApXhFos8S5MTqV+U0RsO8iAAebbn3I3mdZOwG4Nq
+         P92s2UeonxeQBP9oONhbD2bvAXQ1rAnb/yKG7tvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        kernel test robot <lkp@intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0468/1039] ASoC: amd: Fix dependency for SPI master
-Date:   Mon, 24 Jan 2022 19:37:37 +0100
-Message-Id: <20220124184141.014006048@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Subject: [PATCH 5.16 0441/1039] net: mcs7830: handle usb read errors properly
+Date:   Mon, 24 Jan 2022 19:37:10 +0100
+Message-Id: <20220124184140.120501193@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,36 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 19a628d8f1a6c16263d8037a918427207c8a95a0 ]
+[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
 
-Set SPI_MASTER as dependency as is using CS35L41 SPI driver
+Syzbot reported uninit value in mcs7830_bind(). The problem was in
+missing validation check for bytes read via usbnet_read_cmd().
 
-Fixes: 96792fdd77cd1 ("ASoC: amd: enable vangogh platform machine driver build")
+usbnet_read_cmd() internally calls usb_control_msg(), that returns
+number of bytes read. Code should validate that requested number of bytes
+was actually read.
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Link: https://lore.kernel.org/r/20211201180004.1402156-1-tanureal@opensource.cirrus.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+So, this patch adds missing size validation check inside
+mcs7830_get_reg() to prevent uninit value bugs
+
+Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/amd/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/mcs7830.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/amd/Kconfig b/sound/soc/amd/Kconfig
-index 2c6af3f8f2961..ff535370e525a 100644
---- a/sound/soc/amd/Kconfig
-+++ b/sound/soc/amd/Kconfig
-@@ -68,7 +68,7 @@ config SND_SOC_AMD_VANGOGH_MACH
- 	tristate "AMD Vangogh support for NAU8821 CS35L41"
- 	select SND_SOC_NAU8821
- 	select SND_SOC_CS35L41_SPI
--	depends on SND_SOC_AMD_ACP5x && I2C
-+	depends on SND_SOC_AMD_ACP5x && I2C && SPI_MASTER
- 	help
- 	  This option enables machine driver for Vangogh platform
- 	  using NAU8821 and CS35L41 codecs.
+diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
+index 326cc4e749d80..fdda0616704ea 100644
+--- a/drivers/net/usb/mcs7830.c
++++ b/drivers/net/usb/mcs7830.c
+@@ -108,8 +108,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
+ 
+ static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
+ {
+-	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
+-				0x0000, index, data, size);
++	int ret;
++
++	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
++			      0x0000, index, data, size);
++	if (ret < 0)
++		return ret;
++	else if (ret < size)
++		return -ENODATA;
++
++	return ret;
+ }
+ 
+ static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
 -- 
 2.34.1
 
