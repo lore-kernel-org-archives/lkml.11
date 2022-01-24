@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B24C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CCA4C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353848AbiAYAN4 (ORCPT
+        id S2372833AbiAYAMf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:13:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53434 "EHLO
+        Mon, 24 Jan 2022 19:12:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587648AbiAXX2Q (ORCPT
+        with ESMTP id S1382761AbiAXWjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:16 -0500
+        Mon, 24 Jan 2022 17:39:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFB32C0A8877;
-        Mon, 24 Jan 2022 13:33:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46F52C055A86;
+        Mon, 24 Jan 2022 13:03:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DCD061305;
-        Mon, 24 Jan 2022 21:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E4B6C340E4;
-        Mon, 24 Jan 2022 21:33:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D9154612E9;
+        Mon, 24 Jan 2022 21:03:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6D81C340E5;
+        Mon, 24 Jan 2022 21:03:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059995;
-        bh=yJKKoZqoeZsU/xnmPZ+NZhMnAgPh1Vr7l6l0WGRJ2cI=;
+        s=korg; t=1643058202;
+        bh=m3XBgkr5Z/eZ+k0EKJIVJa2TImDNP6ACO8ML6NlEFfM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UrjYebrhZ/JIqN67oM6sWsi7TrcuQRgB/A1Zy54d2+CZkoW/kQZ8EzqAnjoYTfV5P
-         74kz1De7m0rESCJzU6hzLZCSotz7Y7e9o7cmK1LopjjS1RiVQhRnVVoHB3ggJDRsi+
-         hXdy3TpfDIVZEWSxc5DDAruCdi4+bC2MH5DPDWLg=
+        b=gl8ToutV+KciDEVy05OELQXOpXczPqncKGipM0z3OsLWJyswe8OVtYWVRtJj7UbW1
+         iOtgtkBslhbpxEdps0UTmfbALmYp4bsjcmILp3WxqnJkTfl6WRgxy43uCFqclpALko
+         xxF1E/C97nGUZDpcefnBVuqaP8hDLDCPsXKMYQ2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, Paul Gerber <Paul.Gerber@tq-group.com>,
+        Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0805/1039] PCI: mvebu: Fix support for PCI_EXP_DEVCTL on emulated bridge
-Date:   Mon, 24 Jan 2022 19:43:14 +0100
-Message-Id: <20220124184152.374674254@linuxfoundation.org>
+Subject: [PATCH 5.16 0212/1039] thermal/drivers/imx8mm: Enable ADC when enabling monitor
+Date:   Mon, 24 Jan 2022 19:33:21 +0100
+Message-Id: <20220124184132.463403607@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,51 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Paul Gerber <Paul.Gerber@tq-group.com>
 
-[ Upstream commit ecae073e393e65ee7be7ebf3fdd5258ab99f1636 ]
+[ Upstream commit 3de89d8842a2b5d3dd22ebf97dd561ae0a330948 ]
 
-Comment in Armada 370 functional specification is misleading.
-PCI_EXP_DEVCTL_*RE bits are supported and configures receiving of error
-interrupts.
+The i.MX 8MP has a ADC_PD bit in the TMU_TER register that controls the
+operating mode of the ADC:
+* 0 means normal operating mode
+* 1 means power down mode
 
-Link: https://lore.kernel.org/r/20211125124605.25915-14-pali@kernel.org
-Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+When enabling/disabling the TMU, the ADC operating mode must be set
+accordingly.
+
+i.MX 8M Mini & Nano are lacking this bit.
+
+Signed-off-by: Paul Gerber <Paul.Gerber@tq-group.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+Fixes: 2b8f1f0337c5 ("thermal: imx8mm: Add i.MX8MP support")
+Link: https://lore.kernel.org/r/20211122114225.196280-1-alexander.stein@ew.tq-group.com
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-mvebu.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ drivers/thermal/imx8mm_thermal.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
-index aaf6a226f6dba..0052e83c95de9 100644
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -498,9 +498,7 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
- 		break;
+diff --git a/drivers/thermal/imx8mm_thermal.c b/drivers/thermal/imx8mm_thermal.c
+index 7442e013738f8..af666bd9e8d4d 100644
+--- a/drivers/thermal/imx8mm_thermal.c
++++ b/drivers/thermal/imx8mm_thermal.c
+@@ -21,6 +21,7 @@
+ #define TPS			0x4
+ #define TRITSR			0x20	/* TMU immediate temp */
  
- 	case PCI_EXP_DEVCTL:
--		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL) &
--				 ~(PCI_EXP_DEVCTL_URRE | PCI_EXP_DEVCTL_FERE |
--				   PCI_EXP_DEVCTL_NFERE | PCI_EXP_DEVCTL_CERE);
-+		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL);
- 		break;
++#define TER_ADC_PD		BIT(30)
+ #define TER_EN			BIT(31)
+ #define TRITSR_TEMP0_VAL_MASK	0xff
+ #define TRITSR_TEMP1_VAL_MASK	0xff0000
+@@ -113,6 +114,8 @@ static void imx8mm_tmu_enable(struct imx8mm_tmu *tmu, bool enable)
  
- 	case PCI_EXP_LNKCAP:
-@@ -590,13 +588,6 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
- 
- 	switch (reg) {
- 	case PCI_EXP_DEVCTL:
--		/*
--		 * Armada370 data says these bits must always
--		 * be zero when in root complex mode.
--		 */
--		new &= ~(PCI_EXP_DEVCTL_URRE | PCI_EXP_DEVCTL_FERE |
--			 PCI_EXP_DEVCTL_NFERE | PCI_EXP_DEVCTL_CERE);
--
- 		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL);
- 		break;
+ 	val = readl_relaxed(tmu->base + TER);
+ 	val = enable ? (val | TER_EN) : (val & ~TER_EN);
++	if (tmu->socdata->version == TMU_VER2)
++		val = enable ? (val & ~TER_ADC_PD) : (val | TER_ADC_PD);
+ 	writel_relaxed(val, tmu->base + TER);
+ }
  
 -- 
 2.34.1
