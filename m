@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB466C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AE61C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382446AbiAXUZp (ORCPT
+        id S1382531AbiAXUZv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:25:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60654 "EHLO
+        Mon, 24 Jan 2022 15:25:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376681AbiAXUDd (ORCPT
+        with ESMTP id S1352099AbiAXUDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:03:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41AEC0619D2;
-        Mon, 24 Jan 2022 11:30:02 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B71AFC08E6E8;
+        Mon, 24 Jan 2022 11:29:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 91C2B614BE;
-        Mon, 24 Jan 2022 19:30:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9390FC340E5;
-        Mon, 24 Jan 2022 19:30:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D1CBB81233;
+        Mon, 24 Jan 2022 19:29:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFF3CC340E5;
+        Mon, 24 Jan 2022 19:29:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052602;
-        bh=tZrs0Jt+SIkesNUNBAwCsJLLP2xGRVcbKR9NellZksk=;
+        s=korg; t=1643052584;
+        bh=xvzL5yn66KLTBpJ5XX8WNNkm2PGPKRLw75f8LAXvbiA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jCe0lorceJvyg1mu7IGsBu+evQQ9TOpSQesfxk1od7oUO+TaUSqrywAUs5s1ti6zO
-         DCH1Ns3dbBKaypQtk7WIETIRSvt4uqvKyZTw/M5SGCIJI6mFNWt13ZLjwirlxei2k3
-         eOqjQU4jVov8R7vXkh/C/Iiep9WJS2Y3LmNZpao0=
+        b=eTcCj+afUS6IwDh8lyM20NscVo6f8OqI2YYw04c9HIHJk5eI/8N2a1P0E0fb1tnCa
+         48ZwfOJy/6bENfcU7q+sDOAf2zeo5YQ1e5FXtijm7hpLMonhfSr6a/FibwJgEbALgi
+         8irhon6atq9AywiZPQx4GsCrbGtSTIGxBOKlhVYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
-        Paul Chaignon <paul@isovalent.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 096/320] bpftool: Enable line buffering for stdout
-Date:   Mon, 24 Jan 2022 19:41:20 +0100
-Message-Id: <20220124183956.994730693@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 108/320] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_init
+Date:   Mon, 24 Jan 2022 19:41:32 +0100
+Message-Id: <20220124183957.389981862@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -51,39 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Chaignon <paul@isovalent.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 1a1a0b0364ad291bd8e509da104ac8b5b1afec5d ]
+[ Upstream commit f364c571a5c77e96de2d32062ff019d6b8d2e2bc ]
 
-The output of bpftool prog tracelog is currently buffered, which is
-inconvenient when piping the output into other commands. A simple
-tracelog | grep will typically not display anything. This patch fixes it
-by enabling line buffering on stdout for the whole bpftool binary.
+The function performs a check on its input parameters, however, the
+hdev parameter is used before the check.
 
-Fixes: 30da46b5dc3a ("tools: bpftool: add a command to dump the trace pipe")
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Paul Chaignon <paul@isovalent.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211220214528.GA11706@Mem
+Initialize the stack variables after checking the input parameters to
+avoid a possible NULL pointer dereference.
+
+Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
+Addresses-Coverity-ID: 1443831 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/main.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/hid/hid-uclogic-params.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/tools/bpf/bpftool/main.c b/tools/bpf/bpftool/main.c
-index 7d3cfb0ccbe61..4b03983acbefe 100644
---- a/tools/bpf/bpftool/main.c
-+++ b/tools/bpf/bpftool/main.c
-@@ -362,6 +362,8 @@ int main(int argc, char **argv)
- 	};
- 	int opt, ret;
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index ed4ede52b017f..0afd368115891 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -832,10 +832,10 @@ int uclogic_params_init(struct uclogic_params *params,
+ 			struct hid_device *hdev)
+ {
+ 	int rc;
+-	struct usb_device *udev = hid_to_usb_dev(hdev);
+-	__u8  bNumInterfaces = udev->config->desc.bNumInterfaces;
+-	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
+-	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
++	struct usb_device *udev;
++	__u8  bNumInterfaces;
++	struct usb_interface *iface;
++	__u8 bInterfaceNumber;
+ 	bool found;
+ 	/* The resulting parameters (noop) */
+ 	struct uclogic_params p = {0, };
+@@ -846,6 +846,11 @@ int uclogic_params_init(struct uclogic_params *params,
+ 		goto cleanup;
+ 	}
  
-+	setlinebuf(stdout);
++	udev = hid_to_usb_dev(hdev);
++	bNumInterfaces = udev->config->desc.bNumInterfaces;
++	iface = to_usb_interface(hdev->dev.parent);
++	bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
 +
- 	last_do_help = do_help;
- 	pretty_output = false;
- 	json_output = false;
+ 	/*
+ 	 * Set replacement report descriptor if the original matches the
+ 	 * specified size. Otherwise keep interface unchanged.
 -- 
 2.34.1
 
