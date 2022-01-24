@@ -2,93 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0202C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 597ECC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392007AbiAXUuO (ORCPT
+        id S1392043AbiAXUuT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:50:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60504 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354319AbiAXUXD (ORCPT
+        Mon, 24 Jan 2022 15:50:19 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:53524 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381728AbiAXUWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:03 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E652DB8121C;
-        Mon, 24 Jan 2022 20:22:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2063DC340E5;
-        Mon, 24 Jan 2022 20:22:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055777;
-        bh=Jqatb1L8yQjhbQy9UNMVpIvmVrX+KciqGzLn7FtNWoA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v8w/y9kA95AimS7b/yX67vOWdUDjOd6JIyCjft56dHu876xZw+rpgroS15b3H0bxJ
-         AEK5EYYosMWolyhj5teyWM7WtQKAcsMa0nFECI4VRh6UawK/4buiaqijomyZ9Or92r
-         NiSWGXU4fnLe8xM4pG5ZsDdlLKGoThKvFWh09VhI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 263/846] arm64: dts: marvell: cn9130: add GPIO and SPI aliases
-Date:   Mon, 24 Jan 2022 19:36:20 +0100
-Message-Id: <20220124184110.001780743@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 15:22:46 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 0F6B41C0B76; Mon, 24 Jan 2022 21:22:35 +0100 (CET)
+Date:   Mon, 24 Jan 2022 21:22:34 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com,
+        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
+Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
+Message-ID: <20220124202234.GC16782@duo.ucw.cz>
+References: <20220124184024.407936072@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="nmemrqcdn5VTmUEE"
+Content-Disposition: inline
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
 
-[ Upstream commit effd42600b987c1e95f946b14fefc1c7639e7439 ]
+--nmemrqcdn5VTmUEE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-CN9130 has one CP115 built in, which like the CP110 has 2 GPIO and 2 SPI
-controllers built-in.
+Hi!
 
-However, unlike the Armada 7k and 8k the SoC DTSI doesn't add the required
-aliases as both the Orion SPI driver and MVEBU GPIO drivers require the
-aliases to be present.
+> This is the start of the stable review cycle for the 5.10.94 release.
+> There are 563 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 
-So add the required aliases for GPIO and SPI controllers.
+Our tests are unhappy, and it is more than gmp.h problem:
 
-Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+5.10.y
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/arm64/boot/dts/marvell/cn9130.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+arm64_ctj:
 
-diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-index a2b7e5ec979d3..71769ac7f0585 100644
---- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
-+++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-@@ -11,6 +11,13 @@
- 	model = "Marvell Armada CN9130 SoC";
- 	compatible = "marvell,cn9130", "marvell,armada-ap807-quad",
- 		     "marvell,armada-ap807";
-+
-+	aliases {
-+		gpio1 = &cp0_gpio1;
-+		gpio2 = &cp0_gpio2;
-+		spi1 = &cp0_spi0;
-+		spi2 = &cp0_spi1;
-+	};
- };
- 
- /*
--- 
-2.34.1
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/201007=
+0033
 
+arch/arm64/mm/extable.c: In function 'fixup_exception':
+1095arch/arm64/mm/extable.c:17:6: error: implicit declaration of function '=
+in_bpf_jit' [-Werror=3Dimplicit-function-declaration]
+1096  if (in_bpf_jit(regs))
+1097      ^~~~~~~~~~
+1098cc1: some warnings being treated as errors
+1099scripts/Makefile.build:280: recipe for target 'arch/arm64/mm/extable.o'=
+ failed
+1100make[2]: *** [arch/arm64/mm/extable.o] Error 1
+1101make[2]: *** Waiting for unfinished jobs....
+1102  CC      kernel/sched/loadavg.o
+1103  CC      arch/arm64/kernel/entry-common.o
+1104
 
+arm64_defconfig:
 
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/jobs/201007=
+0044
+
+arch/arm64/mm/extable.c: In function 'fixup_exception':
+1129arch/arm64/mm/extable.c:17:6: error: implicit declaration of function '=
+in_bpf_jit' [-Werror=3Dimplicit-function-declaration]
+1130  if (in_bpf_jit(regs))
+1131      ^~~~~~~~~~
+1132  CC      arch/arm64/crypto/ghash-ce-glue.o
+1133cc1: some warnings being treated as errors
+1134scripts/Makefile.build:280: recipe for target 'arch/arm64/mm/extable.o'=
+ failed
+1135make[2]: *** [arch/arm64/mm/extable.o] Error 1
+1136make[2]: *** Waiting for unfinished jobs....
+1137  CC      arch/arm64/kvm/hyp/vhe/sysreg-sr.o
+1138
+
+Best regards,
+									Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--nmemrqcdn5VTmUEE
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYe8KigAKCRAw5/Bqldv6
+8vwdAJ9DYr0MICHQaJW/2sq7Lc9vQCg6cgCgu3gXmPmjdfD78dlYcFxP1V2xOTY=
+=0YOT
+-----END PGP SIGNATURE-----
+
+--nmemrqcdn5VTmUEE--
