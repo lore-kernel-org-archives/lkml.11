@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1319C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D30ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851223AbiAXXcL (ORCPT
+        id S1851246AbiAXXcP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:32:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
+        Mon, 24 Jan 2022 18:32:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836477AbiAXWjf (ORCPT
+        with ESMTP id S1836503AbiAXWjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:39:35 -0500
+        Mon, 24 Jan 2022 17:39:40 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A59DEC05486D;
-        Mon, 24 Jan 2022 13:00:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BDDAC05487C;
+        Mon, 24 Jan 2022 13:02:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 625F3B80CCF;
-        Mon, 24 Jan 2022 21:00:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88197C340E5;
-        Mon, 24 Jan 2022 21:00:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 648A2B811FB;
+        Mon, 24 Jan 2022 21:02:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91777C340E5;
+        Mon, 24 Jan 2022 21:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058033;
-        bh=1O9RhcORyxP6y+2nbjiYaQB2E+++rbjfQVEUZMBHDzA=;
+        s=korg; t=1643058152;
+        bh=fDKZb5ZOGOoDpGNIT4AzWS/7B5dYfdm2X4IfhgXunug=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F7Dykl28uvvyf0OtNHh6QcupRERgVI3L3RiZ79lnSIT5bY7UBcQZwYIViR1Z/4Kk9
-         A4a2i3hGqF3Pa6+jxSoGRTrBE10YMpgsXZVqYYc7Ra6T4zhmPVMep790y5SRXq+pO5
-         UzATDt2/CbC2lCYYUSukkE28QMl3XL7S8Yt0f03o=
+        b=IaZdOLH2YghU9R0dAuy+FfNdTUkeCnLKD1uw+Ljrlqp/XQD3yWLT8iPfguFcjvTDt
+         WsFGSGeKfo2OaGvwVXiH4nBNTkXUDEIWbF+Lh5LcYagpQ9k5vkQAarzc98+EGpAeNV
+         H4Izb8sU8msTXkl08Boh6jG1799t24o3Hwz0XOP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org,
+        "George G. Davis" <davis.george@siemens.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0126/1039] media: atomisp: fix ifdefs in sh_css.c
-Date:   Mon, 24 Jan 2022 19:31:55 +0100
-Message-Id: <20220124184129.384288150@linuxfoundation.org>
+Subject: [PATCH 5.16 0164/1039] mtd: hyperbus: rpc-if: fix bug in rpcif_hb_remove
+Date:   Mon, 24 Jan 2022 19:32:33 +0100
+Message-Id: <20220124184130.734861750@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,135 +51,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: George G. Davis <davis.george@siemens.com>
 
-[ Upstream commit 5a1b2725558f8a3b4cbf0504f53cffae8e163034 ]
+[ Upstream commit baaf965f94308301d2dc554d72a87d7432cd5ce6 ]
 
- ## `if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG) {` case
+The following KASAN BUG is observed when testing the rpc-if driver on
+rcar-gen3:
 
-The intel-aero atomisp has `#if defined(IS_ISP_2400_SYSTEM)` [1]. It is
-to be defined in the following two places [2]:
+root@rcar-gen3:~# modprobe -r rpc-if
+[  101.930146] ==================================================================
+[  101.937408] BUG: KASAN: slab-out-of-bounds in __lock_acquire+0x518/0x25d0
+[  101.944240] Read of size 8 at addr ffff0004c5be2750 by task modprobe/664
+[  101.950959]
+[  101.952466] CPU: 2 PID: 664 Comm: modprobe Not tainted 5.14.0-rc1-00342-g1a1464d7aa31 #1
+[  101.960578] Hardware name: Renesas H3ULCB board based on r8a77951 (DT)
+[  101.967120] Call trace:
+[  101.969580]  dump_backtrace+0x0/0x2c0
+[  101.973275]  show_stack+0x1c/0x30
+[  101.976616]  dump_stack_lvl+0x9c/0xd8
+[  101.980301]  print_address_description.constprop.0+0x74/0x2b8
+[  101.986071]  kasan_report+0x1f4/0x26c
+[  101.989757]  __asan_load8+0x98/0xd4
+[  101.993266]  __lock_acquire+0x518/0x25d0
+[  101.997215]  lock_acquire.part.0+0x18c/0x360
+[  102.001506]  lock_acquire+0x74/0x90
+[  102.005013]  _raw_spin_lock_irq+0x98/0x130
+[  102.009131]  __pm_runtime_disable+0x30/0x210
+[  102.013427]  rpcif_hb_remove+0x5c/0x70 [rpc_if]
+[  102.018001]  platform_remove+0x40/0x80
+[  102.021771]  __device_release_driver+0x234/0x350
+[  102.026412]  driver_detach+0x158/0x20c
+[  102.030179]  bus_remove_driver+0xa0/0x140
+[  102.034212]  driver_unregister+0x48/0x80
+[  102.038153]  platform_driver_unregister+0x18/0x24
+[  102.042879]  rpcif_platform_driver_exit+0x1c/0x34 [rpc_if]
+[  102.048400]  __arm64_sys_delete_module+0x210/0x310
+[  102.053212]  invoke_syscall+0x60/0x190
+[  102.056986]  el0_svc_common+0x12c/0x144
+[  102.060844]  do_el0_svc+0x88/0xac
+[  102.064181]  el0_svc+0x24/0x3c
+[  102.067257]  el0t_64_sync_handler+0x1a8/0x1b0
+[  102.071634]  el0t_64_sync+0x198/0x19c
+[  102.075315]
+[  102.076815] Allocated by task 628:
+[  102.080781]
+[  102.082280] Last potentially related work creation:
+[  102.087524]
+[  102.089022] The buggy address belongs to the object at ffff0004c5be2000
+[  102.089022]  which belongs to the cache kmalloc-2k of size 2048
+[  102.101555] The buggy address is located 1872 bytes inside of
+[  102.101555]  2048-byte region [ffff0004c5be2000, ffff0004c5be2800)
+[  102.113486] The buggy address belongs to the page:
+[  102.118409]
+[  102.119908] Memory state around the buggy address:
+[  102.124711]  ffff0004c5be2600: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  102.131947]  ffff0004c5be2680: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  102.139181] >ffff0004c5be2700: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  102.146412]                                                  ^
+[  102.152257]  ffff0004c5be2780: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  102.159491]  ffff0004c5be2800: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+[  102.166723] ==================================================================
 
-  - css/hive_isp_css_common/system_global.h
-  - css/css_2401_csi2p_system/system_global.h
+The above bug is caused by use of the wrong pointer in the
+rpcif_disable_rpm() call. Fix the bug by using the correct pointer.
 
-and the former file is to be included on ISP2400 devices, too. So, it
-is to be defined for both ISP2400 and ISP2401 devices.
-
-Because the upstreamed atomisp driver now supports only ISP2400 and
-ISP2401, just remove the ISP version test again. This matches the other
-upstream commits like 3c0538fbad9f ("media: atomisp: get rid of most
-checks for ISP2401 version").
-
-While here, moved the comment for define GP_ISEL_TPG_MODE to the
-appropriate place.
-
-[1] https://github.com/intel-aero/linux-kernel/blob/a1b673258feb915268377275130c5c5df0eafc82/drivers/media/pci/atomisp/css/sh_css.c#L552-L558
-[2] https://github.com/intel-aero/linux-kernel/search?q=IS_ISP_2400_SYSTEM
-
-  ## `isys_stream_descr->polling_mode` case
-
-This does not exist on the intel-aero atomisp. This is because it is
-based on css version irci_stable_candrpv_0415_20150521_0458.
-
-On the other hand, the upstreamed atomisp is based on the following css
-version depending on the ISP version using ifdefs:
-
-  - ISP2400: irci_stable_candrpv_0415_20150521_0458
-  - ISP2401: irci_master_20150911_0724
-
-The `isys_stream_descr->polling_mode` usage was added on updating css
-version to irci_master_20150701_0213 [3].
-
-So, it is not a ISP version specific thing, but css version specific
-thing. Because the upstreamed atomisp driver uses irci_master_20150911_0724
-for ISP2401, re-add the ISP version check for now.
-
-I say "for now" because ISP2401 should eventually use the same css
-version with ISP2400 (i.e., irci_stable_candrpv_0415_20150521_0458)
-
-[3] https://raw.githubusercontent.com/intel/ProductionKernelQuilts/cht-m1stable-2016_ww31/uefi/cht-m1stable/patches/cam-0439-atomisp2-css2401-and-2401_legacy-irci_master_2015070.patch
-    ("atomisp2: css2401 and 2401_legacy-irci_master_20150701_0213")
-    Link to Intel's Android kernel patch.
-
- ## `coord = &me->config.internal_frame_origin_bqs_on_sctbl;` case
-
-it was added on commit 4f744a573db3 ("media: atomisp: make
-sh_css_sp_init_pipeline() ISP version independent") for ISP2401. Because
-the upstreamed atomisp for the ISP2401 part is based on
-irci_master_20150911_0724, hence the difference.
-
-Because the upstreamed atomisp driver uses irci_master_20150911_0724
-for ISP2401, revert the test back to `if (IS_ISP2401)`.
-
-Fixes: 27333dadef57 ("media: atomisp: adjust some code at sh_css that could be broken")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 5de15b610f78 ("mtd: hyperbus: add Renesas RPC-IF driver")
+Signed-off-by: George G. Davis <davis.george@siemens.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20210716204935.25859-1-george_davis@mentor.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/sh_css.c | 27 +++++++++-------------
- 1 file changed, 11 insertions(+), 16 deletions(-)
+ drivers/mtd/hyperbus/rpc-if.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css.c b/drivers/staging/media/atomisp/pci/sh_css.c
-index c4b35cbab3737..ba25d0da8b811 100644
---- a/drivers/staging/media/atomisp/pci/sh_css.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css.c
-@@ -522,6 +522,7 @@ ia_css_stream_input_format_bits_per_pixel(struct ia_css_stream *stream)
- 	return bpp;
+diff --git a/drivers/mtd/hyperbus/rpc-if.c b/drivers/mtd/hyperbus/rpc-if.c
+index 367b0d72bf622..dc164c18f8429 100644
+--- a/drivers/mtd/hyperbus/rpc-if.c
++++ b/drivers/mtd/hyperbus/rpc-if.c
+@@ -152,9 +152,9 @@ static int rpcif_hb_remove(struct platform_device *pdev)
+ {
+ 	struct rpcif_hyperbus *hyperbus = platform_get_drvdata(pdev);
+ 	int error = hyperbus_unregister_device(&hyperbus->hbdev);
+-	struct rpcif *rpc = dev_get_drvdata(pdev->dev.parent);
+ 
+-	rpcif_disable_rpm(rpc);
++	rpcif_disable_rpm(&hyperbus->rpc);
++
+ 	return error;
  }
  
-+/* TODO: move define to proper file in tools */
- #define GP_ISEL_TPG_MODE 0x90058
- 
- #if !defined(ISP2401)
-@@ -573,12 +574,8 @@ sh_css_config_input_network(struct ia_css_stream *stream)
- 		vblank_cycles = vblank_lines * (width + hblank_cycles);
- 		sh_css_sp_configure_sync_gen(width, height, hblank_cycles,
- 					     vblank_cycles);
--		if (!IS_ISP2401) {
--			if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG) {
--				/* TODO: move define to proper file in tools */
--				ia_css_device_store_uint32(GP_ISEL_TPG_MODE, 0);
--			}
--		}
-+		if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG)
-+			ia_css_device_store_uint32(GP_ISEL_TPG_MODE, 0);
- 	}
- 	ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
- 			    "sh_css_config_input_network() leave:\n");
-@@ -1009,16 +1006,14 @@ static bool sh_css_translate_stream_cfg_to_isys_stream_descr(
- 	 * ia_css_isys_stream_capture_indication() instead of
- 	 * ia_css_pipeline_sp_wait_for_isys_stream_N() as isp processing of
- 	 * capture takes longer than getting an ISYS frame
--	 *
--	 * Only 2401 relevant ??
- 	 */
--#if 0 // FIXME: NOT USED on Yocto Aero
--	isys_stream_descr->polling_mode
--	    = early_polling ? INPUT_SYSTEM_POLL_ON_CAPTURE_REQUEST
--	      : INPUT_SYSTEM_POLL_ON_WAIT_FOR_FRAME;
--	ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
--			    "sh_css_translate_stream_cfg_to_isys_stream_descr() leave:\n");
--#endif
-+	if (IS_ISP2401) {
-+		isys_stream_descr->polling_mode
-+		    = early_polling ? INPUT_SYSTEM_POLL_ON_CAPTURE_REQUEST
-+		      : INPUT_SYSTEM_POLL_ON_WAIT_FOR_FRAME;
-+		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
-+				    "sh_css_translate_stream_cfg_to_isys_stream_descr() leave:\n");
-+	}
- 
- 	return rc;
- }
-@@ -1433,7 +1428,7 @@ static void start_pipe(
- 
- 	assert(me); /* all callers are in this file and call with non null argument */
- 
--	if (!IS_ISP2401) {
-+	if (IS_ISP2401) {
- 		coord = &me->config.internal_frame_origin_bqs_on_sctbl;
- 		params = me->stream->isp_params_configs;
- 	}
 -- 
 2.34.1
 
