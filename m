@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 217D6C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F5BC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448263AbiAXVMS (ORCPT
+        id S1448196AbiAXVMK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35626 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389423AbiAXUkw (ORCPT
+        Mon, 24 Jan 2022 16:12:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43838 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358462AbiAXUmM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:40:52 -0500
+        Mon, 24 Jan 2022 15:42:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E7C1061507;
-        Mon, 24 Jan 2022 20:40:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE9A8C340E5;
-        Mon, 24 Jan 2022 20:40:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF2A4B81255;
+        Mon, 24 Jan 2022 20:42:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCA7C340E5;
+        Mon, 24 Jan 2022 20:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056852;
-        bh=5ND4c0WFizvbyzJNtRy1VuRdoEZMvxVRqMNu9KAXCrQ=;
+        s=korg; t=1643056929;
+        bh=AOczSnWdWced6oq1iyNUhjT2AeFnG/1hKhyVL7vUbzw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZc38GgQmMTEOZ4chdSkQbrZaTxn9i21iXI7YoULqtWVesZ0QFadIbiaJDSCXL18l
-         B2Zjbq0IEgFQ44gjIHfe+y7bBchBokqbwS3NIDIzukdIpkWLJFyjd+46sGnfNZAmoK
-         1B51HE6vuWEwBRgTxH5g4wYnJB/Ah1m+ciDdqZxw=
+        b=YmzXhUVIT7lXd5e5CiHaM6Kqx08PGuklBchNcnlZz84sQU1HfZ6AUsGghRPJGR2Mu
+         sYzT/Ur6zlvZA5SjgFkN4s6uz8sM4G8SKjkRDabo5J1EwPBlx0xz/qwjQGs7Zk6ez+
+         7a1+T1+IlvlIbYosdgQrEpixecOTBS3sErA/wSsk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 622/846] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
-Date:   Mon, 24 Jan 2022 19:42:19 +0100
-Message-Id: <20220124184122.498894189@linuxfoundation.org>
+Subject: [PATCH 5.15 613/846] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 24 Jan 2022 19:42:10 +0100
+Message-Id: <20220124184122.182959517@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,43 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ingo Molnar <mingo@kernel.org>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit b6aa86cff44cf099299d3a5e66348cb709cd7964 ]
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-Most distro kernels have this option enabled, to improve debug output.
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-Lockdep also selects it.
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
 
-Enable this in the defconfig kernel as well, to make it more
-representative of what people are using on x86.
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
 
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/configs/i386_defconfig   | 1 +
- arch/x86/configs/x86_64_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
-index e81885384f604..99398cbdae434 100644
---- a/arch/x86/configs/i386_defconfig
-+++ b/arch/x86/configs/i386_defconfig
-@@ -262,3 +262,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index e8a7a0af2bdaa..d7298b104a456 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -258,3 +258,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 61e3dd0222af1..9e7e624a6c9db 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2393,7 +2393,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 		/*
 -- 
 2.34.1
 
