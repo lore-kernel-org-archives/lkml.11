@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E39CFC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB392C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840900AbiAXWzm (ORCPT
+        id S1840810AbiAXWz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:55:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
+        Mon, 24 Jan 2022 17:55:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576003AbiAXVwv (ORCPT
+        with ESMTP id S1576067AbiAXVxA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:52:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE9AC0939AD;
-        Mon, 24 Jan 2022 12:34:11 -0800 (PST)
+        Mon, 24 Jan 2022 16:53:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FA1C08B4F0;
+        Mon, 24 Jan 2022 12:34:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B16746152F;
-        Mon, 24 Jan 2022 20:34:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95F9FC340E5;
-        Mon, 24 Jan 2022 20:34:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A2F6B81229;
+        Mon, 24 Jan 2022 20:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D487C340EA;
+        Mon, 24 Jan 2022 20:34:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056450;
-        bh=qB3Fi/c2OFkg4thTeRXKRkzxotAB/uDfhq1PIFW3rw8=;
+        s=korg; t=1643056459;
+        bh=EgN3WYwHQlO/nVftIjAlxl6B3bD+NtPV1F3G+g/3siQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNNjEJp4EO+B58is/Ox61WeIUbdfZKQ4J4PISkYl5XQ0oHnvFRNoaibyhQdi11s4k
-         XXS4gCQWobptKE7r5lyWdweKlGbJ7pc7t5Jv/0GPNmyjtSO3+yYsbkpnrsFZxR0f1p
-         Fg9bWSSo3Rn21Jla7ieYAZ+XVcfJ0TZ2Hnxbc7ts=
+        b=vmM3VDNGjnV2O953gjsZ9D6jDCzRGMzgShqxOUj94OP1i8OdKokL9lYuGUoQbcIVL
+         51Up6KGIsFgVro8RCjlMP5l08LrLx+Qy6htmRF6xA1NXxYEsD3I6PGMkilzqAAgeqp
+         BeFKdM22xPq/yzajNE9dN8JYZkLYzEuvf9fMuf0A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 488/846] libbpf: Accommodate DWARF/compiler bug with duplicated structs
-Date:   Mon, 24 Jan 2022 19:40:05 +0100
-Message-Id: <20220124184117.847023427@linuxfoundation.org>
+Subject: [PATCH 5.15 491/846] arm64: dts: qcom: sm8350: Shorten camera-thermal-bottom name
+Date:   Mon, 24 Jan 2022 19:40:08 +0100
+Message-Id: <20220124184117.950649359@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,113 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit efdd3eb8015e7447095f02a26eaabd164cd18004 ]
+[ Upstream commit f52dd33943ca5f84ae76890f352f6d9e12512c3f ]
 
-According to [0], compilers sometimes might produce duplicate DWARF
-definitions for exactly the same struct/union within the same
-compilation unit (CU). We've had similar issues with identical arrays
-and handled them with a similar workaround in 6b6e6b1d09aa ("libbpf:
-Accomodate DWARF/compiler bug with duplicated identical arrays"). Do the
-same for struct/union by ensuring that two structs/unions are exactly
-the same, down to the integer values of field referenced type IDs.
+Thermal zone names should not be longer than 20 names, which is indicated by
+a message at boot. Change "camera-thermal-bottom" to "cam-thermal-bottom" to
+fix it.
 
-Solving this more generically (allowing referenced types to be
-equivalent, but using different type IDs, all within a single CU)
-requires a huge complexity increase to handle many-to-many mappings
-between canonidal and candidate type graphs. Before we invest in that,
-let's see if this approach handles all the instances of this issue in
-practice. Thankfully it's pretty rare, it seems.
-
-  [0] https://lore.kernel.org/bpf/YXr2NFlJTAhHdZqq@krava/
-
-Reported-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20211117194114.347675-1-andrii@kernel.org
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211114012755.112226-6-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf.c | 45 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 41 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 5fa64a7f0dda8..5f3d20ae66d56 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -3358,8 +3358,8 @@ static long btf_hash_struct(struct btf_type *t)
- }
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index e91cd8a5e5356..296ffb0e9888c 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -2185,7 +2185,7 @@
+ 			};
+ 		};
  
- /*
-- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
-- * IDs. This check is performed during type graph equivalence check and
-+ * Check structural compatibility of two STRUCTs/UNIONs, ignoring referenced
-+ * type IDs. This check is performed during type graph equivalence check and
-  * referenced types equivalence is checked separately.
-  */
- static bool btf_shallow_equal_struct(struct btf_type *t1, struct btf_type *t2)
-@@ -3730,6 +3730,31 @@ static int btf_dedup_identical_arrays(struct btf_dedup *d, __u32 id1, __u32 id2)
- 	return btf_equal_array(t1, t2);
- }
+-		camera-thermal-bottom {
++		cam-thermal-bottom {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <1000>;
  
-+/* Check if given two types are identical STRUCT/UNION definitions */
-+static bool btf_dedup_identical_structs(struct btf_dedup *d, __u32 id1, __u32 id2)
-+{
-+	const struct btf_member *m1, *m2;
-+	struct btf_type *t1, *t2;
-+	int n, i;
-+
-+	t1 = btf_type_by_id(d->btf, id1);
-+	t2 = btf_type_by_id(d->btf, id2);
-+
-+	if (!btf_is_composite(t1) || btf_kind(t1) != btf_kind(t2))
-+		return false;
-+
-+	if (!btf_shallow_equal_struct(t1, t2))
-+		return false;
-+
-+	m1 = btf_members(t1);
-+	m2 = btf_members(t2);
-+	for (i = 0, n = btf_vlen(t1); i < n; i++, m1++, m2++) {
-+		if (m1->type != m2->type)
-+			return false;
-+	}
-+	return true;
-+}
-+
- /*
-  * Check equivalence of BTF type graph formed by candidate struct/union (we'll
-  * call it "candidate graph" in this description for brevity) to a type graph
-@@ -3841,6 +3866,8 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
- 
- 	hypot_type_id = d->hypot_map[canon_id];
- 	if (hypot_type_id <= BTF_MAX_NR_TYPES) {
-+		if (hypot_type_id == cand_id)
-+			return 1;
- 		/* In some cases compiler will generate different DWARF types
- 		 * for *identical* array type definitions and use them for
- 		 * different fields within the *same* struct. This breaks type
-@@ -3849,8 +3876,18 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
- 		 * types within a single CU. So work around that by explicitly
- 		 * allowing identical array types here.
- 		 */
--		return hypot_type_id == cand_id ||
--		       btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
-+		if (btf_dedup_identical_arrays(d, hypot_type_id, cand_id))
-+			return 1;
-+		/* It turns out that similar situation can happen with
-+		 * struct/union sometimes, sigh... Handle the case where
-+		 * structs/unions are exactly the same, down to the referenced
-+		 * type IDs. Anything more complicated (e.g., if referenced
-+		 * types are different, but equivalent) is *way more*
-+		 * complicated and requires a many-to-many equivalence mapping.
-+		 */
-+		if (btf_dedup_identical_structs(d, hypot_type_id, cand_id))
-+			return 1;
-+		return 0;
- 	}
- 
- 	if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
 -- 
 2.34.1
 
