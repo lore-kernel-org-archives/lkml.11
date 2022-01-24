@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BDF7C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378665AbiAYCeN (ORCPT
+        id S3423368AbiAYCet (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:34:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53904 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384175AbiAXU3U (ORCPT
+        Mon, 24 Jan 2022 21:34:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384357AbiAXU3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:29:20 -0500
+        Mon, 24 Jan 2022 15:29:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2954C07A960;
+        Mon, 24 Jan 2022 11:42:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 62C92614ED;
-        Mon, 24 Jan 2022 20:29:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44AD0C340E7;
-        Mon, 24 Jan 2022 20:29:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 945E26141C;
+        Mon, 24 Jan 2022 19:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 754A7C340E5;
+        Mon, 24 Jan 2022 19:42:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056155;
-        bh=s9tsxmFlqICboirL075gBp3+3Ny1m13WJnEkExbZ/tc=;
+        s=korg; t=1643053349;
+        bh=fyqEQBVglc5pdAIBij1r7tV5jKgJ1Mfni7cnBdPz3dg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QUxNbe/OF5cxS/WlafLfIFS/xhKbxOqS5XKW0T7tebS96tskocMFmyAZQCUc99wXM
-         L7U1GYvyNRW9S9ihnjdCZplP5fz0YIB439v0l/yz1jUksOZatArFdbdYo0iZY0Oser
-         dviO12K0Z8uAlOOseTPZfocDlUXOBPTCE09z7Z7E=
+        b=wiaKvf1t0nxCb+sJR0nDCqee/WBID/zwdnKZwybUP5Q9eAmNMtxbpDSl1wQp+LrVu
+         zlfwNJXhDCBoyfRzwSTQ03LRn8W5E8eVgzKCvBzHpmRHtGcUajBKY9Z0LIfbRf7h2H
+         SBoL/fWN6BBbs8w8r39NAx652Z5RdKDAI9UjAczw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 389/846] dt-bindings: thermal: Fix definition of cooling-maps contribution property
-Date:   Mon, 24 Jan 2022 19:38:26 +0100
-Message-Id: <20220124184114.356394547@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.10 005/563] HID: wacom: Avoid using stale array indicies to read contact count
+Date:   Mon, 24 Jan 2022 19:36:10 +0100
+Message-Id: <20220124184024.594123453@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,63 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+From: Jason Gerecke <killertofu@gmail.com>
 
-[ Upstream commit 49bcb1506f2e095262c01bda7fd1c0db524c91e2 ]
+commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
 
-When converting the thermal-zones bindings to yaml the definition of the
-contribution property changed. The intention is the same, an integer
-value expressing a ratio of a sum on how much cooling is provided by the
-device to the zone. But after the conversion the integer value is
-limited to the range 0 to 100 and expressed as a percentage.
+If we ever see a touch report with contact count data we initialize
+several variables used to read the contact count in the pre-report
+phase. These variables are never reset if we process a report which
+doesn't contain a contact count, however. This can cause the pre-
+report function to trigger a read of arbitrary memory (e.g. NULL
+if we're lucky) and potentially crash the driver.
 
-This is problematic for two reasons.
+This commit restores resetting of the variables back to default
+"none" values that were used prior to the commit mentioned
+below.
 
-- This do not match how the binding is used. Out of the 18 files that
-  make use of the property only two (ste-dbx5x0.dtsi and
-  ste-hrefv60plus.dtsi) sets it at a value that satisfy the binding,
-  100. The remaining 16 files set the value higher and fail to validate.
-
-- Expressing the value as a percentage instead of a ratio of the sum is
-  confusing as there is nothing to enforce the sum in the zone is not
-  greater then 100.
-
-This patch restore the pre yaml conversion description and removes the
-value limitation allowing the usage of the bindings to validate.
-
-Fixes: 1202a442a31fd2e5 ("dt-bindings: thermal: Add yaml bindings for thermal zones")
-Reported-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Link: https://lore.kernel.org/r/20211109103045.1403686-1-niklas.soderlund+renesas@ragnatech.se
-Signed-off-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://github.com/linuxwacom/input-wacom/issues/276
+Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../devicetree/bindings/thermal/thermal-zones.yaml       | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/hid/wacom_wac.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/thermal/thermal-zones.yaml b/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-index a07de5ed0ca6a..2d34f3ccb2572 100644
---- a/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-+++ b/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
-@@ -199,12 +199,11 @@ patternProperties:
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2654,6 +2654,10 @@ static void wacom_wac_finger_pre_report(
  
-               contribution:
-                 $ref: /schemas/types.yaml#/definitions/uint32
--                minimum: 0
--                maximum: 100
-                 description:
--                  The percentage contribution of the cooling devices at the
--                  specific trip temperature referenced in this map
--                  to this thermal zone
-+                  The cooling contribution to the thermal zone of the referred
-+                  cooling device at the referred trip point. The contribution is
-+                  a ratio of the sum of all cooling contributions within a
-+                  thermal zone.
+ 	hid_data->confidence = true;
  
-             required:
-               - trip
--- 
-2.34.1
-
++	hid_data->cc_report = 0;
++	hid_data->cc_index = -1;
++	hid_data->cc_value_index = -1;
++
+ 	for (i = 0; i < report->maxfield; i++) {
+ 		struct hid_field *field = report->field[i];
+ 		int j;
 
 
