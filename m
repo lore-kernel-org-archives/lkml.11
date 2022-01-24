@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F77C3527B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D8FEC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380514AbiAXUQZ (ORCPT
+        id S1380658AbiAXUQl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352696AbiAXT5b (ORCPT
+        Mon, 24 Jan 2022 15:16:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53960 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348223AbiAXT5e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E420C047CE0;
-        Mon, 24 Jan 2022 11:27:51 -0800 (PST)
+        Mon, 24 Jan 2022 14:57:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA432B811F9;
-        Mon, 24 Jan 2022 19:27:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA315C340E7;
-        Mon, 24 Jan 2022 19:27:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E493360B56;
+        Mon, 24 Jan 2022 19:57:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0CB3C340E5;
+        Mon, 24 Jan 2022 19:57:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052469;
-        bh=TVOUWNBzfDhAxoXUMjAv2R95FzmE2kWLWGzml5e+0xM=;
+        s=korg; t=1643054253;
+        bh=cN3Y0NOmEgjX6lY6HpwrG6edABhYWBCKcpqZwy82Zp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yim4rdW855uNiP8MExWtHJoNutDxW8Wd8R+24/U2jroz4wfFRDIsrO46wzsD62QeZ
-         g8sRJpdJQtia5tn651TZ2dj80+3G3NK1bOvcd+oxBJ2Y4Ba0GUnG4h3FoQ1hrj11Dd
-         0N0qJ5k1I8iX1qdDVvIb1SKWppdDDgE23aX6dPOU=
+        b=rsnaQV913iIOPQKVZvUWai+Mb8I2cYfqYGyugZLpNRV/eDlHqopS69BYadCsbgKfR
+         e0TnhAHHTMoIggt8k7PhxDnGbgZO8DacR2loS98g7m3NqZecKMZSGRFnYdr78DKUUq
+         NLJ5zFTXPmTXKLaKg+/Q4zSm39LKBQ7r1tzZPVeY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 070/320] staging: rtl8192e: rtllib_module: fix error handle case in alloc_rtllib()
-Date:   Mon, 24 Jan 2022 19:40:54 +0100
-Message-Id: <20220124183956.108196673@linuxfoundation.org>
+Subject: [PATCH 5.10 329/563] rsi: Fix use-after-free in rsi_rx_done_handler()
+Date:   Mon, 24 Jan 2022 19:41:34 +0100
+Message-Id: <20220124184035.812021706@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,69 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit e730cd57ac2dfe94bca0f14a3be8e1b21de41a9c ]
+[ Upstream commit b07e3c6ebc0c20c772c0f54042e430acec2945c3 ]
 
-Some variables are leaked in the error handling in alloc_rtllib(), free
-the variables in the error path.
+When freeing rx_cb->rx_skb, the pointer is not set to NULL,
+a later rsi_rx_done_handler call will try to read the freed
+address.
+This bug will very likley lead to double free, although
+detected early as use-after-free bug.
 
-Fixes: 94a799425eee ("From: wlanfae <wlanfae@realtek.com>")
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20211202030704.2425621-3-yangyingliang@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The bug is triggerable with a compromised/malfunctional usb
+device. After applying the patch, the same input no longer
+triggers the use-after-free.
+
+Attached is the kasan report from fuzzing.
+
+BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+Read of size 4 at addr ffff8880188e5930 by task modprobe/231
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __kasan_report.cold+0x37/0x7c
+ ? dma_direct_unmap_page+0x90/0x110
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ kasan_report+0xe/0x20
+ rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ ? apic_timer_interrupt+0xa/0x20
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ ? handle_irq_event+0xcd/0x157
+ ? handle_edge_irq+0x1eb/0x7b0
+ irq_exit+0x114/0x140
+ do_IRQ+0x91/0x1e0
+ common_interrupt+0xf/0xf
+ </IRQ>
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_module.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_usb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_module.c b/drivers/staging/rtl8192e/rtllib_module.c
-index 64d9feee1f392..f00ac94b2639b 100644
---- a/drivers/staging/rtl8192e/rtllib_module.c
-+++ b/drivers/staging/rtl8192e/rtllib_module.c
-@@ -88,7 +88,7 @@ struct net_device *alloc_rtllib(int sizeof_priv)
- 	err = rtllib_networks_allocate(ieee);
- 	if (err) {
- 		pr_err("Unable to allocate beacon storage: %d\n", err);
--		goto failed;
-+		goto free_netdev;
- 	}
- 	rtllib_networks_initialize(ieee);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index d881df9ebd0c3..7f34148c7dfe5 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -269,8 +269,12 @@ static void rsi_rx_done_handler(struct urb *urb)
+ 	struct rsi_91x_usbdev *dev = (struct rsi_91x_usbdev *)rx_cb->data;
+ 	int status = -EINVAL;
  
-@@ -121,11 +121,13 @@ struct net_device *alloc_rtllib(int sizeof_priv)
- 	ieee->hwsec_active = 0;
- 
- 	memset(ieee->swcamtable, 0, sizeof(struct sw_cam_table) * 32);
--	rtllib_softmac_init(ieee);
-+	err = rtllib_softmac_init(ieee);
-+	if (err)
-+		goto free_crypt_info;
- 
- 	ieee->pHTInfo = kzalloc(sizeof(struct rt_hi_throughput), GFP_KERNEL);
- 	if (!ieee->pHTInfo)
--		return NULL;
-+		goto free_softmac;
- 
- 	HTUpdateDefaultSetting(ieee);
- 	HTInitializeHTInfo(ieee);
-@@ -141,8 +143,14 @@ struct net_device *alloc_rtllib(int sizeof_priv)
- 
- 	return dev;
- 
-- failed:
-+free_softmac:
-+	rtllib_softmac_free(ieee);
-+free_crypt_info:
-+	lib80211_crypt_info_free(&ieee->crypt_info);
-+	rtllib_networks_free(ieee);
-+free_netdev:
- 	free_netdev(dev);
++	if (!rx_cb->rx_skb)
++		return;
 +
- 	return NULL;
+ 	if (urb->status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
+ 		return;
+ 	}
+ 
+@@ -294,8 +298,10 @@ out:
+ 	if (rsi_rx_urb_submit(dev->priv, rx_cb->ep_num, GFP_ATOMIC))
+ 		rsi_dbg(ERR_ZONE, "%s: Failed in urb submission", __func__);
+ 
+-	if (status)
++	if (status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
++	}
  }
- EXPORT_SYMBOL(alloc_rtllib);
+ 
+ static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 -- 
 2.34.1
 
