@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2302DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA231C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847578AbiAXXUD (ORCPT
+        id S1847506AbiAXXT5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:20:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        Mon, 24 Jan 2022 18:19:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584631AbiAXWVa (ORCPT
+        with ESMTP id S1584640AbiAXWVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:30 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3DBC0424F4;
-        Mon, 24 Jan 2022 12:52:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157BFC0424EF;
+        Mon, 24 Jan 2022 12:52:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0AB7160B21;
-        Mon, 24 Jan 2022 20:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA219C340E5;
-        Mon, 24 Jan 2022 20:52:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A807D60907;
+        Mon, 24 Jan 2022 20:52:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4DCC340E5;
+        Mon, 24 Jan 2022 20:52:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057547;
-        bh=157YON3ewFpZewgxjqxaCDDdcCeplABo9eTS1EJvvBU=;
+        s=korg; t=1643057534;
+        bh=8ni2Qb1gdwnoxG6Yoqx7ckQ60AVfkgHrHpUVlMKZax8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XvFxXD9JdrQP9uWWyvfouhRX8KQoFIySvq/MpMMxvKOqYptCdtzqKwThWX1K60vTa
-         Ynsw89uI/ecCz9cuam3Ls69Arviet31Xi+58qV9wf7sPwFzTJknhTOW8rzRFeif0oK
-         ykj58tszmPkb2saeoOqiLDqHxS8n3tGP5bemI3XY=
+        b=0vTfZ1YDP0fGaJ04EKArWDytLSN4etv1n5g29/TVSQM22gpucJ48btJKkZF50h8v7
+         3S3PRADKSA+D/rKOCGQcNSs3ksDVcrFKC7zRL+xsANaIDDv2AsqGogUdG0OXjgvufJ
+         O/G1vQtkMtFc5+VmsMLowJYcVXH3ca0dr+MgkMyM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matthias Kaehlcke <mka@chromium.org>,
-        Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 827/846] net: ipa: fix atomic update in ipa_endpoint_replenish()
-Date:   Mon, 24 Jan 2022 19:45:44 +0100
-Message-Id: <20220124184129.435103470@linuxfoundation.org>
+        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 844/846] mm/hmm.c: allow VM_MIXEDMAP to work with hmm_range_fault
+Date:   Mon, 24 Jan 2022 19:46:01 +0100
+Message-Id: <20220124184130.016535793@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,54 +55,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Alistair Popple <apopple@nvidia.com>
 
-commit 6c0e3b5ce94947b311348c367db9e11dcb2ccc93 upstream.
+commit 87c01d57fa23de82fff593a7d070933d08755801 upstream.
 
-In ipa_endpoint_replenish(), if an error occurs when attempting to
-replenish a receive buffer, we just quit and try again later.  In
-that case we increment the backlog count to reflect that the attempt
-was unsuccessful.  Then, if the add_one flag was true we increment
-the backlog again.
+hmm_range_fault() can be used instead of get_user_pages() for devices
+which allow faulting however unlike get_user_pages() it will return an
+error when used on a VM_MIXEDMAP range.
 
-This second increment is not included in the backlog local variable
-though, and its value determines whether delayed work should be
-scheduled.  This is a bug.
+To make hmm_range_fault() more closely match get_user_pages() remove
+this restriction.  This requires dealing with the !ARCH_HAS_PTE_SPECIAL
+case in hmm_vma_handle_pte().  Rather than replicating the logic of
+vm_normal_page() call it directly and do a check for the zero pfn
+similar to what get_user_pages() currently does.
 
-Fix this by determining whether 1 or 2 should be added to the
-backlog before adding it in a atomic_add_return() call.
+Also add a test to hmm selftest to verify functionality.
 
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Fixes: 84f9bd12d46db ("soc: qcom: ipa: IPA endpoints")
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lkml.kernel.org/r/20211104012001.2555676-1-apopple@nvidia.com
+Fixes: da4c3c735ea4 ("mm/hmm/mirror: helper to snapshot CPU page table")
+Signed-off-by: Alistair Popple <apopple@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jerome Glisse <jglisse@redhat.com>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ipa/ipa_endpoint.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ lib/test_hmm.c                         |   24 ++++++++++++++++++
+ mm/hmm.c                               |    5 ++-
+ tools/testing/selftests/vm/hmm-tests.c |   42 +++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ipa/ipa_endpoint.c
-+++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -1067,6 +1067,7 @@ static void ipa_endpoint_replenish(struc
+--- a/lib/test_hmm.c
++++ b/lib/test_hmm.c
+@@ -1087,9 +1087,33 @@ static long dmirror_fops_unlocked_ioctl(
+ 	return 0;
+ }
+ 
++static int dmirror_fops_mmap(struct file *file, struct vm_area_struct *vma)
++{
++	unsigned long addr;
++
++	for (addr = vma->vm_start; addr < vma->vm_end; addr += PAGE_SIZE) {
++		struct page *page;
++		int ret;
++
++		page = alloc_page(GFP_KERNEL | __GFP_ZERO);
++		if (!page)
++			return -ENOMEM;
++
++		ret = vm_insert_page(vma, addr, page);
++		if (ret) {
++			__free_page(page);
++			return ret;
++		}
++		put_page(page);
++	}
++
++	return 0;
++}
++
+ static const struct file_operations dmirror_fops = {
+ 	.open		= dmirror_fops_open,
+ 	.release	= dmirror_fops_release,
++	.mmap		= dmirror_fops_mmap,
+ 	.unlocked_ioctl = dmirror_fops_unlocked_ioctl,
+ 	.llseek		= default_llseek,
+ 	.owner		= THIS_MODULE,
+--- a/mm/hmm.c
++++ b/mm/hmm.c
+@@ -300,7 +300,8 @@ static int hmm_vma_handle_pte(struct mm_
+ 	 * Since each architecture defines a struct page for the zero page, just
+ 	 * fall through and treat it like a normal page.
+ 	 */
+-	if (pte_special(pte) && !pte_devmap(pte) &&
++	if (!vm_normal_page(walk->vma, addr, pte) &&
++	    !pte_devmap(pte) &&
+ 	    !is_zero_pfn(pte_pfn(pte))) {
+ 		if (hmm_pte_need_fault(hmm_vma_walk, pfn_req_flags, 0)) {
+ 			pte_unmap(ptep);
+@@ -518,7 +519,7 @@ static int hmm_vma_walk_test(unsigned lo
+ 	struct hmm_range *range = hmm_vma_walk->range;
+ 	struct vm_area_struct *vma = walk->vma;
+ 
+-	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP | VM_MIXEDMAP)) &&
++	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP)) &&
+ 	    vma->vm_flags & VM_READ)
+ 		return 0;
+ 
+--- a/tools/testing/selftests/vm/hmm-tests.c
++++ b/tools/testing/selftests/vm/hmm-tests.c
+@@ -1251,6 +1251,48 @@ TEST_F(hmm, anon_teardown)
+ /*
+  * Test memory snapshot without faulting in pages accessed by the device.
+  */
++TEST_F(hmm, mixedmap)
++{
++	struct hmm_buffer *buffer;
++	unsigned long npages;
++	unsigned long size;
++	unsigned char *m;
++	int ret;
++
++	npages = 1;
++	size = npages << self->page_shift;
++
++	buffer = malloc(sizeof(*buffer));
++	ASSERT_NE(buffer, NULL);
++
++	buffer->fd = -1;
++	buffer->size = size;
++	buffer->mirror = malloc(npages);
++	ASSERT_NE(buffer->mirror, NULL);
++
++
++	/* Reserve a range of addresses. */
++	buffer->ptr = mmap(NULL, size,
++			   PROT_READ | PROT_WRITE,
++			   MAP_PRIVATE,
++			   self->fd, 0);
++	ASSERT_NE(buffer->ptr, MAP_FAILED);
++
++	/* Simulate a device snapshotting CPU pagetables. */
++	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
++	ASSERT_EQ(ret, 0);
++	ASSERT_EQ(buffer->cpages, npages);
++
++	/* Check what the device saw. */
++	m = buffer->mirror;
++	ASSERT_EQ(m[0], HMM_DMIRROR_PROT_READ);
++
++	hmm_buffer_free(buffer);
++}
++
++/*
++ * Test memory snapshot without faulting in pages accessed by the device.
++ */
+ TEST_F(hmm2, snapshot)
  {
- 	struct gsi *gsi;
- 	u32 backlog;
-+	int delta;
- 
- 	if (!endpoint->replenish_enabled) {
- 		if (add_one)
-@@ -1084,10 +1085,8 @@ static void ipa_endpoint_replenish(struc
- 
- try_again_later:
- 	/* The last one didn't succeed, so fix the backlog */
--	backlog = atomic_inc_return(&endpoint->replenish_backlog);
--
--	if (add_one)
--		atomic_inc(&endpoint->replenish_backlog);
-+	delta = add_one ? 2 : 1;
-+	backlog = atomic_add_return(delta, &endpoint->replenish_backlog);
- 
- 	/* Whenever a receive buffer transaction completes we'll try to
- 	 * replenish again.  It's unlikely, but if we fail to supply even
+ 	struct hmm_buffer *buffer;
 
 
