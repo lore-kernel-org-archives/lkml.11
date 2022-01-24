@@ -2,139 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AEDC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A738EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836925AbiAXWlV (ORCPT
+        id S1836985AbiAXWld (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:41:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        Mon, 24 Jan 2022 17:41:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457507AbiAXVlp (ORCPT
+        with ESMTP id S1457498AbiAXVlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:45 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE1B8C07E32E;
-        Mon, 24 Jan 2022 12:29:14 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id s5so24675107ejx.2;
-        Mon, 24 Jan 2022 12:29:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9I3YHstC6+idIYnPGdM7ftHMXhOmWb2w8X2hO2PCQA4=;
-        b=aebn4RQTSizEoCO5tYOY0wfuCNx5Gr5k+YJCuBu86z1ZV0Pk6uqjr2k8aT33tbFO/t
-         gPMROzf+a5Q3W0YKigShLsod3A5qMAeV7Cj9BnLNvuTsottjauQ5i4r/kmkQ2KNVpGEW
-         AE9w/LCS0VM2JcnSr9LkZVITT3YktXAHX8rJJefKLteOtnUyurApAMaEW/FG8bWJb7E0
-         MEfiPPuAvjEYaaq0xXeM40LoKiC/6QzDnq0Dg33XoL5XOg2pc7QuNtGsEo67DmmswKv/
-         G2ykziTn7+oG/I+KNA+AunoT8Sil2CxeR60ucfjaYRyxt9E+z94EqPEMOI2KqXDNFHNg
-         YX/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9I3YHstC6+idIYnPGdM7ftHMXhOmWb2w8X2hO2PCQA4=;
-        b=taG5oesfw6SB73YgNe261E9EytAJSb6Za9umbbOirIXOzCNVk2qWDS+hh2yXwda4FT
-         /RDFb8jLNij0InZx0VeT01xWJ9xb362elPPRPOxJZQ7Sf3cgBVM0QDWdNe3+1WK5DAMR
-         cPRo5qm0jfq2mnNj5p86k8WQRV2BPsSITD9zLsjhrJK5BI3Vugfj2tiZ9uGpSw2EpYn0
-         pZwQRXlrWCDog3qUbYLj91DhlPkzTTyRUswiZ08LC/tTHWGE3soI2Jkt115ohMIYohm5
-         FMq/To1AOAq5vlv++9EKMviJew0xdCZLk3HdrkPama731isHIzoVMb4KnGJWOzn8huKV
-         XRXg==
-X-Gm-Message-State: AOAM533poaXbpV024+R4R9K7s43Xm8Y2gJVNAMlLyDkaZNl0FyEgyTqO
-        rhlI6in0u3WE1FcJo6bwQXg=
-X-Google-Smtp-Source: ABdhPJwa5kh9iwPNoKVMC1LR954fiigN9v+L/woUMk894ZYA/f8Ie+QDxOQ99l+LpLpETRV/zOU20Q==
-X-Received: by 2002:a17:906:6a17:: with SMTP id qw23mr3177512ejc.620.1643056153260;
-        Mon, 24 Jan 2022 12:29:13 -0800 (PST)
-Received: from hamza-OptiPlex-7040 ([39.48.137.139])
-        by smtp.gmail.com with ESMTPSA id w25sm7066709edv.68.2022.01.24.12.29.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:29:12 -0800 (PST)
-Date:   Tue, 25 Jan 2022 01:29:07 +0500
-From:   Ameer Hamza <amhamza.mgc@gmail.com>
-To:     James Clark <james.clark@arm.com>
-Cc:     German Gomez <german.gomez@arm.com>, peterz@infradead.org,
-        mingo@redhat.com, acme@kernel.org, rickyman7@gmail.com,
-        alexey.v.bayduraev@linux.intel.com, adrian.hunter@intel.com,
-        leo.yan@linaro.org, linux-perf-users@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mark.rutland@arm.com,
-        alexander.shishkin@linux.intel.com, jolsa@redhat.com,
-        namhyung@kernel.org
-Subject: Re: [PATCH] perf session: check for null pointer before derefernce
-Message-ID: <20220124202907.GA5741@hamza-OptiPlex-7040>
-References: <20220124150001.93145-1-amhamza.mgc@gmail.com>
- <7c068167-e8bb-74f3-97d9-dd0c5858ee19@arm.com>
+        Mon, 24 Jan 2022 16:41:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96AB2C07E327;
+        Mon, 24 Jan 2022 12:28:41 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B0CEB80FA1;
+        Mon, 24 Jan 2022 20:28:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62714C340E5;
+        Mon, 24 Jan 2022 20:28:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056120;
+        bh=aSGRryT8CX9zcMXnbNFnHw3ZKZPdNaaFhHni5Gc/+NI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=PyjHjhgJOV3e2Y1Sw/714Ua4/7RIkFSZRm19XcLBLb9+6+qsxkgS8acQiW08yLyRP
+         wLe60VMdHJQKGCNu5ndiBQSEwEX+NipTU9KaF0WSCKujuBltr9+NUL44KhbVMjPLwg
+         nuH4+rpW/YzhlkY9wS6vAZyE5JlblLp9DHQYfSG8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Selvin Xavier <selvin.xavier@broadcom.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 378/846] RDMA/bnxt_re: Scan the whole bitmap when checking if "disabling RCFW with pending cmd-bit"
+Date:   Mon, 24 Jan 2022 19:38:15 +0100
+Message-Id: <20220124184113.967830355@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7c068167-e8bb-74f3-97d9-dd0c5858ee19@arm.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 03:30:17PM +0000, James Clark wrote:
-> 
-> 
-> On 24/01/2022 15:00, Ameer Hamza wrote:
-> > Move null pointer check before dereferncing the variable
-> > 
-> > Addresses-Coverity: 1497622 ("Derereference before null check")
-> > 
-> > Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
-> > ---
-> >  tools/perf/util/session.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-> > index f19348dddd55..e1014ab62c10 100644
-> > --- a/tools/perf/util/session.c
-> > +++ b/tools/perf/util/session.c
-> > @@ -1503,11 +1503,11 @@ static int machines__deliver_event(struct machines *machines,
-> >  			++evlist->stats.nr_unknown_id;
-> >  			return 0;
-> >  		}
-> > -		dump_sample(evsel, event, sample, perf_env__arch(machine->env));
-> >  		if (machine == NULL) {
-> >  			++evlist->stats.nr_unprocessable_samples;
-> >  			return 0;
-> >  		}
-> > +		dump_sample(evsel, event, sample, perf_env__arch(machine->env));
-> >  		return evlist__deliver_sample(evlist, tool, event, sample, evsel, machine);
-> >  	case PERF_RECORD_MMAP:
-> >  		return tool->mmap(tool, event, sample, machine);
-> > 
-> 
-> Hi Ameer,
-> 
-> This mistake was made recently, but I don't think your change is the desired behavior.
-> 
-> It should be possible to dump stuff if machine is null. null or an empty string
-> should be passed to dump_sample(). It looks like some of the printfs still attempt to
-> show something in this case, although I didn't check them all.
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-Hi James,
+[ Upstream commit a917dfb66c0a1fa1caacf3d71edcafcab48e6ff0 ]
 
-Thank you for your response. I understand your point.
+The 'cmdq->cmdq_bitmap' bitmap is 'rcfw->cmdq_depth' bits long.  The size
+stored in 'cmdq->bmap_size' is the size of the bitmap in bytes.
 
-Do you think following changes would be ok?
+Remove this erroneous 'bmap_size' and use 'rcfw->cmdq_depth' directly in
+'bnxt_qplib_disable_rcfw_channel()'. Otherwise some error messages may be
+missing.
 
-diff --git a/tools/perf/util/session.c b/tools/perf/util/session.c
-index f19348dddd55..210eeee3dd70 100644
---- a/tools/perf/util/session.c
-+++ b/tools/perf/util/session.c
-@@ -1503,11 +1503,12 @@ static int machines__deliver_event(struct machines *machines,
-                        ++evlist->stats.nr_unknown_id;
-                        return 0;
-                }
--               dump_sample(evsel, event, sample, perf_env__arch(machine->env));
-                if (machine == NULL) {
-                        ++evlist->stats.nr_unprocessable_samples;
-+                       dump_sample(evsel, event, sample, perf_env__arch(NULL));
-                        return 0;
-                }
-+               dump_sample(evsel, event, sample, perf_env__arch(machine->env));
-                return evlist__deliver_sample(evlist, tool, event, sample, evsel, machine);
-        case PERF_RECORD_MMAP:
-                return tool->mmap(tool, event, sample, machine);
+Other uses of 'cmdq_bitmap' already take into account 'rcfw->cmdq_depth'
+directly.
 
-Thanks,
-Hamza
+Fixes: 1ac5a4047975 ("RDMA/bnxt_re: Add bnxt_re RoCE driver")
+Link: https://lore.kernel.org/r/47ed717c3070a1d0f53e7b4c768a4fd11caf365d.1636707421.git.christophe.jaillet@wanadoo.fr
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Acked-by: Selvin Xavier <selvin.xavier@broadcom.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/infiniband/hw/bnxt_re/qplib_rcfw.c | 6 ++----
+ drivers/infiniband/hw/bnxt_re/qplib_rcfw.h | 1 -
+ 2 files changed, 2 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c
+index 5d384def5e5fe..d2d39126f1852 100644
+--- a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c
++++ b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.c
+@@ -618,8 +618,6 @@ int bnxt_qplib_alloc_rcfw_channel(struct bnxt_qplib_res *res,
+ 	if (!cmdq->cmdq_bitmap)
+ 		goto fail;
+ 
+-	cmdq->bmap_size = bmap_size;
+-
+ 	/* Allocate one extra to hold the QP1 entries */
+ 	rcfw->qp_tbl_size = qp_tbl_sz + 1;
+ 	rcfw->qp_tbl = kcalloc(rcfw->qp_tbl_size, sizeof(struct bnxt_qplib_qp_node),
+@@ -667,8 +665,8 @@ void bnxt_qplib_disable_rcfw_channel(struct bnxt_qplib_rcfw *rcfw)
+ 	iounmap(cmdq->cmdq_mbox.reg.bar_reg);
+ 	iounmap(creq->creq_db.reg.bar_reg);
+ 
+-	indx = find_first_bit(cmdq->cmdq_bitmap, cmdq->bmap_size);
+-	if (indx != cmdq->bmap_size)
++	indx = find_first_bit(cmdq->cmdq_bitmap, rcfw->cmdq_depth);
++	if (indx != rcfw->cmdq_depth)
+ 		dev_err(&rcfw->pdev->dev,
+ 			"disabling RCFW with pending cmd-bit %lx\n", indx);
+ 
+diff --git a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h
+index 9474c00465821..0c6d0b70ce890 100644
+--- a/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h
++++ b/drivers/infiniband/hw/bnxt_re/qplib_rcfw.h
+@@ -152,7 +152,6 @@ struct bnxt_qplib_cmdq_ctx {
+ 	wait_queue_head_t		waitq;
+ 	unsigned long			flags;
+ 	unsigned long			*cmdq_bitmap;
+-	u32				bmap_size;
+ 	u32				seq_num;
+ };
+ 
+-- 
+2.34.1
+
+
+
