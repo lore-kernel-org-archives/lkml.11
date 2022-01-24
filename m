@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8A3CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D654C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232425AbiAXSuZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:50:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49550 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245487AbiAXSt3 (ORCPT
+        id S245705AbiAXSu2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:50:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245526AbiAXStk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:49:29 -0500
+        Mon, 24 Jan 2022 13:49:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A25C5C06176A;
+        Mon, 24 Jan 2022 10:49:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB6B6B8121A;
-        Mon, 24 Jan 2022 18:49:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D552DC340E8;
-        Mon, 24 Jan 2022 18:49:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40885614D2;
+        Mon, 24 Jan 2022 18:49:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20AB9C340E5;
+        Mon, 24 Jan 2022 18:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050167;
-        bh=MH0E6NCxT8S0JirUSBlxUe9H0Emh2ArelTUEIROEmLs=;
+        s=korg; t=1643050173;
+        bh=unDISHqfT2l35nCeXqnlHSiBvJ2C0S4ZO6Uu0LBzuqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j/qFVMPpL+T9rEI8FjSFew5b4iyA56JOFoDk56L7JCrfIBqqYB1odrWw/NB3LeCxq
-         zMDhj0Zy2uxmWmYix5IcM2Usi486bk8k3B3z14Xk9Yi2hjbVxAJJdq44Ygg5/C43cl
-         ZoNKitaYmWv8fv6q4AVRRUbrixkbRJdyZ6kbPCto=
+        b=AEkfDuNLYlOzUSmwtHmSg6riG1omor+vrHNwBgVvA5AYEf5qMd8P7lqNJ9JbjVJJ4
+         MOdtvRe9qsaCH2lYTUxxtBv9sKj/x0Arg6I7vvWzaxiZftO+8sJlRna16HdVciFMbL
+         K2DU/QEEiirB0pFTBwe/RuGximq2+M6PYmQuwI64=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.4 014/114] media: em28xx: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:49 +0100
-Message-Id: <20220124183927.552845234@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 033/114] usb: ftdi-elan: fix memory leak on device disconnect
+Date:   Mon, 24 Jan 2022 19:42:08 +0100
+Message-Id: <20220124183928.139941564@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -46,42 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-commit d9b7e8df3aa9b8c10708aab60e72e79ac08237e4 upstream.
+[ Upstream commit 1646566b5e0c556f779180a8514e521ac735de1e ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+'ftdi' is alloced when probe device, but not free on device disconnect,
+this cause a memory leak as follows:
 
-Fixes: a6c2ba283565 ("[PATCH] v4l: 716: support for em28xx board family")
-Cc: stable@vger.kernel.org      # 2.6.16
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+unreferenced object 0xffff88800d584000 (size 8400):
+  comm "kworker/0:2", pid 3809, jiffies 4295453055 (age 13.784s)
+  hex dump (first 32 bytes):
+    00 40 58 0d 80 88 ff ff 00 40 58 0d 80 88 ff ff  .@X......@X.....
+    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
+  backtrace:
+    [<000000000d47f947>] kmalloc_order_trace+0x19/0x110 mm/slab_common.c:960
+    [<000000008548ac68>] ftdi_elan_probe+0x8c/0x880 drivers/usb/misc/ftdi-elan.c:2647
+    [<000000007f73e422>] usb_probe_interface+0x31b/0x800 drivers/usb/core/driver.c:396
+    [<00000000fe8d07fc>] really_probe+0x299/0xc30 drivers/base/dd.c:517
+    [<0000000005da7d32>] __driver_probe_device+0x357/0x500 drivers/base/dd.c:751
+    [<000000003c2c9579>] driver_probe_device+0x4e/0x140 drivers/base/dd.c:781
+
+Fix it by freeing 'ftdi' after nobody use it.
+
+Fixes: a5c66e4b2418 ("USB: ftdi-elan: client driver for ELAN Uxxx adapters")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Link: https://lore.kernel.org/r/20211217083428.2441-1-weiyongjun1@huawei.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/em28xx/em28xx-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/misc/ftdi-elan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/media/usb/em28xx/em28xx-core.c
-+++ b/drivers/media/usb/em28xx/em28xx-core.c
-@@ -99,7 +99,7 @@ int em28xx_read_reg_req_len(struct em28x
- 	mutex_lock(&dev->ctrl_urb_lock);
- 	ret = usb_control_msg(dev->udev, pipe, req,
- 			      USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			      0x0000, reg, dev->urb_buf, len, HZ);
-+			      0x0000, reg, dev->urb_buf, len, 1000);
- 	if (ret < 0) {
- 		if (reg_debug)
- 			printk(" failed!\n");
-@@ -182,7 +182,7 @@ int em28xx_write_regs_req(struct em28xx
- 	memcpy(dev->urb_buf, buf, len);
- 	ret = usb_control_msg(dev->udev, pipe, req,
- 			      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			      0x0000, reg, dev->urb_buf, len, HZ);
-+			      0x0000, reg, dev->urb_buf, len, 1000);
- 	mutex_unlock(&dev->ctrl_urb_lock);
+diff --git a/drivers/usb/misc/ftdi-elan.c b/drivers/usb/misc/ftdi-elan.c
+index 52c27cab78c3e..6f6315082bc44 100644
+--- a/drivers/usb/misc/ftdi-elan.c
++++ b/drivers/usb/misc/ftdi-elan.c
+@@ -209,6 +209,7 @@ static void ftdi_elan_delete(struct kref *kref)
+ 	mutex_unlock(&ftdi_module_lock);
+ 	kfree(ftdi->bulk_in_buffer);
+ 	ftdi->bulk_in_buffer = NULL;
++	kfree(ftdi);
+ }
  
- 	if (ret < 0)
+ static void ftdi_elan_put_kref(struct usb_ftdi *ftdi)
+-- 
+2.34.1
+
 
 
