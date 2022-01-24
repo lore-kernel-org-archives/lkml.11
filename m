@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09A7C3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB8FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840391AbiAXWxX (ORCPT
+        id S1840444AbiAXWx3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:53:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57516 "EHLO
+        Mon, 24 Jan 2022 17:53:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574971AbiAXVuu (ORCPT
+        with ESMTP id S1573983AbiAXVrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:50:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6299DC0885AF;
-        Mon, 24 Jan 2022 12:33:41 -0800 (PST)
+        Mon, 24 Jan 2022 16:47:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0CFC081184;
+        Mon, 24 Jan 2022 12:32:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E19B161536;
-        Mon, 24 Jan 2022 20:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD779C340E5;
-        Mon, 24 Jan 2022 20:33:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B62FBB815A6;
+        Mon, 24 Jan 2022 20:32:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE03C340E5;
+        Mon, 24 Jan 2022 20:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056420;
-        bh=hqOSIFfEPM25jf3JyI4blFrW5FBGZ6DQgxd28kjbXpM=;
+        s=korg; t=1643056366;
+        bh=KgD6qxy+fP2fvSM/3e8PrWESYFntT/ISgWQqCE2FJS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T5AHOhibo8JLFqm0tiiUIPucRYoTne7teMdegizH2GYdIGc22XdrFdLKzCYcoUrUC
-         UWvveMdI8xuMvSAnvyL/Ih/QcLhS+zO8uugqGLyPIszxuZnvi0luQg6VyNDsRm8TWi
-         K8fwitxxkX9IuBX3dU++Vj+SqClBY0fbhXpCSmWE=
+        b=EXpw256DssrdG8k1A80cNhpForiHdvH5hC73+omf0cmqw+fkxpzJId9QGKWKxWJi8
+         6LSO44n/hCQHzBe5GbUUxPSpQGdembr6I37BgeFC4WhB3C8PZQhKR85hGrFHpYZrvy
+         3sNEAHpY0ptGlqTiJSY2A6mfJfED33SyZgN77R2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baochen Qiang <bqiang@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 479/846] ath11k: Fix crash caused by uninitialized TX ring
-Date:   Mon, 24 Jan 2022 19:39:56 +0100
-Message-Id: <20220124184117.544956395@linuxfoundation.org>
+Subject: [PATCH 5.15 460/846] Bluetooth: Fix memory leak of hci device
+Date:   Mon, 24 Jan 2022 19:39:37 +0100
+Message-Id: <20220124184116.850102578@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,78 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baochen Qiang <bqiang@codeaurora.org>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 273703ebdb01b6c5f1aaf4b98fb57b177609055c ]
+[ Upstream commit 75d9b8559ac36e059238ee4f8e33cd86086586ba ]
 
-Commit 31582373a4a8 ("ath11k: Change number of TCL rings to one for
-QCA6390") avoids initializing the other entries of dp->tx_ring cause
-the corresponding TX rings on QCA6390/WCN6855 are not used, but leaves
-those ring masks in ath11k_hw_ring_mask_qca6390.tx unchanged. Normally
-this is OK because we will only get interrupts from the first TX ring
-on these chips and thus only the first entry of dp->tx_ring is involved.
+Fault injection test reported memory leak of hci device as follows:
 
-In case of one MSI vector, all DP rings share the same IRQ. For each
-interrupt, all rings have to be checked, which means the other entries
-of dp->tx_ring are involved. However since they are not initialized,
-system crashes.
+unreferenced object 0xffff88800b858000 (size 8192):
+  comm "kworker/0:2", pid 167, jiffies 4294955747 (age 557.148s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
+  backtrace:
+    [<0000000070eb1059>] kmem_cache_alloc_trace mm/slub.c:3208
+    [<00000000015eb521>] hci_alloc_dev_priv include/linux/slab.h:591
+    [<00000000dcfc1e21>] bpa10x_probe include/net/bluetooth/hci_core.h:1240
+    [<000000005d3028c7>] usb_probe_interface drivers/usb/core/driver.c:397
+    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
+    [<0000000024cab3f0>] __driver_probe_device drivers/base/dd.c:751
+    [<00000000202135cb>] driver_probe_device drivers/base/dd.c:782
+    [<000000000761f2bc>] __device_attach_driver drivers/base/dd.c:899
+    [<00000000f7d63134>] bus_for_each_drv drivers/base/bus.c:427
+    [<00000000c9551f0b>] __device_attach drivers/base/dd.c:971
+    [<000000007f79bd16>] bus_probe_device drivers/base/bus.c:487
+    [<000000007bb8b95a>] device_add drivers/base/core.c:3364
+    [<000000009564d9ea>] usb_set_configuration drivers/usb/core/message.c:2171
+    [<00000000e4657087>] usb_generic_driver_probe drivers/usb/core/generic.c:239
+    [<0000000071ede518>] usb_probe_device drivers/usb/core/driver.c:294
+    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
 
-Fix this issue by simply removing those ring masks.
+hci_alloc_dev() do not init the device's flag. And hci_free_dev()
+using put_device() to free the memory allocated for this device,
+but it calls just put_device(dev) only in case of HCI_UNREGISTER
+flag is set, So any error handing before hci_register_dev() success
+will cause memory leak.
 
-crash stack:
-[  102.907438] BUG: kernel NULL pointer dereference, address: 0000000000000028
-[  102.907447] #PF: supervisor read access in kernel mode
-[  102.907451] #PF: error_code(0x0000) - not-present page
-[  102.907453] PGD 1081f0067 P4D 1081f0067 PUD 1081f1067 PMD 0
-[  102.907460] Oops: 0000 [#1] SMP DEBUG_PAGEALLOC NOPTI
-[  102.907465] CPU: 0 PID: 3511 Comm: apt-check Kdump: loaded Tainted: G            E     5.15.0-rc4-wt-ath+ #20
-[  102.907470] Hardware name: AMD Celadon-RN/Celadon-RN, BIOS RCD1005E 10/08/2020
-[  102.907472] RIP: 0010:ath11k_dp_tx_completion_handler+0x201/0x830 [ath11k]
-[  102.907497] Code: 3c 24 4e 8d ac 37 10 04 00 00 4a 8d bc 37 68 04 00 00 48 89 3c 24 48 63 c8 89 83 84 18 00 00 48 c1 e1 05 48 03 8b 78 18 00 00 <8b> 51 08 89 d6 83 e6 07 89 74 24 24 83 fe 03 74 04 85 f6 75 63 41
-[  102.907501] RSP: 0000:ffff9b7340003e08 EFLAGS: 00010202
-[  102.907505] RAX: 0000000000000001 RBX: ffff8e21530c0100 RCX: 0000000000000020
-[  102.907508] RDX: 0000000000000000 RSI: 00000000fffffe00 RDI: ffff8e21530c1938
-[  102.907511] RBP: ffff8e21530c0000 R08: 0000000000000001 R09: 0000000000000000
-[  102.907513] R10: ffff8e2145534c10 R11: 0000000000000001 R12: ffff8e21530c2938
-[  102.907515] R13: ffff8e21530c18e0 R14: 0000000000000100 R15: ffff8e21530c2978
-[  102.907518] FS:  00007f5d4297e740(0000) GS:ffff8e243d600000(0000) knlGS:0000000000000000
-[  102.907521] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[  102.907524] CR2: 0000000000000028 CR3: 00000001034ea000 CR4: 0000000000350ef0
-[  102.907527] Call Trace:
-[  102.907531]  <IRQ>
-[  102.907537]  ath11k_dp_service_srng+0x5c/0x2f0 [ath11k]
-[  102.907556]  ath11k_pci_ext_grp_napi_poll+0x21/0x70 [ath11k_pci]
-[  102.907562]  __napi_poll+0x2c/0x160
-[  102.907570]  net_rx_action+0x251/0x310
-[  102.907576]  __do_softirq+0x107/0x2fc
-[  102.907585]  irq_exit_rcu+0x74/0x90
-[  102.907593]  common_interrupt+0x83/0xa0
-[  102.907600]  </IRQ>
-[  102.907601]  asm_common_interrupt+0x1e/0x40
+To avoid this behaviour we can using kfree() to release dev before
+hci_register_dev() success.
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
-Signed-off-by: Baochen Qiang <bqiang@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211026011605.58615-1-quic_bqiang@quicinc.com
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/hw.c | 2 --
- 1 file changed, 2 deletions(-)
+ net/bluetooth/hci_sysfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/hw.c b/drivers/net/wireless/ath/ath11k/hw.c
-index d9596903b0a58..3e92cc7cfe4c9 100644
---- a/drivers/net/wireless/ath/ath11k/hw.c
-+++ b/drivers/net/wireless/ath/ath11k/hw.c
-@@ -1015,8 +1015,6 @@ const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_ipq8074 = {
- const struct ath11k_hw_ring_mask ath11k_hw_ring_mask_qca6390 = {
- 	.tx  = {
- 		ATH11K_TX_RING_MASK_0,
--		ATH11K_TX_RING_MASK_1,
--		ATH11K_TX_RING_MASK_2,
- 	},
- 	.rx_mon_status = {
- 		0, 0, 0, 0,
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index 7827639ecf5c3..4e3e0451b08c1 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -86,6 +86,8 @@ static void bt_host_release(struct device *dev)
+ 
+ 	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
+ 		hci_release_dev(hdev);
++	else
++		kfree(hdev);
+ 	module_put(THIS_MODULE);
+ }
+ 
 -- 
 2.34.1
 
