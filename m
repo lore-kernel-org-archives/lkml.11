@@ -2,49 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3904C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D4E9C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586601AbiAXW1C (ORCPT
+        id S1586658AbiAXW1G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48960 "EHLO
+        Mon, 24 Jan 2022 17:27:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390792AbiAXVM6 (ORCPT
+        with ESMTP id S1453938AbiAXVbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:12:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD58FC02980C;
-        Mon, 24 Jan 2022 12:10:01 -0800 (PST)
+        Mon, 24 Jan 2022 16:31:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E04C075940;
+        Mon, 24 Jan 2022 12:20:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 84A03B81218;
-        Mon, 24 Jan 2022 20:10:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A742EC340E7;
-        Mon, 24 Jan 2022 20:09:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97A3A61008;
+        Mon, 24 Jan 2022 20:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 736C6C340E5;
+        Mon, 24 Jan 2022 20:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055000;
-        bh=fdEnQR3ESgo3jqbn1qe9UEwBUMsHG31tWLdWi7m5dR8=;
+        s=korg; t=1643055614;
+        bh=KAEEPgoOeOikhj6Qcspk7moZQGuTJ0URGvqWMGvh9Vc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ucgCgEE+JWo22aQAIGa6Jg1JZEFycUGVZq/2shhpyjFxHQSufX9tICoPMpcV22pOP
-         5hhR3iVpednjHABZ8qvcg5t6QZMXuKF2Rx9//z+BOPotVsoC0nMh/ZwpCzfo8sTbxp
-         o9cmdpYf5Ur8BJvSCv44gnrIjIPVnaBVu0DdVTD8=
+        b=koa87U8T01VeHqKcOIG3w9lLgafXAsRp/Rzd/kdohrSQG3sMUuWjMJH75nl8HEWDj
+         DxR2/XPG1SujImRdv1J+mbcIhRhFZIiCWAbqirv4YiUcH8n/v23TD9XbZPFo8RhyGZ
+         MiUMungEF4gugEtTy1mZl3HnjVllh9L6esw87Og8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 001/846] KVM: x86/mmu: Fix write-protection of PTs mapped by the TDP MMU
-Date:   Mon, 24 Jan 2022 19:31:58 +0100
-Message-Id: <20220124184100.925469129@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 208/846] samples: bpf: Fix xdp_sample_user.o linking with Clang
+Date:   Mon, 24 Jan 2022 19:35:25 +0100
+Message-Id: <20220124184108.099853358@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,56 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+From: Alexander Lobakin <alexandr.lobakin@intel.com>
 
-commit 7c8a4742c4abe205ec9daf416c9d42fd6b406e8e upstream.
+[ Upstream commit e64fbcaa7a666f16329b1c67af15ea501bc84586 ]
 
-When the TDP MMU is write-protection GFNs for page table protection (as
-opposed to for dirty logging, or due to the HVA not being writable), it
-checks if the SPTE is already write-protected and if so skips modifying
-the SPTE and the TLB flush.
+Clang (13) doesn't get the jokes about specifying libraries to link in
+cclags of individual .o objects:
 
-This behavior is incorrect because it fails to check if the SPTE
-is write-protected for page table protection, i.e. fails to check
-that MMU-writable is '0'.  If the SPTE was write-protected for dirty
-logging but not page table protection, the SPTE could locklessly be made
-writable, and vCPUs could still be running with writable mappings cached
-in their TLB.
+clang-13: warning: -lm: 'linker' input unused [-Wunused-command-line-argument]
+[ ... ]
+  LD  samples/bpf/xdp_redirect_cpu
+  LD  samples/bpf/xdp_redirect_map_multi
+  LD  samples/bpf/xdp_redirect_map
+  LD  samples/bpf/xdp_redirect
+  LD  samples/bpf/xdp_monitor
+/usr/bin/ld: samples/bpf/xdp_sample_user.o: in function `sample_summary_print':
+xdp_sample_user.c:(.text+0x84c): undefined reference to `floor'
+/usr/bin/ld: xdp_sample_user.c:(.text+0x870): undefined reference to `ceil'
+/usr/bin/ld: xdp_sample_user.c:(.text+0x8cf): undefined reference to `floor'
+/usr/bin/ld: xdp_sample_user.c:(.text+0x8f3): undefined reference to `ceil'
+[ more ]
 
-Fix this by only skipping setting the SPTE if the SPTE is already
-write-protected *and* MMU-writable is already clear.  Technically,
-checking only MMU-writable would suffice; a SPTE cannot be writable
-without MMU-writable being set.  But check both to be paranoid and
-because it arguably yields more readable code.
+Specify '-lm' as ldflags for all xdp_sample_user.o users in the main
+Makefile and remove it from ccflags of ^ in Makefile.target -- just
+like it's done for all other samples. This works with all compilers.
 
-Fixes: 46044f72c382 ("kvm: x86/mmu: Support write protection for nesting in tdp MMU")
-Cc: stable@vger.kernel.org
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220113233020.3986005-2-dmatlack@google.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 6e1051a54e31 ("samples: bpf: Convert xdp_monitor to XDP samples helper")
+Fixes: b926c55d856c ("samples: bpf: Convert xdp_redirect to XDP samples helper")
+Fixes: e531a220cc59 ("samples: bpf: Convert xdp_redirect_cpu to XDP samples helper")
+Fixes: bbe65865aa05 ("samples: bpf: Convert xdp_redirect_map to XDP samples helper")
+Fixes: 594a116b2aa1 ("samples: bpf: Convert xdp_redirect_map_multi to XDP samples helper")
+Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Link: https://lore.kernel.org/bpf/20211203195004.5803-2-alexandr.lobakin@intel.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ samples/bpf/Makefile | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1493,12 +1493,12 @@ static bool write_protect_gfn(struct kvm
- 		    !is_last_spte(iter.old_spte, iter.level))
- 			continue;
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 8ac8573946e1a..c6e38e43c3fd0 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -213,6 +213,11 @@ TPROGS_LDFLAGS := -L$(SYSROOT)/usr/lib
+ endif
  
--		if (!is_writable_pte(iter.old_spte))
--			break;
--
- 		new_spte = iter.old_spte &
- 			~(PT_WRITABLE_MASK | shadow_mmu_writable_mask);
+ TPROGS_LDLIBS			+= $(LIBBPF) -lelf -lz
++TPROGLDLIBS_xdp_monitor		+= -lm
++TPROGLDLIBS_xdp_redirect	+= -lm
++TPROGLDLIBS_xdp_redirect_cpu	+= -lm
++TPROGLDLIBS_xdp_redirect_map	+= -lm
++TPROGLDLIBS_xdp_redirect_map_multi += -lm
+ TPROGLDLIBS_tracex4		+= -lrt
+ TPROGLDLIBS_trace_output	+= -lrt
+ TPROGLDLIBS_map_perf_test	+= -lrt
+@@ -342,7 +347,7 @@ $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
  
-+		if (new_spte == iter.old_spte)
-+			break;
-+
- 		tdp_mmu_set_spte(kvm, &iter, new_spte);
- 		spte_set = true;
- 	}
+ # Override includes for xdp_sample_user.o because $(srctree)/usr/include in
+ # TPROGS_CFLAGS causes conflicts
+-XDP_SAMPLE_CFLAGS += -Wall -O2 -lm \
++XDP_SAMPLE_CFLAGS += -Wall -O2 \
+ 		     -I$(src)/../../tools/include \
+ 		     -I$(src)/../../tools/include/uapi \
+ 		     -I$(LIBBPF_INCLUDE) \
+-- 
+2.34.1
+
 
 
