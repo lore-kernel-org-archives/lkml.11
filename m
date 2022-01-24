@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E9BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBCFDC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345169AbiAXS7y (ORCPT
+        id S1345069AbiAXS7q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
+        Mon, 24 Jan 2022 13:59:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344085AbiAXS5P (ORCPT
+        with ESMTP id S242265AbiAXS5G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:15 -0500
+        Mon, 24 Jan 2022 13:57:06 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4260DC061765;
-        Mon, 24 Jan 2022 10:55:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C191C06175A;
+        Mon, 24 Jan 2022 10:55:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7B4E614DF;
-        Mon, 24 Jan 2022 18:55:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B50D4C340E5;
-        Mon, 24 Jan 2022 18:55:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE7E2614C9;
+        Mon, 24 Jan 2022 18:55:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C790DC340E5;
+        Mon, 24 Jan 2022 18:55:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050527;
-        bh=LkWRsFK9aS7oNkjHvVcPCtvA/eUHuU3Kl8vHPnMu2YU=;
+        s=korg; t=1643050514;
+        bh=gTiAsola0UWMwwPm3YlisJWsAT/oMqMZKVdHyRXMZh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wq0MkcAGhkbKN6ndCfWB+FtEzHOdd4qLQfxBJXtUtsnRrOUYjtcspAOGVqD/4SJIF
-         +baAg1fmuh3PRwaiiIGadMs12Wo7kncJSnHK/2vhz3FTXwuAB5vfOiLktBWqXpDIMN
-         tQUNoHA93/EdmUKcXwHhRXEh+GtmHyF7u2XEsFPQ=
+        b=FtiiME9r6FGv0Y4sLXEJYlQAx39i44yOK/Nm1QcwIHVVzJ1yodcKd0Op1O9SGtqbJ
+         YSAB6mxBTwsKxjuo6odN74oWs1OZunbtPVRMsZarTWevnYqCibTXdu2M8DFCphK4y6
+         ccHUj5r+rNAXApj72VS7xr67+EEnjkTQHtBGuibM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 030/157] wcn36xx: Indicate beacon not connection loss on MISSED_BEACON_IND
-Date:   Mon, 24 Jan 2022 19:42:00 +0100
-Message-Id: <20220124183933.759384695@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.9 026/157] can: softing_cs: softingcs_probe(): fix memleak on registration failure
+Date:   Mon, 24 Jan 2022 19:41:56 +0100
+Message-Id: <20220124183933.624598620@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -51,51 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 588b45c88ae130fe373a8c50edaf54735c3f4fe3 ]
+commit ced4913efb0acc844ed65cc01d091a85d83a2082 upstream.
 
-Firmware can trigger a missed beacon indication, this is not the same as a
-lost signal.
+In case device registration fails during probe, the driver state and
+the embedded platform device structure needs to be freed using
+platform_device_put() to properly free all resources (e.g. the device
+name).
 
-Flag to Linux the missed beacon and let the WiFi stack decide for itself if
-the link is up or down by sending its own probe to determine this.
-
-We should only be signalling the link is lost when the firmware indicates
-
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211027232529.657764-1-bryan.odonoghue@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0a0b7a5f7a04 ("can: add driver for Softing card")
+Link: https://lore.kernel.org/all/20211222104843.6105-1-johan@kernel.org
+Cc: stable@vger.kernel.org # 2.6.38
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/wcn36xx/smd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/softing/softing_cs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index 914c210c9e605..da2f442cab271 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2052,7 +2052,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    tmp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 		}
- 		return 0;
- 	}
-@@ -2067,7 +2067,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    rsp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 			return 0;
- 		}
- 	}
--- 
-2.34.1
-
+--- a/drivers/net/can/softing/softing_cs.c
++++ b/drivers/net/can/softing/softing_cs.c
+@@ -304,7 +304,7 @@ static int softingcs_probe(struct pcmcia
+ 	return 0;
+ 
+ platform_failed:
+-	kfree(dev);
++	platform_device_put(pdev);
+ mem_failed:
+ pcmcia_bad:
+ pcmcia_failed:
 
 
