@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71381C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1953C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584191AbiAXWUY (ORCPT
+        id S1584270AbiAXWUb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445465AbiAXVHQ (ORCPT
+        Mon, 24 Jan 2022 17:20:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50676 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454101AbiAXVbr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:07:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4632DC0680AD;
-        Mon, 24 Jan 2022 12:07:55 -0800 (PST)
+        Mon, 24 Jan 2022 16:31:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DAD186090B;
-        Mon, 24 Jan 2022 20:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEF63C340E5;
-        Mon, 24 Jan 2022 20:07:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 52C0E61469;
+        Mon, 24 Jan 2022 21:31:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28907C340E4;
+        Mon, 24 Jan 2022 21:31:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054874;
-        bh=t36Qf7OqaHp5mhLh63Ejubt/7CRwFd48SoJJMeaqkEw=;
+        s=korg; t=1643059906;
+        bh=05g762syOAZvMLDp/pEL5fFOuow6W/nYQmSGkutZrFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aochQ6oos+JT/eCVwTKV8ak7Tn8SWuPjuNp6olUsKpATDoaq6EyFTWSnosXDeJEZk
-         /3QNGMLD2jwNjdk+U0uSaxNXbKGRmBx+eEObq8DEGKKywEy6sK5lf1Qd6mT/Gh0qcS
-         J0uUbPHkMKGZP17sKaY0gr6sMuK/zVAMwlszjLXs=
+        b=YKi91/PBSZYYXjyVX8+kY162qubSpa8Q1ySGQK/H9f942GbGe9OxXiqGPuflVR3uh
+         pXvjjkgzuFb9W1k/h0mIL7neR7I3mmiL8M07X2Qkg/JsS7JZTfsax3vJkEqVo8FMcD
+         EpHiq/soEVJ63vWg3/ia+W+riwSS+UlbRyEWyavE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurence de Bruxelles <lfdebrux@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.10 530/563] rtc: pxa: fix null pointer dereference
-Date:   Mon, 24 Jan 2022 19:44:55 +0100
-Message-Id: <20220124184042.775283083@linuxfoundation.org>
+        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0775/1039] ASoC: mediatek: mt8173: fix device_node leak
+Date:   Mon, 24 Jan 2022 19:42:44 +0100
+Message-Id: <20220124184151.348249076@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +47,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurence de Bruxelles <lfdebrux@gmail.com>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-commit 34127b3632b21e5c391756e724b1198eb9917981 upstream.
+[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
 
-With the latest stable kernel versions the rtc on the PXA based
-Zaurus does not work, when booting I see the following kernel messages:
+Fixes the device_node leak.
 
-pxa-rtc pxa-rtc: failed to find rtc clock source
-pxa-rtc pxa-rtc: Unable to init SA1100 RTC sub-device
-pxa-rtc: probe of pxa-rtc failed with error -2
-hctosys: unable to open rtc device (rtc0)
-
-I think this is because commit f2997775b111 ("rtc: sa1100: fix possible
-race condition") moved the allocation of the rtc_device struct out of
-sa1100_rtc_init and into sa1100_rtc_probe. This means that pxa_rtc_probe
-also needs to do allocation for the rtc_device struct, otherwise
-sa1100_rtc_init will try to dereference a null pointer. This patch adds
-that allocation by copying how sa1100_rtc_probe in
-drivers/rtc/rtc-sa1100.c does it; after the IRQs are set up a managed
-rtc_device is allocated.
-
-I've tested this patch with `qemu-system-arm -machine akita` and with a
-real Zaurus SL-C1000 applied to 4.19, 5.4, and 5.10.
-
-Signed-off-by: Laurence de Bruxelles <lfdebrux@gmail.com>
-Fixes: f2997775b111 ("rtc: sa1100: fix possible race condition")
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220101154149.12026-1-lfdebrux@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-pxa.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
+ 4 files changed, 9 insertions(+)
 
---- a/drivers/rtc/rtc-pxa.c
-+++ b/drivers/rtc/rtc-pxa.c
-@@ -330,6 +330,10 @@ static int __init pxa_rtc_probe(struct p
- 	if (sa1100_rtc->irq_alarm < 0)
- 		return -ENXIO;
- 
-+	sa1100_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
-+	if (IS_ERR(sa1100_rtc->rtc))
-+		return PTR_ERR(sa1100_rtc->rtc);
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index fc94314bfc02f..3bdd4931316cd 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -180,6 +180,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
 +
- 	pxa_rtc->base = devm_ioremap(dev, pxa_rtc->ress->start,
- 				resource_size(pxa_rtc->ress));
- 	if (!pxa_rtc->base) {
++	of_node_put(codec_node);
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+index 0f28dc2217c09..390da5bf727eb 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+@@ -218,6 +218,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 077c6ee067806..c8e4e85e10575 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -285,6 +285,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index 2cbf679f5c74b..d8cf0802813a0 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -323,6 +323,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+-- 
+2.34.1
+
 
 
