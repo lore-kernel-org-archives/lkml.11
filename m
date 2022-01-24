@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38216C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFF0C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362461AbiAXXmY (ORCPT
+        id S2362478AbiAXXm0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
+        Mon, 24 Jan 2022 18:42:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843433AbiAXXD7 (ORCPT
+        with ESMTP id S1843544AbiAXXEH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:03:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 769C6C06C5A4;
-        Mon, 24 Jan 2022 13:14:40 -0800 (PST)
+        Mon, 24 Jan 2022 18:04:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B151BC06E00C;
+        Mon, 24 Jan 2022 13:16:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3CF78B8121C;
-        Mon, 24 Jan 2022 21:14:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6518CC340E5;
-        Mon, 24 Jan 2022 21:14:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5111961484;
+        Mon, 24 Jan 2022 21:16:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D49C340E4;
+        Mon, 24 Jan 2022 21:16:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058878;
-        bh=utsPrtpcWIvwCt9tvxNIxDq0GM9C7hpc0Yc/H/vxqiE=;
+        s=korg; t=1643058979;
+        bh=th4VKO5Ug+nK9IqtFEODJ6OwStYjXRjMQK8H8lx4WDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MWduGN4Dc050MjBTzh77M8ffK9Ce4Ed9BnlVamcHRkPV6QKJH32/Rfuo1rSEo3mpH
-         y3nYGq/m7TxxXc3E1F2xD9SjZkLu6TbAgolx4x84JIRXjiyinrhWKsYn2hzGwgum2B
-         el1d2BQGRUNZr8a6Hqk9vyrKTd1Td9LxTR2GA9Wc=
+        b=XRf+eJZ8fzzgxjOrp1CHCVDxxSG8cz+oeEE8FrYRm+bs0ECGbHxD6FtHLljSz0Sgu
+         hbDBadwn6dBpIjchdsvmujIq4cUN7O+le8DjqI9dyMJwuVL9pjWFL9tBeJR52UXCr6
+         qxYOJBHQOhEmmzzrKWj0oncOuqw0ExMDYrYZeD9Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Jun <chenjun102@huawei.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0431/1039] tpm: add request_locality before write TPM_INT_ENABLE
-Date:   Mon, 24 Jan 2022 19:37:00 +0100
-Message-Id: <20220124184139.779125359@linuxfoundation.org>
+Subject: [PATCH 5.16 0464/1039] powerpc/32s: Fix shift-out-of-bounds in KASAN init
+Date:   Mon, 24 Jan 2022 19:37:33 +0100
+Message-Id: <20220124184140.875034720@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,42 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Jun <chenjun102@huawei.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 0ef333f5ba7f24f5d8478425c163d3097f1c7afd ]
+[ Upstream commit af11dee4361b3519981fa04d014873f9d9edd6ac ]
 
-Locality is not appropriately requested before writing the int mask.
-Add the missing boilerplate.
+================================================================================
+UBSAN: shift-out-of-bounds in arch/powerpc/mm/kasan/book3s_32.c:22:23
+shift exponent -1 is negative
+CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.5-gentoo-PowerMacG4 #9
+Call Trace:
+[c214be60] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
+[c214be80] [c0b99288] ubsan_epilogue+0x10/0x5c
+[c214be90] [c0b98fe0] __ubsan_handle_shift_out_of_bounds+0x94/0x138
+[c214bf00] [c1c0f010] kasan_init_region+0xd8/0x26c
+[c214bf30] [c1c0ed84] kasan_init+0xc0/0x198
+[c214bf70] [c1c08024] setup_arch+0x18/0x54c
+[c214bfc0] [c1c037f0] start_kernel+0x90/0x33c
+[c214bff0] [00003610] 0x3610
+================================================================================
 
-Fixes: e6aef069b6e9 ("tpm_tis: convert to using locality callbacks")
-Signed-off-by: Chen Jun <chenjun102@huawei.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+This happens when the directly mapped memory is a power of 2.
+
+Fix it by checking the shift and set the result to 0 when shift is -1
+
+Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215169
+Link: https://lore.kernel.org/r/15cbc3439d4ad988b225e2119ec99502a5cc6ad3.1638261744.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/powerpc/mm/kasan/book3s_32.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-index b2659a4c40168..e2df1098a812f 100644
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -994,7 +994,15 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
- 	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
- 		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
- 	intmask &= ~TPM_GLOBAL_INT_ENABLE;
-+
-+	rc = request_locality(chip, 0);
-+	if (rc < 0) {
-+		rc = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
-+	release_locality(chip, 0);
+diff --git a/arch/powerpc/mm/kasan/book3s_32.c b/arch/powerpc/mm/kasan/book3s_32.c
+index 202bd260a0095..35b287b0a8da4 100644
+--- a/arch/powerpc/mm/kasan/book3s_32.c
++++ b/arch/powerpc/mm/kasan/book3s_32.c
+@@ -19,7 +19,8 @@ int __init kasan_init_region(void *start, size_t size)
+ 	block = memblock_alloc(k_size, k_size_base);
  
- 	rc = tpm_chip_start(chip);
- 	if (rc)
+ 	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
+-		int k_size_more = 1 << (ffs(k_size - k_size_base) - 1);
++		int shift = ffs(k_size - k_size_base);
++		int k_size_more = shift ? 1 << (shift - 1) : 0;
+ 
+ 		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
+ 		if (k_size_more >= SZ_128K)
 -- 
 2.34.1
 
