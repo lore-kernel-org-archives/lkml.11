@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A55FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AD0C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840215AbiAXWwy (ORCPT
+        id S1840289AbiAXWxE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57980 "EHLO
+        Mon, 24 Jan 2022 17:53:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379357AbiAXVsu (ORCPT
+        with ESMTP id S1574354AbiAXVs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:48:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F608C0811A1;
-        Mon, 24 Jan 2022 12:33:02 -0800 (PST)
+        Mon, 24 Jan 2022 16:48:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFF9AC0811BB;
+        Mon, 24 Jan 2022 12:33:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A527E6153D;
-        Mon, 24 Jan 2022 20:33:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87855C340E5;
-        Mon, 24 Jan 2022 20:33:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6721BB8122D;
+        Mon, 24 Jan 2022 20:33:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DA5CC340E5;
+        Mon, 24 Jan 2022 20:33:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056381;
-        bh=Jmr/r+DKlgP8D2OIcz4/zMDpgMnOFOLO1c0h1VM4wBk=;
+        s=korg; t=1643056393;
+        bh=4n20CruvaLm92Dk2ViJNwsid1IZpIeyuGIIo5tTJCkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gBjurC1l9wvsRKLWTp0wiBJEtc1fEkCOmeMd4Wdqkla4H66oaadosCZygavlmE0oC
-         45O/YKXY0TOUOhZ9y30tQwYlu2+5IJhtXMBaPeN1xVr6mkFl4REWsz14zueXdoG/Nl
-         p0dDh+Rz5wenVASG3E6JZvUpFFN9Tglx16uJeHPU=
+        b=AOiCrVj5+uUcDvg8Tj46LuOLvZhDzVZJo38/23spDpgoF1GIf+z3keNN2DYxf3KTi
+         pn76dAwfVyn6Li+HEIY+1/FwDMTTspGrJeSNt9v8vYgFVg3o1D78QqR8oGj7QigkKk
+         jxpHbS9xxO3R4bKFxxUPtJd6ownXDeqySTEnq6Es=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 464/846] libbpf: Validate that .BTF and .BTF.ext sections contain data
-Date:   Mon, 24 Jan 2022 19:39:41 +0100
-Message-Id: <20220124184116.991402743@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 436/846] misc: lattice-ecp3-config: Fix task hung when firmware load failed
+Date:   Mon, 24 Jan 2022 19:39:13 +0100
+Message-Id: <20220124184116.026206491@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,41 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 62554d52e71797eefa3fc15b54008038837bb2d4 ]
+[ Upstream commit fcee5ce50bdb21116711e38635e3865594af907e ]
 
-.BTF and .BTF.ext ELF sections should have SHT_PROGBITS type and contain
-data. If they are not, ELF is invalid or corrupted, so bail out.
-Otherwise this can lead to data->d_buf being NULL and SIGSEGV later on.
-Reported by oss-fuzz project.
+When firmware load failed, kernel report task hung as follows:
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211103173213.1376990-4-andrii@kernel.org
+INFO: task xrun:5191 blocked for more than 147 seconds.
+      Tainted: G        W         5.16.0-rc5-next-20211220+ #11
+"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
+task:xrun            state:D stack:    0 pid: 5191 ppid:   270 flags:0x00000004
+Call Trace:
+ __schedule+0xc12/0x4b50 kernel/sched/core.c:4986
+ schedule+0xd7/0x260 kernel/sched/core.c:6369 (discriminator 1)
+ schedule_timeout+0x7aa/0xa80 kernel/time/timer.c:1857
+ wait_for_completion+0x181/0x290 kernel/sched/completion.c:85
+ lattice_ecp3_remove+0x32/0x40 drivers/misc/lattice-ecp3-config.c:221
+ spi_remove+0x72/0xb0 drivers/spi/spi.c:409
+
+lattice_ecp3_remove() wait for signals from firmware loading, but when
+load failed, firmware_load() does not send this signal. This cause
+device remove hung. Fix it by sending signal even if load failed.
+
+Fixes: 781551df57c7 ("misc: Add Lattice ECP3 FPGA configuration via SPI")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Link: https://lore.kernel.org/r/20211228125522.3122284-1-weiyongjun1@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/misc/lattice-ecp3-config.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 0ad29203cbfbf..b7d278b8f4527 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3035,8 +3035,12 @@ static int bpf_object__elf_collect(struct bpf_object *obj)
- 		} else if (strcmp(name, MAPS_ELF_SEC) == 0) {
- 			obj->efile.btf_maps_shndx = idx;
- 		} else if (strcmp(name, BTF_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_data = data;
- 		} else if (strcmp(name, BTF_EXT_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_ext_data = data;
- 		} else if (sh.sh_type == SHT_SYMTAB) {
- 			/* already processed during the first pass above */
+diff --git a/drivers/misc/lattice-ecp3-config.c b/drivers/misc/lattice-ecp3-config.c
+index 0f54730c7ed56..98828030b5a4d 100644
+--- a/drivers/misc/lattice-ecp3-config.c
++++ b/drivers/misc/lattice-ecp3-config.c
+@@ -76,12 +76,12 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 
+ 	if (fw == NULL) {
+ 		dev_err(&spi->dev, "Cannot load firmware, aborting\n");
+-		return;
++		goto out;
+ 	}
+ 
+ 	if (fw->size == 0) {
+ 		dev_err(&spi->dev, "Error: Firmware size is 0!\n");
+-		return;
++		goto out;
+ 	}
+ 
+ 	/* Fill dummy data (24 stuffing bits for commands) */
+@@ -103,7 +103,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 		dev_err(&spi->dev,
+ 			"Error: No supported FPGA detected (JEDEC_ID=%08x)!\n",
+ 			jedec_id);
+-		return;
++		goto out;
+ 	}
+ 
+ 	dev_info(&spi->dev, "FPGA %s detected\n", ecp3_dev[i].name);
+@@ -116,7 +116,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 	buffer = kzalloc(fw->size + 8, GFP_KERNEL);
+ 	if (!buffer) {
+ 		dev_err(&spi->dev, "Error: Can't allocate memory!\n");
+-		return;
++		goto out;
+ 	}
+ 
+ 	/*
+@@ -155,7 +155,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 			"Error: Timeout waiting for FPGA to clear (status=%08x)!\n",
+ 			status);
+ 		kfree(buffer);
+-		return;
++		goto out;
+ 	}
+ 
+ 	dev_info(&spi->dev, "Configuring the FPGA...\n");
+@@ -181,7 +181,7 @@ static void firmware_load(const struct firmware *fw, void *context)
+ 	release_firmware(fw);
+ 
+ 	kfree(buffer);
+-
++out:
+ 	complete(&data->fw_loaded);
+ }
+ 
 -- 
 2.34.1
 
