@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B602C35278
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31226C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409730AbiAYA1Q (ORCPT
+        id S3409885AbiAYA1p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:27:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33936 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573366AbiAXVoy (ORCPT
+        Mon, 24 Jan 2022 19:27:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47836 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455642AbiAXVfs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:54 -0500
+        Mon, 24 Jan 2022 16:35:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BCFF61530;
-        Mon, 24 Jan 2022 21:44:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CEFCC340E4;
-        Mon, 24 Jan 2022 21:44:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9D1FB80CCF;
+        Mon, 24 Jan 2022 21:35:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1CD5C340E4;
+        Mon, 24 Jan 2022 21:35:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060690;
-        bh=MHmC5G+aOd3jIodOwStGtnsuWl6x1s8Ye8y6waVER78=;
+        s=korg; t=1643060146;
+        bh=RYKL0195HNgCJWuQDIBJ5AxoBVK81NvUTBgz1ofwYFw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GVxkupgk8Jqk2LO/LN798YajnKUlYf0ukfICEqnnhAAoEPhPtAHdqeo/4DOU4HSTc
-         aoUqO8rutJh2ei+uiBZE2l6Ma/Ue44B7u9ymZsAbRICUd24Tipc8J1SIw0Av15ZVKY
-         wGtaQNwY3HsRFrgs2qQ5c1/IG03/ESB9IYmTngGo=
+        b=jqgolr7MBIkK6VwJNFfXZmKUk0AskFhjuZlWGJjyyg8N1oTWGlDoivsSWvIQ8Ve5/
+         IHNhgThfk50YiNJK6dol4MvVmlnZLZpKxOG+ZNvIknKwaqQjZtTgDtndUGY4vVDv8k
+         QNj+bBjziJncuk/P1cWIJ5uJC+ouSv+0zYTbLSzU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@google.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 1031/1039] lib/test_meminit: destroy cache in kmem_cache_alloc_bulk() test
-Date:   Mon, 24 Jan 2022 19:47:00 +0100
-Message-Id: <20220124184159.948287040@linuxfoundation.org>
+        Tom Zanussi <zanussi@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.16 0854/1039] tracing: Have syscall trace events use trace_event_buffer_lock_reserve()
+Date:   Mon, 24 Jan 2022 19:44:03 +0100
+Message-Id: <20220124184153.986599946@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,35 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+From: Steven Rostedt <rostedt@goodmis.org>
 
-commit e073e5ef90298d2d6e5e7f04b545a0815e92110c upstream.
+commit 3e2a56e6f639492311e0a8533f0a7aed60816308 upstream.
 
-Make do_kmem_cache_size_bulk() destroy the cache it creates.
+Currently, the syscall trace events call trace_buffer_lock_reserve()
+directly, which means that it misses out on some of the filtering
+optimizations provided by the helper function
+trace_event_buffer_lock_reserve(). Have the syscall trace events call that
+instead, as it was missed when adding the update to use the temp buffer
+when filtering.
 
-Link: https://lkml.kernel.org/r/aced20a94bf04159a139f0846e41d38a1537debb.1640018297.git.andreyknvl@google.com
-Fixes: 03a9349ac0e0 ("lib/test_meminit: add a kmem_cache_alloc_bulk() test")
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Reviewed-by: Marco Elver <elver@google.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Link: https://lkml.kernel.org/r/20220107225839.823118570@goodmis.org
+
+Cc: stable@vger.kernel.org
+Cc: Ingo Molnar <mingo@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Tom Zanussi <zanussi@kernel.org>
+Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+Fixes: 0fc1b09ff1ff4 ("tracing: Use temp buffer when filtering events")
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_meminit.c |    1 +
- 1 file changed, 1 insertion(+)
+ kernel/trace/trace_syscalls.c |    6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/lib/test_meminit.c
-+++ b/lib/test_meminit.c
-@@ -337,6 +337,7 @@ static int __init do_kmem_cache_size_bul
- 		if (num)
- 			kmem_cache_free_bulk(c, num, objects);
- 	}
-+	kmem_cache_destroy(c);
- 	*total_failures += fail;
- 	return 1;
- }
+--- a/kernel/trace/trace_syscalls.c
++++ b/kernel/trace/trace_syscalls.c
+@@ -323,8 +323,7 @@ static void ftrace_syscall_enter(void *d
+ 
+ 	trace_ctx = tracing_gen_ctx();
+ 
+-	buffer = tr->array_buffer.buffer;
+-	event = trace_buffer_lock_reserve(buffer,
++	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
+ 			sys_data->enter_event->event.type, size, trace_ctx);
+ 	if (!event)
+ 		return;
+@@ -367,8 +366,7 @@ static void ftrace_syscall_exit(void *da
+ 
+ 	trace_ctx = tracing_gen_ctx();
+ 
+-	buffer = tr->array_buffer.buffer;
+-	event = trace_buffer_lock_reserve(buffer,
++	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
+ 			sys_data->exit_event->event.type, sizeof(*entry),
+ 			trace_ctx);
+ 	if (!event)
 
 
