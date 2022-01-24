@@ -2,93 +2,202 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4FFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 615D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344131AbiAXSxm (ORCPT
+        id S1344143AbiAXSxp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        Mon, 24 Jan 2022 13:53:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245480AbiAXSwI (ORCPT
+        with ESMTP id S1343614AbiAXSwI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:52:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADD4BC061774;
-        Mon, 24 Jan 2022 10:52:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 757A4B81235;
-        Mon, 24 Jan 2022 18:52:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 984A7C340E5;
-        Mon, 24 Jan 2022 18:51:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050320;
-        bh=m3dT+BwIryTLHf0an/Okp1ItP323n1YSAxKneotYt5o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yt6IKtSjvrHGd9jDqe+YBcI7lBw7iModgcbS/gEZS++pN7ABEYTtBEXEbrUh4Z4F8
-         +b8VKlGw6Rrxi7AMIgXIuKy7dlp8Yysey4eAiHH2cS1jvO6tMdqpMlFpFYYcR7ygjV
-         2efcSFq5NLTDGhyUPZeqyW9CqYz4ZyeP5cy7PbO8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 079/114] dm btree: add a defensive bounds check to insert_at()
-Date:   Mon, 24 Jan 2022 19:42:54 +0100
-Message-Id: <20220124183929.535984756@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B6FCC061770;
+        Mon, 24 Jan 2022 10:52:00 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id m8-20020a9d4c88000000b00592bae7944bso23549757otf.1;
+        Mon, 24 Jan 2022 10:52:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=r9ORcgxwPP4ycG1Uxe8mTwFvOudbcps3q5Aj2rRnpck=;
+        b=e0jdHKVOQgUpteOMfqGIsKj6bppWqqtxb5ZahWfm3lk77uMULiAbyRMiAKafk9wKhT
+         obaUU1owPGL5j6q0WlyHQe9AZXD63iBfKn5yQBktSaUkSZYotefpB1vQhY2MmOd20UBa
+         fdBk/sNOEbcRNXpK/Co7No3CejVyF+9fEZtBPov/vxP85W1L74LxnkeMRUb11+lGqngi
+         KbyoW40hJ9R+ETAV8kSKkfrsiXWCw57UPUGDO88HRIlqTpbTn5NCBbuFoyhnfHe2+k+i
+         GhAQO4/ddpnm1G0bgPsxgqM79TPbDXHjC18GDBxasAnV+4V0d2cXD4/AM/CNIFipJ34V
+         Fudw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=r9ORcgxwPP4ycG1Uxe8mTwFvOudbcps3q5Aj2rRnpck=;
+        b=rJWUKkupxwaVuEF05cdSSNiaTo+Sigj9wkGFdORJKgSTxudK7LHOJzGWru4x4OId2G
+         muaDe6u++v7t5xiKz5B2LWM4EcbwW8IO0k3MZTiBpZ4GEEV0P8acIOAwPR4b01aVBPp8
+         RUuuuQFtSMJG0+A53tKS7cwuFuJ99YkRDnnTWydPXKFoR7XGQreYSKXXQvbsMRzYBwO0
+         +9LUmHWKdYrw9c3fsrSm4eN4GlKFER9QumOPM18e+ASAQAjzDJ86IecbVSTej2a+FgCD
+         RiFi2aze+K2GdTSU4pGCOW+gdxvva3w/J7eidUlEhqRnmECEyUYos5eCbAlAs9D1KG1z
+         3F9w==
+X-Gm-Message-State: AOAM532vDpxoK0S+bNEagJp1c0cHVzL9tcc9Hh0K9slbPDoAzLdRHl2+
+        tYfKt2UNxhoQvFz2MEvgf//Sp9989W6TqPnvo5Y=
+X-Google-Smtp-Source: ABdhPJz1Khf3SO0+bH9fYxpAMD7XCc9wWdnY55JgNJ7kmV9RJ/cvxr18HoDYHDiBJbnuymI0c1uy0F3r7GxxZrlfypU=
+X-Received: by 2002:a9d:601a:: with SMTP id h26mr3092033otj.357.1643050319496;
+ Mon, 24 Jan 2022 10:51:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220123125737.2658758-1-geert@linux-m68k.org> <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
+In-Reply-To: <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 24 Jan 2022 13:51:48 -0500
+Message-ID: <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
+Subject: Re: Build regressions/improvements in v5.17-rc1
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>, alsa-devel@alsa-project.org,
+        kvm@vger.kernel.org, Network Development <netdev@vger.kernel.org>,
+        linux-um@lists.infradead.org, linux-mips@vger.kernel.org,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
+        sparclinux@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "Tobin C. Harding" <me@tobin.cc>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Thornber <ejt@redhat.com>
+On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> w=
+rote:
+>
+> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
+> > Below is the list of build error/warning regressions/improvements in
+> > v5.17-rc1[1] compared to v5.16[2].
+> >
+> > Summarized:
+> >  - build errors: +17/-2
+> >  - build warnings: +23/-25
+> >
+> > Note that there may be false regressions, as some logs are incomplete.
+> > Still, they're build errors/warnings.
+> >
+> > Happy fixing! ;-)
+> >
+> > Thanks to the linux-next team for providing the build service.
+> >
+> > [1] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/e783362eb54cd=
+99b2cac8b3a9aeac942e6f6ac07/ (all 99 configs)
+> > [2] http://kisskb.ellerman.id.au/kisskb/branch/linus/head/df0cc57e057f1=
+8e44dac8e6c18aba47ab53202f9/ (98 out of 99 configs)
+> >
+> >
+> > *** ERRORS ***
+> >
+> > 17 error regressions:
+> >  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit declar=
+ation of function 'nmi_cpu_backtrace' [-Werror=3Dimplicit-function-declarat=
+ion]:  =3D> 171:2
+> >  + /kisskb/src/arch/powerpc/kernel/stacktrace.c: error: implicit declar=
+ation of function 'nmi_trigger_cpumask_backtrace' [-Werror=3Dimplicit-funct=
+ion-declaration]:  =3D> 226:2
+>
+> powerpc-gcc5/skiroot_defconfig
+>
+> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
+function types from 'void (*)(long unsigned int)' to 'void (*)(long unsigne=
+d int,  long unsigned int,  long unsigned int,  long unsigned int,  long un=
+signed int)' [-Werror=3Dcast-function-type]:  =3D> 1756:13, 1639:13
+> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
+function types from 'void (*)(struct mm_struct *)' to 'void (*)(long unsign=
+ed int,  long unsigned int,  long unsigned int,  long unsigned int,  long u=
+nsigned int)' [-Werror=3Dcast-function-type]:  =3D> 1674:29, 1662:29
+> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
+function types from 'void (*)(struct mm_struct *, long unsigned int)' to 'v=
+oid (*)(long unsigned int,  long unsigned int,  long unsigned int,  long un=
+signed int,  long unsigned int)' [-Werror=3Dcast-function-type]:  =3D> 1767=
+:21
+> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
+function types from 'void (*)(struct vm_area_struct *, long unsigned int)' =
+to 'void (*)(long unsigned int,  long unsigned int,  long unsigned int,  lo=
+ng unsigned int,  long unsigned int)' [-Werror=3Dcast-function-type]:  =3D>=
+ 1741:29, 1726:29
+> >  + /kisskb/src/arch/sparc/mm/srmmu.c: error: cast between incompatible =
+function types from 'void (*)(struct vm_area_struct *, long unsigned int,  =
+long unsigned int)' to 'void (*)(long unsigned int,  long unsigned int,  lo=
+ng unsigned int,  long unsigned int,  long unsigned int)' [-Werror=3Dcast-f=
+unction-type]:  =3D> 1694:29, 1711:29
+>
+> sparc64-gcc11/sparc-allmodconfig
+>
+> >  + /kisskb/src/arch/um/include/asm/processor-generic.h: error: called o=
+bject is not a function or function pointer:  =3D> 103:18
+> >  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: assignment make=
+s pointer from integer without a cast [-Werror=3Dint-conversion]:  =3D> 324=
+:9, 317:9
+> >  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declar=
+ation of function 'ioport_map' [-Werror=3Dimplicit-function-declaration]:  =
+=3D> 317:11
+> >  + /kisskb/src/drivers/vfio/pci/vfio_pci_rdwr.c: error: implicit declar=
+ation of function 'ioport_unmap' [-Werror=3Dimplicit-function-declaration]:=
+  =3D> 338:15
+>
+> um-x86_64/um-allyesconfig
+>
+> >  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: err=
+or: control reaches end of non-void function [-Werror=3Dreturn-type]:  =3D>=
+ 1560:1
 
-[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
+I don't really see what's going on here:
 
-Corrupt metadata could trigger an out of bounds write.
+#ifdef CONFIG_X86_64
+return cpu_data(first_cpu_of_numa_node).apicid;
+#else
+return first_cpu_of_numa_node;
+#endif
 
-Signed-off-by: Joe Thornber <ejt@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/md/persistent-data/dm-btree.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+Alex
 
-diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
-index fa9039a53ae5c..23b1d22f693c1 100644
---- a/drivers/md/persistent-data/dm-btree.c
-+++ b/drivers/md/persistent-data/dm-btree.c
-@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
- }
- 
- static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
--		      uint64_t key, void *value)
--		      __dm_written_to_disk(value)
-+		     uint64_t key, void *value)
-+	__dm_written_to_disk(value)
- {
- 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
-+	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
- 	__le64 key_le = cpu_to_le64(key);
- 
- 	if (index > nr_entries ||
--	    index >= le32_to_cpu(node->header.max_entries)) {
-+	    index >= max_entries ||
-+	    nr_entries >= max_entries) {
- 		DMERR("too many entries in btree node for insert");
- 		__dm_unbless_for_disk(value);
- 		return -ENOMEM;
--- 
-2.34.1
-
-
-
+>
+> um-x86_64/um-all{mod,yes}config
+>
+> >  + /kisskb/src/drivers/net/ethernet/freescale/fec_mpc52xx.c: error: pas=
+sing argument 2 of 'mpc52xx_fec_set_paddr' discards 'const' qualifier from =
+pointer target type [-Werror=3Ddiscarded-qualifiers]:  =3D> 659:29
+>
+> powerpc-gcc5/ppc32_allmodconfig
+>
+> >  + /kisskb/src/drivers/pinctrl/pinctrl-thunderbay.c: error: assignment =
+discards 'const' qualifier from pointer target type [-Werror=3Ddiscarded-qu=
+alifiers]:  =3D> 815:8, 815:29
+>
+> arm64-gcc5.4/arm64-allmodconfig
+> arm64-gcc8/arm64-allmodconfig
+>
+> >  + /kisskb/src/lib/test_printf.c: error: "PTR" redefined [-Werror]:  =
+=3D> 247:0, 247
+> >  + /kisskb/src/sound/pci/ca0106/ca0106.h: error: "PTR" redefined [-Werr=
+or]:  =3D> 62, 62:0
+>
+> mips-gcc8/mips-allmodconfig
+> mipsel/mips-allmodconfig
+>
+> >  + error: arch/powerpc/kvm/book3s_64_entry.o: relocation truncated to f=
+it: R_PPC64_REL14 (stub) against symbol `machine_check_common' defined in .=
+text section in arch/powerpc/kernel/head_64.o:  =3D> (.text+0x3e4)
+>
+> powerpc-gcc5/powerpc-allyesconfig
+>
+> Gr{oetje,eeting}s,
+>
+>                                                 Geert
+>
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org
+>
+> In personal conversations with technical people, I call myself a hacker. =
+But
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.
+>                                                             -- Linus Torv=
+alds
