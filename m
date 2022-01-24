@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A46ACC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE18FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374615AbiAYARc (ORCPT
+        id S2374679AbiAYARk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
+        Mon, 24 Jan 2022 19:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356245AbiAXX2B (ORCPT
+        with ESMTP id S1851079AbiAXXbx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:01 -0500
+        Mon, 24 Jan 2022 18:31:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F578C01D7EA;
-        Mon, 24 Jan 2022 13:30:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4F3C075D05;
+        Mon, 24 Jan 2022 13:35:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C07E614E1;
-        Mon, 24 Jan 2022 21:30:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E06C340E4;
-        Mon, 24 Jan 2022 21:30:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DFAEA614DA;
+        Mon, 24 Jan 2022 21:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F398EC340E4;
+        Mon, 24 Jan 2022 21:35:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059848;
-        bh=G82Q4cPxhw81sOqVHOtuTQNejvoexVwt2CxtmuQC0No=;
+        s=korg; t=1643060112;
+        bh=Ss+KyW9+v4+zPtZvCbZxmRTFAjt5mNV30rcy4WIJht8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BMk23j49+M25zpb1nZbDz2RrMhlBclyk19FOHtoGkDKllBECsPvvDZ77RTqUf7WGB
-         ZWNDoHMaAapDTYlAHpFJxp9Q/DpKwixVCN06d1GxPTK9imWxWlXIxA2YB0oJuhlWo6
-         sW8ZwVN58eiX5GnmJEyyJVe7u03wTCLpIDbXomZc=
+        b=yWNekzEQUQtqfBF5fITcfnD2mTnVfsxE84QV8hBwtkOu3Eb9Ej9/1DpOpzmw+aksj
+         Nbkm6oyD1O4LwgU//ol81hQmwKtqbLk66WgCL/BawK3vTQJjVdg/Ou1qqfNAugcJOx
+         JYE08hIMDtx5J+DcfxD8xO5ltwKE8SXr1AeHrqts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0727/1039] parisc: Avoid calling faulthandler_disabled() twice
-Date:   Mon, 24 Jan 2022 19:41:56 +0100
-Message-Id: <20220124184149.768356308@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Juergen Gross <jgross@suse.com>
+Subject: [PATCH 5.16 0844/1039] xen/gntdev: fix unmap notification order
+Date:   Mon, 24 Jan 2022 19:43:53 +0100
+Message-Id: <20220124184153.659861284@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,53 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
 
-[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
+commit ce2f46f3531a03781181b7f4bd1ff9f8c5086e7e upstream.
 
-In handle_interruption(), we call faulthandler_disabled() to check whether the
-fault handler is not disabled. If the fault handler is disabled, we immediately
-call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
-do_page_fault() attempts to fixup the exception by jumping to no_context:
+While working with Xen's libxenvchan library I have faced an issue with
+unmap notifications sent in wrong order if both UNMAP_NOTIFY_SEND_EVENT
+and UNMAP_NOTIFY_CLEAR_BYTE were requested: first we send an event channel
+notification and then clear the notification byte which renders in the below
+inconsistency (cli_live is the byte which was requested to be cleared on unmap):
 
-no_context:
+[  444.514243] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
+libxenvchan_is_open cli_live 1
+[  444.515239] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
 
-        if (!user_mode(regs) && fixup_exception(regs)) {
-                return;
-        }
+Thus it is not possible to reliably implement the checks like
+- wait for the notification (UNMAP_NOTIFY_SEND_EVENT)
+- check the variable (UNMAP_NOTIFY_CLEAR_BYTE)
+because it is possible that the variable gets checked before it is cleared
+by the kernel.
 
-        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
+To fix that we need to re-order the notifications, so the variable is first
+gets cleared and then the event channel notification is sent.
+With this fix I can see the correct order of execution:
 
-Apart from the error messages, the two blocks of code perform the same
-function.
+[   54.522611] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
+[   54.537966] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
+libxenvchan_is_open cli_live 0
 
-We can avoid two calls to faulthandler_disabled() by a simple revision
-to the code in handle_interruption().
-
-Note: I didn't try to fix the formatting of this code block.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Link: https://lore.kernel.org/r/20211210092817.580718-1-andr2000@gmail.com
+Signed-off-by: Juergen Gross <jgross@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/parisc/kernel/traps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/xen/gntdev.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index 892b7fc8f3c45..eb41fece19104 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -785,7 +785,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 	     * unless pagefault_disable() was called before.
- 	     */
+--- a/drivers/xen/gntdev.c
++++ b/drivers/xen/gntdev.c
+@@ -250,13 +250,13 @@ void gntdev_put_map(struct gntdev_priv *
+ 	if (!refcount_dec_and_test(&map->users))
+ 		return;
  
--	    if (fault_space == 0 && !faulthandler_disabled())
-+	    if (faulthandler_disabled() || fault_space == 0)
- 	    {
- 		/* Clean up and return if in exception table. */
- 		if (fixup_exception(regs))
--- 
-2.34.1
-
++	if (map->pages && !use_ptemod)
++		unmap_grant_pages(map, 0, map->count);
++
+ 	if (map->notify.flags & UNMAP_NOTIFY_SEND_EVENT) {
+ 		notify_remote_via_evtchn(map->notify.event);
+ 		evtchn_put(map->notify.event);
+ 	}
+-
+-	if (map->pages && !use_ptemod)
+-		unmap_grant_pages(map, 0, map->count);
+ 	gntdev_free_map(map);
+ }
+ 
 
 
