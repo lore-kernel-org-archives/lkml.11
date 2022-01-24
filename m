@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90487C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7634C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354860AbiAXUMv (ORCPT
+        id S1343512AbiAXUMy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:12:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355648AbiAXTyN (ORCPT
+        Mon, 24 Jan 2022 15:12:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41656 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347076AbiAXTyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:54:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76B7FC041899;
-        Mon, 24 Jan 2022 11:27:14 -0800 (PST)
+        Mon, 24 Jan 2022 14:54:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 345E7B81238;
-        Mon, 24 Jan 2022 19:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 637A8C340E5;
-        Mon, 24 Jan 2022 19:27:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DF6AB81239;
+        Mon, 24 Jan 2022 19:54:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F2AC340E5;
+        Mon, 24 Jan 2022 19:54:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052431;
-        bh=7qJYOBbowqh8wUi59F2Jgk5pd7lhjQA/WH7nAkqaXQ8=;
+        s=korg; t=1643054056;
+        bh=kQeVpgjXMWBkDkt3qPRgjWIZf9hgcZyZSnVYNAKMg0U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IpuslQ5CnI+5T1RPM+OQEe8F134VabPRoiWHlKR7585AtNqaQ5myA4Z+nVkqFEuxf
-         nmK0XmvFmSxbMwG2+2CRM0tcgL+9vAZuTz5vmGSSM9qQ7kPpjRPesjnAfIT5K0jgDV
-         THNUTIxbyBB6C+GzNjSIcPrPHgtrumN0YXzGIHeI=
+        b=N2ClNA0/MBMVsoksSHrWeCDzauK+90quhQU53DSnmEf2xikH/KOPN9rc7nMyKXdqn
+         tlEozhIaNYUsINy8tUhFcvMBXMrxSKSIFn7n/zFWLSd9YzfBEGa0VLFlINwZGClz8i
+         w/6vfNRZHsTTh+xRtMRSEqD19O8JUBrlE6tP2eVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
-        Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>,
-        Michael Rodin <mrodin@de.adit-jv.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 055/320] media: rcar-csi2: Correct the selection of hsfreqrange
-Date:   Mon, 24 Jan 2022 19:40:39 +0100
-Message-Id: <20220124183955.608113027@linuxfoundation.org>
+Subject: [PATCH 5.10 265/563] RDMA/qedr: Fix reporting max_{send/recv}_wr attrs
+Date:   Mon, 24 Jan 2022 19:40:30 +0100
+Message-Id: <20220124184033.600036014@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,78 +48,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Udipi <sudipi@jp.adit-jv.com>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-[ Upstream commit cee44d4fbacbbdfe62697ec94e76c6e4f726c5df ]
+[ Upstream commit b1a4da64bfc189510e08df1ccb1c589e667dc7a3 ]
 
-hsfreqrange should be chosen based on the calculated mbps which
-is closer to the default bit rate  and within the range as per
-table[1]. But current calculation always selects first value which
-is greater than or equal to the calculated mbps which may lead
-to chosing a wrong range in some cases.
+Fix the wrongly reported max_send_wr and max_recv_wr attributes for user
+QP by making sure to save their valuse on QP creation, so when query QP is
+called the attributes will be reported correctly.
 
-For example for 360 mbps for H3/M3N
-Existing logic selects
-Calculated value 360Mbps : Default 400Mbps Range [368.125 -433.125 mbps]
-
-This hsfreqrange is out of range.
-
-The logic is changed to get the default value which is closest to the
-calculated value [1]
-
-Calculated value 360Mbps : Default 350Mbps  Range [320.625 -380.625 mpbs]
-
-[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.9]
-
-Please note that According to Renesas in Table 25.9 the range for
-220 default value is corrected as below
-
- |Range (Mbps)     |  Default  Bit rate (Mbps) |
- -----------------------------------------------
- | 197.125-244.125 |     220                   |
- -----------------------------------------------
-
-Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
-Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
-Signed-off-by: Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
+Link: https://lore.kernel.org/r/20211206201314.124947-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rcar-vin/rcar-csi2.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/qedr/verbs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
-index e01f22bf826d4..99b28611eb12c 100644
---- a/drivers/media/platform/rcar-vin/rcar-csi2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
-@@ -430,16 +430,23 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv)
- static int rcsi2_set_phypll(struct rcar_csi2 *priv, unsigned int mbps)
- {
- 	const struct rcsi2_mbps_reg *hsfreq;
-+	const struct rcsi2_mbps_reg *hsfreq_prev = NULL;
+diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
+index 16d5283651894..eeb87f31cd252 100644
+--- a/drivers/infiniband/hw/qedr/verbs.c
++++ b/drivers/infiniband/hw/qedr/verbs.c
+@@ -1918,6 +1918,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
+ 	/* db offset was calculated in copy_qp_uresp, now set in the user q */
+ 	if (qedr_qp_has_sq(qp)) {
+ 		qp->usq.db_addr = ctx->dpi_addr + uresp.sq_db_offset;
++		qp->sq.max_wr = attrs->cap.max_send_wr;
+ 		rc = qedr_db_recovery_add(dev, qp->usq.db_addr,
+ 					  &qp->usq.db_rec_data->db_data,
+ 					  DB_REC_WIDTH_32B,
+@@ -1928,6 +1929,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
  
--	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++)
-+	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++) {
- 		if (hsfreq->mbps >= mbps)
- 			break;
-+		hsfreq_prev = hsfreq;
-+	}
- 
- 	if (!hsfreq->mbps) {
- 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
- 		return -ERANGE;
- 	}
- 
-+	if (hsfreq_prev &&
-+	    ((mbps - hsfreq_prev->mbps) <= (hsfreq->mbps - mbps)))
-+		hsfreq = hsfreq_prev;
-+
- 	rcsi2_write(priv, PHYPLL_REG, PHYPLL_HSFREQRANGE(hsfreq->reg));
- 
- 	return 0;
+ 	if (qedr_qp_has_rq(qp)) {
+ 		qp->urq.db_addr = ctx->dpi_addr + uresp.rq_db_offset;
++		qp->rq.max_wr = attrs->cap.max_recv_wr;
+ 		rc = qedr_db_recovery_add(dev, qp->urq.db_addr,
+ 					  &qp->urq.db_rec_data->db_data,
+ 					  DB_REC_WIDTH_32B,
 -- 
 2.34.1
 
