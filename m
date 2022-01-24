@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE9EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A34C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391870AbiAXUtG (ORCPT
+        id S1359193AbiAXUtR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:49:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48710 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381837AbiAXUYr (ORCPT
+        Mon, 24 Jan 2022 15:49:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33514 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382135AbiAXUZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:24:47 -0500
+        Mon, 24 Jan 2022 15:25:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E177461232;
-        Mon, 24 Jan 2022 20:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C38C340E5;
-        Mon, 24 Jan 2022 20:24:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F354CB811FB;
+        Mon, 24 Jan 2022 20:25:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28472C340E5;
+        Mon, 24 Jan 2022 20:25:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055886;
-        bh=2/YtUJlhdhKj2+PYmbTkGubem1KTGQtxJkKwLbVF/MI=;
+        s=korg; t=1643055912;
+        bh=v3CmNcQuVcLWxRTsj4bwVZeaXhS0Z8OOc7cj1SIMdtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oBr0dAMk4YT6ZAWcdBzuZ6Nwg+koq+bEU6ndspDlP1bdIWGfWAv4CGdd8NfbSzEHW
-         00KyR14TNLOssl6g+L/wMDdvmFCkGC7La1PE5hTBiogEr8L1XXTJ8cEqMUBQ7ObNbw
-         X+8X0/Agzqf6nUKR4XbF+zIKfbwZWcSsxWgrdfbM=
+        b=b/OroVOPtNvXPY/5tTh0E+jigHIWLisjzgUdyalt3PUSyU5N8lWnJqrM+DaLdmEP4
+         QHE7VBwxEj3fM65nxKjA11j9XtcqecfR1xLEADzeiXJMYR2sB00f6Qv1uLMzHNihoJ
+         wwpr/UuNQx6g8YQjoWXAktJz3bFimtz0VvWHEmbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 299/846] io_uring: remove double poll on poll update
-Date:   Mon, 24 Jan 2022 19:36:56 +0100
-Message-Id: <20220124184111.228757894@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Xiong <xiongx18@fudan.edu.cn>,
+        Xiyu Yang <xiyuyang19@fudan.edu.cn>,
+        Xin Tan <tanxin.ctf@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 308/846] netfilter: ipt_CLUSTERIP: fix refcount leak in clusterip_tg_check()
+Date:   Mon, 24 Jan 2022 19:37:05 +0100
+Message-Id: <20220124184111.534886909@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,34 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Xin Xiong <xiongx18@fudan.edu.cn>
 
-[ Upstream commit e840b4baf3cfb37e2ead4f649a45bb78178677ff ]
+[ Upstream commit d94a69cb2cfa77294921aae9afcfb866e723a2da ]
 
-Before updating a poll request we should remove it from poll queues,
-including the double poll entry.
+The issue takes place in one error path of clusterip_tg_check(). When
+memcmp() returns nonzero, the function simply returns the error code,
+forgetting to decrease the reference count of a clusterip_config
+object, which is bumped earlier by clusterip_config_find_get(). This
+may incur reference count leak.
 
-Fixes: b69de288e913 ("io_uring: allow events and user_data update of running poll requests")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/ac39e7f80152613603b8a6cc29a2b6063ac2434f.1639605189.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fix this issue by decrementing the refcount of the object in specific
+error path.
+
+Fixes: 06aa151ad1fc74 ("netfilter: ipt_CLUSTERIP: check MAC address when duplicate config is set")
+Signed-off-by: Xin Xiong <xiongx18@fudan.edu.cn>
+Signed-off-by: Xiyu Yang <xiyuyang19@fudan.edu.cn>
+Signed-off-by: Xin Tan <tanxin.ctf@gmail.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/ipv4/netfilter/ipt_CLUSTERIP.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index 0006fc7479ca3..ecffeddf90c68 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5925,6 +5925,7 @@ static int io_poll_update(struct io_kiocb *req, unsigned int issue_flags)
- 	 * update those. For multishot, if we're racing with completion, just
- 	 * let completion re-add it.
- 	 */
-+	io_poll_remove_double(preq);
- 	completing = !__io_poll_remove_one(preq, &preq->poll, false);
- 	if (completing && (preq->poll.events & EPOLLONESHOT)) {
- 		ret = -EALREADY;
+diff --git a/net/ipv4/netfilter/ipt_CLUSTERIP.c b/net/ipv4/netfilter/ipt_CLUSTERIP.c
+index 8fd1aba8af31c..b518f20c9a244 100644
+--- a/net/ipv4/netfilter/ipt_CLUSTERIP.c
++++ b/net/ipv4/netfilter/ipt_CLUSTERIP.c
+@@ -520,8 +520,11 @@ static int clusterip_tg_check(const struct xt_tgchk_param *par)
+ 			if (IS_ERR(config))
+ 				return PTR_ERR(config);
+ 		}
+-	} else if (memcmp(&config->clustermac, &cipinfo->clustermac, ETH_ALEN))
++	} else if (memcmp(&config->clustermac, &cipinfo->clustermac, ETH_ALEN)) {
++		clusterip_config_entry_put(config);
++		clusterip_config_put(config);
+ 		return -EINVAL;
++	}
+ 
+ 	ret = nf_ct_netns_get(par->net, par->family);
+ 	if (ret < 0) {
 -- 
 2.34.1
 
