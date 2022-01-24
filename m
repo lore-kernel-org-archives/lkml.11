@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3F9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C97C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346585AbiAXUNO (ORCPT
+        id S1348499AbiAXUNS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:13:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51504 "EHLO
+        Mon, 24 Jan 2022 15:13:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51530 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358113AbiAXTyc (ORCPT
+        with ESMTP id S1358135AbiAXTyc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:54:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34C066090B;
-        Mon, 24 Jan 2022 19:54:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F33D0C340E5;
-        Mon, 24 Jan 2022 19:54:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31AD060B88;
+        Mon, 24 Jan 2022 19:54:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F783C340E5;
+        Mon, 24 Jan 2022 19:54:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054065;
-        bh=FaB0y9HIYPaqAi9q7owR1nZqkiO+ArzL+57wSpMcVoE=;
+        s=korg; t=1643054068;
+        bh=trFRVxPpwQP5j5PpHCK0jByQ6eNg8p9rOMd216bDq5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mXN7gTpr8ERbD4+iZDnFD1CG8Hfd16PMQGyFb6f0QJt9N8Oc4gItIwdbvJ8tC73ZU
-         qPhEmxzWqLpl36HrFUXL/Yc1unmMacmJ1RnzHGIKjksTeZefYzF8pkdE2aX/eARfs4
-         54HtAWaF8gdtGscg3p8tcbOcpWlYVkQGbCBep+lM=
+        b=DpKVVVd7h48U6EEB02P20CG4+cFiLyz4IomYwKjGffx0UI8Zbz1JAIlgQIpVMFcAE
+         Tkxbs3CKYMRoWNL76O9sCkgwrgxceYzg7feUebOOSG8H2+2kFOIhfp5HZAxEDA15t3
+         4VyfAmpMlN55OeugKEyyYA5oNgd06bebwsCGQskY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 267/563] powerpc/powermac: Add additional missing lockdep_register_key()
-Date:   Mon, 24 Jan 2022 19:40:32 +0100
-Message-Id: <20220124184033.680604443@linuxfoundation.org>
+Subject: [PATCH 5.10 268/563] RDMA/core: Let ib_find_gid() continue search even after empty entry
+Date:   Mon, 24 Jan 2022 19:40:33 +0100
+Message-Id: <20220124184033.719964552@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,51 +49,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Avihai Horon <avihaih@nvidia.com>
 
-[ Upstream commit b149d5d45ac9171ed699a256f026c8ebef901112 ]
+[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
 
-Commit df1f679d19ed ("powerpc/powermac: Add missing
-lockdep_register_key()") fixed a problem that was causing a WARNING.
+Currently, ib_find_gid() will stop searching after encountering the first
+empty GID table entry. This behavior is wrong since neither IB nor RoCE
+spec enforce tightly packed GID tables.
 
-There are two other places in the same file with the same problem
-originating from commit 9e607f72748d ("i2c_powermac: shut up lockdep
-warning").
+For example, when a valid GID entry exists at index N, and if a GID entry
+is empty at index N-1, ib_find_gid() will fail to find the valid entry.
 
-Add missing lockdep_register_key()
+Fix it by making ib_find_gid() continue searching even after encountering
+missing entries.
 
-Fixes: 9e607f72748d ("i2c_powermac: shut up lockdep warning")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Depends-on: df1f679d19ed ("powerpc/powermac: Add missing lockdep_register_key()")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=200055
-Link: https://lore.kernel.org/r/2c7e421874e21b2fb87813d768cf662f630c2ad4.1638984999.git.christophe.leroy@csgroup.eu
+Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
+Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
+Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powermac/low_i2c.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/infiniband/core/device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
-index f77a59b5c2e1a..09bfe4b8f25aa 100644
---- a/arch/powerpc/platforms/powermac/low_i2c.c
-+++ b/arch/powerpc/platforms/powermac/low_i2c.c
-@@ -810,6 +810,7 @@ static void __init pmu_i2c_probe(void)
- 		bus->hostdata = bus + 1;
- 		bus->xfer = pmu_i2c_xfer;
- 		mutex_init(&bus->mutex);
-+		lockdep_register_key(&bus->lock_key);
- 		lockdep_set_class(&bus->mutex, &bus->lock_key);
- 		bus->flags = pmac_i2c_multibus;
- 		list_add(&bus->link, &pmac_i2c_busses);
-@@ -933,6 +934,7 @@ static void __init smu_i2c_probe(void)
- 		bus->hostdata = bus + 1;
- 		bus->xfer = smu_i2c_xfer;
- 		mutex_init(&bus->mutex);
-+		lockdep_register_key(&bus->lock_key);
- 		lockdep_set_class(&bus->mutex, &bus->lock_key);
- 		bus->flags = 0;
- 		list_add(&bus->link, &pmac_i2c_busses);
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index 76b9c436edcd2..aa526c5ca0cf3 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -2411,7 +2411,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
+ 		     ++i) {
+ 			ret = rdma_query_gid(device, port, i, &tmp_gid);
+ 			if (ret)
+-				return ret;
++				continue;
++
+ 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
+ 				*port_num = port;
+ 				if (index)
 -- 
 2.34.1
 
