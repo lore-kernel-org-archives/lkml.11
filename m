@@ -2,105 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC135C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:12:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E79B6C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:12:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446856AbiAXVJc (ORCPT
+        id S1446908AbiAXVJj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:09:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
+        Mon, 24 Jan 2022 16:09:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390642AbiAXUp7 (ORCPT
+        with ESMTP id S1355870AbiAXUk6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:45:59 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D671C061340
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:55:57 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id e17so338778ljk.5
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:55:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CsGwBiMEkwe4bLg19ywjdJZ3/5M1hRBHlVRcQEjbGmo=;
-        b=rtbY+gqfHYd5dj6xP5LOP4QpTVnE0wZG3g8n7uzpDUJ4jVInle5CceB62w4oNxWy8u
-         xXN8vN7IrBOKmQcgtvQFaTfgpVvlZ1C7rg8TWBiysAfRSiqHZV5kZTrpHFseJFjMV4Od
-         +Jk5BAqTQjingEkJlsAfH3x7sfC03xhNfh0ADDu2Y2dMke7fwHzLmPKHUaTG7d2OKHNx
-         fysiqoVSVENsXqjTFvu/VWsdgDVMLFS6QU1EAZh0HnTGPYzaozPOI7hgaS4vbnNHE24k
-         ov5CQ5YvZP7tmNZBSSD6kToX7EO1i/6HTOWafDrGLNTOSJU6Ciew4FpN1aYt0fGglLwQ
-         8/vQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CsGwBiMEkwe4bLg19ywjdJZ3/5M1hRBHlVRcQEjbGmo=;
-        b=0iNCbLh1iZBgrpmCa/BfneWnmFginOLYGf2hJRxdY1SiRwvCaArA7vlxdw5K8GOyEW
-         PSKxIaHNaxYYEl/TZyFbbXTcl5zthV/Btz3HdHSKz92lPomR5gUsXDHw/HmpsvOz4pQL
-         c1nVcDK758rlgMWBdez2UmbD2QBoQNFLs7lTKxPy57Vsnt8zdcraiKkP3tSXK7ShZLbI
-         V7zJr54YZMydCrKRrUVfICmg44Cda0H6scSsz1+uvGGMXhWEI/HlNXf67x/pPSEPEMXY
-         JgvHriXZNGTxAIfFzdWaxWsGgXkvf+86H3Y0RDp9YKxpLwvMt3pFEY8WEtvRAfA5xlVE
-         KLLg==
-X-Gm-Message-State: AOAM531b1EAwTokuS3HhkjsORZaeNJAWrmDtExRr7iYQ2CKaRLhr928I
-        BY/v3224VR40G3tF9rPoThwmfJY20nzKgpA1HPX02g==
-X-Google-Smtp-Source: ABdhPJyOtLsKZqsENjScci++5Pp4Q0kOx1naLw57dM5+mMcu04T6dj7bnpqZLaem4TA31GMKPuqL3D7+h16zW5aDmyc=
-X-Received: by 2002:a2e:8283:: with SMTP id y3mr12029632ljg.128.1643054155425;
- Mon, 24 Jan 2022 11:55:55 -0800 (PST)
+        Mon, 24 Jan 2022 15:40:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191B1C045929;
+        Mon, 24 Jan 2022 11:51:56 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1EBCB81188;
+        Mon, 24 Jan 2022 19:51:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7FE6C340E5;
+        Mon, 24 Jan 2022 19:51:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053914;
+        bh=XvsuaybxONItoAZe5a0vX9UxPNEjPcRQlzwFZKwiE4I=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pDgWWbaDTkK3k0RylsjsaRY0oB/xipg/+HE3d3O6Pvzec53Y+QDDSuiGtN9PsQrKo
+         D10pTl1ReFbD33iNNhiVyNz9jTSFNFh8Kdnjkckk/1Wgh/AFphONdOTxAdsUcvTSUq
+         bP+FLxLW3vUz293WHs+A5i0Yh8M+CEa4xQyb4CVc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 211/563] fsl/fman: Check for null pointer after calling devm_ioremap
+Date:   Mon, 24 Jan 2022 19:39:36 +0100
+Message-Id: <20220124184031.739722328@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220120053100.408816-1-masahiroy@kernel.org>
-In-Reply-To: <20220120053100.408816-1-masahiroy@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 24 Jan 2022 11:55:43 -0800
-Message-ID: <CAKwvOd=52G2J2nXRbefjJ57B_ySZaZ6SD8UwwHziZMPoR6ABHQ@mail.gmail.com>
-Subject: Re: [PATCH] Revert "Makefile: Do not quote value for CONFIG_CC_IMPLICIT_FALLTHROUGH"
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
-        carnil@debian.org, Kees Cook <keescook@chromium.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+ Salvatore, Kees, Gustavo, Nathan
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-On Wed, Jan 19, 2022 at 9:31 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> This reverts commit cd8c917a56f20f48748dd43d9ae3caff51d5b987.
->
-> Commit 129ab0d2d9f3 ("kbuild: do not quote string values in
-> include/config/auto.conf") provided the final solution.
->
-> Now reverting the temporary workaround.
->
-> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+[ Upstream commit d5a73ec96cc57cf67e51b12820fc2354e7ca46f8 ]
 
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+As the possible failure of the allocation, the devm_ioremap() may return
+NULL pointer.
+Take tgec_initialization() as an example.
+If allocation fails, the params->base_addr will be NULL pointer and will
+be assigned to tgec->regs in tgec_config().
+Then it will cause the dereference of NULL pointer in set_mac_address(),
+which is called by tgec_init().
+Therefore, it should be better to add the sanity check after the calling
+of the devm_ioremap().
 
-> ---
->
->  Makefile | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/Makefile b/Makefile
-> index 3f07f0f04475..c94559a97dca 100644
-> --- a/Makefile
-> +++ b/Makefile
-> @@ -778,7 +778,7 @@ stackp-flags-$(CONFIG_STACKPROTECTOR_STRONG)      := -fstack-protector-strong
->  KBUILD_CFLAGS += $(stackp-flags-y)
->
->  KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
-> -KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH:"%"=%)
-> +KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
->
->  ifdef CONFIG_CC_IS_CLANG
->  KBUILD_CPPFLAGS += -Qunused-arguments
-> --
-> 2.32.0
->
+Fixes: 3933961682a3 ("fsl/fman: Add FMan MAC driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/freescale/fman/mac.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index 901749a7a318b..6eeccc11b76ef 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -94,14 +94,17 @@ static void mac_exception(void *handle, enum fman_mac_exceptions ex)
+ 		__func__, ex);
+ }
+ 
+-static void set_fman_mac_params(struct mac_device *mac_dev,
+-				struct fman_mac_params *params)
++static int set_fman_mac_params(struct mac_device *mac_dev,
++			       struct fman_mac_params *params)
+ {
+ 	struct mac_priv_s *priv = mac_dev->priv;
+ 
+ 	params->base_addr = (typeof(params->base_addr))
+ 		devm_ioremap(priv->dev, mac_dev->res->start,
+ 			     resource_size(mac_dev->res));
++	if (!params->base_addr)
++		return -ENOMEM;
++
+ 	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
+ 	params->max_speed	= priv->max_speed;
+ 	params->phy_if		= mac_dev->phy_if;
+@@ -112,6 +115,8 @@ static void set_fman_mac_params(struct mac_device *mac_dev,
+ 	params->event_cb	= mac_exception;
+ 	params->dev_id		= mac_dev;
+ 	params->internal_phy_node = priv->internal_phy_node;
++
++	return 0;
+ }
+ 
+ static int tgec_initialization(struct mac_device *mac_dev)
+@@ -123,7 +128,9 @@ static int tgec_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	mac_dev->fman_mac = tgec_config(&params);
+ 	if (!mac_dev->fman_mac) {
+@@ -169,7 +176,9 @@ static int dtsec_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	mac_dev->fman_mac = dtsec_config(&params);
+ 	if (!mac_dev->fman_mac) {
+@@ -218,7 +227,9 @@ static int memac_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	if (priv->max_speed == SPEED_10000)
+ 		params.phy_if = PHY_INTERFACE_MODE_XGMII;
 -- 
-Thanks,
-~Nick Desaulniers
+2.34.1
+
+
+
