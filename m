@@ -2,99 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0F88C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1408BC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586800AbiAXW1V (ORCPT
+        id S1586534AbiAXW0u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33426 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447726AbiAXVLY (ORCPT
+        Mon, 24 Jan 2022 17:26:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53808 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453926AbiAXVbS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:24 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 666F8B8105C;
-        Mon, 24 Jan 2022 21:11:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 915CCC340E5;
-        Mon, 24 Jan 2022 21:11:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058681;
-        bh=HDH01BdQbtjtxDwLkE394xgNnK/+LbYUX8kUZZULQ84=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYz2fBU99AXAyEVKfL7qlu4e0FamZrNlc6uHgWL46wNGxlH3PHKlYHEH5beq/UTro
-         xxGOgZNrBWgfrl6YOd0eI5uNwYWaO3YNZQhgIJkRpPSER+IHDEhX0DMAD492AC/WHF
-         3WAIgxpC2yjGiDIUHHk7ztgycCFpfVlgdxwxKAbU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0366/1039] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
-Date:   Mon, 24 Jan 2022 19:35:55 +0100
-Message-Id: <20220124184137.590156427@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 16:31:18 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD988C0AD1AE;
+        Mon, 24 Jan 2022 12:20:01 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id b5so3558109qtq.11;
+        Mon, 24 Jan 2022 12:20:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gnv2KdJcWev5DXG7Zqmo5Ay+2m+nYtTgLdGUtEWY2Fo=;
+        b=ZKm4XrV0bDIIfSfrRa1cBCMem6IENGQKiz41veeGoGimaA0Rzii13gOZYfiO+KP/x5
+         +K3c9M15mBOnYky1E+sVZNL7Xlq4fyAL3E3usJWu6Mj9Jp0B9SsAfSsMmPkh5M5Fe5X+
+         hIV7wfy5rsIAZKTEB4OTqfq09ZKInPLMQR8aag4/stNwGFdndh6N0ZfFPHeMw96OeTHw
+         v0/CDRQD6GsjS8evqiCrxi2xa0dJdfGkk/m/F6kzdLk1xwDsPtm5n8BFEZX7jBANyD+Z
+         RSgfFHU5foRYa1u+9BwbI0OjQHqzWFV5PyUtL4p2bNwrHV6U1Z3bnVqhMozv9JTvrumD
+         j5Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Gnv2KdJcWev5DXG7Zqmo5Ay+2m+nYtTgLdGUtEWY2Fo=;
+        b=F47DzfZzzN5+tEzMnP/SH9uvUFcsEoLzJDon6l4WU6dHKhIm0xNbx+++YvtxuPr2Ix
+         eWD0DR6TXUN/KIEaznHDdTyRDcErUfCz18ohxZeQ5bI1oH5FTHHZyhVZrpzNI26qTGRc
+         Dimf1Z0i3Bn81ivLIvFehL6rbn3HvtG2F9W6GdFPRevUfNYXwJqKYMhutGgOSObafrsJ
+         HUYLz414d8lZf/sdJuQzLjk/9hQiDEuDZxeUvBakh1LWcqHKh17pQuE3mJCqVqR8EnPD
+         a6b3zYVQXxqlSNWCQndcsvkxyYUt2NDMBdYSuKGy1TumNMf9ccPROJAehBKPuc6dCYq5
+         F+cw==
+X-Gm-Message-State: AOAM5326S9hs7PeluI2Eiznz9/atlf3y2RzVZYBBc0z3h1js8/nBox+9
+        0Zsg0wgNvsfT9f1f04lu2/E=
+X-Google-Smtp-Source: ABdhPJx1x3LrfGZm1OMEN8K3yQ/Ev5a2v6oVIol5yow2jgTH1jCA1UCUOJ/M2hV/mZnJDCBxN9KUvA==
+X-Received: by 2002:a05:622a:120a:: with SMTP id y10mr13844793qtx.429.1643055601015;
+        Mon, 24 Jan 2022 12:20:01 -0800 (PST)
+Received: from localhost ([2600:1700:65a0:ab60:8937:675:3cb3:d613])
+        by smtp.gmail.com with ESMTPSA id t29sm7922203qtc.47.2022.01.24.12.20.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 12:20:00 -0800 (PST)
+Date:   Mon, 24 Jan 2022 12:19:58 -0800
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Brian Vazquez <brianvv@google.com>,
+        Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        jeffreyji <jeffreyji@google.com>
+Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
+Message-ID: <Ye8J7rMiiTwNNA6T@pop-os.localdomain>
+References: <20220122000301.1872828-1-jeffreyji@google.com>
+ <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAMzD94QW5uK2wAZfYWu5J=2HqCcLrT=y7u6+0PgJvHBb0YTz_Q@mail.gmail.com>
+ <20220124092924.0eb17027@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124092924.0eb17027@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+On Mon, Jan 24, 2022 at 09:29:24AM -0800, Jakub Kicinski wrote:
+> On Mon, 24 Jan 2022 09:13:12 -0800 Brian Vazquez wrote:
+> > On Fri, Jan 21, 2022 at 7:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > On Sat, 22 Jan 2022 00:03:01 +0000 Jeffrey Ji wrote:  
+> > > > From: jeffreyji <jeffreyji@google.com>
+> > > >
+> > > > Increment InMacErrors counter when packet dropped due to incorrect dest
+> > > > MAC addr.
+> > > >
+> > > > example output from nstat:
+> > > > \~# nstat -z "*InMac*"
+> > > > \#kernel
+> > > > Ip6InMacErrors                  0                  0.0
+> > > > IpExtInMacErrors                1                  0.0
+> > > >
+> > > > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> > > > with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> > > > counter was incremented.
+> > > >
+> > > > Signed-off-by: jeffreyji <jeffreyji@google.com>  
+> > >
+> > > How about we use the new kfree_skb_reason() instead to avoid allocating
+> > > per-netns memory the stats?  
+> > 
+> > I'm not too familiar with the new kfree_skb_reason , but my
+> > understanding is that it needs either the drop_monitor  or ebpf to get
+> > the reason from the tracepoint, right? This is not too different from
+> > using perf tool to find where the pkt is being dropped.
+> > 
+> > The idea here was to have a high level metric that is easier to find
+> > for users that have less expertise on using more advance tools.
+> 
+> That much it's understood, but it's a trade off. This drop point
+> existed for 20 years, why do we need to consume extra memory now?
 
-[ Upstream commit 977d2e7c63c3d04d07ba340b39987742e3241554 ]
+kfree_skb_reason() is for tracing and tracing has overhead in
+production, which is higher than just a percpu counter.
 
-In nonstatic_find_mem_region(), pcmcia_make_resource() is assigned to
-res and used in pci_bus_alloc_resource(). There a dereference of res
-in pci_bus_alloc_resource(), which could lead to a NULL pointer
-dereference on failure of pcmcia_make_resource().
+What memory overhead are you talking about? We have ~37 IP related
+SNMP counters, this patch merely adds 1/37 memory overhead. So, what's the
+point? :-/
 
-Fix this bug by adding a check of res.
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/pcmcia/rsrc_nonstatic.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
-index 827ca6e9ee54a..1cac528707111 100644
---- a/drivers/pcmcia/rsrc_nonstatic.c
-+++ b/drivers/pcmcia/rsrc_nonstatic.c
-@@ -812,6 +812,9 @@ static struct resource *nonstatic_find_mem_region(u_long base, u_long num,
- 	unsigned long min, max;
- 	int ret, i, j;
- 
-+	if (!res)
-+		return NULL;
-+
- 	low = low || !(s->features & SS_CAP_PAGE_REGS);
- 
- 	data.mask = align - 1;
--- 
-2.34.1
-
-
-
+Thanks.
