@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9249FC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2370838AbiAYAGS (ORCPT
+        id S2370869AbiAYAGY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:06:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
+        Mon, 24 Jan 2022 19:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847533AbiAXXT7 (ORCPT
+        with ESMTP id S1847754AbiAXXUc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:19:59 -0500
+        Mon, 24 Jan 2022 18:20:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAB45C06F8FD;
-        Mon, 24 Jan 2022 13:27:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A419EC09B052;
+        Mon, 24 Jan 2022 13:28:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 58A1661490;
-        Mon, 24 Jan 2022 21:27:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32F10C340E4;
-        Mon, 24 Jan 2022 21:27:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4138561569;
+        Mon, 24 Jan 2022 21:28:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23530C33E6A;
+        Mon, 24 Jan 2022 21:28:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059662;
-        bh=P6eFo3h9qX3r6YCHPSkuPE/RNoXMNV1Mnn7M6uecedU=;
+        s=korg; t=1643059716;
+        bh=nODJdLZgNtDJsYBxRp1SexhPYRVVlpVwxtcXBGJsMPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N3lw26p6aQ1Hj4Z3y9cV57qYeVMJDllBK7VX0EoFPkiKtSKJZa1XN4XFha0CU6Y3Z
-         C3AvWagQL10P9eidMGSNoS6odpK8QNHNc7kK6q0E+wrF+N4EfEIy+CXIOICROof+ST
-         jivP42Ae9JZDq/K89YlD030tJFO07mzhyF1mSEXo=
+        b=RldR6t/4lhZ5nJyZCddNWxuw6Iq3uL0lh5ARoxczngVT+dJaLIODANrFu1sbJJV0u
+         lKy5J6bkD9Sf5WmCMc9ELK57UljmXi6JAgYWnfOduWQE63p181s0vwg0xT33MD4oSe
+         Xnd7V3M9hLjhpdgQ0nkLaNF6xqpbGWBOGICDP+2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingwen Chen <Jingwen.Chen2@amd.com>,
-        Horace Chen <horace.chen@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0658/1039] drm/amd/amdgpu: fix psp tmr bo pin count leak in SRIOV
-Date:   Mon, 24 Jan 2022 19:40:47 +0100
-Message-Id: <20220124184147.486025851@linuxfoundation.org>
+Subject: [PATCH 5.16 0709/1039] btrfs: remove BUG_ON() in find_parent_nodes()
+Date:   Mon, 24 Jan 2022 19:41:38 +0100
+Message-Id: <20220124184149.164631763@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,48 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jingwen Chen <Jingwen.Chen2@amd.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 85dfc1d692c9434c37842e610be37cd4ae4e0081 ]
+[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
 
-[Why]
-psp tmr bo will be pinned during loading amdgpu and reset in SRIOV while
-only unpinned in unload amdgpu
+We search for an extent entry with .offset = -1, which shouldn't be a
+thing, but corruption happens.  Add an ASSERT() for the developers,
+return -EUCLEAN for mortals.
 
-[How]
-add amdgpu_in_reset and sriov judgement to skip pin bo
-
-v2: fix wrong judgement
-
-Signed-off-by: Jingwen Chen <Jingwen.Chen2@amd.com>
-Reviewed-by: Horace Chen <horace.chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ fs/btrfs/backref.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index c641f84649d6b..d011ae7e50a54 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -2017,12 +2017,16 @@ static int psp_hw_start(struct psp_context *psp)
- 		return ret;
- 	}
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index f735b8798ba12..6b4b0f105a572 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1214,7 +1214,12 @@ again:
+ 	ret = btrfs_search_slot(NULL, fs_info->extent_root, &key, path, 0, 0);
+ 	if (ret < 0)
+ 		goto out;
+-	BUG_ON(ret == 0);
++	if (ret == 0) {
++		/* This shouldn't happen, indicates a bug or fs corruption. */
++		ASSERT(ret != 0);
++		ret = -EUCLEAN;
++		goto out;
++	}
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
-+
- 	ret = psp_tmr_init(psp);
- 	if (ret) {
- 		DRM_ERROR("PSP tmr init failed!\n");
- 		return ret;
- 	}
- 
-+skip_pin_bo:
- 	/*
- 	 * For ASICs with DF Cstate management centralized
- 	 * to PMFW, TMR setup should be performed after PMFW
+ #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
+ 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
 -- 
 2.34.1
 
