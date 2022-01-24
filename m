@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A479C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED316C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835473AbiAXWgg (ORCPT
+        id S1835520AbiAXWgm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:36:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54448 "EHLO
+        Mon, 24 Jan 2022 17:36:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456125AbiAXVhw (ORCPT
+        with ESMTP id S1456120AbiAXVhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:37:52 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4EC05A1BA;
-        Mon, 24 Jan 2022 12:24:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD10C0BD12F;
+        Mon, 24 Jan 2022 12:24:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9F9F9B8122D;
-        Mon, 24 Jan 2022 20:24:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8AC5C340E5;
-        Mon, 24 Jan 2022 20:24:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A9389B81229;
+        Mon, 24 Jan 2022 20:24:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D22C8C340E5;
+        Mon, 24 Jan 2022 20:24:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055847;
-        bh=nbudAHV5Id/HIQCDuN+n30CdC18eMXg3cLWyw/aOG2Q=;
+        s=korg; t=1643055841;
+        bh=jwjFmACAnwdgTPgiXQNtUaCkXKpEKBIBAWq4GBFnCFA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RMT7UME8z65lgVs+pCJMEH15jKJm7tCnx2gKpEOjq+y9DQBCxjheY9uBCa4HI0Ezv
-         Jsf8TFGfPyONWwL6NlIVdp1c+nlzGXKOAzfsuriUOCuPiIW+r1nw2PjiUdxvAxlydc
-         gmotoVY2CVhoB9a+1Awgwq+O4+2aza5Mtuu5GkH4=
+        b=IRIw2wPaVah+njMHMUAMgfh3IOOR/AHecc5BuHFFUSV32XKn5JawDMrTjfHQhwudV
+         7o7jJ5aodT5jXkPScYopJFCQl788yr1wWFz36ZsYkCj3pzipyjUM+rA1YxQG4ogiJe
+         9rME9rNN37JPaRhhQxXPtHyn/rfuWvmWBhqUZaTs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 284/846] Bluetooth: L2CAP: Fix using wrong mode
-Date:   Mon, 24 Jan 2022 19:36:41 +0100
-Message-Id: <20220124184110.724640275@linuxfoundation.org>
+Subject: [PATCH 5.15 256/846] drm/tegra: gr2d: Explicitly control module reset
+Date:   Mon, 24 Jan 2022 19:36:13 +0100
+Message-Id: <20220124184109.771216782@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,52 +49,111 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit 30d57722732d9736554f85f75f9d7ad5402d192e ]
+[ Upstream commit 271fca025a6d43f1c18a48543c5aaf31a31e4694 ]
 
-If user has a set to use SOCK_STREAM the socket would default to
-L2CAP_MODE_ERTM which later needs to be adjusted if the destination
-address is LE which doesn't support such mode.
+As of commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
+clocks"), module resets are no longer automatically deasserted when the
+module clock is enabled. To make sure that the gr2d module continues to
+work, we need to explicitly control the module reset.
 
-Fixes: 15f02b9105625 ("Bluetooth: L2CAP: Add initial code for Enhanced Credit Based Mode")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/tegra/gr2d.c | 33 +++++++++++++++++++++++++++++++--
+ 1 file changed, 31 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index 4574c5cb1b596..251017c69ab7f 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -161,7 +161,11 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
- 		break;
+diff --git a/drivers/gpu/drm/tegra/gr2d.c b/drivers/gpu/drm/tegra/gr2d.c
+index de288cba39055..ba3722f1b8651 100644
+--- a/drivers/gpu/drm/tegra/gr2d.c
++++ b/drivers/gpu/drm/tegra/gr2d.c
+@@ -4,9 +4,11 @@
+  */
+ 
+ #include <linux/clk.h>
++#include <linux/delay.h>
+ #include <linux/iommu.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
++#include <linux/reset.h>
+ 
+ #include "drm.h"
+ #include "gem.h"
+@@ -19,6 +21,7 @@ struct gr2d_soc {
+ struct gr2d {
+ 	struct tegra_drm_client client;
+ 	struct host1x_channel *channel;
++	struct reset_control *rst;
+ 	struct clk *clk;
+ 
+ 	const struct gr2d_soc *soc;
+@@ -208,6 +211,12 @@ static int gr2d_probe(struct platform_device *pdev)
+ 	if (!syncpts)
+ 		return -ENOMEM;
+ 
++	gr2d->rst = devm_reset_control_get(dev, NULL);
++	if (IS_ERR(gr2d->rst)) {
++		dev_err(dev, "cannot get reset\n");
++		return PTR_ERR(gr2d->rst);
++	}
++
+ 	gr2d->clk = devm_clk_get(dev, NULL);
+ 	if (IS_ERR(gr2d->clk)) {
+ 		dev_err(dev, "cannot get clock\n");
+@@ -220,6 +229,14 @@ static int gr2d_probe(struct platform_device *pdev)
+ 		return err;
  	}
  
--	if (chan->psm && bdaddr_type_is_le(chan->src_type))
-+	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
-+	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
-+	 */
-+	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
-+	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
- 
- 	chan->state = BT_BOUND;
-@@ -255,7 +259,11 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 			return -EINVAL;
++	usleep_range(2000, 4000);
++
++	err = reset_control_deassert(gr2d->rst);
++	if (err < 0) {
++		dev_err(dev, "failed to deassert reset: %d\n", err);
++		goto disable_clk;
++	}
++
+ 	INIT_LIST_HEAD(&gr2d->client.base.list);
+ 	gr2d->client.base.ops = &gr2d_client_ops;
+ 	gr2d->client.base.dev = dev;
+@@ -234,8 +251,7 @@ static int gr2d_probe(struct platform_device *pdev)
+ 	err = host1x_client_register(&gr2d->client.base);
+ 	if (err < 0) {
+ 		dev_err(dev, "failed to register host1x client: %d\n", err);
+-		clk_disable_unprepare(gr2d->clk);
+-		return err;
++		goto assert_rst;
  	}
  
--	if (chan->psm && bdaddr_type_is_le(chan->src_type) && !chan->mode)
-+	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
-+	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
-+	 */
-+	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
-+	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+ 	/* initialize address register map */
+@@ -245,6 +261,13 @@ static int gr2d_probe(struct platform_device *pdev)
+ 	platform_set_drvdata(pdev, gr2d);
  
- 	l2cap_sock_init_pid(sk);
+ 	return 0;
++
++assert_rst:
++	(void)reset_control_assert(gr2d->rst);
++disable_clk:
++	clk_disable_unprepare(gr2d->clk);
++
++	return err;
+ }
+ 
+ static int gr2d_remove(struct platform_device *pdev)
+@@ -259,6 +282,12 @@ static int gr2d_remove(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
++	err = reset_control_assert(gr2d->rst);
++	if (err < 0)
++		dev_err(&pdev->dev, "failed to assert reset: %d\n", err);
++
++	usleep_range(2000, 4000);
++
+ 	clk_disable_unprepare(gr2d->clk);
+ 
+ 	return 0;
 -- 
 2.34.1
 
