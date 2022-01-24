@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78075C35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E0A3C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444808AbiAXVBg (ORCPT
+        id S1444827AbiAXVBh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387950AbiAXUhg (ORCPT
+        Mon, 24 Jan 2022 16:01:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40570 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351907AbiAXUhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1E7C02B8E2;
-        Mon, 24 Jan 2022 11:51:02 -0800 (PST)
+        Mon, 24 Jan 2022 15:37:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68A81B8123A;
-        Mon, 24 Jan 2022 19:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8457CC340E8;
-        Mon, 24 Jan 2022 19:50:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3330BB81061;
+        Mon, 24 Jan 2022 20:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A7AC340E5;
+        Mon, 24 Jan 2022 20:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053860;
-        bh=dew9iB/PSxpZFa7z+LvbEm0R1sFHfkirT3jY0G+NzIo=;
+        s=korg; t=1643056669;
+        bh=9al30aZ+w+f56itTZnfhDZfSCut72/YNcJcpvw4L33c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXte4R0tvEQmbEtum+D04DmEqTRgQAsOIigDo96C+s4uy+jjrzdQrd6Lt6hCKYipi
-         n+vLRr4VnDnDLSfPyuQyfdV5hS1hTaeCw4V5HzkVq8AxBfvR+iF073q3Tgknsdgzaa
-         2mAxLl9VknkPnTdw4f/CWEKjDXdEgzsO5J2ZBBtY=
+        b=q8KJmpyiWA6Zp1GiLOR1MDcvlrMi3ILb/u0No92GlemAKqhN8RJ7oZiTRz2/bzc+l
+         XWIp/8iNDQFJkt6vtsflmadm3BZJ9MSr++W5LZnKf2QQWvHhjplLE6+2uUkJwLC1wY
+         XVtqCoH8j+iEN7C+PpTO1W3hmbvyoAK1tE4UCt2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 200/563] ACPI: scan: Create platform device for BCM4752 and LNV4752 ACPI nodes
-Date:   Mon, 24 Jan 2022 19:39:25 +0100
-Message-Id: <20220124184031.344880300@linuxfoundation.org>
+Subject: [PATCH 5.15 561/846] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
+Date:   Mon, 24 Jan 2022 19:41:18 +0100
+Message-Id: <20220124184120.376492793@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,77 +46,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit f85196bdd5a50da74670250564740fc852b3c239 ]
+[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
 
-BCM4752 and LNV4752 ACPI nodes describe a Broadcom 4752 GPS module
-attached to an UART of the system.
+The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
+MiB - 1. This was likely presumed to be the "limit" rather than length.
+Fix it up.
 
-The GPS modules talk a custom protocol which only works with a closed-
-source Android gpsd daemon which knows this protocol.
-
-The ACPI nodes also describe GPIOs to turn the GPS on/off these are
-handled by the net/rfkill/rfkill-gpio.c code. This handling predates the
-addition of enumeration of ACPI instantiated serdevs to the kernel and
-was broken by that addition, because the ACPI scan code now no longer
-instantiates platform_device-s for these nodes.
-
-Rename the i2c_multi_instantiate_ids HID list to ignore_serial_bus_ids
-and add the BCM4752 and LNV4752 HIDs, so that rfkill-gpio gets
-a platform_device to bind to again; and so that a tty cdev for gpsd
-gets created for these.
-
-Fixes: e361d1f85855 ("ACPI / scan: Fix enumeration for special UART devices")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/scan.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index de0533bd4e086..67a5ee2fedfd3 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1577,6 +1577,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- {
- 	struct list_head resource_list;
- 	bool is_serial_bus_slave = false;
-+	static const struct acpi_device_id ignore_serial_bus_ids[] = {
- 	/*
- 	 * These devices have multiple I2cSerialBus resources and an i2c-client
- 	 * must be instantiated for each, each with its own i2c_device_id.
-@@ -1585,11 +1586,18 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 	 * drivers/platform/x86/i2c-multi-instantiate.c driver, which knows
- 	 * which i2c_device_id to use for each resource.
- 	 */
--	static const struct acpi_device_id i2c_multi_instantiate_ids[] = {
- 		{"BSG1160", },
- 		{"BSG2150", },
- 		{"INT33FE", },
- 		{"INT3515", },
-+	/*
-+	 * HIDs of device with an UartSerialBusV2 resource for which userspace
-+	 * expects a regular tty cdev to be created (instead of the in kernel
-+	 * serdev) and which have a kernel driver which expects a platform_dev
-+	 * such as the rfkill-gpio driver.
-+	 */
-+		{"BCM4752", },
-+		{"LNV4752", },
- 		{}
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index e94f8add1a400..062e87e893316 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -1079,7 +1079,7 @@
+ 
+ 	ccplex@e000000 {
+ 		compatible = "nvidia,tegra186-ccplex-cluster";
+-		reg = <0x0 0x0e000000 0x0 0x3fffff>;
++		reg = <0x0 0x0e000000 0x0 0x400000>;
+ 
+ 		nvidia,bpmp = <&bpmp>;
  	};
- 
-@@ -1603,8 +1611,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 	     fwnode_property_present(&device->fwnode, "baud")))
- 		return true;
- 
--	/* Instantiate a pdev for the i2c-multi-instantiate drv to bind to */
--	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
-+	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
- 		return false;
- 
- 	INIT_LIST_HEAD(&resource_list);
 -- 
 2.34.1
 
