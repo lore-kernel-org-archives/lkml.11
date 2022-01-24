@@ -2,128 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DE4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422498AbiAYCb1 (ORCPT
+        id S3422583AbiAYCbj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42826 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381098AbiAXUSy (ORCPT
+        Mon, 24 Jan 2022 21:31:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348791AbiAXUTX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:18:54 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E483B6091A;
-        Mon, 24 Jan 2022 20:18:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4C9CC340E5;
-        Mon, 24 Jan 2022 20:18:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055533;
-        bh=0KzNRX1TV9/vmHxdGek7P+d4sSMlyXHggMI8sTCNUXs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Heyzn+khn4zysVzeFD2ql03b4/HnPlZ0wlzpofqDU3tClNlvcCoHKv8PadA6irtXg
-         WHaK7ztHHzqkrG7qqApWG8peLe8FfiKAqF9tIBG0FRuPrPCb0q/MRZzNZpJtrCm4VN
-         N1+a9IcThYZOQpvZinb2L+oIdiH4kCZqfpFleDlU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marco Chiappero <marco.chiappero@intel.com>,
-        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 150/846] crypto: qat - make pfvf send message direction agnostic
-Date:   Mon, 24 Jan 2022 19:34:27 +0100
-Message-Id: <20220124184106.160325228@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 15:19:23 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA20C07597F
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:38:57 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id e81so27161877oia.6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:38:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=kwkbTwrBzC5jE9f2nafUwAahS6VU0ATjJ7MFCgX616c=;
+        b=mWzdzA6qhipKU0Y435He/wNbJHmgEgP9OP8ykZrxXsJZKtUyYKTa7HDaY/sn7/3hw/
+         t4JkQkLEWBIXqUzmazVAIkbKn2Pq2GhSbf5eHq211Qwc0uXY8RLYXjjyKX5W2LC+pqQZ
+         2QA1rTJe5w1qbfpd9/fp2/IL7+zE8+duxtWtA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=kwkbTwrBzC5jE9f2nafUwAahS6VU0ATjJ7MFCgX616c=;
+        b=5H5nt8HGBfBR3Kdip6TwoEtH+9rRs0HSt7YmSPh4V/JBSQhYSuSa2F0nJtakf/O3Qv
+         kLkUpD1X9aW7PxrV3Vr1sDnQ+NO3KStJC+y4lMH7jsSoIjpzhTf8b1PfPc5KvUbo9BDI
+         lpV8Fiq+liX7IMCCIjPqpCjeMn4RTOXLjXyE35m1j28Tm6A/LZt/veAiBGwb7Rz4DVlM
+         UeMW5uw1+VBAkylo7+BypERO/o9UC486EHcdQPLPNPfaQefJ3tI9o1PFJdRWs80nJVhi
+         OM8qq0gH8XGTVcKtoZoFjNw11Ix3m1/+0b4bg5NixRxm2yhSOoBf/Mu/FxRzeGVXvRFw
+         tTpQ==
+X-Gm-Message-State: AOAM531ikJ/X4XhtXtLqDCIrodV0sZQPMOKUeQxYZNxdpRpJUL9DfHsC
+        3oD6cx2FpNwdrkUHsnKkoaCXGVeqVpM9q5gjq3A/zfXgMNc=
+X-Google-Smtp-Source: ABdhPJwiCnqu6yM4uv/PV0S4Qz6YlQlrhPVpkOJMdAypGHgIGkKVo6c8u59L5EKFTyd32VvCZwg4u2QBBm+6bRT9OCc=
+X-Received: by 2002:aca:f241:: with SMTP id q62mr2885361oih.64.1643053137039;
+ Mon, 24 Jan 2022 11:38:57 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 24 Jan 2022 11:38:56 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220124165745.16277-1-tdas@codeaurora.org>
+References: <20220124165745.16277-1-tdas@codeaurora.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 24 Jan 2022 11:38:56 -0800
+Message-ID: <CAE-0n53pZG+LG8v35O6untzjn6H9dDOyrTX8Q4joHjcV3GAWSQ@mail.gmail.com>
+Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio
+ clock controllers
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marco Chiappero <marco.chiappero@intel.com>
+Quoting Taniya Das (2022-01-24 08:57:45)
+> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> index 937c2e0e93eb..0aa834ce6b61 100644
+> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
+> @@ -1744,6 +1746,47 @@
+>                         #clock-cells = <1>;
+>                 };
+>
+> +               lpass_audiocc: clock-controller@3300000 {
+> +                       compatible = "qcom,sc7280-lpassaudiocc";
+> +                       reg = <0  0x03300000 0 0x30000>;
+> +                       clocks = <&rpmhcc RPMH_CXO_CLK>,
+> +                              <&lpass_aon LPASS_AON_CC_MAIN_RCG_CLK_SRC>;
+> +                       clock-names = "bi_tcxo", "lpass_aon_cc_main_rcg_clk_src";
+> +                       power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
+> +                       #clock-cells = <1>;
+> +                       #power-domain-cells = <1>;
+> +               };
+> +
+> +               lpass_aon: clock-controller@3380000 {
+> +                       compatible = "qcom,sc7280-lpassaoncc";
+> +                       reg = <0  0x03380000 0 0x30000>;
+> +                       clocks = <&rpmhcc RPMH_CXO_CLK>,
+> +                              <&rpmhcc RPMH_CXO_CLK_A>,
+> +                              <&lpasscc LPASS_CORE_CC_CORE_CLK>;
+> +                       clock-names = "bi_tcxo", "bi_tcxo_ao", "iface";
+> +                       #clock-cells = <1>;
+> +                       #power-domain-cells = <1>;
+> +               };
+> +
+> +               lpasscore: clock-controller@3900000 {
+> +                       compatible = "qcom,sc7280-lpasscorecc";
+> +                       reg = <0  0x03900000 0 0x50000>;
 
-[ Upstream commit 6e680f94bc31d0fd0ff01123c964d895ea8040fa ]
+Nitpick: Why the extra space here? ^ Applies to all three above.
 
-The functions adf_iov_putmsg() and __adf_iov_putmsg() are shared by both
-PF and VF. Any logging or documentation should not refer to any specific
-direction.
-
-Make comments and log messages direction agnostic by replacing PF2VF
-with PFVF. Also fix the wording for some related comments.
-
-Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
-Co-developed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/crypto/qat/qat_common/adf_pf2vf_msg.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
-index d3f6ff68d45d9..d5a7261ddd928 100644
---- a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
-+++ b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
-@@ -117,11 +117,11 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
- 
- 	mutex_lock(lock);
- 
--	/* Check if PF2VF CSR is in use by remote function */
-+	/* Check if the PFVF CSR is in use by remote function */
- 	val = ADF_CSR_RD(pmisc_bar_addr, pf2vf_offset);
- 	if ((val & remote_in_use_mask) == remote_in_use_pattern) {
- 		dev_dbg(&GET_DEV(accel_dev),
--			"PF2VF CSR in use by remote function\n");
-+			"PFVF CSR in use by remote function\n");
- 		ret = -EBUSY;
- 		goto out;
- 	}
-@@ -129,7 +129,7 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
- 	msg &= ~local_in_use_mask;
- 	msg |= local_in_use_pattern;
- 
--	/* Attempt to get ownership of the PF2VF CSR */
-+	/* Attempt to get ownership of the PFVF CSR */
- 	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, msg | int_bit);
- 
- 	/* Wait for confirmation from remote func it received the message */
-@@ -151,7 +151,7 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
- 		ret = -EIO;
- 	}
- 
--	/* Finished with PF2VF CSR; relinquish it and leave msg in CSR */
-+	/* Finished with the PFVF CSR; relinquish it and leave msg in CSR */
- 	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, val & ~local_in_use_mask);
- out:
- 	mutex_unlock(lock);
-@@ -159,12 +159,13 @@ out:
- }
- 
- /**
-- * adf_iov_putmsg() - send PF2VF message
-+ * adf_iov_putmsg() - send PFVF message
-  * @accel_dev:  Pointer to acceleration device.
-  * @msg:	Message to send
-- * @vf_nr:	VF number to which the message will be sent
-+ * @vf_nr:	VF number to which the message will be sent if on PF, ignored
-+ *		otherwise
-  *
-- * Function sends a message from the PF to a VF
-+ * Function sends a message through the PFVF channel
-  *
-  * Return: 0 on success, error code otherwise.
-  */
--- 
-2.34.1
-
-
-
+> +                       clocks =  <&rpmhcc RPMH_CXO_CLK>;
+> +                       clock-names = "bi_tcxo";
+> +                       power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>;
+> +                       #clock-cells = <1>;
+> +                       #power-domain-cells = <1>;
