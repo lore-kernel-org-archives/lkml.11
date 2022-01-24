@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E01CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13971C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575259AbiAXVvM (ORCPT
+        id S1575281AbiAXVvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:51:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38842 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449726AbiAXVQF (ORCPT
+        Mon, 24 Jan 2022 16:51:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35842 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449591AbiAXVPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:16:05 -0500
+        Mon, 24 Jan 2022 16:15:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8292611C8;
-        Mon, 24 Jan 2022 21:16:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6249AC340E4;
-        Mon, 24 Jan 2022 21:16:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BC14B811F3;
+        Mon, 24 Jan 2022 21:15:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A0F8C340E4;
+        Mon, 24 Jan 2022 21:15:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058964;
-        bh=0pMuCKPO/MhYjB/3MEoZSaWEvbcXKnkvLaoassEfGl4=;
+        s=korg; t=1643058948;
+        bh=LSL6cfHhkID5SJXenbev0csahBF86XUuUbQBpDHN27Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xjOgep8rP8b7XmOx/qYM4OmmuaS1mQrbTw59OP2jPYwx+H/cKKTBKwHDTS8BN0KsU
-         lfr0wk0PD4wX9Gl0J3nTAvfhVUHwa9GSgxBvVXG8o1qzsAniBBZf12Wvkseri8Jucf
-         77D5rNuJyI76RjUZdterFIkfDMb+zgZJPX7J9sVQ=
+        b=PQYCGszN5kZYqPj4TmjfZ+H78w4CmTY2q6GkzPayELFI/g+IPyJmINcBZDZvVt5e/
+         mO1YFr5uHQOWBo+TTizW7Zc5KFIBUVfHkZdBU9n8Ha90KdR5ssvvBASYn6AOhBmfBH
+         Xlh59cwAiBMdGxfcjAaPRUZ44zrKgDTgcKHTlfnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jack Wang <jinpu.wang@ionos.com>,
-        Guoqing Jiang <Guoqing.Jiang@linux.dev>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0459/1039] RDMA/rtrs-clt: Fix the initial value of min_latency
-Date:   Mon, 24 Jan 2022 19:37:28 +0100
-Message-Id: <20220124184140.723253545@linuxfoundation.org>
+Subject: [PATCH 5.16 0455/1039] ASoC: cs42l42: Report initial jack state
+Date:   Mon, 24 Jan 2022 19:37:24 +0100
+Message-Id: <20220124184140.591589225@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,36 +48,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jack Wang <jinpu.wang@ionos.com>
+From: Richard Fitzgerald <rf@opensource.cirrus.com>
 
-[ Upstream commit 925cac6358677d3d64f9b25f205eeb3d31c9f7f8 ]
+[ Upstream commit fdd535283779ec9f9c35fda352585c629121214f ]
 
-The type of min_latency is ktime_t, so use KTIME_MAX to initialize the
-initial value.
+When a jack handler is registered in cs42l42_set_jack() the
+initial state should be reported if an attached headphone/headset
+has already been detected.
 
-Fixes: dc3b66a0ce70 ("RDMA/rtrs-clt: Add a minimum latency multipath policy")
-Link: https://lore.kernel.org/r/20211124081040.19533-1-jinpu.wang@ionos.com
-Signed-off-by: Jack Wang <jinpu.wang@ionos.com>
-Reviewed-by: Guoqing Jiang <Guoqing.Jiang@linux.dev>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+The jack detect sequence takes around 1 second: typically long
+enough for the machine driver to probe and register the jack handler
+in time to receive the first report from the interrupt handler. So
+it is possible on some systems that the correct initial state was seen
+simply because of lucky timing. Modular builds were more likely to
+miss the reporting of the initial state.
+
+Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
+Fixes: 4ca239f33737 ("ASoC: cs42l42: Always enable TS_PLUG and TS_UNPLUG interrupts")
+Link: https://lore.kernel.org/r/20211119124854.58939-1-rf@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/soc/codecs/cs42l42.c | 22 ++++++++++++++++++++++
+ sound/soc/codecs/cs42l42.h |  2 ++
+ 2 files changed, 24 insertions(+)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index 15c0077dd27eb..e39709dee179d 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -867,7 +867,7 @@ static struct rtrs_clt_sess *get_next_path_min_latency(struct path_it *it)
- 	struct rtrs_clt_sess *min_path = NULL;
- 	struct rtrs_clt *clt = it->clt;
- 	struct rtrs_clt_sess *sess;
--	ktime_t min_latency = INT_MAX;
-+	ktime_t min_latency = KTIME_MAX;
- 	ktime_t latency;
+diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
+index 27a1c4c73074f..a63fba4e6c9c2 100644
+--- a/sound/soc/codecs/cs42l42.c
++++ b/sound/soc/codecs/cs42l42.c
+@@ -521,8 +521,25 @@ static int cs42l42_set_jack(struct snd_soc_component *component, struct snd_soc_
+ {
+ 	struct cs42l42_private *cs42l42 = snd_soc_component_get_drvdata(component);
  
- 	list_for_each_entry_rcu(sess, &clt->paths_list, s.entry) {
++	/* Prevent race with interrupt handler */
++	mutex_lock(&cs42l42->jack_detect_mutex);
+ 	cs42l42->jack = jk;
+ 
++	if (jk) {
++		switch (cs42l42->hs_type) {
++		case CS42L42_PLUG_CTIA:
++		case CS42L42_PLUG_OMTP:
++			snd_soc_jack_report(jk, SND_JACK_HEADSET, SND_JACK_HEADSET);
++			break;
++		case CS42L42_PLUG_HEADPHONE:
++			snd_soc_jack_report(jk, SND_JACK_HEADPHONE, SND_JACK_HEADPHONE);
++			break;
++		default:
++			break;
++		}
++	}
++	mutex_unlock(&cs42l42->jack_detect_mutex);
++
+ 	return 0;
+ }
+ 
+@@ -1611,6 +1628,8 @@ static irqreturn_t cs42l42_irq_thread(int irq, void *data)
+ 		CS42L42_M_DETECT_FT_MASK |
+ 		CS42L42_M_HSBIAS_HIZ_MASK);
+ 
++	mutex_lock(&cs42l42->jack_detect_mutex);
++
+ 	/* Check auto-detect status */
+ 	if ((~masks[5]) & irq_params_table[5].mask) {
+ 		if (stickies[5] & CS42L42_HSDET_AUTO_DONE_MASK) {
+@@ -1689,6 +1708,8 @@ static irqreturn_t cs42l42_irq_thread(int irq, void *data)
+ 		}
+ 	}
+ 
++	mutex_unlock(&cs42l42->jack_detect_mutex);
++
+ 	return IRQ_HANDLED;
+ }
+ 
+@@ -2033,6 +2054,7 @@ static int cs42l42_i2c_probe(struct i2c_client *i2c_client,
+ 
+ 	cs42l42->dev = &i2c_client->dev;
+ 	i2c_set_clientdata(i2c_client, cs42l42);
++	mutex_init(&cs42l42->jack_detect_mutex);
+ 
+ 	cs42l42->regmap = devm_regmap_init_i2c(i2c_client, &cs42l42_regmap);
+ 	if (IS_ERR(cs42l42->regmap)) {
+diff --git a/sound/soc/codecs/cs42l42.h b/sound/soc/codecs/cs42l42.h
+index f45bcc9a3a62f..02128ebf8989a 100644
+--- a/sound/soc/codecs/cs42l42.h
++++ b/sound/soc/codecs/cs42l42.h
+@@ -12,6 +12,7 @@
+ #ifndef __CS42L42_H__
+ #define __CS42L42_H__
+ 
++#include <linux/mutex.h>
+ #include <sound/jack.h>
+ 
+ #define CS42L42_PAGE_REGISTER	0x00	/* Page Select Register */
+@@ -838,6 +839,7 @@ struct  cs42l42_private {
+ 	struct gpio_desc *reset_gpio;
+ 	struct completion pdn_done;
+ 	struct snd_soc_jack *jack;
++	struct mutex jack_detect_mutex;
+ 	int pll_config;
+ 	int bclk;
+ 	u32 sclk;
 -- 
 2.34.1
 
