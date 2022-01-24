@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FEFC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8642AC41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380625AbiAXUQf (ORCPT
+        id S1380790AbiAXUQz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43908 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345767AbiAXT6A (ORCPT
+        Mon, 24 Jan 2022 15:16:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358398AbiAXT7X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:58:00 -0500
+        Mon, 24 Jan 2022 14:59:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10219C04D628;
+        Mon, 24 Jan 2022 11:28:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E87ACB8123A;
-        Mon, 24 Jan 2022 19:57:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E4BAC340E5;
-        Mon, 24 Jan 2022 19:57:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 917DF60BB9;
+        Mon, 24 Jan 2022 19:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F5EBC340E7;
+        Mon, 24 Jan 2022 19:28:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054271;
-        bh=kTg8vEfwcwCp1q4N3Z9VVLQobA/kn/bNqh568ct1VJ4=;
+        s=korg; t=1643052494;
+        bh=8Qb3odU96UAZmSxkT0ILSF9+4S+jInvXDLtNLOeojlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TcfSJSCMf+vmxfYKtW9OTxYRVTbMv8VNnXo6llm1l3eOuzrIWn6I7zg4RrOX/7s3b
-         O0dklI1QwNI/jKIf8cJQNn1DomajPi6ySoNTdpNsdPXlFTpyE5dBhIPFMFnZ68gzcG
-         2VFpyI9cda/DZPj6uPRNqatwnkgEBvJzPCy/Ef8c=
+        b=ZUNhiNAwwx1y0vtI+W31x9ejhFIxvDE6l6byynmvy1iui7+sFvrS8obr4vsisip46
+         F1a7sF9Im2A7BDHr6QT6uThwGnOv6gQ5R/iZ1Exyeb4yYDBRlkKzQBK2Y8awlHYn9l
+         2vXSWoCU7VggUvRJ17fRuNkVqSzZ6CyrISlVBI+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 335/563] ACPI / x86: Allow specifying acpi_device_override_status() quirks by path
-Date:   Mon, 24 Jan 2022 19:41:40 +0100
-Message-Id: <20220124184036.019748581@linuxfoundation.org>
+Subject: [PATCH 5.4 078/320] xfrm: fix a small bug in xfrm_sa_len()
+Date:   Mon, 24 Jan 2022 19:41:02 +0100
+Message-Id: <20220124183956.397450184@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,106 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit ba46e42e925b5d09b4e441f8de3db119cc7df58f ]
+[ Upstream commit 7770a39d7c63faec6c4f33666d49a8cb664d0482 ]
 
-Not all ACPI-devices have a HID + UID, allow specifying quirks for
-acpi_device_override_status() by path too.
+copy_user_offload() will actually push a struct struct xfrm_user_offload,
+which is different than (struct xfrm_state *)->xso
+(struct xfrm_state_offload)
 
-Note this moves the path/HID+UID check to after the CPU + DMI checks
-since the path lookup is somewhat costly.
-
-This way this lookup is only done on devices where the other checks
-match.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: d77e38e612a01 ("xfrm: Add an IPsec hardware offloading API")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/utils.c | 42 ++++++++++++++++++++++++++++++----------
- 1 file changed, 32 insertions(+), 10 deletions(-)
+ net/xfrm/xfrm_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
-index c6b0782dcced5..91bbc4b6b8035 100644
---- a/drivers/acpi/x86/utils.c
-+++ b/drivers/acpi/x86/utils.c
-@@ -38,22 +38,30 @@ struct override_status_id {
- 	struct x86_cpu_id cpu_ids[2];
- 	struct dmi_system_id dmi_ids[2]; /* Optional */
- 	const char *uid;
-+	const char *path;
- 	unsigned long long status;
- };
- 
--#define ENTRY(status, hid, uid, cpu_model, dmi...) {			\
-+#define ENTRY(status, hid, uid, path, cpu_model, dmi...) {		\
- 	{ { hid, }, {} },						\
- 	{ X86_MATCH_INTEL_FAM6_MODEL(cpu_model, NULL), {} },		\
- 	{ { .matches = dmi }, {} },					\
- 	uid,								\
-+	path,								\
- 	status,								\
- }
- 
- #define PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
--	ENTRY(ACPI_STA_DEFAULT, hid, uid, cpu_model, dmi)
-+	ENTRY(ACPI_STA_DEFAULT, hid, uid, NULL, cpu_model, dmi)
- 
- #define NOT_PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
--	ENTRY(0, hid, uid, cpu_model, dmi)
-+	ENTRY(0, hid, uid, NULL, cpu_model, dmi)
-+
-+#define PRESENT_ENTRY_PATH(path, cpu_model, dmi...) \
-+	ENTRY(ACPI_STA_DEFAULT, "", NULL, path, cpu_model, dmi)
-+
-+#define NOT_PRESENT_ENTRY_PATH(path, cpu_model, dmi...) \
-+	ENTRY(0, "", NULL, path, cpu_model, dmi)
- 
- static const struct override_status_id override_status_ids[] = {
- 	/*
-@@ -120,13 +128,6 @@ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *s
- 	unsigned int i;
- 
- 	for (i = 0; i < ARRAY_SIZE(override_status_ids); i++) {
--		if (acpi_match_device_ids(adev, override_status_ids[i].hid))
--			continue;
--
--		if (!adev->pnp.unique_id ||
--		    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
--			continue;
--
- 		if (!x86_match_cpu(override_status_ids[i].cpu_ids))
- 			continue;
- 
-@@ -134,6 +135,27 @@ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *s
- 		    !dmi_check_system(override_status_ids[i].dmi_ids))
- 			continue;
- 
-+		if (override_status_ids[i].path) {
-+			struct acpi_buffer path = { ACPI_ALLOCATE_BUFFER, NULL };
-+			bool match;
-+
-+			if (acpi_get_name(adev->handle, ACPI_FULL_PATHNAME, &path))
-+				continue;
-+
-+			match = strcmp((char *)path.pointer, override_status_ids[i].path) == 0;
-+			kfree(path.pointer);
-+
-+			if (!match)
-+				continue;
-+		} else {
-+			if (acpi_match_device_ids(adev, override_status_ids[i].hid))
-+				continue;
-+
-+			if (!adev->pnp.unique_id ||
-+			    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
-+				continue;
-+		}
-+
- 		*status = override_status_ids[i].status;
- 		ret = true;
- 		break;
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 0cee2d3c6e452..ddcf569d852f7 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -2816,7 +2816,7 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
+ 	if (x->props.extra_flags)
+ 		l += nla_total_size(sizeof(x->props.extra_flags));
+ 	if (x->xso.dev)
+-		 l += nla_total_size(sizeof(x->xso));
++		 l += nla_total_size(sizeof(struct xfrm_user_offload));
+ 	if (x->props.smark.v | x->props.smark.m) {
+ 		l += nla_total_size(sizeof(x->props.smark.v));
+ 		l += nla_total_size(sizeof(x->props.smark.m));
 -- 
 2.34.1
 
