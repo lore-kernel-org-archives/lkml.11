@@ -2,100 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6DE6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343681AbiAXSyJ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343611AbiAXSwZ (ORCPT
+        id S245671AbiAXSyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:54:13 -0500
+Received: from mail-qk1-f174.google.com ([209.85.222.174]:43606 "EHLO
+        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245656AbiAXSw1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B21EC0617A6;
-        Mon, 24 Jan 2022 10:52:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7E5FB81227;
-        Mon, 24 Jan 2022 18:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C708BC340E5;
-        Mon, 24 Jan 2022 18:52:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050332;
-        bh=nF1g3TlmBQAjvdwYb0PgfScODMcjqpRH4mw4fHaeTBE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mG2A3L/i/p0+bxE92vI63bV153IeD/X+bklsBH3IE0QJYIFXXwIrnO0jctyXYogKm
-         xLwpIpz9J9z+dxEY0QwsCYb+tqqrd1vM5J4kEQSpIFRylB11O4d3fFcCWEPDRI+ER0
-         Gq3vWpf+gmr1qoFs36WlwO9sefhio+70XhKApE/w=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 083/114] parisc: Avoid calling faulthandler_disabled() twice
-Date:   Mon, 24 Jan 2022 19:42:58 +0100
-Message-Id: <20220124183929.673037481@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 13:52:27 -0500
+Received: by mail-qk1-f174.google.com with SMTP id h2so21394780qkp.10;
+        Mon, 24 Jan 2022 10:52:27 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JVltL7XfUr78OBdyLqEqOu/YRzCA0cEoywdSG9wAfwo=;
+        b=QJ58ryjU0BQnhokNxWiSvx9LVJwvpRNeTjeCa7g5uqbTy6E9pv4SzezeQnGTPQcvYm
+         QQgaIWSpdt/RWwmso62q/DYncSFGhGGOJDQcPLiwqvy/X8ucaeyM8sAguAMXYjX5WH8V
+         +FP/z9eeimYBcPQUsRAJxiWRYGOOts4wBFoKeuHADnfTwnGpAgY5QdrgKI2zhaLcEkgJ
+         fNOm17Fze2vFZPl7Gx+vU6mWOzbhmA0MYXWYNjJXD2Fy0MwytP904gXmZ+GVLAsjn34x
+         zYEQVjdBrIVpxAHKO1IXyFtQO9j+3uNqTqwgX2O9CqTiNfygiLvxE5OjvUuga8IXiWz+
+         MdFA==
+X-Gm-Message-State: AOAM5328EF22RW5au7gQUBSdOKnMVMs4/R7IOtYCmclHB/6PYcievHFn
+        h0eIp75pgzzLfbS8pASIQ5NN0Q9JL3KtqqxW23w=
+X-Google-Smtp-Source: ABdhPJx7TK2MvPwVSaAnSh01KupVk1iv0Pp7EXSDqNuAkHni9KT1XFQY2XONmQZbwXzKfAEkNwUa4j5bzUrEm8hJr20=
+X-Received: by 2002:a05:620a:1a97:: with SMTP id bl23mr12176564qkb.621.1643050346792;
+ Mon, 24 Jan 2022 10:52:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220111103346.2660639-1-abailon@baylibre.com> <7hilu9xe7n.fsf@baylibre.com>
+In-Reply-To: <7hilu9xe7n.fsf@baylibre.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 24 Jan 2022 19:52:11 +0100
+Message-ID: <CAJZ5v0gZFBEKDt6S0H91F5xCjC3qtT6B+cTnv6u1nijMHkc8jA@mail.gmail.com>
+Subject: Re: [PATCH v4 RESEND 0/2] Add a generic virtual thermal sensor
+To:     Kevin Hilman <khilman@baylibre.com>
+Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ben.tseng@mediatek.com, Matthias Kaehlcke <mka@chromium.org>,
+        Alexandre Bailon <abailon@baylibre.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Zhang, Rui" <rui.zhang@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+On Mon, Jan 24, 2022 at 5:58 PM Kevin Hilman <khilman@baylibre.com> wrote:
+>
+> Daniel, Amit,
+>
+> Alexandre Bailon <abailon@baylibre.com> writes:
+>
+> > This series add a virtual thermal sensor.
+> > It could be used to get a temperature using some thermal sensors.
+> > Currently, the supported operations are max, min and avg.
+> > The virtual sensor could be easily extended to support others operations.
+> >
+> > Changes in v2:
+> > - Fix some warnings / errors reported by kernel test robot
+> > - rename some struct and functions with a more accurate name
+> > - update the dt bindings: rename type attribute to aggregation-function
+> > - factorize a little bit the aggregation functions
+> > Changes in v3:
+> > - Aggregate thermal zone instead of thermal sensors
+> > - Use try_get_module / put_module to prevent thermal providers to be removed
+> > - Update the bindings, to be more accurate
+> > Changes in v4:
+> > - Fix two warnings reported by kernel test robot
+>
+> Any more feedback on this series?
 
-[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
-
-In handle_interruption(), we call faulthandler_disabled() to check whether the
-fault handler is not disabled. If the fault handler is disabled, we immediately
-call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
-do_page_fault() attempts to fixup the exception by jumping to no_context:
-
-no_context:
-
-        if (!user_mode(regs) && fixup_exception(regs)) {
-                return;
-        }
-
-        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
-
-Apart from the error messages, the two blocks of code perform the same
-function.
-
-We can avoid two calls to faulthandler_disabled() by a simple revision
-to the code in handle_interruption().
-
-Note: I didn't try to fix the formatting of this code block.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/parisc/kernel/traps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index 6f61a17e2485a..55e7ba06511df 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -796,7 +796,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 	     * unless pagefault_disable() was called before.
- 	     */
- 
--	    if (fault_space == 0 && !faulthandler_disabled())
-+	    if (faulthandler_disabled() || fault_space == 0)
- 	    {
- 		/* Clean up and return if in exception table. */
- 		if (fixup_exception(regs))
--- 
-2.34.1
-
-
-
+Hopefully, I'll get to it this week and I'll let you know.
