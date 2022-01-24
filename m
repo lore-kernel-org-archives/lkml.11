@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4107AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF218C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:50:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357281AbiAXTtn (ORCPT
+        id S1357311AbiAXTts (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:49:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34628 "EHLO
+        Mon, 24 Jan 2022 14:49:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37046 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347433AbiAXTjH (ORCPT
+        with ESMTP id S1354813AbiAXTjX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:39:07 -0500
+        Mon, 24 Jan 2022 14:39:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 290FB614B8;
-        Mon, 24 Jan 2022 19:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D5A1C340ED;
-        Mon, 24 Jan 2022 19:39:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8708D60909;
+        Mon, 24 Jan 2022 19:39:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C4FEC340E5;
+        Mon, 24 Jan 2022 19:39:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053146;
-        bh=jDg9XGqHjkDJjhAXgWKbRhPaSoxWIUpSvlaXpemAD9Q=;
+        s=korg; t=1643053162;
+        bh=osbjsETwmrFoJOk4P3d1ByJmQInAso1wONfhM9/Ubdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BCp+Pgvgfb8e/Jn9w+rlWQ7u5MN3VYeJQGDu6v1pBTWQJ6lyCAoPUTAO2v8rDZHC1
-         ipJI08tXHs93PXJAq1AHOdfSFqKleJTP2Oo6HkcwN3u+YYoM9FlET/t36WwdzXM+GT
-         kG7T6SbzxZ8bF1deFVfALED5/oUxxCMJPnWZaNaQ=
+        b=wcpj23CSk3rgduECmBRk8wq5z2SbbR50fC87VaYWTMxfcyP0vXKpGOOCXjXZlif1B
+         KghHffYZaOPI6yrzh3PBrETh8m9DTKro3ItEhdmnSjDZjbL8ZifgZpHAJ4oyV5TE4a
+         pb/cnskfJ25PG5c96YA/9gvZ/gyGHyKcJG9r7nWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.4 274/320] of: base: Improve argument length mismatch error
-Date:   Mon, 24 Jan 2022 19:44:18 +0100
-Message-Id: <20220124184003.297857000@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 296/320] net: axienet: fix number of TX ring slots for available check
+Date:   Mon, 24 Jan 2022 19:44:40 +0100
+Message-Id: <20220124184004.013259783@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,55 +46,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch@tkos.co.il>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 5d05b811b5acb92fc581a7b328b36646c86f5ab9 upstream.
+commit aba57a823d2985a2cc8c74a2535f3a88e68d9424 upstream.
 
-The cells_name field of of_phandle_iterator might be NULL. Use the
-phandle name instead. With this change instead of:
+The check for the number of available TX ring slots was off by 1 since a
+slot is required for the skb header as well as each fragment. This could
+result in overwriting a TX ring slot that was still in use.
 
-  OF: /soc/pinctrl@1000000: (null) = 3 found 2
-
-We get:
-
-  OF: /soc/pinctrl@1000000: phandle pinctrl@1000000 needs 3, found 2
-
-Which is a more helpful messages making DT debugging easier.
-
-In this particular example the phandle name looks like duplicate of the
-same node name. But note that the first node is the parent node
-(it->parent), while the second is the phandle target (it->node). They
-happen to be the same in the case that triggered this improvement. See
-commit 72cb4c48a46a ("arm64: dts: qcom: ipq6018: Fix gpio-ranges
-property").
-
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/f6a68e0088a552ea9dfd4d8e3b5b586d92594738.1640881913.git.baruch@tkos.co.il
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/of/base.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1366,9 +1366,14 @@ int of_phandle_iterator_next(struct of_p
- 		 * property data length
- 		 */
- 		if (it->cur + count > it->list_end) {
--			pr_err("%pOF: %s = %d found %td\n",
--			       it->parent, it->cells_name,
--			       count, it->list_end - it->cur);
-+			if (it->cells_name)
-+				pr_err("%pOF: %s = %d found %td\n",
-+					it->parent, it->cells_name,
-+					count, it->list_end - it->cur);
-+			else
-+				pr_err("%pOF: phandle %s needs %d, found %td\n",
-+					it->parent, of_node_full_name(it->node),
-+					count, it->list_end - it->cur);
- 			goto err;
- 		}
- 	}
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -636,7 +636,7 @@ axienet_start_xmit(struct sk_buff *skb,
+ 	num_frag = skb_shinfo(skb)->nr_frags;
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ 
+-	if (axienet_check_tx_bd_space(lp, num_frag)) {
++	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
+ 		if (netif_queue_stopped(ndev))
+ 			return NETDEV_TX_BUSY;
+ 
+@@ -646,7 +646,7 @@ axienet_start_xmit(struct sk_buff *skb,
+ 		smp_mb();
+ 
+ 		/* Space might have just been freed - check again */
+-		if (axienet_check_tx_bd_space(lp, num_frag))
++		if (axienet_check_tx_bd_space(lp, num_frag + 1))
+ 			return NETDEV_TX_BUSY;
+ 
+ 		netif_wake_queue(ndev);
 
 
