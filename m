@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3A61C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA61C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314806AbiAYCvs (ORCPT
+        id S1314962AbiAYCwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347317AbiAXVFL (ORCPT
+        Mon, 24 Jan 2022 21:52:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58382 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354126AbiAXVFp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C712C055A97;
-        Mon, 24 Jan 2022 12:04:32 -0800 (PST)
+        Mon, 24 Jan 2022 16:05:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09BF161357;
-        Mon, 24 Jan 2022 20:04:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB007C340E5;
-        Mon, 24 Jan 2022 20:04:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61A3A6141C;
+        Mon, 24 Jan 2022 21:05:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3973CC340EC;
+        Mon, 24 Jan 2022 21:05:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054671;
-        bh=TCMAxjkJB9dgoIXSVmuuBks01Ti+Fg5Kyhrp6E1okHA=;
+        s=korg; t=1643058342;
+        bh=jP+0gXL/VNQriQLXfi4a6uJjR2ZLUnqmaq2pjhalBUM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DlqVVy0Ri6sg23/kQTRjdVd/x31vNOqjesvEa0NlsqOD4GYPRA7DDaZJtJxJwjVKa
-         EA+ehfVAXiU3c3O7MXaTgfFrsvJTKbvLT46WsyfxDMVyKa3u6gCHgorvLh3kkYgiN0
-         RrWanrZ/q3Kk/ad3fuwHELo0lf85K6PsrkoKbdSM=
+        b=StSvJKeUtlFUGgsxEo68zVwQ5kFHqKJ6jSGXkhSNusqH8yPw4McARO7ENYtXYRiav
+         j4B3FNr5LVtgu+uSyrjWxHvHPXX1rULpcOM32jPLsHhGW1/PZCfX0RgvddqNmlh6Uh
+         wZiAPP93cJxbyeAYPZTHr7piQrYrzyrARd7PLtPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jay Chen <jkchen@linux.alibaba.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
+        Mark Chen <mark-yw.chen@mediatek.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 433/563] irqchip/gic-v4: Disable redistributors view of the VPE table at boot time
-Date:   Mon, 24 Jan 2022 19:43:18 +0100
-Message-Id: <20220124184039.425602485@linuxfoundation.org>
+Subject: [PATCH 5.16 0257/1039] Bluetooth: btusb: Handle download_firmware failure cases
+Date:   Mon, 24 Jan 2022 19:34:06 +0100
+Message-Id: <20220124184133.952496250@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,60 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Mark Chen <mark-yw.chen@mediatek.com>
 
-[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
+[ Upstream commit 00c0ee9850b7b0cb7c40b8daba806ae2245e59d4 ]
 
-Jay Chen reported that using a kdump kernel on a GICv4.1 system
-results in a RAS error being delivered when the secondary kernel
-configures the ITS's view of the new VPE table.
+For Mediatek chipset, it can not enabled if there are something wrong
+in btmtk_setup_firmware_79xx(). Thus, the process must be terminated
+and returned error code.
 
-As it turns out, that's because each RD still has a pointer to
-the previous instance of the VPE table, and that particular
-implementation is very upset by seeing two bits of the HW that
-should point to the same table with different values.
-
-To solve this, let's invalidate any reference that any RD has to
-the VPE table when discovering the RDs. The ITS can then be
-programmed as expected.
-
-Reported-by: Jay Chen <jkchen@linux.alibaba.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
-Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
+Fixes: fc342c4dc4087 ("Bluetooth: btusb: Add protocol support for MediaTek MT7921U USB devices")
+Co-developed-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Mark Chen <mark-yw.chen@mediatek.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/bluetooth/btusb.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 1bdb7acf445f4..04d1b3963b6ba 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -915,6 +915,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
- {
- 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
+diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
+index c923c38658baa..a766660603634 100644
+--- a/drivers/bluetooth/btusb.c
++++ b/drivers/bluetooth/btusb.c
+@@ -2895,6 +2895,10 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
+ 			"mediatek/BT_RAM_CODE_MT%04x_1_%x_hdr.bin",
+ 			 dev_id & 0xffff, (fw_version & 0xff) + 1);
+ 		err = btusb_mtk_setup_firmware_79xx(hdev, fw_bin_name);
++		if (err < 0) {
++			bt_dev_err(hdev, "Failed to set up firmware (%d)", err);
++			return err;
++		}
  
-+	/* Boot-time cleanip */
-+	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
-+		u64 val;
-+
-+		/* Deactivate any present vPE */
-+		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
-+		if (val & GICR_VPENDBASER_Valid)
-+			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
-+					      ptr + SZ_128K + GICR_VPENDBASER);
-+
-+		/* Mark the VPE table as invalid */
-+		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
-+		val &= ~GICR_VPROPBASER_4_1_VALID;
-+		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
-+	}
-+
- 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
- 
- 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
+ 		/* It's Device EndPoint Reset Option Register */
+ 		btusb_mtk_uhw_reg_write(data, MTK_EP_RST_OPT, MTK_EP_RST_IN_OUT_OPT);
 -- 
 2.34.1
 
