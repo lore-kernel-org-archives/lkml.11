@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A36BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16FBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234902AbiAXTHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:07:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60472 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344657AbiAXTBt (ORCPT
+        id S242524AbiAXTIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:08:01 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57470 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344597AbiAXTBn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:01:49 -0500
+        Mon, 24 Jan 2022 14:01:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07CED60B86;
-        Mon, 24 Jan 2022 19:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEEBDC340E5;
-        Mon, 24 Jan 2022 19:01:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07F33B8123D;
+        Mon, 24 Jan 2022 19:01:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3907BC340E5;
+        Mon, 24 Jan 2022 19:01:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050908;
-        bh=76HVBb0t5v3c1y4QZ4tIBcCqirxUjeVEVr/1bZHAtoI=;
+        s=korg; t=1643050900;
+        bh=GmG+/voixByuzyHwsMFBsuj2PX+ZSiBIZM0+gB8/Sjg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wI3WAnSupWwhKIgq9KjADJsPpCe+rm/9qQf7RoqQlwFn96/ngoaC7LonTivoB+TBS
-         IgP6Fyf2XsZjI6+JzyqiNmjq8kQHh7XskRXSZQBv5RnNKnm2JEJzemJz6dVh6yHnfJ
-         OW/SXcQxqHJYYbFaH92n6El4WvF+vPmfwPkKK6R8=
+        b=eqiRpQTAu0D67xHnugDBo0GEuNdZMYaEsqwqxT6WeEC641xHrn6+FtbSov/Cb+hPd
+         YSo+9sZCDcHm3/ufBp04Hj1zYSfWalCkDFxIUcyQ/WShFKr21b/NI6GfoGJJ/Epzrg
+         ZNnhcJzetHzdqQ7ypN7vPT+OFLHbSPeENO/VDFsI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 118/157] power: bq25890: Enable continuous conversion for ADC at charging
-Date:   Mon, 24 Jan 2022 19:43:28 +0100
-Message-Id: <20220124183936.522999069@linuxfoundation.org>
+Subject: [PATCH 4.9 116/157] scsi: sr: Dont use GFP_DMA
+Date:   Mon, 24 Jan 2022 19:43:26 +0100
+Message-Id: <20220124183936.462228849@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,41 +47,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yauhen Kharuzhy <jekhor@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 80211be1b9dec04cc2805d3d81e2091ecac289a1 ]
+[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
 
-Instead of one shot run of ADC at beginning of charging, run continuous
-conversion to ensure that all charging-related values are monitored
-properly (input voltage, input current, themperature etc.).
+The allocated buffers are used as a command payload, for which the block
+layer and/or DMA API do the proper bounce buffering if needed.
 
-Signed-off-by: Yauhen Kharuzhy <jekhor@gmail.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
+Reported-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/power/supply/bq25890_charger.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/scsi/sr.c        | 2 +-
+ drivers/scsi/sr_vendor.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
-index f993a55cde20f..faf2a62435674 100644
---- a/drivers/power/supply/bq25890_charger.c
-+++ b/drivers/power/supply/bq25890_charger.c
-@@ -521,12 +521,12 @@ static void bq25890_handle_state_change(struct bq25890_device *bq,
+diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
+index 9b63e46edffcc..a2a4c6e22c68d 100644
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -882,7 +882,7 @@ static void get_capabilities(struct scsi_cd *cd)
  
- 	if (!new_state->online) {			     /* power removed */
- 		/* disable ADC */
--		ret = bq25890_field_write(bq, F_CONV_START, 0);
-+		ret = bq25890_field_write(bq, F_CONV_RATE, 0);
- 		if (ret < 0)
- 			goto error;
- 	} else if (!old_state.online) {			    /* power inserted */
- 		/* enable ADC, to have control of charge current/voltage */
--		ret = bq25890_field_write(bq, F_CONV_START, 1);
-+		ret = bq25890_field_write(bq, F_CONV_RATE, 1);
- 		if (ret < 0)
- 			goto error;
- 	}
+ 
+ 	/* allocate transfer buffer */
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer) {
+ 		sr_printk(KERN_ERR, cd, "out of memory.\n");
+ 		return;
+diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
+index 11a238cb22223..629bfe1b20263 100644
+--- a/drivers/scsi/sr_vendor.c
++++ b/drivers/scsi/sr_vendor.c
+@@ -118,7 +118,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
+ 		density = (blocklength > 2048) ? 0x81 : 0x83;
+ #endif
+ 
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -166,7 +166,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
+ 	if (cd->cdi.mask & CDC_MULTI_SESSION)
+ 		return 0;
+ 
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
 -- 
 2.34.1
 
