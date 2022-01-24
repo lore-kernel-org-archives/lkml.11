@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFD2C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78075C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444497AbiAXVBD (ORCPT
+        id S1444808AbiAXVBg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39958 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387203AbiAXUgi (ORCPT
+        Mon, 24 Jan 2022 16:01:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387950AbiAXUhg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:38 -0500
+        Mon, 24 Jan 2022 15:37:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB1E7C02B8E2;
+        Mon, 24 Jan 2022 11:51:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 624EEB811FB;
-        Mon, 24 Jan 2022 20:36:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89735C340E5;
-        Mon, 24 Jan 2022 20:36:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68A81B8123A;
+        Mon, 24 Jan 2022 19:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8457CC340E8;
+        Mon, 24 Jan 2022 19:50:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056595;
-        bh=Uxs0Gx+3NmFC6BXoIOxZxNJaR0wXchGDKw1i4wsCkHU=;
+        s=korg; t=1643053860;
+        bh=dew9iB/PSxpZFa7z+LvbEm0R1sFHfkirT3jY0G+NzIo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xGRqnIcNW8yFaOgvD4oge97fW3j3D2ofdiD28hGfzdEePW/M/BVELJIGpn579yaRJ
-         z+Zh3p38kCTlvdMTGQF5kD3NKgyaycP7k5I6ilVAcSf2hDtxnyytJum6fOhNB+t/PG
-         8yp7icnlrY3prTYG4NtE4I1ICl0On3x3Ky4XBCmI=
+        b=FXte4R0tvEQmbEtum+D04DmEqTRgQAsOIigDo96C+s4uy+jjrzdQrd6Lt6hCKYipi
+         n+vLRr4VnDnDLSfPyuQyfdV5hS1hTaeCw4V5HzkVq8AxBfvR+iF073q3Tgknsdgzaa
+         2mAxLl9VknkPnTdw4f/CWEKjDXdEgzsO5J2ZBBtY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 535/846] net-sysfs: update the queue counts in the unregistration path
-Date:   Mon, 24 Jan 2022 19:40:52 +0100
-Message-Id: <20220124184119.458435129@linuxfoundation.org>
+Subject: [PATCH 5.10 200/563] ACPI: scan: Create platform device for BCM4752 and LNV4752 ACPI nodes
+Date:   Mon, 24 Jan 2022 19:39:25 +0100
+Message-Id: <20220124184031.344880300@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,36 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
+[ Upstream commit f85196bdd5a50da74670250564740fc852b3c239 ]
 
-When updating Rx and Tx queue kobjects, the queue count should always be
-updated to match the queue kobjects count. This was not done in the net
-device unregistration path, fix it. Tracking all queue count updates
-will allow in a following up patch to detect illegal updates.
+BCM4752 and LNV4752 ACPI nodes describe a Broadcom 4752 GPS module
+attached to an UART of the system.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The GPS modules talk a custom protocol which only works with a closed-
+source Android gpsd daemon which knows this protocol.
+
+The ACPI nodes also describe GPIOs to turn the GPS on/off these are
+handled by the net/rfkill/rfkill-gpio.c code. This handling predates the
+addition of enumeration of ACPI instantiated serdevs to the kernel and
+was broken by that addition, because the ACPI scan code now no longer
+instantiates platform_device-s for these nodes.
+
+Rename the i2c_multi_instantiate_ids HID list to ignore_serial_bus_ids
+and add the BCM4752 and LNV4752 HIDs, so that rfkill-gpio gets
+a platform_device to bind to again; and so that a tty cdev for gpsd
+gets created for these.
+
+Fixes: e361d1f85855 ("ACPI / scan: Fix enumeration for special UART devices")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/net-sysfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/acpi/scan.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index dfa5ecff7f738..a4ae652633844 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -1820,6 +1820,9 @@ static void remove_queue_kobjects(struct net_device *dev)
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index de0533bd4e086..67a5ee2fedfd3 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1577,6 +1577,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ {
+ 	struct list_head resource_list;
+ 	bool is_serial_bus_slave = false;
++	static const struct acpi_device_id ignore_serial_bus_ids[] = {
+ 	/*
+ 	 * These devices have multiple I2cSerialBus resources and an i2c-client
+ 	 * must be instantiated for each, each with its own i2c_device_id.
+@@ -1585,11 +1586,18 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	 * drivers/platform/x86/i2c-multi-instantiate.c driver, which knows
+ 	 * which i2c_device_id to use for each resource.
+ 	 */
+-	static const struct acpi_device_id i2c_multi_instantiate_ids[] = {
+ 		{"BSG1160", },
+ 		{"BSG2150", },
+ 		{"INT33FE", },
+ 		{"INT3515", },
++	/*
++	 * HIDs of device with an UartSerialBusV2 resource for which userspace
++	 * expects a regular tty cdev to be created (instead of the in kernel
++	 * serdev) and which have a kernel driver which expects a platform_dev
++	 * such as the rfkill-gpio driver.
++	 */
++		{"BCM4752", },
++		{"LNV4752", },
+ 		{}
+ 	};
  
- 	net_rx_queue_update_kobjects(dev, real_rx, 0);
- 	netdev_queue_update_kobjects(dev, real_tx, 0);
-+
-+	dev->real_num_rx_queues = 0;
-+	dev->real_num_tx_queues = 0;
- #ifdef CONFIG_SYSFS
- 	kset_unregister(dev->queues_kset);
- #endif
+@@ -1603,8 +1611,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	     fwnode_property_present(&device->fwnode, "baud")))
+ 		return true;
+ 
+-	/* Instantiate a pdev for the i2c-multi-instantiate drv to bind to */
+-	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
++	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
+ 		return false;
+ 
+ 	INIT_LIST_HEAD(&resource_list);
 -- 
 2.34.1
 
