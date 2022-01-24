@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45292C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36704C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410237AbiAYA2s (ORCPT
+        id S3410262AbiAYA2w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:28:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
+        Mon, 24 Jan 2022 19:28:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33234 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381862AbiAXXeJ (ORCPT
+        with ESMTP id S1578585AbiAXWDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:34:09 -0500
+        Mon, 24 Jan 2022 17:03:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B4AC07597A;
-        Mon, 24 Jan 2022 13:35:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B63C036BDD;
+        Mon, 24 Jan 2022 12:41:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D2361028;
-        Mon, 24 Jan 2022 21:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B32D4C340E5;
-        Mon, 24 Jan 2022 21:35:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 40CDD615A0;
+        Mon, 24 Jan 2022 20:41:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 228A5C340E5;
+        Mon, 24 Jan 2022 20:41:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060158;
-        bh=y2surFG9CF99niOXP/oloofbrzQ/roUtKTzGdU8adRQ=;
+        s=korg; t=1643056895;
+        bh=e9qHwmWQeW+I8N/3hk78hKYr7tPj2scOY6Gr/oCbo4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KTKNQqc/PUu1yYpsOUx1sxCLe9s80XRil/hWWFv3SUiDNfoMMNaNaZJWoEWJ9fLHQ
-         FD+83/pjTyqoBjxvWifTsAvPuJ1J0vWWc4uuD9+ICc3sQuE6F2ZANRdZyd37fDndpf
-         33XZPmrkod4Gk35ZvMEowDHqTuxy9w0xct4kuXs4=
+        b=FdWbgKA6PNoQWcYKYBUYP1zREWMCZr/0xS+Rn9cfo4wRsxmpQ52XmKt9r3O/aa2dS
+         w0KxgDuuS80QrjpajX5+l16OaJZQRIn3LjC51kcgj+jdCUYh4XKwWPhJAj9NXEgSvq
+         fTTk3kAGIOTtTH/T6OfniVWsprHApqU50PD9jj/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.16 0858/1039] device property: Fix fwnode_graph_devcon_match() fwnode leak
-Date:   Mon, 24 Jan 2022 19:44:07 +0100
-Message-Id: <20220124184154.119883333@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 635/846] KVM: PPC: Book3S: Suppress failed alloc warning in H_COPY_TOFROM_GUEST
+Date:   Mon, 24 Jan 2022 19:42:32 +0100
+Message-Id: <20220124184122.929031010@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,41 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-commit 4a7f4110f79163fd53ea65438041994ed615e3af upstream.
+[ Upstream commit 792020907b11c6f9246c21977cab3bad985ae4b6 ]
 
-For each endpoint it encounters, fwnode_graph_devcon_match() checks
-whether the endpoint's remote port parent device is available. If it is
-not, it ignores the endpoint but does not put the reference to the remote
-endpoint port parent fwnode. For available devices the fwnode handle
-reference is put as expected.
+H_COPY_TOFROM_GUEST is an hcall for an upper level VM to access its nested
+VMs memory. The userspace can trigger WARN_ON_ONCE(!(gfp & __GFP_NOWARN))
+in __alloc_pages() by constructing a tiny VM which only does
+H_COPY_TOFROM_GUEST with a too big GPR9 (number of bytes to copy).
 
-Put the reference for unavailable devices now.
+This silences the warning by adding __GFP_NOWARN.
 
-Fixes: 637e9e52b185 ("device connection: Find device connections also from device graphs")
-Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Spotted by syzkaller.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210901084550.1658699-1-aik@ozlabs.ru
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/property.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/powerpc/kvm/book3s_hv_nested.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -1206,8 +1206,10 @@ fwnode_graph_devcon_match(struct fwnode_
+diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
+index ed8a2c9f56299..89295b52a97c3 100644
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -582,7 +582,7 @@ long kvmhv_copy_tofrom_guest_nested(struct kvm_vcpu *vcpu)
+ 	if (eaddr & (0xFFFUL << 52))
+ 		return H_PARAMETER;
  
- 	fwnode_graph_for_each_endpoint(fwnode, ep) {
- 		node = fwnode_graph_get_remote_port_parent(ep);
--		if (!fwnode_device_is_available(node))
-+		if (!fwnode_device_is_available(node)) {
-+			fwnode_handle_put(node);
- 			continue;
-+		}
+-	buf = kzalloc(n, GFP_KERNEL);
++	buf = kzalloc(n, GFP_KERNEL | __GFP_NOWARN);
+ 	if (!buf)
+ 		return H_NO_MEM;
  
- 		ret = match(node, con_id, data);
- 		fwnode_handle_put(node);
+-- 
+2.34.1
+
 
 
