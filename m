@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC9FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BDBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345912AbiAXTEo (ORCPT
+        id S1345944AbiAXTEt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:04:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345351AbiAXTAI (ORCPT
+        Mon, 24 Jan 2022 14:04:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56764 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343972AbiAXS5o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1D4C06179A;
-        Mon, 24 Jan 2022 10:57:22 -0800 (PST)
+        Mon, 24 Jan 2022 13:57:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 294CE6153A;
-        Mon, 24 Jan 2022 18:57:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF7DC340E5;
-        Mon, 24 Jan 2022 18:57:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2B361571;
+        Mon, 24 Jan 2022 18:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C2F0C340E5;
+        Mon, 24 Jan 2022 18:57:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050641;
-        bh=w46WblcSNnkv/REghqn6QUVMuYOSbyXJbKRtxqJJU4E=;
+        s=korg; t=1643050663;
+        bh=Qjjcms0dCT2MCUurdm3bONYYlLGmNucgLwcM9IbxerE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xHkQZD1KhE3lYh+d2w/ePp3bMpAmer4UU8vyjm3VlY1tGbX1ioSGm6+NnCVpSquMp
-         Ic5nxskLJ8hHCFYyJsvvONhuw/kQ4fktxmziXuZP9iAL9p8/jnlo2whkJN7vR0mMBq
-         yCUD4MRsURCHLCdq+alqtAXqOGbbBnYHXzCkp8X4=
+        b=LCpIuFmHfdgEV/6wEf6JytC1c0lRO8d7n+/UA4TOT7GFxRp+zuwi1p83Pbk6EPrnI
+         HHNUSJL75ibyQWQKQLyH4RPETIAUPHxu1gs+Xlj/Lz8SaU9GwVSH4qOchzQfm18nl7
+         OkkxRmsuzPP4ii83/j9Yzy0naN+NcLoXvts1UnQM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
-        Mark Zhang <markzhang@nvidia.com>,
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
         Leon Romanovsky <leonro@nvidia.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 066/157] RDMA/core: Let ib_find_gid() continue search even after empty entry
-Date:   Mon, 24 Jan 2022 19:42:36 +0100
-Message-Id: <20220124183934.877562935@linuxfoundation.org>
+Subject: [PATCH 4.9 072/157] RDMA/cxgb4: Set queue pair state when being queried
+Date:   Mon, 24 Jan 2022 19:42:42 +0100
+Message-Id: <20220124183935.077018026@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -52,45 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avihai Horon <avihaih@nvidia.com>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
+[ Upstream commit e375b9c92985e409c4bb95dd43d34915ea7f5e28 ]
 
-Currently, ib_find_gid() will stop searching after encountering the first
-empty GID table entry. This behavior is wrong since neither IB nor RoCE
-spec enforce tightly packed GID tables.
+The API for ib_query_qp requires the driver to set cur_qp_state on return,
+add the missing set.
 
-For example, when a valid GID entry exists at index N, and if a GID entry
-is empty at index N-1, ib_find_gid() will fail to find the valid entry.
-
-Fix it by making ib_find_gid() continue searching even after encountering
-missing entries.
-
-Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
-Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Mark Zhang <markzhang@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Fixes: 67bbc05512d8 ("RDMA/cxgb4: Add query_qp support")
+Link: https://lore.kernel.org/r/20211220152530.60399-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/device.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/cxgb4/qp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
-index 4b947d5cafe28..c5c175b72f21e 100644
---- a/drivers/infiniband/core/device.c
-+++ b/drivers/infiniband/core/device.c
-@@ -870,7 +870,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
- 		for (i = 0; i < device->port_immutable[port].gid_tbl_len; ++i) {
- 			ret = ib_query_gid(device, port, i, &tmp_gid, NULL);
- 			if (ret)
--				return ret;
-+				continue;
-+
- 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
- 				*port_num = port;
- 				if (index)
+diff --git a/drivers/infiniband/hw/cxgb4/qp.c b/drivers/infiniband/hw/cxgb4/qp.c
+index 87bc7b0db892b..2eeac8401c927 100644
+--- a/drivers/infiniband/hw/cxgb4/qp.c
++++ b/drivers/infiniband/hw/cxgb4/qp.c
+@@ -1974,6 +1974,7 @@ int c4iw_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
+ 	memset(attr, 0, sizeof *attr);
+ 	memset(init_attr, 0, sizeof *init_attr);
+ 	attr->qp_state = to_ib_qp_state(qhp->attr.state);
++	attr->cur_qp_state = to_ib_qp_state(qhp->attr.state);
+ 	init_attr->cap.max_send_wr = qhp->attr.sq_num_entries;
+ 	init_attr->cap.max_recv_wr = qhp->attr.rq_num_entries;
+ 	init_attr->cap.max_send_sge = qhp->attr.sq_max_sges;
 -- 
 2.34.1
 
