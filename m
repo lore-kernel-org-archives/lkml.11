@@ -2,40 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1765C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 314DCC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450225AbiAXVUB (ORCPT
+        id S1450121AbiAXVTr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:20:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48374 "EHLO
+        Mon, 24 Jan 2022 16:19:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49244 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392457AbiAXUvP (ORCPT
+        with ESMTP id S1392427AbiAXUvO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:15 -0500
+        Mon, 24 Jan 2022 15:51:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCAE7B81063;
-        Mon, 24 Jan 2022 20:51:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E517C340E5;
-        Mon, 24 Jan 2022 20:51:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DFBA5B81057;
+        Mon, 24 Jan 2022 20:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEAC9C340E5;
+        Mon, 24 Jan 2022 20:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057473;
-        bh=QQYbblQ35leF5mIDeINDGQFfwan87gWS7LaQi2QXxZI=;
+        s=korg; t=1643057470;
+        bh=xi4KJIaJwSCkynoxCcarqiM8KPP5W/cAYIZDLYrFnBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1txdVApDkGrpbneHEwbmecVV/7h9wD+k/cfuz1S5Ite1zEig/hxC8LwRJ6zjE27s/
-         3fGug7zYhUEzVq4lqE0Fp6ycsrnK4x36orq8VSsuBKK4yVJmNypdCl2rq3UEb0b77O
-         DouaohQRQul+68gWfGadraAib+/NnaIgwGNEyN8Q=
+        b=gEXrxbQbJ4OirvWlN+siED7fjF3snJCqDCvAeNdLINtesRYJ9EqJ5QSVoLuM2fDD/
+         rimdXrPIhcMGq8M94g+W6PcPkVrsqZzKzZvVYbRETcWsEKsWll01MUmq8Rs3PhD9fh
+         5QZmBrtD/GuwHdYn2KHCAeBj4kEMW+2feJ2uIZxY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 791/846] net: axienet: increase reset timeout
-Date:   Mon, 24 Jan 2022 19:45:08 +0100
-Message-Id: <20220124184128.245066759@linuxfoundation.org>
+        stable@vger.kernel.org, Zechuan Chen <chenzechuan1@huawei.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Yang Jihong <yangjihong1@huawei.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 822/846] perf probe: Fix ppc64 perf probe add events failed case
+Date:   Mon, 24 Jan 2022 19:45:39 +0100
+Message-Id: <20220124184129.259153704@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,58 +59,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Zechuan Chen <chenzechuan1@huawei.com>
 
-commit 2e5644b1bab2ccea9cfc7a9520af95b94eb0dbf1 upstream.
+commit 4624f199327a704dd1069aca1c3cadb8f2a28c6f upstream.
 
-The previous timeout of 1ms was too short to handle some cases where the
-core is reset just after the input clocks were started, which will
-be introduced in an upcoming patch. Increase the timeout to 50ms. Also
-simplify the reset timeout checking to use read_poll_timeout.
+Because of commit bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms
+lookup across powerpc ABIv1 and ABIv2"), in ppc64 ABIv1, our perf
+command eliminates the need to use the prefix "." at the symbol name.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+But when the command "perf probe -a schedule" is executed on ppc64
+ABIv1, it obtains two symbol address information through /proc/kallsyms,
+for example:
+
+  cat /proc/kallsyms | grep -w schedule
+  c000000000657020 T .schedule
+  c000000000d4fdb8 D schedule
+
+The symbol "D schedule" is not a function symbol, and perf will print:
+"p:probe/schedule _text+13958584"Failed to write event: Invalid argument
+
+Therefore, when searching symbols from map and adding probe point for
+them, a symbol type check is added. If the type of symbol is not a
+function, skip it.
+
+Fixes: bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms lookup across powerpc ABIv1 and ABIv2")
+Signed-off-by: Zechuan Chen <chenzechuan1@huawei.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jianlin Lv <Jianlin.Lv@arm.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Cc: Yang Jihong <yangjihong1@huawei.com>
+Link: https://lore.kernel.org/r/20211228111338.218602-1-chenzechuan1@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ tools/perf/util/probe-event.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -496,7 +496,8 @@ static void axienet_setoptions(struct ne
+--- a/tools/perf/util/probe-event.c
++++ b/tools/perf/util/probe-event.c
+@@ -3083,6 +3083,9 @@ static int find_probe_trace_events_from_
+ 	for (j = 0; j < num_matched_functions; j++) {
+ 		sym = syms[j];
  
- static int __axienet_device_reset(struct axienet_local *lp)
- {
--	u32 timeout;
-+	u32 value;
-+	int ret;
- 
- 	/* Reset Axi DMA. This would reset Axi Ethernet core as well. The reset
- 	 * process of Axi DMA takes a while to complete as all pending
-@@ -506,15 +507,13 @@ static int __axienet_device_reset(struct
- 	 * they both reset the entire DMA core, so only one needs to be used.
- 	 */
- 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, XAXIDMA_CR_RESET_MASK);
--	timeout = DELAY_OF_ONE_MILLISEC;
--	while (axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET) &
--				XAXIDMA_CR_RESET_MASK) {
--		udelay(1);
--		if (--timeout == 0) {
--			netdev_err(lp->ndev, "%s: DMA reset timeout!\n",
--				   __func__);
--			return -ETIMEDOUT;
--		}
-+	ret = read_poll_timeout(axienet_dma_in32, value,
-+				!(value & XAXIDMA_CR_RESET_MASK),
-+				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
-+				XAXIDMA_TX_CR_OFFSET);
-+	if (ret) {
-+		dev_err(lp->dev, "%s: DMA reset timeout!\n", __func__);
-+		return ret;
- 	}
- 
- 	return 0;
++		if (sym->type != STT_FUNC)
++			continue;
++
+ 		/* There can be duplicated symbols in the map */
+ 		for (i = 0; i < j; i++)
+ 			if (sym->start == syms[i]->start) {
 
 
