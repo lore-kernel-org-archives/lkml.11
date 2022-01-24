@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36033C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77AABC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3408152AbiAYAVt (ORCPT
+        id S3408708AbiAYAXZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:21:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54972 "EHLO
+        Mon, 24 Jan 2022 19:23:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2360414AbiAXXgn (ORCPT
+        with ESMTP id S1578649AbiAXWDO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:36:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38358C0ADFDF;
-        Mon, 24 Jan 2022 13:37:49 -0800 (PST)
+        Mon, 24 Jan 2022 17:03:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAA7EC036BF2;
+        Mon, 24 Jan 2022 12:41:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAD726151E;
-        Mon, 24 Jan 2022 21:37:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EFB3C340E5;
-        Mon, 24 Jan 2022 21:37:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81A22B811F9;
+        Mon, 24 Jan 2022 20:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADF6C340E7;
+        Mon, 24 Jan 2022 20:41:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060268;
-        bh=aUqMRbesUG+fUwoezkLtVOmqh/MbsZg6evIG255zsv8=;
+        s=korg; t=1643056905;
+        bh=u56yJa6/B5ipNGduQHjOcZv8irApVmodvGSAzEzLbG8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P6g/cuid4NTAAyWiC2zQiPHPsuX4fWZ/kCzzgTxHKLrtMmphglcq50vkm9kYzJh/8
-         U7XZf4zYjE+zh/Ogze4UrX9yQlP4q9lDcu3xrnzDHtDtBsEMpYfOr2FZ8h8vQnRgtF
-         ZVR6u1rKT9zJ9HCvLpmmFlAM5l+2pW0lAT/3gs1o=
+        b=oxquHIc+EmjMhltB+vLjY3P7DyyexD+PbGmRcysqdv8bNJ0sXF+KTlsSAHn5LSELK
+         f4i9yIcgrUYYHPB1wcjuE0VHshYNF3Z9F+BdW7BzYhNJ0opqTH+j6/JA/BRvifusx8
+         xgyN2fVAaBGwSFqa8YoF4z156LppOTYGdYVPqdWs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.16 0893/1039] ext4: fix fast commit may miss tracking range for FALLOC_FL_ZERO_RANGE
-Date:   Mon, 24 Jan 2022 19:44:42 +0100
-Message-Id: <20220124184155.301106304@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Williams <dan.j.williams@intel.com>,
+        Christoph Hellwig <hch@lst.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 638/846] dm: fix alloc_dax error handling in alloc_dev
+Date:   Mon, 24 Jan 2022 19:42:35 +0100
+Message-Id: <20220124184123.035154111@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,54 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xin Yin <yinxin.x@bytedance.com>
+From: Christoph Hellwig <hch@lst.de>
 
-commit 5e4d0eba1ccaf19f93222abdeda5a368be141785 upstream.
+[ Upstream commit d751939235b9b7bc4af15f90a3e99288a8b844a7 ]
 
-when call falloc with FALLOC_FL_ZERO_RANGE, to set an range to unwritten,
-which has been already initialized. If the range is align to blocksize,
-fast commit will not track range for this change.
+Make sure ->dax_dev is NULL on error so that the cleanup path doesn't
+trip over an ERR_PTR.
 
-Also track range for unwritten range in ext4_map_blocks().
-
-Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/20211221022839.374606-1-yinxin.x@bytedance.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20211129102203.2243509-2-hch@lst.de
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/extents.c |    2 --
- fs/ext4/inode.c   |    7 ++++---
- 2 files changed, 4 insertions(+), 5 deletions(-)
+ drivers/md/dm.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/fs/ext4/extents.c
-+++ b/fs/ext4/extents.c
-@@ -4647,8 +4647,6 @@ static long ext4_zero_range(struct file
- 	ret = ext4_mark_inode_dirty(handle, inode);
- 	if (unlikely(ret))
- 		goto out_handle;
--	ext4_fc_track_range(handle, inode, offset >> inode->i_sb->s_blocksize_bits,
--			(offset + len - 1) >> inode->i_sb->s_blocksize_bits);
- 	/* Zero out partial block at the edges of the range */
- 	ret = ext4_zero_partial_blocks(handle, inode, offset, len);
- 	if (ret >= 0)
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -741,10 +741,11 @@ out_sem:
- 			if (ret)
- 				return ret;
- 		}
--		ext4_fc_track_range(handle, inode, map->m_lblk,
--			    map->m_lblk + map->m_len - 1);
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index 76d9da49fda75..671bb454f1649 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -1794,8 +1794,10 @@ static struct mapped_device *alloc_dev(int minor)
+ 	if (IS_ENABLED(CONFIG_DAX_DRIVER)) {
+ 		md->dax_dev = alloc_dax(md, md->disk->disk_name,
+ 					&dm_dax_ops, 0);
+-		if (IS_ERR(md->dax_dev))
++		if (IS_ERR(md->dax_dev)) {
++			md->dax_dev = NULL;
+ 			goto bad;
++		}
  	}
--
-+	if (retval > 0 && (map->m_flags & EXT4_MAP_UNWRITTEN ||
-+				map->m_flags & EXT4_MAP_MAPPED))
-+		ext4_fc_track_range(handle, inode, map->m_lblk,
-+					map->m_lblk + map->m_len - 1);
- 	if (retval < 0)
- 		ext_debug(inode, "failed with err %d\n", retval);
- 	return retval;
+ 
+ 	format_dev_t(md->name, MKDEV(_major, minor));
+-- 
+2.34.1
+
 
 
