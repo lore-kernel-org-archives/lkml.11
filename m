@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5608DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09792C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443239AbiAXU4c (ORCPT
+        id S1443451AbiAXU46 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38744 "EHLO
+        Mon, 24 Jan 2022 15:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348495AbiAXUdd (ORCPT
+        with ESMTP id S1385529AbiAXUdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:33:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6510C07E2A4;
-        Mon, 24 Jan 2022 11:46:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C33EC07E2A6;
+        Mon, 24 Jan 2022 11:46:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53F9D614BB;
-        Mon, 24 Jan 2022 19:46:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB7FC340E5;
-        Mon, 24 Jan 2022 19:46:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B92276154E;
+        Mon, 24 Jan 2022 19:46:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E8FC340E5;
+        Mon, 24 Jan 2022 19:46:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053566;
-        bh=nkRbVp2W10K033deshM2ceJteFE6A6KthK5vUO20h1o=;
+        s=korg; t=1643053579;
+        bh=lLAkhTF9mn3pG3+LBJokmhIVH1QLXwMkT+mZu/HSBUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m4RcX5T7eP7DrQh29Q5oSSF4NcGcRVZN3eyv8u2I89JegiLwl8ASuEN7cCSl6QgaY
-         ceXzorXhbyDwH3JZ565zYB8498EY9Pi+2UmVtwi3m3dlp4C6oVGqvNBizUt6fqUBD1
-         QWHiMWbKzoRTCMkWeGZ7H1yf3w3hmu+HR+o0I/E0=
+        b=SLdDwTeSNGiydRxGenViheksmLFiwnQw7dUiN1At38EIwYf93XPS2GgXre9s8pCx+
+         XtVXFajazqVNzLCnwzoZb1MazbmblrDz/rZtfwLA5/VsPGUe2y62IZxY67uKsOy/Rl
+         pB4acwaS0HH61HemsFCRgLPYEiJi19g/7rl6U38w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Joel Stanley <joel@jms.id.au>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 075/563] media: aspeed: fix mode-detect always time out at 2nd run
-Date:   Mon, 24 Jan 2022 19:37:20 +0100
-Message-Id: <20220124184026.991814372@linuxfoundation.org>
+Subject: [PATCH 5.10 104/563] tty: serial: atmel: Check return code of dmaengine_submit()
+Date:   Mon, 24 Jan 2022 19:37:49 +0100
+Message-Id: <20220124184027.996894655@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -53,54 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jammy Huang <jammy_huang@aspeedtech.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit 62cea52ad4bead0ae4be2cfe1142eb0aae0e9fbd ]
+[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
 
-aspeed_video_get_resolution() will try to do res-detect again if the
-timing got in last try is invalid. But it will always time out because
-VE_SEQ_CTRL_TRIG_MODE_DET is only cleared after 1st mode-detect.
+The tx_submit() method of struct dma_async_tx_descriptor is entitled
+to do sanity checks and return errors if encountered. It's not the
+case for the DMA controller drivers that this client is using
+(at_h/xdmac), because they currently don't do sanity checks and always
+return a positive cookie at tx_submit() method. In case the controller
+drivers will implement sanity checks and return errors, print a message
+so that the client will be informed that something went wrong at
+tx_submit() level.
 
-To fix the problem, just clear VE_SEQ_CTRL_TRIG_MODE_DET before setting
-it in aspeed_video_enable_mode_detect().
-
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/aspeed-video.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index 7bb6babdcade0..23c41c545c536 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -500,6 +500,10 @@ static void aspeed_video_enable_mode_detect(struct aspeed_video *video)
- 	aspeed_video_update(video, VE_INTERRUPT_CTRL, 0,
- 			    VE_INTERRUPT_MODE_DETECT);
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index a24e5c2b30bc9..396fe8c51f93b 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1004,6 +1004,11 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		desc->callback = atmel_complete_tx_dma;
+ 		desc->callback_param = atmel_port;
+ 		atmel_port->cookie_tx = dmaengine_submit(desc);
++		if (dma_submit_error(atmel_port->cookie_tx)) {
++			dev_err(port->dev, "dma_submit_error %d\n",
++				atmel_port->cookie_tx);
++			return;
++		}
+ 	}
  
-+	/* Disable mode detect in order to re-trigger */
-+	aspeed_video_update(video, VE_SEQ_CTRL,
-+			    VE_SEQ_CTRL_TRIG_MODE_DET, 0);
-+
- 	/* Trigger mode detect */
- 	aspeed_video_update(video, VE_SEQ_CTRL, 0, VE_SEQ_CTRL_TRIG_MODE_DET);
- }
-@@ -786,10 +790,6 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 			return;
- 		}
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1264,6 +1269,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	desc->callback_param = port;
+ 	atmel_port->desc_rx = desc;
+ 	atmel_port->cookie_rx = dmaengine_submit(desc);
++	if (dma_submit_error(atmel_port->cookie_rx)) {
++		dev_err(port->dev, "dma_submit_error %d\n",
++			atmel_port->cookie_rx);
++		goto chan_err;
++	}
  
--		/* Disable mode detect in order to re-trigger */
--		aspeed_video_update(video, VE_SEQ_CTRL,
--				    VE_SEQ_CTRL_TRIG_MODE_DET, 0);
--
- 		aspeed_video_check_and_set_polarity(video);
+ 	return 0;
  
- 		aspeed_video_enable_mode_detect(video);
 -- 
 2.34.1
 
