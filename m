@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AB3FC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1DFC4707F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577950AbiAXWBS (ORCPT
+        id S1578875AbiAXWDz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:01:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51868 "EHLO
+        Mon, 24 Jan 2022 17:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451490AbiAXVXC (ORCPT
+        with ESMTP id S1450849AbiAXVVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:02 -0500
+        Mon, 24 Jan 2022 16:21:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0547EC08E912;
-        Mon, 24 Jan 2022 12:17:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B3FC0617AA;
+        Mon, 24 Jan 2022 12:16:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C283BB8123F;
-        Mon, 24 Jan 2022 20:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B59C340E5;
-        Mon, 24 Jan 2022 20:17:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A35D1B8122A;
+        Mon, 24 Jan 2022 20:16:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC720C340E5;
+        Mon, 24 Jan 2022 20:16:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055429;
-        bh=OzkQojU2CQWWU1b+Ypc3Ses6ysxsIjIUCCxdS7saOgE=;
+        s=korg; t=1643055374;
+        bh=WZ3y8zEoAZCa0dRNCAuVij8BF5EdE9FA38K3vuCAJqE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q05cig/Ai807AGXvSpd3DvYWJd8Hrpn6/JiteG1mU9R5LIV3dsu9xdQwqWesvS0QT
-         OXWgodHqK+XudV4Lir1PmMhTy9b2TPHzcX3ugsXCaazmdBkHZZzfZJ9i5+Qjp4EzGk
-         31KJ631my0TF3q39ZBBNLgQ4t+jlv8Acki1UIhqI=
+        b=ISL+wimExMxRsQgONtqYfPK3aN2wi05YQteVJM0+fUGE/SEdCobAAZrXG15w+8FZS
+         cSAHp9t/5tZP08OdO2DBgjTS3TDsLZQLapiydW4rnC8t/BZ374DiWjwA8fiksLKArQ
+         Sg3CMmTY4IiEW19RF67XbQS4VfBA4IS4mJzvnA+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, oujiefeng <oujiefeng@huawei.com>,
+        Jay Fang <f.fangjian@huawei.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 115/846] media: atomisp: fix enum formats logic
-Date:   Mon, 24 Jan 2022 19:33:52 +0100
-Message-Id: <20220124184104.936369564@linuxfoundation.org>
+Subject: [PATCH 5.15 130/846] spi: hisi-kunpeng: Fix the debugfs directory name incorrect
+Date:   Mon, 24 Jan 2022 19:34:07 +0100
+Message-Id: <20220124184105.477739229@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,80 +51,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: oujiefeng <oujiefeng@huawei.com>
 
-[ Upstream commit fae46cb0531b45c789e39128f676f2bafa3a7b47 ]
+[ Upstream commit 40fafc8eca3f0d41b9dade5c10afb2dad723aad7 ]
 
-Changeset 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
-added an extra verification for a pads parameter for enum mbus
-format code.
+Change the debugfs directory name from hisi_spi65535 to hisi_spi0.
 
-Such change broke atomisp, because now the V4L2 core
-refuses to enum MBUS formats if the state is empty.
-
-So, add .which field in order to select the active formats,
-in order to make it work again.
-
-While here, improve error messages.
-
-Fixes: 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 2b2142f247eb ("spi: hisi-kunpeng: Add debugfs support")
+Signed-off-by: oujiefeng <oujiefeng@huawei.com>
+Signed-off-by: Jay Fang <f.fangjian@huawei.com>
+Link: https://lore.kernel.org/r/20211117012119.55558-1-f.fangjian@huawei.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_ioctl.c | 23 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ drivers/spi/spi-hisi-kunpeng.c | 15 ++++++++-------
+ 1 file changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-index a57e640fbf791..29826f8e4143d 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-@@ -773,7 +773,10 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 	struct video_device *vdev = video_devdata(file);
- 	struct atomisp_device *isp = video_get_drvdata(vdev);
- 	struct atomisp_sub_device *asd = atomisp_to_video_pipe(vdev)->asd;
--	struct v4l2_subdev_mbus_code_enum code = { 0 };
-+	struct v4l2_subdev_mbus_code_enum code = {
-+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
-+	};
-+	struct v4l2_subdev *camera;
- 	unsigned int i, fi = 0;
- 	int rval;
+diff --git a/drivers/spi/spi-hisi-kunpeng.c b/drivers/spi/spi-hisi-kunpeng.c
+index 58b823a16fc4d..525cc0143a305 100644
+--- a/drivers/spi/spi-hisi-kunpeng.c
++++ b/drivers/spi/spi-hisi-kunpeng.c
+@@ -127,7 +127,6 @@ struct hisi_spi {
+ 	void __iomem		*regs;
+ 	int			irq;
+ 	u32			fifo_len; /* depth of the FIFO buffer */
+-	u16			bus_num;
  
-@@ -783,14 +786,20 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 		return -EINVAL;
- 	}
+ 	/* Current message transfer state info */
+ 	const void		*tx;
+@@ -165,7 +164,10 @@ static int hisi_spi_debugfs_init(struct hisi_spi *hs)
+ {
+ 	char name[32];
  
-+	camera = isp->inputs[asd->input_curr].camera;
-+	if(!camera) {
-+		dev_err(isp->dev, "%s(): camera is NULL, device is %s\n",
-+			__func__, vdev->name);
-+		return -EINVAL;
-+	}
+-	snprintf(name, 32, "hisi_spi%d", hs->bus_num);
++	struct spi_controller *master;
 +
- 	rt_mutex_lock(&isp->mutex);
--	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera, pad,
--				enum_mbus_code, NULL, &code);
++	master = container_of(hs->dev, struct spi_controller, dev);
++	snprintf(name, 32, "hisi_spi%d", master->bus_num);
+ 	hs->debugfs = debugfs_create_dir(name, NULL);
+ 	if (!hs->debugfs)
+ 		return -ENOMEM;
+@@ -467,7 +469,6 @@ static int hisi_spi_probe(struct platform_device *pdev)
+ 	hs = spi_controller_get_devdata(master);
+ 	hs->dev = dev;
+ 	hs->irq = irq;
+-	hs->bus_num = pdev->id;
+ 
+ 	hs->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(hs->regs))
+@@ -490,7 +491,7 @@ static int hisi_spi_probe(struct platform_device *pdev)
+ 	master->use_gpio_descriptors = true;
+ 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LOOP;
+ 	master->bits_per_word_mask = SPI_BPW_RANGE_MASK(4, 32);
+-	master->bus_num = hs->bus_num;
++	master->bus_num = pdev->id;
+ 	master->setup = hisi_spi_setup;
+ 	master->cleanup = hisi_spi_cleanup;
+ 	master->transfer_one = hisi_spi_transfer_one;
+@@ -506,15 +507,15 @@ static int hisi_spi_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	if (hisi_spi_debugfs_init(hs))
+-		dev_info(dev, "failed to create debugfs dir\n");
+-
+ 	ret = spi_register_controller(master);
+ 	if (ret) {
+ 		dev_err(dev, "failed to register spi master, ret=%d\n", ret);
+ 		return ret;
+ 	}
+ 
++	if (hisi_spi_debugfs_init(hs))
++		dev_info(dev, "failed to create debugfs dir\n");
 +
-+	rval = v4l2_subdev_call(camera, pad, enum_mbus_code, NULL, &code);
- 	if (rval == -ENOIOCTLCMD) {
- 		dev_warn(isp->dev,
--			 "enum_mbus_code pad op not supported. Please fix your sensor driver!\n");
--		//	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera,
--		//				video, enum_mbus_fmt, 0, &code.code);
-+			 "enum_mbus_code pad op not supported by %s. Please fix your sensor driver!\n",
-+			 camera->name);
- 	}
- 	rt_mutex_unlock(&isp->mutex);
- 
-@@ -820,6 +829,8 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 		f->pixelformat = format->pixelformat;
- 		return 0;
- 	}
-+	dev_err(isp->dev, "%s(): format for code %x not found.\n",
-+		__func__, code.code);
- 
- 	return -EINVAL;
- }
+ 	dev_info(dev, "hw version:0x%x max-freq:%u kHz\n",
+ 		readl(hs->regs + HISI_SPI_VERSION),
+ 		master->max_speed_hz / 1000);
 -- 
 2.34.1
 
