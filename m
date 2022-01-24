@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1CEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 310B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442088AbiAXUxH (ORCPT
+        id S1442116AbiAXUxO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:53:07 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36204 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384721AbiAXUa0 (ORCPT
+        Mon, 24 Jan 2022 15:53:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384757AbiAXUad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:26 -0500
+        Mon, 24 Jan 2022 15:30:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92E1C08B4D5;
+        Mon, 24 Jan 2022 11:42:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C37BB8122D;
-        Mon, 24 Jan 2022 20:30:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDDFC340E5;
-        Mon, 24 Jan 2022 20:30:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 865F2B80FA1;
+        Mon, 24 Jan 2022 19:42:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A43C340E5;
+        Mon, 24 Jan 2022 19:42:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056224;
-        bh=03Wqyse5WbMn58IU7wn8cQE9JWvTPxZxaYwH/cNb67A=;
+        s=korg; t=1643053367;
+        bh=FeZZ+ingMMeS9llhA0tL7fmg4FwHfTx7PJX3YvByI6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PHRVMFtep2t1qpDp5W8ue1yHw0Y7wm0/ZXOi46+sJRPB9XQkul6vSmacwoPMS5Dbv
-         cJAqgXr64x/D5WMdYfkOyo+xUSqorO4uQBJfaEFUp9EavSKLute+TyOHJvXf1Uo0n+
-         4xYrwimmu3nbr5fihXU9bRUhTo9fVPTM6b+tv24o=
+        b=h7JAahBvBFk8l/NZOpIEsvDjsdWUUXaLyEEKLapyXt0YF1RyjQ8uG0lbjH9lKx7Jo
+         UArvXGoyOmc1vDvwKArdzvGMDiyMasroJnGiBOmGW4DzOYcZt+feF+fafgRUUuHrtm
+         ng+hLd8qAs+tXDRP3wcBttFO1EQW2+5Xs8Hfa8mQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Jim Quinlan <jim2101024@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 413/846] of: unittest: fix warning on PowerPC frame size warning
-Date:   Mon, 24 Jan 2022 19:38:50 +0100
-Message-Id: <20220124184115.216029653@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.10 034/563] gpu: host1x: Add back arm_iommu_detach_device()
+Date:   Mon, 24 Jan 2022 19:36:39 +0100
+Message-Id: <20220124184025.606765771@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Quinlan <jim2101024@gmail.com>
+From: Dmitry Osipenko <digetx@gmail.com>
 
-[ Upstream commit a8d61a9112ad0c9216ab45d050991e07bc4f3408 ]
+commit d5185965c3b59073c4520bad7dd2adf725b9abba upstream.
 
-The struct device variable "dev_bogus" was triggering this warning
-on a PowerPC build:
+Host1x DMA buffer isn't mapped properly when CONFIG_ARM_DMA_USE_IOMMU=y.
+The memory management code of Host1x driver has a longstanding overhaul
+overdue and it's not obvious where the problem is in this case. Hence
+let's add back the old workaround which we already had sometime before.
+It explicitly detaches Host1x device from the offending implicit IOMMU
+domain. This fixes a completely broken Host1x DMA in case of ARM32
+multiplatform kernel config.
 
-    drivers/of/unittest.c: In function 'of_unittest_dma_ranges_one.constprop':
-    [...] >> The frame size of 1424 bytes is larger than 1024 bytes
-             [-Wframe-larger-than=]
-
-This variable is now dynamically allocated.
-
-Fixes: e0d072782c734 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20211210184636.7273-2-jim2101024@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: af1cbfb9bf0f ("gpu: host1x: Support DMA mapping of buffers")
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/of/unittest.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/gpu/host1x/dev.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index 5b85a2a3792ae..242381568f13c 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -911,11 +911,18 @@ static void __init of_unittest_dma_ranges_one(const char *path,
- 	if (!rc) {
- 		phys_addr_t	paddr;
- 		dma_addr_t	dma_addr;
--		struct device	dev_bogus;
-+		struct device	*dev_bogus;
+--- a/drivers/gpu/host1x/dev.c
++++ b/drivers/gpu/host1x/dev.c
+@@ -18,6 +18,10 @@
+ #include <trace/events/host1x.h>
+ #undef CREATE_TRACE_POINTS
  
--		dev_bogus.dma_range_map = map;
--		paddr = dma_to_phys(&dev_bogus, expect_dma_addr);
--		dma_addr = phys_to_dma(&dev_bogus, expect_paddr);
-+		dev_bogus = kzalloc(sizeof(struct device), GFP_KERNEL);
-+		if (!dev_bogus) {
-+			unittest(0, "kzalloc() failed\n");
-+			kfree(map);
-+			return;
-+		}
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++#include <asm/dma-iommu.h>
++#endif
 +
-+		dev_bogus->dma_range_map = map;
-+		paddr = dma_to_phys(dev_bogus, expect_dma_addr);
-+		dma_addr = phys_to_dma(dev_bogus, expect_paddr);
+ #include "bus.h"
+ #include "channel.h"
+ #include "debug.h"
+@@ -232,6 +236,17 @@ static struct iommu_domain *host1x_iommu
+ 	struct iommu_domain *domain = iommu_get_domain_for_dev(host->dev);
+ 	int err;
  
- 		unittest(paddr == expect_paddr,
- 			 "of_dma_get_range: wrong phys addr %pap (expecting %llx) on node %pOF\n",
-@@ -925,6 +932,7 @@ static void __init of_unittest_dma_ranges_one(const char *path,
- 			 &dma_addr, expect_dma_addr, np);
- 
- 		kfree(map);
-+		kfree(dev_bogus);
- 	}
- 	of_node_put(np);
- #endif
--- 
-2.34.1
-
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++	if (host->dev->archdata.mapping) {
++		struct dma_iommu_mapping *mapping =
++				to_dma_iommu_mapping(host->dev);
++		arm_iommu_detach_device(host->dev);
++		arm_iommu_release_mapping(mapping);
++
++		domain = iommu_get_domain_for_dev(host->dev);
++	}
++#endif
++
+ 	/*
+ 	 * We may not always want to enable IOMMU support (for example if the
+ 	 * host1x firewall is already enabled and we don't support addressing
 
 
