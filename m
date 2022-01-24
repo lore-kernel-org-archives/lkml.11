@@ -2,138 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F012C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:23:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EA5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:28:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243147AbiAXNXY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:23:24 -0500
-Received: from mail-il1-f198.google.com ([209.85.166.198]:48928 "EHLO
-        mail-il1-f198.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242817AbiAXNXW (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:23:22 -0500
-Received: by mail-il1-f198.google.com with SMTP id t18-20020a92ca92000000b002b952c60bfbso8125110ilo.15
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:23:22 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=UwVYcwjIbXXhRYDfOcKoTuvxpfCtFVOrX+FsCBnaKME=;
-        b=hkKDbUunrwapTQtKm/s0N/WsKpWwIswT89qku74XzJnNDO0kvLsbvegtphKezlC+gx
-         7/u3bOYMd2sP3i4xNmLuDI0DTZfi41jVFKJB3eX02awzyTh9mbZigw95yN+v/y7c5/6M
-         EmKRDHfo8o/DU0f0xC++fDk/KLHid3GKNLw+v2bBdVLDbff9fJ1IaDtFwoqz12OKe2Z3
-         32aWa+w2w80JGDYBJkYG8mi62DUP9U0KCMROLY7s9s4MJEBVD+cy96EiVYcKD2R8riYy
-         JFraQimEfCiIf1FEDpQY84OJpqxQGCj0rhoFCGud1E3ldr58P/QWPftZ6byxi4Wa2wE8
-         qYxA==
-X-Gm-Message-State: AOAM532QYtihtM4gHPcQN8kee1TXk5ajUC0VBYFlxKeaxjRstFo8D116
-        JOSu5KkPEYkuF36pbzaEbnZ5LUdA7/UwD6n4up0S6cFeaFbd
-X-Google-Smtp-Source: ABdhPJw/vHFHHVex5TcHa8lOoHF8V1vZ9VrUAs3BV26xmI87lZ6a9xYoIt2EDGVC3C152c7Ce+Wxvk7dXV2U5mfeEqex5vLaGosO
+        id S243154AbiAXN2Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:28:24 -0500
+Received: from mail-dm6nam10on2055.outbound.protection.outlook.com ([40.107.93.55]:4544
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229576AbiAXN2V (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 08:28:21 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ONYwqxOmhcxQhKC67XJ0n+AUTqL7I3iUFpwHmqPZMH2e3bhVmEAuU9Nxy/F0KjN7UJuqJFY4YpnI4UQ/hTHCDqo9l1f8W2UZc1a+QoDMzVRHNwnbYZG7d+03o+CkW2c5D8e9GAR+RBkK+RRhLrhJXyckLj9X9aFEbDGPJi0M3+hvo2lZxpwkoLJ4kCCrtIw9Z1aMIvTQegzskP3bG25LewhnDzHDCz93e5Whk7XgxlbRWcUYKdbkLvmn1r8+CivFLB412ahecz/kmMakuOQbAaEfSOb/q3a6SEjkjvQqWFH5KAav2QrcboOMb9VdHXcgqfnC9NdOiXMIzj9+02A4Tw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=hIL+QT6b03sPMZdKjRi2oT9ip99Xq5Nhf+srC8g/ZI0=;
+ b=YkI8/tvVJsKy9pqrstpiRtESEc8ldoL9EhA0Nz8nAJBLWrgS22MtsNAU05a4IQMstwEccHqdAGC3HaeWSpRqp1DuoI3D/Sasuq1OeLVtw5L5AujQcvxbAkWNanqxhbjVZv9gCKJc4WOo1T7KwEcZiaDCl/KS94n8+FWnN2ttn2cFYQnIXFm2ldckLruJ5D3pNwYtXtV0Rtxc5s+FQpGV6K3UzG23FJhBBrOkRlsDij20CcoMyGoYHzJKSDUyqiwk9M1wfiotJTwI7zfNgRrAjqr4q2I8v11Y2yj4wpyBI1NGdSDU9mcir1w6RL59CvYLxTQNuVqUoOVRKdWxKBz5pg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hIL+QT6b03sPMZdKjRi2oT9ip99Xq5Nhf+srC8g/ZI0=;
+ b=UBk4zEC7fReVtk+ZWlDER8g4S2GREgXQlGxkNJZ48DBqLoP45KCwDqOAU/sj01c7eMgnw9hbq6Z51DmZoFQDjTQDyQSjxlvQ5cZpOhJtW1scHOuRonRlxV7aV5Mrct9omkkP9ClPUhwFsdoqFLBK1Iieya0Q4TcLos18RqMGd7YhHBHT0jMAdaxV/bYs04sgvf2lc7el2EMpQBtVgj7WrXiJZsBWfyA7jGlpPdpgREOPcKCy4vZyCheyXnz769YZjPwCisBMpQCJHl0S7f7eBQqmXoBXA83i+9V/t7Ojau97BfF8LQctfSzSPsjxHm9Hy8SXSb7UvrrKvYnc8TCSxQ==
+Received: from DM6PR12CA0021.namprd12.prod.outlook.com (2603:10b6:5:1c0::34)
+ by BY5PR12MB3650.namprd12.prod.outlook.com (2603:10b6:a03:1a3::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Mon, 24 Jan
+ 2022 13:28:19 +0000
+Received: from DM6NAM11FT061.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:1c0:cafe::1) by DM6PR12CA0021.outlook.office365.com
+ (2603:10b6:5:1c0::34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
+ Transport; Mon, 24 Jan 2022 13:28:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT061.mail.protection.outlook.com (10.13.173.138) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 13:28:19 +0000
+Received: from drhqmail201.nvidia.com (10.126.190.180) by
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.18; Mon, 24 Jan 2022 13:28:18 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
+ Mon, 24 Jan 2022 05:28:17 -0800
+Received: from kkartik-desktop.nvidia.com (10.127.8.12) by mail.nvidia.com
+ (10.126.190.182) with Microsoft SMTP Server id 15.2.986.9 via Frontend
+ Transport; Mon, 24 Jan 2022 05:28:14 -0800
+From:   Kartik <kkartik@nvidia.com>
+To:     <robh+dt@kernel.org>, <treding@nvidia.com>, <jonathanh@nvidia.com>,
+        <mperttunen@nvidia.com>, <devicetree@vger.kernel.org>,
+        <linux-tegra@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <kkartik@nvidia.com>
+CC:     <smangipudi@nvidia.com>
+Subject: [PATCH v2] arm64: tegra: Enable additional UART for Jetson AGX Orin
+Date:   Mon, 24 Jan 2022 19:00:04 +0530
+Message-ID: <1643031004-4649-1-git-send-email-kkartik@nvidia.com>
+X-Mailer: git-send-email 2.7.4
+X-NVConfidentiality: public
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:1213:: with SMTP id a19mr8299952ilq.14.1643030602129;
- Mon, 24 Jan 2022 05:23:22 -0800 (PST)
-Date:   Mon, 24 Jan 2022 05:23:22 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000006527b405d653df1f@google.com>
-Subject: [syzbot] INFO: task can't die in show_free_areas
-From:   syzbot <syzbot+8f41dccfb6c03cc36fd6@syzkaller.appspotmail.com>
-To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
-        linux-kernel@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6e4fab38-4c94-42c6-22d0-08d9df3d62ff
+X-MS-TrafficTypeDiagnostic: BY5PR12MB3650:EE_
+X-Microsoft-Antispam-PRVS: <BY5PR12MB3650184FEEBEBA229200C5B1CD5E9@BY5PR12MB3650.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:370;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: vLZ14IHHDZMDmDz8YlUqs9yIpO7CiLfeC5xYhFg1DIxd1AWgJoj2X3AFmVY/kgIgC8FNXtXysQD5bUPYbALUFggIykxfMfciLZru1ujGC+AaBzdvw1CskGcC9IoA77sz4UCiKNH158lbbaJNskQmJo9kPjZYe7CU/K3/7Xbo6GR1/fNLXQhpWvAc+36ZnaijfU10uqraRa1GAXpYK4Z20E4w5RJnQvTi/w59oegXAhBO95GVdpP3Jyyoq1s42jEcJNFzB1WyVQLkEsQYWZd1jNhpc2w61S8PZJV1pzGgWwdJu65J73F1KKdUoPL+ky4U8DaHZZVbccMq4QuU1VGXo6PmcZ21TDtPfiri2QQDhu5aHMJj09Exc3V0t18z83H9+Io7vN+dCXmZKpSws8ADhYZ0m2p1QDjtSY96xWZo0sdbYndmP9uFbIpbWQkWHSM/3rs6Nk3l1T0pMppAHFL2l4I4w/ZNIhWPa0ekf8Fp/OVj6V75B/Q20T/nY4U4bF7lhmg7hPdD86xdB1JfCQWfBa9ysExz2sG6AMAuIiTLwqJaDSevg0ofo+2+m4OTt2G18ZrMHu2UfpOW6zZlW3/qy31A0OxPYwYlFkw3o8p32tDsoDhHWUv8rAkzTIKK3ItkoBijh3M/d4P01UDpvBNTyohYcNXGQKyJNPnBWzrHVWGG0MMZQAOpCIMqZV49EcinBrW1vH6xjDzYPjt8K1aNuYHKokiI/Ix7PQjJOrkGf5cgqJ73PtIyIDMGTIjotYbRSowCdLBH8/id4VymXLZLbCLYTVosE3vQ2cU469RCnCI=
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(36840700001)(40470700004)(46966006)(47076005)(40460700003)(336012)(36860700001)(107886003)(508600001)(7696005)(2616005)(5660300002)(26005)(86362001)(36756003)(426003)(4326008)(7049001)(82310400004)(83380400001)(356005)(81166007)(8676002)(70206006)(70586007)(110136005)(6666004)(186003)(2906002)(8936002)(316002)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 13:28:19.5116
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6e4fab38-4c94-42c6-22d0-08d9df3d62ff
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT061.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3650
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+From: kartik <kkartik@nvidia.com>
 
-syzbot found the following issue on:
+On Jetson AGX Orin, additional UART (UART-A) is available on 40-pin
+header.
 
-HEAD commit:    74e5dee6a5b9 Add linux-next specific files for 20220124
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=16fbb967b00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=2242b42e3f4b745
-dashboard link: https://syzkaller.appspot.com/bug?extid=8f41dccfb6c03cc36fd6
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Enable UART-A for Jetson AGX Orin and change the compatible string to
+"nvidia,tegra194-hsuart". This enables serial-tegra driver, which
+supports HW flow control and is the preffered driver for higher
+baud rates.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+8f41dccfb6c03cc36fd6@syzkaller.appspotmail.com
-
-INFO: task syz-executor.5:19074 can't die for more than 143 seconds.
-task:syz-executor.5  state:R  running task     stack:26128 pid:19074 ppid:  3634 flags:0x00004004
-Call Trace:
- <TASK>
- context_switch kernel/sched/core.c:4986 [inline]
- __schedule+0xab2/0x4db0 kernel/sched/core.c:6295
- preempt_schedule_common+0x45/0xc0 kernel/sched/core.c:6461
- preempt_schedule_thunk+0x16/0x18 arch/x86/entry/thunk_64.S:35
- vprintk_emit+0x1c9/0x4f0 kernel/printk/printk.c:2249
- vprintk+0x80/0x90 kernel/printk/printk_safe.c:50
- _printk+0xba/0xed kernel/printk/printk.c:2269
- show_free_areas+0xc99/0x1120 mm/page_alloc.c:6082
- show_mem+0x31/0x191 lib/show_mem.c:17
- warn_alloc_show_mem mm/page_alloc.c:4214 [inline]
- warn_alloc.cold+0x121/0x189 mm/page_alloc.c:4239
- __vmalloc_area_node mm/vmalloc.c:2982 [inline]
- __vmalloc_node_range+0xe0a/0x1040 mm/vmalloc.c:3110
- __vmalloc_node mm/vmalloc.c:3160 [inline]
- vzalloc+0x67/0x80 mm/vmalloc.c:3238
- n_tty_open+0x16/0x170 drivers/tty/n_tty.c:1813
- tty_ldisc_open+0x9b/0x110 drivers/tty/tty_ldisc.c:433
- tty_ldisc_setup+0x43/0x100 drivers/tty/tty_ldisc.c:740
- tty_init_dev.part.0+0x1f4/0x610 drivers/tty/tty_io.c:1443
- tty_init_dev include/linux/err.h:36 [inline]
- tty_open_by_driver drivers/tty/tty_io.c:2086 [inline]
- tty_open+0xb16/0x1000 drivers/tty/tty_io.c:2133
- chrdev_open+0x266/0x770 fs/char_dev.c:414
- do_dentry_open+0x4b9/0x1240 fs/open.c:824
- do_open fs/namei.c:3476 [inline]
- path_openat+0x1c9e/0x2940 fs/namei.c:3609
- do_filp_open+0x1aa/0x400 fs/namei.c:3636
- do_sys_openat2+0x16d/0x4d0 fs/open.c:1214
- do_sys_open fs/open.c:1230 [inline]
- __do_sys_openat fs/open.c:1246 [inline]
- __se_sys_openat fs/open.c:1241 [inline]
- __x64_sys_openat+0x13f/0x1f0 fs/open.c:1241
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7f0116f1e059
-RSP: 002b:00007f01157ee168 EFLAGS: 00000246 ORIG_RAX: 0000000000000101
-RAX: ffffffffffffffda RBX: 00007f0117031370 RCX: 00007f0116f1e059
-RDX: 0000000000000000 RSI: 0000000020000200 RDI: ffffffffffffff9c
-RBP: 00007f0116f7808d R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000000000
-R13: 00007ffd12bd1c4f R14: 00007f01157ee300 R15: 0000000000022000
- </TASK>
-
-Showing all locks held in the system:
-3 locks held by kworker/u4:0/8:
- #0: ffff8880b9d39c58 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x2b/0x120 kernel/sched/core.c:489
- #1: ffff8880b9d27948 (&per_cpu_ptr(group->pcpu, cpu)->seq){-.-.}-{0:0}, at: psi_task_switch+0x176/0x4e0 kernel/sched/psi.c:882
- #2: ffff8880b9d28498 (&base->lock){-.-.}-{2:2}, at: lock_timer_base+0x5a/0x1f0 kernel/time/timer.c:946
-1 lock held by khungtaskd/26:
- #0: ffffffff8bb83ae0 (rcu_read_lock){....}-{1:2}, at: debug_show_all_locks+0x53/0x260 kernel/locking/lockdep.c:6460
-2 locks held by getty/3283:
- #0: ffff888022a54098 (&tty->ldisc_sem){++++}-{0:0}, at: tty_ldisc_ref_wait+0x22/0x80 drivers/tty/tty_ldisc.c:244
- #1: ffffc90002b632e8 (&ldata->atomic_read_lock){+.+.}-{3:3}, at: n_tty_read+0xcf0/0x1230 drivers/tty/n_tty.c:2077
-5 locks held by kworker/0:12/18357:
- #0: ffff8880b9c39c58 (&rq->__lock){-.-.}-{2:2}, at: raw_spin_rq_lock_nested+0x2b/0x120 kernel/sched/core.c:489
- #1: ffff8880b9c27948 (&per_cpu_ptr(group->pcpu, cpu)->seq){-.-.}-{0:0}, at: psi_task_switch+0x3e7/0x4e0 kernel/sched/psi.c:891
- #2: ffff8880b9c28498 (&base->lock){-.-.}-{2:2}, at: lock_timer_base+0x5a/0x1f0 kernel/time/timer.c:946
- #3: ffffffff9077a3d0 (&obj_hash[i].lock){-.-.}-{2:2}, at: debug_object_activate+0x12e/0x3e0 lib/debugobjects.c:661
- #4: ffffffff90797a10 (&obj_hash[i].lock){-.-.}-{2:2}, at: __debug_check_no_obj_freed lib/debugobjects.c:980 [inline]
- #4: ffffffff90797a10 (&obj_hash[i].lock){-.-.}-{2:2}, at: debug_check_no_obj_freed+0xc7/0x420 lib/debugobjects.c:1023
-3 locks held by syz-executor.5/19074:
-
-=============================================
-
-
-
+Signed-off-by: kartik <kkartik@nvidia.com>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+v2 -> v1: updated commit message
+---
+ arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+index efbbb87..4eda238 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
++++ b/arch/arm64/boot/dts/nvidia/tegra234-p3737-0000+p3701-0000.dts
+@@ -11,6 +11,7 @@
+ 	aliases {
+ 		mmc3 = "/bus@0/mmc@3460000";
+ 		serial0 = &tcu;
++		serial1 = &uarta;
+ 	};
+ 
+ 	chosen {
+@@ -18,6 +19,13 @@
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	bus@0 {
++		serial@3100000 {
++			compatible = "nvidia,tegra194-hsuart";
++			status = "okay";
++		};
++	};
++
+ 	serial {
+ 		status = "okay";
+ 	};
+-- 
+2.7.4
+
