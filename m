@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AD9DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA4CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245172AbiAXSvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:51:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245344AbiAXSuh (ORCPT
+        id S245501AbiAXSvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:51:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49418 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236174AbiAXSuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:50:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7432AC061401;
-        Mon, 24 Jan 2022 10:50:37 -0800 (PST)
+        Mon, 24 Jan 2022 13:50:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 11A4E61502;
-        Mon, 24 Jan 2022 18:50:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9CCDC340E5;
-        Mon, 24 Jan 2022 18:50:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9F5F614C9;
+        Mon, 24 Jan 2022 18:50:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC23EC340E5;
+        Mon, 24 Jan 2022 18:50:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050236;
-        bh=yDBSgpBW6dgHBL2qjwJh5vA0ZzJY2QqpuiH7rtUVgX0=;
+        s=korg; t=1643050239;
+        bh=bXxs5pp4y2DzjUk7vXFOB+RzFrdzy657g1Ih/Gk3cYA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z4hec8MJns+B6zOTsiGbXgOiOP7MVKEGb9aw/lhtZ4EtkUZSQ53LrYcfJjcAfgVdr
-         bNKw6wG59ftNHEp062T/pJTrPR9khfLUYXLbDWq0w7FNiZhH8v+V9a9DH+mdK0lssw
-         6jnAp9uCo/TUfGdJ4vj8K+ngPut97XaO1F0u2p20=
+        b=2j4K1PD9kwkxTmCjxqQZ2UShuwWKIpRkNcYUmsQvg1PSM+EfjM+LEaPjz3w3z0yp8
+         KTcBIrifsFqE0d48KTY9gZ7sIyFJjlfznws+rZ4JH3AbkJtQdzED8D9xaJv3dnzTd4
+         /sUdoRg8jdBpWyBvUd4pszetauqzCNFuexsGerQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
         Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 020/114] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-Date:   Mon, 24 Jan 2022 19:41:55 +0100
-Message-Id: <20220124183927.749639988@linuxfoundation.org>
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Subject: [PATCH 4.4 021/114] Bluetooth: stop proccessing malicious adv data
+Date:   Mon, 24 Jan 2022 19:41:56 +0100
+Message-Id: <20220124183927.780532909@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -50,52 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
+[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
 
-I got a kernel BUG report when doing fault injection test:
+Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
+problem was in missing validaion check.
 
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-...
-RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
-...
-Call Trace:
- proto_unregister+0x83/0x220
- cmtp_cleanup_sockets+0x37/0x40 [cmtp]
- cmtp_exit+0xe/0x1f [cmtp]
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+We should check if data is not malicious and we can read next data block.
+If we won't check ptr validness, code can read a way beyond skb->end and
+it can cause problems, of course.
 
-If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
-success. This will cause a kernel bug when accessing uncreated ctmp
-related data when the module exits.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
+Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/cmtp/core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ net/bluetooth/hci_event.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index b1757895c4ad2..23bad44bb0850 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -500,9 +500,7 @@ static int __init cmtp_init(void)
- {
- 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 6528ecc3a3bc5..05ccd2bcd9e46 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4940,7 +4940,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
--	cmtp_init_sockets();
--
--	return 0;
-+	return cmtp_init_sockets();
- }
+-		if (ev->length <= HCI_MAX_AD_LENGTH) {
++		if (ev->length <= HCI_MAX_AD_LENGTH &&
++		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+ 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+ 					   ev->bdaddr_type, NULL, 0, rssi,
+@@ -4950,6 +4951,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		}
  
- static void __exit cmtp_exit(void)
+ 		ptr += sizeof(*ev) + ev->length + 1;
++
++		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
++			break;
++		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 -- 
 2.34.1
 
