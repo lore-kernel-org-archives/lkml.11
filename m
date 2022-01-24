@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F792C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC93C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448755AbiAXVNp (ORCPT
+        id S1448796AbiAXVNs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:13:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41496 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391087AbiAXUq5 (ORCPT
+        Mon, 24 Jan 2022 16:13:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391105AbiAXUq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:57 -0500
+        Mon, 24 Jan 2022 15:46:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E72EC0619C2;
+        Mon, 24 Jan 2022 11:56:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AED5260B0B;
-        Mon, 24 Jan 2022 20:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98320C340E5;
-        Mon, 24 Jan 2022 20:46:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AB33B8122F;
+        Mon, 24 Jan 2022 19:56:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92510C340E5;
+        Mon, 24 Jan 2022 19:56:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057216;
-        bh=C0ltC4XK+lzZpfHNcWz3++UuYMDZj12sv+fI4U1loHA=;
+        s=korg; t=1643054210;
+        bh=WwyqKVvqSWpzPHuY0DjZnnFLbWkXOccjBFegE6a5n8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TzN8GWKkfW4KYsFWbIA/Ck/rzlktmirVQVHaRdpsNgOBm85QODo4wwWqpNkXwx4Ve
-         TVqmkHBCgE2VFvt2MsVMk9wDxkpheSfL6S7172mf/lHHYVy2GskrTwq+4hUVNVCcA0
-         G4IUTREAVuM8hELBO5rbQe0vowiAwvzPf/xbCoSs=
+        b=SxWaDOXibv/qmdAVtyEesNJeWeMRve9vQnfLf+F3cxcSwNvOKXLCnLoG+TJL6E+Up
+         1SUGSDwWQF+2GKCF//MgeqNRtoQgfCuigzR8uoPje/Nds6C90Rw3rt/9TVhBLhyT6y
+         7D2cqq4jW2vgCMcrZF1iR/QZYzenn4QPoYLxzFzM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.15 739/846] Documentation, arch: Remove leftovers from raw device
-Date:   Mon, 24 Jan 2022 19:44:16 +0100
-Message-Id: <20220124184126.481611657@linuxfoundation.org>
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 313/563] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 24 Jan 2022 19:41:18 +0100
+Message-Id: <20220124184035.255603480@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,82 +50,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-commit 473dcf0ffc31ce1135cd10578e7e06698cf51f4a upstream.
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-Raw device interface was removed so remove all references to configs
-related to it.
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-Fixes: 603e4922f1c8 ("remove the raw driver")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de> [arch/arm/configs]
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
+
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
+
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/devices.txt  |    8 +-------
- arch/arm/configs/spear13xx_defconfig   |    1 -
- arch/arm/configs/spear3xx_defconfig    |    1 -
- arch/arm/configs/spear6xx_defconfig    |    1 -
- arch/powerpc/configs/pseries_defconfig |    1 -
- 5 files changed, 1 insertion(+), 11 deletions(-)
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/Documentation/admin-guide/devices.txt
-+++ b/Documentation/admin-guide/devices.txt
-@@ -2339,13 +2339,7 @@
- 		disks (see major number 3) except that the limit on
- 		partitions is 31.
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index cbb7947f366f9..d8652321e15e9 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
  
-- 162 char	Raw block device interface
--		  0 = /dev/rawctl	Raw I/O control device
--		  1 = /dev/raw/raw1	First raw I/O device
--		  2 = /dev/raw/raw2	Second raw I/O device
--		    ...
--		 max minor number of raw device is set by kernel config
--		 MAX_RAW_DEVS or raw module parameter 'max_raw_devs'
-+ 162 char	Used for (now removed) raw block device interface
+-	return 0;
++	return stream_open(inode, file);
+ }
  
-  163 char
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -1152,7 +1152,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
  
---- a/arch/arm/configs/spear13xx_defconfig
-+++ b/arch/arm/configs/spear13xx_defconfig
-@@ -61,7 +61,6 @@ CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=8192
- CONFIG_I2C=y
- CONFIG_I2C_DESIGNWARE_PLATFORM=y
- CONFIG_SPI=y
---- a/arch/arm/configs/spear3xx_defconfig
-+++ b/arch/arm/configs/spear3xx_defconfig
-@@ -41,7 +41,6 @@ CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=8192
- CONFIG_I2C=y
- CONFIG_I2C_DESIGNWARE_PLATFORM=y
- CONFIG_SPI=y
---- a/arch/arm/configs/spear6xx_defconfig
-+++ b/arch/arm/configs/spear6xx_defconfig
-@@ -36,7 +36,6 @@ CONFIG_INPUT_FF_MEMLESS=y
- CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=8192
- CONFIG_I2C=y
- CONFIG_I2C_DESIGNWARE_PLATFORM=y
- CONFIG_SPI=y
---- a/arch/powerpc/configs/pseries_defconfig
-+++ b/arch/powerpc/configs/pseries_defconfig
-@@ -190,7 +190,6 @@ CONFIG_HVCS=m
- CONFIG_VIRTIO_CONSOLE=m
- CONFIG_IBM_BSR=m
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=1024
- CONFIG_I2C_CHARDEV=y
- CONFIG_FB=y
- CONFIG_FIRMWARE_EDID=y
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
+-- 
+2.34.1
+
 
 
