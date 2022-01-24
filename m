@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F5EC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E99D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843019AbiAXXDJ (ORCPT
+        id S1843001AbiAXXDH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59110 "EHLO
+        Mon, 24 Jan 2022 18:03:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577037AbiAXV5L (ORCPT
+        with ESMTP id S1577053AbiAXV5L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:57:11 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61B42C02C30C;
-        Mon, 24 Jan 2022 12:38:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68761C038AEF;
+        Mon, 24 Jan 2022 12:38:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0103661008;
-        Mon, 24 Jan 2022 20:38:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCA1BC340E5;
-        Mon, 24 Jan 2022 20:38:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 03E9B6153D;
+        Mon, 24 Jan 2022 20:38:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66DCC340E5;
+        Mon, 24 Jan 2022 20:38:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056733;
-        bh=eFMl/MhttaEwrV7USY7/hPWY6uI4fhVEmffTevK80BE=;
+        s=korg; t=1643056736;
+        bh=car2GWGQ84Oqt5DZ8T8+3ao0ewMS7ZfYThhbRLWU8xk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mcpfA6IKnocnYMhib51Px+Ip1pNqJ/GXfMvkdFL2X2esS3oO0/YRJbbIIcVErt5m0
-         EzmF+XtyIeN/HjcIV1y+f9Fi2mAz+4TqrkZrFSZ47Kdhev3OfropQn+6lnkNhKanA7
-         2bhC8D/5TZp85c+CX4JiNDnO5u0irPVbCLbfGAYU=
+        b=Xw/ao++DW7zB2mqItbeJVTroVh5GlQBygTRTR/iPauyw68Xb9beQQSxOQ5JVjUrZ+
+         8Qdm4D2OOfOFRzw/YMjjqc8elZRwmyobfbygTE7V/3aMa5aeEtXb8h6s6lfCBqa4Zm
+         0QfGk/LtyMvMeNi9/22Q5HZPGtmAvL+g17wlGpPM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 575/846] iwlwifi: fix leaks/bad data after failed firmware load
-Date:   Mon, 24 Jan 2022 19:41:32 +0100
-Message-Id: <20220124184120.866302947@linuxfoundation.org>
+Subject: [PATCH 5.15 584/846] Bluetooth: btintel: Add missing quirks and msft ext for legacy bootloader
+Date:   Mon, 24 Jan 2022 19:41:41 +0100
+Message-Id: <20220124184121.188374566@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,67 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Tedd Ho-Jeong An <tedd.an@intel.com>
 
-[ Upstream commit ab07506b0454bea606095951e19e72c282bfbb42 ]
+[ Upstream commit 3547a008c8962df2175db1e78b80f27e027ec549 ]
 
-If firmware load fails after having loaded some parts of the
-firmware, e.g. the IML image, then this would leak. For the
-host command list we'd end up running into a WARN on the next
-attempt to load another firmware image.
+This patch add missing HCI quirks and MSFT extension for legacy
+bootloader when it is running in the operational firmware.
 
-Fix this by calling iwl_dealloc_ucode() on failures, and make
-that also clear the data so we start fresh on the next round.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210110539.1f742f0eb58a.I1315f22f6aa632d94ae2069f85e1bca5e734dce0@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Tedd Ho-Jeong An <tedd.an@intel.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/bluetooth/btintel.c | 26 ++++++++++++++++++++++----
+ 1 file changed, 22 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 94553f272d377..2206f66f69940 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -131,6 +131,9 @@ static void iwl_dealloc_ucode(struct iwl_drv *drv)
- 
- 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
- 		iwl_free_fw_img(drv, drv->fw.img + i);
+diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
+index 525be2e1fbb25..e73d4c719b0ad 100644
+--- a/drivers/bluetooth/btintel.c
++++ b/drivers/bluetooth/btintel.c
+@@ -2330,10 +2330,14 @@ static int btintel_setup_combined(struct hci_dev *hdev)
+ 	case 0x12:      /* ThP */
+ 	case 0x13:      /* HrP */
+ 	case 0x14:      /* CcP */
+-		/* Some legacy bootloader devices from JfP supports both old
+-		 * and TLV based HCI_Intel_Read_Version command. But we don't
+-		 * want to use the TLV based setup routines for those legacy
+-		 * bootloader device.
++		/* Some legacy bootloader devices starting from JfP,
++		 * the operational firmware supports both old and TLV based
++		 * HCI_Intel_Read_Version command based on the command
++		 * parameter.
++		 *
++		 * For upgrading firmware case, the TLV based version cannot
++		 * be used because the firmware filename for legacy bootloader
++		 * is based on the old format.
+ 		 *
+ 		 * Also, it is not easy to convert TLV based version from the
+ 		 * legacy version format.
+@@ -2345,6 +2349,20 @@ static int btintel_setup_combined(struct hci_dev *hdev)
+ 		err = btintel_read_version(hdev, &ver);
+ 		if (err)
+ 			return err;
 +
-+	/* clear the data for the aborted load case */
-+	memset(&drv->fw, 0, sizeof(drv->fw));
- }
- 
- static int iwl_alloc_fw_desc(struct iwl_drv *drv, struct fw_desc *desc,
-@@ -1333,6 +1336,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	int i;
- 	bool load_module = false;
- 	bool usniffer_images = false;
-+	bool failure = true;
- 
- 	fw->ucode_capa.max_probe_length = IWL_DEFAULT_MAX_PROBE_LENGTH;
- 	fw->ucode_capa.standard_phy_calibration_size =
-@@ -1602,6 +1606,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 				op->name, err);
- #endif
- 	}
-+	failure = false;
- 	goto free;
- 
-  try_again:
-@@ -1617,6 +1622,9 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-  free:
-+	if (failure)
-+		iwl_dealloc_ucode(drv);
++		/* Apply the device specific HCI quirks
++		 *
++		 * All Legacy bootloader devices support WBS
++		 */
++		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
 +
- 	if (pieces) {
- 		for (i = 0; i < ARRAY_SIZE(pieces->img); i++)
- 			kfree(pieces->img[i].sec);
++		/* Valid LE States quirk for JfP/ThP familiy */
++		if (ver.hw_variant == 0x11 || ver.hw_variant == 0x12)
++			set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
++
++		/* Setup MSFT Extension support */
++		btintel_set_msft_opcode(hdev, ver.hw_variant);
++
+ 		err = btintel_bootloader_setup(hdev, &ver);
+ 		break;
+ 	case 0x17:
 -- 
 2.34.1
 
