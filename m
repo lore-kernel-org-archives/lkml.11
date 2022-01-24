@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E09CC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9EADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357028AbiAXTsL (ORCPT
+        id S1345825AbiAXTsU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:48:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59098 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345772AbiAXTiC (ORCPT
+        Mon, 24 Jan 2022 14:48:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35486 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344264AbiAXTiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:38:02 -0500
+        Mon, 24 Jan 2022 14:38:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD7FEB81215;
-        Mon, 24 Jan 2022 19:38:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F416CC340E5;
-        Mon, 24 Jan 2022 19:37:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 067CE61525;
+        Mon, 24 Jan 2022 19:38:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6A97C340E7;
+        Mon, 24 Jan 2022 19:38:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053079;
-        bh=xn5CIkjOdhzi0YaD3ET90nmLIPGwL+NI53JbBeeAdXo=;
+        s=korg; t=1643053085;
+        bh=FRukRTFFv3IyJWhgY9Oz80eIT2Q6q8nsT2qXjYOW4+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TSSSPDOL8FymrBxVmc4QmIShf6VPzBMqI1zSMRBh7+9mT3E88SiLHwcygqKK/14zO
-         NLV3p54TF/8WT6Nzf5QiyWmRuLORZ5ISUjlKIicq7uUKq4M0Qu0GOyrwXIyjLhU0+c
-         05cxxAES99iy8wNsgdMIIBe6A1tyXlrXB8L3Jsp4=
+        b=TXQnSNGXW1QRBZMN/Ilq5AUytLKRPIBSxwecXiQrWXKXxhvpLvQMQ7JTPOp5QwBYB
+         jtSyNbNBJ5qXzm81evsXUu8q//Oe9p3mQLnpa3TfzeikCPOR4/n2lIugh7td7GQmTq
+         XgWLxLl16/Sr7EaYMq2JzbUN8N+KuUgfdb63RzJs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>,
-        syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
-Subject: [PATCH 5.4 268/320] ext4: make sure to reset inode lockdep class when quota enabling fails
-Date:   Mon, 24 Jan 2022 19:44:12 +0100
-Message-Id: <20220124184003.098755253@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.4 270/320] ext4: set csum seed in tmp inode while migrating to extents
+Date:   Mon, 24 Jan 2022 19:44:14 +0100
+Message-Id: <20220124184003.161692485@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,49 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Luís Henriques <lhenriques@suse.de>
 
-commit 4013d47a5307fdb5c13370b5392498b00fedd274 upstream.
+commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
 
-When we succeed in enabling some quota type but fail to enable another
-one with quota feature, we correctly disable all enabled quota types.
-However we forget to reset i_data_sem lockdep class. When the inode gets
-freed and reused, it will inherit this lockdep class (i_data_sem is
-initialized only when a slab is created) and thus eventually lockdep
-barfs about possible deadlocks.
+When migrating to extents, the temporary inode will have it's own checksum
+seed.  This means that, when swapping the inodes data, the inode checksums
+will be incorrect.
 
-Reported-and-tested-by: syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
-Cc: stable@kernel.org
-Link: https://lore.kernel.org/r/20211007155336.12493-3-jack@suse.cz
+This can be fixed by recalculating the extents checksums again.  Or simply
+by copying the seed into the temporary inode.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
+Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ fs/ext4/migrate.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -5998,8 +5998,19 @@ static int ext4_enable_quotas(struct sup
- 					"Failed to enable quota tracking "
- 					"(type=%d, err=%d). Please run "
- 					"e2fsck to fix.", type, err);
--				for (type--; type >= 0; type--)
-+				for (type--; type >= 0; type--) {
-+					struct inode *inode;
-+
-+					inode = sb_dqopt(sb)->files[type];
-+					if (inode)
-+						inode = igrab(inode);
- 					dquot_quota_off(sb, type);
-+					if (inode) {
-+						lockdep_set_quota_inode(inode,
-+							I_DATA_SEM_NORMAL);
-+						iput(inode);
-+					}
-+				}
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -477,6 +477,17 @@ int ext4_ext_migrate(struct inode *inode
+ 		ext4_journal_stop(handle);
+ 		goto out_unlock;
+ 	}
++	/*
++	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
++	 * is so that the metadata blocks will have the correct checksum after
++	 * the migration.
++	 *
++	 * Note however that, if a crash occurs during the migration process,
++	 * the recovery process is broken because the tmp_inode checksums will
++	 * be wrong and the orphans cleanup will fail.
++	 */
++	ei = EXT4_I(inode);
++	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+ 	 * Set the i_nlink to zero so it will be deleted later
+@@ -520,7 +531,6 @@ int ext4_ext_migrate(struct inode *inode
+ 		goto out_tmp_inode;
+ 	}
  
- 				return err;
- 			}
+-	ei = EXT4_I(inode);
+ 	i_data = ei->i_data;
+ 	memset(&lb, 0, sizeof(lb));
+ 
 
 
