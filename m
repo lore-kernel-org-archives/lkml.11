@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A962C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF62EC35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347532AbiAXURC (ORCPT
+        id S1380932AbiAXURV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:17:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54610 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359839AbiAXUAR (ORCPT
+        Mon, 24 Jan 2022 15:17:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42774 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344007AbiAXUAY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:00:17 -0500
+        Mon, 24 Jan 2022 15:00:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BA0860916;
-        Mon, 24 Jan 2022 20:00:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A965C340E5;
-        Mon, 24 Jan 2022 20:00:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33BBDB81218;
+        Mon, 24 Jan 2022 20:00:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56124C340E5;
+        Mon, 24 Jan 2022 20:00:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054415;
-        bh=C+4B7g9Rtt7BSWPboHk3EW42cx6jfP4t12STewUU/Eo=;
+        s=korg; t=1643054421;
+        bh=ehT1W02LPHHbQC4CpSx98mgh4CIOnT+AKMKHij0IAzI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hcqlJJhjXPsslbrzgac42DiZG1T4hdwGQFw17Tl6773Y+LJEBx4ZSLrEB99CtnAxB
-         Q1F0MzwdW+h0CY/fOTC+lYXG5z7JtJYeWxGDMvyCx9kFwjUsj8uAobH+AwReznceFP
-         6zr2yIZQTn83tcGSmE4whpSmqlEjPbac68Qw6eTA=
+        b=CldPozz/hgOS6PkcXNiifqofcJPm2nXcSNZadRaMqTLhswYJE3HR7GzjwiA6E8mCt
+         tA0BdMUR2QYy2HaTDntfQU7iQB0vNz4SxQqEzRy8QNFx0vjlSUgrWSNXpobI6fX9CP
+         UkL7zomYVGgGRU5zOdOqPe9x/rUyGF5BvWvLT30Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Egerer <thomas.egerer@secunet.com>,
-        Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 382/563] xfrm: rate limit SA mapping change message to user space
-Date:   Mon, 24 Jan 2022 19:42:27 +0100
-Message-Id: <20220124184037.632696519@linuxfoundation.org>
+Subject: [PATCH 5.10 357/563] x86/mce: Mark mce_panic() noinstr
+Date:   Mon, 24 Jan 2022 19:42:02 +0100
+Message-Id: <20220124184036.765131336@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,209 +46,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 4e484b3e969b52effd95c17f7a86f39208b2ccf4 ]
+[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
 
-Kernel generates mapping change message, XFRM_MSG_MAPPING,
-when a source port chage is detected on a input state with UDP
-encapsulation set.  Kernel generates a message for each IPsec packet
-with new source port.  For a high speed flow per packet mapping change
-message can be excessive, and can overload the user space listener.
+And allow instrumentation inside it because it does calls to other
+facilities which will not be tagged noinstr.
 
-Introduce rate limiting for XFRM_MSG_MAPPING message to the user space.
+Fixes
 
-The rate limiting is configurable via netlink, when adding a new SA or
-updating it. Use the new attribute XFRMA_MTIMER_THRESH in seconds.
+  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
 
-v1->v2 change:
-	update xfrm_sa_len()
-
-v2->v3 changes:
-	use u32 insted unsigned long to reduce size of struct xfrm_state
-	fix xfrm_ompat size Reported-by: kernel test robot <lkp@intel.com>
-	accept XFRM_MSG_MAPPING only when XFRMA_ENCAP is present
-
-Co-developed-by: Thomas Egerer <thomas.egerer@secunet.com>
-Signed-off-by: Thomas Egerer <thomas.egerer@secunet.com>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/xfrm.h        |  5 +++++
- include/uapi/linux/xfrm.h |  1 +
- net/xfrm/xfrm_compat.c    |  6 ++++--
- net/xfrm/xfrm_state.c     | 23 ++++++++++++++++++++++-
- net/xfrm/xfrm_user.c      | 18 +++++++++++++++++-
- 5 files changed, 49 insertions(+), 4 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 6232a5f048bde..337d29875e518 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -193,6 +193,11 @@ struct xfrm_state {
- 	struct xfrm_algo_aead	*aead;
- 	const char		*geniv;
- 
-+	/* mapping change rate limiting */
-+	__be16 new_mapping_sport;
-+	u32 new_mapping;	/* seconds */
-+	u32 mapping_maxage;	/* seconds for input SA */
-+
- 	/* Data for encapsulator */
- 	struct xfrm_encap_tmpl	*encap;
- 	struct sock __rcu	*encap_sk;
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index ffc6a5391bb7b..2290c98b47cf8 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -308,6 +308,7 @@ enum xfrm_attr_type_t {
- 	XFRMA_SET_MARK,		/* __u32 */
- 	XFRMA_SET_MARK_MASK,	/* __u32 */
- 	XFRMA_IF_ID,		/* __u32 */
-+	XFRMA_MTIMER_THRESH,	/* __u32 in seconds for input SA */
- 	__XFRMA_MAX
- 
- #define XFRMA_OUTPUT_MARK XFRMA_SET_MARK	/* Compatibility */
-diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
-index 2bf2693901631..a0f62fa02e06e 100644
---- a/net/xfrm/xfrm_compat.c
-+++ b/net/xfrm/xfrm_compat.c
-@@ -127,6 +127,7 @@ static const struct nla_policy compat_policy[XFRMA_MAX+1] = {
- 	[XFRMA_SET_MARK]	= { .type = NLA_U32 },
- 	[XFRMA_SET_MARK_MASK]	= { .type = NLA_U32 },
- 	[XFRMA_IF_ID]		= { .type = NLA_U32 },
-+	[XFRMA_MTIMER_THRESH]	= { .type = NLA_U32 },
- };
- 
- static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
-@@ -274,9 +275,10 @@ static int xfrm_xlate64_attr(struct sk_buff *dst, const struct nlattr *src)
- 	case XFRMA_SET_MARK:
- 	case XFRMA_SET_MARK_MASK:
- 	case XFRMA_IF_ID:
-+	case XFRMA_MTIMER_THRESH:
- 		return xfrm_nla_cpy(dst, src, nla_len(src));
- 	default:
--		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
-+		BUILD_BUG_ON(XFRMA_MAX != XFRMA_MTIMER_THRESH);
- 		pr_warn_once("unsupported nla_type %d\n", src->nla_type);
- 		return -EOPNOTSUPP;
- 	}
-@@ -431,7 +433,7 @@ static int xfrm_xlate32_attr(void *dst, const struct nlattr *nla,
- 	int err;
- 
- 	if (type > XFRMA_MAX) {
--		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
-+		BUILD_BUG_ON(XFRMA_MAX != XFRMA_MTIMER_THRESH);
- 		NL_SET_ERR_MSG(extack, "Bad attribute");
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index c158e70e8ae10..65e2805fa113a 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1557,6 +1557,9 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	x->km.seq = orig->km.seq;
- 	x->replay = orig->replay;
- 	x->preplay = orig->preplay;
-+	x->mapping_maxage = orig->mapping_maxage;
-+	x->new_mapping = 0;
-+	x->new_mapping_sport = 0;
- 
- 	return x;
- 
-@@ -2208,7 +2211,7 @@ int km_query(struct xfrm_state *x, struct xfrm_tmpl *t, struct xfrm_policy *pol)
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 34fffffaf8730..64d8a96a2bf1e 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -295,11 +295,17 @@ static void wait_for_panic(void)
+ 	panic("Panicing machine check CPU died");
  }
- EXPORT_SYMBOL(km_query);
  
--int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
-+static int __km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
+-static void mce_panic(const char *msg, struct mce *final, char *exp)
++static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
  {
- 	int err = -EINVAL;
- 	struct xfrm_mgr *km;
-@@ -2223,6 +2226,24 @@ int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
- 	rcu_read_unlock();
- 	return err;
- }
+-	int apei_err = 0;
+ 	struct llist_node *pending;
+ 	struct mce_evt_llist *l;
++	int apei_err = 0;
 +
-+int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
-+{
-+	int ret = 0;
-+
-+	if (x->mapping_maxage) {
-+		if ((jiffies / HZ - x->new_mapping) > x->mapping_maxage ||
-+		    x->new_mapping_sport != sport) {
-+			x->new_mapping_sport = sport;
-+			x->new_mapping = jiffies / HZ;
-+			ret = __km_new_mapping(x, ipaddr, sport);
-+		}
-+	} else {
-+		ret = __km_new_mapping(x, ipaddr, sport);
-+	}
-+
-+	return ret;
-+}
- EXPORT_SYMBOL(km_new_mapping);
++	/*
++	 * Allow instrumentation around external facilities usage. Not that it
++	 * matters a whole lot since the machine is going to panic anyway.
++	 */
++	instrumentation_begin();
  
- void km_policy_expired(struct xfrm_policy *pol, int dir, int hard, u32 portid)
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index ddf1b3a5f7c1f..d0fdfbf4c5f72 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -282,6 +282,10 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
- 
- 	err = 0;
- 
-+	if (attrs[XFRMA_MTIMER_THRESH])
-+		if (!attrs[XFRMA_ENCAP])
-+			err = -EINVAL;
-+
- out:
- 	return err;
- }
-@@ -521,6 +525,7 @@ static void xfrm_update_ae_params(struct xfrm_state *x, struct nlattr **attrs,
- 	struct nlattr *lt = attrs[XFRMA_LTIME_VAL];
- 	struct nlattr *et = attrs[XFRMA_ETIMER_THRESH];
- 	struct nlattr *rt = attrs[XFRMA_REPLAY_THRESH];
-+	struct nlattr *mt = attrs[XFRMA_MTIMER_THRESH];
- 
- 	if (re) {
- 		struct xfrm_replay_state_esn *replay_esn;
-@@ -552,6 +557,9 @@ static void xfrm_update_ae_params(struct xfrm_state *x, struct nlattr **attrs,
- 
- 	if (rt)
- 		x->replay_maxdiff = nla_get_u32(rt);
-+
-+	if (mt)
-+		x->mapping_maxage = nla_get_u32(mt);
- }
- 
- static void xfrm_smark_init(struct nlattr **attrs, struct xfrm_mark *m)
-@@ -969,8 +977,13 @@ static int copy_to_user_state_extra(struct xfrm_state *x,
- 		if (ret)
- 			goto out;
- 	}
--	if (x->security)
-+	if (x->security) {
- 		ret = copy_sec_ctx(x->security, skb);
-+		if (ret)
+ 	if (!fake_panic) {
+ 		/*
+@@ -314,7 +320,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
+ 	} else {
+ 		/* Don't log too much for fake panic */
+ 		if (atomic_inc_return(&mce_fake_panicked) > 1)
+-			return;
 +			goto out;
-+	}
-+	if (x->mapping_maxage)
-+		ret = nla_put_u32(skb, XFRMA_MTIMER_THRESH, x->mapping_maxage);
- out:
- 	return ret;
- }
-@@ -2924,6 +2937,9 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
- 	/* Must count x->lastused as it may become non-zero behind our back. */
- 	l += nla_total_size_64bit(sizeof(u64));
- 
-+	if (x->mapping_maxage)
-+		l += nla_total_size(sizeof(x->mapping_maxage));
+ 	}
+ 	pending = mce_gen_pool_prepare_records();
+ 	/* First print corrected ones that are still unlogged */
+@@ -352,6 +358,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
+ 		panic(msg);
+ 	} else
+ 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
 +
- 	return l;
++out:
++	instrumentation_end();
  }
  
+ /* Support code for software error injection */
 -- 
 2.34.1
 
