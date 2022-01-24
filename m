@@ -2,118 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B33FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08E8C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843216AbiAXXDe (ORCPT
+        id S1843559AbiAXXEI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60544 "EHLO
+        Mon, 24 Jan 2022 18:04:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577991AbiAXWBY (ORCPT
+        with ESMTP id S1578722AbiAXWDV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:01:24 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA62C024161
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:41:12 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id bu18so52459020lfb.5
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:41:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1LJGjDTYMuLmHfQpWatQs3kMJ9qbd2ha/UHX5cFngus=;
-        b=mvCHYThbHbgCT4TsM9CfI+ZrMCLe2++pHQhdwPeI8vb/8sEb8D65Iom2uXnznuVmVS
-         +nGb5Ow23gtXLzerVRkV3f3Uw+Z6842cwIsDw+5dB7yqFKE3AjaTZwN1OxOvhrrjaDh2
-         75UtaMM4hS2p9EATTlFqNg0mtAUeJig69pu4EtGEQtcCKDwuG+KfNOM4L3+EXZwrdQ7j
-         TaqH65KfdgS3yLgVjAMhReY9jxu4RJWojw24J+Cl2+1KPAHeQ2TmTq2dOeVhSHk7T0DQ
-         ikZdyLW3rbZhcNdw2hBGpnM2eaid1iX33aaQTP+GjCBH5HwNygxtlrFmGpLuLQXIMqWG
-         Hmkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1LJGjDTYMuLmHfQpWatQs3kMJ9qbd2ha/UHX5cFngus=;
-        b=fx4HLbL6ydRyCzLrYbtsGCaP+G93MjaDGGJA+JjIoJjbrZZr9vbMr9jBzWOEYIC8oi
-         7J5YMCdmU8G4Ngge5Di24g+4zWR121fT762AhPBYJodyZ+ElCJ42/Pngze5eVkwtuC47
-         N7Nh36uWapIKs+mGdF3BY6nQ1GqqNcRqiLAp/5iOGedd4LjvHeZm32wjgeT+t9v36R/5
-         75qbkUrrBxSXQUdCln9juHXQaD6lAcxtvpVp2xjtybKandAfHGeVw5PtBuHgcjbCSvYw
-         9x5sF0gXk4gQpaSRqMFh3Wf0VZdjJGcZAuBc8AzQNUDP+9vu5z3vDhy/FYqMilZjFBXF
-         rmSA==
-X-Gm-Message-State: AOAM532JfA3Ww0u2u1nFxSCMRTvXNR/xLgwh875AQFxRQ324aZPLXOhg
-        /rNFKUe/AJZA1jbBFiMZT2Ea9DvcHXQDvAfc34uViE9IDc+noQ==
-X-Google-Smtp-Source: ABdhPJw5wfq7L+SJLcrq8u2A8nE43CCiP3/gypswmbsopPtzGSfHfId+dsvXuFq4G0FIe+wlsrViT3Ke+xM97hf2HYg=
-X-Received: by 2002:a05:6512:b0d:: with SMTP id w13mr14398285lfu.240.1643056870722;
- Mon, 24 Jan 2022 12:41:10 -0800 (PST)
+        Mon, 24 Jan 2022 17:03:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F72DC036BFC;
+        Mon, 24 Jan 2022 12:41:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1673615D8;
+        Mon, 24 Jan 2022 20:41:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5309C340E5;
+        Mon, 24 Jan 2022 20:41:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056911;
+        bh=Ht43UxNFhdmKPNTqhSR/k8BwiUdZV1+y0lRQ40YRnCE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w1TNF/TV7M/9UdSfiYjkrqU/g7x/D1wPuSNm+V/Xxmq1HTvO2D8w7eP8uzlba5xEo
+         mHgwHO/MoeEE2nEmvwB6MezXyyPueir1q8IWHkXWRa/Jr9f4ye6trJnRJ4/IDbZrjX
+         iRJR2FKS/SdU0bUUvwvyWMO3DoQlrCfGalBLAbg8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
+        Georgi Djakov <djakov@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 639/846] interconnect: qcom: rpm: Prevent integer overflow in rate
+Date:   Mon, 24 Jan 2022 19:42:36 +0100
+Message-Id: <20220124184123.072750615@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220120214001.1879469-1-nathan@kernel.org> <20220120214001.1879469-2-nathan@kernel.org>
-In-Reply-To: <20220120214001.1879469-2-nathan@kernel.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 24 Jan 2022 12:40:58 -0800
-Message-ID: <CAKwvOdmTBUcre5+=kopcyAv3q=55=Z5O65QHmvy3Ra2JqgLNHw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] MIPS: Loongson64: Wrap -mno-branch-likely with cc-option
-To:     Nathan Chancellor <nathan@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Huacai Chen <chenhuacai@kernel.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 1:40 PM Nathan Chancellor <nathan@kernel.org> wrote:
->
-> This flag is not supported by clang, which results in a warning:
->
->   clang-14: warning: argument unused during compilation: '-mno-branch-likely' [-Wunused-command-line-argument]
->
-> This breaks cc-option, which adds -Werror to make this warning fatal and
-> catch flags that are not supported. Wrap the flag in cc-option so that
-> it does not cause cc-option to fail, which can cause randconfigs to be
-> really noisy.
->
-> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+From: Stephan Gerhold <stephan@gerhold.net>
 
-We should convert more of these tests to Kconfig checks that run once
-per configuration, rather than multiple times for a build. IIRC Linus
-mentioned this somewhere...yeah, the -Wimplicit-fallthrough patches.
-See
-dee2b702bcf06 ("kconfig: Add support for -Wimplicit-fallthrough")
+[ Upstream commit a7d9436a6c85fcb8843c910fd323dcd7f839bf63 ]
 
-I wonder if we can check ARCH or SUBARCH in Kconfig to limit invoking
-the tool under test for certain arch specific command line flags?
+Using icc-rpm on ARM32 currently results in clk_set_rate() errors during
+boot, e.g. "bus clk_set_rate error: -22". This is very similar to commit
+7381e27b1e56 ("interconnect: qcom: msm8974: Prevent integer overflow in rate")
+where the u64 is converted to a signed long during clock rate rounding,
+resulting in an overflow on 32-bit platforms.
 
-I'll take this patch over such a larger change, but I think towards
-the goal of speeding up already configured builds, we eventually want
-to be migrating cc-option and ld-option checks to Kconfig.
+Let's fix it similarly by making sure that the rate does not exceed
+LONG_MAX. Such high clock rates will surely result in the maximum
+frequency of the bus anyway.
 
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+Link: https://lore.kernel.org/r/20211206114542.45325-1-stephan@gerhold.net
+Signed-off-by: Georgi Djakov <djakov@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/interconnect/qcom/icc-rpm.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> ---
->  arch/mips/loongson64/Platform | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Platform
-> index 981d3abc150e..acf9edc9b15d 100644
-> --- a/arch/mips/loongson64/Platform
-> +++ b/arch/mips/loongson64/Platform
-> @@ -26,5 +26,6 @@ cflags-y += $(call cc-option,-mno-loongson-mmi)
->  # Loongson Machines' Support
->  #
->
-> -cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64 -mno-branch-likely
-> +cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64
-> +cflags-$(CONFIG_MACH_LOONGSON64) += $(call cc-option,-mno-branch-likely)
->  load-$(CONFIG_CPU_LOONGSON64) += 0xffffffff80200000
-> --
-> 2.34.1
->
->
-
-
+diff --git a/drivers/interconnect/qcom/icc-rpm.c b/drivers/interconnect/qcom/icc-rpm.c
+index 54de49ca7808a..ddf1805ded0c0 100644
+--- a/drivers/interconnect/qcom/icc-rpm.c
++++ b/drivers/interconnect/qcom/icc-rpm.c
+@@ -68,6 +68,7 @@ static int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
+ 	rate = max(sum_bw, max_peak_bw);
+ 
+ 	do_div(rate, qn->buswidth);
++	rate = min_t(u64, rate, LONG_MAX);
+ 
+ 	if (qn->rate == rate)
+ 		return 0;
 -- 
-Thanks,
-~Nick Desaulniers
+2.34.1
+
+
+
