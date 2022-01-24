@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E2DC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1647AC2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848778AbiAXXXR (ORCPT
+        id S1848758AbiAXXXO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:23:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39988 "EHLO
+        Mon, 24 Jan 2022 18:23:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835115AbiAXWfm (ORCPT
+        with ESMTP id S1588608AbiAXWdl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:35:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBEAC097FB7;
-        Mon, 24 Jan 2022 12:58:11 -0800 (PST)
+        Mon, 24 Jan 2022 17:33:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3C60C095436;
+        Mon, 24 Jan 2022 12:57:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDAAC61323;
-        Mon, 24 Jan 2022 20:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B432CC340E5;
-        Mon, 24 Jan 2022 20:58:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89AD9B812A4;
+        Mon, 24 Jan 2022 20:57:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A931AC340E5;
+        Mon, 24 Jan 2022 20:57:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057890;
-        bh=Y3/oFE/QPkDB9XzitazqTYGIxNmsbbIZuW60fHLZWPE=;
+        s=korg; t=1643057853;
+        bh=6yOJ5HGX4s/hvqyokoZbRAiRTadbNajAI/pYKePkIRM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H19cGVXO6mot1dtSql1EZVt9Tb1k2fCva0iePIA2DGusrVn2MUDLrd6aQ3dqyo04h
-         DSvYQtzrHGEcWm/BkK8LO97Q1H9RZl8oIxX5Pa/ZsXui20ycSKc9D3MfoVujx8PQSe
-         C8XmCJO501dPZKSrvBLxt2IrC3x1kzcQtaQpmmGI=
+        b=LcCTIDahSKjKEgmr9AqftfevBc+keTUyqM9wi3Gaey7KUwNev6MiKt6jIs3F/H++s
+         Q0w1EU3BjQuRw5c4tEeOW8l2+CPu5RNQGNBiIt0C6FOlYjxB3qYqLH8feIxDRoLH04
+         HzMnNnQjNdryNVhZ6EflT+51v9JjtaidPLbdKJzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0112/1039] wcn36xx: Release DMA channel descriptor allocations
-Date:   Mon, 24 Jan 2022 19:31:41 +0100
-Message-Id: <20220124184128.898293990@linuxfoundation.org>
+Subject: [PATCH 5.16 0101/1039] drm/vc4: crtc: Make sure the HDMI controller is powered when disabling
+Date:   Mon, 24 Jan 2022 19:31:30 +0100
+Message-Id: <20220124184128.559489885@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,36 +50,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 3652096e5263ad67604b0323f71d133485f410e5 ]
+[ Upstream commit bca10db67bdaf15997a5a2a276e7aa9b6eea1393 ]
 
-When unloading the driver we are not releasing the DMA descriptors which we
-previously allocated.
+Since commit 875a4d536842 ("drm/vc4: drv: Disable the CRTC at boot
+time"), during the initial setup of the driver we call into the VC4 HDMI
+controller hooks to make sure the controller is properly disabled.
 
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211105122152.1580542-3-bryan.odonoghue@linaro.org
+However, we were never making sure that the device was properly powered
+while doing so. This never resulted in any (reported) issue in practice,
+but since the introduction of commit 4209f03fcb8e ("drm/vc4: hdmi: Warn
+if we access the controller while disabled") we get a loud complaint
+when we do that kind of access.
+
+Let's make sure we have the HDMI controller properly powered while
+disabling it.
+
+Fixes: 875a4d536842 ("drm/vc4: drv: Disable the CRTC at boot time")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210923185013.826679-1-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/dxe.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/gpu/drm/vc4/vc4_crtc.c | 19 ++++++++++++++++++-
+ 1 file changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
-index 0c4f63f1312f8..017c7d78072ba 100644
---- a/drivers/net/wireless/ath/wcn36xx/dxe.c
-+++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
-@@ -1014,4 +1014,9 @@ void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
+diff --git a/drivers/gpu/drm/vc4/vc4_crtc.c b/drivers/gpu/drm/vc4/vc4_crtc.c
+index 18f5009ce90e3..c0df11e5fcf2b 100644
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -32,6 +32,7 @@
+ #include <linux/clk.h>
+ #include <linux/component.h>
+ #include <linux/of_device.h>
++#include <linux/pm_runtime.h>
  
- 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_l_ch);
- 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_h_ch);
+ #include <drm/drm_atomic.h>
+ #include <drm/drm_atomic_helper.h>
+@@ -42,6 +43,7 @@
+ #include <drm/drm_vblank.h>
+ 
+ #include "vc4_drv.h"
++#include "vc4_hdmi.h"
+ #include "vc4_regs.h"
+ 
+ #define HVS_FIFO_LATENCY_PIX	6
+@@ -496,8 +498,10 @@ int vc4_crtc_disable_at_boot(struct drm_crtc *crtc)
+ 	enum vc4_encoder_type encoder_type;
+ 	const struct vc4_pv_data *pv_data;
+ 	struct drm_encoder *encoder;
++	struct vc4_hdmi *vc4_hdmi;
+ 	unsigned encoder_sel;
+ 	int channel;
++	int ret;
+ 
+ 	if (!(of_device_is_compatible(vc4_crtc->pdev->dev.of_node,
+ 				      "brcm,bcm2711-pixelvalve2") ||
+@@ -525,7 +529,20 @@ int vc4_crtc_disable_at_boot(struct drm_crtc *crtc)
+ 	if (WARN_ON(!encoder))
+ 		return 0;
+ 
+-	return vc4_crtc_disable(crtc, encoder, NULL, channel);
++	vc4_hdmi = encoder_to_vc4_hdmi(encoder);
++	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
++	if (ret)
++		return ret;
 +
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_l_ch);
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_h_ch);
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_l_ch);
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_h_ch);
++	ret = vc4_crtc_disable(crtc, encoder, NULL, channel);
++	if (ret)
++		return ret;
++
++	ret = pm_runtime_put(&vc4_hdmi->pdev->dev);
++	if (ret)
++		return ret;
++
++	return 0;
  }
+ 
+ static void vc4_crtc_atomic_disable(struct drm_crtc *crtc,
 -- 
 2.34.1
 
