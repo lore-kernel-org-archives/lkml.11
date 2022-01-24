@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B22DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD0BFC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1313559AbiAYCss (ORCPT
+        id S1313750AbiAYCtP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:48:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        Mon, 24 Jan 2022 21:49:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359523AbiAXVDK (ORCPT
+        with ESMTP id S1358665AbiAXVDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:03:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 899D2C06B5A2;
-        Mon, 24 Jan 2022 12:03:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30996C06B58B;
+        Mon, 24 Jan 2022 12:03:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A77161333;
-        Mon, 24 Jan 2022 20:03:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01A9FC340E5;
-        Mon, 24 Jan 2022 20:03:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A09C661320;
+        Mon, 24 Jan 2022 20:03:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87D3BC340E8;
+        Mon, 24 Jan 2022 20:03:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054616;
-        bh=lRlIHxLA+FhWCYJVfDqIdzQVSQrZgqEhG2DBKd2bWcQ=;
+        s=korg; t=1643054586;
+        bh=ZqzrJaiaGVNMXGWL+p/VujNjJlhpChX0ptTIT8Wsttc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ugOUh+ratmJmDOWIFfv5Vq/CF5vAKogQlUyQS+kawCwA9W9czIWmUi1qxyPUmXi+N
-         ALWR8S7JpfKuekQDosr01GZgHZAImyFL/B2BoF/BRVFNgVG6Ay9rAfFfMpmkjTWq97
-         zNUeF0cilW+VJfKJLEhnUQediNk0l44kmxJasQJs=
+        b=ywPtpdH5EqgBVH0olyPKIJqfHKEo/UkGN9v+a1N+kBoe5/ow2AOeJLQMDMkjKw6Jz
+         QabSZpEUWyKG+7QKYtOjIXJFraogTs9nbN95ZKGW/8qVHNiiDCnX1F1cU0q3/Yc5HD
+         n2SiyNNSbcBelPvN+eCYTLnI0S6F3D7cLEOqlG+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.10 447/563] xen/gntdev: fix unmap notification order
-Date:   Mon, 24 Jan 2022 19:43:32 +0100
-Message-Id: <20220124184039.913055821@linuxfoundation.org>
+        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 438/563] ASoC: mediatek: mt8183: fix device_node leak
+Date:   Mon, 24 Jan 2022 19:43:23 +0100
+Message-Id: <20220124184039.590688431@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,62 +50,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-commit ce2f46f3531a03781181b7f4bd1ff9f8c5086e7e upstream.
+[ Upstream commit cb006006fe6221f092fadaffd3f219288304c9ad ]
 
-While working with Xen's libxenvchan library I have faced an issue with
-unmap notifications sent in wrong order if both UNMAP_NOTIFY_SEND_EVENT
-and UNMAP_NOTIFY_CLEAR_BYTE were requested: first we send an event channel
-notification and then clear the notification byte which renders in the below
-inconsistency (cli_live is the byte which was requested to be cleared on unmap):
+Fixes the device_node leak.
 
-[  444.514243] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
-libxenvchan_is_open cli_live 1
-[  444.515239] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
-
-Thus it is not possible to reliably implement the checks like
-- wait for the notification (UNMAP_NOTIFY_SEND_EVENT)
-- check the variable (UNMAP_NOTIFY_CLEAR_BYTE)
-because it is possible that the variable gets checked before it is cleared
-by the kernel.
-
-To fix that we need to re-order the notifications, so the variable is first
-gets cleared and then the event channel notification is sent.
-With this fix I can see the correct order of execution:
-
-[   54.522611] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
-[   54.537966] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
-libxenvchan_is_open cli_live 0
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20211210092817.580718-1-andr2000@gmail.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-3-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/gntdev.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c         | 6 +++++-
+ sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c | 7 ++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
---- a/drivers/xen/gntdev.c
-+++ b/drivers/xen/gntdev.c
-@@ -240,13 +240,13 @@ void gntdev_put_map(struct gntdev_priv *
- 	if (!refcount_dec_and_test(&map->users))
- 		return;
- 
-+	if (map->pages && !use_ptemod)
-+		unmap_grant_pages(map, 0, map->count);
-+
- 	if (map->notify.flags & UNMAP_NOTIFY_SEND_EVENT) {
- 		notify_remote_via_evtchn(map->notify.event);
- 		evtchn_put(map->notify.event);
+diff --git a/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c b/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
+index 20d31b69a5c00..9cc0f26b08fbc 100644
+--- a/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
++++ b/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
+@@ -787,7 +787,11 @@ static int mt8183_da7219_max98357_dev_probe(struct platform_device *pdev)
+ 		return ret;
  	}
--
--	if (map->pages && !use_ptemod)
--		unmap_grant_pages(map, 0, map->count);
- 	gntdev_free_map(map);
+ 
+-	return devm_snd_soc_register_card(&pdev->dev, card);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++
++	of_node_put(platform_node);
++	of_node_put(hdmi_codec);
++	return ret;
  }
  
+ #ifdef CONFIG_OF
+diff --git a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
+index 79ba2f2d84522..14ce8b93597f3 100644
+--- a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
++++ b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
+@@ -720,7 +720,12 @@ mt8183_mt6358_ts3a227_max98357_dev_probe(struct platform_device *pdev)
+ 				 __func__, ret);
+ 	}
+ 
+-	return devm_snd_soc_register_card(&pdev->dev, card);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++
++	of_node_put(platform_node);
++	of_node_put(ec_codec);
++	of_node_put(hdmi_codec);
++	return ret;
+ }
+ 
+ #ifdef CONFIG_OF
+-- 
+2.34.1
+
 
 
