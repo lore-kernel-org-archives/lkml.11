@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B807C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79600C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575933AbiAXVwo (ORCPT
+        id S1575918AbiAXVwn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351988AbiAXVTB (ORCPT
+        Mon, 24 Jan 2022 16:52:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38896 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450471AbiAXVUj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:01 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B1BC06F8CB;
-        Mon, 24 Jan 2022 12:12:58 -0800 (PST)
+        Mon, 24 Jan 2022 16:20:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A0EB61375;
-        Mon, 24 Jan 2022 20:12:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FCAC340E7;
-        Mon, 24 Jan 2022 20:12:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A95FDB811A2;
+        Mon, 24 Jan 2022 21:20:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16067C340E4;
+        Mon, 24 Jan 2022 21:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055177;
-        bh=RHR1IXkcIgk2HJtIz0MhPowxjEOro65WsiGHJqwdpCQ=;
+        s=korg; t=1643059236;
+        bh=Qbnpal6S+UxOf65CG/ERZROcEXBzaAoH3S2RJUPcGq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IVcLS4MlqI9lBDZAkRptHIUKQq26FuWR9YmaM8shZek6anmde8LOyBz9DefcdSf4l
-         plZzyVbPbSa2vHv5fkBQLusP0IY0BqcfF6BIcmG15yAk3bk7C6h+gWK50W/7hY+sA4
-         jbzv1atBlFIVOlm7jEbSlOrXeOSpnFQGeL1ea4co=
+        b=RPsNuzs1COLkELw2/mZC11+TNSSZVDNo/qQzY/5W/HqRTaJC6zntbPT+5fop1mYvB
+         NaWM0C74JnUpeNLWYNgRbprDdZ0k65Qgzus12mHtZwcedIZHNCFZs/39H78v1RyApS
+         qsnbSyX2Y/53Wa398Vz+zswWhJt1d7IF6PWeQo9s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.15 066/846] drm/tegra: Add back arm_iommu_detach_device()
-Date:   Mon, 24 Jan 2022 19:33:03 +0100
-Message-Id: <20220124184103.245035526@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0515/1039] mips: lantiq: add support for clk_set_parent()
+Date:   Mon, 24 Jan 2022 19:38:24 +0100
+Message-Id: <20220124184142.604075292@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,57 +49,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit d210919dbdc8a82c676cc3e3c370b1802be63124 upstream.
+[ Upstream commit 76f66dfd60dc5d2f9dec22d99091fea1035c5d03 ]
 
-DMA buffers of 2D/3D engines aren't mapped properly when
-CONFIG_ARM_DMA_USE_IOMMU=y. The memory management code of Tegra DRM driver
-has a longstanding overhaul overdue and it's not obvious where the problem
-is in this case. Hence let's add back the old workaround which we already
-had sometime before. It explicitly detaches DRM devices from the offending
-implicit IOMMU domain. This fixes a completely broken 2d/3d drivers in
-case of ARM32 multiplatform kernel config.
+Provide a simple implementation of clk_set_parent() in the lantiq
+subarch so that callers of it will build without errors.
 
-Cc: stable@vger.kernel.org
-Fixes: fa6661b7aa0b ("drm/tegra: Optionally attach clients to the IOMMU")
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes these build errors:
+
+ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
+ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
+
+Fixes: 171bb2f19ed6 ("MIPS: Lantiq: Add initial support for Lantiq SoCs")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+--to=linux-mips@vger.kernel.org --cc="John Crispin <john@phrozen.org>" --cc="Jonathan Cameron <jic23@kernel.org>" --cc="Russell King <linux@armlinux.org.uk>" --cc="Andy Shevchenko <andy.shevchenko@gmail.com>" --cc=alsa-devel@alsa-project.org --to="Thomas Bogendoerfer <tsbogend@alpha.franken.de>"
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tegra/drm.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ arch/mips/lantiq/clk.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/gpu/drm/tegra/drm.c
-+++ b/drivers/gpu/drm/tegra/drm.c
-@@ -21,6 +21,10 @@
- #include <drm/drm_prime.h>
- #include <drm/drm_vblank.h>
+diff --git a/arch/mips/lantiq/clk.c b/arch/mips/lantiq/clk.c
+index 4916cccf378fd..7a623684d9b5e 100644
+--- a/arch/mips/lantiq/clk.c
++++ b/arch/mips/lantiq/clk.c
+@@ -164,6 +164,12 @@ struct clk *clk_get_parent(struct clk *clk)
+ }
+ EXPORT_SYMBOL(clk_get_parent);
  
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+#include <asm/dma-iommu.h>
-+#endif
++int clk_set_parent(struct clk *clk, struct clk *parent)
++{
++	return 0;
++}
++EXPORT_SYMBOL(clk_set_parent);
 +
- #include "dc.h"
- #include "drm.h"
- #include "gem.h"
-@@ -936,6 +940,17 @@ int host1x_client_iommu_attach(struct ho
- 	struct iommu_group *group = NULL;
- 	int err;
- 
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+	if (client->dev->archdata.mapping) {
-+		struct dma_iommu_mapping *mapping =
-+				to_dma_iommu_mapping(client->dev);
-+		arm_iommu_detach_device(client->dev);
-+		arm_iommu_release_mapping(mapping);
-+
-+		domain = iommu_get_domain_for_dev(client->dev);
-+	}
-+#endif
-+
- 	/*
- 	 * If the host1x client is already attached to an IOMMU domain that is
- 	 * not the shared IOMMU domain, don't try to attach it to a different
+ static inline u32 get_counter_resolution(void)
+ {
+ 	u32 res;
+-- 
+2.34.1
+
 
 
