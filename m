@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 317C1C35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BADEC35276
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353835AbiAXV0u (ORCPT
+        id S1344034AbiAXV0k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42808 "EHLO
+        Mon, 24 Jan 2022 16:26:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391107AbiAXUq7 (ORCPT
+        with ESMTP id S1391192AbiAXUrD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:59 -0500
+        Mon, 24 Jan 2022 15:47:03 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9801AC0619C5;
-        Mon, 24 Jan 2022 11:57:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09341C0424D8;
+        Mon, 24 Jan 2022 11:57:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60A06B81239;
-        Mon, 24 Jan 2022 19:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90C41C340E5;
-        Mon, 24 Jan 2022 19:56:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80781B81218;
+        Mon, 24 Jan 2022 19:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FDFBC33DA0;
+        Mon, 24 Jan 2022 19:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054219;
-        bh=c48g0P2kXom32ZkWk2oniIOiwrvvjuNKadW20KYAa4o=;
+        s=korg; t=1643054250;
+        bh=mMVMuisXCIt+zCi8F5XYc+fsmSAixmNaldXMRbfRe4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xmIJX1IsGxyKdIDxNB1YRpKUcsQtykYiETfsCLposwtCEhLhAAFcpH+OeBRnn6so9
-         GTW3KHOXIOMNCsOC006lwL+T07dwiJfw8ZnwWPOUTWskCEUymqYfLOK6NthrZsOHV5
-         NonbBiqVsQ2fPTUkxoLHbh5DP+Unx8I9GxaifYHY=
+        b=TU/o+f6rnXqlsgW1HlLNttZdlrrgw1ptwsndQYtQ3t4OlPardNnFSaRTgtNl8Zl35
+         mxhGQojMAp3tABAGz0zIPRURJ7ZK57LOqOXLVCJuo4pUBUILo0gI5SyxHUp9Cf9UZ3
+         YPKDJsbCs1UlEmfRsW74b49rKq1i8mh6Q1uyNUa8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zheyu Ma <zheyuma97@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 316/563] media: b2c2: Add missing check in flexcop_pci_isr:
-Date:   Mon, 24 Jan 2022 19:41:21 +0100
-Message-Id: <20220124184035.362810588@linuxfoundation.org>
+Subject: [PATCH 5.10 328/563] mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
+Date:   Mon, 24 Jan 2022 19:41:33 +0100
+Message-Id: <20220124184035.773561830@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,161 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zheyu Ma <zheyuma97@gmail.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit b13203032e679674c7c518f52a7ec0801ca3a829 ]
+[ Upstream commit 04d80663f67ccef893061b49ec8a42ff7045ae84 ]
 
-A out-of-bounds bug can be triggered by an interrupt, the reason for
-this bug is the lack of checking of register values.
+Currently, with an unknown recv_type, mwifiex_usb_recv
+just return -1 without restoring the skb. Next time
+mwifiex_usb_rx_complete is invoked with the same skb,
+calling skb_put causes skb_over_panic.
 
-In flexcop_pci_isr, the driver reads value from a register and uses it as
-a dma address. Finally, this address will be passed to the count parameter
-of find_next_packet. If this value is larger than the size of dma, the
-index of buffer will be out-of-bounds.
+The bug is triggerable with a compromised/malfunctioning
+usb device. After applying the patch, skb_over_panic
+no longer shows up with the same input.
 
-Fix this by adding a check after reading the value of the register.
-
-The following KASAN report reveals it:
-
-BUG: KASAN: slab-out-of-bounds in find_next_packet
-drivers/media/dvb-core/dvb_demux.c:528 [inline]
-BUG: KASAN: slab-out-of-bounds in _dvb_dmx_swfilter
-drivers/media/dvb-core/dvb_demux.c:572 [inline]
-BUG: KASAN: slab-out-of-bounds in dvb_dmx_swfilter+0x3fa/0x420
-drivers/media/dvb-core/dvb_demux.c:603
-Read of size 1 at addr ffff8880608c00a0 by task swapper/2/0
-
-CPU: 2 PID: 0 Comm: swapper/2 Not tainted 4.19.177-gdba4159c14ef #25
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
-rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+Attached is the panic report from fuzzing.
+skbuff: skb_over_panic: text:000000003bf1b5fa
+ len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
+ tail:0x844 end:0x840 dev:<NULL>
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
+RIP: 0010:skb_panic+0x15f/0x161
 Call Trace:
  <IRQ>
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0xec/0x156 lib/dump_stack.c:118
- print_address_description+0x78/0x290 mm/kasan/report.c:256
- kasan_report_error mm/kasan/report.c:354 [inline]
- kasan_report+0x25b/0x380 mm/kasan/report.c:412
- __asan_report_load1_noabort+0x19/0x20 mm/kasan/report.c:430
- find_next_packet drivers/media/dvb-core/dvb_demux.c:528 [inline]
- _dvb_dmx_swfilter drivers/media/dvb-core/dvb_demux.c:572 [inline]
- dvb_dmx_swfilter+0x3fa/0x420 drivers/media/dvb-core/dvb_demux.c:603
- flexcop_pass_dmx_data+0x2e/0x40 drivers/media/common/b2c2/flexcop.c:167
- flexcop_pci_isr+0x3d1/0x5d0 drivers/media/pci/b2c2/flexcop-pci.c:212
- __handle_irq_event_percpu+0xfb/0x770 kernel/irq/handle.c:149
- handle_irq_event_percpu+0x79/0x150 kernel/irq/handle.c:189
- handle_irq_event+0xac/0x140 kernel/irq/handle.c:206
- handle_fasteoi_irq+0x232/0x5c0 kernel/irq/chip.c:725
- generic_handle_irq_desc include/linux/irqdesc.h:155 [inline]
- handle_irq+0x230/0x3a0 arch/x86/kernel/irq_64.c:87
- do_IRQ+0xa7/0x1e0 arch/x86/kernel/irq.c:247
- common_interrupt+0xf/0xf arch/x86/entry/entry_64.S:670
+ ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ skb_put.cold+0x24/0x24
+ mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
  </IRQ>
-RIP: 0010:native_safe_halt+0x28/0x30 arch/x86/include/asm/irqflags.h:61
-Code: 00 00 55 be 04 00 00 00 48 c7 c7 00 62 2f 8c 48 89 e5 e8 fb 31
-e8 f8 8b 05 75 4f 8e 03 85 c0 7e 07 0f 00 2d 8a 61 66 00 fb f4 <5d> c3
-90 90 90 90 90 90 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 41
-RSP: 0018:ffff88806b71fcc8 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffde
-RAX: 0000000000000000 RBX: ffffffff8bde44c8 RCX: ffffffff88a11285
-RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffffffff8c2f6200
-RBP: ffff88806b71fcc8 R08: fffffbfff185ec40 R09: fffffbfff185ec40
-R10: 0000000000000001 R11: fffffbfff185ec40 R12: 0000000000000002
-R13: ffffffff8be9d6e0 R14: 0000000000000000 R15: 0000000000000000
- arch_safe_halt arch/x86/include/asm/paravirt.h:94 [inline]
- default_idle+0x6f/0x360 arch/x86/kernel/process.c:557
- arch_cpu_idle+0xf/0x20 arch/x86/kernel/process.c:548
- default_idle_call+0x3b/0x60 kernel/sched/idle.c:93
- cpuidle_idle_call kernel/sched/idle.c:153 [inline]
- do_idle+0x2ab/0x3c0 kernel/sched/idle.c:263
- cpu_startup_entry+0xcb/0xe0 kernel/sched/idle.c:369
- start_secondary+0x3b8/0x4e0 arch/x86/kernel/smpboot.c:271
- secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
 
-Allocated by task 1:
- save_stack+0x43/0xd0 mm/kasan/kasan.c:448
- set_track mm/kasan/kasan.c:460 [inline]
- kasan_kmalloc+0xad/0xe0 mm/kasan/kasan.c:553
- kasan_slab_alloc+0x11/0x20 mm/kasan/kasan.c:490
- slab_post_alloc_hook mm/slab.h:445 [inline]
- slab_alloc_node mm/slub.c:2741 [inline]
- slab_alloc mm/slub.c:2749 [inline]
- kmem_cache_alloc+0xeb/0x280 mm/slub.c:2754
- kmem_cache_zalloc include/linux/slab.h:699 [inline]
- __kernfs_new_node+0xe2/0x6f0 fs/kernfs/dir.c:633
- kernfs_new_node+0x9a/0x120 fs/kernfs/dir.c:693
- __kernfs_create_file+0x5f/0x340 fs/kernfs/file.c:992
- sysfs_add_file_mode_ns+0x22a/0x4e0 fs/sysfs/file.c:306
- create_files fs/sysfs/group.c:63 [inline]
- internal_create_group+0x34e/0xc30 fs/sysfs/group.c:147
- sysfs_create_group fs/sysfs/group.c:173 [inline]
- sysfs_create_groups+0x9c/0x140 fs/sysfs/group.c:200
- driver_add_groups+0x3e/0x50 drivers/base/driver.c:129
- bus_add_driver+0x3a5/0x790 drivers/base/bus.c:684
- driver_register+0x1cd/0x410 drivers/base/driver.c:170
- __pci_register_driver+0x197/0x200 drivers/pci/pci-driver.c:1411
- cx88_audio_pci_driver_init+0x23/0x25 drivers/media/pci/cx88/cx88-alsa.c:
- 1017
- do_one_initcall+0xe0/0x610 init/main.c:884
- do_initcall_level init/main.c:952 [inline]
- do_initcalls init/main.c:960 [inline]
- do_basic_setup init/main.c:978 [inline]
- kernel_init_freeable+0x4d0/0x592 init/main.c:1145
- kernel_init+0x18/0x190 init/main.c:1062
- ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:415
-
-Freed by task 0:
-(stack is not available)
-
-The buggy address belongs to the object at ffff8880608c0000
- which belongs to the cache kernfs_node_cache of size 160
-The buggy address is located 0 bytes to the right of
- 160-byte region [ffff8880608c0000, ffff8880608c00a0)
-The buggy address belongs to the page:
-page:ffffea0001823000 count:1 mapcount:0 mapping:ffff88806bed1e00
-index:0x0 compound_mapcount: 0
-flags: 0x100000000008100(slab|head)
-raw: 0100000000008100 dead000000000100 dead000000000200 ffff88806bed1e00
-raw: 0000000000000000 0000000000240024 00000001ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
-
-Memory state around the buggy address:
- ffff8880608bff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880608c0000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->ffff8880608c0080: 00 00 00 00 fc fc fc fc fc fc fc fc 00 00 00 00
-                               ^
- ffff8880608c0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
- ffff8880608c0180: fc fc fc fc fc fc fc fc 00 00 00 00 00 00 00 00
-==================================================================
-
-Link: https://lore.kernel.org/linux-media/1620723603-30912-1-git-send-email-zheyuma97@gmail.com
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/b2c2/flexcop-pci.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/b2c2/flexcop-pci.c b/drivers/media/pci/b2c2/flexcop-pci.c
-index a9d9520a94c6d..c9e6c7d663768 100644
---- a/drivers/media/pci/b2c2/flexcop-pci.c
-+++ b/drivers/media/pci/b2c2/flexcop-pci.c
-@@ -185,6 +185,8 @@ static irqreturn_t flexcop_pci_isr(int irq, void *dev_id)
- 		dma_addr_t cur_addr =
- 			fc->read_ibi_reg(fc,dma1_008).dma_0x8.dma_cur_addr << 2;
- 		u32 cur_pos = cur_addr - fc_pci->dma[0].dma_addr0;
-+		if (cur_pos > fc_pci->dma[0].size * 2)
-+			goto error;
- 
- 		deb_irq("%u irq: %08x cur_addr: %llx: cur_pos: %08x, last_cur_pos: %08x ",
- 				jiffies_to_usecs(jiffies - fc_pci->last_irq),
-@@ -225,6 +227,7 @@ static irqreturn_t flexcop_pci_isr(int irq, void *dev_id)
- 		ret = IRQ_NONE;
- 	}
- 
-+error:
- 	spin_unlock_irqrestore(&fc_pci->irq_lock, flags);
- 	return ret;
- }
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 9736aa0ab7fd4..8f01fcbe93961 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
+ 		}
+ 		break;
+ 	case MWIFIEX_USB_EP_DATA:
 -- 
 2.34.1
 
