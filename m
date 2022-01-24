@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 215F8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695AEC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353463AbiAXTep (ORCPT
+        id S1353507AbiAXTev (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:34:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53838 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351195AbiAXT0K (ORCPT
+        Mon, 24 Jan 2022 14:34:51 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49276 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351230AbiAXT0N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:26:10 -0500
+        Mon, 24 Jan 2022 14:26:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D2C9E60BB9;
-        Mon, 24 Jan 2022 19:26:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B38C340E5;
-        Mon, 24 Jan 2022 19:26:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76487B81215;
+        Mon, 24 Jan 2022 19:26:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D667CC340E5;
+        Mon, 24 Jan 2022 19:26:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052368;
-        bh=DU3CIw3p50KSKQOPg73wZG2FU2DsWzcnpkARL7xOBgw=;
+        s=korg; t=1643052371;
+        bh=5mn8xY2Rw2yKpuokmAWh9/JaNI4qxPL/snAS97h6juY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oLsZQQBrFp/dTzspCjDI3uyxslHknsdGV9FbJhmZdRRCq+hgrE3wTyG8KFHFaLGfC
-         xuJ/r/AV/CdChrQ+YnVwFCxbeOD3Yq+oPOt1ZeD1U0kD1TamkzrU9M9McbdEXmiTfP
-         HmsX2IoLQqK8jvbWfyU8Zk03R3im5PjHKhdi3yGI=
+        b=dOTH3XaZl5yYBguUNO/G6KM5EmJNdohXxKeyLFWqOlZn5v2urvQxpev9x4gY05qh6
+         ISXaPQqmgHQ0583d6BME7xbUPzFULUJCDd78UPVqErA8ovqs67govj7LPYuCDBQPgW
+         JqAJL0/8X8WN+G6Khsie5SBSQsKV+QVkoluYxsAM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 036/320] drm/rockchip: dsi: Fix unbalanced clock on probe error
-Date:   Mon, 24 Jan 2022 19:40:20 +0100
-Message-Id: <20220124183954.978288662@linuxfoundation.org>
+Subject: [PATCH 5.4 037/320] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
+Date:   Mon, 24 Jan 2022 19:40:21 +0100
+Message-Id: <20220124183955.010672799@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,43 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 251888398753924059f3bb247a44153a2853137f ]
+[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
 
-Our probe() function never enabled this clock, so we shouldn't disable
-it if we fail to probe the bridge.
+I got a kernel BUG report when doing fault injection test:
 
-Noted by inspection.
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:45!
+...
+RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
+...
+Call Trace:
+ proto_unregister+0x83/0x220
+ cmtp_cleanup_sockets+0x37/0x40 [cmtp]
+ cmtp_exit+0xe/0x1f [cmtp]
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Fixes: 2d4f7bdafd70 ("drm/rockchip: dsi: migrate to use dw-mipi-dsi bridge driver")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.3.Ie8ceefb51ab6065a1151869b6fcda41a467d4d2c@changeid
+If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
+success. This will cause a kernel bug when accessing uncreated ctmp
+related data when the module exits.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |    6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ net/bluetooth/cmtp/core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-+++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-@@ -1023,14 +1023,10 @@ static int dw_mipi_dsi_rockchip_probe(st
- 		if (ret != -EPROBE_DEFER)
- 			DRM_DEV_ERROR(dev,
- 				      "Failed to probe dw_mipi_dsi: %d\n", ret);
--		goto err_clkdisable;
-+		return ret;
- 	}
+diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
+index 0a2d78e811cf5..83eb84e8e688f 100644
+--- a/net/bluetooth/cmtp/core.c
++++ b/net/bluetooth/cmtp/core.c
+@@ -501,9 +501,7 @@ static int __init cmtp_init(void)
+ {
+ 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
  
- 	return 0;
+-	cmtp_init_sockets();
 -
--err_clkdisable:
--	clk_disable_unprepare(dsi->pllref_clk);
--	return ret;
+-	return 0;
++	return cmtp_init_sockets();
  }
  
- static int dw_mipi_dsi_rockchip_remove(struct platform_device *pdev)
+ static void __exit cmtp_exit(void)
+-- 
+2.34.1
+
 
 
