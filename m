@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA351C3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F732C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423360AbiAYCdc (ORCPT
+        id S3423317AbiAYCd2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:33:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35468 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349448AbiAXU3G (ORCPT
+        Mon, 24 Jan 2022 21:33:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356859AbiAXU2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:29:06 -0500
+        Mon, 24 Jan 2022 15:28:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C506CC07A959;
+        Mon, 24 Jan 2022 11:42:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63E7EB815A6;
-        Mon, 24 Jan 2022 20:29:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF5DC340E5;
-        Mon, 24 Jan 2022 20:29:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6508661488;
+        Mon, 24 Jan 2022 19:42:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C3FC340E5;
+        Mon, 24 Jan 2022 19:42:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056144;
-        bh=hoGmMt6X0klq0+u7iW/1fCYXghyAHMkMKI5zDTPe7y0=;
+        s=korg; t=1643053325;
+        bh=237rbF9pS7DmapYAq12bvUaL8GTC3vSFTf2z40fMX3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OMA70Lr0x7UOYvk2PLFCbg2kW5GkQnOfvNlTbH+VFIg1xWgbeYWRlJvXG73tZG9Hg
-         9CUDR3Kcc65hSudLFrEkPamxAjXhZsoC1nULOYsiYLvoQKE4ivfpkaFoQhmfO1hhN5
-         T7MOAS9soxSfRt3ASTnX57HD9WFMLxhayDk6RnbY=
+        b=IB3dskKLnVy6YOh7m0W8tuvJYu84V7J2D8EWRwIsRrrjSJy3W3OOl0RoxGAfNogKm
+         i8Af/a11VSttHdQtilwl8cpq6uNx6JiPiVJaeVCKV3sx1NViUQ9U3T+nPo46M+YZRY
+         2QPvm6SooX+VUOQTWPRLBEFiWDjFGdTx3RT5CGWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 385/846] ASoC: uniphier: drop selecting non-existing SND_SOC_UNIPHIER_AIO_DMA
-Date:   Mon, 24 Jan 2022 19:38:22 +0100
-Message-Id: <20220124184114.217141803@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.10 028/563] media: stk1160: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:36:33 +0100
+Message-Id: <20220124184025.402106800@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,53 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 49f893253ab43566e34332a969324531fea463f6 ]
+commit 6aa6e70cdb5b863a57bad61310bf89b6617a5d2d upstream.
 
-Commit f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common
-driver") adds configs SND_SOC_UNIPHIER_{LD11,PXS2}, which select the
-non-existing config SND_SOC_UNIPHIER_AIO_DMA.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Hence, ./scripts/checkkconfigsymbols.py warns:
-
-  SND_SOC_UNIPHIER_AIO_DMA
-  Referencing files: sound/soc/uniphier/Kconfig
-
-Probably, there is actually no further config intended to be selected
-here. So, just drop selecting the non-existing config.
-
-Fixes: f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common driver")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Link: https://lore.kernel.org/r/20211125095158.8394-2-lukas.bulwahn@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9cb2173e6ea8 ("[media] media: Add stk1160 new driver (easycap replacement)")
+Cc: stable@vger.kernel.org      # 3.7
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/uniphier/Kconfig | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/media/usb/stk1160/stk1160-core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/uniphier/Kconfig b/sound/soc/uniphier/Kconfig
-index aa3592ee1358b..ddfa6424c656b 100644
---- a/sound/soc/uniphier/Kconfig
-+++ b/sound/soc/uniphier/Kconfig
-@@ -23,7 +23,6 @@ config SND_SOC_UNIPHIER_LD11
- 	tristate "UniPhier LD11/LD20 Device Driver"
- 	depends on SND_SOC_UNIPHIER
- 	select SND_SOC_UNIPHIER_AIO
--	select SND_SOC_UNIPHIER_AIO_DMA
- 	help
- 	  This adds ASoC driver for Socionext UniPhier LD11/LD20
- 	  input and output that can be used with other codecs.
-@@ -34,7 +33,6 @@ config SND_SOC_UNIPHIER_PXS2
- 	tristate "UniPhier PXs2 Device Driver"
- 	depends on SND_SOC_UNIPHIER
- 	select SND_SOC_UNIPHIER_AIO
--	select SND_SOC_UNIPHIER_AIO_DMA
- 	help
- 	  This adds ASoC driver for Socionext UniPhier PXs2
- 	  input and output that can be used with other codecs.
--- 
-2.34.1
-
+--- a/drivers/media/usb/stk1160/stk1160-core.c
++++ b/drivers/media/usb/stk1160/stk1160-core.c
+@@ -65,7 +65,7 @@ int stk1160_read_reg(struct stk1160 *dev
+ 		return -ENOMEM;
+ 	ret = usb_control_msg(dev->udev, pipe, 0x00,
+ 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			0x00, reg, buf, sizeof(u8), HZ);
++			0x00, reg, buf, sizeof(u8), 1000);
+ 	if (ret < 0) {
+ 		stk1160_err("read failed on reg 0x%x (%d)\n",
+ 			reg, ret);
+@@ -85,7 +85,7 @@ int stk1160_write_reg(struct stk1160 *de
+ 
+ 	ret =  usb_control_msg(dev->udev, pipe, 0x01,
+ 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			value, reg, NULL, 0, HZ);
++			value, reg, NULL, 0, 1000);
+ 	if (ret < 0) {
+ 		stk1160_err("write failed on reg 0x%x (%d)\n",
+ 			reg, ret);
 
 
