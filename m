@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F14C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F44C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343940AbiAXSyV (ORCPT
+        id S1343959AbiAXSyW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343592AbiAXSw3 (ORCPT
+        Mon, 24 Jan 2022 13:54:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51522 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343689AbiAXSwd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9EA0C0617AD;
-        Mon, 24 Jan 2022 10:52:16 -0800 (PST)
+        Mon, 24 Jan 2022 13:52:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A8CD614E5;
-        Mon, 24 Jan 2022 18:52:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0CED3C340E5;
-        Mon, 24 Jan 2022 18:52:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E810B81227;
+        Mon, 24 Jan 2022 18:52:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D143C340E5;
+        Mon, 24 Jan 2022 18:52:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050335;
-        bh=psuyDMM6MvL9f/VYUohhevJw8G1rkBO4hNdRr21J+v0=;
+        s=korg; t=1643050351;
+        bh=i5PnfJ5ACF12zxhZM9oXbHuElB0dKR9hdwAK0CLrRJE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bd7GJW9RTu/fYm8ZDBuRPHDDMRpAyvx8kT8Fu5uncAusESUUD6VqQrVGfHxM3UdcE
-         1qzdMdPNhkLjFPLD/z8wPtElIZXLLMopzEFtRCH7ILuqbXWYa+il/0oSdx/l48GZ6C
-         86//xFlLuhQ2CEiWiYshSkWdvLCi6mvp67s+i5kI=
+        b=Gsq8CSzOSFBF061eTlTuHIkxF5w5Lp0G2WyL1CMAlTjerF1t1x+s5qCXK5tYsHtX3
+         pW4Hgf7DOb+9quT/uWAcBTrwHsFFu5hzJtt7cQ2xb1VBfpGMCSEbzcSW63BzPNWRvU
+         t2AqLbvH+/2OoquszEMqP4eeoUpDhwKGdd2UKei4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 052/114] ASoC: samsung: idma: Check of ioremap return value
-Date:   Mon, 24 Jan 2022 19:42:27 +0100
-Message-Id: <20220124183928.707294544@linuxfoundation.org>
+Subject: [PATCH 4.4 057/114] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 24 Jan 2022 19:42:32 +0100
+Message-Id: <20220124183928.865449135@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -51,38 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 3ecb46755eb85456b459a1a9f952c52986bce8ec ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-Because of the potential failure of the ioremap(), the buf->area could
-be NULL.
-Therefore, we need to check it and return -ENOMEM in order to transfer
-the error.
+Fault injection test report debugfs entry leak as follows:
 
-Fixes: f09aecd50f39 ("ASoC: SAMSUNG: Add I2S0 internal dma driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20211228034026.1659385-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
+
+Add the remove debugfs code to fix it.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/idma.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/sound/soc/samsung/idma.c b/sound/soc/samsung/idma.c
-index 4ed29ffc1c54e..d9cd9350ffbe2 100644
---- a/sound/soc/samsung/idma.c
-+++ b/sound/soc/samsung/idma.c
-@@ -370,6 +370,8 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
- 	buf->addr = idma.lp_tx_addr;
- 	buf->bytes = idma_hardware.buffer_bytes_max;
- 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
-+	if (!buf->area)
-+		return -ENOMEM;
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index eefaa10c74dbb..1cc78b88a0d9f 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3459,6 +3459,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
- 	return 0;
- }
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
