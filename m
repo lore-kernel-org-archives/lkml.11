@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C19AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19DEBC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354421AbiAXTgg (ORCPT
+        id S1354392AbiAXTge (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54226 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352872AbiAXTbN (ORCPT
+        Mon, 24 Jan 2022 14:36:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352844AbiAXTbL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:13 -0500
+        Mon, 24 Jan 2022 14:31:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF152C028C22;
+        Mon, 24 Jan 2022 11:14:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C205DB810AF;
-        Mon, 24 Jan 2022 19:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D93D3C340E5;
-        Mon, 24 Jan 2022 19:31:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B55BB81232;
+        Mon, 24 Jan 2022 19:14:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBD51C340E5;
+        Mon, 24 Jan 2022 19:14:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052670;
-        bh=Sk9A/4JkAGKM92L/GmL40lQafKcgq0e2rnxGxsxYeoQ=;
+        s=korg; t=1643051645;
+        bh=h9OWux2i1YLh5BjrO9KQYEBGMBejsiK7N9nwnwNhnxc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agDew632/Z7VCT2478pPbK5rDfcvW4nMuHOs6dKPO+0rLlOGX7gyiB/gWJej8SSo1
-         VMQTdiyA7QITZvL/CX48pTCsqW528zzDlNxZ/gWNBhfE2E4OakVU//JrVMOkWCInDS
-         MSYEAquqaEybzUc0Ms8QFuIi3D8wNaCGr1Ml98ng=
+        b=pHP01jKj4ZrTM4WPBsVVOhcm6YLwfOIme96qWTmQ6z61ovZe4mhxCyaGpkEHTIdOh
+         fOPsr9RwChad5OP5SfOej/ZkqzWUEunS/yYe2WIRtNolpUJk25tdgyYqaynv/q8UV4
+         fLh10O7eIMH0Ks2yOOmxeOqVWgv7s8kfoZuxI9pA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 103/320] ppp: ensure minimum packet size in ppp_write()
-Date:   Mon, 24 Jan 2022 19:41:27 +0100
-Message-Id: <20220124183957.223371972@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 009/239] random: fix data race on crng_node_pool
+Date:   Mon, 24 Jan 2022 19:40:47 +0100
+Message-Id: <20220124183943.409514111@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,104 +50,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 44073187990d5629804ce0627525f6ea5cfef171 ]
+commit 5d73d1e320c3fd94ea15ba5f79301da9a8bcc7de upstream.
 
-It seems pretty clear ppp layer assumed user space
-would always be kind to provide enough data
-in their write() to a ppp device.
+extract_crng() and crng_backtrack_protect() load crng_node_pool with a
+plain load, which causes undefined behavior if do_numa_crng_init()
+modifies it concurrently.
 
-This patch makes sure user provides at least
-2 bytes.
+Fix this by using READ_ONCE().  Note: as per the previous discussion
+https://lore.kernel.org/lkml/20211219025139.31085-1-ebiggers@kernel.org/T/#u,
+READ_ONCE() is believed to be sufficient here, and it was requested that
+it be used here instead of smp_load_acquire().
 
-It adds PPP_PROTO_LEN macro that could replace
-in net-next many occurrences of hard-coded 2 value.
+Also change do_numa_crng_init() to set crng_node_pool using
+cmpxchg_release() instead of mb() + cmpxchg(), as the former is
+sufficient here but is more lightweight.
 
-I replaced only one occurrence to ease backports
-to stable kernels.
-
-The bug manifests in the following report:
-
-BUG: KMSAN: uninit-value in ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
- ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
- __ppp_xmit_process+0x23e/0x4b0 drivers/net/ppp/ppp_generic.c:1640
- ppp_xmit_process+0x1fe/0x480 drivers/net/ppp/ppp_generic.c:1661
- ppp_write+0x5cb/0x5e0 drivers/net/ppp/ppp_generic.c:513
- do_iter_write+0xb0c/0x1500 fs/read_write.c:853
- vfs_writev fs/read_write.c:924 [inline]
- do_writev+0x645/0xe00 fs/read_write.c:967
- __do_sys_writev fs/read_write.c:1040 [inline]
- __se_sys_writev fs/read_write.c:1037 [inline]
- __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- ppp_write+0x11d/0x5e0 drivers/net/ppp/ppp_generic.c:501
- do_iter_write+0xb0c/0x1500 fs/read_write.c:853
- vfs_writev fs/read_write.c:924 [inline]
- do_writev+0x645/0xe00 fs/read_write.c:967
- __do_sys_writev fs/read_write.c:1040 [inline]
- __se_sys_writev fs/read_write.c:1037 [inline]
- __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: linux-ppp@vger.kernel.org
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1e7f583af67b ("random: make /dev/urandom scalable for silly userspace programs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ppp/ppp_generic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/char/random.c |   42 ++++++++++++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index c6c41a7836c93..a085213dc2eaa 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -69,6 +69,8 @@
- #define MPHDRLEN	6	/* multilink protocol header length */
- #define MPHDRLEN_SSN	4	/* ditto with short sequence numbers */
- 
-+#define PPP_PROTO_LEN	2
-+
- /*
-  * An instance of /dev/ppp can be associated with either a ppp
-  * interface unit or a ppp channel.  In both cases, file->private_data
-@@ -498,6 +500,9 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
- 
- 	if (!pf)
- 		return -ENXIO;
-+	/* All PPP packets should start with the 2-byte protocol */
-+	if (count < PPP_PROTO_LEN)
-+		return -EINVAL;
- 	ret = -ENOMEM;
- 	skb = alloc_skb(count + pf->hdrlen, GFP_KERNEL);
- 	if (!skb)
-@@ -1544,7 +1549,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -831,8 +831,8 @@ static void do_numa_crng_init(struct wor
+ 		crng_initialize(crng);
+ 		pool[i] = crng;
  	}
+-	mb();
+-	if (cmpxchg(&crng_node_pool, NULL, pool)) {
++	/* pairs with READ_ONCE() in select_crng() */
++	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
+ 		for_each_node(i)
+ 			kfree(pool[i]);
+ 		kfree(pool);
+@@ -845,8 +845,26 @@ static void numa_crng_init(void)
+ {
+ 	schedule_work(&numa_crng_init_work);
+ }
++
++static struct crng_state *select_crng(void)
++{
++	struct crng_state **pool;
++	int nid = numa_node_id();
++
++	/* pairs with cmpxchg_release() in do_numa_crng_init() */
++	pool = READ_ONCE(crng_node_pool);
++	if (pool && pool[nid])
++		return pool[nid];
++
++	return &primary_crng;
++}
+ #else
+ static void numa_crng_init(void) {}
++
++static struct crng_state *select_crng(void)
++{
++	return &primary_crng;
++}
+ #endif
  
- 	++ppp->stats64.tx_packets;
--	ppp->stats64.tx_bytes += skb->len - 2;
-+	ppp->stats64.tx_bytes += skb->len - PPP_PROTO_LEN;
+ /*
+@@ -995,15 +1013,7 @@ static void _extract_crng(struct crng_st
  
- 	switch (proto) {
- 	case PPP_IP:
--- 
-2.34.1
-
+ static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_extract_crng(crng, out);
++	_extract_crng(select_crng(), out);
+ }
+ 
+ /*
+@@ -1032,15 +1042,7 @@ static void _crng_backtrack_protect(stru
+ 
+ static void crng_backtrack_protect(__u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_crng_backtrack_protect(crng, tmp, used);
++	_crng_backtrack_protect(select_crng(), tmp, used);
+ }
+ 
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 
 
