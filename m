@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 269B4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346787AbiAXTIP (ORCPT
+        id S1345021AbiAXTIW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:08:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58958 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344722AbiAXTCB (ORCPT
+        Mon, 24 Jan 2022 14:08:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60716 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343864AbiAXTCF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:01 -0500
+        Mon, 24 Jan 2022 14:02:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE2E8B8123F;
-        Mon, 24 Jan 2022 19:01:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E5DC340E5;
-        Mon, 24 Jan 2022 19:01:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F54460BB9;
+        Mon, 24 Jan 2022 19:02:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3403C340E7;
+        Mon, 24 Jan 2022 19:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050917;
-        bh=HiMokRcWVrkWobPHLR9Q0PWQ6ThwoWIl6UQONrxaaJM=;
+        s=korg; t=1643050920;
+        bh=sySPTNdEhcF7C94lJKAfucfeS/5lj3Mr/SaXWyQkuJs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Idna65wm5caU5zLWG2RQ4s1u1fQci000oWjIEWhFHFOpwbUL1rQ3E2chFr/kNQtFM
-         pHpKSVerWno8JUpMfM1tsmIxE1eYNEaAAaDy29RTFMYRBehzRqL4nauWxPOIz7uPE1
-         +UDSIhZaFu3YbgVFbDdnz/5IF1MHHkjZeYV490zk=
+        b=0mB09bF4S/+NacBEQ+XKx6hMBxY7OvPvqpKk72c6TGCz/PPVCuMGLYknOAusNxXFH
+         /79cK51VQCNsfs/4EDEdKdBvstbF3gdSYX5tQtP/NbRo9EwIAR5EJTODTKo7SnWIl1
+         qAIRrIFIWMqnmg47rrRDYjl5YaeSTgiAZdADuFh8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Subject: [PATCH 4.9 121/157] drm/etnaviv: limit submit sizes
-Date:   Mon, 24 Jan 2022 19:43:31 +0100
-Message-Id: <20220124183936.614611281@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 112/157] w1: Misuse of get_user()/put_user() reported by sparse
+Date:   Mon, 24 Jan 2022 19:43:22 +0100
+Message-Id: <20220124183936.326986368@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,48 +47,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
+[ Upstream commit 33dc3e3e99e626ce51f462d883b05856c6c30b1d ]
 
-Currently we allow rediculous amounts of kernel memory being allocated
-via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
-some reasonable limits in to fix this.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/w1/slaves/w1_ds28e04.c:342:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char [noderef] __user *_pu_addr @@     got char *buf @@
+   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     expected char [noderef] __user *_pu_addr
+   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     got char *buf
+>> drivers/w1/slaves/w1_ds28e04.c:356:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char const [noderef] __user *_gu_addr @@     got char const *buf @@
+   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     expected char const [noderef] __user *_gu_addr
+   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     got char const *buf
 
-The commandstream size is limited to 64KB, which was already a soft limit
-on older kernels after which the kernel only took submits on a best effort
-base, so there is no userspace that tries to submit commandstreams larger
-than this. Even if the whole commandstream is a single incrementing address
-load, the size limit also limits the number of potential relocs and
-referenced buffers to slightly under 64K, so use the same limit for those
-arguments. The performance monitoring infrastructure currently supports
-less than 50 performance counter signals, so limiting them to 128 on a
-single submit seems like a reasonably future-proof number for now. This
-number can be bumped if needed without breaking the interface.
+The buffer buf is a failsafe buffer in kernel space, it's not user
+memory hence doesn't deserve the use of get_user() or put_user().
 
-Cc: stable@vger.kernel.org
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Access 'buf' content directly.
+
+Link: https://lore.kernel.org/lkml/202111190526.K5vb7NWC-lkp@intel.com/T/
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Link: https://lore.kernel.org/r/d14ed8d71ad4372e6839ae427f91441d3ba0e94d.1637946316.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/w1/slaves/w1_ds28e04.c | 26 ++++++--------------------
+ 1 file changed, 6 insertions(+), 20 deletions(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-@@ -325,6 +325,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
- 		return -EINVAL;
- 	}
+diff --git a/drivers/w1/slaves/w1_ds28e04.c b/drivers/w1/slaves/w1_ds28e04.c
+index 5e348d38ec5c9..f4cf54c256fd8 100644
+--- a/drivers/w1/slaves/w1_ds28e04.c
++++ b/drivers/w1/slaves/w1_ds28e04.c
+@@ -39,7 +39,7 @@ static int w1_strong_pullup = 1;
+ module_param_named(strong_pullup, w1_strong_pullup, int, 0);
  
-+	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
-+	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
-+		DRM_ERROR("submit arguments out of size limits\n");
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * Copy the command submission and bo array to kernel space in
- 	 * one go, and do this outside of any locks.
+ /* enable/disable CRC checking on DS28E04-100 memory accesses */
+-static char w1_enable_crccheck = 1;
++static bool w1_enable_crccheck = true;
+ 
+ #define W1_EEPROM_SIZE		512
+ #define W1_PAGE_COUNT		16
+@@ -346,32 +346,18 @@ static BIN_ATTR_RW(pio, 1);
+ static ssize_t crccheck_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+-	if (put_user(w1_enable_crccheck + 0x30, buf))
+-		return -EFAULT;
+-
+-	return sizeof(w1_enable_crccheck);
++	return sysfs_emit(buf, "%d\n", w1_enable_crccheck);
+ }
+ 
+ static ssize_t crccheck_store(struct device *dev, struct device_attribute *attr,
+ 			      const char *buf, size_t count)
+ {
+-	char val;
+-
+-	if (count != 1 || !buf)
+-		return -EINVAL;
++	int err = kstrtobool(buf, &w1_enable_crccheck);
+ 
+-	if (get_user(val, buf))
+-		return -EFAULT;
++	if (err)
++		return err;
+ 
+-	/* convert to decimal */
+-	val = val - 0x30;
+-	if (val != 0 && val != 1)
+-		return -EINVAL;
+-
+-	/* set the new value */
+-	w1_enable_crccheck = val;
+-
+-	return sizeof(w1_enable_crccheck);
++	return count;
+ }
+ 
+ static DEVICE_ATTR_RW(crccheck);
+-- 
+2.34.1
+
 
 
