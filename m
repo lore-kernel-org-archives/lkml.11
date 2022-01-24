@@ -2,89 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48487C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 384F0C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443120AbiAXU4T (ORCPT
+        id S1443097AbiAXU4Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385570AbiAXUdg (ORCPT
+        Mon, 24 Jan 2022 15:56:16 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:46512 "EHLO
+        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385545AbiAXUde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:36 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16CDAC07E2AA;
-        Mon, 24 Jan 2022 11:46:47 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0D8FB8122C;
-        Mon, 24 Jan 2022 19:46:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D65F1C340E7;
-        Mon, 24 Jan 2022 19:46:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053605;
-        bh=YGKYsF4QIvwkbyNNnfubN109Rd59um3bHJir9fWNhzY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jq0SafI9bx5TRycYTkD+JofM7XbDR09rOQIqNPRf5HChVW530Cw4Z1MZcSH3LodmR
-         0yYF4dlbkuQZd4a8AGysPSbXwmxgYfoeF3RMbvwNbz5qT8JMdyBorAqVI0Yf+PXaMh
-         UBNcxkV33OG1Rc9tz5z0Ud2Luw28rnm3vsVszYBo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 119/563] arm64: dts: qcom: msm8916: fix MMC controller aliases
-Date:   Mon, 24 Jan 2022 19:38:04 +0100
-Message-Id: <20220124184028.533315113@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:33:34 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 293712010EB;
+        Mon, 24 Jan 2022 20:33:30 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id 2C38980A2B; Mon, 24 Jan 2022 21:30:07 +0100 (CET)
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 2/6] hw_random: read() callback must be called for size of 32 or more bytes
+Date:   Mon, 24 Jan 2022 21:29:47 +0100
+Message-Id: <20220124202951.28579-2-linux@dominikbrodowski.net>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220124202951.28579-1-linux@dominikbrodowski.net>
+References: <20220124202951.28579-1-linux@dominikbrodowski.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+According to <linux/hw_random.h>, the @max parameter of the ->read
+callback "is a multiple of 4 and >= 32 bytes". That promise was not
+kept by add_early_randomness(), which only asked for 16 bytes. As
+rng_buffer_size() is at least 32, we can simply ask for 32 bytes.
 
-[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
-
-Change sdhcN aliases to mmcN to make them actually work. Currently the
-board uses non-standard aliases sdhcN, which do not work, resulting in
-mmc0 and mmc1 hosts randomly changing indices between boots.
-
-Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/char/hw_random/core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index b1ffc056eea0b..291276a38d7cd 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -18,8 +18,8 @@
- 	#size-cells = <2>;
+diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
+index e860e044b19e..c2d260b5dd92 100644
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -64,10 +64,9 @@ static size_t rng_buffer_size(void)
+ static void add_early_randomness(struct hwrng *rng)
+ {
+ 	int bytes_read;
+-	size_t size = min_t(size_t, 16, rng_buffer_size());
  
- 	aliases {
--		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
--		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
-+		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
-+		mmc1 = &sdhc_2; /* SDC2 SD card slot */
- 	};
- 
- 	chosen { };
+ 	mutex_lock(&reading_mutex);
+-	bytes_read = rng_get_data(rng, rng_buffer, size, 0);
++	bytes_read = rng_get_data(rng, rng_buffer, 32, 0);
+ 	mutex_unlock(&reading_mutex);
+ 	if (bytes_read > 0)
+ 		add_device_randomness(rng_buffer, bytes_read);
 -- 
 2.34.1
-
-
 
