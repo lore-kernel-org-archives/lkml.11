@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E114C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1794C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837979AbiAXWpn (ORCPT
+        id S1838000AbiAXWpp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377400AbiAXVha (ORCPT
+        Mon, 24 Jan 2022 17:45:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47594 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377338AbiAXVh3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D766DC0BD11D;
-        Mon, 24 Jan 2022 12:23:24 -0800 (PST)
+        Mon, 24 Jan 2022 16:37:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9665CB8122D;
-        Mon, 24 Jan 2022 20:23:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9DF0C340E5;
-        Mon, 24 Jan 2022 20:23:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2D18B81142;
+        Mon, 24 Jan 2022 21:37:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2393CC340E7;
+        Mon, 24 Jan 2022 21:37:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055802;
-        bh=SFpaN1Q+FQLxVudgmI3DnJry1PBPmM+zzf/zOsrDouM=;
+        s=korg; t=1643060237;
+        bh=NoAJVYw6CP/5wj4wKs43vSyyWuXkyI9r0CT4hhQoO8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Bti/cxbvA0uOxw8Gt089m+vggJkFsy/aPwAW6jnldkg42U4ngJy5IzPO5Ib+f9GR3
-         j6BdtE78Us5vLIBiT3UsKiXN7QK4c3Sci6geX5RJrTWklTDXRoZOn6taLG2dXZ8alt
-         mtlgPCgY4gb/Dzbwnh6Lmj2SIfcYg2syiDya7fg0=
+        b=N6ZV7o86rpTbcfpnGZu53diW3t1PDaPhohU46LfkhkXWEiTNcTAkI/DYrB7DpYPlP
+         pRHjk2i0qC2tqVfV2lvBMYde8zeBIbkJD9I6+xivmOM7O3wsY/skzMlmUGdjzmkb91
+         00gaZZlrgNOnA7N4gBwX6YoCKIqwZATyUKcVMYZI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Errera <nathan.errera@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 271/846] iwlwifi: mvm: test roc running status bits before removing the sta
-Date:   Mon, 24 Jan 2022 19:36:28 +0100
-Message-Id: <20220124184110.278730882@linuxfoundation.org>
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 0884/1039] btrfs: check the root node for uptodate before returning it
+Date:   Mon, 24 Jan 2022 19:44:33 +0100
+Message-Id: <20220124184155.007622603@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,67 +47,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Errera <nathan.errera@intel.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 998e1aba6e5eb35370eaf30ccc1823426ec11f90 ]
+commit 120de408e4b97504a2d9b5ca534b383de2c73d49 upstream.
 
-In some cases the sta is being removed twice since we do not test the
-roc aux running before removing it. Start looking at the bit before
-removing the sta.
+Now that we clear the extent buffer uptodate if we fail to write it out
+we need to check to see if our root node is uptodate before we search
+down it.  Otherwise we could return stale data (or potentially corrupt
+data that was caught by the write verification step) and think that the
+path is OK to search down.
 
-Signed-off-by: Nathan Errera <nathan.errera@intel.com>
-Fixes: 2c2c3647cde4 ("iwlwifi: mvm: support ADD_STA_CMD_API_S ver 12")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219121514.d5376ac6bcb0.Ic5f8470ea60c072bde9d1503e5f528b65e301e20@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/time-event.c   | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ fs/btrfs/ctree.c |   19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-index e91f8e889df70..f93f15357a3f8 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-@@ -49,14 +49,13 @@ void iwl_mvm_roc_done_wk(struct work_struct *wk)
- 	struct iwl_mvm *mvm = container_of(wk, struct iwl_mvm, roc_done_wk);
+--- a/fs/btrfs/ctree.c
++++ b/fs/btrfs/ctree.c
+@@ -1570,12 +1570,9 @@ static struct extent_buffer *btrfs_searc
+ {
+ 	struct btrfs_fs_info *fs_info = root->fs_info;
+ 	struct extent_buffer *b;
+-	int root_lock;
++	int root_lock = 0;
+ 	int level = 0;
  
+-	/* We try very hard to do read locks on the root */
+-	root_lock = BTRFS_READ_LOCK;
+-
+ 	if (p->search_commit_root) {
+ 		/*
+ 		 * The commit roots are read only so we always do read locks,
+@@ -1613,6 +1610,9 @@ static struct extent_buffer *btrfs_searc
+ 		goto out;
+ 	}
+ 
++	/* We try very hard to do read locks on the root */
++	root_lock = BTRFS_READ_LOCK;
++
  	/*
--	 * Clear the ROC_RUNNING /ROC_AUX_RUNNING status bit.
-+	 * Clear the ROC_RUNNING status bit.
- 	 * This will cause the TX path to drop offchannel transmissions.
- 	 * That would also be done by mac80211, but it is racy, in particular
- 	 * in the case that the time event actually completed in the firmware
- 	 * (which is handled in iwl_mvm_te_handle_notif).
- 	 */
- 	clear_bit(IWL_MVM_STATUS_ROC_RUNNING, &mvm->status);
--	clear_bit(IWL_MVM_STATUS_ROC_AUX_RUNNING, &mvm->status);
+ 	 * If the level is set to maximum, we can skip trying to get the read
+ 	 * lock.
+@@ -1639,6 +1639,17 @@ static struct extent_buffer *btrfs_searc
+ 	level = btrfs_header_level(b);
  
- 	synchronize_net();
- 
-@@ -82,9 +81,19 @@ void iwl_mvm_roc_done_wk(struct work_struct *wk)
- 			mvmvif = iwl_mvm_vif_from_mac80211(mvm->p2p_device_vif);
- 			iwl_mvm_flush_sta(mvm, &mvmvif->bcast_sta, true);
- 		}
--	} else {
+ out:
++	/*
++	 * The root may have failed to write out at some point, and thus is no
++	 * longer valid, return an error in this case.
++	 */
++	if (!extent_buffer_uptodate(b)) {
++		if (root_lock)
++			btrfs_tree_unlock_rw(b, root_lock);
++		free_extent_buffer(b);
++		return ERR_PTR(-EIO);
 +	}
 +
-+	/*
-+	 * Clear the ROC_AUX_RUNNING status bit.
-+	 * This will cause the TX path to drop offchannel transmissions.
-+	 * That would also be done by mac80211, but it is racy, in particular
-+	 * in the case that the time event actually completed in the firmware
-+	 * (which is handled in iwl_mvm_te_handle_notif).
-+	 */
-+	if (test_and_clear_bit(IWL_MVM_STATUS_ROC_AUX_RUNNING, &mvm->status)) {
- 		/* do the same in case of hot spot 2.0 */
- 		iwl_mvm_flush_sta(mvm, &mvm->aux_sta, true);
-+
- 		/* In newer version of this command an aux station is added only
- 		 * in cases of dedicated tx queue and need to be removed in end
- 		 * of use */
--- 
-2.34.1
-
+ 	p->nodes[level] = b;
+ 	if (!p->skip_locking)
+ 		p->locks[level] = root_lock;
 
 
