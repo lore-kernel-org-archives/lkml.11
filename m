@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 433FDC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 635D0C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353735AbiAXTfS (ORCPT
+        id S1353766AbiAXTfV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347073AbiAXT1l (ORCPT
+        Mon, 24 Jan 2022 14:35:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53838 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348205AbiAXT2M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:27:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199D9C08E7BF;
-        Mon, 24 Jan 2022 11:12:53 -0800 (PST)
+        Mon, 24 Jan 2022 14:28:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC106B8122F;
-        Mon, 24 Jan 2022 19:12:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34347C340E8;
-        Mon, 24 Jan 2022 19:12:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 97FFF612A5;
+        Mon, 24 Jan 2022 19:28:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 667E4C340E5;
+        Mon, 24 Jan 2022 19:28:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051570;
-        bh=N8Rgi53AUy+5nlRNc2Il+oQgNwWJTC8Or3+tDrNCYHM=;
+        s=korg; t=1643052491;
+        bh=/KO7TjZdTKaIEWpeAtBTzlVw9Z4gVP4KOb9QTuY+Arg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C9xReAzji9iIjedf3BxmJuhuZzhI0r11+gkq4l3DcGZQ/5w51b0+l8fDgluQONEGz
-         0NFMH8eqf5/RaJ+nItYEO3JzNdMqY49WWh30VpVbggjudMeqz2NoNurE2b6T7xKzjx
-         VHovutbhtltDZSux8TQ1OWRGw4J2f0hNg2u2iHPw=
+        b=FkPwXAEEFcfyc8Iw2PerFH6w5zZ3tQ0qEegMZi3tq/l7Tv3Vu4swE8aDnLA9V9ArN
+         Ij344ybehN3DYIgisJCtaez1Bo3pqqRB/acz1fgJxP+sZDPGsk5SjB9da1n2gol3fD
+         /j7YVOCo6EmXHDzRxNnKsarbr457l56yLS0j1gXg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
-        Johan Hovold <johan@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 4.19 018/239] firmware: qemu_fw_cfg: fix sysfs information leak
-Date:   Mon, 24 Jan 2022 19:40:56 +0100
-Message-Id: <20220124183943.701260030@linuxfoundation.org>
+        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
+        TOTE Robot <oslab@tsinghua.edu.cn>,
+        Brian Norris <briannorris@chromium.org>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 077/320] mwifiex: Fix possible ABBA deadlock
+Date:   Mon, 24 Jan 2022 19:41:01 +0100
+Message-Id: <20220124183956.360963062@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +48,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Brian Norris <briannorris@chromium.org>
 
-commit 1b656e9aad7f4886ed466094d1dc5ee4dd900d20 upstream.
+[ Upstream commit 1b8bb8919ef81bfc8873d223b9361f1685f2106d ]
 
-Make sure to always NUL-terminate file names retrieved from the firmware
-to avoid accessing data beyond the entry slab buffer and exposing it
-through sysfs in case the firmware data is corrupt.
+Quoting Jia-Ju Bai <baijiaju1990@gmail.com>:
 
-Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
-Cc: stable@vger.kernel.org      # 4.6
-Cc: Gabriel Somlo <somlo@cmu.edu>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-4-johan@kernel.org
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  mwifiex_dequeue_tx_packet()
+     spin_lock_bh(&priv->wmm.ra_list_spinlock); --> Line 1432 (Lock A)
+     mwifiex_send_addba()
+       spin_lock_bh(&priv->sta_list_spinlock); --> Line 608 (Lock B)
+
+  mwifiex_process_sta_tx_pause()
+     spin_lock_bh(&priv->sta_list_spinlock); --> Line 398 (Lock B)
+     mwifiex_update_ralist_tx_pause()
+       spin_lock_bh(&priv->wmm.ra_list_spinlock); --> Line 941 (Lock A)
+
+Similar report for mwifiex_process_uap_tx_pause().
+
+While the locking expectations in this driver are a bit unclear, the
+Fixed commit only intended to protect the sta_ptr, so we can drop the
+lock as soon as we're done with it.
+
+IIUC, this deadlock cannot actually happen, because command event
+processing (which calls mwifiex_process_sta_tx_pause()) is
+sequentialized with TX packet processing (e.g.,
+mwifiex_dequeue_tx_packet()) via the main loop (mwifiex_main_process()).
+But it's good not to leave this potential issue lurking.
+
+Fixes: f0f7c2275fb9 ("mwifiex: minor cleanups w/ sta_list_spinlock in cfg80211.c")
+Cc: Douglas Anderson <dianders@chromium.org>
+Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+Link: https://lore.kernel.org/linux-wireless/0e495b14-efbb-e0da-37bd-af6bd677ee2c@gmail.com/
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/YaV0pllJ5p/EuUat@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/qemu_fw_cfg.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/marvell/mwifiex/sta_event.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -598,7 +598,7 @@ static int fw_cfg_register_file(const st
- 	/* set file entry information */
- 	entry->size = be32_to_cpu(f->size);
- 	entry->select = be16_to_cpu(f->select);
--	memcpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
-+	strscpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
+diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+index 5fdffb114913d..fd12093863801 100644
+--- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
++++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
+@@ -364,10 +364,12 @@ static void mwifiex_process_uap_tx_pause(struct mwifiex_private *priv,
+ 		sta_ptr = mwifiex_get_sta_entry(priv, tp->peermac);
+ 		if (sta_ptr && sta_ptr->tx_pause != tp->tx_pause) {
+ 			sta_ptr->tx_pause = tp->tx_pause;
++			spin_unlock_bh(&priv->sta_list_spinlock);
+ 			mwifiex_update_ralist_tx_pause(priv, tp->peermac,
+ 						       tp->tx_pause);
++		} else {
++			spin_unlock_bh(&priv->sta_list_spinlock);
+ 		}
+-		spin_unlock_bh(&priv->sta_list_spinlock);
+ 	}
+ }
  
- 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
- 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
+@@ -399,11 +401,13 @@ static void mwifiex_process_sta_tx_pause(struct mwifiex_private *priv,
+ 			sta_ptr = mwifiex_get_sta_entry(priv, tp->peermac);
+ 			if (sta_ptr && sta_ptr->tx_pause != tp->tx_pause) {
+ 				sta_ptr->tx_pause = tp->tx_pause;
++				spin_unlock_bh(&priv->sta_list_spinlock);
+ 				mwifiex_update_ralist_tx_pause(priv,
+ 							       tp->peermac,
+ 							       tp->tx_pause);
++			} else {
++				spin_unlock_bh(&priv->sta_list_spinlock);
+ 			}
+-			spin_unlock_bh(&priv->sta_list_spinlock);
+ 		}
+ 	}
+ }
+-- 
+2.34.1
+
 
 
