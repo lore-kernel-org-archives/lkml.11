@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A468C41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A658C3526C
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314603AbiAYCvR (ORCPT
+        id S1314770AbiAYCvo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
+        Mon, 24 Jan 2022 21:51:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353993AbiAXVFL (ORCPT
+        with ESMTP id S1347065AbiAXVFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:05:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114FCC068099;
-        Mon, 24 Jan 2022 12:05:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05737C055A94;
+        Mon, 24 Jan 2022 12:04:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2758B8122A;
-        Mon, 24 Jan 2022 20:05:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68B6C340E5;
-        Mon, 24 Jan 2022 20:05:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B6A13B811FB;
+        Mon, 24 Jan 2022 20:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E21B9C340E5;
+        Mon, 24 Jan 2022 20:04:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054720;
-        bh=rk21zKQ+j7Sr59F2dIE7knXhtPu1glCcJYXJODTUaGo=;
+        s=korg; t=1643054668;
+        bh=1W7QnzWemca3+VHrxEBDJsad3MM3/pf0E4IB4zUs6LA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zYKkBWbDB6ykUwPIfScWgyK5lusvuVdKGcMs+T+lY3EPBbcJtHnejQ5I8xqRUMTmb
-         BsKTx4pSLRgryGS3H5JHsCZpDhcJ+PtBMBqVwLn5qSMxoKElrbie6fd7d+b4qp5rzN
-         Qj3ptbBr08GRDQKuX7C+Jq/EwgKCs93ox9twBBag=
+        b=p8GcmPvcQA6sgSZ+00ofn+xjsHT7CIPoDKBnUZibiXyvmqOOXP/KHHFTtV2lex4cS
+         u0T0mQubQYJ82mYLlwXpbTV8mIkQX4yLcivF9cVTOQPv/s8XlFey8KffBmqzqjrXwo
+         nhKr6zPKsEi/b+YXcGJ3TtGkRHik64upYyq8ablU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Lukas Czerner <lczerner@redhat.com>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.10 481/563] ext4: destroy ext4_fc_dentry_cachep kmemcache on module removal
-Date:   Mon, 24 Jan 2022 19:44:06 +0100
-Message-Id: <20220124184041.094594379@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 432/563] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 24 Jan 2022 19:43:17 +0100
+Message-Id: <20220124184039.394739063@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -52,69 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-commit ab047d516dea72f011c15c04a929851e4d053109 upstream.
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-The kmemcache for ext4_fc_dentry_cachep remains registered after module
-removal.
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
 
-Destroy ext4_fc_dentry_cachep kmemcache on module removal.
-
-Fixes: aa75f4d3daaeb ("ext4: main fast-commit commit path")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Lukas Czerner <lczerner@redhat.com>
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/20211110134640.lyku5vklvdndw6uk@linutronix.de
-Link: https://lore.kernel.org/r/YbiK3JetFFl08bd7@linutronix.de
-Link: https://lore.kernel.org/r/20211223164436.2628390-1-bigeasy@linutronix.de
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ext4.h        |    1 +
- fs/ext4/fast_commit.c |    5 +++++
- fs/ext4/super.c       |    2 ++
- 3 files changed, 8 insertions(+)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2778,6 +2778,7 @@ bool ext4_fc_replay_check_excluded(struc
- void ext4_fc_replay_cleanup(struct super_block *sb);
- int ext4_fc_commit(journal_t *journal, tid_t commit_tid);
- int __init ext4_fc_init_dentry_cache(void);
-+void ext4_fc_destroy_dentry_cache(void);
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index d56e9b9d2e434..a994022e32c9f 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
  
- /* mballoc.c */
- extern const struct seq_operations ext4_mb_seq_groups_ops;
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -2169,3 +2169,8 @@ int __init ext4_fc_init_dentry_cache(voi
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
- 	return 0;
+ 	return ret;
  }
-+
-+void ext4_fc_destroy_dentry_cache(void)
-+{
-+	kmem_cache_destroy(ext4_fc_dentry_cachep);
-+}
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6729,6 +6729,7 @@ static int __init ext4_init_fs(void)
- out:
- 	unregister_as_ext2();
- 	unregister_as_ext3();
-+	ext4_fc_destroy_dentry_cache();
- out05:
- 	destroy_inodecache();
- out1:
-@@ -6755,6 +6756,7 @@ static void __exit ext4_exit_fs(void)
- 	unregister_as_ext2();
- 	unregister_as_ext3();
- 	unregister_filesystem(&ext4_fs_type);
-+	ext4_fc_destroy_dentry_cache();
- 	destroy_inodecache();
- 	ext4_exit_mballoc();
- 	ext4_exit_sysfs();
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
+ 
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 950e6c6e86297..fa87e5aa1811d 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -544,6 +544,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
+ 
+-- 
+2.34.1
+
 
 
