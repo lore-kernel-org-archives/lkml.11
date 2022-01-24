@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB54DC35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64035C47081
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366108AbiAXXwU (ORCPT
+        id S2366160AbiAXXwZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        Mon, 24 Jan 2022 18:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845408AbiAXXMO (ORCPT
+        with ESMTP id S1356464AbiAXW4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:12:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6B8C09F4B6;
-        Mon, 24 Jan 2022 13:19:30 -0800 (PST)
+        Mon, 24 Jan 2022 17:56:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85186C0698C2;
+        Mon, 24 Jan 2022 13:10:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93D20B80FA1;
-        Mon, 24 Jan 2022 21:19:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4D9C340E4;
-        Mon, 24 Jan 2022 21:19:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24FC66141C;
+        Mon, 24 Jan 2022 21:10:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A66C340E5;
+        Mon, 24 Jan 2022 21:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059169;
-        bh=K5eKq+0HrMybBiSNveured9NxZMCaK86vy2yBY9oE8Q=;
+        s=korg; t=1643058627;
+        bh=n/lcnXhgHSaRyo+ZtvUumelV6/WcgjJd3RAK8llaias=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qcTqC2J29Kj9xYjCvEDnA816dCV4lGv+73mpRYfyst5jRcLWOJUtQBgRf6BLt4EJh
-         I8sgkrRJakp+KdpbstySjxEusA+I11OjHD9VyEY09NYRW893v4Pf+/mNlAOpex4V4A
-         vs6SKuDp0zsnk+u6UvGUIo1ykzUCNuAqxO04htPs=
+        b=DVXo35GjGgC2CQSs58JZnfUH8y61eJeBOgrcop1bvXhoD9RRoFZrf+7dxyocSTUqC
+         t0htKPtPuIaiyPQITiSNn/sdAQwDLFVTAnV9EO03Qk3b0+wTOVY4NQV7TvJMaIUl79
+         lD3Ip8fSoqK3LtHSX9FOOaw7VghlSYHcmuWTi79g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Baochen Qiang <quic_bqiang@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0527/1039] ASoC: imx-card: improve the sound quality for low rate
-Date:   Mon, 24 Jan 2022 19:38:36 +0100
-Message-Id: <20220124184142.998295878@linuxfoundation.org>
+Subject: [PATCH 5.16 0351/1039] ath11k: Fix unexpected return buffer manager error for QCA6390
+Date:   Mon, 24 Jan 2022 19:35:40 +0100
+Message-Id: <20220124184137.083494354@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,60 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Baochen Qiang <quic_bqiang@quicinc.com>
 
-[ Upstream commit 3969341813eb56d2dfc39bb64229359a6ae3c195 ]
+[ Upstream commit 71c748b5e01e3e28838a8e26a8966fb5adb03df7 ]
 
-According to RM, on auto mode:
-For codec AK4458 and AK4497, the lowest ratio of MLCK/FS is 256
-if sample rate is 8kHz-48kHz,
-For codec AK5558, the lowest ratio of MLCK/FS is 512 if sample
-rate is 8kHz-48kHz.
+We are seeing below error on QCA6390:
+...
+[70211.671189] ath11k_pci 0000:72:00.0: failed to parse rx error in wbm_rel ring desc -22
+[70212.696154] ath11k_pci 0000:72:00.0: failed to parse rx error in wbm_rel ring desc -22
+[70213.092941] ath11k_pci 0000:72:00.0: failed to parse rx error in wbm_rel ring desc -22
+...
 
-With these setting the sound quality for 8kHz-48kHz can be improved.
+The reason is that, with commit 734223d78428 ("ath11k: change return
+buffer manager for QCA6390"), ath11k expects the return buffer manager
+(RBM) field of descriptor configured as HAL_RX_BUF_RBM_SW1_BM when
+parsing error frames from WBM2SW3_RELEASE ring. This is a wrong change
+cause the RBM field is set as HAL_RX_BUF_RBM_SW3_BM.
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1641292835-19085-4-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The same issue also applies to REO2TCL ring though we have not got any
+error reported.
+
+Fix it by changing RBM from HAL_RX_BUF_RBM_SW1_BM to HAL_RX_BUF_RBM_SW3_BM
+for these two rings.
+
+Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
+
+Fixes: 734223d78428 ("ath11k: change return buffer manager for QCA6390")
+Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211222013536.582527-1-quic_bqiang@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/fsl/imx-card.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c  | 2 +-
+ drivers/net/wireless/ath/ath11k/hal_rx.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index 84a8dcdee9316..c7503a5f7cfbc 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -120,7 +120,7 @@ struct imx_card_data {
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index c5320847b80a7..22b6b6a470d4c 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -3800,7 +3800,7 @@ int ath11k_dp_process_rx_err(struct ath11k_base *ab, struct napi_struct *napi,
+ 		ath11k_hal_rx_msdu_link_info_get(link_desc_va, &num_msdus, msdu_cookies,
+ 						 &rbm);
+ 		if (rbm != HAL_RX_BUF_RBM_WBM_IDLE_DESC_LIST &&
+-		    rbm != ab->hw_params.hal_params->rx_buf_rbm) {
++		    rbm != HAL_RX_BUF_RBM_SW3_BM) {
+ 			ab->soc_stats.invalid_rbm++;
+ 			ath11k_warn(ab, "invalid return buffer manager %d\n", rbm);
+ 			ath11k_dp_rx_link_desc_return(ab, desc,
+diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
+index 329c404cfa80d..922926246db7a 100644
+--- a/drivers/net/wireless/ath/ath11k/hal_rx.c
++++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
+@@ -374,7 +374,7 @@ int ath11k_hal_wbm_desc_parse_err(struct ath11k_base *ab, void *desc,
  
- static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
- 	/* Normal, < 32kHz */
--	{ .rmin = 8000,   .rmax = 24000,  .wmin = 1024, .wmax = 1024, },
-+	{ .rmin = 8000,   .rmax = 24000,  .wmin = 256,  .wmax = 1024, },
- 	/* Normal, 32kHz */
- 	{ .rmin = 32000,  .rmax = 32000,  .wmin = 256,  .wmax = 1024, },
- 	/* Normal */
-@@ -151,8 +151,8 @@ static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
- 	 * Table 7      - mapping multiplier and speed mode
- 	 * Tables 8 & 9 - mapping speed mode and LRCK fs
- 	 */
--	{ .rmin = 8000,   .rmax = 32000,  .wmin = 1024, .wmax = 1024, }, /* Normal, <= 32kHz */
--	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, }, /* Normal */
-+	{ .rmin = 8000,   .rmax = 32000,  .wmin = 256,  .wmax = 1024, }, /* Normal, <= 32kHz */
-+	{ .rmin = 44100,  .rmax = 48000,  .wmin = 256,  .wmax = 512, }, /* Normal */
- 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, }, /* Double */
- 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, }, /* Quad */
- 	{ .rmin = 352800, .rmax = 384000, .wmin = 128,  .wmax = 128, }, /* Oct */
-@@ -164,7 +164,7 @@ static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
-  * (Table 4 from datasheet)
-  */
- static struct imx_akcodec_fs_mul ak5558_fs_mul[] = {
--	{ .rmin = 8000,   .rmax = 32000,  .wmin = 1024, .wmax = 1024, },
-+	{ .rmin = 8000,   .rmax = 32000,  .wmin = 512,  .wmax = 1024, },
- 	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, },
- 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, },
- 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, },
+ 	ret_buf_mgr = FIELD_GET(BUFFER_ADDR_INFO1_RET_BUF_MGR,
+ 				wbm_desc->buf_addr_info.info1);
+-	if (ret_buf_mgr != ab->hw_params.hal_params->rx_buf_rbm) {
++	if (ret_buf_mgr != HAL_RX_BUF_RBM_SW3_BM) {
+ 		ab->soc_stats.invalid_rbm++;
+ 		return -EINVAL;
+ 	}
 -- 
 2.34.1
 
