@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C92C9C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 962B5C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582022AbiAXWNZ (ORCPT
+        id S1581895AbiAXWMh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:13:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51250 "EHLO
+        Mon, 24 Jan 2022 17:12:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49694 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453615AbiAXVad (ORCPT
+        with ESMTP id S1378461AbiAXV3B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:30:33 -0500
+        Mon, 24 Jan 2022 16:29:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1337361028;
-        Mon, 24 Jan 2022 21:30:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE51C340E4;
-        Mon, 24 Jan 2022 21:30:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0653C61521;
+        Mon, 24 Jan 2022 21:29:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1BC5C33E60;
+        Mon, 24 Jan 2022 21:28:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059830;
-        bh=Zy5v5fLQBLXnARGxYzyL5FpJcmsXb0/iPQFT4iszAW4=;
+        s=korg; t=1643059739;
+        bh=Fl5rzd6FQiE4olvgjq95Hwc7BEQkLP+TG+oqGxrulSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wi5gInQVql5hu8dVh8s4mWxKPbz26p+IkeKKnU4Tcx/onmCfaEymZjWzhCb+6rRbt
-         WSzz74wtWmV5/RmVHXDkMTFmzHVshVG7obztzKR3Xv/rZxiQC0x6N5s3GEjga3STEv
-         9LTmCQa8pLmstfENj2XWOqBHEhSa2A6KWXQGbJhE=
+        b=S5AsVKMyVxkyfI8OiwnpF4ESGaKIP9+CNk9saiGuRpyctlvDyFsaEvxsjvCFjoRnV
+         Orc2pm3fONc/4LZO8t7IZw25KAtyLxsBAH4E6IaIRqjS7o26KuFFHTvsYUjChRSubK
+         6jrjKIvlyyzR9UNZ1EkfKbjojcRbqhE5Kgw/dvRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gilles BULOZ <gilles.buloz@kontron.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        stable@vger.kernel.org, Danielle Ratson <danieller@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0748/1039] nvmem: core: set size for sysfs bin file
-Date:   Mon, 24 Jan 2022 19:42:17 +0100
-Message-Id: <20220124184150.476108873@linuxfoundation.org>
+Subject: [PATCH 5.16 0717/1039] mlxsw: pci: Avoid flow control for EMAD packets
+Date:   Mon, 24 Jan 2022 19:41:46 +0100
+Message-Id: <20220124184149.432272027@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,35 +48,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: Danielle Ratson <danieller@nvidia.com>
 
-[ Upstream commit 86192251033308bb42f1e9813c962989d8ed07ec ]
+[ Upstream commit d43e4271747ace01a27a49a97a397cb4219f6487 ]
 
-For some reason we never set the size for nvmem sysfs binary file.
-Set this.
+Locally generated packets ingress the device through its CPU port. When
+the CPU port is congested and there are not enough credits in its
+headroom buffer, packets can be dropped.
 
-Reported-by: Gilles BULOZ <gilles.buloz@kontron.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20211130133909.6154-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While this might be acceptable for data packets that traverse the
+network, configuration packets exchanged between the host and the device
+(EMADs) should not be subjected to this flow control.
+
+The "sdq_lp" bit in the SDQ (Send Descriptor Queue) context allows the
+host to instruct the device to treat packets sent on this queue as
+"local processing" and always process them, regardless of the state of
+the CPU port's headroom.
+
+Add the definition of this bit and set it for the dedicated SDQ reserved
+for the transmission of EMAD packets. This makes the "local processing"
+bit in the WQE (Work Queue Element) redundant, so clear it.
+
+Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvmem/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/cmd.h | 12 ++++++++++++
+ drivers/net/ethernet/mellanox/mlxsw/pci.c |  6 +++++-
+ 2 files changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index e765d3d0542e5..23a38dcf0fc4d 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -312,6 +312,8 @@ static umode_t nvmem_bin_attr_is_visible(struct kobject *kobj,
- 	struct device *dev = kobj_to_dev(kobj);
- 	struct nvmem_device *nvmem = to_nvmem_device(dev);
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/cmd.h b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+index 392ce3cb27f72..51b260d54237e 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/cmd.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/cmd.h
+@@ -935,6 +935,18 @@ static inline int mlxsw_cmd_sw2hw_rdq(struct mlxsw_core *mlxsw_core,
+  */
+ MLXSW_ITEM32(cmd_mbox, sw2hw_dq, cq, 0x00, 24, 8);
  
-+	attr->size = nvmem->size;
++enum mlxsw_cmd_mbox_sw2hw_dq_sdq_lp {
++	MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE,
++	MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE,
++};
 +
- 	return nvmem_bin_attr_get_umode(nvmem);
- }
++/* cmd_mbox_sw2hw_dq_sdq_lp
++ * SDQ local Processing
++ * 0: local processing by wqe.lp
++ * 1: local processing (ignoring wqe.lp)
++ */
++MLXSW_ITEM32(cmd_mbox, sw2hw_dq, sdq_lp, 0x00, 23, 1);
++
+ /* cmd_mbox_sw2hw_dq_sdq_tclass
+  * SDQ: CPU Egress TClass
+  * RDQ: Reserved
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index cd3331a077bbf..f91dde4df152b 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -285,6 +285,7 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 			      struct mlxsw_pci_queue *q)
+ {
+ 	int tclass;
++	int lp;
+ 	int i;
+ 	int err;
  
+@@ -292,9 +293,12 @@ static int mlxsw_pci_sdq_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 	q->consumer_counter = 0;
+ 	tclass = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_PCI_SDQ_EMAD_TC :
+ 						      MLXSW_PCI_SDQ_CTL_TC;
++	lp = q->num == MLXSW_PCI_SDQ_EMAD_INDEX ? MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_IGNORE_WQE :
++						  MLXSW_CMD_MBOX_SW2HW_DQ_SDQ_LP_WQE;
+ 
+ 	/* Set CQ of same number of this SDQ. */
+ 	mlxsw_cmd_mbox_sw2hw_dq_cq_set(mbox, q->num);
++	mlxsw_cmd_mbox_sw2hw_dq_sdq_lp_set(mbox, lp);
+ 	mlxsw_cmd_mbox_sw2hw_dq_sdq_tclass_set(mbox, tclass);
+ 	mlxsw_cmd_mbox_sw2hw_dq_log2_dq_sz_set(mbox, 3); /* 8 pages */
+ 	for (i = 0; i < MLXSW_PCI_AQ_PAGES; i++) {
+@@ -1678,7 +1682,7 @@ static int mlxsw_pci_skb_transmit(void *bus_priv, struct sk_buff *skb,
+ 
+ 	wqe = elem_info->elem;
+ 	mlxsw_pci_wqe_c_set(wqe, 1); /* always report completion */
+-	mlxsw_pci_wqe_lp_set(wqe, !!tx_info->is_emad);
++	mlxsw_pci_wqe_lp_set(wqe, 0);
+ 	mlxsw_pci_wqe_type_set(wqe, MLXSW_PCI_WQE_TYPE_ETHERNET);
+ 
+ 	err = mlxsw_pci_wqe_frag_map(mlxsw_pci, wqe, 0, skb->data,
 -- 
 2.34.1
 
