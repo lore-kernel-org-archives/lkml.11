@@ -2,105 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CA1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA11FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243815AbiAXQku (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 11:40:50 -0500
-Received: from foss.arm.com ([217.140.110.172]:40074 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243800AbiAXQkZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:40:25 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 65E95113E;
-        Mon, 24 Jan 2022 08:40:25 -0800 (PST)
-Received: from e121345-lin.cambridge.arm.com (e121345-lin.cambridge.arm.com [10.1.196.40])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 80B043F793;
-        Mon, 24 Jan 2022 08:40:24 -0800 (PST)
-From:   Robin Murphy <robin.murphy@arm.com>
-To:     hch@lst.de, konrad@kernel.org
-Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org,
-        tientzu@chromium.org, guozhengkui@vivo.com
-Subject: [PATCH 2/3] swiotlb: Tidy up includes
-Date:   Mon, 24 Jan 2022 16:40:18 +0000
-Message-Id: <57acdf35aa8a66e40ba99d97713ed97b2e40a1f6.1643028164.git.robin.murphy@arm.com>
-X-Mailer: git-send-email 2.28.0.dirty
-In-Reply-To: <cover.1643028164.git.robin.murphy@arm.com>
-References: <cover.1643028164.git.robin.murphy@arm.com>
+        id S243809AbiAXQlo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 11:41:44 -0500
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:52498 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241174AbiAXQlm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 11:41:42 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 4JjG393q2Rz9vKMM
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:41:41 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id LyBRGfAocl05 for <linux-kernel@vger.kernel.org>;
+        Mon, 24 Jan 2022 10:41:41 -0600 (CST)
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 4JjG391gYlz9vKMN
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:41:41 -0600 (CST)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 4JjG391gYlz9vKMN
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 4JjG391gYlz9vKMN
+Received: by mail-pl1-f197.google.com with SMTP id p17-20020a170903249100b0014af06caa65so3598938plw.6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:41:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZjxyaAEg9dgyhIAkpzzAptxU/LU+QVbkLgcz/aYUJL0=;
+        b=VirmN0SOTo8kwAsb6NJ8f0My6angxwwfXPytMw1MiWvZSTJvH+k60e1XJyHLwmUJ8I
+         gb0dYxOJhTRm6FHSjRNj1F6BYyfFQ8+rziWRzJ00cmkMG234HWQcyUGZn5QJtTbt/0x5
+         WbHHVlcfwvqCi20uI+e6uqC7Qe1Eo2tLyk+amiDmu4D5peJpc9psf3Irx6gq3vG41A0C
+         FIAlbksV75hxBifi+VXqDsxG/vbBE68AVFX6uEYDWAe+mYQwZ8A+Pc4O0JHjfAlsM/mJ
+         4xTil0FcCZpFLqjqcbEgxhd0Ryw/MGyG3tq1qmv37KkJPwdGE8iTmytU4kXKL8ky7oxJ
+         COMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZjxyaAEg9dgyhIAkpzzAptxU/LU+QVbkLgcz/aYUJL0=;
+        b=y3LlT+90Csz3CPhwC4SoMSVtaz/6jUaWccUIU/yUbrEHNmlZfDnxmRBma7t8JXlKkW
+         a3ABoaypQcTBtH9t16Tp2QpcJY5GkDnYZlpJtV5LlFnDHSUPjA9p/0g5uZ/LS2ZYnSsv
+         Cayv2S2FnfX93/KmlkYX1AR1K78dNM9u/lMNN/CTh2KHT/DPGt4L6MzH1vOT/7n9Zl6/
+         yHZ6Fdrt7ygYVAQnbknXqesVGitCpc6XJIpOH6YGejII0y1yj2HC61ZgHqflZIO7cavt
+         xlAUO9+c5ZGZ2C7G/q069uvdnbllYQwKz/RJSq5yEBALIbW3cem6ElCh5sbL0n3fFvH0
+         7SFQ==
+X-Gm-Message-State: AOAM530ahC/yqpW1Notoh8COs9GuBcGHRTdfftFdx/j7AnZhDfc6s8Dx
+        40LaRhw+BbqfYPXa8Mat7Fpf0/+PIWgeexMVtsbtIeT1vWMFDPEOoZCgrvIYbfGMeS+/hwquEkC
+        +SbTa61vO26QAV/fXYU9CD4+cNTt2
+X-Received: by 2002:a17:90a:3f09:: with SMTP id l9mr2728753pjc.38.1643042500403;
+        Mon, 24 Jan 2022 08:41:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyOpsozHODGgFyK9SCHH//gLgeWWuohBy6yEBU2ijxYIw5SjGOPgAKzc1o1kBe/gI7Gr6S2GA==
+X-Received: by 2002:a17:90a:3f09:: with SMTP id l9mr2728731pjc.38.1643042500108;
+        Mon, 24 Jan 2022 08:41:40 -0800 (PST)
+Received: from zqy787-GE5S.lan ([36.4.61.248])
+        by smtp.gmail.com with ESMTPSA id my11sm11680862pjb.35.2022.01.24.08.41.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 08:41:39 -0800 (PST)
+From:   Zhou Qingyang <zhou1615@umn.edu>
+To:     zhou1615@umn.edu
+Cc:     kjlu@umn.edu, "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>, Lv Zheng <lv.zheng@intel.com>,
+        linux-acpi@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] ACPI: OSL: Fix a NULL pointer dereference in extlog_init().
+Date:   Tue, 25 Jan 2022 00:41:34 +0800
+Message-Id: <20220124164134.52046-1-zhou1615@umn.edu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SWIOTLB's includes have become a great big mess. Restore some order by
-consolidating the random different blocks, sorting alphabetically, and
-purging some clearly unnecessary entries - linux/io.h is now included
-unconditionally, so need not be duplicated in the restricted DMA pool
-case; similarly, linux/io.h subsumes asm/io.h; and by now it's a
-mystery why asm/dma.h was ever here at all.
+In extlog_init(), acpi_os_map_iomem() is assigned to extlog_l1_hdr and
+there is a dereference of it through l1_head. on the failure of
+acpi_os_map_iomem(), the return value of it could be NULL, which may
+introduce a NULL pointer dereference.
 
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Fix this bug by adding a NULL check of extlog_l1_hdr.
+
+This bug was found by a static analyzer.
+
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: a238317ce818 ("ACPI: Clean up acpi_os_map/unmap_memory() to eliminate __iomem.")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
 ---
- kernel/dma/swiotlb.c | 31 +++++++++++++------------------
- 1 file changed, 13 insertions(+), 18 deletions(-)
+The analysis employs differential checking to identify inconsistent 
+security operations (e.g., checks or kfrees) between two code paths 
+and confirms that the inconsistent operations are not recovered in the
+current function or the callers, so they constitute bugs. 
 
-diff --git a/kernel/dma/swiotlb.c b/kernel/dma/swiotlb.c
-index bdce89e053bd..f56d6504903c 100644
---- a/kernel/dma/swiotlb.c
-+++ b/kernel/dma/swiotlb.c
-@@ -21,38 +21,33 @@
- #define pr_fmt(fmt) "software IO TLB: " fmt
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+ drivers/acpi/acpi_extlog.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/acpi/acpi_extlog.c b/drivers/acpi/acpi_extlog.c
+index 72f1fb77abcd..2187ac23d3d4 100644
+--- a/drivers/acpi/acpi_extlog.c
++++ b/drivers/acpi/acpi_extlog.c
+@@ -239,6 +239,12 @@ static int __init extlog_init(void)
+ 	}
  
- #include <linux/cache.h>
-+#include <linux/cc_platform.h>
-+#include <linux/ctype.h>
-+#include <linux/debugfs.h>
- #include <linux/dma-direct.h>
- #include <linux/dma-map-ops.h>
--#include <linux/mm.h>
- #include <linux/export.h>
-+#include <linux/gfp.h>
-+#include <linux/highmem.h>
-+#include <linux/io.h>
-+#include <linux/iommu-helper.h>
-+#include <linux/init.h>
-+#include <linux/memblock.h>
-+#include <linux/mm.h>
-+#include <linux/pfn.h>
-+#include <linux/scatterlist.h>
-+#include <linux/set_memory.h>
- #include <linux/spinlock.h>
- #include <linux/string.h>
- #include <linux/swiotlb.h>
--#include <linux/pfn.h>
- #include <linux/types.h>
--#include <linux/ctype.h>
--#include <linux/highmem.h>
--#include <linux/gfp.h>
--#include <linux/scatterlist.h>
--#include <linux/cc_platform.h>
--#include <linux/set_memory.h>
--#include <linux/debugfs.h>
- #ifdef CONFIG_DMA_RESTRICTED_POOL
--#include <linux/io.h>
- #include <linux/of.h>
- #include <linux/of_fdt.h>
- #include <linux/of_reserved_mem.h>
- #include <linux/slab.h>
- #endif
- 
--#include <asm/io.h>
--#include <asm/dma.h>
--
--#include <linux/io.h>
--#include <linux/init.h>
--#include <linux/memblock.h>
--#include <linux/iommu-helper.h>
--
- #define CREATE_TRACE_POINTS
- #include <trace/events/swiotlb.h>
- 
+ 	extlog_l1_hdr = acpi_os_map_iomem(l1_dirbase, l1_hdr_size);
++	if (!extlog_l1_hdr) {
++		rc = -ENOMEM;
++		release_mem_region(l1_dirbase, l1_hdr_size);
++		goto err;
++	}
++
+ 	l1_head = (struct extlog_l1_head *)extlog_l1_hdr;
+ 	l1_size = l1_head->total_len;
+ 	l1_percpu_entry = l1_head->entries;
 -- 
-2.28.0.dirty
+2.25.1
 
