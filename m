@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8DCCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E167C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453469AbiAXVaN (ORCPT
+        id S1453519AbiAXVaR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:30:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52026 "EHLO
+        Mon, 24 Jan 2022 16:30:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54160 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441813AbiAXU6g (ORCPT
+        with ESMTP id S1443770AbiAXU7H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:36 -0500
+        Mon, 24 Jan 2022 15:59:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96842B815A5;
-        Mon, 24 Jan 2022 20:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B19B2C33E20;
-        Mon, 24 Jan 2022 20:58:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9D10B81057;
+        Mon, 24 Jan 2022 20:59:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE3BC340E5;
+        Mon, 24 Jan 2022 20:59:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057908;
-        bh=N+i2Ktt5HSL7SoYdHLmIVc6uikYJLYEZ1wvPI4WY1uA=;
+        s=korg; t=1643057944;
+        bh=GEUWqZa4Mds9xpkPoeSkjkmS/DNRRSRnYjCMluj7qrE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LTxNAC/fEcNO5+tEPnkGRkjYC747g+1/bvQrjbQfiPEcaA5apksh2lt0+xhTvOAaJ
-         VsuC7m3mKCdbv1R8MqmArApmbzXSmynq+164suNBpC7bSRWIt7naXX1lwtkykfJrmF
-         y+69gcuzLk+DtMbYmPwoYQPVKgQSdm83l74mIPdM=
+        b=YfEEV+jhElUuQ6XTgLJ7fnb4lTvM5h60mGcEXvb7GIEf1+zYrzCt14uQmqrd77eSi
+         PtCZSTQCYhAC5jFaIDPb1l3bsj4HGpIaznTyNRviX7D4cklm6L+SH1wK+HonDY/BXZ
+         edQtSyFQx5fmUMrd+ZAMUJKT7T5c68lgGdxWZnu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0117/1039] bpftool: Fix memory leak in prog_dump()
-Date:   Mon, 24 Jan 2022 19:31:46 +0100
-Message-Id: <20220124184129.076854913@linuxfoundation.org>
+Subject: [PATCH 5.16 0131/1039] media: em28xx: fix memory leak in em28xx_init_dev
+Date:   Mon, 24 Jan 2022 19:32:00 +0100
+Message-Id: <20220124184129.565373621@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,80 +50,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Quentin Monnet <quentin@isovalent.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit ebbd7f64a3fbe9e0f235e39fc244ee9735e2a52a ]
+[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
 
-Following the extraction of prog_dump() from do_dump(), the struct btf
-allocated in prog_dump() is no longer freed on error; the struct
-bpf_prog_linfo is not freed at all. Make sure we release them before
-exiting the function.
+In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
+to deallocate the media_dev allocated in the em28xx_media_device_init.
 
-Fixes: ec2025095cf6 ("bpftool: Match several programs with same tag")
-Signed-off-by: Quentin Monnet <quentin@isovalent.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20211110114632.24537-2-quentin@isovalent.com
+Fix this by adding em28xx_unregister_media_device to free media_dev.
+
+BTW, this patch is tested in my local syzkaller instance, and it can
+prevent the memory leak from occurring again.
+
+CC: Pavel Skripkin <paskripkin@gmail.com>
+Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/bpf/bpftool/prog.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
-index 515d229526026..6ccd17b8eb560 100644
---- a/tools/bpf/bpftool/prog.c
-+++ b/tools/bpf/bpftool/prog.c
-@@ -639,8 +639,8 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
- 	char func_sig[1024];
- 	unsigned char *buf;
- 	__u32 member_len;
-+	int fd, err = -1;
- 	ssize_t n;
--	int fd;
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index b207f34af5c6f..b451ce3cb169a 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -3630,8 +3630,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
  
- 	if (mode == DUMP_JITED) {
- 		if (info->jited_prog_len == 0 || !info->jited_prog_insns) {
-@@ -679,7 +679,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
- 		if (fd < 0) {
- 			p_err("can't open file %s: %s", filepath,
- 			      strerror(errno));
--			return -1;
-+			goto exit_free;
- 		}
+ 	if (dev->is_audio_only) {
+ 		retval = em28xx_audio_setup(dev);
+-		if (retval)
+-			return -ENODEV;
++		if (retval) {
++			retval = -ENODEV;
++			goto err_deinit_media;
++		}
+ 		em28xx_init_extension(dev);
  
- 		n = write(fd, buf, member_len);
-@@ -687,7 +687,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
- 		if (n != (ssize_t)member_len) {
- 			p_err("error writing output file: %s",
- 			      n < 0 ? strerror(errno) : "short write");
--			return -1;
-+			goto exit_free;
- 		}
- 
- 		if (json_output)
-@@ -701,7 +701,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
- 						     info->netns_ino,
- 						     &disasm_opt);
- 			if (!name)
--				return -1;
-+				goto exit_free;
- 		}
- 
- 		if (info->nr_jited_func_lens && info->jited_func_lens) {
-@@ -796,9 +796,12 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
- 		kernel_syms_destroy(&dd);
+ 		return 0;
+@@ -3650,7 +3652,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 		dev_err(&dev->intf->dev,
+ 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
+ 		       __func__, retval);
+-		return retval;
++		goto err_deinit_media;
  	}
  
--	btf__free(btf);
-+	err = 0;
+ 	/* register i2c bus 1 */
+@@ -3666,9 +3668,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 				"%s: em28xx_i2c_register bus 1 - error [%d]!\n",
+ 				__func__, retval);
  
--	return 0;
-+exit_free:
-+	btf__free(btf);
-+	bpf_prog_linfo__free(prog_linfo);
-+	return err;
+-			em28xx_i2c_unregister(dev, 0);
+-
+-			return retval;
++			goto err_unreg_i2c;
+ 		}
+ 	}
+ 
+@@ -3676,6 +3676,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 	em28xx_card_setup(dev);
+ 
+ 	return 0;
++
++err_unreg_i2c:
++	em28xx_i2c_unregister(dev, 0);
++err_deinit_media:
++	em28xx_unregister_media_device(dev);
++	return retval;
  }
  
- static int do_dump(int argc, char **argv)
+ static int em28xx_duplicate_dev(struct em28xx *dev)
 -- 
 2.34.1
 
