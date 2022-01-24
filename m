@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C502DC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E92C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843878AbiAXXGf (ORCPT
+        id S1843613AbiAXXFH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:06:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        Mon, 24 Jan 2022 18:05:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583740AbiAXWTa (ORCPT
+        with ESMTP id S1581298AbiAXWLd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:19:30 -0500
+        Mon, 24 Jan 2022 17:11:33 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DD9C04A2F9;
-        Mon, 24 Jan 2022 12:49:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B5DC0E03C9;
+        Mon, 24 Jan 2022 12:43:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 533E9B8122A;
-        Mon, 24 Jan 2022 20:49:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FF58C340E5;
-        Mon, 24 Jan 2022 20:49:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90342B8105C;
+        Mon, 24 Jan 2022 20:43:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F31C340E5;
+        Mon, 24 Jan 2022 20:43:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057377;
-        bh=erMBbhktD/e8ZzmhSjqjLHdeMwvuoTg8BFvNKzz4T5E=;
+        s=korg; t=1643057016;
+        bh=fKi7ZwPG8n0+BGVYMxk00IA52PoG1YjyUx5UZx1Vb/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dWSvV1l8SxIMtm/hAdZd63CQPCY7TcQU4idySKkv7vKjSTzrXybusfsme7XYnO5WD
-         571oKWYDxS+XyMt1Fa0BxzA9c3pKMF+46/YCofF64x2yve5WNi7ddYRPGFU1YSHkOx
-         MDxP0uDazfcccerv/H25b6XySVFXDLf+473PUjXw=
+        b=qbLoCf6WI6Qbf6Df81SSBMp7RNMkXQkeT0T1GqWy9DMct2ZcnzdQwz8GNDc9QznnY
+         EaMQSbf/8UrbIyA200lhTJFqXDVaJIwI0rVjIMXBAVd9FvVnW9I4WSewfZ6FRXWIgl
+         FNmPavPysb2yOSEtJYqkE0e7NKH4g5/c+t1tLXQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.15 760/846] drm/vc4: Fix non-blocking commit getting stuck forever
-Date:   Mon, 24 Jan 2022 19:44:37 +0100
-Message-Id: <20220124184127.181674912@linuxfoundation.org>
+        stable@vger.kernel.org, Patrick Williams <patrick@stwcx.xyz>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.15 674/846] tpm: fix NPE on probe for missing device
+Date:   Mon, 24 Jan 2022 19:43:11 +0100
+Message-Id: <20220124184124.324993444@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,141 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Patrick Williams <patrick@stwcx.xyz>
 
-commit 0c250c150c74a90db298bf2a8bcd0a1dabed2e2f upstream.
+commit 84cc69589700b90a4c8d27b481a51fce8cca6051 upstream.
 
-In some situation, we can end up being stuck on a non-blocking that went
-through properly.
+When using the tpm_tis-spi driver on a system missing the physical TPM,
+a null pointer exception was observed.
 
-The situation that seems to trigger it reliably is to first start a
-non-blocking commit, and then right after, and before we had any vblank
-interrupt), start a blocking commit.
+    [    0.938677] Unable to handle kernel NULL pointer dereference at virtual address 00000004
+    [    0.939020] pgd = 10c753cb
+    [    0.939237] [00000004] *pgd=00000000
+    [    0.939808] Internal error: Oops: 5 [#1] SMP ARM
+    [    0.940157] CPU: 0 PID: 48 Comm: kworker/u4:1 Not tainted 5.15.10-dd1e40c #1
+    [    0.940364] Hardware name: Generic DT based system
+    [    0.940601] Workqueue: events_unbound async_run_entry_fn
+    [    0.941048] PC is at tpm_tis_remove+0x28/0xb4
+    [    0.941196] LR is at tpm_tis_core_init+0x170/0x6ac
 
-This will lead to the first commit workqueue to be scheduled, setup the
-display, while the second commit is waiting for the first one to be
-completed.
+This is due to an attempt in 'tpm_tis_remove' to use the drvdata, which
+was not initialized in 'tpm_tis_core_init' prior to the first error.
 
-The vblank interrupt will then be raised, vc4_crtc_handle_vblank() will
-run and will compare the active dlist in the HVS channel to the one
-associated with the crtc->state.
+Move the initialization of drvdata earlier so 'tpm_tis_remove' has
+access to it.
 
-However, at that point, the second commit is waiting using
-drm_atomic_helper_wait_for_dependencies that occurs after
-drm_atomic_helper_swap_state has been called, so crtc->state points to
-the second commit state. vc4_crtc_handle_vblank() will compare the two
-dlist addresses and since they don't match will ignore the interrupt.
-
-The vblank event will never be reported, and the first and second commit
-will wait for the first commit completion until they timeout.
-
-The underlying reason is that it was never safe to do so. Indeed,
-accessing the ->state pointer access synchronization is based on
-ownership guarantees that can only occur within the functions and hooks
-defined as part of the KMS framework, and obviously the irq handler
-isn't one of them. The rework to move to generic helpers only uncovered
-the underlying issue.
-
-However, since the code path between
-drm_atomic_helper_wait_for_dependencies() and
-drm_atomic_helper_wait_for_vblanks() is serialised and we can't get two
-commits in that path at the same time, we can work around this issue by
-setting a variable associated to struct drm_crtc to the dlist we expect,
-and then using it from the vc4_crtc_handle_vblank() function.
-
-Since that state is shared with the modesetting path, we also need to
-introduce a spinlock to protect the code shared between the interrupt
-handler and the modesetting path, protecting only our new variable for
-now.
-
-Link: https://lore.kernel.org/all/YWgteNaNeaS9uWDe@phenom.ffwll.local/
-Link: https://lore.kernel.org/r/20211025141113.702757-3-maxime@cerno.tech
-Fixes: 56d1fe0979dc ("drm/vc4: Make pageflip completion handling more robust.")
-Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Signed-off-by: Patrick Williams <patrick@stwcx.xyz>
+Fixes: 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent queries")
+Cc: stable@vger.kernel.org
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_crtc.c |    5 ++++-
- drivers/gpu/drm/vc4/vc4_drv.h  |   14 ++++++++++++++
- drivers/gpu/drm/vc4/vc4_hvs.c  |    7 +++++--
- 3 files changed, 23 insertions(+), 3 deletions(-)
+ drivers/char/tpm/tpm_tis_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/gpu/drm/vc4/vc4_crtc.c
-+++ b/drivers/gpu/drm/vc4/vc4_crtc.c
-@@ -713,8 +713,9 @@ static void vc4_crtc_handle_page_flip(st
- 	unsigned long flags;
+--- a/drivers/char/tpm/tpm_tis_core.c
++++ b/drivers/char/tpm/tpm_tis_core.c
+@@ -950,6 +950,8 @@ int tpm_tis_core_init(struct device *dev
+ 	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
+ 	priv->phy_ops = phy_ops;
  
- 	spin_lock_irqsave(&dev->event_lock, flags);
-+	spin_lock(&vc4_crtc->irq_lock);
- 	if (vc4_crtc->event &&
--	    (vc4_state->mm.start == HVS_READ(SCALER_DISPLACTX(chan)) ||
-+	    (vc4_crtc->current_dlist == HVS_READ(SCALER_DISPLACTX(chan)) ||
- 	     vc4_crtc->feeds_txp)) {
- 		drm_crtc_send_vblank_event(crtc, vc4_crtc->event);
- 		vc4_crtc->event = NULL;
-@@ -728,6 +729,7 @@ static void vc4_crtc_handle_page_flip(st
- 		 */
- 		vc4_hvs_unmask_underrun(dev, chan);
- 	}
-+	spin_unlock(&vc4_crtc->irq_lock);
- 	spin_unlock_irqrestore(&dev->event_lock, flags);
- }
- 
-@@ -1127,6 +1129,7 @@ int vc4_crtc_init(struct drm_device *drm
- 		return PTR_ERR(primary_plane);
++	dev_set_drvdata(&chip->dev, priv);
++
+ 	rc = tpm_tis_read32(priv, TPM_DID_VID(0), &vendor);
+ 	if (rc < 0)
+ 		return rc;
+@@ -962,8 +964,6 @@ int tpm_tis_core_init(struct device *dev
+ 		priv->timeout_max = TIS_TIMEOUT_MAX_ATML;
  	}
  
-+	spin_lock_init(&vc4_crtc->irq_lock);
- 	drm_crtc_init_with_planes(drm, crtc, primary_plane, NULL,
- 				  crtc_funcs, NULL);
- 	drm_crtc_helper_add(crtc, crtc_helper_funcs);
---- a/drivers/gpu/drm/vc4/vc4_drv.h
-+++ b/drivers/gpu/drm/vc4/vc4_drv.h
-@@ -500,6 +500,20 @@ struct vc4_crtc {
- 	 * @feeds_txp: True if the CRTC feeds our writeback controller.
- 	 */
- 	bool feeds_txp;
-+
-+	/**
-+	 * @irq_lock: Spinlock protecting the resources shared between
-+	 * the atomic code and our vblank handler.
-+	 */
-+	spinlock_t irq_lock;
-+
-+	/**
-+	 * @current_dlist: Start offset of the display list currently
-+	 * set in the HVS for that CRTC. Protected by @irq_lock, and
-+	 * copied in vc4_hvs_update_dlist() for the CRTC interrupt
-+	 * handler to have access to that value.
-+	 */
-+	unsigned int current_dlist;
- };
- 
- static inline struct vc4_crtc *
---- a/drivers/gpu/drm/vc4/vc4_hvs.c
-+++ b/drivers/gpu/drm/vc4/vc4_hvs.c
-@@ -365,10 +365,9 @@ static void vc4_hvs_update_dlist(struct
- 	struct vc4_dev *vc4 = to_vc4_dev(dev);
- 	struct vc4_crtc *vc4_crtc = to_vc4_crtc(crtc);
- 	struct vc4_crtc_state *vc4_state = to_vc4_crtc_state(crtc->state);
-+	unsigned long flags;
- 
- 	if (crtc->state->event) {
--		unsigned long flags;
+-	dev_set_drvdata(&chip->dev, priv);
 -
- 		crtc->state->event->pipe = drm_crtc_index(crtc);
- 
- 		WARN_ON(drm_crtc_vblank_get(crtc) != 0);
-@@ -388,6 +387,10 @@ static void vc4_hvs_update_dlist(struct
- 		HVS_WRITE(SCALER_DISPLISTX(vc4_state->assigned_channel),
- 			  vc4_state->mm.start);
- 	}
-+
-+	spin_lock_irqsave(&vc4_crtc->irq_lock, flags);
-+	vc4_crtc->current_dlist = vc4_state->mm.start;
-+	spin_unlock_irqrestore(&vc4_crtc->irq_lock, flags);
- }
- 
- void vc4_hvs_atomic_enable(struct drm_crtc *crtc,
+ 	if (is_bsw()) {
+ 		priv->ilb_base_addr = ioremap(INTEL_LEGACY_BLK_BASE_ADDR,
+ 					ILB_REMAP_SIZE);
 
 
