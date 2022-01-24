@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E7A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AD7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376999AbiAXUEq (ORCPT
+        id S1377072AbiAXUEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:04:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44108 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356637AbiAXTqw (ORCPT
+        Mon, 24 Jan 2022 15:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356705AbiAXTrE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:46:52 -0500
+        Mon, 24 Jan 2022 14:47:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001EEC038ADC;
+        Mon, 24 Jan 2022 11:22:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 311DA6153F;
-        Mon, 24 Jan 2022 19:46:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0158EC340E5;
-        Mon, 24 Jan 2022 19:46:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B9FEB8123F;
+        Mon, 24 Jan 2022 19:22:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9EFFC340E5;
+        Mon, 24 Jan 2022 19:22:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053611;
-        bh=+foyvL7izzsuiv8nrfS8Meoqvb9x4WJelribnKioMGE=;
+        s=korg; t=1643052163;
+        bh=mJ7EnTXoE+3TzNWISKOxh44ytbpCqkpAZk/lHkYoLTw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IuxQwtSvkA8sl1rm0bhpFsRlIO3Sjle2GTkGSlwNhXMnJMXv4DE55HgRTGlSi4D7y
-         lr4+w6/F5rYroTzP253Ztz85i4U/8o0soDabtHxwKYx2Ca0SzSl0chkiT40TJsVNRb
-         eG2Ot+MARKSb05iE352wb1ssO8q0wFfFPWY5Rois=
+        b=sReFaDQoXuD53fU5UKCSfXMc6vC61oD/njv/23l5UTwltyP9+ovLcP0vjK4cvRH2U
+         pQWrwSDoM5iHaWJb0cwpV5Sxm8GlPFi7QLcDkPsTwSHXrRhMxY0odsZBjmYxP9S+ee
+         RPPzNLV5uS5nrIcBimzEBID12Oh09ZtGtnNeJjIg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 121/563] ACPI: EC: Rework flushing of EC work while suspended to idle
-Date:   Mon, 24 Jan 2022 19:38:06 +0100
-Message-Id: <20220124184028.594728190@linuxfoundation.org>
+        KaiChieh Chuang <kaichieh.chuang@mediatek.com>,
+        Mark Brown <broonie@kernel.org>,
+        Will McVicker <willmcvicker@google.com>
+Subject: [PATCH 4.19 208/239] ASoC: dpcm: prevent snd_soc_dpcm use after free
+Date:   Mon, 24 Jan 2022 19:44:06 +0100
+Message-Id: <20220124183949.720547325@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,218 +51,273 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
 
-[ Upstream commit 4a9af6cac050dce2e895ec3205c4615383ad9112 ]
+commit a9764869779081e8bf24da07ac040e8f3efcf13a upstream.
 
-The flushing of pending work in the EC driver uses drain_workqueue()
-to flush the event handling work that can requeue itself via
-advance_transaction(), but this is problematic, because that
-work may also be requeued from the query workqueue.
+The dpcm get from fe_clients/be_clients
+may be free before use
 
-Namely, if an EC transaction is carried out during the execution of
-a query handler, it involves calling advance_transaction() which
-may queue up the event handling work again.  This causes the kernel
-to complain about attempts to add a work item to the EC event
-workqueue while it is being drained and worst-case it may cause a
-valid event to be skipped.
+Add a spin lock at snd_soc_card level,
+to protect the dpcm instance.
+The lock may be used in atomic context, so use spin lock.
 
-To avoid this problem, introduce two new counters, events_in_progress
-and queries_in_progress, incremented when a work item is queued on
-the event workqueue or the query workqueue, respectively, and
-decremented at the end of the corresponding work function, and make
-acpi_ec_dispatch_gpe() the workqueues in a loop until the both of
-these counters are zero (or system wakeup is pending) instead of
-calling acpi_ec_flush_work().
+Use irq spin lock version,
+since the lock may be used in interrupts.
 
-At the same time, change __acpi_ec_flush_work() to call
-flush_workqueue() instead of drain_workqueue() to flush the event
-workqueue.
+possible race condition between
+void dpcm_be_disconnect(
+	...
+	list_del(&dpcm->list_be);
+	list_del(&dpcm->list_fe);
+	kfree(dpcm);
+	...
 
-While at it, use the observation that the work item queued in
-acpi_ec_query() cannot be pending at that time, because it is used
-only once, to simplify the code in there.
+and
+	for_each_dpcm_fe()
+	for_each_dpcm_be*()
 
-Additionally, clean up a comment in acpi_ec_query() and adjust white
-space in acpi_ec_event_processor().
+race condition example
+Thread 1:
+    snd_soc_dapm_mixer_update_power()
+        -> soc_dpcm_runtime_update()
+            -> dpcm_be_disconnect()
+                -> kfree(dpcm);
+Thread 2:
+    dpcm_fe_dai_trigger()
+        -> dpcm_be_dai_trigger()
+            -> snd_soc_dpcm_can_be_free_stop()
+                -> if (dpcm->fe == fe)
 
-Fixes: f0ac20c3f613 ("ACPI: EC: Fix flushing of pending work")
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Excpetion Scenario:
+	two FE link to same BE
+	FE1 -> BE
+	FE2 ->
+
+	Thread 1: switch of mixer between FE2 -> BE
+	Thread 2: pcm_stop FE1
+
+Exception:
+
+Unable to handle kernel paging request at virtual address dead0000000000e0
+
+pc=<> [<ffffff8960e2cd10>] dpcm_be_dai_trigger+0x29c/0x47c
+	sound/soc/soc-pcm.c:3226
+		if (dpcm->fe == fe)
+lr=<> [<ffffff8960e2f694>] dpcm_fe_dai_do_trigger+0x94/0x26c
+
+Backtrace:
+[<ffffff89602dba80>] notify_die+0x68/0xb8
+[<ffffff896028c7dc>] die+0x118/0x2a8
+[<ffffff89602a2f84>] __do_kernel_fault+0x13c/0x14c
+[<ffffff89602a27f4>] do_translation_fault+0x64/0xa0
+[<ffffff8960280cf8>] do_mem_abort+0x4c/0xd0
+[<ffffff8960282ad0>] el1_da+0x24/0x40
+[<ffffff8960e2cd10>] dpcm_be_dai_trigger+0x29c/0x47c
+[<ffffff8960e2f694>] dpcm_fe_dai_do_trigger+0x94/0x26c
+[<ffffff8960e2edec>] dpcm_fe_dai_trigger+0x3c/0x44
+[<ffffff8960de5588>] snd_pcm_do_stop+0x50/0x5c
+[<ffffff8960dded24>] snd_pcm_action+0xb4/0x13c
+[<ffffff8960ddfdb4>] snd_pcm_drop+0xa0/0x128
+[<ffffff8960de69bc>] snd_pcm_common_ioctl+0x9d8/0x30f0
+[<ffffff8960de1cac>] snd_pcm_ioctl_compat+0x29c/0x2f14
+[<ffffff89604c9d60>] compat_SyS_ioctl+0x128/0x244
+[<ffffff8960283740>] el0_svc_naked+0x34/0x38
+[<ffffffffffffffff>] 0xffffffffffffffff
+
+Signed-off-by: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+Signed-off-by: Mark Brown <broonie@kernel.org>
+[willmcvicker: move spinlock to bottom of struct snd_soc_card]
+Signed-off-by: Will McVicker <willmcvicker@google.com>
+Cc: stable@vger.kernel.org # 4.19+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/acpi/ec.c       | 57 +++++++++++++++++++++++++++++++----------
- drivers/acpi/internal.h |  2 ++
- 2 files changed, 45 insertions(+), 14 deletions(-)
+ include/sound/soc.h  |    2 ++
+ sound/soc/soc-core.c |    1 +
+ sound/soc/soc-pcm.c  |   40 +++++++++++++++++++++++++++++++++-------
+ 3 files changed, 36 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
-index be3e0921a6c00..3f2e5ea9ab6b7 100644
---- a/drivers/acpi/ec.c
-+++ b/drivers/acpi/ec.c
-@@ -166,6 +166,7 @@ struct acpi_ec_query {
- 	struct transaction transaction;
- 	struct work_struct work;
- 	struct acpi_ec_query_handler *handler;
-+	struct acpi_ec *ec;
+--- a/include/sound/soc.h
++++ b/include/sound/soc.h
+@@ -1113,6 +1113,8 @@ struct snd_soc_card {
+ 	u32 pop_time;
+ 
+ 	void *drvdata;
++
++	spinlock_t dpcm_lock;
  };
  
- static int acpi_ec_query(struct acpi_ec *ec, u8 *data);
-@@ -469,6 +470,7 @@ static void acpi_ec_submit_query(struct acpi_ec *ec)
- 		ec_dbg_evt("Command(%s) submitted/blocked",
- 			   acpi_ec_cmd_string(ACPI_EC_COMMAND_QUERY));
- 		ec->nr_pending_queries++;
-+		ec->events_in_progress++;
- 		queue_work(ec_wq, &ec->work);
+ /* SoC machine DAI configuration, glues a codec and cpu DAI together */
+--- a/sound/soc/soc-core.c
++++ b/sound/soc/soc-core.c
+@@ -2752,6 +2752,7 @@ int snd_soc_register_card(struct snd_soc
+ 	card->instantiated = 0;
+ 	mutex_init(&card->mutex);
+ 	mutex_init(&card->dapm_mutex);
++	spin_lock_init(&card->dpcm_lock);
+ 
+ 	ret = snd_soc_instantiate_card(card);
+ 	if (ret != 0)
+--- a/sound/soc/soc-pcm.c
++++ b/sound/soc/soc-pcm.c
+@@ -1221,6 +1221,7 @@ static int dpcm_be_connect(struct snd_so
+ 		struct snd_soc_pcm_runtime *be, int stream)
+ {
+ 	struct snd_soc_dpcm *dpcm;
++	unsigned long flags;
+ 
+ 	/* only add new dpcms */
+ 	list_for_each_entry(dpcm, &fe->dpcm[stream].be_clients, list_be) {
+@@ -1236,8 +1237,10 @@ static int dpcm_be_connect(struct snd_so
+ 	dpcm->fe = fe;
+ 	be->dpcm[stream].runtime = fe->dpcm[stream].runtime;
+ 	dpcm->state = SND_SOC_DPCM_LINK_STATE_NEW;
++	spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 	list_add(&dpcm->list_be, &fe->dpcm[stream].be_clients);
+ 	list_add(&dpcm->list_fe, &be->dpcm[stream].fe_clients);
++	spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
+ 
+ 	dev_dbg(fe->dev, "connected new DPCM %s path %s %s %s\n",
+ 			stream ? "capture" : "playback",  fe->dai_link->name,
+@@ -1283,6 +1286,7 @@ static void dpcm_be_reparent(struct snd_
+ void dpcm_be_disconnect(struct snd_soc_pcm_runtime *fe, int stream)
+ {
+ 	struct snd_soc_dpcm *dpcm, *d;
++	unsigned long flags;
+ 
+ 	list_for_each_entry_safe(dpcm, d, &fe->dpcm[stream].be_clients, list_be) {
+ 		dev_dbg(fe->dev, "ASoC: BE %s disconnect check for %s\n",
+@@ -1302,8 +1306,10 @@ void dpcm_be_disconnect(struct snd_soc_p
+ #ifdef CONFIG_DEBUG_FS
+ 		debugfs_remove(dpcm->debugfs_state);
+ #endif
++		spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 		list_del(&dpcm->list_be);
+ 		list_del(&dpcm->list_fe);
++		spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
+ 		kfree(dpcm);
  	}
  }
-@@ -535,7 +537,7 @@ static void acpi_ec_enable_event(struct acpi_ec *ec)
- #ifdef CONFIG_PM_SLEEP
- static void __acpi_ec_flush_work(void)
+@@ -1557,10 +1563,13 @@ int dpcm_process_paths(struct snd_soc_pc
+ void dpcm_clear_pending_state(struct snd_soc_pcm_runtime *fe, int stream)
  {
--	drain_workqueue(ec_wq); /* flush ec->work */
-+	flush_workqueue(ec_wq); /* flush ec->work */
- 	flush_workqueue(ec_query_wq); /* flush queries */
+ 	struct snd_soc_dpcm *dpcm;
++	unsigned long flags;
+ 
++	spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 	list_for_each_entry(dpcm, &fe->dpcm[stream].be_clients, list_be)
+ 		dpcm->be->dpcm[stream].runtime_update =
+ 						SND_SOC_DPCM_UPDATE_NO;
++	spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
  }
  
-@@ -1116,7 +1118,7 @@ void acpi_ec_remove_query_handler(struct acpi_ec *ec, u8 query_bit)
- }
- EXPORT_SYMBOL_GPL(acpi_ec_remove_query_handler);
+ static void dpcm_be_dai_startup_unwind(struct snd_soc_pcm_runtime *fe,
+@@ -2626,6 +2635,7 @@ static int dpcm_run_update_startup(struc
+ 	struct snd_soc_dpcm *dpcm;
+ 	enum snd_soc_dpcm_trigger trigger = fe->dai_link->trigger[stream];
+ 	int ret;
++	unsigned long flags;
  
--static struct acpi_ec_query *acpi_ec_create_query(u8 *pval)
-+static struct acpi_ec_query *acpi_ec_create_query(struct acpi_ec *ec, u8 *pval)
+ 	dev_dbg(fe->dev, "ASoC: runtime %s open on FE %s\n",
+ 			stream ? "capture" : "playback", fe->dai_link->name);
+@@ -2695,11 +2705,13 @@ close:
+ 	dpcm_be_dai_shutdown(fe, stream);
+ disconnect:
+ 	/* disconnect any non started BEs */
++	spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 	list_for_each_entry(dpcm, &fe->dpcm[stream].be_clients, list_be) {
+ 		struct snd_soc_pcm_runtime *be = dpcm->be;
+ 		if (be->dpcm[stream].state != SND_SOC_DPCM_STATE_START)
+ 				dpcm->state = SND_SOC_DPCM_LINK_STATE_FREE;
+ 	}
++	spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
+ 
+ 	return ret;
+ }
+@@ -3278,7 +3290,10 @@ int snd_soc_dpcm_can_be_free_stop(struct
  {
- 	struct acpi_ec_query *q;
- 	struct transaction *t;
-@@ -1124,11 +1126,13 @@ static struct acpi_ec_query *acpi_ec_create_query(u8 *pval)
- 	q = kzalloc(sizeof (struct acpi_ec_query), GFP_KERNEL);
- 	if (!q)
- 		return NULL;
-+
- 	INIT_WORK(&q->work, acpi_ec_event_processor);
- 	t = &q->transaction;
- 	t->command = ACPI_EC_COMMAND_QUERY;
- 	t->rdata = pval;
- 	t->rlen = 1;
-+	q->ec = ec;
- 	return q;
- }
+ 	struct snd_soc_dpcm *dpcm;
+ 	int state;
++	int ret = 1;
++	unsigned long flags;
  
-@@ -1145,13 +1149,21 @@ static void acpi_ec_event_processor(struct work_struct *work)
++	spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 	list_for_each_entry(dpcm, &be->dpcm[stream].fe_clients, list_fe) {
+ 
+ 		if (dpcm->fe == fe)
+@@ -3287,12 +3302,15 @@ int snd_soc_dpcm_can_be_free_stop(struct
+ 		state = dpcm->fe->dpcm[stream].state;
+ 		if (state == SND_SOC_DPCM_STATE_START ||
+ 			state == SND_SOC_DPCM_STATE_PAUSED ||
+-			state == SND_SOC_DPCM_STATE_SUSPEND)
+-			return 0;
++			state == SND_SOC_DPCM_STATE_SUSPEND) {
++			ret = 0;
++			break;
++		}
+ 	}
++	spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
+ 
+ 	/* it's safe to free/stop this BE DAI */
+-	return 1;
++	return ret;
+ }
+ EXPORT_SYMBOL_GPL(snd_soc_dpcm_can_be_free_stop);
+ 
+@@ -3305,7 +3323,10 @@ int snd_soc_dpcm_can_be_params(struct sn
  {
- 	struct acpi_ec_query *q = container_of(work, struct acpi_ec_query, work);
- 	struct acpi_ec_query_handler *handler = q->handler;
-+	struct acpi_ec *ec = q->ec;
+ 	struct snd_soc_dpcm *dpcm;
+ 	int state;
++	int ret = 1;
++	unsigned long flags;
  
- 	ec_dbg_evt("Query(0x%02x) started", handler->query_bit);
-+
- 	if (handler->func)
- 		handler->func(handler->data);
- 	else if (handler->handle)
- 		acpi_evaluate_object(handler->handle, NULL, NULL, NULL);
-+
- 	ec_dbg_evt("Query(0x%02x) stopped", handler->query_bit);
-+
-+	spin_lock_irq(&ec->lock);
-+	ec->queries_in_progress--;
-+	spin_unlock_irq(&ec->lock);
-+
- 	acpi_ec_delete_query(q);
++	spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 	list_for_each_entry(dpcm, &be->dpcm[stream].fe_clients, list_fe) {
+ 
+ 		if (dpcm->fe == fe)
+@@ -3315,12 +3336,15 @@ int snd_soc_dpcm_can_be_params(struct sn
+ 		if (state == SND_SOC_DPCM_STATE_START ||
+ 			state == SND_SOC_DPCM_STATE_PAUSED ||
+ 			state == SND_SOC_DPCM_STATE_SUSPEND ||
+-			state == SND_SOC_DPCM_STATE_PREPARE)
+-			return 0;
++			state == SND_SOC_DPCM_STATE_PREPARE) {
++			ret = 0;
++			break;
++		}
+ 	}
++	spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
+ 
+ 	/* it's safe to change hw_params */
+-	return 1;
++	return ret;
  }
+ EXPORT_SYMBOL_GPL(snd_soc_dpcm_can_be_params);
  
-@@ -1161,7 +1173,7 @@ static int acpi_ec_query(struct acpi_ec *ec, u8 *data)
- 	int result;
- 	struct acpi_ec_query *q;
+@@ -3359,6 +3383,7 @@ static ssize_t dpcm_show_state(struct sn
+ 	struct snd_pcm_hw_params *params = &fe->dpcm[stream].hw_params;
+ 	struct snd_soc_dpcm *dpcm;
+ 	ssize_t offset = 0;
++	unsigned long flags;
  
--	q = acpi_ec_create_query(&value);
-+	q = acpi_ec_create_query(ec, &value);
- 	if (!q)
- 		return -ENOMEM;
- 
-@@ -1183,19 +1195,20 @@ static int acpi_ec_query(struct acpi_ec *ec, u8 *data)
+ 	/* FE state */
+ 	offset += scnprintf(buf + offset, size - offset,
+@@ -3386,6 +3411,7 @@ static ssize_t dpcm_show_state(struct sn
+ 		goto out;
  	}
  
- 	/*
--	 * It is reported that _Qxx are evaluated in a parallel way on
--	 * Windows:
-+	 * It is reported that _Qxx are evaluated in a parallel way on Windows:
- 	 * https://bugzilla.kernel.org/show_bug.cgi?id=94411
- 	 *
--	 * Put this log entry before schedule_work() in order to make
--	 * it appearing before any other log entries occurred during the
--	 * work queue execution.
-+	 * Put this log entry before queue_work() to make it appear in the log
-+	 * before any other messages emitted during workqueue handling.
- 	 */
- 	ec_dbg_evt("Query(0x%02x) scheduled", value);
--	if (!queue_work(ec_query_wq, &q->work)) {
--		ec_dbg_evt("Query(0x%02x) overlapped", value);
--		result = -EBUSY;
--	}
-+
-+	spin_lock_irq(&ec->lock);
-+
-+	ec->queries_in_progress++;
-+	queue_work(ec_query_wq, &q->work);
-+
-+	spin_unlock_irq(&ec->lock);
- 
- err_exit:
- 	if (result)
-@@ -1253,6 +1266,10 @@ static void acpi_ec_event_handler(struct work_struct *work)
- 	ec_dbg_evt("Event stopped");
- 
- 	acpi_ec_check_event(ec);
-+
-+	spin_lock_irqsave(&ec->lock, flags);
-+	ec->events_in_progress--;
-+	spin_unlock_irqrestore(&ec->lock, flags);
++	spin_lock_irqsave(&fe->card->dpcm_lock, flags);
+ 	list_for_each_entry(dpcm, &fe->dpcm[stream].be_clients, list_be) {
+ 		struct snd_soc_pcm_runtime *be = dpcm->be;
+ 		params = &dpcm->hw_params;
+@@ -3406,7 +3432,7 @@ static ssize_t dpcm_show_state(struct sn
+ 				params_channels(params),
+ 				params_rate(params));
+ 	}
+-
++	spin_unlock_irqrestore(&fe->card->dpcm_lock, flags);
+ out:
+ 	return offset;
  }
- 
- static void acpi_ec_handle_interrupt(struct acpi_ec *ec)
-@@ -2034,6 +2051,7 @@ void acpi_ec_set_gpe_wake_mask(u8 action)
- 
- bool acpi_ec_dispatch_gpe(void)
- {
-+	bool work_in_progress;
- 	u32 ret;
- 
- 	if (!first_ec)
-@@ -2054,8 +2072,19 @@ bool acpi_ec_dispatch_gpe(void)
- 	if (ret == ACPI_INTERRUPT_HANDLED)
- 		pm_pr_dbg("ACPI EC GPE dispatched\n");
- 
--	/* Flush the event and query workqueues. */
--	acpi_ec_flush_work();
-+	/* Drain EC work. */
-+	do {
-+		acpi_ec_flush_work();
-+
-+		pm_pr_dbg("ACPI EC work flushed\n");
-+
-+		spin_lock_irq(&first_ec->lock);
-+
-+		work_in_progress = first_ec->events_in_progress +
-+			first_ec->queries_in_progress > 0;
-+
-+		spin_unlock_irq(&first_ec->lock);
-+	} while (work_in_progress && !pm_wakeup_pending());
- 
- 	return false;
- }
-diff --git a/drivers/acpi/internal.h b/drivers/acpi/internal.h
-index a958ad60a3394..125e4901c9b47 100644
---- a/drivers/acpi/internal.h
-+++ b/drivers/acpi/internal.h
-@@ -184,6 +184,8 @@ struct acpi_ec {
- 	struct work_struct work;
- 	unsigned long timestamp;
- 	unsigned long nr_pending_queries;
-+	unsigned int events_in_progress;
-+	unsigned int queries_in_progress;
- 	bool busy_polling;
- 	unsigned int polling_guard;
- };
--- 
-2.34.1
-
 
 
