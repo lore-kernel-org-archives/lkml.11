@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E80C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DB6C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386237AbiAXUfR (ORCPT
+        id S1386151AbiAXUfN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40694 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355508AbiAXUNn (ORCPT
+        Mon, 24 Jan 2022 15:35:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354861AbiAXUMv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:43 -0500
+        Mon, 24 Jan 2022 15:12:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E95CDC028C2B;
+        Mon, 24 Jan 2022 11:34:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96AC66091B;
-        Mon, 24 Jan 2022 20:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CD4FC340E5;
-        Mon, 24 Jan 2022 20:13:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F396141C;
+        Mon, 24 Jan 2022 19:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CBA8C340E5;
+        Mon, 24 Jan 2022 19:34:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055221;
-        bh=21wLfuqbveCS5JVAQjiuxwd7PXQ2jDvYYmglTZT6T1o=;
+        s=korg; t=1643052844;
+        bh=XtiamZuhFQg/KSWaToglrULMfVhgN5zJmScIv/wuNgs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SG5OOckxHMkZFuTiruYg43jr9f+VIafaxwImUDN9yhJtEvbP350qxNO+TkNVepI3r
-         FvNnqJCZPgeHOocKhoiKp9DXk4KJI4pdyuIWVY71q61xiFaJgfMgbtZo8W4jzIxM4K
-         R8gzD9FTk3qHbNCqYEg5YDzEE63pswxoPhrzOB+A=
+        b=JHhe+c84IR0fW7CDCPmKgZtgfCslukwlWYO6Kf8DAoQfWiiwrOezC99RPpMvGlhRS
+         SsVkdQ7NKh1iedZQAFet9EmWY+jDAAUo1j1x81m0OnZIDsoPjDCHiKmG3p6fCztPjH
+         FXzZyxZ+gr1ZcuYdtjhEkZXEi5pu0ULe5bJo3jWI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 047/846] media: s2255: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:32:44 +0100
-Message-Id: <20220124184102.569859643@linuxfoundation.org>
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 192/320] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 24 Jan 2022 19:42:56 +0100
+Message-Id: <20220124184000.180649765@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,45 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-commit f71d272ad4e354097020a4e6b1dc6e4b59feb50f upstream.
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
 
-Use the common control-message timeout define for the five-second
-timeouts.
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
 
-Fixes: 38f993ad8b1f ("V4L/DVB (8125): This driver adds support for the Sensoray 2255 devices.")
-Cc: stable@vger.kernel.org      # 2.6.27
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
+
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/s2255/s2255drv.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/media/usb/s2255/s2255drv.c
-+++ b/drivers/media/usb/s2255/s2255drv.c
-@@ -1882,7 +1882,7 @@ static long s2255_vendor_req(struct s225
- 				    USB_TYPE_VENDOR | USB_RECIP_DEVICE |
- 				    USB_DIR_IN,
- 				    Value, Index, buf,
--				    TransferBufferLength, HZ * 5);
-+				    TransferBufferLength, USB_CTRL_SET_TIMEOUT);
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 0bf33786fc5c5..9e0791332ef38 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -626,6 +626,8 @@ try_again:
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
  
- 		if (r >= 0)
- 			memcpy(TransferBuffer, buf, TransferBufferLength);
-@@ -1891,7 +1891,7 @@ static long s2255_vendor_req(struct s225
- 		r = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
- 				    Request, USB_TYPE_VENDOR | USB_RECIP_DEVICE,
- 				    Value, Index, buf,
--				    TransferBufferLength, HZ * 5);
-+				    TransferBufferLength, USB_CTRL_SET_TIMEOUT);
++	card->ocr = ocr_card;
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -738,7 +740,7 @@ try_again:
+ 			goto mismatch;
+ 		}
  	}
- 	kfree(buf);
- 	return r;
+-	card->ocr = ocr_card;
++
+ 	mmc_fixup_device(card, sdio_fixup_methods);
+ 
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
+-- 
+2.34.1
+
 
 
