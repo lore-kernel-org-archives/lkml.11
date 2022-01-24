@@ -2,121 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9D57C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B08C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314460AbiAYCvC (ORCPT
+        id S1314482AbiAYCvF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445631AbiAXVEj (ORCPT
+        Mon, 24 Jan 2022 21:51:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55086 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445674AbiAXVEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:04:39 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F06C06808D
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:04:20 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id d1so16903230plh.10
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:04:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HWwbmK/pAa8TicZndugMntIsGVz9WaQyv1NGfSzTgcw=;
-        b=evyr4/5YrkVKxbwBNuvYxJPRCdA1sS+6XauE9QA/AOykrR1cFC5lAmQtnSW4Ni9gnD
-         HRxJURxVyLSZoQ/nFrB3dPmgsdCU8KkKuxmhjkd0VELhaN+Br1rppOIEfAwAx2mDVMWD
-         Hx6SOeIczWZB2HIfdkCHMLsgs3toX5mM6kres=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HWwbmK/pAa8TicZndugMntIsGVz9WaQyv1NGfSzTgcw=;
-        b=rpR1KNhxp4bLDBlQDMsrxUbaswUS2J4BLBqYdE0aDIMgJrON1fPDVWsqqPzCSQDsXR
-         ks++p10b1Zd28AjZEaTSJxn3ft4Ma0UuMN3euTrln3Fsx4EMS7DuvacOKNhUxxH/dtcZ
-         AqRjTezIWb/0QEIwMymArnN5MJbQ1PkLu4wS3GKVKBoxMf9YVKDllBpBaNYkkVEIc/gg
-         eATRabRmBMSPCBN7kV7BHHGOEVAViUKc8LxEa2CO8QkPZVP/VHvyd6wBKo82bfXph8Vv
-         u8UEY417lzgAgJqPLuk6WJhbLDBQlEoC+D6jrkQGDp2yx8gxND438mvSxeo0TNkWzGZq
-         hU4w==
-X-Gm-Message-State: AOAM532p3Sp2+CHDad/r+amt601d0NFs9EVoRTEhuwBKn4butIS7FE63
-        Kdloe8Y+mgAUx4wN7YLiQxsTcQ==
-X-Google-Smtp-Source: ABdhPJyey0HzmygEmv9p2/wz3TGvEUw5WhWIlrs4My5MbuEhhFNmubVbuxVL85Pw43NTudYXYZas3w==
-X-Received: by 2002:a17:902:8ec9:b0:149:8864:cfd4 with SMTP id x9-20020a1709028ec900b001498864cfd4mr15745741plo.16.1643054659774;
-        Mon, 24 Jan 2022 12:04:19 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id n34sm15246142pfv.209.2022.01.24.12.04.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:04:19 -0800 (PST)
-Date:   Mon, 24 Jan 2022 12:04:15 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arch@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
-        carnil@debian.org, "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: Re: [PATCH] Revert "Makefile: Do not quote value for
- CONFIG_CC_IMPLICIT_FALLTHROUGH"
-Message-ID: <202201241203.BC2D1B63@keescook>
-References: <20220120053100.408816-1-masahiroy@kernel.org>
- <CAKwvOd=52G2J2nXRbefjJ57B_ySZaZ6SD8UwwHziZMPoR6ABHQ@mail.gmail.com>
+        Mon, 24 Jan 2022 16:04:42 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32AFB60916;
+        Mon, 24 Jan 2022 21:04:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAA9C340E5;
+        Mon, 24 Jan 2022 21:04:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058278;
+        bh=0s33lcfy4P2jFzKILFRE4pEzm1ozOlLG3JQ6R6GELwE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UWrrlVXvWikm81fC6mbwm1uu1cbEGRaX5jJrz8HAge+Hm8hCNnzBx9J2eqEI7cpnv
+         l4wL3y+mGSnFooDMrsuDeECbW7T5oy6LKzmOFXeAbpjfct7o4Plpoim4HQlSucLkA/
+         +OlJnlv5tr84gG5YTxzFpyOnoVjmUjGr4LD1tqgw=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Reiji Watanabe <reijiw@google.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0238/1039] arm64: mte: DC {GVA,GZVA} shouldnt be used when DCZID_EL0.DZP == 1
+Date:   Mon, 24 Jan 2022 19:33:47 +0100
+Message-Id: <20220124184133.321609644@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOd=52G2J2nXRbefjJ57B_ySZaZ6SD8UwwHziZMPoR6ABHQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 11:55:43AM -0800, Nick Desaulniers wrote:
-> + Salvatore, Kees, Gustavo, Nathan
-> 
-> On Wed, Jan 19, 2022 at 9:31 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
-> >
-> > This reverts commit cd8c917a56f20f48748dd43d9ae3caff51d5b987.
-> >
-> > Commit 129ab0d2d9f3 ("kbuild: do not quote string values in
-> > include/config/auto.conf") provided the final solution.
+From: Reiji Watanabe <reijiw@google.com>
 
-Oh nice!
+[ Upstream commit 685e2564daa1493053fcd7f1dbed38b35ee2f3cb ]
 
-> >
-> > Now reverting the temporary workaround.
-> >
-> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
-> 
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Currently, mte_set_mem_tag_range() and mte_zero_clear_page_tags() use
+DC {GVA,GZVA} unconditionally.  But, they should make sure that
+DCZID_EL0.DZP, which indicates whether or not use of those instructions
+is prohibited, is zero when using those instructions.
+Use ST{G,ZG,Z2G} instead when DCZID_EL0.DZP == 1.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Fixes: 013bb59dbb7c ("arm64: mte: handle tags zeroing at page allocation time")
+Fixes: 3d0cca0b02ac ("kasan: speed up mte_set_mem_tag_range")
+Signed-off-by: Reiji Watanabe <reijiw@google.com>
+Link: https://lore.kernel.org/r/20211206004736.1520989-3-reijiw@google.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/include/asm/mte-kasan.h | 8 +++++---
+ arch/arm64/lib/mte.S               | 8 +++++++-
+ 2 files changed, 12 insertions(+), 4 deletions(-)
 
--Kees
-
-> 
-> > ---
-> >
-> >  Makefile | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/Makefile b/Makefile
-> > index 3f07f0f04475..c94559a97dca 100644
-> > --- a/Makefile
-> > +++ b/Makefile
-> > @@ -778,7 +778,7 @@ stackp-flags-$(CONFIG_STACKPROTECTOR_STRONG)      := -fstack-protector-strong
-> >  KBUILD_CFLAGS += $(stackp-flags-y)
-> >
-> >  KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
-> > -KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH:"%"=%)
-> > +KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
-> >
-> >  ifdef CONFIG_CC_IS_CLANG
-> >  KBUILD_CPPFLAGS += -Qunused-arguments
-> > --
-> > 2.32.0
-> >
-> 
-> 
-> -- 
-> Thanks,
-> ~Nick Desaulniers
-
+diff --git a/arch/arm64/include/asm/mte-kasan.h b/arch/arm64/include/asm/mte-kasan.h
+index 478b9bcf69ad1..e4704a403237e 100644
+--- a/arch/arm64/include/asm/mte-kasan.h
++++ b/arch/arm64/include/asm/mte-kasan.h
+@@ -84,10 +84,12 @@ static inline void __dc_gzva(u64 p)
+ static inline void mte_set_mem_tag_range(void *addr, size_t size, u8 tag,
+ 					 bool init)
+ {
+-	u64 curr, mask, dczid_bs, end1, end2, end3;
++	u64 curr, mask, dczid, dczid_bs, dczid_dzp, end1, end2, end3;
+ 
+ 	/* Read DC G(Z)VA block size from the system register. */
+-	dczid_bs = 4ul << (read_cpuid(DCZID_EL0) & 0xf);
++	dczid = read_cpuid(DCZID_EL0);
++	dczid_bs = 4ul << (dczid & 0xf);
++	dczid_dzp = (dczid >> 4) & 1;
+ 
+ 	curr = (u64)__tag_set(addr, tag);
+ 	mask = dczid_bs - 1;
+@@ -106,7 +108,7 @@ static inline void mte_set_mem_tag_range(void *addr, size_t size, u8 tag,
+ 	 */
+ #define SET_MEMTAG_RANGE(stg_post, dc_gva)		\
+ 	do {						\
+-		if (size >= 2 * dczid_bs) {		\
++		if (!dczid_dzp && size >= 2 * dczid_bs) {\
+ 			do {				\
+ 				curr = stg_post(curr);	\
+ 			} while (curr < end1);		\
+diff --git a/arch/arm64/lib/mte.S b/arch/arm64/lib/mte.S
+index e83643b3995f4..f531dcb95174a 100644
+--- a/arch/arm64/lib/mte.S
++++ b/arch/arm64/lib/mte.S
+@@ -43,17 +43,23 @@ SYM_FUNC_END(mte_clear_page_tags)
+  *	x0 - address to the beginning of the page
+  */
+ SYM_FUNC_START(mte_zero_clear_page_tags)
++	and	x0, x0, #(1 << MTE_TAG_SHIFT) - 1	// clear the tag
+ 	mrs	x1, dczid_el0
++	tbnz	x1, #4, 2f	// Branch if DC GZVA is prohibited
+ 	and	w1, w1, #0xf
+ 	mov	x2, #4
+ 	lsl	x1, x2, x1
+-	and	x0, x0, #(1 << MTE_TAG_SHIFT) - 1	// clear the tag
+ 
+ 1:	dc	gzva, x0
+ 	add	x0, x0, x1
+ 	tst	x0, #(PAGE_SIZE - 1)
+ 	b.ne	1b
+ 	ret
++
++2:	stz2g	x0, [x0], #(MTE_GRANULE_SIZE * 2)
++	tst	x0, #(PAGE_SIZE - 1)
++	b.ne	2b
++	ret
+ SYM_FUNC_END(mte_zero_clear_page_tags)
+ 
+ /*
 -- 
-Kees Cook
+2.34.1
+
+
+
