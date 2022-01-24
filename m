@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF3AC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBCDC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386032AbiAXUe5 (ORCPT
+        id S1386058AbiAXUe7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:34:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355441AbiAXUNl (ORCPT
+        Mon, 24 Jan 2022 15:34:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37168 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244247AbiAXUMn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9EAC06177A;
-        Mon, 24 Jan 2022 11:36:25 -0800 (PST)
+        Mon, 24 Jan 2022 15:12:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 648BAB81239;
-        Mon, 24 Jan 2022 19:36:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73F75C340E5;
-        Mon, 24 Jan 2022 19:36:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B30E6131F;
+        Mon, 24 Jan 2022 20:12:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68848C340E5;
+        Mon, 24 Jan 2022 20:12:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052984;
-        bh=kH5gr8b1BThPsKuYxjw5b3QRMMbMoAjYI1p+XaHELZw=;
+        s=korg; t=1643055163;
+        bh=n1nbNAay+RH+Ky8IQRliasEUD9HvunJnAqUvWTiXY/Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F/BGVKbcV9gazL3A9YkDNEwukInEL3wlfr/PgQ6bpxQcqLSW7x9dWxcFGGzvdUHID
-         8qtOLaEfmlIxs/UERMhW5NSsPb8b2y1/d14xm1E80VEIt0sdwoCOiq7561iCvl3Bg/
-         63l+66xEQlh/+OMRmuSlt9ER2u4+4TVCVnzYuwlw=
+        b=iWUahNJUkcXPaYy9W5jQoGXU32zi4fPmYXesepNz29AziG3LdZQaaK299v0/DmE/p
+         twA0RUuHo74Qg0AdIDm9JWK4Am8YhvpgsiduQJg24mTFE9ULm7qVlcUuWyz5pEWIT5
+         hqdeytSdzj7u/Mg/SxNs5Yqni0MKDpNiIOxDVVpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 236/320] scsi: lpfc: Trigger SLI4 firmware dump before doing driver cleanup
-Date:   Mon, 24 Jan 2022 19:43:40 +0100
-Message-Id: <20220124184002.011801274@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Ben Widawsky <ben.widawsky@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>
+Subject: [PATCH 5.15 061/846] cxl/pmem: Fix reference counting for delayed work
+Date:   Mon, 24 Jan 2022 19:32:58 +0100
+Message-Id: <20220124184103.076682307@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,188 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Dan Williams <dan.j.williams@intel.com>
 
-[ Upstream commit 7dd2e2a923173d637c272e483966be8e96a72b64 ]
+commit 08b9e0ab8af48895337192e683de44ab1e1b7427 upstream.
 
-Extraneous teardown routines are present in the firmware dump path causing
-altered states in firmware captures.
+There is a potential race between queue_work() returning and the
+queued-work running that could result in put_device() running before
+get_device(). Introduce the cxl_nvdimm_bridge_state_work() helper that
+takes the reference unconditionally, but drops it if no new work was
+queued, to keep the references balanced.
 
-When a firmware dump is requested via sysfs, trigger the dump immediately
-without tearing down structures and changing adapter state.
-
-The driver shall rely on pre-existing firmware error state clean up
-handlers to restore the adapter.
-
-Link: https://lore.kernel.org/r/20211204002644.116455-6-jsmart2021@gmail.com
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8fdcb1704f61 ("cxl/pmem: Add initial infrastructure for pmem support")
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Ben Widawsky <ben.widawsky@intel.com>
+Link: https://lore.kernel.org/r/163553734757.2509761.3305231863616785470.stgit@dwillia2-desk3.amr.corp.intel.com
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc.h         |  2 +-
- drivers/scsi/lpfc/lpfc_attr.c    | 62 ++++++++++++++++++++------------
- drivers/scsi/lpfc/lpfc_hbadisc.c |  8 ++++-
- drivers/scsi/lpfc/lpfc_sli.c     |  6 ----
- 4 files changed, 48 insertions(+), 30 deletions(-)
+ drivers/cxl/pmem.c |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
-index 8943d42fc406e..0b69f4f713778 100644
---- a/drivers/scsi/lpfc/lpfc.h
-+++ b/drivers/scsi/lpfc/lpfc.h
-@@ -735,7 +735,6 @@ struct lpfc_hba {
- #define HBA_DEVLOSS_TMO         0x2000 /* HBA in devloss timeout */
- #define HBA_RRQ_ACTIVE		0x4000 /* process the rrq active list */
- #define HBA_IOQ_FLUSH		0x8000 /* FCP/NVME I/O queues being flushed */
--#define HBA_FW_DUMP_OP		0x10000 /* Skips fn reset before FW dump */
- #define HBA_RECOVERABLE_UE	0x20000 /* Firmware supports recoverable UE */
- #define HBA_FORCED_LINK_SPEED	0x40000 /*
- 					 * Firmware supports Forced Link Speed
-@@ -744,6 +743,7 @@ struct lpfc_hba {
- #define HBA_FLOGI_ISSUED	0x100000 /* FLOGI was issued */
- #define HBA_DEFER_FLOGI		0x800000 /* Defer FLOGI till read_sparm cmpl */
+--- a/drivers/cxl/pmem.c
++++ b/drivers/cxl/pmem.c
+@@ -149,14 +149,24 @@ static void cxl_nvb_update_state(struct
+ 	put_device(&cxl_nvb->dev);
+ }
  
-+	struct completion *fw_dump_cmpl; /* cmpl event tracker for fw_dump */
- 	uint32_t fcp_ring_in_use; /* When polling test if intr-hndlr active*/
- 	struct lpfc_dmabuf slim2p;
- 
-diff --git a/drivers/scsi/lpfc/lpfc_attr.c b/drivers/scsi/lpfc/lpfc_attr.c
-index f0ecfe565660a..1c541a600149b 100644
---- a/drivers/scsi/lpfc/lpfc_attr.c
-+++ b/drivers/scsi/lpfc/lpfc_attr.c
-@@ -1537,25 +1537,25 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
- 	before_fc_flag = phba->pport->fc_flag;
- 	sriov_nr_virtfn = phba->cfg_sriov_nr_virtfn;
- 
--	/* Disable SR-IOV virtual functions if enabled */
--	if (phba->cfg_sriov_nr_virtfn) {
--		pci_disable_sriov(pdev);
--		phba->cfg_sriov_nr_virtfn = 0;
--	}
-+	if (opcode == LPFC_FW_DUMP) {
-+		init_completion(&online_compl);
-+		phba->fw_dump_cmpl = &online_compl;
-+	} else {
-+		/* Disable SR-IOV virtual functions if enabled */
-+		if (phba->cfg_sriov_nr_virtfn) {
-+			pci_disable_sriov(pdev);
-+			phba->cfg_sriov_nr_virtfn = 0;
-+		}
- 
--	if (opcode == LPFC_FW_DUMP)
--		phba->hba_flag |= HBA_FW_DUMP_OP;
-+		status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
- 
--	status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
-+		if (status != 0)
-+			return status;
- 
--	if (status != 0) {
--		phba->hba_flag &= ~HBA_FW_DUMP_OP;
--		return status;
-+		/* wait for the device to be quiesced before firmware reset */
-+		msleep(100);
- 	}
- 
--	/* wait for the device to be quiesced before firmware reset */
--	msleep(100);
--
- 	reg_val = readl(phba->sli4_hba.conf_regs_memmap_p +
- 			LPFC_CTL_PDEV_CTL_OFFSET);
- 
-@@ -1584,24 +1584,42 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
- 		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
- 				"3153 Fail to perform the requested "
- 				"access: x%x\n", reg_val);
-+		if (phba->fw_dump_cmpl)
-+			phba->fw_dump_cmpl = NULL;
- 		return rc;
- 	}
- 
- 	/* keep the original port state */
--	if (before_fc_flag & FC_OFFLINE_MODE)
--		goto out;
--
--	init_completion(&online_compl);
--	job_posted = lpfc_workq_post_event(phba, &status, &online_compl,
--					   LPFC_EVT_ONLINE);
--	if (!job_posted)
-+	if (before_fc_flag & FC_OFFLINE_MODE) {
-+		if (phba->fw_dump_cmpl)
-+			phba->fw_dump_cmpl = NULL;
- 		goto out;
-+	}
- 
--	wait_for_completion(&online_compl);
-+	/* Firmware dump will trigger an HA_ERATT event, and
-+	 * lpfc_handle_eratt_s4 routine already handles bringing the port back
-+	 * online.
++static void cxl_nvdimm_bridge_state_work(struct cxl_nvdimm_bridge *cxl_nvb)
++{
++	/*
++	 * Take a reference that the workqueue will drop if new work
++	 * gets queued.
 +	 */
-+	if (opcode == LPFC_FW_DUMP) {
-+		wait_for_completion(phba->fw_dump_cmpl);
-+	} else  {
-+		init_completion(&online_compl);
-+		job_posted = lpfc_workq_post_event(phba, &status, &online_compl,
-+						   LPFC_EVT_ONLINE);
-+		if (!job_posted)
-+			goto out;
- 
-+		wait_for_completion(&online_compl);
-+	}
- out:
- 	/* in any case, restore the virtual functions enabled as before */
- 	if (sriov_nr_virtfn) {
-+		/* If fw_dump was performed, first disable to clean up */
-+		if (opcode == LPFC_FW_DUMP) {
-+			pci_disable_sriov(pdev);
-+			phba->cfg_sriov_nr_virtfn = 0;
-+		}
++	get_device(&cxl_nvb->dev);
++	if (!queue_work(cxl_pmem_wq, &cxl_nvb->state_work))
++		put_device(&cxl_nvb->dev);
++}
 +
- 		sriov_err =
- 			lpfc_sli_probe_sriov_nr_virtfn(phba, sriov_nr_virtfn);
- 		if (!sriov_err)
-diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
-index 0dc1d56ff4709..0abce779fbb13 100644
---- a/drivers/scsi/lpfc/lpfc_hbadisc.c
-+++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
-@@ -628,10 +628,16 @@ lpfc_work_done(struct lpfc_hba *phba)
- 	if (phba->pci_dev_grp == LPFC_PCI_DEV_OC)
- 		lpfc_sli4_post_async_mbox(phba);
+ static void cxl_nvdimm_bridge_remove(struct device *dev)
+ {
+ 	struct cxl_nvdimm_bridge *cxl_nvb = to_cxl_nvdimm_bridge(dev);
  
--	if (ha_copy & HA_ERATT)
-+	if (ha_copy & HA_ERATT) {
- 		/* Handle the error attention event */
- 		lpfc_handle_eratt(phba);
+ 	if (cxl_nvb->state == CXL_NVB_ONLINE)
+ 		cxl_nvb->state = CXL_NVB_OFFLINE;
+-	if (queue_work(cxl_pmem_wq, &cxl_nvb->state_work))
+-		get_device(&cxl_nvb->dev);
++	cxl_nvdimm_bridge_state_work(cxl_nvb);
+ }
  
-+		if (phba->fw_dump_cmpl) {
-+			complete(phba->fw_dump_cmpl);
-+			phba->fw_dump_cmpl = NULL;
-+		}
-+	}
-+
- 	if (ha_copy & HA_MBATT)
- 		lpfc_sli_handle_mb_event(phba);
+ static int cxl_nvdimm_bridge_probe(struct device *dev)
+@@ -177,8 +187,7 @@ static int cxl_nvdimm_bridge_probe(struc
+ 	}
  
-diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
-index 51bab0979527b..bd908dd273078 100644
---- a/drivers/scsi/lpfc/lpfc_sli.c
-+++ b/drivers/scsi/lpfc/lpfc_sli.c
-@@ -4498,12 +4498,6 @@ lpfc_sli4_brdreset(struct lpfc_hba *phba)
- 	phba->fcf.fcf_flag = 0;
- 	spin_unlock_irq(&phba->hbalock);
+ 	cxl_nvb->state = CXL_NVB_ONLINE;
+-	if (queue_work(cxl_pmem_wq, &cxl_nvb->state_work))
+-		get_device(&cxl_nvb->dev);
++	cxl_nvdimm_bridge_state_work(cxl_nvb);
  
--	/* SLI4 INTF 2: if FW dump is being taken skip INIT_PORT */
--	if (phba->hba_flag & HBA_FW_DUMP_OP) {
--		phba->hba_flag &= ~HBA_FW_DUMP_OP;
--		return rc;
--	}
--
- 	/* Now physically reset the device */
- 	lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
- 			"0389 Performing PCI function reset!\n");
--- 
-2.34.1
-
+ 	return 0;
+ }
 
 
