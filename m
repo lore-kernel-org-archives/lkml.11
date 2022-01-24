@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E25A1C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB02C35273
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586065AbiAXWsE (ORCPT
+        id S1838719AbiAXWr5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:48:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56574 "EHLO
+        Mon, 24 Jan 2022 17:47:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458142AbiAXVmr (ORCPT
+        with ESMTP id S1458144AbiAXVmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:42:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3ADDC0612AC;
-        Mon, 24 Jan 2022 12:30:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8B8C07A955;
+        Mon, 24 Jan 2022 12:31:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8030561383;
-        Mon, 24 Jan 2022 20:30:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 601C3C340E5;
-        Mon, 24 Jan 2022 20:30:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29FB661383;
+        Mon, 24 Jan 2022 20:31:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0839AC340E7;
+        Mon, 24 Jan 2022 20:30:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056241;
-        bh=YsZqgbWDddXl7uHko3GTTgZImh2guF9pFKYmHcmK/CE=;
+        s=korg; t=1643056259;
+        bh=e9ukgO2HtZrPpeNCuBBCRIWPjwNXuYeZrknKf0Rh6RA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S4FYkf9FDmr6BwoOn8LhhNVzx9vin8TmjfXZdMyD03jCAw8m8uBKy0F/UUH4o6upt
-         Vy/MT229JKwrtNXyqO23OuJhAaQ2yL+xfE1CiIeBWA0KLpbsdzCRlaG+6bn+WBLbC5
-         YxdOIq3nlYTJz3AhWXQhte3oagq3iy3k2jFPajNE=
+        b=FgRrmsTKzTTTv/EGe2/6mLZcTDNyzgT2ZkUe4NjXOrhz68EM2VKuJ2JR42Mrod+KR
+         IjJJbCrVTEgw0RFCoJhjmB4aFEGucRNLDWdwZZYaxEHszfWLleRXbwg9HAIvwNLXqj
+         hZfOj8Unhwkj4ZPUDAe3oP5m99tPICIj2FK4Izu8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        stable@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 418/846] dmaengine: pxa/mmp: stop referencing config->slave_id
-Date:   Mon, 24 Jan 2022 19:38:55 +0100
-Message-Id: <20220124184115.395355279@linuxfoundation.org>
+Subject: [PATCH 5.15 424/846] ASoC: Intel: catpt: Test dmaengine_submit() result before moving on
+Date:   Mon, 24 Jan 2022 19:39:01 +0100
+Message-Id: <20220124184115.607866287@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,61 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Cezary Rojewski <cezary.rojewski@intel.com>
 
-[ Upstream commit 134c37fa250a87a7e77c80a7c59ae16c462e46e0 ]
+[ Upstream commit 2a9a72e290d4a4741e673f86b9fba9bfb319786d ]
 
-The last driver referencing the slave_id on Marvell PXA and MMP platforms
-was the SPI driver, but this stopped doing so a long time ago, so the
-TODO from the earlier patch can no be removed.
+After calling dmaengine_submit(), the submitted transfer descriptor
+belongs to the DMA engine. Pointer to that descriptor may no longer be
+valid after the call and should be tested before awaiting transfer
+completion.
 
-Fixes: b729bf34535e ("spi/pxa2xx: Don't use slave_id of dma_slave_config")
-Fixes: 13b3006b8ebd ("dma: mmp_pdma: add filter function")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20211122222203.4103644-7-arnd@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: Kevin Tian <kevin.tian@intel.com>
+Suggested-by: Dave Jiang <dave.jiang@intel.com>
+Fixes: 4fac9b31d0b9 ("ASoC: Intel: Add catpt base members")
+Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20211216115743.2130622-2-cezary.rojewski@intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/mmp_pdma.c | 6 ------
- drivers/dma/pxa_dma.c  | 7 -------
- 2 files changed, 13 deletions(-)
+ sound/soc/intel/catpt/dsp.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
-index 89f1814ff27a0..26d11885c50ec 100644
---- a/drivers/dma/mmp_pdma.c
-+++ b/drivers/dma/mmp_pdma.c
-@@ -727,12 +727,6 @@ static int mmp_pdma_config_write(struct dma_chan *dchan,
+diff --git a/sound/soc/intel/catpt/dsp.c b/sound/soc/intel/catpt/dsp.c
+index 9c5fd18f2600f..346bec0003066 100644
+--- a/sound/soc/intel/catpt/dsp.c
++++ b/sound/soc/intel/catpt/dsp.c
+@@ -65,6 +65,7 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
+ {
+ 	struct dma_async_tx_descriptor *desc;
+ 	enum dma_status status;
++	int ret;
  
- 	chan->dir = direction;
- 	chan->dev_addr = addr;
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (cfg->slave_id)
--		chan->drcmr = cfg->slave_id;
+ 	desc = dmaengine_prep_dma_memcpy(chan, dst_addr, src_addr, size,
+ 					 DMA_CTRL_ACK);
+@@ -77,13 +78,22 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
+ 	catpt_updatel_shim(cdev, HMDC,
+ 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id),
+ 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id));
+-	dmaengine_submit(desc);
++
++	ret = dma_submit_error(dmaengine_submit(desc));
++	if (ret) {
++		dev_err(cdev->dev, "submit tx failed: %d\n", ret);
++		goto clear_hdda;
++	}
++
+ 	status = dma_wait_for_async_tx(desc);
++	ret = (status == DMA_COMPLETE) ? 0 : -EPROTO;
++
++clear_hdda:
+ 	/* regardless of status, disable access to HOST memory in demand mode */
+ 	catpt_updatel_shim(cdev, HMDC,
+ 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id), 0);
  
- 	return 0;
+-	return (status == DMA_COMPLETE) ? 0 : -EPROTO;
++	return ret;
  }
-diff --git a/drivers/dma/pxa_dma.c b/drivers/dma/pxa_dma.c
-index 4a2a796e348c1..aa6e552249ab9 100644
---- a/drivers/dma/pxa_dma.c
-+++ b/drivers/dma/pxa_dma.c
-@@ -910,13 +910,6 @@ static void pxad_get_config(struct pxad_chan *chan,
- 		*dcmd |= PXA_DCMD_BURST16;
- 	else if (maxburst == 32)
- 		*dcmd |= PXA_DCMD_BURST32;
--
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (chan->cfg.slave_id)
--		chan->drcmr = chan->cfg.slave_id;
- }
  
- static struct dma_async_tx_descriptor *
+ int catpt_dma_memcpy_todsp(struct catpt_dev *cdev, struct dma_chan *chan,
 -- 
 2.34.1
 
