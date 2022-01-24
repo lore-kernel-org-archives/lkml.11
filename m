@@ -2,31 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C703C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D77FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234707AbiAXM62 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:58:28 -0500
-Received: from foss.arm.com ([217.140.110.172]:33100 "EHLO foss.arm.com"
+        id S242717AbiAXM50 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:57:26 -0500
+Received: from foss.arm.com ([217.140.110.172]:32844 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242846AbiAXM6W (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:58:22 -0500
+        id S242629AbiAXM5R (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:57:17 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 49FD9113E;
-        Mon, 24 Jan 2022 04:58:22 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id EF7A4D6E;
+        Mon, 24 Jan 2022 04:57:16 -0800 (PST)
 Received: from p8cg001049571a15.arm.com (unknown [10.163.43.190])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 09B913F774;
-        Mon, 24 Jan 2022 04:58:18 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 1590B3F774;
+        Mon, 24 Jan 2022 04:57:13 -0800 (PST)
 From:   Anshuman Khandual <anshuman.khandual@arm.com>
 To:     linux-mm@kvack.org
 Cc:     linux-kernel@vger.kernel.org, hch@infradead.org,
         akpm@linux-foundation.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Vineet Gupta <vgupta@kernel.org>,
-        linux-snps-arc@lists.infradead.org
-Subject: [RFC V1 18/31] arc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Mon, 24 Jan 2022 18:26:55 +0530
-Message-Id: <1643029028-12710-19-git-send-email-anshuman.khandual@arm.com>
+        Anshuman Khandual <anshuman.khandual@arm.com>
+Subject: [RFC V1 02/31] mm/mmap: Clarify protection_map[] indices
+Date:   Mon, 24 Jan 2022 18:26:39 +0530
+Message-Id: <1643029028-12710-3-git-send-email-anshuman.khandual@arm.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
 References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
@@ -34,109 +32,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
-macros can be dropped which are no longer needed.
+protection_map[] maps vm_flags access combinations into page protection
+value as defined by the platform via __PXXX and __SXXX macros. The array
+indices in protection_map[], represents vm_flags access combinations but
+it's not very intuitive to derive. This makes it clear and explicit.
 
-Cc: Vineet Gupta <vgupta@kernel.org>
-Cc: linux-snps-arc@lists.infradead.org
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: linux-mm@kvack.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
- arch/arc/Kconfig                          |  1 +
- arch/arc/include/asm/pgtable-bits-arcv2.h | 17 ----------
- arch/arc/mm/mmap.c                        | 41 +++++++++++++++++++++++
- 3 files changed, 42 insertions(+), 17 deletions(-)
+ mm/mmap.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arc/Kconfig b/arch/arc/Kconfig
-index 3c2a4753d09b..78ff0644b343 100644
---- a/arch/arc/Kconfig
-+++ b/arch/arc/Kconfig
-@@ -13,6 +13,7 @@ config ARC
- 	select ARCH_HAS_SETUP_DMA_OPS
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_SUPPORTS_ATOMIC_RMW if ARC_HAS_LLSC
- 	select ARCH_32BIT_OFF_T
- 	select BUILDTIME_TABLE_SORT
-diff --git a/arch/arc/include/asm/pgtable-bits-arcv2.h b/arch/arc/include/asm/pgtable-bits-arcv2.h
-index 183d23bc1e00..798308f4dbad 100644
---- a/arch/arc/include/asm/pgtable-bits-arcv2.h
-+++ b/arch/arc/include/asm/pgtable-bits-arcv2.h
-@@ -72,23 +72,6 @@
-  *     This is to enable COW mechanism
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 1e8fdb0b51ed..254d716220df 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -102,8 +102,22 @@ static void unmap_region(struct mm_struct *mm,
+  *								x: (yes) yes
   */
- 	/* xwr */
--#define __P000  PAGE_U_NONE
--#define __P001  PAGE_U_R
--#define __P010  PAGE_U_R	/* Pvt-W => !W */
--#define __P011  PAGE_U_R	/* Pvt-W => !W */
--#define __P100  PAGE_U_X_R	/* X => R */
--#define __P101  PAGE_U_X_R
--#define __P110  PAGE_U_X_R	/* Pvt-W => !W and X => R */
--#define __P111  PAGE_U_X_R	/* Pvt-W => !W */
--
--#define __S000  PAGE_U_NONE
--#define __S001  PAGE_U_R
--#define __S010  PAGE_U_W_R	/* W => R */
--#define __S011  PAGE_U_W_R
--#define __S100  PAGE_U_X_R	/* X => R */
--#define __S101  PAGE_U_X_R
--#define __S110  PAGE_U_X_W_R	/* X => R */
--#define __S111  PAGE_U_X_W_R
+ pgprot_t protection_map[16] __ro_after_init = {
+-	__P000, __P001, __P010, __P011, __P100, __P101, __P110, __P111,
+-	__S000, __S001, __S010, __S011, __S100, __S101, __S110, __S111
++	[VM_NONE]				= __P000,
++	[VM_READ]				= __P001,
++	[VM_WRITE]				= __P010,
++	[VM_READ|VM_WRITE]			= __P011,
++	[VM_EXEC]				= __P100,
++	[VM_EXEC|VM_READ]			= __P101,
++	[VM_EXEC|VM_WRITE]			= __P110,
++	[VM_EXEC|VM_READ|VM_WRITE]		= __P111,
++	[VM_SHARED]				= __S000,
++	[VM_SHARED|VM_READ]			= __S001,
++	[VM_SHARED|VM_WRITE]			= __S010,
++	[VM_SHARED|VM_READ|VM_WRITE]		= __S011,
++	[VM_SHARED|VM_EXEC]			= __S100,
++	[VM_SHARED|VM_READ|VM_EXEC]		= __S101,
++	[VM_SHARED|VM_WRITE|VM_EXEC]		= __S110,
++	[VM_SHARED|VM_READ|VM_WRITE|VM_EXEC]	= __S111
+ };
  
- #ifndef __ASSEMBLY__
- 
-diff --git a/arch/arc/mm/mmap.c b/arch/arc/mm/mmap.c
-index 722d26b94307..860b2fc91f55 100644
---- a/arch/arc/mm/mmap.c
-+++ b/arch/arc/mm/mmap.c
-@@ -74,3 +74,44 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
- 	info.align_offset = pgoff << PAGE_SHIFT;
- 	return vm_unmapped_area(&info);
- }
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
-+	case VM_NONE:
-+		return PAGE_U_NONE;
-+	case VM_READ:
-+		return PAGE_U_R;
-+	case VM_WRITE:
-+		return PAGE_U_R;
-+	case VM_READ | VM_WRITE:
-+		return PAGE_U_R;
-+	case VM_EXEC:
-+		return PAGE_U_X_R;
-+	case VM_EXEC | VM_READ:
-+		return PAGE_U_X_R;
-+	case VM_EXEC | VM_WRITE:
-+		return PAGE_U_X_R;
-+	case VM_EXEC | VM_READ | VM_WRITE:
-+		return PAGE_U_X_R;
-+	case VM_SHARED:
-+		return PAGE_U_NONE;
-+	case VM_SHARED | VM_READ:
-+		return PAGE_U_R;
-+	case VM_SHARED | VM_WRITE:
-+		return PAGE_U_W_R;
-+	case VM_SHARED | VM_READ | VM_WRITE:
-+		return PAGE_U_W_R;
-+	case VM_SHARED | VM_EXEC:
-+		return PAGE_U_X_R;
-+	case VM_SHARED | VM_EXEC | VM_READ:
-+		return PAGE_U_X_R;
-+	case VM_SHARED | VM_EXEC | VM_WRITE:
-+		return PAGE_U_X_W_R;
-+	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
-+		return PAGE_U_X_W_R;
-+	default:
-+		BUILD_BUG();
-+	}
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
+ #ifndef CONFIG_ARCH_HAS_FILTER_PGPROT
 -- 
 2.25.1
 
