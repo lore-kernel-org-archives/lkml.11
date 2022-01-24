@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6651C2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD182C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:12:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447252AbiAXVKR (ORCPT
+        id S1447234AbiAXVKO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33176 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388634AbiAXUjy (ORCPT
+        Mon, 24 Jan 2022 16:10:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46710 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390720AbiAXUqG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:39:54 -0500
+        Mon, 24 Jan 2022 15:46:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 436A461536;
-        Mon, 24 Jan 2022 20:39:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27993C340E5;
-        Mon, 24 Jan 2022 20:39:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31C84B81061;
+        Mon, 24 Jan 2022 20:46:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E2A1C340E5;
+        Mon, 24 Jan 2022 20:46:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056790;
-        bh=eZwEiXJyPGEonfCjOOp7aKHAaSn0sBKdsFPzaIWm9G4=;
+        s=korg; t=1643057163;
+        bh=1UkMZa/royLpHMxGh9IRPXpsoz9kl6dKbdO4wAyXQCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ffyFSdetoPrruAJ8SNAZiBsOIpNRkhtPrzryWqjI84vdTZOWROHFWBAUFsflT57Pn
-         F412fCuZOqqPt2ENSkMFCg5yDi7hEci5sdoAOQfrciUt7UhUjNOCYUqxm9GDO90Mq/
-         u2O6RXKFYe67USWUqX9Zs6aIA3wXEADS0SMg4PiQ=
+        b=2Pqtye1jbfVWluzV/MSxWVZLvYQ80GIYrpaeS3V/KSVGPzm0DxhMpPWfKDAoVeQVS
+         80Q4eYZ+2RV0RDJtVkWgtyKmjXz17LrK1MINnFo0IoM5jicNs8U8h/TeyfpepCt+JX
+         XpZU9IdafJUZosqmGroTkvony6pgrEvuQFiVovNQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 601/846] btrfs: remove BUG_ON(!eie) in find_parent_nodes
-Date:   Mon, 24 Jan 2022 19:41:58 +0100
-Message-Id: <20220124184121.768919225@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 689/846] device property: Fix fwnode_graph_devcon_match() fwnode leak
+Date:   Mon, 24 Jan 2022 19:43:26 +0100
+Message-Id: <20220124184124.825727206@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,54 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
+commit 4a7f4110f79163fd53ea65438041994ed615e3af upstream.
 
-If we're looking for leafs that point to a data extent we want to record
-the extent items that point at our bytenr.  At this point we have the
-reference and we know for a fact that this leaf should have a reference
-to our bytenr.  However if there's some sort of corruption we may not
-find any references to our leaf, and thus could end up with eie == NULL.
-Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
-mortals.
+For each endpoint it encounters, fwnode_graph_devcon_match() checks
+whether the endpoint's remote port parent device is available. If it is
+not, it ignores the endpoint but does not put the reference to the remote
+endpoint port parent fwnode. For available devices the fwnode handle
+reference is put as expected.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Put the reference for unavailable devices now.
+
+Fixes: 637e9e52b185 ("device connection: Find device connections also from device graphs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/backref.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/base/property.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index 6b4b0f105a572..8b090c40daf77 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1365,10 +1365,18 @@ again:
- 				goto out;
- 			if (!ret && extent_item_pos) {
- 				/*
--				 * we've recorded that parent, so we must extend
--				 * its inode list here
-+				 * We've recorded that parent, so we must extend
-+				 * its inode list here.
-+				 *
-+				 * However if there was corruption we may not
-+				 * have found an eie, return an error in this
-+				 * case.
- 				 */
--				BUG_ON(!eie);
-+				ASSERT(eie);
-+				if (!eie) {
-+					ret = -EUCLEAN;
-+					goto out;
-+				}
- 				while (eie->next)
- 					eie = eie->next;
- 				eie->next = ref->inode_list;
--- 
-2.34.1
-
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1269,8 +1269,10 @@ fwnode_graph_devcon_match(struct fwnode_
+ 
+ 	fwnode_graph_for_each_endpoint(fwnode, ep) {
+ 		node = fwnode_graph_get_remote_port_parent(ep);
+-		if (!fwnode_device_is_available(node))
++		if (!fwnode_device_is_available(node)) {
++			fwnode_handle_put(node);
+ 			continue;
++		}
+ 
+ 		ret = match(node, con_id, data);
+ 		fwnode_handle_put(node);
 
 
