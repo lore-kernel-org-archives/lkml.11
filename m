@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 464C8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0541DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352188AbiAXVeQ (ORCPT
+        id S1454959AbiAXVeO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:34:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50862 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444150AbiAXVAI (ORCPT
+        Mon, 24 Jan 2022 16:34:14 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:51024 "EHLO
+        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444056AbiAXU7z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:00:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6646C611DA;
-        Mon, 24 Jan 2022 21:00:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24851C340E5;
-        Mon, 24 Jan 2022 21:00:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058005;
-        bh=kucaGnne7cqZQPDqTUhLgDG6belnp+ejA+u9CyOrx/g=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HVb/01x37fk59ltfTuQxIqFiLS9sVvKG/bmE8fnFPNTGrtIEJzJYMvFcf7Joz73f2
-         Djfpnfm2Pir4WaMP4IXD35emQcxy0uEoIPtHF5AvqOjwRz8IGv6yBijNxxgv+wO8Xo
-         5VGV+mv1txw3Lwx7yBxkyO7pjmcybFeU22mzETo0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tirthendu Sarkar <tirthendu.sarkar@intel.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0149/1039] selftests/bpf: Fix xdpxceiver failures for no hugepages
-Date:   Mon, 24 Jan 2022 19:32:18 +0100
-Message-Id: <20220124184130.171764698@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:59:55 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 8EC1220124E;
+        Mon, 24 Jan 2022 20:33:30 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id B3FDE80E73; Mon, 24 Jan 2022 21:30:21 +0100 (CET)
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 6/6] hw_random: credit entropy for low quality sources of randomness
+Date:   Mon, 24 Jan 2022 21:29:51 +0100
+Message-Id: <20220124202951.28579-6-linux@dominikbrodowski.net>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220124202951.28579-1-linux@dominikbrodowski.net>
+References: <20220124202951.28579-1-linux@dominikbrodowski.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+In case the entropy quality is low, there may be less than one bit to
+credit in the call to add_hwgenerator_randomness(): The number of bytes
+returned by rng_get_data() multiplied by the current quality (in entropy
+bits per 1024 bits of input) must be larger than 128 to credit at least
+one bit. However, imx-rngc.c sets the quality to 19, but may return less
+than 32 bytes; hid_u2fzero.c sets the quality to 1; and users may override
+the quality setting manually.
 
-[ Upstream commit dd7f091fd22b1dce6c20e8f7769aa068ed88ac6d ]
+In case there is less than one bit to credit, keep track of it and add
+that credit to the next iteration.
 
-xsk_configure_umem() needs hugepages to work in unaligned mode. So when
-hugepages are not configured, 'unaligned' tests should be skipped which
-is determined by the helper function hugepages_present(). This function
-erroneously returns true with MAP_NORESERVE flag even when no hugepages
-are configured. The removal of this flag fixes the issue.
-
-The test TEST_TYPE_UNALIGNED_INV_DESC also needs to be skipped when
-there are no hugepages. However, this was not skipped as there was no
-check for presence of hugepages and hence was failing. The check to skip
-the test has now been added.
-
-Fixes: a4ba98dd0c69 (selftests: xsk: Add test for unaligned mode)
-Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20211117123613.22288-1-tirthendu.sarkar@intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/char/hw_random/core.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 6c7cf8aadc792..621342ec30c48 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -1219,7 +1219,7 @@ static bool hugepages_present(struct ifobject *ifobject)
- 	void *bufs;
+diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
+index bc9f95cbac92..6d7f05641c7c 100644
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -427,6 +427,7 @@ static int hwrng_fillfn(void *unused)
+ 	long rc;
  
- 	bufs = mmap(NULL, mmap_sz, PROT_READ | PROT_WRITE,
--		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE | MAP_HUGETLB, -1, 0);
-+		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
- 	if (bufs == MAP_FAILED)
- 		return false;
+ 	while (!kthread_should_stop()) {
++		size_t entropy, entropy_credit = 0; /* in 1/1024 of a bit */
+ 		struct hwrng *rng;
  
-@@ -1366,6 +1366,10 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
- 		testapp_invalid_desc(test);
- 		break;
- 	case TEST_TYPE_UNALIGNED_INV_DESC:
-+		if (!hugepages_present(test->ifobj_tx)) {
-+			ksft_test_result_skip("No 2M huge pages present.\n");
-+			return;
-+		}
- 		test_spec_set_name(test, "UNALIGNED_INV_DESC");
- 		test->ifobj_tx->umem->unaligned_mode = true;
- 		test->ifobj_rx->umem->unaligned_mode = true;
+ 		if (!current_quality)
+@@ -445,9 +446,17 @@ static int hwrng_fillfn(void *unused)
+ 			msleep_interruptible(10000);
+ 			continue;
+ 		}
++
++		/* If we cannot credit at least one bit of entropy,
++		 * keep track of the remainder for the next iteration
++		 */
++		entropy = rc * current_quality * 8 + entropy_credit;
++		if ((entropy >> 10) == 0)
++			entropy_credit = entropy;
++
+ 		/* Outside lock, sure, but y'know: randomness. */
+ 		add_hwgenerator_randomness((void *)rng_fillbuf, rc,
+-					   rc * current_quality * 8 >> 10);
++					   entropy >> 10);
+ 	}
+ 	hwrng_fill = NULL;
+ 	return 0;
 -- 
 2.34.1
-
-
 
