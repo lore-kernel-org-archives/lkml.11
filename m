@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A78EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:14:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F792C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:14:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448685AbiAXVNf (ORCPT
+        id S1448755AbiAXVNp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:13:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47080 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390927AbiAXUqk (ORCPT
+        Mon, 24 Jan 2022 16:13:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41496 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391087AbiAXUq5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:40 -0500
+        Mon, 24 Jan 2022 15:46:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96893B80FA1;
-        Mon, 24 Jan 2022 20:46:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC97EC340E5;
-        Mon, 24 Jan 2022 20:46:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AED5260B0B;
+        Mon, 24 Jan 2022 20:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98320C340E5;
+        Mon, 24 Jan 2022 20:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057198;
-        bh=BItfNGfUUbAV/nLpEBTDpo2VvhTunofOvRGfFxsF9mA=;
+        s=korg; t=1643057216;
+        bh=C0ltC4XK+lzZpfHNcWz3++UuYMDZj12sv+fI4U1loHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VLFVmRq3ZfcbmSJ8to4Dof/WNKa3XIE7lRN5Xw46n4mS3S018n3EjdWrjOHaeH8kF
-         2kGCj4GE8xVKolMOglbve1sUdkiz9er3aP33859RD/+i3Wrx0xDVXUCbXIkU/kfPhN
-         l3WEDk6ufCYHH2DVNcNWKx1N4KRH4h/O3NHaCxMc=
+        b=TzN8GWKkfW4KYsFWbIA/Ck/rzlktmirVQVHaRdpsNgOBm85QODo4wwWqpNkXwx4Ve
+         TVqmkHBCgE2VFvt2MsVMk9wDxkpheSfL6S7172mf/lHHYVy2GskrTwq+4hUVNVCcA0
+         G4IUTREAVuM8hELBO5rbQe0vowiAwvzPf/xbCoSs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.15 734/846] drm/vc4: hdmi: Make sure the device is powered with CEC
-Date:   Mon, 24 Jan 2022 19:44:11 +0100
-Message-Id: <20220124184126.318677950@linuxfoundation.org>
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: [PATCH 5.15 739/846] Documentation, arch: Remove leftovers from raw device
+Date:   Mon, 24 Jan 2022 19:44:16 +0100
+Message-Id: <20220124184126.481611657@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,55 +47,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-commit 20b0dfa86bef0e80b41b0e5ac38b92f23b6f27f9 upstream.
+commit 473dcf0ffc31ce1135cd10578e7e06698cf51f4a upstream.
 
-Similarly to what we encountered with the detect hook with DRM, nothing
-actually prevents any of the CEC callback from being run while the HDMI
-output is disabled.
+Raw device interface was removed so remove all references to configs
+related to it.
 
-However, this is an issue since any register access to the controller
-when it's powered down will result in a silent hang.
-
-Let's make sure we run the runtime_pm hooks when the CEC adapter is
-opened and closed by the userspace to avoid that issue.
-
-Fixes: 15b4511a4af6 ("drm/vc4: add HDMI CEC support")
-Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210819135931.895976-6-maxime@cerno.tech
+Fixes: 603e4922f1c8 ("remove the raw driver")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Acked-by: Arnd Bergmann <arnd@arndb.de> [arch/arm/configs]
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ Documentation/admin-guide/devices.txt  |    8 +-------
+ arch/arm/configs/spear13xx_defconfig   |    1 -
+ arch/arm/configs/spear3xx_defconfig    |    1 -
+ arch/arm/configs/spear6xx_defconfig    |    1 -
+ arch/powerpc/configs/pseries_defconfig |    1 -
+ 5 files changed, 1 insertion(+), 11 deletions(-)
 
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1735,8 +1735,14 @@ static int vc4_hdmi_cec_adap_enable(stru
- 	struct vc4_hdmi *vc4_hdmi = cec_get_drvdata(adap);
- 	/* clock period in microseconds */
- 	const u32 usecs = 1000000 / CEC_CLOCK_FREQ;
--	u32 val = HDMI_READ(HDMI_CEC_CNTRL_5);
-+	u32 val;
-+	int ret;
+--- a/Documentation/admin-guide/devices.txt
++++ b/Documentation/admin-guide/devices.txt
+@@ -2339,13 +2339,7 @@
+ 		disks (see major number 3) except that the limit on
+ 		partitions is 31.
  
-+	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
-+	if (ret)
-+		return ret;
-+
-+	val = HDMI_READ(HDMI_CEC_CNTRL_5);
- 	val &= ~(VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET |
- 		 VC4_HDMI_CEC_CNT_TO_4700_US_MASK |
- 		 VC4_HDMI_CEC_CNT_TO_4500_US_MASK);
-@@ -1882,6 +1888,8 @@ static int vc4_hdmi_cec_init(struct vc4_
- 	if (ret < 0)
- 		goto err_remove_handlers;
+- 162 char	Raw block device interface
+-		  0 = /dev/rawctl	Raw I/O control device
+-		  1 = /dev/raw/raw1	First raw I/O device
+-		  2 = /dev/raw/raw2	Second raw I/O device
+-		    ...
+-		 max minor number of raw device is set by kernel config
+-		 MAX_RAW_DEVS or raw module parameter 'max_raw_devs'
++ 162 char	Used for (now removed) raw block device interface
  
-+	pm_runtime_put(&vc4_hdmi->pdev->dev);
-+
- 	return 0;
+  163 char
  
- err_remove_handlers:
+--- a/arch/arm/configs/spear13xx_defconfig
++++ b/arch/arm/configs/spear13xx_defconfig
+@@ -61,7 +61,6 @@ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+ # CONFIG_HW_RANDOM is not set
+ CONFIG_RAW_DRIVER=y
+-CONFIG_MAX_RAW_DEVS=8192
+ CONFIG_I2C=y
+ CONFIG_I2C_DESIGNWARE_PLATFORM=y
+ CONFIG_SPI=y
+--- a/arch/arm/configs/spear3xx_defconfig
++++ b/arch/arm/configs/spear3xx_defconfig
+@@ -41,7 +41,6 @@ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+ # CONFIG_HW_RANDOM is not set
+ CONFIG_RAW_DRIVER=y
+-CONFIG_MAX_RAW_DEVS=8192
+ CONFIG_I2C=y
+ CONFIG_I2C_DESIGNWARE_PLATFORM=y
+ CONFIG_SPI=y
+--- a/arch/arm/configs/spear6xx_defconfig
++++ b/arch/arm/configs/spear6xx_defconfig
+@@ -36,7 +36,6 @@ CONFIG_INPUT_FF_MEMLESS=y
+ CONFIG_SERIAL_AMBA_PL011=y
+ CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
+ CONFIG_RAW_DRIVER=y
+-CONFIG_MAX_RAW_DEVS=8192
+ CONFIG_I2C=y
+ CONFIG_I2C_DESIGNWARE_PLATFORM=y
+ CONFIG_SPI=y
+--- a/arch/powerpc/configs/pseries_defconfig
++++ b/arch/powerpc/configs/pseries_defconfig
+@@ -190,7 +190,6 @@ CONFIG_HVCS=m
+ CONFIG_VIRTIO_CONSOLE=m
+ CONFIG_IBM_BSR=m
+ CONFIG_RAW_DRIVER=y
+-CONFIG_MAX_RAW_DEVS=1024
+ CONFIG_I2C_CHARDEV=y
+ CONFIG_FB=y
+ CONFIG_FIRMWARE_EDID=y
 
 
