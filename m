@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48D05C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 955E9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584532AbiAXWVX (ORCPT
+        id S1584685AbiAXWVd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:21:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48094 "EHLO
+        Mon, 24 Jan 2022 17:21:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47434 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453445AbiAXVaN (ORCPT
+        with ESMTP id S1452938AbiAXV12 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:30:13 -0500
+        Mon, 24 Jan 2022 16:27:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E6676131F;
-        Mon, 24 Jan 2022 21:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC75C340E4;
-        Mon, 24 Jan 2022 21:30:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FF9C61469;
+        Mon, 24 Jan 2022 21:27:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C558C340E4;
+        Mon, 24 Jan 2022 21:27:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059809;
-        bh=VpOIpWuYU5r7PoaTzGcmVyr0EObttdwQ5irv2gBTbpo=;
+        s=korg; t=1643059642;
+        bh=slkzV2uCi161ff2FMYKOSO9pXjF+rfhmk/CRWGQotis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RsKG81PsWHtcehDMBI/G1ENtgHJGgiFnr5K/czvcZDdaTDy7MdEw9GbYW7TtG7e+V
-         u4Rj33MVyN6OhWF8NBh+cdgE4ex0lkDKIDu/olk0j3o2IdAmOzWU6021YgULt7m44o
-         kShtF6r2q/VlJCUYQa6kno4ezY3tEBBA+lICqhPg=
+        b=1k8O7klpE1iS54jCJvKfEfEdzJgSFTcTH/Lt6K+XjxqU5q0Nw4AiIn/FJE/yxHDOM
+         QqbbX4C4sKoUhF45+OCB2VVjEs1z8e0TMe5dDcA1EMLWeU4X5PGt1FPagTizXju6JO
+         ivzl+RoKlz5K7NSLsH/SZknyXUEW9oiVPF/mMh8o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Joakim Tjernlund <joakim.tjernlund@infinera.com>,
-        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0742/1039] i2c: mpc: Correct I2C reset procedure
-Date:   Mon, 24 Jan 2022 19:42:11 +0100
-Message-Id: <20220124184150.271234597@linuxfoundation.org>
+Subject: [PATCH 5.16 0683/1039] iwlwifi: mvm: Fix calculation of frame length
+Date:   Mon, 24 Jan 2022 19:41:12 +0100
+Message-Id: <20220124184148.313794057@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,68 +47,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
+[ Upstream commit 40a0b38d7a7f91a6027287e0df54f5f547e8d27e ]
 
-Current I2C reset procedure is broken in two ways:
-1) It only generate 1 START instead of 9 STARTs and STOP.
-2) It leaves the bus Busy so every I2C xfer after the first
-   fixup calls the reset routine again, for every xfer there after.
+The RADA might include in the Rx frame the MIC and CRC bytes.
+These bytes should be removed for non monitor interfaces and
+should not be passed to mac80211.
 
-This fixes both errors.
+Fix the Rx processing to remove the extra bytes on non monitor
+cases.
 
-Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
-Acked-by: Scott Wood <oss@buserror.net>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211219121514.098be12c801e.I1d81733d8a75b84c3b20eb6e0d14ab3405ca6a86@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
-index db26cc36e13fe..6c698c10d3cdb 100644
---- a/drivers/i2c/busses/i2c-mpc.c
-+++ b/drivers/i2c/busses/i2c-mpc.c
-@@ -119,23 +119,30 @@ static inline void writeccr(struct mpc_i2c *i2c, u32 x)
- /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
-  * the bus, because it wants to send ACK.
-  * Following sequence of enabling/disabling and sending start/stop generates
-- * the 9 pulses, so it's all OK.
-+ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
-  */
- static void mpc_i2c_fixup(struct mpc_i2c *i2c)
- {
- 	int k;
--	u32 delay_val = 1000000 / i2c->real_clk + 1;
--
--	if (delay_val < 2)
--		delay_val = 2;
-+	unsigned long flags;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index e0601f802628c..1e2a55ccf1926 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -121,12 +121,39 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
+ 	struct iwl_rx_mpdu_desc *desc = (void *)pkt->data;
+ 	unsigned int headlen, fraglen, pad_len = 0;
+ 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
++	u8 mic_crc_len = u8_get_bits(desc->mac_flags1,
++				     IWL_RX_MPDU_MFLG1_MIC_CRC_LEN_MASK) << 1;
  
- 	for (k = 9; k; k--) {
- 		writeccr(i2c, 0);
--		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
-+		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
-+		readb(i2c->base + MPC_I2C_DR); /* init xfer */
-+		udelay(15); /* let it hit the bus */
-+		local_irq_save(flags); /* should not be delayed further */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
- 		readb(i2c->base + MPC_I2C_DR);
--		writeccr(i2c, CCR_MEN);
--		udelay(delay_val << 1);
-+		if (k != 1)
-+			udelay(5);
-+		local_irq_restore(flags);
+ 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
+ 		len -= 2;
+ 		pad_len = 2;
  	}
-+	writeccr(i2c, CCR_MEN); /* Initiate STOP */
-+	readb(i2c->base + MPC_I2C_DR);
-+	udelay(15); /* Let STOP propagate */
-+	writeccr(i2c, 0);
- }
  
- static int i2c_mpc_wait_sr(struct mpc_i2c *i2c, int mask)
++	/*
++	 * For non monitor interface strip the bytes the RADA might not have
++	 * removed. As monitor interface cannot exist with other interfaces
++	 * this removal is safe.
++	 */
++	if (mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS)) {
++		u32 pkt_flags = le32_to_cpu(pkt->len_n_flags);
++
++		/*
++		 * If RADA was not enabled then decryption was not performed so
++		 * the MIC cannot be removed.
++		 */
++		if (!(pkt_flags & FH_RSCSR_RADA_EN)) {
++			if (WARN_ON(crypt_len > mic_crc_len))
++				return -EINVAL;
++
++			mic_crc_len -= crypt_len;
++		}
++
++		if (WARN_ON(mic_crc_len > len))
++			return -EINVAL;
++
++		len -= mic_crc_len;
++	}
++
+ 	/* If frame is small enough to fit in skb->head, pull it completely.
+ 	 * If not, only pull ieee80211_hdr (including crypto if present, and
+ 	 * an additional 8 bytes for SNAP/ethertype, see below) so that
 -- 
 2.34.1
 
