@@ -2,93 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C5BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:06:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A380EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238175AbiAXMGn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:06:43 -0500
-Received: from mga04.intel.com ([192.55.52.120]:9110 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238134AbiAXMGm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:06:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643026002; x=1674562002;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=q97j3huVGFZJgu3MU+aSBJJrgEZUzUSUSwiaJsxmWuk=;
-  b=FBU2OU2PTFx0Fs17O0Cf+WzbyaW/gHAXOHldOaA59Wrd1b0Mkgj7kAV1
-   TFBgBsqDUJPVWmeSbAxGo25yPYc2CzTlcDFJNjz+57EWA9pYXJornrezs
-   mIcFh0mLgHknCtCg+AoTzQcsG448uZtpFD4qUWb1JzleD4ioVFOzanuPi
-   fk0U551iaCJtoQm3Xx4v47++W03ikOLs5CXeEMD8ROhGKrzZsfefSukLw
-   7hhXSn9KjWeZ7Oia685mLIrbfL3seT5Ci7ojeOUTUb/gqFGEQz8Y3UsEy
-   1UVZ3MBh5jTV4RAJG2nlzO2+P1kmmuJPT0HSxPJEPmCjVtuPwR9vLWCa7
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="244863752"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="244863752"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 04:06:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627474921"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 04:06:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBy7K-000IHN-Sy; Mon, 24 Jan 2022 12:06:38 +0000
-Date:   Mon, 24 Jan 2022 20:05:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Chen-Yu Tsai <wenst@chromium.org>, Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-Cc:     kbuild-all@lists.01.org, Chen-Yu Tsai <wenst@chromium.org>,
-        Chun-Jie Chen <chun-jie.chen@mediatek.com>,
-        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] clk: mediatek: pll: fix semicolon.cocci warnings
-Message-ID: <20220124120543.GA22562@efa69eafe693>
-References: <20220122091731.283592-26-wenst@chromium.org>
+        id S238193AbiAXMIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:08:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59640 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238097AbiAXMIa (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:08:30 -0500
+Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1859FC06173B;
+        Mon, 24 Jan 2022 04:08:30 -0800 (PST)
+Received: by mail-wm1-x32a.google.com with SMTP id 131so322672wmc.4;
+        Mon, 24 Jan 2022 04:08:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=XArnnH4OvrxRcoFfpFy+puuAOs1zK8Kgo1S3kPJSJSw=;
+        b=Jc276FuGvUAjhsukljJ+yBmJsnTKcW5NrocuudRyuV338c+REYomAqV50vs3b9w4gw
+         jQUdowlUT4PRsPPsTAx3vb+xhwoOyrYKpR9Yc+Tii6O6Pa7p/nbIXGl23Dc7cyglQCdj
+         /h5svWv15McmcBB+SVksjK92+h0n0fJw40OLE2eieebA957FhvtKGR0hjGKQV4L8E1jT
+         ULJQlldeeOX3wdAa0621QBFB1gY3WE2BqPzwM3CJ5bFnJLxjaQPzu5VlFPBnYQIxnLda
+         Vhqv8J9RWPMvMK4I0olcJ33FVxRcdbNGVrSgt20UGyTLJIwHtLqMfwvzw6f3J+0KLU90
+         m9Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=XArnnH4OvrxRcoFfpFy+puuAOs1zK8Kgo1S3kPJSJSw=;
+        b=vFxQFofijTNIGACU3PYRhevl6jGMJEA9+8+Kgmw6Y9hrWZVia+MrO8mUGJD+mTZwAl
+         4Sbiwml2YpIg5Om9+lvCzJUy+y7HhUHeIhfsD8kHn+C5LAPPrwsNJ1F0i6atmGE0w/Ux
+         0B8//PlaVst06hGWXYPHpsZSmV1xFAI1vCpl5aps+rqCnRilzR1re1Jqyy0zfVzTkZCG
+         jifCIgxEQ786NS4a/hPhn3UhdZtkB2GGqrcVz2HgFgzcCNghZxyaXA5rfO7I/oaN+xis
+         iRQonN5vauePOCf7XEUkQViQOQKHUIWFWiSOGaM1efAuT+SJAsZbfumf9ADUz3Y+QnC0
+         +nqw==
+X-Gm-Message-State: AOAM530oQ0JLccCPXuwGOsTY5/WnrNoZaHZWK5pGMG/v/SytAhVNX69C
+        kQ6utowu2Ri9GPjAStUczrU=
+X-Google-Smtp-Source: ABdhPJxx9aW2LXSFk8wJPNYSMOgRQT/XrKepKIzP/Y7B/Y5B2yDT0IK8LOJk1hzSqfc71Sgws6OTQA==
+X-Received: by 2002:a7b:c5c4:: with SMTP id n4mr1572870wmk.134.1643026108567;
+        Mon, 24 Jan 2022 04:08:28 -0800 (PST)
+Received: from [192.168.178.21] (p57b0bff8.dip0.t-ipconnect.de. [87.176.191.248])
+        by smtp.gmail.com with ESMTPSA id c14sm17849799wri.32.2022.01.24.04.08.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 04:08:28 -0800 (PST)
+Subject: Re: [PATCH V2 0/7] DRM kmap() fixes and kmap_local_page() conversions
+To:     ira.weiny@intel.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
+        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>
+Cc:     linux-arm-msm@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        amd-gfx@lists.freedesktop.org
+References: <20220124015409.807587-1-ira.weiny@intel.com>
+From:   =?UTF-8?Q?Christian_K=c3=b6nig?= <ckoenig.leichtzumerken@gmail.com>
+Message-ID: <a56344b6-b1bd-6749-5ed2-5f38bf79dcee@gmail.com>
+Date:   Mon, 24 Jan 2022 13:08:26 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220122091731.283592-26-wenst@chromium.org>
-X-Patchwork-Hint: ignore
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220124015409.807587-1-ira.weiny@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
+Am 24.01.22 um 02:54 schrieb ira.weiny@intel.com:
+> From: Ira Weiny <ira.weiny@intel.com>
+>
+> Changes from V1:
+> 	Use memcpy_to_page() where appropriate
+> 	Rebased to latest
+>
+> The kmap() call may cause issues with work being done with persistent memory.
+> For this and other reasons it is being deprecated.
 
-drivers/clk/mediatek/clk-pll.c:407:2-3: Unneeded semicolon
+I'm really wondering how we should be able to implement the kernel 
+mapping without kmap in TTM.
 
+> This series starts by converting the last easy kmap() uses in the drm tree to
+> kmap_local_page().
+>
+> The final 2 patches fix bugs found while working on the ttm_bo_kmap_ttm()
+> conversion.  They are valid fixes but were found via code inspection not
+> because of any actual bug so don't require a stable tag.[1]
+>
+> There is one more call to kmap() used in ttm_bo_kmap_ttm().  Unfortunately,
+> fixing this is not straight forward so it is left to future work.[2]
 
- Remove unneeded semicolon.
+Patches #2, #4, #6 and #7 are Reviewed-by: Christian König 
+<christian.koenig@amd.com>
 
-Generated by: scripts/coccinelle/misc/semicolon.cocci
+How to you now want to push those upstream? I can pick them up for the 
+AMD tree like Daniel suggested or you can push them through something else.
 
-CC: Chen-Yu Tsai <wenst@chromium.org>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
+Regards,
+Christian.
 
-url:    https://github.com/0day-ci/linux/commits/Chen-Yu-Tsai/clk-mediatek-Cleanups-and-Improvements-Part-1/20220122-172158
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/clk/linux.git clk-next
-:::::: branch date: 2 days ago
-:::::: commit date: 2 days ago
+>
+> [1] https://lore.kernel.org/lkml/fb71af05-a889-8f6e-031b-426b58a64f00@amd.com/
+> [2] https://lore.kernel.org/lkml/20211215210949.GW3538886@iweiny-DESK2.sc.intel.com/
+>
+>
+> Ira Weiny (7):
+> drm/i915: Replace kmap() with kmap_local_page()
+> drm/amd: Replace kmap() with kmap_local_page()
+> drm/gma: Remove calls to kmap()
+> drm/radeon: Replace kmap() with kmap_local_page()
+> drm/msm: Alter comment to use kmap_local_page()
+> drm/amdgpu: Ensure kunmap is called on error
+> drm/radeon: Ensure kunmap is called on error
+>
+> drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 8 ++++----
+> drivers/gpu/drm/amd/amdgpu/amdgpu_uvd.c | 1 +
+> drivers/gpu/drm/gma500/gma_display.c | 6 ++----
+> drivers/gpu/drm/gma500/mmu.c | 8 ++++----
+> drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 6 ++----
+> drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 8 ++++----
+> drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c | 4 ++--
+> drivers/gpu/drm/i915/gt/shmem_utils.c | 7 ++-----
+> drivers/gpu/drm/i915/i915_gem.c | 8 ++++----
+> drivers/gpu/drm/i915/i915_gpu_error.c | 4 ++--
+> drivers/gpu/drm/msm/msm_gem_submit.c | 4 ++--
+> drivers/gpu/drm/radeon/radeon_ttm.c | 4 ++--
+> drivers/gpu/drm/radeon/radeon_uvd.c | 1 +
+> 13 files changed, 32 insertions(+), 37 deletions(-)
+>
+> --
+> 2.31.1
+>
 
- clk-pll.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/clk/mediatek/clk-pll.c
-+++ b/drivers/clk/mediatek/clk-pll.c
-@@ -404,7 +404,7 @@ err:
- 
- 		mtk_clk_unregister_pll(clk_data->clks[pll->id]);
- 		clk_data->clks[pll->id] = ERR_PTR(-ENOENT);
--	};
-+	}
- 
- 	iounmap(base);
- 
