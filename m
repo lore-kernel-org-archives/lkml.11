@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED78C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF819C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452079AbiAXVYA (ORCPT
+        id S1452056AbiAXVX5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49848 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443443AbiAXU46 (ORCPT
+        Mon, 24 Jan 2022 16:23:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52258 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443389AbiAXU4w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:56:58 -0500
+        Mon, 24 Jan 2022 15:56:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D748D60B03;
-        Mon, 24 Jan 2022 20:56:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8774C340E5;
-        Mon, 24 Jan 2022 20:56:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F294DB81243;
+        Mon, 24 Jan 2022 20:56:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 424FBC340E5;
+        Mon, 24 Jan 2022 20:56:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057816;
-        bh=e4BpGwdT8izfHTQPZn1Ny6wEvrlLCnwgZUVm5AB7R5w=;
+        s=korg; t=1643057809;
+        bh=bd/N2cLIIyZKGPaNuTPqhxCMHdyWjib1d+RJWqvsz/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ugAdMgexZTUNmSKUvataG+vr+3PS14HBp4AdKRH8VLr3FVUuGoalUfu6bNwIQ7r2i
-         JV9S2famDY4u29QcLDGfa1IQrdWPXCkitW8nmv+nBgTjOINT0LPCJVWKZJRoO8HT4C
-         IWLHUt7NZvYqAo+d+XSiizvVDvlJCZ+ExnibPlvY=
+        b=Gl5/52HE9rkRHItua/QNCN/tn7X8DJtkSiZViZe65HTE/SwwdEoOFJ+yAxdKXLwI+
+         ji5M2YW71nJugx0EahGrdtSvu6ojJr38FUxFtv5hJSRDEeolpHf3YpoxpJjurCqa+n
+         xXJZHGJJG+wuqj8qY2snQUSTIhRa+RHPLGkt6ZzA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Tomas Winkler <tomas.winkler@intel.com>,
-        Alexander Usyskin <alexander.usyskin@intel.com>
-Subject: [PATCH 5.16 0056/1039] mei: hbm: fix client dma reply status
-Date:   Mon, 24 Jan 2022 19:30:45 +0100
-Message-Id: <20220124184127.033162199@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0054/1039] media: cec-pin: fix interrupt en/disable handling
+Date:   Mon, 24 Jan 2022 19:30:43 +0100
+Message-Id: <20220124184126.962153354@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,67 +46,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Usyskin <alexander.usyskin@intel.com>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-commit 6b0b80ac103b2a40c72a47c301745fd1f4ef4697 upstream.
+commit 713bdfa10b5957053811470d298def9537d9ff13 upstream.
 
-Don't blindly copy status value received from the firmware
-into internal client status field,
-It may be positive and ERR_PTR(ret) will translate it
-into an invalid address and the caller will crash.
+The en/disable_irq() functions keep track of the 'depth': i.e. if
+interrupts are disabled twice, then it needs to enable_irq() calls to
+enable them again. The cec-pin framework didn't take this into accound
+and could disable irqs multiple times, and it expected that a single
+enable_irq() would enable them again.
 
-Put the error code into the client status on failure.
+Move all calls to en/disable_irq() to the kthread where it is easy
+to keep track of the current irq state and ensure that multiple
+en/disable_irq calls never happen.
 
-Fixes: 369aea845951 ("mei: implement client dma setup.")
-Cc: <stable@vger.kernel.org> # v5.11+
-Reported-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Tested-by: : Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Acked-by: Tomas Winkler <tomas.winkler@intel.com>
-Signed-off-by: Alexander Usyskin <alexander.usyskin@intel.com>
-Signed-off-by: Tomas Winkler <tomas.winkler@intel.com>
-Link: https://lore.kernel.org/r/20211228082047.378115-1-tomas.winkler@intel.com
+If interrupts where disabled twice, then they would never turn on
+again, leaving the CEC adapter in a dead state.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 865463fc03ed (media: cec-pin: add error injection support)
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/misc/mei/hbm.c |   20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+ drivers/media/cec/core/cec-pin.c |   31 ++++++++++++++++++-------------
+ 1 file changed, 18 insertions(+), 13 deletions(-)
 
---- a/drivers/misc/mei/hbm.c
-+++ b/drivers/misc/mei/hbm.c
-@@ -672,10 +672,14 @@ static void mei_hbm_cl_dma_map_res(struc
- 	if (!cl)
- 		return;
+--- a/drivers/media/cec/core/cec-pin.c
++++ b/drivers/media/cec/core/cec-pin.c
+@@ -1033,6 +1033,7 @@ static int cec_pin_thread_func(void *_ad
+ {
+ 	struct cec_adapter *adap = _adap;
+ 	struct cec_pin *pin = adap->pin;
++	bool irq_enabled = false;
  
--	dev_dbg(dev->dev, "cl dma map result = %d\n", res->status);
--	cl->status = res->status;
--	if (!cl->status)
-+	if (res->status) {
-+		dev_err(dev->dev, "cl dma map failed %d\n", res->status);
-+		cl->status = -EFAULT;
-+	} else {
-+		dev_dbg(dev->dev, "cl dma map succeeded\n");
- 		cl->dma_mapped = 1;
-+		cl->status = 0;
-+	}
- 	wake_up(&cl->wait);
+ 	for (;;) {
+ 		wait_event_interruptible(pin->kthread_waitq,
+@@ -1060,6 +1061,7 @@ static int cec_pin_thread_func(void *_ad
+ 				ns_to_ktime(pin->work_rx_msg.rx_ts));
+ 			msg->len = 0;
+ 		}
++
+ 		if (pin->work_tx_status) {
+ 			unsigned int tx_status = pin->work_tx_status;
+ 
+@@ -1083,27 +1085,39 @@ static int cec_pin_thread_func(void *_ad
+ 		switch (atomic_xchg(&pin->work_irq_change,
+ 				    CEC_PIN_IRQ_UNCHANGED)) {
+ 		case CEC_PIN_IRQ_DISABLE:
+-			pin->ops->disable_irq(adap);
++			if (irq_enabled) {
++				pin->ops->disable_irq(adap);
++				irq_enabled = false;
++			}
+ 			cec_pin_high(pin);
+ 			cec_pin_to_idle(pin);
+ 			hrtimer_start(&pin->timer, ns_to_ktime(0),
+ 				      HRTIMER_MODE_REL);
+ 			break;
+ 		case CEC_PIN_IRQ_ENABLE:
++			if (irq_enabled)
++				break;
+ 			pin->enable_irq_failed = !pin->ops->enable_irq(adap);
+ 			if (pin->enable_irq_failed) {
+ 				cec_pin_to_idle(pin);
+ 				hrtimer_start(&pin->timer, ns_to_ktime(0),
+ 					      HRTIMER_MODE_REL);
++			} else {
++				irq_enabled = true;
+ 			}
+ 			break;
+ 		default:
+ 			break;
+ 		}
+-
+ 		if (kthread_should_stop())
+ 			break;
+ 	}
++	if (pin->ops->disable_irq && irq_enabled)
++		pin->ops->disable_irq(adap);
++	hrtimer_cancel(&pin->timer);
++	cec_pin_read(pin);
++	cec_pin_to_idle(pin);
++	pin->state = CEC_ST_OFF;
+ 	return 0;
  }
  
-@@ -698,10 +702,14 @@ static void mei_hbm_cl_dma_unmap_res(str
- 	if (!cl)
+@@ -1130,13 +1144,7 @@ static int cec_pin_adap_enable(struct ce
+ 		hrtimer_start(&pin->timer, ns_to_ktime(0),
+ 			      HRTIMER_MODE_REL);
+ 	} else {
+-		if (pin->ops->disable_irq)
+-			pin->ops->disable_irq(adap);
+-		hrtimer_cancel(&pin->timer);
+ 		kthread_stop(pin->kthread);
+-		cec_pin_read(pin);
+-		cec_pin_to_idle(pin);
+-		pin->state = CEC_ST_OFF;
+ 	}
+ 	return 0;
+ }
+@@ -1157,11 +1165,8 @@ void cec_pin_start_timer(struct cec_pin
+ 	if (pin->state != CEC_ST_RX_IRQ)
  		return;
  
--	dev_dbg(dev->dev, "cl dma unmap result = %d\n", res->status);
--	cl->status = res->status;
--	if (!cl->status)
-+	if (res->status) {
-+		dev_err(dev->dev, "cl dma unmap failed %d\n", res->status);
-+		cl->status = -EFAULT;
-+	} else {
-+		dev_dbg(dev->dev, "cl dma unmap succeeded\n");
- 		cl->dma_mapped = 0;
-+		cl->status = 0;
-+	}
- 	wake_up(&cl->wait);
+-	atomic_set(&pin->work_irq_change, CEC_PIN_IRQ_UNCHANGED);
+-	pin->ops->disable_irq(pin->adap);
+-	cec_pin_high(pin);
+-	cec_pin_to_idle(pin);
+-	hrtimer_start(&pin->timer, ns_to_ktime(0), HRTIMER_MODE_REL);
++	atomic_set(&pin->work_irq_change, CEC_PIN_IRQ_DISABLE);
++	wake_up_interruptible(&pin->kthread_waitq);
  }
  
+ static int cec_pin_adap_transmit(struct cec_adapter *adap, u8 attempts,
 
 
