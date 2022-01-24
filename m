@@ -2,160 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED316C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBF89C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835520AbiAXWgm (ORCPT
+        id S1835491AbiAXWgj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:36:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
+        Mon, 24 Jan 2022 17:36:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456120AbiAXVhw (ORCPT
+        with ESMTP id S1456131AbiAXVhw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:37:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD10C0BD12F;
-        Mon, 24 Jan 2022 12:24:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9389B81229;
-        Mon, 24 Jan 2022 20:24:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D22C8C340E5;
-        Mon, 24 Jan 2022 20:24:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055841;
-        bh=jwjFmACAnwdgTPgiXQNtUaCkXKpEKBIBAWq4GBFnCFA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IRIw2wPaVah+njMHMUAMgfh3IOOR/AHecc5BuHFFUSV32XKn5JawDMrTjfHQhwudV
-         7o7jJ5aodT5jXkPScYopJFCQl788yr1wWFz36ZsYkCj3pzipyjUM+rA1YxQG4ogiJe
-         9rME9rNN37JPaRhhQxXPtHyn/rfuWvmWBhqUZaTs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 256/846] drm/tegra: gr2d: Explicitly control module reset
-Date:   Mon, 24 Jan 2022 19:36:13 +0100
-Message-Id: <20220124184109.771216782@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18758C0BD132
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:24:11 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id m9so12922303oia.12
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:24:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=w3ynFKV1fLntHunSKUJ/uGzn1fGWIgjZmU7aBt47Qlo=;
+        b=i5o1/vEQIKJw1sMvH0GGqP/BOyX0hMhqYlSabek/jvvjhnl8Dd6qOmKf048VgTNIgL
+         W+mER+ik7PnWfOA5TdWVnoOWd4HDBmu0KUMfwo0rA7EBo6NDHZyxLLU1Jba6TlactXU8
+         TTOqJa0YtytYB5OBMJs5XhZLcXQZy6D+ZObjc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=w3ynFKV1fLntHunSKUJ/uGzn1fGWIgjZmU7aBt47Qlo=;
+        b=h2r6qPlw5CN8SeiYc6wShLfDtgyFtNAAFwcTdykEABiDQpYqed58ClWR6MAxx3kNXZ
+         dggx+GHuAJjEcydh3o2dq4ojHH9ANS0EcDNvGgN5uMNo0tgQP2u5j7oouNL9qVxlzWgO
+         QD7Itu2f+CKk0wpUGwj0AcMjW7vGSuzPDzgAOpr7zw9RptyV2fqlqi3LZga2ei1zWCZ6
+         V65tCUnvBw6eNsfDMggxYpuBEeL9wT9OpXTsWHj6pHgSuDjcfHo+8MBqrN1WMOBya+8a
+         qXjCig4hpk2CsNeVJLr0zTx5GWB/MLBGWNir+tEMW8a15IBhHLPas7kCJZOJ5l1cTItn
+         zT5g==
+X-Gm-Message-State: AOAM5316BUVEw3xrF890tbMlyX2MECYw7BNSJ3eGXlASln28AGRULRAq
+        ihdkmVZBzTdlZ4StVpceivOy60sZtT5M3f5e871ebNMCf14=
+X-Google-Smtp-Source: ABdhPJwJr+L9TLQ5U3Eh5OUnJaPwt9T0uy8XOGbvauiD6g+ZvjuWnHO+tGF2uwCLg7VOfdaAHF1gbUWcJoGO76mVM7Y=
+X-Received: by 2002:aca:aa0f:: with SMTP id t15mr2917122oie.32.1643055850425;
+ Mon, 24 Jan 2022 12:24:10 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 24 Jan 2022 12:24:10 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220124011143.684348-1-dnojiri@chromium.org>
+References: <20220124010348.681893-1-dnojiri@chromium.org> <20220124011143.684348-1-dnojiri@chromium.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 24 Jan 2022 12:24:09 -0800
+Message-ID: <CAE-0n528Mw8mCLTL9GAiaYBXxTbTBUi_f_OfeFPo_gmDpBGqXg@mail.gmail.com>
+Subject: Re: [PATCH v2] power: supply: PCHG: Use MKBP for device event handling
+To:     Daisuke Nojiri <dnojiri@chromium.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Sebastian Reichel <sre@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-pm@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+Quoting Daisuke Nojiri (2022-01-23 17:11:40)
+> This patch makes the PCHG driver receive device events through
 
-[ Upstream commit 271fca025a6d43f1c18a48543c5aaf31a31e4694 ]
+$ git grep "This patch" -- Documentation/process
 
-As of commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
-clocks"), module resets are no longer automatically deasserted when the
-module clock is enabled. To make sure that the gr2d module continues to
-work, we need to explicitly control the module reset.
+i.e. don't use "This patch"
 
-Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/tegra/gr2d.c | 33 +++++++++++++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+> MKBP protocol since CrOS EC switched to deliver all peripheral
+> charge events to the MKBP protocol. This will unify PCHG event
+> handling on X86 and ARM.
+>
+> Signed-off-by: Daisuke Nojiri <dnojiri@chromium.org>
+> ---
 
-diff --git a/drivers/gpu/drm/tegra/gr2d.c b/drivers/gpu/drm/tegra/gr2d.c
-index de288cba39055..ba3722f1b8651 100644
---- a/drivers/gpu/drm/tegra/gr2d.c
-+++ b/drivers/gpu/drm/tegra/gr2d.c
-@@ -4,9 +4,11 @@
-  */
- 
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
-+#include <linux/reset.h>
- 
- #include "drm.h"
- #include "gem.h"
-@@ -19,6 +21,7 @@ struct gr2d_soc {
- struct gr2d {
- 	struct tegra_drm_client client;
- 	struct host1x_channel *channel;
-+	struct reset_control *rst;
- 	struct clk *clk;
- 
- 	const struct gr2d_soc *soc;
-@@ -208,6 +211,12 @@ static int gr2d_probe(struct platform_device *pdev)
- 	if (!syncpts)
- 		return -ENOMEM;
- 
-+	gr2d->rst = devm_reset_control_get(dev, NULL);
-+	if (IS_ERR(gr2d->rst)) {
-+		dev_err(dev, "cannot get reset\n");
-+		return PTR_ERR(gr2d->rst);
-+	}
-+
- 	gr2d->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(gr2d->clk)) {
- 		dev_err(dev, "cannot get clock\n");
-@@ -220,6 +229,14 @@ static int gr2d_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
-+	usleep_range(2000, 4000);
-+
-+	err = reset_control_deassert(gr2d->rst);
-+	if (err < 0) {
-+		dev_err(dev, "failed to deassert reset: %d\n", err);
-+		goto disable_clk;
-+	}
-+
- 	INIT_LIST_HEAD(&gr2d->client.base.list);
- 	gr2d->client.base.ops = &gr2d_client_ops;
- 	gr2d->client.base.dev = dev;
-@@ -234,8 +251,7 @@ static int gr2d_probe(struct platform_device *pdev)
- 	err = host1x_client_register(&gr2d->client.base);
- 	if (err < 0) {
- 		dev_err(dev, "failed to register host1x client: %d\n", err);
--		clk_disable_unprepare(gr2d->clk);
--		return err;
-+		goto assert_rst;
- 	}
- 
- 	/* initialize address register map */
-@@ -245,6 +261,13 @@ static int gr2d_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, gr2d);
- 
- 	return 0;
-+
-+assert_rst:
-+	(void)reset_control_assert(gr2d->rst);
-+disable_clk:
-+	clk_disable_unprepare(gr2d->clk);
-+
-+	return err;
- }
- 
- static int gr2d_remove(struct platform_device *pdev)
-@@ -259,6 +282,12 @@ static int gr2d_remove(struct platform_device *pdev)
- 		return err;
- 	}
- 
-+	err = reset_control_assert(gr2d->rst);
-+	if (err < 0)
-+		dev_err(&pdev->dev, "failed to assert reset: %d\n", err);
-+
-+	usleep_range(2000, 4000);
-+
- 	clk_disable_unprepare(gr2d->clk);
- 
- 	return 0;
--- 
-2.34.1
+Just some nitpicks
 
+> diff --git a/drivers/power/supply/cros_peripheral_charger.c b/drivers/power/supply/cros_peripheral_charger.c
+> index 305f10dfc06d1b..cb402f48087ddf 100644
+> --- a/drivers/power/supply/cros_peripheral_charger.c
+> +++ b/drivers/power/supply/cros_peripheral_charger.c
+> @@ -237,46 +238,22 @@ static int cros_pchg_event(const struct charger_data *charger,
+>         return NOTIFY_OK;
+>  }
+>
+> -static u32 cros_get_device_event(const struct charger_data *charger)
+> -{
+> -       struct ec_params_device_event req;
+> -       struct ec_response_device_event rsp;
+> -       struct device *dev = charger->dev;
+> -       int ret;
+> -
+> -       req.param = EC_DEVICE_EVENT_PARAM_GET_CURRENT_EVENTS;
+> -       ret = cros_pchg_ec_command(charger, 0, EC_CMD_DEVICE_EVENT,
+> -                                  &req, sizeof(req), &rsp, sizeof(rsp));
+> -       if (ret < 0) {
+> -               dev_warn(dev, "Unable to get device events (err:%d)\n", ret);
+> -               return 0;
+> -       }
+> -
+> -       return rsp.event_mask;
+> -}
+> -
+>  static int cros_ec_notify(struct notifier_block *nb,
+>                           unsigned long queued_during_suspend,
+>                           void *data)
+>  {
+>         struct cros_ec_device *ec_dev = (struct cros_ec_device *)data;
 
+Not a problem in this patch but the cast can be dropped.
 
+> -       u32 host_event = cros_ec_get_host_event(ec_dev);
+>         struct charger_data *charger =
+>                         container_of(nb, struct charger_data, notifier);
+> -       u32 device_event_mask;
+> +       u32 host_event;
+>
+> -       if (!host_event)
+> +       if (ec_dev->event_data.event_type != EC_MKBP_EVENT_PCHG
+> +                       || ec_dev->event_size != sizeof(host_event))
+
+Does checkpatch complain here? Preferably it's written as
+
+       if (ec_dev->event_data.event_type != EC_MKBP_EVENT_PCHG ||
+           ec_dev->event_size != sizeof(host_event))
+
+>                 return NOTIFY_DONE;
+>
+> -       if (!(host_event & EC_HOST_EVENT_MASK(EC_HOST_EVENT_DEVICE)))
+> -               return NOTIFY_DONE;
+> +       host_event = get_unaligned_le32(&ec_dev->event_data.data.host_event);
+>
+> -       /*
+> -        * todo: Retrieve device event mask in common place
+> -        * (e.g. cros_ec_proto.c).
+> -        */
+> -       device_event_mask = cros_get_device_event(charger);
+> -       if (!(device_event_mask & EC_DEVICE_EVENT_MASK(EC_DEVICE_EVENT_WLC)))
+> +       if (!(host_event & EC_MKBP_PCHG_DEVICE_EVENT))
+>                 return NOTIFY_DONE;
+>
+>         return cros_pchg_event(charger, host_event);
+> diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+> index 271bd87bff0a25..c784bed3388865 100644
+> --- a/include/linux/platform_data/cros_ec_commands.h
+> +++ b/include/linux/platform_data/cros_ec_commands.h
+> @@ -3386,6 +3386,9 @@ enum ec_mkbp_event {
+>         /* Send an incoming CEC message to the AP */
+>         EC_MKBP_EVENT_CEC_MESSAGE = 9,
+>
+> +       /* Peripheral device charger event */
+> +       EC_MKBP_EVENT_PCHG = 12,
+> +
+>         /* Number of MKBP events */
+>         EC_MKBP_EVENT_COUNT,
+>  };
+> @@ -5527,6 +5530,67 @@ enum pchg_state {
+>         [PCHG_STATE_CONNECTED] = "CONNECTED", \
+>         }
+>
+> +/**
+
+Please use only one '*', i.e. '/*' so that this doesn't trip up
+kernel-doc generation that looks for two stars.
+
+> + * Update firmware of peripheral chip
+> + */
+> +#define EC_CMD_PCHG_UPDATE 0x0136
