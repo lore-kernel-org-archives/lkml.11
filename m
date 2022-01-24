@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2100C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:33:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AFBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:33:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421090AbiAYC0N (ORCPT
+        id S3421240AbiAYC0d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346121AbiAXTsk (ORCPT
+        Mon, 24 Jan 2022 21:26:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46130 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351078AbiAXTs5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA328C02B8E1;
-        Mon, 24 Jan 2022 11:23:42 -0800 (PST)
+        Mon, 24 Jan 2022 14:48:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03D2AB8122A;
-        Mon, 24 Jan 2022 19:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18AF4C340E5;
-        Mon, 24 Jan 2022 19:23:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 944E1601B6;
+        Mon, 24 Jan 2022 19:48:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7176DC340E5;
+        Mon, 24 Jan 2022 19:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052219;
-        bh=/wufMqX4nHb3ttYgY9ynSmxAtApyX6khtVhKyV0tUd8=;
+        s=korg; t=1643053736;
+        bh=qmKODafzn0xTB1HxAA7mC+0HKJowUFd9fWKDNtYGq94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fUM4o/dq5XkUzTwiUVIuVIFU4YppmiwWFGevErI4PXYxE8UwdDVm1KeyrtzMEMRGc
-         ip6Fr+NW0g2I/wR/MIDhS+1tL5Jqg0tWWqyh0dXZiMpl9+GUvI8AuCiq6xynTOaenA
-         hmQYd6st7Au95IFYFvO2kHX+QAbbNd8BQOqspD5M=
+        b=rSlOggtwDSwsYd1B8bmxp2EJvIH1mtVhtXNNoXCHFI+Yg6Wau9yGk+AKV3Zg3De9H
+         muU6BwebHBAmZzzTcky3su14oV6xySMEKaUHEGnoxnmJcVnq/24xCK86UWaJzvo1CJ
+         4Eo+3Blm5GjtIoBqdCD+TVT/KulrJRxApbcGqEig=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.19 228/239] dmaengine: at_xdmac: Dont start transactions at tx_submit level
-Date:   Mon, 24 Jan 2022 19:44:26 +0100
-Message-Id: <20220124183950.357338128@linuxfoundation.org>
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 160/563] crypto: stm32 - Revert broken pm_runtime_resume_and_get changes
+Date:   Mon, 24 Jan 2022 19:38:45 +0100
+Message-Id: <20220124184029.923441972@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit bccfb96b59179d4f96cbbd1ddff8fac6d335eae4 upstream.
+[ Upstream commit 3d6b661330a7954d8136df98160d525eb04dcd6a ]
 
-tx_submit is supposed to push the current transaction descriptor to a
-pending queue, waiting for issue_pending() to be called. issue_pending()
-must start the transfer, not tx_submit(), thus remove
-at_xdmac_start_xfer() from at_xdmac_tx_submit(). Clients of at_xdmac that
-assume that tx_submit() starts the transfer must be updated and call
-dma_async_issue_pending() if they miss to call it (one example is
-atmel_serial).
+We should not call pm_runtime_resume_and_get where the reference
+count is expected to be incremented unconditionally.  This patch
+reverts these calls to the original unconditional get_sync call.
 
-As the at_xdmac_start_xfer() is now called only from
-at_xdmac_advance_work() when !at_xdmac_chan_is_enabled(), the
-at_xdmac_chan_is_enabled() check is no longer needed in
-at_xdmac_start_xfer(), thus remove it.
-
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-2-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Heiner Kallweit <hkallweit1@gmail.com>
+Fixes: 747bf30fd944 ("crypto: stm32/cryp - Fix PM reference leak...")
+Fixes: 1cb3ad701970 ("crypto: stm32/hash - Fix PM reference leak...")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/at_xdmac.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/crypto/stm32/stm32-cryp.c | 3 ++-
+ drivers/crypto/stm32/stm32-hash.c | 6 +++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -344,9 +344,6 @@ static void at_xdmac_start_xfer(struct a
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index cd57c5bae3ce9..81eb136b6c11d 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -529,7 +529,8 @@ static int stm32_cryp_hw_init(struct stm32_cryp *cryp)
+ {
+ 	int ret;
+ 	u32 cfg, hw_mode;
+-	pm_runtime_resume_and_get(cryp->dev);
++
++	pm_runtime_get_sync(cryp->dev);
  
- 	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, first);
+ 	/* Disable interrupt */
+ 	stm32_cryp_write(cryp, CRYP_IMSCR, 0);
+diff --git a/drivers/crypto/stm32/stm32-hash.c b/drivers/crypto/stm32/stm32-hash.c
+index ff5362da118d8..16bb52836b28d 100644
+--- a/drivers/crypto/stm32/stm32-hash.c
++++ b/drivers/crypto/stm32/stm32-hash.c
+@@ -812,7 +812,7 @@ static void stm32_hash_finish_req(struct ahash_request *req, int err)
+ static int stm32_hash_hw_init(struct stm32_hash_dev *hdev,
+ 			      struct stm32_hash_request_ctx *rctx)
+ {
+-	pm_runtime_resume_and_get(hdev->dev);
++	pm_runtime_get_sync(hdev->dev);
  
--	if (at_xdmac_chan_is_enabled(atchan))
--		return;
--
- 	/* Set transfer as active to not try to start it again. */
- 	first->active_xfer = true;
+ 	if (!(HASH_FLAGS_INIT & hdev->flags)) {
+ 		stm32_hash_write(hdev, HASH_CR, HASH_CR_INIT);
+@@ -961,7 +961,7 @@ static int stm32_hash_export(struct ahash_request *req, void *out)
+ 	u32 *preg;
+ 	unsigned int i;
  
-@@ -430,9 +427,6 @@ static dma_cookie_t at_xdmac_tx_submit(s
- 	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
- 		 __func__, atchan, desc);
- 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
--	if (list_is_singular(&atchan->xfers_list))
--		at_xdmac_start_xfer(atchan, desc);
--
- 	spin_unlock_irqrestore(&atchan->lock, irqflags);
- 	return cookie;
- }
+-	pm_runtime_resume_and_get(hdev->dev);
++	pm_runtime_get_sync(hdev->dev);
+ 
+ 	while ((stm32_hash_read(hdev, HASH_SR) & HASH_SR_BUSY))
+ 		cpu_relax();
+@@ -999,7 +999,7 @@ static int stm32_hash_import(struct ahash_request *req, const void *in)
+ 
+ 	preg = rctx->hw_context;
+ 
+-	pm_runtime_resume_and_get(hdev->dev);
++	pm_runtime_get_sync(hdev->dev);
+ 
+ 	stm32_hash_write(hdev, HASH_IMR, *preg++);
+ 	stm32_hash_write(hdev, HASH_STR, *preg++);
+-- 
+2.34.1
+
 
 
