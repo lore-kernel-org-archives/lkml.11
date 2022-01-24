@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C7BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87474C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237425AbiAXTR2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:17:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346627AbiAXTHH (ORCPT
+        id S1344922AbiAXTRf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:17:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36572 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345884AbiAXTGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:07:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1F4C0613A7;
-        Mon, 24 Jan 2022 11:01:33 -0800 (PST)
+        Mon, 24 Jan 2022 14:06:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7E13B8123A;
-        Mon, 24 Jan 2022 19:01:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2B01C36AF5;
-        Mon, 24 Jan 2022 19:01:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16EB0611DA;
+        Mon, 24 Jan 2022 19:06:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD784C340E5;
+        Mon, 24 Jan 2022 19:06:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050891;
-        bh=4vD56yFlgUBC5atksTz50D4Z2EyBrU/6DhqxbVI8tNM=;
+        s=korg; t=1643051197;
+        bh=Sh+M3L0lB9KpZ1YUcJstaGMEojTqMlUaXuswNPJ9dYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tqI8XLMtfrAdozpQ3AFu04cvQywJ1iXapoo7GOnmBfpuzljkxDoDaVnZfvXr9OfXj
-         sVxAVVvToWpDik6CSyaWDGYh9GsS/ocTNbjyzYGqzRjOWZPV0c1UzhfX5Wz9mne7ey
-         igMXE4toGqyH4nrsaZhyrUYlUiqQGj8HVKSGLoWw=
+        b=pBsBpRwJde5Gu4jGiFC6DzHgiPOPkFMlYspxUf2obor0F5oOL1PPCnDWuqI3iKMG3
+         C854UMPjLfBRk9kz3QWMxXRXkgBf8U3ZFxui3tL6DGjvelIOjN1vCbOq6MDHWLwC49
+         bavDU/9/7i2h203uzEJmhuFSmKrj1914cN0lJfg4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 4.9 144/157] scripts/dtc: dtx_diff: remove broken example from help text
-Date:   Mon, 24 Jan 2022 19:43:54 +0100
-Message-Id: <20220124183937.334059306@linuxfoundation.org>
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 086/186] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 24 Jan 2022 19:42:41 +0100
+Message-Id: <20220124183939.880661017@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
-this has never worked: The /proc/self/fds/... paths passed by the shell
-will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
-but even with this check removed, the function cannot work: hexdump will
-eat up the DTB magic, making the subsequent dtc call fail, as a pipe
-cannot be rewound.
+Fault injection test report debugfs entry leak as follows:
 
-Simply remove this broken example, as there is already an alternative one
-that works fine.
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
 
-Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
+
+Add the remove debugfs code to fix it.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/dtc/dtx_diff |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/scripts/dtc/dtx_diff
-+++ b/scripts/dtc/dtx_diff
-@@ -56,12 +56,8 @@ Otherwise DTx is treated as a dts source
-    or '/include/' to be processed.
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 1906adfd553ad..687b4d0e4c673 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3183,6 +3183,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
-    If DTx_1 and DTx_2 are in different architectures, then this script
--   may not work since \${ARCH} is part of the include path.  Two possible
--   workarounds:
--
--      `basename $0` \\
--          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
--          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
-+   may not work since \${ARCH} is part of the include path.  The following
-+   workaround can be used:
- 
-       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
-       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
+-- 
+2.34.1
+
 
 
