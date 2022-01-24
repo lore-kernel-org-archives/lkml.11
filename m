@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA101C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3344C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410036AbiAYA2S (ORCPT
+        id S3410105AbiAYA22 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:28:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        Mon, 24 Jan 2022 19:28:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455300AbiAXVfL (ORCPT
+        with ESMTP id S2361415AbiAXXkB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E66C075D3F;
-        Mon, 24 Jan 2022 12:22:04 -0800 (PST)
+        Mon, 24 Jan 2022 18:40:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F78C078512;
+        Mon, 24 Jan 2022 13:38:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F406B815A5;
-        Mon, 24 Jan 2022 20:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E441C340E5;
-        Mon, 24 Jan 2022 20:22:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5045861502;
+        Mon, 24 Jan 2022 21:38:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AFFBC340E4;
+        Mon, 24 Jan 2022 21:38:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055721;
-        bh=dqbWfEMlNE/Ni041E7Yb6Yct9cWyfdGrWOafYB2jzak=;
+        s=korg; t=1643060309;
+        bh=Ewihb/s7hmwafORVRqMeu0MC+lgGBymeShU96pQLBU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qcRj2v4cipempaCDN+qURO+0uz/Se15egnCT+4bW8SzsaOuG1TlU4dF1UH458P21H
-         vwQwRQs5r0N8LQ6ZQqNrKbd8GBWydNHKsO9eqB+xP59/OIolO2g42mReQuj+mzW9Us
-         iftiRuTKTI80A8RtQFG+ByIPq2orfsy8u7a4LEnY=
+        b=F+FATGPBITqPMUPhLka/fClfX4WLZXuy8M7RZlqCWBjcAbyrL+d1um89CjkVyaT/H
+         t214J0EVRGpjPoC3iT/1b59ej96trrntM0ovYR5SObOpYfi2AEJDMo3q59HHbkW4/i
+         PECknk+sOTrWrpU9YBH4101rFXPZEApv/GRcqC68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 244/846] media: msi001: fix possible null-ptr-deref in msi001_probe()
-Date:   Mon, 24 Jan 2022 19:36:01 +0100
-Message-Id: <20220124184109.354390187@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: [PATCH 5.16 0872/1039] PCI: xgene: Fix IB window setup
+Date:   Mon, 24 Jan 2022 19:44:21 +0100
+Message-Id: <20220124184154.612147474@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,58 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Rob Herring <robh@kernel.org>
 
-[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
+commit c7a75d07827a1f33d566e18e6098379cc2a0c2b2 upstream.
 
-I got a null-ptr-deref report:
+Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+broke PCI support on XGene. The cause is the IB resources are now sorted
+in address order instead of being in DT dma-ranges order. The result is
+which inbound registers are used for each region are swapped. I don't
+know the details about this h/w, but it appears that IB region 0
+registers can't handle a size greater than 4GB. In any case, limiting
+the size for region 0 is enough to get back to the original assignment
+of dma-ranges to regions.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000060
-...
-RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
-...
-Call Trace:
- msi001_probe+0x13b/0x24b [msi001]
- spi_probe+0xeb/0x130
-...
- do_syscall_64+0x35/0xb0
-
-In msi001_probe(), if the creation of control for bandwidth_auto
-fails, there will be a null-ptr-deref issue when it is used in
-v4l2_ctrl_auto_cluster().
-
-Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
-
-Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
-Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/all/CA+enf=v9rY_xnZML01oEgKLmvY1NGBUUhnSJaETmXtDtXfaczA@mail.gmail.com/
+Link: https://lore.kernel.org/r/20211129173637.303201-1-robh@kernel.org
+Fixes: 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+Reported-by: Stéphane Graber <stgraber@ubuntu.com>
+Tested-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
+Cc: stable@vger.kernel.org # v5.5+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/tuners/msi001.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/pci/controller/pci-xgene.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
-index 78e6fd600d8ef..44247049a3190 100644
---- a/drivers/media/tuners/msi001.c
-+++ b/drivers/media/tuners/msi001.c
-@@ -442,6 +442,13 @@ static int msi001_probe(struct spi_device *spi)
- 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
- 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
-+	if (dev->hdl.error) {
-+		ret = dev->hdl.error;
-+		dev_err(&spi->dev, "Could not initialize controls\n");
-+		/* control init failed, free handler */
-+		goto err_ctrl_handler_free;
-+	}
-+
- 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
- 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
--- 
-2.34.1
-
+--- a/drivers/pci/controller/pci-xgene.c
++++ b/drivers/pci/controller/pci-xgene.c
+@@ -465,7 +465,7 @@ static int xgene_pcie_select_ib_reg(u8 *
+ 		return 1;
+ 	}
+ 
+-	if ((size > SZ_1K) && (size < SZ_1T) && !(*ib_reg_mask & (1 << 0))) {
++	if ((size > SZ_1K) && (size < SZ_4G) && !(*ib_reg_mask & (1 << 0))) {
+ 		*ib_reg_mask |= (1 << 0);
+ 		return 0;
+ 	}
 
 
