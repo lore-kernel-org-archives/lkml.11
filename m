@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC125C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C52C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421536AbiAYC1H (ORCPT
+        id S3421509AbiAYC1D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351000AbiAXTul (ORCPT
+        Mon, 24 Jan 2022 21:27:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45688 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350929AbiAXTui (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:50:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFDFC019B19;
-        Mon, 24 Jan 2022 11:24:03 -0800 (PST)
+        Mon, 24 Jan 2022 14:50:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B514BB8121F;
-        Mon, 24 Jan 2022 19:24:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9DF7C340E7;
-        Mon, 24 Jan 2022 19:24:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E468260B03;
+        Mon, 24 Jan 2022 19:50:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC67CC340E5;
+        Mon, 24 Jan 2022 19:50:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052241;
-        bh=4vD56yFlgUBC5atksTz50D4Z2EyBrU/6DhqxbVI8tNM=;
+        s=korg; t=1643053836;
+        bh=UCxDnoM5ZMozC2PjxW1JyBuEh17gqFvQToMn369sdiU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z0HYXFlXUDqFI/JPxUjk9Vy5wHkU+xn05tf7HLTnyyay4Iq9YcBSO3ZUS/CFHj3Vg
-         +Cyreyk9QfxnyyzRAhMR6fzxSJDVWWMSnfSB6RZx0in/Yz2Ml4GkJPhjNc1Zk3xsGc
-         4KFp7GX2BJ00I4PE/bdXoXjp/FaCXk+EktQJxNwk=
+        b=UMh5MnxK5zfZGVcNKCuqgDDRNIPrpXhPozvc7EL9IpKBsJNGh3mGhkSZg7h/5hkks
+         RoaekyoUKQsj6fMFCUZJ6Z+SEAfG35R/o4Ik3JIVjvII8C5uPiyQrAspjGlNgV+IRo
+         l2aIvOkXpaZ5vxi7aOULWda2PS8Fxq5Ze+ke/K6k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 4.19 234/239] scripts/dtc: dtx_diff: remove broken example from help text
-Date:   Mon, 24 Jan 2022 19:44:32 +0100
-Message-Id: <20220124183950.543102350@linuxfoundation.org>
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 193/563] backlight: qcom-wled: Use cpu_to_le16 macro to perform conversion
+Date:   Mon, 24 Jan 2022 19:39:18 +0100
+Message-Id: <20220124184031.108040168@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +51,96 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
+[ Upstream commit 0a139358548968b2ff308257b4fbeec7badcc3e1 ]
 
-dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
-this has never worked: The /proc/self/fds/... paths passed by the shell
-will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
-but even with this check removed, the function cannot work: hexdump will
-eat up the DTB magic, making the subsequent dtc call fail, as a pipe
-cannot be rewound.
+The kernel already provides appropriate primitives to perform endianness
+conversion which should be used in favour of manual bit-wrangling.
 
-Simply remove this broken example, as there is already an alternative one
-that works fine.
-
-Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
-Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-4-marijn.suijten@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/dtc/dtx_diff |    8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+ drivers/video/backlight/qcom-wled.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
---- a/scripts/dtc/dtx_diff
-+++ b/scripts/dtc/dtx_diff
-@@ -56,12 +56,8 @@ Otherwise DTx is treated as a dts source
-    or '/include/' to be processed.
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index 70fcee74866a5..13368044d0a75 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -231,14 +231,14 @@ struct wled {
+ static int wled3_set_brightness(struct wled *wled, u16 brightness)
+ {
+ 	int rc, i;
+-	u8 v[2];
++	__le16 v;
  
-    If DTx_1 and DTx_2 are in different architectures, then this script
--   may not work since \${ARCH} is part of the include path.  Two possible
--   workarounds:
--
--      `basename $0` \\
--          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
--          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
-+   may not work since \${ARCH} is part of the include path.  The following
-+   workaround can be used:
+-	v[0] = brightness & 0xff;
+-	v[1] = (brightness >> 8) & 0xf;
++	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
  
-       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
-       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->ctrl_addr +
+-				       WLED3_SINK_REG_BRIGHT(i), v, 2);
++				       WLED3_SINK_REG_BRIGHT(i),
++				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+ 	}
+@@ -250,18 +250,18 @@ static int wled4_set_brightness(struct wled *wled, u16 brightness)
+ {
+ 	int rc, i;
+ 	u16 low_limit = wled->max_brightness * 4 / 1000;
+-	u8 v[2];
++	__le16 v;
+ 
+ 	/* WLED4's lower limit of operation is 0.4% */
+ 	if (brightness > 0 && brightness < low_limit)
+ 		brightness = low_limit;
+ 
+-	v[0] = brightness & 0xff;
+-	v[1] = (brightness >> 8) & 0xf;
++	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
+ 
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->sink_addr +
+-				       WLED4_SINK_REG_BRIGHT(i), v, 2);
++				       WLED4_SINK_REG_BRIGHT(i),
++				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+ 	}
+@@ -273,21 +273,20 @@ static int wled5_set_brightness(struct wled *wled, u16 brightness)
+ {
+ 	int rc, offset;
+ 	u16 low_limit = wled->max_brightness * 1 / 1000;
+-	u8 v[2];
++	__le16 v;
+ 
+ 	/* WLED5's lower limit is 0.1% */
+ 	if (brightness < low_limit)
+ 		brightness = low_limit;
+ 
+-	v[0] = brightness & 0xff;
+-	v[1] = (brightness >> 8) & 0x7f;
++	v = cpu_to_le16(brightness & WLED5_SINK_REG_BRIGHT_MAX_15B);
+ 
+ 	offset = (wled->cfg.mod_sel == MOD_A) ?
+ 		  WLED5_SINK_REG_MOD_A_BRIGHTNESS_LSB :
+ 		  WLED5_SINK_REG_MOD_B_BRIGHTNESS_LSB;
+ 
+ 	rc = regmap_bulk_write(wled->regmap, wled->sink_addr + offset,
+-			       v, 2);
++			       &v, sizeof(v));
+ 	return rc;
+ }
+ 
+-- 
+2.34.1
+
 
 
