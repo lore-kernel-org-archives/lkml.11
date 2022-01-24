@@ -2,112 +2,252 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 891E5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C62C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:40:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236778AbiAXJjt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:39:49 -0500
-Received: from mail-eopbgr130105.outbound.protection.outlook.com ([40.107.13.105]:48577
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234484AbiAXJjc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:39:32 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CU0azdYQiffprp75Sc2JwjyR5iFCrNnzXtZAvfHEjZTO7aCFyhE24YKOaI64J2gOMU8itw9NFSb8JDdNDX+VsZShDVCepVs2gXU5t+xQSUG80yromxvKDTXbH6+RERl2M6cGT6uHENepUakNINp/J8UiVSegQALN6i7tqLXywuhdMCDdmBL1xEpJZZqIqkgnlCAArh4rhNDqhVNbp9VWsxN5N5DOTvrdi+4XpHnPE1u5FEnqWTud6Blen4z2UgyGDcVm5YW3TlbbGYVSSsNAZT1Nb5eZ/tqMj9YVK4xCE8KfwV52CZ1U0pUFd5Sd+AogUZAPpSYg+cqhubDdjpz/6w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=zPf28QEpET5P8MbnP9OHJORM/2XVgfCMG6/0VEDgU1o=;
- b=VWElwSEkfGp7xh1b1uxY2UGjI6tJCvB91j2YETAyfeUodMhi1bxMAEOwTz1dg3ub4mVj3qgkqcfn9zsg+7hYP/ui4jhSErAh4ErNhflTc978RGURMKT5/7qkKWyRd2hBXqllbDigNl2Z01qpipHdeqkmXcQSDwnlPBe9el7niV3oK3fIyKuUaltaekNfW1yfCiOfiupU0/3C6xZvXD+zpchoQhBn8rWUqQiQ5ljx70ovh6qmGYlisuKNIGvSlsKQFZUSjbw7m4vI4JELn4RmHQj2vqnEWpBSJm6h7RqRnaf5k4UfMYsrPqf2iLXOkomkjeR8IRx3a4wza6k2eu1VeA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=softfail (sender ip
- is 193.8.40.112) smtp.rcpttodomain=leica-geosystems.com.cn
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=fail (p=quarantine sp=quarantine
- pct=100) action=quarantine header.from=leica-geosystems.com.cn; dkim=none
- (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zPf28QEpET5P8MbnP9OHJORM/2XVgfCMG6/0VEDgU1o=;
- b=NLrMr2ftulYu+w682JOBQiEmVOCAinhVvMY/vLz7LuRH1lHfDBhFk37pi/ZdVfxrO5wyzN52LMMb8oHxObe79hYyV49BXd1Gdj7to+zUQc59kaJUBNnTrxKAnxMzBv11fGam9+p7aE0HBQeK4JKu/62J/jkVvBVtROnT068rfbc=
-Received: from AS9PR06CA0037.eurprd06.prod.outlook.com (2603:10a6:20b:463::21)
- by VI1PR06MB4464.eurprd06.prod.outlook.com (2603:10a6:803:5f::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Mon, 24 Jan
- 2022 09:39:30 +0000
-Received: from VE1EUR02FT049.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:463:cafe::c9) by AS9PR06CA0037.outlook.office365.com
- (2603:10a6:20b:463::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
- Transport; Mon, 24 Jan 2022 09:39:29 +0000
-X-MS-Exchange-Authentication-Results: spf=softfail (sender IP is 193.8.40.112)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=fail action=quarantine
- header.from=leica-geosystems.com.cn;
-Received-SPF: SoftFail (protection.outlook.com: domain of transitioning
- leica-geosystems.com.cn discourages use of 193.8.40.112 as permitted sender)
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.112) by
- VE1EUR02FT049.mail.protection.outlook.com (10.152.12.161) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 09:39:29 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     qing-wu.li@leica-geosystems.com.cn, jic23@kernel.org,
-        lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
-        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Subject: [PATCH V1 6/6] dt-bindings: iio: accel: sca3300: Document murata,scl3300
-Date:   Mon, 24 Jan 2022 09:39:12 +0000
-Message-Id: <20220124093912.2429190-7-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn>
+        id S236787AbiAXJkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:40:23 -0500
+Received: from azure-sdnproxy.icoremail.net ([52.175.55.52]:60820 "HELO
+        azure-sdnproxy-2.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with SMTP id S236844AbiAXJj5 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 04:39:57 -0500
+X-Greylist: delayed 419 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jan 2022 04:39:56 EST
+Received: from localhost.localdomain (unknown [123.60.114.22])
+        by mail-app4 (Coremail) with SMTP id cS_KCgCH_YC6ce5hI41KCA--.1780S2;
+        Mon, 24 Jan 2022 17:30:35 +0800 (CST)
+From:   lostway@zju.edu.cn
+To:     linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
+        bp@alien8.de, tony.luck@intel.com
+Subject: [PATCH] RAS: Report ARM processor information to userspace
+Date:   Mon, 24 Jan 2022 17:30:34 +0800
+Message-Id: <20220124093034.33095-1-lostway@zju.edu.cn>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 15e9b8e4-8056-43a5-7c70-08d9df1d6b49
-X-MS-TrafficTypeDiagnostic: VI1PR06MB4464:EE_
-X-Microsoft-Antispam-PRVS: <VI1PR06MB44648DB77CEC3C57244C8C85D75E9@VI1PR06MB4464.eurprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1079;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: OaQ2Dbe1Bf4af3lIosGMImKnIgV7id8wx07cHg9W9EE8ulSLpvxdeSz9K1FrRD6xEihOjqkHXMGwZSfFLpWa32PcFMWRACmM6kQCRIa4MKrW2fG1LhPSQa7T4HDeXaWeuhfxJ1d5M9O7Dbkt41bjbsxRd9l1GmDKiQZWigf3KYpwBK+/1WcvJ/RtakKXgIjLXTbE0VLHk5eYSXWvms/52aW2U18WHQQRbrgne/1YvC7I8EbPekP5gTO48c1R+NQvUFb2SwNGYI64hnqRJN2B+8X1qghFZJy+15/Mud8V6yeGmnpxoi2DqwVAYi3UYziWghFKb5WIJr/lgAKYLGHA2eE2LHeaIktMV2+oHVA+j5esj6RdmSTyO6r3pr2995rbC3OqUrAvPj844lYNx3uyUWcpsYcIE2EGFUDP7x03LsoNbqHAH/XdUodVEoinpC20l/Jywc34slEytIBceiuxg8SOcctW7Q75JHLYXwPkVnipbXoNf9eFvDWJZg0uQqO8SuF6Ej245ZOptJc43jP+/qD5m3KC9qEF0nBEo+GCnAAjEq/LqcDBmjECd5RGic1k//ZAsxvNysZAuuC8vCtopDKDTJ9n7d74NjzMWl9oVwU9TwMO56ygoImyDEzzdyJc/gUAA7Qy05t+MGwYesNuCRst5PyhU4kdK3rVRlP8hnoB7SEg2eqD1l1T5pd9i9HlhoFjzkUgAXd8Y+D1cE8uGe9+QDCWQPFhb0XuIeK4XxBq1D/VbpCrym/2wm/3nUSdW+IJvov/qb3rFnjG2hJ2vnLWP4OS+09DbLsrSE+zBx+91HemveRemH/gg2GRue9N
-X-Forefront-Antispam-Report: CIP:193.8.40.112;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:mailhost.polymeca.com;CAT:NONE;SFS:(4636009)(46966006)(40470700004)(36840700001)(36860700001)(508600001)(70586007)(4326008)(186003)(1076003)(36756003)(2906002)(336012)(81166007)(82310400004)(47076005)(6512007)(86362001)(2616005)(6486002)(956004)(36736006)(6666004)(316002)(118246002)(8936002)(26005)(8676002)(6506007)(5660300002)(70206006)(356005)(40460700003)(4744005)(107886003);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 09:39:29.4472
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15e9b8e4-8056-43a5-7c70-08d9df1d6b49
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.112];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT049.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR06MB4464
+X-CM-TRANSID: cS_KCgCH_YC6ce5hI41KCA--.1780S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxtryUtr4UGF1Duw1DWw4UArb_yoWxKr17pF
+        n8CryYkr4rJFsxG3y3JFWru3y3Z34ruw1DK343Xay7CFs5ur1qgFs0gr42kF93JF98J34a
+        q3Wqgr9xCa4DJrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkYb7Iv0xC_tr1lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
+        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
+        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
+        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
+        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
+        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
+        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4kE6xkIj40Ew7xC0wCF04k2
+        0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
+        8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41l
+        IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIx
+        AIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2
+        jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8dpnPUUUUU==
+X-CM-SenderInfo: isrxjjaqquq6lmxovvfxof0/
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-initial DT bindings for Murata scl3300 inclinometer.
+From: Shengwei Luo <luoshengwei@huawei.com>
 
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+The ARM processor error section includes several ARM processor error
+information, several ARM processor context information and several
+vendor specific error information structures. In addition to these
+info, there are error severity and cpu logical index about the event.
+Report all of these information to userspace via perf i/f.
+
+Original-Author: Jason Tian <jason@os.amperecomputing.com>
+Signed-off-by: Shengwei Luo <luoshengwei@huawei.com>
 ---
- Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/acpi/apei/ghes.c |  3 +--
+ drivers/ras/ras.c        | 46 ++++++++++++++++++++++++++++++++++++--
+ include/linux/ras.h      | 15 +++++++++++--
+ include/ras/ras_event.h  | 48 +++++++++++++++++++++++++++++++++++-----
+ 4 files changed, 101 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-index 55fd3548e3b6..f6e2a16a710b 100644
---- a/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/murata,sca3300.yaml
-@@ -17,6 +17,7 @@ properties:
-   compatible:
-     enum:
-       - murata,sca3300
-+      - murata,scl3300
+diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
+index 0c5c9acc6254..f824c26057b1 100644
+--- a/drivers/acpi/apei/ghes.c
++++ b/drivers/acpi/apei/ghes.c
+@@ -490,9 +490,8 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
+ 	int sec_sev, i;
+ 	char *p;
  
-   reg:
-     maxItems: 1
+-	log_arm_hw_error(err);
+-
+ 	sec_sev = ghes_severity(gdata->error_severity);
++	log_arm_hw_error(err, sec_sev);
+ 	if (sev != GHES_SEV_RECOVERABLE || sec_sev != GHES_SEV_RECOVERABLE)
+ 		return false;
+ 
+diff --git a/drivers/ras/ras.c b/drivers/ras/ras.c
+index 95540ea8dd9d..1ec1e51f457c 100644
+--- a/drivers/ras/ras.c
++++ b/drivers/ras/ras.c
+@@ -21,9 +21,51 @@ void log_non_standard_event(const guid_t *sec_type, const guid_t *fru_id,
+ 	trace_non_standard_event(sec_type, fru_id, fru_text, sev, err, len);
+ }
+ 
+-void log_arm_hw_error(struct cper_sec_proc_arm *err)
++void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev)
+ {
+-	trace_arm_event(err);
++	u32 pei_len;
++	u32 ctx_len = 0;
++	u32 vsei_len;
++	u8 *pei_err;
++	u8 *ctx_err;
++	u8 *ven_err_data;
++	struct cper_arm_err_info *err_info;
++	struct cper_arm_ctx_info *ctx_info;
++	int n, sz;
++	int cpu;
++
++	pei_len = sizeof(struct cper_arm_err_info) * err->err_info_num;
++	pei_err = (u8 *)err + sizeof(struct cper_sec_proc_arm);
++
++	err_info = (struct cper_arm_err_info *)(err + 1);
++	ctx_info = (struct cper_arm_ctx_info *)(err_info + err->err_info_num);
++	ctx_err = (u8 *)ctx_info;
++	for (n = 0; n < err->context_info_num; n++) {
++		sz = sizeof(struct cper_arm_ctx_info) + ctx_info->size;
++		ctx_info = (struct cper_arm_ctx_info *)((long)ctx_info + sz);
++		ctx_len += sz;
++	}
++
++	vsei_len = err->section_length - (sizeof(struct cper_sec_proc_arm) +
++						pei_len + ctx_len);
++	if (vsei_len < 0) {
++		pr_warn(FW_BUG
++			"section length: %d\n", err->section_length);
++		pr_warn(FW_BUG
++			"section length is too small\n");
++		pr_warn(FW_BUG
++			"firmware-generated error record is incorrect\n");
++		vsei_len = 0;
++	}
++	ven_err_data = (u8 *)ctx_info;
++
++	cpu = GET_LOGICAL_INDEX(err->mpidr);
++	/* when return value is invalid, set cpu index to -1 */
++	if (cpu < 0)
++		cpu = -1;
++
++	trace_arm_event(err, pei_err, pei_len, ctx_err, ctx_len,
++			ven_err_data, vsei_len, sev, cpu);
+ }
+ 
+ static int __init ras_init(void)
+diff --git a/include/linux/ras.h b/include/linux/ras.h
+index 1f4048bf2674..4529775374d0 100644
+--- a/include/linux/ras.h
++++ b/include/linux/ras.h
+@@ -24,7 +24,7 @@ int __init parse_cec_param(char *str);
+ void log_non_standard_event(const guid_t *sec_type,
+ 			    const guid_t *fru_id, const char *fru_text,
+ 			    const u8 sev, const u8 *err, const u32 len);
+-void log_arm_hw_error(struct cper_sec_proc_arm *err);
++void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev);
+ #else
+ static inline void
+ log_non_standard_event(const guid_t *sec_type,
+@@ -32,7 +32,18 @@ log_non_standard_event(const guid_t *sec_type,
+ 		       const u8 sev, const u8 *err, const u32 len)
+ { return; }
+ static inline void
+-log_arm_hw_error(struct cper_sec_proc_arm *err) { return; }
++log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev) { return; }
+ #endif
+ 
++#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
++#include <asm/smp_plat.h>
++/*
++ * Include ARM specific SMP header which provides a function mapping mpidr to
++ * cpu logical index.
++ */
++#define GET_LOGICAL_INDEX(mpidr) get_logical_index(mpidr & MPIDR_HWID_BITMASK)
++#else
++#define GET_LOGICAL_INDEX(mpidr) -EINVAL
++#endif /* CONFIG_ARM || CONFIG_ARM64 */
++
+ #endif /* __RAS_H__ */
+diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
+index d0337a41141c..92cfb61bdb20 100644
+--- a/include/ras/ras_event.h
++++ b/include/ras/ras_event.h
+@@ -168,11 +168,24 @@ TRACE_EVENT(mc_event,
+  * This event is generated when hardware detects an ARM processor error
+  * has occurred. UEFI 2.6 spec section N.2.4.4.
+  */
++#define APEIL "ARM Processor Err Info data len"
++#define APEID "ARM Processor Err Info raw data"
++#define APECIL "ARM Processor Err Context Info data len"
++#define APECID "ARM Processor Err Context Info raw data"
++#define VSEIL "Vendor Specific Err Info data len"
++#define VSEID "Vendor Specific Err Info raw data"
+ TRACE_EVENT(arm_event,
+ 
+-	TP_PROTO(const struct cper_sec_proc_arm *proc),
++	TP_PROTO(const struct cper_sec_proc_arm *proc, const u8 *pei_err,
++			const u32 pei_len,
++			const u8 *ctx_err,
++			const u32 ctx_len,
++			const u8 *oem,
++			const u32 oem_len,
++			u8 sev,
++			int cpu),
+ 
+-	TP_ARGS(proc),
++	TP_ARGS(proc, pei_err, pei_len, ctx_err, ctx_len, oem, oem_len, sev, cpu),
+ 
+ 	TP_STRUCT__entry(
+ 		__field(u64, mpidr)
+@@ -180,6 +193,14 @@ TRACE_EVENT(arm_event,
+ 		__field(u32, running_state)
+ 		__field(u32, psci_state)
+ 		__field(u8, affinity)
++		__field(u32, pei_len)
++		__dynamic_array(u8, buf, pei_len)
++		__field(u32, ctx_len)
++		__dynamic_array(u8, buf1, ctx_len)
++		__field(u32, oem_len)
++		__dynamic_array(u8, buf2, oem_len)
++		__field(u8, sev)
++		__field(int, cpu)
+ 	),
+ 
+ 	TP_fast_assign(
+@@ -199,12 +220,29 @@ TRACE_EVENT(arm_event,
+ 			__entry->running_state = ~0;
+ 			__entry->psci_state = ~0;
+ 		}
++		__entry->pei_len = pei_len;
++		memcpy(__get_dynamic_array(buf), pei_err, pei_len);
++		__entry->ctx_len = ctx_len;
++		memcpy(__get_dynamic_array(buf1), ctx_err, ctx_len);
++		__entry->oem_len = oem_len;
++		memcpy(__get_dynamic_array(buf2), oem, oem_len);
++		__entry->sev = sev;
++		__entry->cpu = cpu;
+ 	),
+ 
+-	TP_printk("affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
+-		  "running state: %d; PSCI state: %d",
++	TP_printk("cpu: %d; error: %d; affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
++		  "running state: %d; PSCI state: %d; "
++		  "%s: %d; %s: %s; %s: %d; %s: %s; %s: %d; %s: %s",
++		  __entry->cpu,
++		  __entry->sev,
+ 		  __entry->affinity, __entry->mpidr, __entry->midr,
+-		  __entry->running_state, __entry->psci_state)
++		  __entry->running_state, __entry->psci_state,
++		  APEIL, __entry->pei_len, APEID,
++		  __print_hex(__get_dynamic_array(buf), __entry->pei_len),
++		  APECIL, __entry->ctx_len, APECID,
++		  __print_hex(__get_dynamic_array(buf1), __entry->ctx_len),
++		  VSEIL, __entry->oem_len, VSEID,
++		  __print_hex(__get_dynamic_array(buf2), __entry->oem_len))
+ );
+ 
+ /*
 -- 
-2.25.1
+2.27.0
 
