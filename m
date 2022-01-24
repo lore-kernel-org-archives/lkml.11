@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C119C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC24FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581386AbiAXWLl (ORCPT
+        id S1581478AbiAXWLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:41 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40640 "EHLO
+        Mon, 24 Jan 2022 17:11:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41884 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452629AbiAXVZ7 (ORCPT
+        with ESMTP id S1452736AbiAXV00 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:59 -0500
+        Mon, 24 Jan 2022 16:26:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6B35B81188;
-        Mon, 24 Jan 2022 21:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE34CC340E4;
-        Mon, 24 Jan 2022 21:25:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17785B8122A;
+        Mon, 24 Jan 2022 21:26:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 684BCC340E4;
+        Mon, 24 Jan 2022 21:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059557;
-        bh=4DGqvUVNgCI1oxIPLP0J8vXnSD8dR9XxMPl+oh1CnQA=;
+        s=korg; t=1643059583;
+        bh=0co8E5XKLYjxH3n0wc4rra2FJH6eQg6IaRzMkRhkBdA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R4ZtlUJGu4MGWm/JUR3KszMiTA26doCPbL87CZZhuzGViU3fWakVR6K9/65Tc3MRK
-         kDVca+pbQ6vN713/OYG7RvNlp6BeFQ+PIwvD9NjjoClSD7kczOoCg/hO4psIwuk7sl
-         OWQx/odaSnTXflIra+FrZGu64DIBbI+7uAyfBZac=
+        b=E37f8ZBqxnOHiYBTaOZ2ATbdaFDeNTBx+V2luRMf9AyWbO437kESJ0mrgOpqejzzs
+         A/+WfQJjRmSzQHXS8dOIJw4gG/vqFeCon0M6vn8Ex8JzNsWZP5ISWsVqsGbbz817sc
+         IkRerfu14AwOpf0bJUkOcbtydT9kdb7Z3IFh0P5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Yang Shen <shenyang39@huawei.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0623/1039] arm64: dts: renesas: Fix thermal bindings
-Date:   Mon, 24 Jan 2022 19:40:12 +0100
-Message-Id: <20220124184146.281546297@linuxfoundation.org>
+Subject: [PATCH 5.16 0665/1039] crypto: hisilicon/qm - fix deadlock for remove driver
+Date:   Mon, 24 Jan 2022 19:40:54 +0100
+Message-Id: <20220124184147.732689466@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,322 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+From: Yang Shen <shenyang39@huawei.com>
 
-[ Upstream commit 82ce79391d0ec25ec8aaae3c0617b71048ff0836 ]
+[ Upstream commit fc6c01f0cd10b89c4b01dd2940e0b0cda1bd82fb ]
 
-The binding node names for the thermal zones are not successfully
-validated by the dt-schemas.
+When remove the driver and executing the task occur at the same time,
+the following deadlock will be triggered:
 
-Fix the validation by changing from sensor-thermalN or thermal-sensor-N
-to sensorN-thermal.  Provide node labels of the form sensorN_thermal to
-ensure consistency with the other platform implementations.
+Chain exists of:
+    sva_lock --> uacce_mutex --> &qm->qps_lock
+    Possible unsafe locking scenario:
+		CPU0                    CPU1
+		----                    ----
+	lock(&qm->qps_lock);
+					lock(uacce_mutex);
+					lock(&qm->qps_lock);
+	lock(sva_lock);
 
-Signed-off-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Link: https://lore.kernel.org/r/20211104224033.3997504-1-kieran.bingham+renesas@ideasonboard.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+And the lock 'qps_lock' is used to protect qp. Therefore, it's reasonable
+cycle is to continue until the qp memory is released. So move the release
+lock infront of 'uacce_remove'.
+
+Signed-off-by: Yang Shen <shenyang39@huawei.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/r8a774a1.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77951.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77960.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77961.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77965.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77980.dtsi |  4 ++--
- arch/arm64/boot/dts/renesas/r8a779a0.dtsi | 10 +++++-----
- 9 files changed, 28 insertions(+), 28 deletions(-)
+ drivers/crypto/hisilicon/qm.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-index 6f4fffacfca21..e70aa5a087402 100644
---- a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-@@ -2784,7 +2784,7 @@
- 	};
+diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
+index 70b0405494db5..1dc6a27ba0e0d 100644
+--- a/drivers/crypto/hisilicon/qm.c
++++ b/drivers/crypto/hisilicon/qm.c
+@@ -3399,6 +3399,7 @@ void hisi_qm_uninit(struct hisi_qm *qm)
+ 		dma_free_coherent(dev, qm->qdma.size,
+ 				  qm->qdma.va, qm->qdma.dma);
+ 	}
++	up_write(&qm->qps_lock);
  
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2799,7 +2799,7 @@
- 			};
- 		};
+ 	qm_irq_unregister(qm);
+ 	hisi_qm_pci_uninit(qm);
+@@ -3406,8 +3407,6 @@ void hisi_qm_uninit(struct hisi_qm *qm)
+ 		uacce_remove(qm->uacce);
+ 		qm->uacce = NULL;
+ 	}
+-
+-	up_write(&qm->qps_lock);
+ }
+ EXPORT_SYMBOL_GPL(hisi_qm_uninit);
  
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2814,7 +2814,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-index 0f7bdfc90a0dc..6c5694fa66900 100644
---- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-@@ -2629,7 +2629,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2644,7 +2644,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2659,7 +2659,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-index 379a1300272ba..62209ab6deb9a 100644
---- a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-@@ -2904,7 +2904,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2919,7 +2919,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2934,7 +2934,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77951.dtsi b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-index 1768a3e6bb8da..193d81be40fc4 100644
---- a/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-@@ -3375,7 +3375,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -3390,7 +3390,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -3405,7 +3405,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77960.dtsi b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-index 2bd8169735d35..b526e4f0ee6a8 100644
---- a/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-@@ -2972,7 +2972,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2987,7 +2987,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -3002,7 +3002,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77961.dtsi b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-index 86d59e7e1a876..b1a00f5df4311 100644
---- a/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-@@ -2730,7 +2730,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2745,7 +2745,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2760,7 +2760,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77965.dtsi b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-index 08df75606430b..f9679a4dd85fa 100644
---- a/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-@@ -2784,7 +2784,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2799,7 +2799,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2814,7 +2814,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77980.dtsi b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-index 6347d15e66b64..21fe602bd25af 100644
---- a/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-@@ -1580,7 +1580,7 @@
- 	};
- 
- 	thermal-zones {
--		thermal-sensor-1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -1599,7 +1599,7 @@
- 			};
- 		};
- 
--		thermal-sensor-2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a779a0.dtsi b/arch/arm64/boot/dts/renesas/r8a779a0.dtsi
-index 43bf2cbfbd8f7..770a23b769d86 100644
---- a/arch/arm64/boot/dts/renesas/r8a779a0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a779a0.dtsi
-@@ -2607,7 +2607,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2621,7 +2621,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2635,7 +2635,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-@@ -2649,7 +2649,7 @@
- 			};
- 		};
- 
--		sensor_thermal4: sensor-thermal4 {
-+		sensor4_thermal: sensor4-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 3>;
-@@ -2663,7 +2663,7 @@
- 			};
- 		};
- 
--		sensor_thermal5: sensor-thermal5 {
-+		sensor5_thermal: sensor5-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 4>;
 -- 
 2.34.1
 
