@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E634DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DAFAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245601AbiAXSvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:51:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49856 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241926AbiAXSuE (ORCPT
+        id S1343640AbiAXSvQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:51:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48834 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236766AbiAXSuJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:50:04 -0500
+        Mon, 24 Jan 2022 13:50:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 536F0B8122D;
-        Mon, 24 Jan 2022 18:50:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9CA5C36AE9;
-        Mon, 24 Jan 2022 18:50:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ADF0A614D7;
+        Mon, 24 Jan 2022 18:50:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8805DC340E5;
+        Mon, 24 Jan 2022 18:50:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050202;
-        bh=t/mC74GPu6DwbDU9BF7P9FlIn07H9tWh/CCjzNBe9Ps=;
+        s=korg; t=1643050208;
+        bh=Y6WHr/nO1RZeWIVVbbieVTNw/VGG4rsX2v4GkT3h1gw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s77J02W2fY9wTUhyxpgusjlHVaE+o78AoO9gDij983ggk/Yd6SxMJhU4r8vHWFl+h
-         4ceIpJTUBlaNDKSuPCFt1Oav/pqf3WfvwAVr9KGyvv6rjhxiA77WIoTEEMQU0cqP4A
-         TeL69D+apKYxe+P+FbRsMHFK0LD85fvZ9s6s8rpc=
+        b=YQHHOXMVJqU9dHSgcGeu/JfC3xTDwhUSDLEcACuw+ucoTLMs4wYURTgtZRUhixR+P
+         mlxDNR9saJS+6HsB22PUXrtM+gYg1V0NWQt/BlD9tZ5zyeSqrpooKEY3xM0y7MjZpY
+         u6QD+o0bdEQrX90bNBeHn1LukJg2RJaZmxp/g8sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.4 015/114] media: dib0700: fix undefined behavior in tuner shutdown
-Date:   Mon, 24 Jan 2022 19:41:50 +0100
-Message-Id: <20220124183927.582488506@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 043/114] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:42:18 +0100
+Message-Id: <20220124183928.438211582@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -45,51 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kuron <michael.kuron@gmail.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
+[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
 
-This fixes a problem where closing the tuner would leave it in a state
-where it would not tune to any channel when reopened. This problem was
-discovered as part of https://github.com/hselasky/webcamd/issues/16.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
-behavior. The driver still worked in practice as the overflow would in
-most environments result in 0, which rendered the line a no-op. When
-running the driver as part of webcamd however, the overflow could lead
-to 0xff due to optimizations by the compiler, which would, in the end,
-improperly shut down the tuner.
-
-The bug is a regression introduced in the commit referenced below. The
-present patch causes identical behavior to before that commit for
-adap->id equal to 0 or 1. The driver does not contain support for
-dib0700 devices with more adapters, assuming such even exist.
-
-Tests have been performed with the Xbox One Digital TV Tuner on amd64.
-Not all dib0700 devices are expected to be affected by the regression;
-this code path is only taken by those with incorrect endpoint numbers.
-
-Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
-
-Cc: stable@vger.kernel.org
-Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
-Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
+Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
- 1 file changed, 2 deletions(-)
+ sound/core/jack.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/media/usb/dvb-usb/dib0700_core.c
-+++ b/drivers/media/usb/dvb-usb/dib0700_core.c
-@@ -583,8 +583,6 @@ int dib0700_streaming_ctrl(struct dvb_us
- 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
- 		if (onoff)
- 			st->channel_state |=	1 << (adap->id);
--		else
--			st->channel_state |=	1 << ~(adap->id);
- 	} else {
- 		if (onoff)
- 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index fcc972fbe8ffd..ecbdac88f95ad 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -64,10 +64,13 @@ static int snd_jack_dev_free(struct snd_device *device)
+ 	struct snd_card *card = device->card;
+ 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
+ 
++	down_write(&card->controls_rwsem);
+ 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
+ 		list_del_init(&jack_kctl->list);
+ 		snd_ctl_remove(card, jack_kctl->kctl);
+ 	}
++	up_write(&card->controls_rwsem);
++
+ 	if (jack->private_free)
+ 		jack->private_free(jack);
+ 
+-- 
+2.34.1
+
 
 
