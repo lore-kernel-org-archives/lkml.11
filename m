@@ -2,94 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0541DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD0CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454959AbiAXVeO (ORCPT
+        id S1455009AbiAXVeg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:34:14 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:51024 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444056AbiAXU7z (ORCPT
+        Mon, 24 Jan 2022 16:34:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53016 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346556AbiAXU6B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:59:55 -0500
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 8EC1220124E;
-        Mon, 24 Jan 2022 20:33:30 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id B3FDE80E73; Mon, 24 Jan 2022 21:30:21 +0100 (CET)
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 6/6] hw_random: credit entropy for low quality sources of randomness
-Date:   Mon, 24 Jan 2022 21:29:51 +0100
-Message-Id: <20220124202951.28579-6-linux@dominikbrodowski.net>
+        Mon, 24 Jan 2022 15:58:01 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 407FDB810A8;
+        Mon, 24 Jan 2022 20:57:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E345C340EE;
+        Mon, 24 Jan 2022 20:57:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057878;
+        bh=WZDVIQIpgDa0TPO+WKGnuxZv7obQrPN87x3ZN3QYyIc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=d72mdtIr5n1dGfy8MlLOp0cLrohAZ4biD8qNDJGmIK3ugpMhsVuhDWeQCYDt6AGtb
+         cdpfYLMle4mD8TXK+pAWY0sR8aNB5XJF9QJzbOrOUOsEjIuyEfqBZwCn9QT3r3HnmH
+         kw7UH8k4AiRBfITXvWJBEwezqIWTY7NApH2i61cs=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0108/1039] drm/vc4: hdmi: Enable the scrambler on reconnection
+Date:   Mon, 24 Jan 2022 19:31:37 +0100
+Message-Id: <20220124184128.776595374@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124202951.28579-1-linux@dominikbrodowski.net>
-References: <20220124202951.28579-1-linux@dominikbrodowski.net>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In case the entropy quality is low, there may be less than one bit to
-credit in the call to add_hwgenerator_randomness(): The number of bytes
-returned by rng_get_data() multiplied by the current quality (in entropy
-bits per 1024 bits of input) must be larger than 128 to credit at least
-one bit. However, imx-rngc.c sets the quality to 19, but may return less
-than 32 bytes; hid_u2fzero.c sets the quality to 1; and users may override
-the quality setting manually.
+From: Maxime Ripard <maxime@cerno.tech>
 
-In case there is less than one bit to credit, keep track of it and add
-that credit to the next iteration.
+[ Upstream commit b7551457c5d0b3505b0be247d47919c1ee30506d ]
 
-Cc: Matt Mackall <mpm@selenic.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+If we have a state already and disconnect/reconnect the display, the
+SCDC messages won't be sent again since we didn't go through a disable /
+enable cycle.
+
+In order to fix this, let's call the vc4_hdmi_enable_scrambling function
+in the detect callback if there is a mode and it needs the scrambler to
+be enabled.
+
+Fixes: c85695a2016e ("drm/vc4: hdmi: Enable the scrambler")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Link: https://lore.kernel.org/r/20211025152903.1088803-10-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/core.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index bc9f95cbac92..6d7f05641c7c 100644
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -427,6 +427,7 @@ static int hwrng_fillfn(void *unused)
- 	long rc;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 05fd54fbb773e..c000946996edb 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -162,6 +162,8 @@ static void vc4_hdmi_cec_update_clk_div(struct vc4_hdmi *vc4_hdmi)
+ static void vc4_hdmi_cec_update_clk_div(struct vc4_hdmi *vc4_hdmi) {}
+ #endif
  
- 	while (!kthread_should_stop()) {
-+		size_t entropy, entropy_credit = 0; /* in 1/1024 of a bit */
- 		struct hwrng *rng;
- 
- 		if (!current_quality)
-@@ -445,9 +446,17 @@ static int hwrng_fillfn(void *unused)
- 			msleep_interruptible(10000);
- 			continue;
++static void vc4_hdmi_enable_scrambling(struct drm_encoder *encoder);
++
+ static enum drm_connector_status
+ vc4_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ {
+@@ -190,6 +192,7 @@ vc4_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 			}
  		}
-+
-+		/* If we cannot credit at least one bit of entropy,
-+		 * keep track of the remainder for the next iteration
-+		 */
-+		entropy = rc * current_quality * 8 + entropy_credit;
-+		if ((entropy >> 10) == 0)
-+			entropy_credit = entropy;
-+
- 		/* Outside lock, sure, but y'know: randomness. */
- 		add_hwgenerator_randomness((void *)rng_fillbuf, rc,
--					   rc * current_quality * 8 >> 10);
-+					   entropy >> 10);
+ 
++		vc4_hdmi_enable_scrambling(&vc4_hdmi->encoder.base.base);
+ 		pm_runtime_put(&vc4_hdmi->pdev->dev);
+ 		return connector_status_connected;
  	}
- 	hwrng_fill = NULL;
- 	return 0;
 -- 
 2.34.1
+
+
 
