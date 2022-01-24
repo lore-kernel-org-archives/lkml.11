@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D35C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B192CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450978AbiAXVVz (ORCPT
+        id S1450954AbiAXVVu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:21:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46816 "EHLO
+        Mon, 24 Jan 2022 16:21:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47078 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442151AbiAXUxb (ORCPT
+        with ESMTP id S1442172AbiAXUxl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:53:31 -0500
+        Mon, 24 Jan 2022 15:53:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C3BB60C44;
-        Mon, 24 Jan 2022 20:53:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558C5C340E7;
-        Mon, 24 Jan 2022 20:53:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A69D960C60;
+        Mon, 24 Jan 2022 20:53:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 775F7C340E7;
+        Mon, 24 Jan 2022 20:53:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057608;
-        bh=aMCzFlePstTjSYJQ1nZqs+s14GvcDB63SuiLw1DajFU=;
+        s=korg; t=1643057620;
+        bh=j6BIUp+UvD5pzXwiUtAQyP7yzx8R7qTuo7sUGKPGpXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EfBWG2HCv0cgatgK0bgK+OCop9SWQXrdyqryrlASyUZJgY01IKeLGHDV5rUzHPfyS
-         8rVeUouRvc2xS68Ctbi6UF36KCT+XfIbmpLJqGWbDVi/ZSYcJOKfdiftHgHXlpKjc2
-         V+G+UJGYuoEb+Ztv71b48L3szABS78Xwsv/WBo1s=
+        b=12cZUUAzoKdelutUtKMh1uglytB5e05tsjrjb8TmKFDmwWx5xVYWFzhsY/bUQku5r
+         fVggF+D6TvF7PjI+m9dye+d0nEC9dAwsvQ6MxiaQ3x1JQ/mbkjQc3nBg942Ods3AM/
+         u6EIkJ6xQe3gmbt2aZQjAogA51g6MtSh6WLd2YMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.16 0013/1039] f2fs: avoid EINVAL by SBI_NEED_FSCK when pinning a file
-Date:   Mon, 24 Jan 2022 19:30:02 +0100
-Message-Id: <20220124184125.591885196@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Kossifidis <mick@ics.forth.gr>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 0025/1039] riscv: try to allocate crashkern region from 32bit addressible memory
+Date:   Mon, 24 Jan 2022 19:30:14 +0100
+Message-Id: <20220124184125.982757510@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -45,68 +46,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Nick Kossifidis <mick@ics.forth.gr>
 
-commit 19bdba5265624ba6b9d9dd936a0c6ccc167cfe80 upstream.
+commit decf89f86ecd3c3c3de81c562010d5797bea3de1 upstream.
 
-Android OTA failed due to SBI_NEED_FSCK flag when pinning the file. Let's avoid
-it since we can do in-place-updates.
+When allocating crash kernel region without explicitly specifying its
+base address/size, memblock_phys_alloc_range will attempt to allocate
+memory top to bottom (memblock.bottom_up is false), so the crash
+kernel region will end up in highmem on 64bit systems. This way
+swiotlb can't work on the crash kernel, since there won't be any
+32bit addressible memory available for the bounce buffers.
 
+Try to allocate 32bit addressible memory if available, for the
+crash kernel by restricting the top search address to be less
+than SZ_4G. If that fails fallback to the previous behavior.
+
+I tested this on HiFive Unmatched where the pci-e controller needs
+swiotlb to work, with this patch it's possible to access the pci-e
+controller on crash kernel and mount the rootfs from the nvme.
+
+Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+Fixes: e53d28180d4d ("RISC-V: Add kdump support")
 Cc: stable@vger.kernel.org
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/data.c |    7 +++++--
- fs/f2fs/file.c |   10 +++++-----
- 2 files changed, 10 insertions(+), 7 deletions(-)
+ arch/riscv/mm/init.c |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -2617,6 +2617,11 @@ bool f2fs_should_update_outplace(struct
- {
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
- 
-+	/* The below cases were checked when setting it. */
-+	if (f2fs_is_pinned_file(inode))
-+		return false;
-+	if (fio && is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-+		return true;
- 	if (f2fs_lfs_mode(sbi))
- 		return true;
- 	if (S_ISDIR(inode->i_mode))
-@@ -2625,8 +2630,6 @@ bool f2fs_should_update_outplace(struct
- 		return true;
- 	if (f2fs_is_atomic_file(inode))
- 		return true;
--	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
--		return true;
- 
- 	/* swap file is migrating in aligned write mode */
- 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -3143,17 +3143,17 @@ static int f2fs_ioc_set_pin_file(struct
- 
- 	inode_lock(inode);
- 
--	if (f2fs_should_update_outplace(inode, NULL)) {
--		ret = -EINVAL;
--		goto out;
--	}
--
- 	if (!pin) {
- 		clear_inode_flag(inode, FI_PIN_FILE);
- 		f2fs_i_gc_failures_write(inode, 0);
- 		goto done;
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -812,13 +812,22 @@ static void __init reserve_crashkernel(v
+ 	/*
+ 	 * Current riscv boot protocol requires 2MB alignment for
+ 	 * RV64 and 4MB alignment for RV32 (hugepage size)
++	 *
++	 * Try to alloc from 32bit addressible physical memory so that
++	 * swiotlb can work on the crash kernel.
+ 	 */
+ 	crash_base = memblock_phys_alloc_range(crash_size, PMD_SIZE,
+-					       search_start, search_end);
++					       search_start,
++					       min(search_end, (unsigned long) SZ_4G));
+ 	if (crash_base == 0) {
+-		pr_warn("crashkernel: couldn't allocate %lldKB\n",
+-			crash_size >> 10);
+-		return;
++		/* Try again without restricting region to 32bit addressible memory */
++		crash_base = memblock_phys_alloc_range(crash_size, PMD_SIZE,
++						search_start, search_end);
++		if (crash_base == 0) {
++			pr_warn("crashkernel: couldn't allocate %lldKB\n",
++				crash_size >> 10);
++			return;
++		}
  	}
  
-+	if (f2fs_should_update_outplace(inode, NULL)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	if (f2fs_pin_file_control(inode, false)) {
- 		ret = -EAGAIN;
- 		goto out;
+ 	pr_info("crashkernel: reserved 0x%016llx - 0x%016llx (%lld MB)\n",
 
 
