@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 852C2C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94D37C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314666AbiAYCv2 (ORCPT
+        id S1314706AbiAYCve (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46600 "EHLO
+        Mon, 24 Jan 2022 21:51:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349211AbiAXVFL (ORCPT
+        with ESMTP id S1354079AbiAXVFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:05:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B971C068093;
-        Mon, 24 Jan 2022 12:04:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59A5BC06809B;
+        Mon, 24 Jan 2022 12:05:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7AD3B8119E;
-        Mon, 24 Jan 2022 20:04:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46C2FC340E5;
-        Mon, 24 Jan 2022 20:04:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18D83B811FB;
+        Mon, 24 Jan 2022 20:05:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4026FC340E5;
+        Mon, 24 Jan 2022 20:05:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054686;
-        bh=6Zayg6Lj/chNfgA3QoYSYBaYHAsYWM4JNzJbEEUECcA=;
+        s=korg; t=1643054729;
+        bh=J3h6L2kwUZJ7G0s0Kn2R/BUw7Zxwyn30CVsABOeUez4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fi7WEpmagRb0Hgo5LjKo0iaFGhVeBCLdM01X/XxAm2oMEqryMgeGDTRfzPkOz1lEx
-         RpUe22nT7E7Mi5tT7eyicQrME9Ccw4ZoooqugHeJyemy6Avz0fWuc0Pnrrcvcc1b8Z
-         7GB63UQLR8LKr0ecSFCWqrndqoVZGzj6cnr9jMIg=
+        b=az0ZmAnwJ4Tfyx1RyLT5SM9/oRRgo/ErohZAzuhLggCYppBILzg/PHtvHA5/9+EkG
+         cNEcwrCY6AEjEHg0m8epaGMCmm7iOgdtdsykqQmQQ/T4YVnbFaAPfnMYY1+7oxxqGQ
+         oC69jT3SlhmZewGdacb9CsndQJ017wrTtrlWsMcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 471/563] btrfs: respect the max size in the header when activating swap file
-Date:   Mon, 24 Jan 2022 19:43:56 +0100
-Message-Id: <20220124184040.758131871@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Jan Stancek <jstancek@redhat.com>,
+        Borislav Petkov <bp@suse.de>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.10 484/563] drm/radeon: fix error handling in radeon_driver_open_kms
+Date:   Mon, 24 Jan 2022 19:44:09 +0100
+Message-Id: <20220124184041.188741901@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,65 +52,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Christian König <christian.koenig@amd.com>
 
-commit c2f822635df873c510bda6fb7fd1b10b7c31be2d upstream.
+commit 4722f463896cc0ef1a6f1c3cb2e171e949831249 upstream.
 
-If we extended the size of a swapfile after its header was created (by the
-mkswap utility) and then try to activate it, we will map the entire file
-when activating the swap file, instead of limiting to the max size defined
-in the swap file's header.
+The return value was never initialized so the cleanup code executed when
+it isn't even necessary.
 
-Currently test case generic/643 from fstests fails because we do not
-respect that size limit defined in the swap file's header.
+Just add proper error handling.
 
-So fix this by not mapping file ranges beyond the max size defined in the
-swap header.
-
-This is the same type of bug that iomap used to have, and was fixed in
-commit 36ca7943ac18ae ("mm/swap: consider max pages in
-iomap_swapfile_add_extent").
-
-Fixes: ed46ff3d423780 ("Btrfs: support swap files")
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-and-tested-by: Josef Bacik <josef@toxicpanda.com
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: ab50cb9df889 ("drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()")
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Tested-by: Jan Stancek <jstancek@redhat.com>
+Tested-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/inode.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/gpu/drm/radeon/radeon_kms.c |   22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -10094,9 +10094,19 @@ static int btrfs_add_swap_extent(struct
- 				 struct btrfs_swap_info *bsi)
- {
- 	unsigned long nr_pages;
-+	unsigned long max_pages;
- 	u64 first_ppage, first_ppage_reported, next_ppage;
- 	int ret;
+--- a/drivers/gpu/drm/radeon/radeon_kms.c
++++ b/drivers/gpu/drm/radeon/radeon_kms.c
+@@ -652,18 +652,18 @@ int radeon_driver_open_kms(struct drm_de
+ 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
+ 		if (unlikely(!fpriv)) {
+ 			r = -ENOMEM;
+-			goto out_suspend;
++			goto err_suspend;
+ 		}
  
-+	/*
-+	 * Our swapfile may have had its size extended after the swap header was
-+	 * written. In that case activating the swapfile should not go beyond
-+	 * the max size set in the swap header.
-+	 */
-+	if (bsi->nr_pages >= sis->max)
-+		return 0;
+ 		if (rdev->accel_working) {
+ 			vm = &fpriv->vm;
+ 			r = radeon_vm_init(rdev, vm);
+ 			if (r)
+-				goto out_fpriv;
++				goto err_fpriv;
+ 
+ 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
+ 			if (r)
+-				goto out_vm_fini;
++				goto err_vm_fini;
+ 
+ 			/* map the ib pool buffer read only into
+ 			 * virtual address space */
+@@ -671,7 +671,7 @@ int radeon_driver_open_kms(struct drm_de
+ 							rdev->ring_tmp_bo.bo);
+ 			if (!vm->ib_bo_va) {
+ 				r = -ENOMEM;
+-				goto out_vm_fini;
++				goto err_vm_fini;
+ 			}
+ 
+ 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
+@@ -679,19 +679,21 @@ int radeon_driver_open_kms(struct drm_de
+ 						  RADEON_VM_PAGE_READABLE |
+ 						  RADEON_VM_PAGE_SNOOPED);
+ 			if (r)
+-				goto out_vm_fini;
++				goto err_vm_fini;
+ 		}
+ 		file_priv->driver_priv = fpriv;
+ 	}
+ 
+-	if (!r)
+-		goto out_suspend;
++	pm_runtime_mark_last_busy(dev->dev);
++	pm_runtime_put_autosuspend(dev->dev);
++	return 0;
+ 
+-out_vm_fini:
++err_vm_fini:
+ 	radeon_vm_fini(rdev, vm);
+-out_fpriv:
++err_fpriv:
+ 	kfree(fpriv);
+-out_suspend:
 +
-+	max_pages = sis->max - bsi->nr_pages;
- 	first_ppage = ALIGN(bsi->block_start, PAGE_SIZE) >> PAGE_SHIFT;
- 	next_ppage = ALIGN_DOWN(bsi->block_start + bsi->block_len,
- 				PAGE_SIZE) >> PAGE_SHIFT;
-@@ -10104,6 +10114,7 @@ static int btrfs_add_swap_extent(struct
- 	if (first_ppage >= next_ppage)
- 		return 0;
- 	nr_pages = next_ppage - first_ppage;
-+	nr_pages = min(nr_pages, max_pages);
- 
- 	first_ppage_reported = first_ppage;
- 	if (bsi->start == 0)
++err_suspend:
+ 	pm_runtime_mark_last_busy(dev->dev);
+ 	pm_runtime_put_autosuspend(dev->dev);
+ 	return r;
 
 
