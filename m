@@ -2,124 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9100DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:45:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CC68C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:45:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243883AbiAXQpD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 11:45:03 -0500
-Received: from mga01.intel.com ([192.55.52.88]:11191 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243859AbiAXQo7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:44:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643042699; x=1674578699;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=aM9YJcSBXC3yFsRIAO+XebEgJNs0dEaVhB0zbDtZ3xQ=;
-  b=UYPkqkG9u4/rqZiFgWvnZQm7XYcbIOvIXwX1kS6+dH9n6tZ0VDWf7AcB
-   EdWDBJvl3R8O4D4gYEuLYnfx1Xedvqbxh8MJmBRRiiv0BfP/uQxmlP/dC
-   +4Nqm/Bt/nq+8jCT6bPM6e5V44e3bXhmvGxGfa7a6oUQRgndo974lnW71
-   m6sFEit+JnjeY6Ok3jNlXon9gV7fFRoMOwWYWP+Fmf+r+S0xB1yO51PwC
-   LEOkTb383oEsGpEI8/uCYJp0KVWwbvhPIBpaO859fpNuW0CQVeOLbbwQ9
-   c1bXSUMX7+bZUCg/QHLoUhehnT+lKy9YR/97/Hpmetkz0mwfndxPE7ho+
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270525828"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="270525828"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 08:44:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627562188"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 08:44:56 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC2Sd-000Icf-Q6; Mon, 24 Jan 2022 16:44:55 +0000
-Date:   Tue, 25 Jan 2022 00:44:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ronak Vijay Raheja <rraheja@codeaurora.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org,
-        Macpaul Lin <macpaul.lin@mediatek.com>,
-        Jack Pham <jackp@codeaurora.org>,
-        Eddie Hung <eddie.hung@mediatek.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.10
- 2301/9999] drivers/usb/gadget/configfs.c:1620:2: error: implicit declaration
- of function 'acc_disconnect'
-Message-ID: <202201250013.vOmQcvaI-lkp@intel.com>
+        id S243871AbiAXQpo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 11:45:44 -0500
+Received: from mta-p6.oit.umn.edu ([134.84.196.206]:60474 "EHLO
+        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243781AbiAXQpd (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 11:45:33 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 4JjG7c3pSbz9vC8y
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:45:32 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p6.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xHppgTBzXuJD for <linux-kernel@vger.kernel.org>;
+        Mon, 24 Jan 2022 10:45:32 -0600 (CST)
+Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 4JjG7c1k7jz9vC8v
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:45:32 -0600 (CST)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 4JjG7c1k7jz9vC8v
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 4JjG7c1k7jz9vC8v
+Received: by mail-pl1-f197.google.com with SMTP id cp2-20020a170902e78200b0014a9f3e3c1fso3626869plb.5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:45:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=djkJvPzkQRLMPwigXx2q/PnzxUoF5zQXKI2ZeQZ9B6s=;
+        b=fOZiKfn07UXaKCOkHaNtClM/MEf7BTq75piNz4qWhO2dhkvJy68A9cl1/+jEOut2YN
+         gvEhq+1z93ib+Z/QOL88narBG7FiUZVlN2ZbG22nXv95XFg2eaw37iwJXHYBH1WD3imF
+         +JeffRTJ0NXXNAB/o+0YmFvtWuptqmmX9W4W/WnREepCUxSh98vU7xJKazuOi8FpFXwP
+         5e/YLd1g25nruFJInu4sqgyCahvJSrE9pULL3PKKsjjOWEQO92itWZ+/m3OkdUtvkdAs
+         nmUjZM+bDJZRRysa2EUeQ6QoVGNUHOY4HDad8G5RWETVjI5Uyz7ZVHzfzrIiYjjFgvFD
+         GTdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=djkJvPzkQRLMPwigXx2q/PnzxUoF5zQXKI2ZeQZ9B6s=;
+        b=AJ5UgqM/fo14mWGd29bj/+SCgOMM2YXcuo5jroRUvpYjo5DqnqSjkTC9Y4kPSLct1o
+         xofVK8M0tcD6xxzisakXkWCTbLpRf3R/Kb/HDDawvi6/3z5U+cXsm016GF1sCXXYkglR
+         kM3tl086GTtqKCIawh4jwSpVZcJXCD/dsgkOde6Ckl/s2JAQ63f4NbB3d9lOoojxqMn4
+         F5hGZZqO1jyS5gvDUbFl9dTKneahb3SsjNhvOeTGDW14Z1YAhKLxtjyk1hOPG6OXI2dJ
+         C3ujnqeF8BCYWhC8NaaVfV6Wz1sVeUfOsXtLH+8I+u+9PamHVoHyWe7GhAu6h2eKThQU
+         yl9g==
+X-Gm-Message-State: AOAM530/QYkcXCYPmqHjbENaPbQjk5M5Ck32C7w/LvW76uRu2YNYUtBx
+        QBACkp4gKdDL442iGw/ZXZKgfJXN9OK78lp1/QzFBZnhnHVMuBEDqb/DEMk0u2mi/F/9BBBZbMz
+        JqyHh1LeIAMpGWyKk/SAwbE8dRhOo
+X-Received: by 2002:a17:902:d4c1:b0:14b:4a0b:79bd with SMTP id o1-20020a170902d4c100b0014b4a0b79bdmr6444148plg.170.1643042731390;
+        Mon, 24 Jan 2022 08:45:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwpyQjGPPn2EhhJAhMlokks0xQvRxA7QZE9Ic+dNtUz3PJOX2gO13nba6OZiazWAlZ8Qi83jw==
+X-Received: by 2002:a17:902:d4c1:b0:14b:4a0b:79bd with SMTP id o1-20020a170902d4c100b0014b4a0b79bdmr6444129plg.170.1643042731180;
+        Mon, 24 Jan 2022 08:45:31 -0800 (PST)
+Received: from zqy787-GE5S.lan ([36.4.61.248])
+        by smtp.gmail.com with ESMTPSA id z14sm8151922pfq.3.2022.01.24.08.45.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 08:45:30 -0800 (PST)
+From:   Zhou Qingyang <zhou1615@umn.edu>
+To:     zhou1615@umn.edu
+Cc:     kjlu@umn.edu, Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Alexander Shiyan <shc_work@mail.ru>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Jens Axboe <axboe@kernel.dk>, linux-ide@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] ata: pata_platform: Fix a NULL pointer dereference in __pata_platform_probe()
+Date:   Tue, 25 Jan 2022 00:45:25 +0800
+Message-Id: <20220124164525.53068-1-zhou1615@umn.edu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ronak,
+In __pata_platform_probe(), devm_kzalloc() is assigned to ap->ops and
+there is a dereference of it right after that, which could introduce a
+NULL pointer dereference bug.
 
-FYI, the error/warning still remains.
+Fix this by adding a NULL check of ap->ops.
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.10
-head:   eb69f26fe8e2177cfb7cbf859a23fc5ac59cacb7
-commit: 80fef39de7e9dbe706d0cbc820a09b5c05dc366f [2301/9999] ANDROID: usb: gadget: Resolve NULL pointer dereference in composite_disconnect
-config: arm64-randconfig-r021-20220120 (https://download.01.org/0day-ci/archive/20220125/202201250013.vOmQcvaI-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://github.com/ammarfaizi2/linux-block/commit/80fef39de7e9dbe706d0cbc820a09b5c05dc366f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.10
-        git checkout 80fef39de7e9dbe706d0cbc820a09b5c05dc366f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash drivers/usb/gadget/
+This bug was found by a static analyzer.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code.
 
-All errors (new ones prefixed by >>):
-
->> drivers/usb/gadget/configfs.c:1620:2: error: implicit declaration of function 'acc_disconnect' [-Werror,-Wimplicit-function-declaration]
-           acc_disconnect();
-           ^
-   1 error generated.
-
-
-vim +/acc_disconnect +1620 drivers/usb/gadget/configfs.c
-
-  1603	
-  1604	static void configfs_composite_disconnect(struct usb_gadget *gadget)
-  1605	{
-  1606		struct usb_composite_dev *cdev;
-  1607		struct gadget_info *gi;
-  1608		unsigned long flags;
-  1609	
-  1610		cdev = get_gadget_data(gadget);
-  1611		if (!cdev)
-  1612			return;
-  1613	
-  1614	#ifdef CONFIG_USB_CONFIGFS_F_ACC
-  1615		/*
-  1616		 * accessory HID support can be active while the
-  1617		 * accessory function is not actually enabled,
-  1618		 * so we need to inform it when we are disconnected.
-  1619		 */
-> 1620		acc_disconnect();
-  1621	#endif
-  1622		gi = container_of(cdev, struct gadget_info, cdev);
-  1623		spin_lock_irqsave(&gi->spinlock, flags);
-  1624		cdev = get_gadget_data(gadget);
-  1625		if (!cdev || gi->unbind) {
-  1626			spin_unlock_irqrestore(&gi->spinlock, flags);
-  1627			return;
-  1628		}
-  1629	
-
+Fixes: f3d5e4f18dba ("ata: pata_of_platform: Allow to use 16-bit wide data transfer")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+The analysis employs differential checking to identify inconsistent 
+security operations (e.g., checks or kfrees) between two code paths 
+and confirms that the inconsistent operations are not recovered in the
+current function or the callers, so they constitute bugs. 
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+ drivers/ata/pata_platform.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/ata/pata_platform.c b/drivers/ata/pata_platform.c
+index 028329428b75..021ef9cbcbc1 100644
+--- a/drivers/ata/pata_platform.c
++++ b/drivers/ata/pata_platform.c
+@@ -128,6 +128,8 @@ int __pata_platform_probe(struct device *dev, struct resource *io_res,
+ 	ap = host->ports[0];
+ 
+ 	ap->ops = devm_kzalloc(dev, sizeof(*ap->ops), GFP_KERNEL);
++	if (ap->ops)
++		return -ENOMEM;
+ 	ap->ops->inherits = &ata_sff_port_ops;
+ 	ap->ops->cable_detect = ata_cable_unknown;
+ 	ap->ops->set_mode = pata_platform_set_mode;
+-- 
+2.25.1
+
