@@ -2,112 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32250C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E22A4C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355591AbiAXWax (ORCPT
+        id S1356931AbiAXWa7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:30:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55166 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456423AbiAXVjT (ORCPT
+        Mon, 24 Jan 2022 17:30:59 -0500
+Received: from thorn.bewilderbeest.net ([71.19.156.171]:59675 "EHLO
+        thorn.bewilderbeest.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456407AbiAXVjW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DC9C034003;
-        Mon, 24 Jan 2022 12:24:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 24 Jan 2022 16:39:22 -0500
+Received: from hatter.bewilderbeest.net (174-21-190-118.tukw.qwest.net [174.21.190.118])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B572DB8122D;
-        Mon, 24 Jan 2022 20:24:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E11E2C340E5;
-        Mon, 24 Jan 2022 20:24:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055853;
-        bh=0uJHedN80f2xLTdruQW7Fj+OFcuWMBzE4MqBNcSaJxI=;
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 7EF76690;
+        Mon, 24 Jan 2022 13:39:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1643060342;
+        bh=DqrmV9MGxyAiCEmRUewAEVdQrxV9eeYb1sRoUnPeamw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ATReQQf3vEqUlPZVmppNZqvWqwovWgfKOQU7MFqEI0EWmtHysvTLw/q6VjwD05cvw
-         qckEqB/w3Ivq62kB4jymRqeQBNXJH7pHwtuSR8ApssNBmaHRJ+mLpnCpEMTwfzrwd+
-         Q/1cHLpepdIpn6tWZ8gBhKSzR3KXjWRN17U0hldA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 286/846] backlight: qcom-wled: Validate enabled string indices in DT
-Date:   Mon, 24 Jan 2022 19:36:43 +0100
-Message-Id: <20220124184110.787654678@linuxfoundation.org>
+        b=IXBCUJKGE9YD/G80hJhY8Kfm2oTJoQuw5vq/kkdy2/kzNIVKnIlndgJziGn2ncHbk
+         PAFjxjq/BPYcA8gz2fpD5HIMaa8rE0WRHXsWiKFiEDHECiOowH7X8CLC9hDaIOW+BZ
+         6I0+4++DX2p/byi0oKBhTugMvf5sAqNDz133JjtU=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     linux-i2c@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Peter Rosin <peda@axentia.se>
+Subject: [PATCH 2/2] dt-bindings: i2c: add nxp,pca9541 release-delay-us property
+Date:   Mon, 24 Jan 2022 13:38:50 -0800
+Message-Id: <20220124213850.3766-3-zev@bewilderbeest.net>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220124213850.3766-1-zev@bewilderbeest.net>
+References: <20220124213850.3766-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+This property can be used to reduce arbitration overhead on busy i2c
+busses by retaining ownership for a brief period in anticipation of
+another transaction in the near future.
 
-[ Upstream commit c05b21ebc5bce3ecc78c2c71afd76d92c790a2ac ]
-
-The strings passed in DT may possibly cause out-of-bounds register
-accesses and should be validated before use.
-
-Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211115203459.1634079-2-marijn.suijten@somainline.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 ---
- drivers/video/backlight/qcom-wled.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/i2c/nxp,pca9541.txt | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
-index d094299c2a485..8a42ed89c59c9 100644
---- a/drivers/video/backlight/qcom-wled.c
-+++ b/drivers/video/backlight/qcom-wled.c
-@@ -1528,12 +1528,28 @@ static int wled_configure(struct wled *wled)
- 	string_len = of_property_count_elems_of_size(dev->of_node,
- 						     "qcom,enabled-strings",
- 						     sizeof(u32));
--	if (string_len > 0)
-+	if (string_len > 0) {
-+		if (string_len > wled->max_string_count) {
-+			dev_err(dev, "Cannot have more than %d strings\n",
-+				wled->max_string_count);
-+			return -EINVAL;
-+		}
-+
- 		of_property_read_u32_array(dev->of_node,
- 						"qcom,enabled-strings",
- 						wled->cfg.enabled_strings,
- 						sizeof(u32));
+diff --git a/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt b/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
+index 42bfc09c8918..c755da59d6ec 100644
+--- a/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
++++ b/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
+@@ -6,6 +6,14 @@ Required Properties:
  
-+		for (i = 0; i < string_len; ++i) {
-+			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
-+				dev_err(dev,
-+					"qcom,enabled-strings index %d at %d is out of bounds\n",
-+					wled->cfg.enabled_strings[i], i);
-+				return -EINVAL;
-+			}
-+		}
-+	}
-+
- 	return 0;
- }
+   - reg: The I2C address of the device.
  
++Optional Properties:
++
++ - release-delay-us: the number of microseconds to delay before
++   releasing the bus after a transaction.  If unspecified the default
++   is zero (the bus is released immediately).  Non-zero values can
++   reduce arbitration overhead for back-to-back transactions, at the
++   cost of delaying the other master's access to the bus.
++
+   The following required properties are defined externally:
+ 
+   - I2C arbitration bus node. See i2c-arb.txt in this directory.
+@@ -13,9 +21,11 @@ Required Properties:
+ 
+ Example:
+ 
++	#include <dt-bindings/mux/mux.h>
+ 	i2c-arbitrator@74 {
+ 		compatible = "nxp,pca9541";
+ 		reg = <0x74>;
++		release-delay-us = <20000>;
+ 
+ 		i2c-arb {
+ 			#address-cells = <1>;
 -- 
 2.34.1
-
-
 
