@@ -2,80 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D39BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ACAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238110AbiAXO0h convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:26:37 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:41288 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238202AbiAXOYl (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:24:41 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-595-Lu2NlBYqOpiVgmCEFu51BA-1; Mon, 24 Jan 2022 09:24:37 -0500
-X-MC-Unique: Lu2NlBYqOpiVgmCEFu51BA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id F201F1923B85;
-        Mon, 24 Jan 2022 14:24:35 +0000 (UTC)
-Received: from x1.com (unknown [10.22.32.253])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 82BD5798B2;
-        Mon, 24 Jan 2022 14:24:34 +0000 (UTC)
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [PATCH 7/8] rtla/osnoise: Fix error message when failing to enable trace instance
-Date:   Mon, 24 Jan 2022 15:24:10 +0100
-Message-Id: <c2a20c84d63092e685af9649f9b7656c3ecd1c90.1643033113.git.bristot@kernel.org>
-In-Reply-To: <cover.1643033113.git.bristot@kernel.org>
-References: <cover.1643033113.git.bristot@kernel.org>
+        id S238283AbiAXO1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:27:33 -0500
+Received: from mga01.intel.com ([192.55.52.88]:61621 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238295AbiAXO1c (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 09:27:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643034452; x=1674570452;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=j2z/GmNDeCOiVJHcgh+l/bMe+jvLITsYaovOpxRgCec=;
+  b=hlMfD539qiMfRLYrQACYhf0nWfRfNUkr2TAb4mw/30hHw4H7POe4RZbb
+   mcTXVS5UtoVaMXJbz7KCDoUjKMi5WRpaYVf0lwYT69RbEzoE8kQWqwIK/
+   7vgKlLnzoX+fbO26sOhd9C3nQFtUgv73O242b34cu1tI4SbxnATe/YRji
+   x70OrswNfHKkPZD5EXJGKfiKC+u2shFeXCZGJ0mV5szoluBpIWItmS5ZY
+   dtiRZLzIkgCSfUVqKVPqtUg69i9zvRYqe7WMiG0MZJB3F2jz6FEMYjMlO
+   raN5BRBMOTDk1WIH4DUPzDcTX17TeVbA1aAAyrvopF9SiMXWVeIjJpUAa
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270491672"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="270491672"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:27:32 -0800
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="532093032"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:27:30 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@intel.com>)
+        id 1nC0IZ-00DvFO-6W;
+        Mon, 24 Jan 2022 16:26:23 +0200
+Date:   Mon, 24 Jan 2022 16:26:22 +0200
+From:   Andy Shevchenko <andriy.shevchenko@intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Andy Shevchenko <andy@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@suse.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH v2] lib/string_helpers: Use the given gfp flag when
+ allocating memory
+Message-ID: <Ye63DkOZkBd2j+8+@smile.fi.intel.com>
+References: <1ec96b6e4f2e35599931d7516c6938c4a8845bf0.1642337606.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=bristot@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1ec96b6e4f2e35599931d7516c6938c4a8845bf0.1642337606.git.christophe.jaillet@wanadoo.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a trace instance creation fails, tools are printing:
+On Sun, Jan 16, 2022 at 01:53:37PM +0100, Christophe JAILLET wrote:
+> kstrdup_quotable_cmdline() and kstrdup_quotable_file() are given a gfp flag
+> that is passed and used for memory allocation in kstrdup_quotable() just a
+> few lines below.
+> 
+> It looks reasonable to use this gfp value for the buffer allocated and
+> freed in these functions as well.
 
-	Could not enable -> osnoiser <- tracer for tracing
+Acked-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Print the actual (and correct) name of the tracer it fails to enable.
+> Fixes: 0ee931c4e31a ("mm: treewide: remove GFP_TEMPORARY allocation flag")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
+> According to what I've found in 5.16, all callers use GFP_KERNEL, so this
+> patch should be a no-op.
+> But who knows how it will be used in the future. Better safe than sorry.
+> 
+> v2: Add the change for kstrdup_quotable_file()
+> ---
+>  lib/string_helpers.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
+> index 90f9f1b7afec..4433e486b725 100644
+> --- a/lib/string_helpers.c
+> +++ b/lib/string_helpers.c
+> @@ -624,7 +624,7 @@ char *kstrdup_quotable_cmdline(struct task_struct *task, gfp_t gfp)
+>  	char *buffer, *quoted;
+>  	int i, res;
+>  
+> -	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
+> +	buffer = kmalloc(PAGE_SIZE, gfp);
+>  	if (!buffer)
+>  		return NULL;
+>  
+> @@ -660,7 +660,7 @@ char *kstrdup_quotable_file(struct file *file, gfp_t gfp)
+>  		return kstrdup("<unknown>", gfp);
+>  
+>  	/* We add 11 spaces for ' (deleted)' to be appended */
+> -	temp = kmalloc(PATH_MAX + 11, GFP_KERNEL);
+> +	temp = kmalloc(PATH_MAX + 11, gfp);
+>  	if (!temp)
+>  		return kstrdup("<no_memory>", gfp);
+>  
+> -- 
+> 2.32.0
+> 
 
-Fixes: b1696371d865 ("rtla: Helper functions for rtla")
-Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- tools/tracing/rtla/src/osnoise.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tools/tracing/rtla/src/osnoise.c b/tools/tracing/rtla/src/osnoise.c
-index 7b73d1eccd0e..c1368315d508 100644
---- a/tools/tracing/rtla/src/osnoise.c
-+++ b/tools/tracing/rtla/src/osnoise.c
-@@ -807,7 +807,7 @@ struct osnoise_tool *osnoise_init_trace_tool(char *tracer)
- 
- 	retval = enable_tracer_by_name(trace->trace.inst, tracer);
- 	if (retval) {
--		err_msg("Could not enable osnoiser tracer for tracing\n");
-+		err_msg("Could not enable %s tracer for tracing\n", tracer);
- 		goto out_err;
- 	}
- 
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
