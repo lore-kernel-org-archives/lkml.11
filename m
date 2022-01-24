@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 176B3C47080
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 664B5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842981AbiAXXDE (ORCPT
+        id S1843379AbiAXXDy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60470 "EHLO
+        Mon, 24 Jan 2022 18:03:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350225AbiAXV7F (ORCPT
+        with ESMTP id S1457964AbiAXVzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:59:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7692AC038AF2;
-        Mon, 24 Jan 2022 12:39:03 -0800 (PST)
+        Mon, 24 Jan 2022 16:55:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AAC4C07E2A5;
+        Mon, 24 Jan 2022 12:36:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 136C261008;
-        Mon, 24 Jan 2022 20:39:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF04FC340E5;
-        Mon, 24 Jan 2022 20:39:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4699AB81229;
+        Mon, 24 Jan 2022 20:36:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BA72C340E8;
+        Mon, 24 Jan 2022 20:36:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056742;
-        bh=xGjLG6O1atRMNztE7ztV8VKfMRg3b63aZpfJhCivZMw=;
+        s=korg; t=1643056601;
+        bh=JRwEwaQ2ghXjEgsdO+LW6h97cIMvCsKA8iS5G29TpR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o9iHAu94Gzb4eRaJLOjTrjD7vRc3dUb5HzZnxQAehVYzN+xTZMvmnqN3/OnhNKM4U
-         r4uOdGTJRFSdyClM19fn+/cT0ifNOCQwrK/9c1I4aN78z/b5JyhTG6YTr6b57qE2Rh
-         XYq72fyI0yIuG/LdkRhk/gPUdNPeg3PwivjTk3W4=
+        b=VoJ48H29zGRGsX2HkSFIZXH6J5ulfLQbSEP80OJss11P0+1vExUSuX0UUNWtiNG7i
+         4TQxogBGeqoW1pkPsjqMUGyddNeHPfndhqtjrqvEzMWZHj9vmwD+nUzv9j2Q5bVYk8
+         oES1Et/31ZW3+lM1pgozFNUWmyRF7eoi3QnXns/E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thomas Egerer <thomas.egerer@secunet.com>,
-        Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org,
+        Iwona Winiarska <iwona.winiarska@intel.com>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 586/846] xfrm: rate limit SA mapping change message to user space
-Date:   Mon, 24 Jan 2022 19:41:43 +0100
-Message-Id: <20220124184121.258181301@linuxfoundation.org>
+Subject: [PATCH 5.15 537/846] gpio: aspeed: Convert aspeed_gpio.lock to raw_spinlock
+Date:   Mon, 24 Jan 2022 19:40:54 +0100
+Message-Id: <20220124184119.520229373@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,209 +51,256 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Iwona Winiarska <iwona.winiarska@intel.com>
 
-[ Upstream commit 4e484b3e969b52effd95c17f7a86f39208b2ccf4 ]
+[ Upstream commit 61a7904b6ace99b1bde0d0e867fa3097f5c8cee2 ]
 
-Kernel generates mapping change message, XFRM_MSG_MAPPING,
-when a source port chage is detected on a input state with UDP
-encapsulation set.  Kernel generates a message for each IPsec packet
-with new source port.  For a high speed flow per packet mapping change
-message can be excessive, and can overload the user space listener.
+The gpio-aspeed driver implements an irq_chip which need to be invoked
+from hardirq context. Since spin_lock() can sleep with PREEMPT_RT, it is
+no longer legal to invoke it while interrupts are disabled.
+This also causes lockdep to complain about:
+[    0.649797] [ BUG: Invalid wait context ]
+because aspeed_gpio.lock (spin_lock_t) is taken under irq_desc.lock
+(raw_spinlock_t).
+Let's use of raw_spinlock_t instead of spinlock_t.
 
-Introduce rate limiting for XFRM_MSG_MAPPING message to the user space.
-
-The rate limiting is configurable via netlink, when adding a new SA or
-updating it. Use the new attribute XFRMA_MTIMER_THRESH in seconds.
-
-v1->v2 change:
-	update xfrm_sa_len()
-
-v2->v3 changes:
-	use u32 insted unsigned long to reduce size of struct xfrm_state
-	fix xfrm_ompat size Reported-by: kernel test robot <lkp@intel.com>
-	accept XFRM_MSG_MAPPING only when XFRMA_ENCAP is present
-
-Co-developed-by: Thomas Egerer <thomas.egerer@secunet.com>
-Signed-off-by: Thomas Egerer <thomas.egerer@secunet.com>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/xfrm.h        |  5 +++++
- include/uapi/linux/xfrm.h |  1 +
- net/xfrm/xfrm_compat.c    |  6 ++++--
- net/xfrm/xfrm_state.c     | 23 ++++++++++++++++++++++-
- net/xfrm/xfrm_user.c      | 18 +++++++++++++++++-
- 5 files changed, 49 insertions(+), 4 deletions(-)
+ drivers/gpio/gpio-aspeed.c | 52 +++++++++++++++++++-------------------
+ 1 file changed, 26 insertions(+), 26 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 2308210793a01..2589e4c0501bd 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -200,6 +200,11 @@ struct xfrm_state {
- 	struct xfrm_algo_aead	*aead;
- 	const char		*geniv;
+diff --git a/drivers/gpio/gpio-aspeed.c b/drivers/gpio/gpio-aspeed.c
+index 3c8f20c57695f..318a7d95a1a8b 100644
+--- a/drivers/gpio/gpio-aspeed.c
++++ b/drivers/gpio/gpio-aspeed.c
+@@ -53,7 +53,7 @@ struct aspeed_gpio_config {
+ struct aspeed_gpio {
+ 	struct gpio_chip chip;
+ 	struct irq_chip irqc;
+-	spinlock_t lock;
++	raw_spinlock_t lock;
+ 	void __iomem *base;
+ 	int irq;
+ 	const struct aspeed_gpio_config *config;
+@@ -413,14 +413,14 @@ static void aspeed_gpio_set(struct gpio_chip *gc, unsigned int offset,
+ 	unsigned long flags;
+ 	bool copro;
  
-+	/* mapping change rate limiting */
-+	__be16 new_mapping_sport;
-+	u32 new_mapping;	/* seconds */
-+	u32 mapping_maxage;	/* seconds for input SA */
-+
- 	/* Data for encapsulator */
- 	struct xfrm_encap_tmpl	*encap;
- 	struct sock __rcu	*encap_sk;
-diff --git a/include/uapi/linux/xfrm.h b/include/uapi/linux/xfrm.h
-index eda0426ec4c2b..4e29d78518902 100644
---- a/include/uapi/linux/xfrm.h
-+++ b/include/uapi/linux/xfrm.h
-@@ -313,6 +313,7 @@ enum xfrm_attr_type_t {
- 	XFRMA_SET_MARK,		/* __u32 */
- 	XFRMA_SET_MARK_MASK,	/* __u32 */
- 	XFRMA_IF_ID,		/* __u32 */
-+	XFRMA_MTIMER_THRESH,	/* __u32 in seconds for input SA */
- 	__XFRMA_MAX
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 	copro = aspeed_gpio_copro_request(gpio, offset);
  
- #define XFRMA_OUTPUT_MARK XFRMA_SET_MARK	/* Compatibility */
-diff --git a/net/xfrm/xfrm_compat.c b/net/xfrm/xfrm_compat.c
-index 2bf2693901631..a0f62fa02e06e 100644
---- a/net/xfrm/xfrm_compat.c
-+++ b/net/xfrm/xfrm_compat.c
-@@ -127,6 +127,7 @@ static const struct nla_policy compat_policy[XFRMA_MAX+1] = {
- 	[XFRMA_SET_MARK]	= { .type = NLA_U32 },
- 	[XFRMA_SET_MARK_MASK]	= { .type = NLA_U32 },
- 	[XFRMA_IF_ID]		= { .type = NLA_U32 },
-+	[XFRMA_MTIMER_THRESH]	= { .type = NLA_U32 },
- };
+ 	__aspeed_gpio_set(gc, offset, val);
  
- static struct nlmsghdr *xfrm_nlmsg_put_compat(struct sk_buff *skb,
-@@ -274,9 +275,10 @@ static int xfrm_xlate64_attr(struct sk_buff *dst, const struct nlattr *src)
- 	case XFRMA_SET_MARK:
- 	case XFRMA_SET_MARK_MASK:
- 	case XFRMA_IF_ID:
-+	case XFRMA_MTIMER_THRESH:
- 		return xfrm_nla_cpy(dst, src, nla_len(src));
- 	default:
--		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
-+		BUILD_BUG_ON(XFRMA_MAX != XFRMA_MTIMER_THRESH);
- 		pr_warn_once("unsupported nla_type %d\n", src->nla_type);
- 		return -EOPNOTSUPP;
- 	}
-@@ -431,7 +433,7 @@ static int xfrm_xlate32_attr(void *dst, const struct nlattr *nla,
- 	int err;
- 
- 	if (type > XFRMA_MAX) {
--		BUILD_BUG_ON(XFRMA_MAX != XFRMA_IF_ID);
-+		BUILD_BUG_ON(XFRMA_MAX != XFRMA_MTIMER_THRESH);
- 		NL_SET_ERR_MSG(extack, "Bad attribute");
- 		return -EOPNOTSUPP;
- 	}
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index a2f4001221d16..78d51399a0f4b 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -1593,6 +1593,9 @@ static struct xfrm_state *xfrm_state_clone(struct xfrm_state *orig,
- 	x->km.seq = orig->km.seq;
- 	x->replay = orig->replay;
- 	x->preplay = orig->preplay;
-+	x->mapping_maxage = orig->mapping_maxage;
-+	x->new_mapping = 0;
-+	x->new_mapping_sport = 0;
- 
- 	return x;
- 
-@@ -2242,7 +2245,7 @@ int km_query(struct xfrm_state *x, struct xfrm_tmpl *t, struct xfrm_policy *pol)
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
  }
- EXPORT_SYMBOL(km_query);
  
--int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
-+static int __km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
- {
- 	int err = -EINVAL;
- 	struct xfrm_mgr *km;
-@@ -2257,6 +2260,24 @@ int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
- 	rcu_read_unlock();
- 	return err;
+ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
+@@ -435,7 +435,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
+ 	if (!have_input(gpio, offset))
+ 		return -ENOTSUPP;
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 
+ 	reg = ioread32(addr);
+ 	reg &= ~GPIO_BIT(offset);
+@@ -445,7 +445,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+ 
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	return 0;
  }
-+
-+int km_new_mapping(struct xfrm_state *x, xfrm_address_t *ipaddr, __be16 sport)
-+{
-+	int ret = 0;
-+
-+	if (x->mapping_maxage) {
-+		if ((jiffies / HZ - x->new_mapping) > x->mapping_maxage ||
-+		    x->new_mapping_sport != sport) {
-+			x->new_mapping_sport = sport;
-+			x->new_mapping = jiffies / HZ;
-+			ret = __km_new_mapping(x, ipaddr, sport);
-+		}
-+	} else {
-+		ret = __km_new_mapping(x, ipaddr, sport);
-+	}
-+
-+	return ret;
-+}
- EXPORT_SYMBOL(km_new_mapping);
+@@ -463,7 +463,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
+ 	if (!have_output(gpio, offset))
+ 		return -ENOTSUPP;
  
- void km_policy_expired(struct xfrm_policy *pol, int dir, int hard, u32 portid)
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 5ad7530f65457..b10f88822c0df 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -282,6 +282,10 @@ static int verify_newsa_info(struct xfrm_usersa_info *p,
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
  
- 	err = 0;
+ 	reg = ioread32(addr);
+ 	reg |= GPIO_BIT(offset);
+@@ -474,7 +474,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
  
-+	if (attrs[XFRMA_MTIMER_THRESH])
-+		if (!attrs[XFRMA_ENCAP])
-+			err = -EINVAL;
-+
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	return 0;
+ }
+@@ -492,11 +492,11 @@ static int aspeed_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
+ 	if (!have_output(gpio, offset))
+ 		return GPIO_LINE_DIRECTION_IN;
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 
+ 	val = ioread32(bank_reg(gpio, bank, reg_dir)) & GPIO_BIT(offset);
+ 
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	return val ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
+ }
+@@ -539,14 +539,14 @@ static void aspeed_gpio_irq_ack(struct irq_data *d)
+ 
+ 	status_addr = bank_reg(gpio, bank, reg_irq_status);
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 	copro = aspeed_gpio_copro_request(gpio, offset);
+ 
+ 	iowrite32(bit, status_addr);
+ 
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ }
+ 
+ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
+@@ -565,7 +565,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
+ 
+ 	addr = bank_reg(gpio, bank, reg_irq_enable);
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 	copro = aspeed_gpio_copro_request(gpio, offset);
+ 
+ 	reg = ioread32(addr);
+@@ -577,7 +577,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
+ 
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ }
+ 
+ static void aspeed_gpio_irq_mask(struct irq_data *d)
+@@ -629,7 +629,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
+ 		return -EINVAL;
+ 	}
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 	copro = aspeed_gpio_copro_request(gpio, offset);
+ 
+ 	addr = bank_reg(gpio, bank, reg_irq_type0);
+@@ -649,7 +649,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
+ 
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	irq_set_handler_locked(d, handler);
+ 
+@@ -716,7 +716,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
+ 
+ 	treg = bank_reg(gpio, to_bank(offset), reg_tolerance);
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 	copro = aspeed_gpio_copro_request(gpio, offset);
+ 
+ 	val = readl(treg);
+@@ -730,7 +730,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
+ 
+ 	if (copro)
+ 		aspeed_gpio_copro_release(gpio, offset);
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	return 0;
+ }
+@@ -856,7 +856,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
+ 		return rc;
+ 	}
+ 
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 
+ 	if (timer_allocation_registered(gpio, offset)) {
+ 		rc = unregister_allocated_timer(gpio, offset);
+@@ -916,7 +916,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
+ 	configure_timer(gpio, offset, i);
+ 
  out:
- 	return err;
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	return rc;
  }
-@@ -521,6 +525,7 @@ static void xfrm_update_ae_params(struct xfrm_state *x, struct nlattr **attrs,
- 	struct nlattr *lt = attrs[XFRMA_LTIME_VAL];
- 	struct nlattr *et = attrs[XFRMA_ETIMER_THRESH];
- 	struct nlattr *rt = attrs[XFRMA_REPLAY_THRESH];
-+	struct nlattr *mt = attrs[XFRMA_MTIMER_THRESH];
+@@ -927,13 +927,13 @@ static int disable_debounce(struct gpio_chip *chip, unsigned int offset)
+ 	unsigned long flags;
+ 	int rc;
  
- 	if (re) {
- 		struct xfrm_replay_state_esn *replay_esn;
-@@ -552,6 +557,9 @@ static void xfrm_update_ae_params(struct xfrm_state *x, struct nlattr **attrs,
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
  
- 	if (rt)
- 		x->replay_maxdiff = nla_get_u32(rt);
-+
-+	if (mt)
-+		x->mapping_maxage = nla_get_u32(mt);
+ 	rc = unregister_allocated_timer(gpio, offset);
+ 	if (!rc)
+ 		configure_timer(gpio, offset, 0);
+ 
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 
+ 	return rc;
  }
+@@ -1015,7 +1015,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
+ 		return -EINVAL;
+ 	bindex = offset >> 3;
  
- static void xfrm_smark_init(struct nlattr **attrs, struct xfrm_mark *m)
-@@ -1029,8 +1037,13 @@ static int copy_to_user_state_extra(struct xfrm_state *x,
- 		if (ret)
- 			goto out;
- 	}
--	if (x->security)
-+	if (x->security) {
- 		ret = copy_sec_ctx(x->security, skb);
-+		if (ret)
-+			goto out;
-+	}
-+	if (x->mapping_maxage)
-+		ret = nla_put_u32(skb, XFRMA_MTIMER_THRESH, x->mapping_maxage);
- out:
- 	return ret;
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 
+ 	/* Sanity check, this shouldn't happen */
+ 	if (gpio->cf_copro_bankmap[bindex] == 0xff) {
+@@ -1036,7 +1036,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
+ 	if (bit)
+ 		*bit = GPIO_OFFSET(offset);
+  bail:
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 	return rc;
  }
-@@ -3084,6 +3097,9 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
- 	/* Must count x->lastused as it may become non-zero behind our back. */
- 	l += nla_total_size_64bit(sizeof(u64));
+ EXPORT_SYMBOL_GPL(aspeed_gpio_copro_grab_gpio);
+@@ -1060,7 +1060,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
+ 		return -EINVAL;
+ 	bindex = offset >> 3;
  
-+	if (x->mapping_maxage)
-+		l += nla_total_size(sizeof(x->mapping_maxage));
-+
- 	return l;
+-	spin_lock_irqsave(&gpio->lock, flags);
++	raw_spin_lock_irqsave(&gpio->lock, flags);
+ 
+ 	/* Sanity check, this shouldn't happen */
+ 	if (gpio->cf_copro_bankmap[bindex] == 0) {
+@@ -1074,7 +1074,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
+ 		aspeed_gpio_change_cmd_source(gpio, bank, bindex,
+ 					      GPIO_CMDSRC_ARM);
+  bail:
+-	spin_unlock_irqrestore(&gpio->lock, flags);
++	raw_spin_unlock_irqrestore(&gpio->lock, flags);
+ 	return rc;
  }
+ EXPORT_SYMBOL_GPL(aspeed_gpio_copro_release_gpio);
+@@ -1148,7 +1148,7 @@ static int __init aspeed_gpio_probe(struct platform_device *pdev)
+ 	if (IS_ERR(gpio->base))
+ 		return PTR_ERR(gpio->base);
  
+-	spin_lock_init(&gpio->lock);
++	raw_spin_lock_init(&gpio->lock);
+ 
+ 	gpio_id = of_match_node(aspeed_gpio_of_table, pdev->dev.of_node);
+ 	if (!gpio_id)
 -- 
 2.34.1
 
