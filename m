@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D15AEC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 655DDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366710AbiAXXxW (ORCPT
+        id S2366450AbiAXXwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49170 "EHLO
+        Mon, 24 Jan 2022 18:52:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846025AbiAXXOO (ORCPT
+        with ESMTP id S1845905AbiAXXNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92CBFC067A7D;
-        Mon, 24 Jan 2022 13:22:24 -0800 (PST)
+        Mon, 24 Jan 2022 18:13:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D0A2C067A6A;
+        Mon, 24 Jan 2022 13:19:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A357B81188;
-        Mon, 24 Jan 2022 21:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CE63C340E4;
-        Mon, 24 Jan 2022 21:22:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A08B61320;
+        Mon, 24 Jan 2022 21:19:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2314C340E4;
+        Mon, 24 Jan 2022 21:19:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059343;
-        bh=/EAeO4xUnZVlE4J3vuK3DNqUta/S6QmR1xXciBHU+t4=;
+        s=korg; t=1643059187;
+        bh=BRth5bWhl+JDCIuYfy5CS8sx+fRhAfvxk/XHWkwWoXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KaKw1anUg42BQFWn47k6WcIxzJi+pTM0JetW//CMyPMcOsqZ0h3rz4Lqie6Mc8TNq
-         kJPLZ8DRmmh7h4HfqRX+PQANvSc7j1ZbnDZC1I/3TQtL7lOpIkfs0QGfplB+bH72PW
-         gxuXJAdG/g6La8BLEoVRWN1jfI0zQqA+JPHFj25w=
+        b=Yq0qCppTxvsXdPzCMe3DJgUFi5OHflmySu+R15lCEks/J9WeV7kkk480Wobe/I6Mn
+         Bl0xEU6pLvyYSCn1Y0rumCOTEM4omeOsEfcYMD6Xk8EEs/7mvc7dbLHXanx+z/aFtO
+         6r7z+5758ib6T6gEgvjC6APmKHilckjbCFPY0/1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Hengqi Chen <hengqi.chen@gmail.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0551/1039] selftests/bpf: Destroy XDP link correctly
-Date:   Mon, 24 Jan 2022 19:39:00 +0100
-Message-Id: <20220124184143.806005676@linuxfoundation.org>
+Subject: [PATCH 5.16 0532/1039] MIPS: compressed: Fix build with ZSTD compression
+Date:   Mon, 24 Jan 2022 19:38:41 +0100
+Message-Id: <20220124184143.167822711@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,37 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Paul Cercueil <paul@crapouillou.net>
 
-[ Upstream commit f91231eeeed752119f49eb6620cae44ec745a007 ]
+[ Upstream commit c5c7440fe7f74645940d5c9e2c49cd7efb706a4f ]
 
-bpf_link__detach() was confused with bpf_link__destroy() and leaves
-leaked FD in the process. Fix the problem.
+Fix the following build issues:
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
-Link: https://lore.kernel.org/bpf/20211107165521.9240-9-andrii@kernel.org
+mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `FSE_buildDTable_internal':
+ decompress.c:(.text.FSE_buildDTable_internal+0x2cc): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `BIT_initDStream':
+   decompress.c:(.text.BIT_initDStream+0x7c): undefined reference to `__clzdi2'
+   mips64el-linux-ld: decompress.c:(.text.BIT_initDStream+0x158): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `ZSTD_buildFSETable_body_default.constprop.0':
+ decompress.c:(.text.ZSTD_buildFSETable_body_default.constprop.0+0x2a8): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `FSE_readNCount_body_default':
+ decompress.c:(.text.FSE_readNCount_body_default+0x130): undefined reference to `__ctzdi2'
+ mips64el-linux-ld: decompress.c:(.text.FSE_readNCount_body_default+0x1a4): undefined reference to `__ctzdi2'
+ mips64el-linux-ld: decompress.c:(.text.FSE_readNCount_body_default+0x2e4): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `HUF_readStats_body_default':
+ decompress.c:(.text.HUF_readStats_body_default+0x184): undefined reference to `__clzdi2'
+ mips64el-linux-ld: decompress.c:(.text.HUF_readStats_body_default+0x1b4): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `ZSTD_DCtx_getParameter':
+ decompress.c:(.text.ZSTD_DCtx_getParameter+0x60): undefined reference to `__clzdi2'
+
+Fixes: a510b616131f ("MIPS: Add support for ZSTD-compressed kernels")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Nick Terrell <terrelln@fb.com>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/boot/compressed/Makefile  | 2 +-
+ arch/mips/boot/compressed/clz_ctz.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+ create mode 100644 arch/mips/boot/compressed/clz_ctz.c
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-index 7589c03fd26be..eb2feaac81fe2 100644
---- a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-@@ -204,8 +204,8 @@ static int pass_ack(struct migrate_reuseport_test_case *test_case)
- {
- 	int err;
+diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
+index f27cf31b41401..38e233f7fd7a4 100644
+--- a/arch/mips/boot/compressed/Makefile
++++ b/arch/mips/boot/compressed/Makefile
+@@ -52,7 +52,7 @@ endif
  
--	err = bpf_link__detach(test_case->link);
--	if (!ASSERT_OK(err, "bpf_link__detach"))
-+	err = bpf_link__destroy(test_case->link);
-+	if (!ASSERT_OK(err, "bpf_link__destroy"))
- 		return -1;
+ vmlinuzobjs-$(CONFIG_KERNEL_XZ) += $(obj)/ashldi3.o
  
- 	test_case->link = NULL;
+-vmlinuzobjs-$(CONFIG_KERNEL_ZSTD) += $(obj)/bswapdi.o $(obj)/ashldi3.o
++vmlinuzobjs-$(CONFIG_KERNEL_ZSTD) += $(obj)/bswapdi.o $(obj)/ashldi3.o $(obj)/clz_ctz.o
+ 
+ targets := $(notdir $(vmlinuzobjs-y))
+ 
+diff --git a/arch/mips/boot/compressed/clz_ctz.c b/arch/mips/boot/compressed/clz_ctz.c
+new file mode 100644
+index 0000000000000..b4a1b6eb2f8ad
+--- /dev/null
++++ b/arch/mips/boot/compressed/clz_ctz.c
+@@ -0,0 +1,2 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include "../../../../lib/clz_ctz.c"
 -- 
 2.34.1
 
