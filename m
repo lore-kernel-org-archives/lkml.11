@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B969C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFBFC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582988AbiAXWQR (ORCPT
+        id S1352052AbiAXWSf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:16:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46086 "EHLO
+        Mon, 24 Jan 2022 17:18:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34740 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376842AbiAXVZD (ORCPT
+        with ESMTP id S1447700AbiAXVLT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:03 -0500
+        Mon, 24 Jan 2022 16:11:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B643614D7;
-        Mon, 24 Jan 2022 21:25:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487FEC340E4;
-        Mon, 24 Jan 2022 21:25:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5A9B60C60;
+        Mon, 24 Jan 2022 21:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77ABBC340E8;
+        Mon, 24 Jan 2022 21:11:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059501;
-        bh=JjoTPxcrsm13yYDz2X0aCGOrakWj/cvM4DjQzFBa75A=;
+        s=korg; t=1643058678;
+        bh=ywvwEwdbHU5wOPoIxh/ANzlr4vblBlzIaHREvpeMLtM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wrrUq68ZvNYSLXpCyMmmOEPt6S2nnndrN8C+8jeQ/0jNVxNEGP9wwgQz8x9PVL75g
-         RlxhW9AxX2zweNq5xKo5iR40jt7r6lugyiKbvVs0qG+15fkJyCEfBavWUYVyzEgLFJ
-         Iiu7JuxHN2LNUXlyNV0EtRsAJ+o0lfxjORgkRYCY=
+        b=CMNddaEn+ze8RCt3al5tdxZ23GZPcgQeGMqI4TmKhD5ScQwhZTbjxltfVZJ6kaM/L
+         Znu/obZHuV/W9ktRFMf7FfErT2A2YH2JcoLI1oqMRYOQgzDhtCBp70gHNoIuulGtwO
+         qz4ZY5fxpqhDuvvJtxl2fRpCbR0XRG7l9fX7/Yeg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0619/1039] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:40:08 +0100
-Message-Id: <20220124184146.146218978@linuxfoundation.org>
+Subject: [PATCH 5.16 0365/1039] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in __nonstatic_find_io_region()
+Date:   Mon, 24 Jan 2022 19:35:54 +0100
+Message-Id: <20220124184137.551740940@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,25 +49,14 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+[ Upstream commit ca0fe0d7c35c97528bdf621fdca75f13157c27af ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+In __nonstatic_find_io_region(), pcmcia_make_resource() is assigned to
+res and used in pci_bus_alloc_resource(). There is a dereference of res
+in pci_bus_alloc_resource(), which could lead to a NULL pointer
+dereference on failure of pcmcia_make_resource().
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
-
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
-
-Fix this bug by adding a check of saa7146_vv_init().
+Fix this bug by adding a check of res.
 
 This bug was found by a static analyzer. The analysis employs
 differential checking to identify inconsistent security operations
@@ -80,39 +68,32 @@ Note that, as a bug found by static analysis, it can be a false
 positive or hard to trigger. Multiple researchers have cross-reviewed
 the bug.
 
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
+Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
 and our static analyzer no longer warns about this code.
 
+Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
 Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+[linux@dominikbrodowski.net: Fix typo in commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/pcmcia/rsrc_nonstatic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index 39d14c179d229..2eb4bee16b71f 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
+diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
+index bb15a8bdbaab5..827ca6e9ee54a 100644
+--- a/drivers/pcmcia/rsrc_nonstatic.c
++++ b/drivers/pcmcia/rsrc_nonstatic.c
+@@ -690,6 +690,9 @@ static struct resource *__nonstatic_find_io_region(struct pcmcia_socket *s,
+ 	unsigned long min = base;
+ 	int ret;
  
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
++	if (!res)
++		return NULL;
 +
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
+ 	data.mask = align - 1;
+ 	data.offset = base & data.mask;
+ 	data.map = &s_data->io_db;
 -- 
 2.34.1
 
