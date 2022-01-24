@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C6FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A130FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355934AbiAXTo5 (ORCPT
+        id S1355949AbiAXTo6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:44:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57812 "EHLO
+        Mon, 24 Jan 2022 14:44:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58044 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353985AbiAXTfn (ORCPT
+        with ESMTP id S1354135AbiAXTgF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:35:43 -0500
+        Mon, 24 Jan 2022 14:36:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97DC8B8122A;
-        Mon, 24 Jan 2022 19:35:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE896C340E7;
-        Mon, 24 Jan 2022 19:35:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE1D7B8122C;
+        Mon, 24 Jan 2022 19:36:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19EAEC340E5;
+        Mon, 24 Jan 2022 19:36:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052941;
-        bh=Z6LnLnvpzRXBhuAU39DeUE7li7MEBSuYocwLtie5v+Y=;
+        s=korg; t=1643052962;
+        bh=xX+HrHhYId0Tfufo3/43Ld1U2JB46Xat28lK7sWeS/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UJoHSb0WWm4pv0sW0A01Nvkc6yoWvHsDaOQNhDQ9ULKBbQ/YmZzhkoEPZCbJG+cIU
-         92Eb/kTLXbnACWxZTxLiIOjQ1xN+wf4+8d77eTBkjUmCfnHWUEPMKClmORUhq7kV7R
-         9VcNqWaqMTy1jplCGOvdbidHUPemzGAMW4u/4tH0=
+        b=YHFeCgFVzqRrNp0Z890erP8tkknqpzg5PLZ6aogOTdf/VgcxznKe+YHTl1mB5Ieu6
+         RyQSmeDK1M3s1EEzKDqzn5YR8r/HCy2alg/w3EJWNbW+bnBrByPLHvPlz91oTRa+OE
+         99PiluY44XVE+PvCZjf2Def+I9PlbNDZ+Ilf34+4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 223/320] parisc: Avoid calling faulthandler_disabled() twice
-Date:   Mon, 24 Jan 2022 19:43:27 +0100
-Message-Id: <20220124184001.578089440@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 230/320] powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
+Date:   Mon, 24 Jan 2022 19:43:34 +0100
+Message-Id: <20220124184001.805656409@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,51 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
+[ Upstream commit a4ac0d249a5db80e79d573db9e4ad29354b643a8 ]
 
-In handle_interruption(), we call faulthandler_disabled() to check whether the
-fault handler is not disabled. If the fault handler is disabled, we immediately
-call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
-do_page_fault() attempts to fixup the exception by jumping to no_context:
+setup_profiling_timer() is only needed when CONFIG_PROFILING is enabled.
 
-no_context:
+Fixes the following W=1 warning when CONFIG_PROFILING=n:
+  linux/arch/powerpc/kernel/smp.c:1638:5: error: no previous prototype for ‘setup_profiling_timer’
 
-        if (!user_mode(regs) && fixup_exception(regs)) {
-                return;
-        }
-
-        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
-
-Apart from the error messages, the two blocks of code perform the same
-function.
-
-We can avoid two calls to faulthandler_disabled() by a simple revision
-to the code in handle_interruption().
-
-Note: I didn't try to fix the formatting of this code block.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211124093254.1054750-5-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/traps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index 82fc011894889..2a1060d747a5d 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -783,7 +783,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 	     * unless pagefault_disable() was called before.
- 	     */
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index c06cac543f188..82dff003a7fd6 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -1296,10 +1296,12 @@ void start_secondary(void *unused)
+ 	BUG();
+ }
  
--	    if (fault_space == 0 && !faulthandler_disabled())
-+	    if (faulthandler_disabled() || fault_space == 0)
- 	    {
- 		/* Clean up and return if in exception table. */
- 		if (fixup_exception(regs))
++#ifdef CONFIG_PROFILING
+ int setup_profiling_timer(unsigned int multiplier)
+ {
+ 	return 0;
+ }
++#endif
+ 
+ #ifdef CONFIG_SCHED_SMT
+ /* cpumask of CPUs with asymetric SMT dependancy */
 -- 
 2.34.1
 
