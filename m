@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 564A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC7DC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379136AbiAXUKY (ORCPT
+        id S1379169AbiAXUK3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352168AbiAXTwp (ORCPT
+        Mon, 24 Jan 2022 15:10:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50246 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235569AbiAXTwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D558C06138E;
-        Mon, 24 Jan 2022 11:25:44 -0800 (PST)
+        Mon, 24 Jan 2022 14:52:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E93746148B;
-        Mon, 24 Jan 2022 19:25:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB115C340E5;
-        Mon, 24 Jan 2022 19:25:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1580860989;
+        Mon, 24 Jan 2022 19:52:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDAB1C340E8;
+        Mon, 24 Jan 2022 19:52:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052343;
-        bh=DJ/cYkr8MzqT7hAfv92BLVMqYFrXoXo4x8FHMhWFLhY=;
+        s=korg; t=1643053969;
+        bh=HkJde7G0N3DRpmHjssvvdYfr06UK7b1u/hUJBLTfLf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Hd46jcAe/bMRU6y1iTVNEYlRGlbSkIamwpta2/28D0aA7CeE6ak9r1QR4fzYQ8oK8
-         9kmlYBy+pHVQsVRLgF58RQC4jWOYufYIr0bloFn+kYYqIPylkN4xzUcQVZ6mUibahC
-         JTthaUJooCqKq3DLTz3xoszrcNJzKGWY1GtYbKV4=
+        b=fWjdYUDEYkQS17SfaxzHQxD0xOFt9HQJXJ6Ng5oiOi3YfHrufv9d0+2CzQI61NyCH
+         C+LIlUpWArhp3jej1Zuvz/+HyCr7A/8z+P5zlW7TJLC3dt1sXq2m1K9xlYRQBxv8qh
+         uMrCwR6zgEY/bK5JZB6zDavMWAql/B2etcECtDWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Subject: [PATCH 5.4 006/320] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
-Date:   Mon, 24 Jan 2022 19:39:50 +0100
-Message-Id: <20220124183953.977141470@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 236/563] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
+Date:   Mon, 24 Jan 2022 19:40:01 +0100
+Message-Id: <20220124184032.606666415@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,102 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
+[ Upstream commit 4ccdcc8ffd955490feec05380223db6a48961eb5 ]
 
-Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
-(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
-a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
+When building ARCH=arm allmodconfig:
 
-KASAN report:
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function ‘iwl_mvm_ftm_rtt_smoothing’:
+./include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
+  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
+      |                                   ^~
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note: in expansion of macro ‘do_div’
+ 1070 |         do_div(rtt_avg, 100);
+      |         ^~~~~~
 
-  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
-  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+do_div() has to be used with an unsigned 64-bit integer dividend but
+rtt_avg is a signed 64-bit integer.
 
-  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x59
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   __kasan_report.cold+0x117/0x11c
-   ? mark_lock+0x480/0x4f0
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   kasan_report+0x38/0x50
-   nfc_alloc_send_skb+0x2d/0xc0
-   nfc_llcp_send_ui_frame+0x18c/0x2a0
-   ? nfc_llcp_send_i_frame+0x230/0x230
-   ? __local_bh_enable_ip+0x86/0xe0
-   ? llcp_sock_connect+0x470/0x470
-   ? llcp_sock_connect+0x470/0x470
-   sock_sendmsg+0x8e/0xa0
-   ____sys_sendmsg+0x253/0x3f0
-   ...
+div_s64() expects a signed 64-bit integer dividend and signed 32-bit
+divisor, which fits this scenario, so use that function here to fix the
+warning.
 
-The issue was visible only with multiple simultaneous calls to bind() and
-sendmsg(), which resulted in most of the bind() calls to fail.  The
-bind() was failing on checking if there is available WKS/SDP/SAP
-(respective bit in 'struct nfc_llcp_local' fields).  When there was no
-available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
-socket was able to trigger mentioned NULL pointer dereference of
-nfc_llcp_sock->dev.
-
-The code looks simply racy and currently it protects several paths
-against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
-in error paths of bind().  The llcp_sock_sendmsg() did not have such
-check but called function nfc_llcp_send_ui_frame() had, although not
-protected with lock_sock().
-
-Therefore the race could look like (same socket is used all the time):
-  CPU0                                     CPU1
-  ====                                     ====
-  llcp_sock_bind()
-  - lock_sock()
-    - success
-  - release_sock()
-  - return 0
-                                           llcp_sock_sendmsg()
-                                           - lock_sock()
-                                           - release_sock()
-  llcp_sock_bind(), same socket
-  - lock_sock()
-    - error
-                                           - nfc_llcp_send_ui_frame()
-                                             - if (!llcp_sock->local)
-    - llcp_sock->local = NULL
-    - nfc_put_device(dev)
-                                             - dereference llcp_sock->dev
-  - release_sock()
-  - return -ERRNO
-
-The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
-lock, which is racy and ineffective check.  Instead, its caller
-llcp_sock_sendmsg(), should perform the check inside lock_sock().
-
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8b0f92549f2c ("iwlwifi: mvm: fix 32-bit build in FTM")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20211227191757.2354329-1-nathan@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/llcp_sock.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -789,6 +789,11 @@ static int llcp_sock_sendmsg(struct sock
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+index fe3d52620a897..b1335fe3b01a2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+@@ -967,8 +967,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
+ 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
+ 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
  
- 	lock_sock(sk);
+-	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
+-	do_div(rtt_avg, 100);
++	rtt_avg = div_s64(alpha * rtt + (100 - alpha) * resp->rtt_avg, 100);
  
-+	if (!llcp_sock->local) {
-+		release_sock(sk);
-+		return -ENODEV;
-+	}
-+
- 	if (sk->sk_type == SOCK_DGRAM) {
- 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
- 				 msg->msg_name);
+ 	IWL_DEBUG_INFO(mvm,
+ 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
+-- 
+2.34.1
+
 
 
