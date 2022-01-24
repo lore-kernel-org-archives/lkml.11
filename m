@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEA2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D80FC4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383956AbiAXU2D (ORCPT
+        id S1383920AbiAXU2A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49082 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377971AbiAXUGE (ORCPT
+        Mon, 24 Jan 2022 15:28:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33340 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377747AbiAXUF4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:06:04 -0500
+        Mon, 24 Jan 2022 15:05:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B741EB81215;
-        Mon, 24 Jan 2022 20:06:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F46C340E5;
-        Mon, 24 Jan 2022 20:06:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA69460916;
+        Mon, 24 Jan 2022 20:05:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A102FC340E5;
+        Mon, 24 Jan 2022 20:05:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054761;
-        bh=vwRGDU4N4TbEApmcUFKQ4hpx5acenT08Vv9AbCWceh8=;
+        s=korg; t=1643054755;
+        bh=Ss9cJ1xCoPXGKemzTHnuPgLOcrn/oCFFznA4VV3+pwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kl3Nre77F2SH0prH9ZGLj73Cdb9wF5KnVrCWuM8yBiQy6AtHyK98Q5xts/uGKCEHm
-         4jmwKGZ+yJticKJmQxEAtLwDH3IRnFaxL8fjxIQWXxbLsmUZ/gstpmNUVbAv4P9BRF
-         dknzDoEJFMP2OnrFpSqp/7F06Fpwcucho1zeJrYc=
+        b=LObD8LfaJOaUMZgjtopaJzvYL5DbZU2S/dMTveAA7u+HoLdzhHG7iBLG/BN6PNSZW
+         3fd3mLtcDh0zR83X5fzx7F+fwSTIxORHu7boaalVbF0yX5sGJ5hylo0w2Qkg1BlHbs
+         G7EvDIkGdEqXixzSJtCPzDFXmZUJlAexfugIyTC8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.10 493/563] Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
-Date:   Mon, 24 Jan 2022 19:44:18 +0100
-Message-Id: <20220124184041.499757730@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.10 491/563] Documentation: dmaengine: Correctly describe dmatest with channel unset
+Date:   Mon, 24 Jan 2022 19:44:16 +0100
+Message-Id: <20220124184041.427860925@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,39 +47,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-commit 82ca67321f55a8d1da6ac3ed611da3c32818bb37 upstream.
+commit c61d7b2ef141abf81140756b45860a2306f395a2 upstream.
 
-The config RANDOMIZE_SLAB does not exist, the authors probably intended to
-refer to the config RANDOMIZE_BASE, which provides kernel address-space
-randomization. They probably just confused SLAB with BASE (these two
-four-letter words coincidentally share three common letters), as they also
-point out the config SLAB_FREELIST_RANDOM as further randomization within
-the same sentence.
+Currently the documentation states that channels must be configured before
+running the dmatest. This has not been true since commit 6b41030fdc79
+("dmaengine: dmatest: Restore default for channel"). Fix accordingly.
 
-Fix the reference of the config for kernel address-space randomization to
-the config that provides that.
-
-Fixes: 6e88559470f5 ("Documentation: Add section about CPU vulnerabilities for Spectre")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Link: https://lore.kernel.org/r/20211230171940.27558-1-lukas.bulwahn@gmail.com
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Fixes: 6b41030fdc79 ("dmaengine: dmatest: Restore default for channel")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Link: https://lore.kernel.org/r/20211118100952.27268-3-daniel.thompson@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/hw-vuln/spectre.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/driver-api/dmaengine/dmatest.rst |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/Documentation/admin-guide/hw-vuln/spectre.rst
-+++ b/Documentation/admin-guide/hw-vuln/spectre.rst
-@@ -468,7 +468,7 @@ Spectre variant 2
-    before invoking any firmware code to prevent Spectre variant 2 exploits
-    using the firmware.
+--- a/Documentation/driver-api/dmaengine/dmatest.rst
++++ b/Documentation/driver-api/dmaengine/dmatest.rst
+@@ -143,13 +143,14 @@ Part 5 - Handling channel allocation
+ Allocating Channels
+ -------------------
  
--   Using kernel address space randomization (CONFIG_RANDOMIZE_SLAB=y
-+   Using kernel address space randomization (CONFIG_RANDOMIZE_BASE=y
-    and CONFIG_SLAB_FREELIST_RANDOM=y in the kernel configuration) makes
-    attacks on the kernel generally more difficult.
+-Channels are required to be configured prior to starting the test run.
+-Attempting to run the test without configuring the channels will fail.
++Channels do not need to be configured prior to starting a test run. Attempting
++to run the test without configuring the channels will result in testing any
++channels that are available.
  
+ Example::
+ 
+     % echo 1 > /sys/module/dmatest/parameters/run
+-    dmatest: Could not start test, no channels configured
++    dmatest: No channels configured, continue with any
+ 
+ Channels are registered using the "channel" parameter. Channels can be requested by their
+ name, once requested, the channel is registered and a pending thread is added to the test list.
 
 
