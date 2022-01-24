@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D5BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDFEDC3526D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356822AbiAXU2b (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377496AbiAXUFd (ORCPT
+        id S238286AbiAXU2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:28:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49108 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378014AbiAXUGI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:05:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F7CC08E87B;
-        Mon, 24 Jan 2022 11:32:05 -0800 (PST)
+        Mon, 24 Jan 2022 15:06:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAC57B8125F;
-        Mon, 24 Jan 2022 19:32:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16C2FC340E7;
-        Mon, 24 Jan 2022 19:32:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4F4F9B8122D;
+        Mon, 24 Jan 2022 20:06:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83794C340E5;
+        Mon, 24 Jan 2022 20:06:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052722;
-        bh=WJ0l9wBkHylNm8t0kXEqMvXswbr+3A7YmZXxEF2MNFo=;
+        s=korg; t=1643054765;
+        bh=9wTFvCDXsLGr2ff4ZSyAlfnhmj5VqNbcLjP9DYhL73E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B1AKckWe+MFjkDgav+L6fCdvKuTdeupaqHhFB2sT9j2Fd4HAz7ptYtGzqsPv7mZMO
-         186Nazkknkyh3az1yGZFqHeWawNmzklFvNrGc407Nd6ATc5Tro7FHjMkF7Z/BZpMRg
-         yibLoosSJexrqHVF4g+9Xpfhz+DMjRr5GhAA6Emg=
+        b=BWfekx0k/06pvM6pp+8QTpWgs74DQ/UATHzuYUs1L+CYSyEMuUK81L+a69ytaFifO
+         UO10j/WLD1SFHvILFETExhVFgQfQqDNkotiKgh4suKI2zlAWTyG0Cx+8s8cSEhQIyL
+         PqPT2f9bDRoL1ozGIGpj+nXUdO7i/tHqZRda4FgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 153/320] fs: dlm: filter user dlm messages for kernel locks
-Date:   Mon, 24 Jan 2022 19:42:17 +0100
-Message-Id: <20220124183958.838861997@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.10 494/563] Documentation: fix firewire.rst ABI file path error
+Date:   Mon, 24 Jan 2022 19:44:19 +0100
+Message-Id: <20220124184041.539349566@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,118 +46,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
+commit b0ac702f3329cdc8a06dcaac73183d4b5a2b942d upstream.
 
-This patch fixes the following crash by receiving a invalid message:
+Adjust the path of the ABI files for firewire.rst to prevent a
+documentation build error. Prevents this problem:
 
-[  160.672220] ==================================================================
-[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
-[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
-[  160.681447]
-[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
-[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
-[  160.685574] Workqueue: dlm_recv process_recv_sockets
-[  160.686721] Call Trace:
-[  160.687310]  dump_stack_lvl+0x56/0x6f
-[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
-[  160.689116]  kasan_report.cold.14+0x116/0x11b
-[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
-[  160.690832]  dlm_user_add_ast+0xc3/0x370
-[  160.691502]  _receive_unlock_reply+0x103/0x170
-[  160.692241]  _receive_message+0x11df/0x1ec0
-[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.694427]  ? lock_acquire+0x175/0x400
-[  160.695058]  ? do_purge.isra.51+0x200/0x200
-[  160.695744]  ? lock_acquired+0x360/0x5d0
-[  160.696400]  ? lock_contended+0x6a0/0x6a0
-[  160.697055]  ? lock_release+0x21d/0x5e0
-[  160.697686]  ? lock_is_held_type+0xe0/0x110
-[  160.698352]  ? lock_is_held_type+0xe0/0x110
-[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
-[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
-[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
-[  160.701249]  ? down_write_killable+0x2b0/0x2b0
-[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
-[  160.702690]  dlm_receive_buffer+0x1a5/0x210
-[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
-[  160.704210]  receive_from_sock+0x1c0/0x3b0
-[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
-[  160.705561]  ? lock_acquire+0x175/0x400
-[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.707681]  process_recv_sockets+0x32/0x40
-[  160.708366]  process_one_work+0x55e/0xad0
-[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
-[  160.709820]  worker_thread+0x65/0x5e0
-[  160.710423]  ? process_one_work+0xad0/0xad0
-[  160.711087]  kthread+0x1ed/0x220
-[  160.711628]  ? set_kthread_struct+0x80/0x80
-[  160.712314]  ret_from_fork+0x22/0x30
+Sphinx parallel build error:
+docutils.utils.SystemMessage: Documentation/driver-api/firewire.rst:22: (SEVERE/4) Problems with "include" directive path:
+InputError: [Errno 2] No such file or directory: '../Documentation/driver-api/ABI/stable/firewire-cdev'.
 
-The issue is that we received a DLM message for a user lock but the
-destination lock is a kernel lock. Note that the address which is trying
-to derefence is 00000000deadbeef, which is in a kernel lock
-lkb->lkb_astparam, this field should never be derefenced by the DLM
-kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
-(memory is shared by a union field). The struct lkb_ua will be handled
-by the DLM kernel stack but on a kernel lock it will contain invalid
-data and ends in most likely crashing the kernel.
-
-It can be reproduced with two cluster nodes.
-
-node 2:
-dlm_tool join test
-echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
-echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
-
-node 1:
-dlm_tool join test
-
-python:
-foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
-          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
-newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
-newFile.write(bytes(foo))
-
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2f4830ef96d2 ("FireWire: add driver-api Introduction section")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/20220119033905.4779-1-rdunlap@infradead.org
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/dlm/lock.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ Documentation/driver-api/firewire.rst |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
-index 18d81599522f3..53500b555bfa8 100644
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -3975,6 +3975,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 	int from = ms->m_header.h_nodeid;
- 	int error = 0;
+--- a/Documentation/driver-api/firewire.rst
++++ b/Documentation/driver-api/firewire.rst
+@@ -19,7 +19,7 @@ of kernel interfaces is available via ex
+ Firewire char device data structures
+ ====================================
  
-+	/* currently mixing of user/kernel locks are not supported */
-+	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
-+		log_error(lkb->lkb_resource->res_ls,
-+			  "got user dlm message for a kernel lock");
-+		error = -EINVAL;
-+		goto out;
-+	}
-+
- 	switch (ms->m_type) {
- 	case DLM_MSG_CONVERT:
- 	case DLM_MSG_UNLOCK:
-@@ -4003,6 +4011,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 		error = -EINVAL;
- 	}
+-.. include:: /ABI/stable/firewire-cdev
++.. include:: ../ABI/stable/firewire-cdev
+     :literal:
  
-+out:
- 	if (error)
- 		log_error(lkb->lkb_resource->res_ls,
- 			  "ignore invalid message %d from %d %x %x %x %d",
--- 
-2.34.1
-
+ .. kernel-doc:: include/uapi/linux/firewire-cdev.h
+@@ -28,7 +28,7 @@ Firewire char device data structures
+ Firewire device probing and sysfs interfaces
+ ============================================
+ 
+-.. include:: /ABI/stable/sysfs-bus-firewire
++.. include:: ../ABI/stable/sysfs-bus-firewire
+     :literal:
+ 
+ .. kernel-doc:: drivers/firewire/core-device.c
 
 
