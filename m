@@ -2,147 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C26C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EE91C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:16:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1320272AbiAYDMQ (ORCPT
+        id S1320495AbiAYDNI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:12:16 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:45491 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345604AbiAYC4G (ORCPT
+        Mon, 24 Jan 2022 22:13:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1316868AbiAYC6x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 21:56:06 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 24 Jan 2022 21:58:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4F8C0E262F;
+        Mon, 24 Jan 2022 12:44:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjWgr67Z3z4y7S;
-        Tue, 25 Jan 2022 13:55:52 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643079355;
-        bh=exfOBrNGIq18HB9bpbg5tO06O42Lp4/sVUlZzo7SeNc=;
-        h=Date:From:To:Cc:Subject:From;
-        b=W7k5uazm+p1A9H6KRBm5c9OJP2/bU55qmgAbohHKdtPzWBfB6cX39goZyjzRxtQX8
-         vD5Vv04G2flS6FcQaS0nd8qjTgmEBUp/vdnAQ9BAq5dPeg9/Cu1i9BtaGfz2q/sWD3
-         QRi4770hsK2puISXNjZGspRzKXr72sKHtOqc6va/MYBCHtF/5up5OusqH0Jsli8wVc
-         H7pW8oU6Zcs4xUOEGB78gZNwvNAnNijV+gqoYBNCcxwAtLvqxjG18vkrKPlpqCwUUv
-         4TeNvUPE5jCc9ZZYdHlDY3zToT1ZH1HrGBVl74a37zZnlcyxp4za9E22C/YZNc6A0r
-         o1YjAByTuLsaw==
-Date:   Tue, 25 Jan 2022 13:55:46 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Edmund Dea <edmund.j.dea@intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Anitha Chrisanthus <anitha.chrisanthus@intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: linux-next: build failure after merge of the kspp tree
-Message-ID: <20220125135546.1a2e1d6b@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C2E460916;
+        Mon, 24 Jan 2022 20:44:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6510EC340E5;
+        Mon, 24 Jan 2022 20:44:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057057;
+        bh=MRETdH0R/JG+t6ZDfa9LEIzPGElTchgZ8fjTDMT/5lk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=W5Z0DDUFtU6aYdCAQKYqfwaFy5aLDs+6vK3rjcl63ThHzlsCKM/6ujlcuqgD5YaJA
+         3XkRKHKCMJWijhD7GbXqDklo+TljQgU4ePDHD2vJ5JBjZAeH6Kxa3HGppMT//Eg9Qh
+         c/Kl6cu3beEQ6WBFkrqmKsREpuYcUJf2CHrltIdo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 645/846] powerpc/40x: Map 32Mbytes of memory at startup
+Date:   Mon, 24 Jan 2022 19:42:42 +0100
+Message-Id: <20220124184123.271975059@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nrM2XqSEID89HGMexxVxPDt";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/nrM2XqSEID89HGMexxVxPDt
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-Hi all,
+[ Upstream commit 06e7cbc29e97b4713b4ea6def04ae8501a7d1a59 ]
 
-After merging the kspp tree, today's linux-next build (powerpc
-allyesconfig) failed like this:
+As reported by Carlo, 16Mbytes is not enough with modern kernels
+that tend to be a bit big, so map another 16M page at boot.
 
-drivers/gpu/drm/kmb/kmb_plane.c: In function 'kmb_plane_atomic_disable':
-drivers/gpu/drm/kmb/kmb_plane.c:165:34: error: array subscript 3 is above a=
-rray bounds of 'struct layer_status[2]' [-Werror=3Darray-bounds]
-  165 |                 kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL2_E=
-NABLE;
-      |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
-   61 |         struct layer_status             plane_status[KMB_MAX_PLANES=
-];
-      |                                         ^~~~~~~~~~~~
-drivers/gpu/drm/kmb/kmb_plane.c:162:34: error: array subscript 2 is above a=
-rray bounds of 'struct layer_status[2]' [-Werror=3Darray-bounds]
-  162 |                 kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL1_E=
-NABLE;
-      |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_status'
-   61 |         struct layer_status             plane_status[KMB_MAX_PLANES=
-];
-      |                                         ^~~~~~~~~~~~
-
-Exposed by commit
-
-  4ba545781e20 ("Makefile: Enable -Warray-bounds")
-
-Originally introduced by commmit
-
-  7f7b96a8a0a1 ("drm/kmb: Add support for KeemBay Display")
-
-Maybe should have been fixed by
-
-  c026565fe9be ("drm/kmb: Enable alpha blended second plane")
-
-I have applied the following hack for now.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 13:45:26 +1100
-Subject: [PATCH] hack for building with -Warray-bounds
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/89b5f974a7fa5011206682cd092e2c905530ff46.1632755552.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/kmb/kmb_plane.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/kernel/head_40x.S | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/kmb/kmb_plane.c b/drivers/gpu/drm/kmb/kmb_plan=
-e.c
-index 00404ba4126d..c12e900c6c93 100644
---- a/drivers/gpu/drm/kmb/kmb_plane.c
-+++ b/drivers/gpu/drm/kmb/kmb_plane.c
-@@ -161,9 +161,11 @@ static void kmb_plane_atomic_disable(struct drm_plane =
-*plane,
- 	case LAYER_2:
- 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL1_ENABLE;
- 		break;
-+#if 0
- 	case LAYER_3:
- 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL2_ENABLE;
- 		break;
-+#endif
- 	}
-=20
- 	kmb->plane_status[plane_id].disable =3D true;
---=20
+diff --git a/arch/powerpc/kernel/head_40x.S b/arch/powerpc/kernel/head_40x.S
+index 7d72ee5ab387c..e783860bea838 100644
+--- a/arch/powerpc/kernel/head_40x.S
++++ b/arch/powerpc/kernel/head_40x.S
+@@ -27,6 +27,7 @@
+ 
+ #include <linux/init.h>
+ #include <linux/pgtable.h>
++#include <linux/sizes.h>
+ #include <asm/processor.h>
+ #include <asm/page.h>
+ #include <asm/mmu.h>
+@@ -650,7 +651,7 @@ start_here:
+ 	b	.		/* prevent prefetch past rfi */
+ 
+ /* Set up the initial MMU state so we can do the first level of
+- * kernel initialization.  This maps the first 16 MBytes of memory 1:1
++ * kernel initialization.  This maps the first 32 MBytes of memory 1:1
+  * virtual to physical and more importantly sets the cache mode.
+  */
+ initial_mmu:
+@@ -687,6 +688,12 @@ initial_mmu:
+ 	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
+ 	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
+ 
++	li	r0,62			/* TLB slot 62 */
++	addis	r4,r4,SZ_16M@h
++	addis	r3,r3,SZ_16M@h
++	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
++	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
++
+ 	isync
+ 
+ 	/* Establish the exception vector base
+-- 
 2.34.1
 
---=20
-Cheers,
-Stephen Rothwell
 
---Sig_/nrM2XqSEID89HGMexxVxPDt
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvZrIACgkQAVBC80lX
-0Gxj6gf/ZKsSyaOBUb43GfeYY9eBBKNOBDJcX1eTPHcB9bK6bcGRWWXMviVjIOJU
-IZ4U07Wd0ytcz1CSbOEATioVlukDAjwKt4ZXgdBAR5/+JNIn+M6WLTGqXJly3izc
-MfuXgQAzDN+Q+Drt+vL/hcSXlq/O26egplrB/mww0j48pCt2FPvf2gona+mVtMol
-OhLIEH6olM3HGUYAx5cnhuMfDs8UpA+4tMfYZkkP2bzpiDy8zC2mzByFFPR2NcbF
-2L/uqM4IcsnVb67egQ8ViXOtL9ak5dEZG/MFmvkyWm5XOsP9CuukHMxatcD9J0+F
-wTRKnfvQx95m3nONtNW+meNeKKz+TQ==
-=uTQR
------END PGP SIGNATURE-----
-
---Sig_/nrM2XqSEID89HGMexxVxPDt--
