@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72318C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58889C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838795AbiAXWsQ (ORCPT
+        id S1453881AbiAXWs3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:48:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458141AbiAXVmr (ORCPT
+        Mon, 24 Jan 2022 17:48:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52676 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573040AbiAXVm5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1316C07A953;
-        Mon, 24 Jan 2022 12:30:45 -0800 (PST)
+        Mon, 24 Jan 2022 16:42:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8288B61383;
-        Mon, 24 Jan 2022 20:30:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5BCC340E5;
-        Mon, 24 Jan 2022 20:30:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9146B80CCF;
+        Mon, 24 Jan 2022 21:42:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F051DC340E4;
+        Mon, 24 Jan 2022 21:42:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056244;
-        bh=lHp066GqEuWHuPWqIDH4N1W547qnHtwjWomtPz60+2M=;
+        s=korg; t=1643060574;
+        bh=X24xw2mD4tZTlOt+v1NYqsBi5NtBEk4lzJIRzF3aMqA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z6y2vvacceplFWuIxh5IRUeUNeTDzhC4LfmpY4FzifwCsvSogPnQ3BLfMKxv4VZ83
-         n2zsw44Tq7DVbVgAGQ/DC8+X9wnNI8iUfuztlyhqVE1mVnBF0s5htSRENGub5s2dnz
-         uhxEsiooxjySBoEZqNZQ+k+3aBjn7MJilQAeKANw=
+        b=zyHutr7z8UURwPEUTlHN4ZGqgCXErOqj5WjYbuSVXbVZA9bmFVf/BIUVCUYnwmMru
+         U94o4KXb2adYhVyYzr9k/eT3bjWLiLUrLGvWbRY2jgMI/tMCMh6sdizG0896Ew9nmY
+         1rQFqZYZIfu1NlVhdOlKuaVZJejI6Iq8LNdvzh0g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 419/846] iommu/amd: Restore GA log/tail pointer on host resume
-Date:   Mon, 24 Jan 2022 19:38:56 +0100
-Message-Id: <20220124184115.426600618@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 0993/1039] perf script: Fix hex dump character output
+Date:   Mon, 24 Jan 2022 19:46:22 +0100
+Message-Id: <20220124184158.668119314@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,95 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-[ Upstream commit a8d4a37d1bb93608501d0d0545f902061152669a ]
+commit 62942e9fda9fd1def10ffcbd5e1c025b3c9eec17 upstream.
 
-This will give IOMMU GA log a chance to work after resume
-from s3/s4.
+Using grep -C with perf script -D can give erroneous results as grep loses
+lines due to non-printable characters, for example, below the 0020, 0060
+and 0070 lines are missing:
 
-Fixes: 8bda0cfbdc1a6 ("iommu/amd: Detect and initialize guest vAPIC log")
+ $ perf script -D | grep -C10 AUX | head
+ .  0010:  08 00 00 00 00 00 00 00 1f 00 00 00 00 00 00 00  ................
+ .  0030:  01 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00  ................
+ .  0040:  00 08 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0050:  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+ .  0080:  02 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 00  ................
+ .  0090:  00 00 00 00 00 00 00 00                          ........
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Link: https://lore.kernel.org/r/20211123161038.48009-2-mlevitsk@redhat.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ 0 0 0x450 [0x98]: PERF_RECORD_AUXTRACE_INFO type: 1
+   PMU Type            8
+   Time Shift          31
+
+perf's isprint() is a custom implementation from the kernel, but the
+kernel's _ctype appears to include characters from Latin-1 Supplement which
+is not compatible with, for example, UTF-8. Fix by checking also isascii().
+
+After:
+
+ $ tools/perf/perf script -D | grep -C10 AUX | head
+ .  0010:  08 00 00 00 00 00 00 00 1f 00 00 00 00 00 00 00  ................
+ .  0020:  03 84 32 2f 00 00 00 00 63 7c 4f d2 fa ff ff ff  ..2/....c|O.....
+ .  0030:  01 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00  ................
+ .  0040:  00 08 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0050:  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+ .  0060:  00 02 00 00 00 00 00 00 00 c0 03 00 00 00 00 00  ................
+ .  0070:  e2 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0080:  02 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 00  ................
+ .  0090:  00 00 00 00 00 00 00 00                          ........
+
+Fixes: 3052ba56bcb58904 ("tools perf: Move from sane_ctype.h obtained from git to the Linux's original")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Link: http://lore.kernel.org/lkml/20220112085057.277205-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/amd/init.c | 31 +++++++++++++++----------------
- 1 file changed, 15 insertions(+), 16 deletions(-)
+ tools/perf/util/debug.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 2a822b229bd05..9b12a2f7548ac 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -804,16 +804,27 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
- {
- #ifdef CONFIG_IRQ_REMAP
- 	u32 status, i;
-+	u64 entry;
- 
- 	if (!iommu->ga_log)
- 		return -EINVAL;
- 
--	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
--
- 	/* Check if already running */
--	if (status & (MMIO_STATUS_GALOG_RUN_MASK))
-+	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
-+	if (WARN_ON(status & (MMIO_STATUS_GALOG_RUN_MASK)))
- 		return 0;
- 
-+	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
-+	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
-+		    &entry, sizeof(entry));
-+	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
-+		 (BIT_ULL(52)-1)) & ~7ULL;
-+	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
-+		    &entry, sizeof(entry));
-+	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
-+	writel(0x00, iommu->mmio_base + MMIO_GA_TAIL_OFFSET);
-+
-+
- 	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
- 	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
- 
-@@ -823,7 +834,7 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
- 			break;
- 	}
- 
--	if (i >= LOOP_TIMEOUT)
-+	if (WARN_ON(i >= LOOP_TIMEOUT))
- 		return -EINVAL;
- #endif /* CONFIG_IRQ_REMAP */
- 	return 0;
-@@ -832,8 +843,6 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
- static int iommu_init_ga_log(struct amd_iommu *iommu)
- {
- #ifdef CONFIG_IRQ_REMAP
--	u64 entry;
--
- 	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
- 		return 0;
- 
-@@ -847,16 +856,6 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
- 	if (!iommu->ga_log_tail)
- 		goto err_out;
- 
--	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
--	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
--		    &entry, sizeof(entry));
--	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
--		 (BIT_ULL(52)-1)) & ~7ULL;
--	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
--		    &entry, sizeof(entry));
--	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
--	writel(0x00, iommu->mmio_base + MMIO_GA_TAIL_OFFSET);
--
- 	return 0;
- err_out:
- 	free_ga_log(iommu);
--- 
-2.34.1
-
+--- a/tools/perf/util/debug.c
++++ b/tools/perf/util/debug.c
+@@ -179,7 +179,7 @@ static int trace_event_printer(enum bina
+ 		break;
+ 	case BINARY_PRINT_CHAR_DATA:
+ 		printed += color_fprintf(fp, color, "%c",
+-			      isprint(ch) ? ch : '.');
++			      isprint(ch) && isascii(ch) ? ch : '.');
+ 		break;
+ 	case BINARY_PRINT_CHAR_PAD:
+ 		printed += color_fprintf(fp, color, " ");
 
 
