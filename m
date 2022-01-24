@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCC18C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6BDC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:37:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423840AbiAYCgi (ORCPT
+        id S1352868AbiAYCgr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:36:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56326 "EHLO
+        Mon, 24 Jan 2022 21:36:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54132 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356458AbiAXUbo (ORCPT
+        with ESMTP id S1385205AbiAXUbo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:31:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4806B6153C;
-        Mon, 24 Jan 2022 20:31:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C294C340E7;
-        Mon, 24 Jan 2022 20:31:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EA1861382;
+        Mon, 24 Jan 2022 20:31:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA8B6C340E5;
+        Mon, 24 Jan 2022 20:31:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056297;
-        bh=mGRwhgutD5F/03hC0eC/ggllLNMardUvS9KmQ8CBr2g=;
+        s=korg; t=1643056300;
+        bh=jYIRWSiUZSWF2+JFSFBxoVE0otIiJf+SdqOpEdwYg0E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Juv54I0vYHKa6xOTRTVuAYxcBGL+mnM+2P8zkZwNPni+nVm79j1RJdWq1/laHVc5b
-         5TJ1eE0+LBg/JkNwjn3V37ojk4URet41ZlmTqrPz3h+hHDYcXsskhfo3yFNyW7rpmI
-         RYM12L88JJ7Ty2sZfPN8oXdyUHHsa5keuPbrJGZM=
+        b=apku6Q1OctwavvNQ5sjJsMGZlqVWYYk9401xdpKnp3wqe6xu2UEIPYQ0pMvB2GD0X
+         ZzmSjXnbaA/ycgIChNrHcKw7lfXev7A3lNRGn/962kSxdNDUMCFo5YwxDdBRRFAxFZ
+         9NrXzYlmjV4MsiI1hFLw3M8ClandQp/KdwlNiK1M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Dobriyan <adobriyan@gmail.com>,
-        Bean Huo <beanhuo@micron.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 405/846] scsi: ufs: Fix race conditions related to driver data
-Date:   Mon, 24 Jan 2022 19:38:42 +0100
-Message-Id: <20220124184114.936665356@linuxfoundation.org>
+Subject: [PATCH 5.15 396/846] misc: at25: Make driver OF independent again
+Date:   Mon, 24 Jan 2022 19:38:33 +0100
+Message-Id: <20220124184114.618403515@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,85 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 21ad0e49085deb22c094f91f9da57319a97188e4 ]
+[ Upstream commit 5b557298d7d09cce04e0565a535fbca63661724a ]
 
-The driver data pointer must be set before any callbacks are registered
-that use that pointer. Hence move the initialization of that pointer from
-after the ufshcd_init() call to inside ufshcd_init().
+The commit f60e7074902a ("misc: at25: Make use of device property API")
+made a good job by enabling the driver for non-OF platforms, but the
+recent commit 604288bc6196 ("nvmem: eeprom: at25: fix type compiler warnings")
+brought that back.
 
-Link: https://lore.kernel.org/r/20211203231950.193369-7-bvanassche@acm.org
-Fixes: 3b1d05807a9a ("[SCSI] ufs: Segregate PCI Specific Code")
-Reported-by: Alexey Dobriyan <adobriyan@gmail.com>
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Restore greatness of the driver once again.
+
+Fixes: eab61fb1cc2e ("nvmem: eeprom: at25: fram discovery simplification")
+Fixes: fd307a4ad332 ("nvmem: prepare basics for FRAM support")
+Acked-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Link: https://lore.kernel.org/r/20211125212729.86585-2-andriy.shevchenko@linux.intel.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/tc-dwc-g210-pci.c | 1 -
- drivers/scsi/ufs/ufshcd-pci.c      | 2 --
- drivers/scsi/ufs/ufshcd-pltfrm.c   | 2 --
- drivers/scsi/ufs/ufshcd.c          | 7 +++++++
- 4 files changed, 7 insertions(+), 5 deletions(-)
+ drivers/misc/eeprom/at25.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/scsi/ufs/tc-dwc-g210-pci.c b/drivers/scsi/ufs/tc-dwc-g210-pci.c
-index 679289e1a78e6..7b08e2e07cc5f 100644
---- a/drivers/scsi/ufs/tc-dwc-g210-pci.c
-+++ b/drivers/scsi/ufs/tc-dwc-g210-pci.c
-@@ -110,7 +110,6 @@ tc_dwc_g210_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return err;
- 	}
+diff --git a/drivers/misc/eeprom/at25.c b/drivers/misc/eeprom/at25.c
+index b38978a3b3ffa..9193b812bc07e 100644
+--- a/drivers/misc/eeprom/at25.c
++++ b/drivers/misc/eeprom/at25.c
+@@ -17,8 +17,6 @@
+ #include <linux/spi/spi.h>
+ #include <linux/spi/eeprom.h>
+ #include <linux/property.h>
+-#include <linux/of.h>
+-#include <linux/of_device.h>
+ #include <linux/math.h>
  
--	pci_set_drvdata(pdev, hba);
- 	pm_runtime_put_noidle(&pdev->dev);
- 	pm_runtime_allow(&pdev->dev);
+ /*
+@@ -380,13 +378,14 @@ static int at25_probe(struct spi_device *spi)
+ 	int			sr;
+ 	u8 id[FM25_ID_LEN];
+ 	u8 sernum[FM25_SN_LEN];
++	bool is_fram;
+ 	int i;
+-	const struct of_device_id *match;
+-	bool is_fram = 0;
  
-diff --git a/drivers/scsi/ufs/ufshcd-pci.c b/drivers/scsi/ufs/ufshcd-pci.c
-index f725248ba57f4..f76692053ca17 100644
---- a/drivers/scsi/ufs/ufshcd-pci.c
-+++ b/drivers/scsi/ufs/ufshcd-pci.c
-@@ -538,8 +538,6 @@ ufshcd_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
- 		return err;
- 	}
+-	match = of_match_device(of_match_ptr(at25_of_match), &spi->dev);
+-	if (match && !strcmp(match->compatible, "cypress,fm25"))
+-		is_fram = 1;
++	err = device_property_match_string(&spi->dev, "compatible", "cypress,fm25");
++	if (err >= 0)
++		is_fram = true;
++	else
++		is_fram = false;
  
--	pci_set_drvdata(pdev, hba);
--
- 	hba->vops = (struct ufs_hba_variant_ops *)id->driver_data;
- 
- 	err = ufshcd_init(hba, mmio_base, pdev->irq);
-diff --git a/drivers/scsi/ufs/ufshcd-pltfrm.c b/drivers/scsi/ufs/ufshcd-pltfrm.c
-index eaeae83b999fd..8b16bbbcb806c 100644
---- a/drivers/scsi/ufs/ufshcd-pltfrm.c
-+++ b/drivers/scsi/ufs/ufshcd-pltfrm.c
-@@ -361,8 +361,6 @@ int ufshcd_pltfrm_init(struct platform_device *pdev,
- 		goto dealloc_host;
- 	}
- 
--	platform_set_drvdata(pdev, hba);
--
- 	pm_runtime_set_active(&pdev->dev);
- 	pm_runtime_enable(&pdev->dev);
- 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 31adf25e57b0d..300bf00765d5b 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -9366,6 +9366,13 @@ int ufshcd_init(struct ufs_hba *hba, void __iomem *mmio_base, unsigned int irq)
- 	struct device *dev = hba->dev;
- 	char eh_wq_name[sizeof("ufs_eh_wq_00")];
- 
-+	/*
-+	 * dev_set_drvdata() must be called before any callbacks are registered
-+	 * that use dev_get_drvdata() (frequency scaling, clock scaling, hwmon,
-+	 * sysfs).
-+	 */
-+	dev_set_drvdata(dev, hba);
-+
- 	if (!mmio_base) {
- 		dev_err(hba->dev,
- 		"Invalid memory reference for mmio_base is NULL\n");
+ 	at25 = devm_kzalloc(&spi->dev, sizeof(struct at25_data), GFP_KERNEL);
+ 	if (!at25)
 -- 
 2.34.1
 
