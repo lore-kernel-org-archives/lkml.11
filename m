@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F203C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CDDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355737AbiAXTn1 (ORCPT
+        id S1344318AbiAXTng (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51944 "EHLO
+        Mon, 24 Jan 2022 14:43:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345699AbiAXTb3 (ORCPT
+        with ESMTP id S1345683AbiAXTb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:31:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94042C028BE5;
-        Mon, 24 Jan 2022 11:14:41 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97428C028BE3;
+        Mon, 24 Jan 2022 11:14:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3198560B88;
-        Mon, 24 Jan 2022 19:14:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0840C340E5;
-        Mon, 24 Jan 2022 19:14:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54FC7B81235;
+        Mon, 24 Jan 2022 19:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 696EFC340E5;
+        Mon, 24 Jan 2022 19:14:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051680;
-        bh=PlQem231B9ZJ6Nur+9/SuZiPSNd25scKJOTzlt/aIAA=;
+        s=korg; t=1643051674;
+        bh=25Ko4hpiWyy/zvu15EXPbYLOPKyb4DyarnzWm4qNq5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kbWY//bPDKL2aJJT24wqzv/JiJ7Pcy9WtnKENWRSX3tXHt4tOyyhnbdQ3EaWI9YRT
-         GEFsnhwaTu+mTlYOnxnhZAlvo6Llp+SKbuBBItJJgy5IzAJgdjIdv/s41DIKZ/MNvU
-         Sj7e6tK1U4nxxvrUVRdS6Z2TbWzQ4ZIXCWbQtTEQ=
+        b=Mkg9+6uegJMj4yEP6PdvYLvLhWME6uMKRFscxs4aHZTIqXi5Zuz47cv7zRNMHcpB1
+         W+QWIYVbwDFZ6IEPkJ6m4olNjc0a9tGdJ5BTFUocw4BT9TRu/Zs92HfMT3OOvL9ezT
+         m1GCDzHMaXCgKmhbvt1pesgWuvVSnocW7Rer/yw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 053/239] Bluetooth: stop proccessing malicious adv data
-Date:   Mon, 24 Jan 2022 19:41:31 +0100
-Message-Id: <20220124183944.821850135@linuxfoundation.org>
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 051/239] media: em28xx: fix memory leak in em28xx_init_dev
+Date:   Mon, 24 Jan 2022 19:41:29 +0100
+Message-Id: <20220124183944.759591047@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -51,52 +53,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
+[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
 
-Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
-problem was in missing validaion check.
+In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
+to deallocate the media_dev allocated in the em28xx_media_device_init.
 
-We should check if data is not malicious and we can read next data block.
-If we won't check ptr validness, code can read a way beyond skb->end and
-it can cause problems, of course.
+Fix this by adding em28xx_unregister_media_device to free media_dev.
 
-Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
-Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+BTW, this patch is tested in my local syzkaller instance, and it can
+prevent the memory leak from occurring again.
+
+CC: Pavel Skripkin <paskripkin@gmail.com>
+Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 937cada5595ee..c0dbb8ad00376 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5391,7 +5391,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		struct hci_ev_le_advertising_info *ev = ptr;
- 		s8 rssi;
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index ec608f60d2c75..06da08f8efdb1 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -3515,8 +3515,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
  
--		if (ev->length <= HCI_MAX_AD_LENGTH) {
-+		if (ev->length <= HCI_MAX_AD_LENGTH &&
-+		    ev->data + ev->length <= skb_tail_pointer(skb)) {
- 			rssi = ev->data[ev->length];
- 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
- 					   ev->bdaddr_type, NULL, 0, rssi,
-@@ -5401,6 +5402,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		}
- 
- 		ptr += sizeof(*ev) + ev->length + 1;
-+
-+		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
-+			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
-+			break;
+ 	if (dev->is_audio_only) {
+ 		retval = em28xx_audio_setup(dev);
+-		if (retval)
+-			return -ENODEV;
++		if (retval) {
++			retval = -ENODEV;
++			goto err_deinit_media;
 +		}
+ 		em28xx_init_extension(dev);
+ 
+ 		return 0;
+@@ -3535,7 +3537,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 		dev_err(&dev->intf->dev,
+ 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
+ 		       __func__, retval);
+-		return retval;
++		goto err_deinit_media;
  	}
  
- 	hci_dev_unlock(hdev);
+ 	/* register i2c bus 1 */
+@@ -3551,9 +3553,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 				"%s: em28xx_i2c_register bus 1 - error [%d]!\n",
+ 				__func__, retval);
+ 
+-			em28xx_i2c_unregister(dev, 0);
+-
+-			return retval;
++			goto err_unreg_i2c;
+ 		}
+ 	}
+ 
+@@ -3561,6 +3561,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 	em28xx_card_setup(dev);
+ 
+ 	return 0;
++
++err_unreg_i2c:
++	em28xx_i2c_unregister(dev, 0);
++err_deinit_media:
++	em28xx_unregister_media_device(dev);
++	return retval;
+ }
+ 
+ static int em28xx_duplicate_dev(struct em28xx *dev)
 -- 
 2.34.1
 
