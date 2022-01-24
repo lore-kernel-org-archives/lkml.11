@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A4EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 851E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377361AbiAXUFV (ORCPT
+        id S1377510AbiAXUFe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356834AbiAXTr0 (ORCPT
+        Mon, 24 Jan 2022 15:05:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37800 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354097AbiAXTsA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:47:26 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97281C038AEF;
-        Mon, 24 Jan 2022 11:23:21 -0800 (PST)
+        Mon, 24 Jan 2022 14:48:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35EDA6131E;
-        Mon, 24 Jan 2022 19:23:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C6AFC340E5;
-        Mon, 24 Jan 2022 19:23:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 29C77B8119D;
+        Mon, 24 Jan 2022 19:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D17BC340E5;
+        Mon, 24 Jan 2022 19:47:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052200;
-        bh=63F1nd3KDMNKL6yqbHKJOnOSr+qJ79dax9b58eVEicc=;
+        s=korg; t=1643053676;
+        bh=/vz12Y+4kCw+FJnjP4uwJIwY0vpUaKSJwMXMfs4kA/k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/RKbzNEg6hXgmPJnmbOea+Am8Emm0wRwJSvq9/5EF+kVIT8K6dZmUCQrcYaSdPrl
-         kbl1NfxOakoWHtqt3fuE122oCWxr8FBSdC97G3/IfjbrIjPYypt02wrq+z4pUkxobj
-         lfa3DhazgZqDtihYGp4ZOAnmUjYmmdP6OpMkodEQ=
+        b=vltYa7x/HUPJXlOU193E8ZIP4kZCHA22a0S1cEFz7lGZMtMC+VR1kNG4p8bywlD6n
+         sS0u6UBd+9+UkHRbM+7qBHPD6PW80aWQwz5A0lu146lq0iPX8gaNZFnVbj20i7W25H
+         XTDroPvtWpOfKbktzcIeaviddlzmfQPYM9jQEOok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 222/239] af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
-Date:   Mon, 24 Jan 2022 19:44:20 +0100
-Message-Id: <20220124183950.169864061@linuxfoundation.org>
+        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
+        Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>,
+        Michael Rodin <mrodin@de.adit-jv.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 108/563] media: rcar-csi2: Correct the selection of hsfreqrange
+Date:   Mon, 24 Jan 2022 19:37:53 +0100
+Message-Id: <20220124184028.138439005@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,128 +52,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Suresh Udipi <sudipi@jp.adit-jv.com>
 
-commit 9d6d7f1cb67cdee15f1a0e85aacfb924e0e02435 upstream.
+[ Upstream commit cee44d4fbacbbdfe62697ec94e76c6e4f726c5df ]
 
-wait_for_unix_gc() reads unix_tot_inflight & gc_in_progress
-without synchronization.
+hsfreqrange should be chosen based on the calculated mbps which
+is closer to the default bit rate  and within the range as per
+table[1]. But current calculation always selects first value which
+is greater than or equal to the calculated mbps which may lead
+to chosing a wrong range in some cases.
 
-Adds READ_ONCE()/WRITE_ONCE() and their associated comments
-to better document the intent.
+For example for 360 mbps for H3/M3N
+Existing logic selects
+Calculated value 360Mbps : Default 400Mbps Range [368.125 -433.125 mbps]
 
-BUG: KCSAN: data-race in unix_inflight / wait_for_unix_gc
+This hsfreqrange is out of range.
 
-write to 0xffffffff86e2b7c0 of 4 bytes by task 9380 on cpu 0:
- unix_inflight+0x1e8/0x260 net/unix/scm.c:63
- unix_attach_fds+0x10c/0x1e0 net/unix/scm.c:121
- unix_scm_to_skb net/unix/af_unix.c:1674 [inline]
- unix_dgram_sendmsg+0x679/0x16b0 net/unix/af_unix.c:1817
- unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+The logic is changed to get the default value which is closest to the
+calculated value [1]
 
-read to 0xffffffff86e2b7c0 of 4 bytes by task 9375 on cpu 1:
- wait_for_unix_gc+0x24/0x160 net/unix/garbage.c:196
- unix_dgram_sendmsg+0x8e/0x16b0 net/unix/af_unix.c:1772
- unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Calculated value 360Mbps : Default 350Mbps  Range [320.625 -380.625 mpbs]
 
-value changed: 0x00000002 -> 0x00000004
+[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.9]
 
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 9375 Comm: syz-executor.1 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Please note that According to Renesas in Table 25.9 the range for
+220 default value is corrected as below
 
-Fixes: 9915672d4127 ("af_unix: limit unix_tot_inflight")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220114164328.2038499-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+ |Range (Mbps)     |  Default  Bit rate (Mbps) |
+ -----------------------------------------------
+ | 197.125-244.125 |     220                   |
+ -----------------------------------------------
+
+Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
+Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
+Signed-off-by: Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>
+Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
+Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/unix/garbage.c |   14 +++++++++++---
- net/unix/scm.c     |    6 ++++--
- 2 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/media/platform/rcar-vin/rcar-csi2.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/net/unix/garbage.c
-+++ b/net/unix/garbage.c
-@@ -197,8 +197,11 @@ void wait_for_unix_gc(void)
+diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
+index d2d87a204e918..6fb8efcb40444 100644
+--- a/drivers/media/platform/rcar-vin/rcar-csi2.c
++++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
+@@ -436,16 +436,23 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv,
+ static int rcsi2_set_phypll(struct rcar_csi2 *priv, unsigned int mbps)
  {
- 	/* If number of inflight sockets is insane,
- 	 * force a garbage collect right now.
-+	 * Paired with the WRITE_ONCE() in unix_inflight(),
-+	 * unix_notinflight() and gc_in_progress().
- 	 */
--	if (unix_tot_inflight > UNIX_INFLIGHT_TRIGGER_GC && !gc_in_progress)
-+	if (READ_ONCE(unix_tot_inflight) > UNIX_INFLIGHT_TRIGGER_GC &&
-+	    !READ_ONCE(gc_in_progress))
- 		unix_gc();
- 	wait_event(unix_gc_wait, gc_in_progress == false);
- }
-@@ -218,7 +221,9 @@ void unix_gc(void)
- 	if (gc_in_progress)
- 		goto out;
+ 	const struct rcsi2_mbps_reg *hsfreq;
++	const struct rcsi2_mbps_reg *hsfreq_prev = NULL;
  
--	gc_in_progress = true;
-+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
-+	WRITE_ONCE(gc_in_progress, true);
-+
- 	/* First, select candidates for garbage collection.  Only
- 	 * in-flight sockets are considered, and from those only ones
- 	 * which don't have any external reference.
-@@ -304,7 +309,10 @@ void unix_gc(void)
+-	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++)
++	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++) {
+ 		if (hsfreq->mbps >= mbps)
+ 			break;
++		hsfreq_prev = hsfreq;
++	}
  
- 	/* All candidates should have been detached by now. */
- 	BUG_ON(!list_empty(&gc_candidates));
--	gc_in_progress = false;
-+
-+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
-+	WRITE_ONCE(gc_in_progress, false);
-+
- 	wake_up(&unix_gc_wait);
- 
-  out:
---- a/net/unix/scm.c
-+++ b/net/unix/scm.c
-@@ -56,7 +56,8 @@ void unix_inflight(struct user_struct *u
- 		} else {
- 			BUG_ON(list_empty(&u->link));
- 		}
--		unix_tot_inflight++;
-+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
-+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight + 1);
+ 	if (!hsfreq->mbps) {
+ 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
+ 		return -ERANGE;
  	}
- 	user->unix_inflight++;
- 	spin_unlock(&unix_gc_lock);
-@@ -76,7 +77,8 @@ void unix_notinflight(struct user_struct
  
- 		if (atomic_long_dec_and_test(&u->inflight))
- 			list_del_init(&u->link);
--		unix_tot_inflight--;
-+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
-+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight - 1);
- 	}
- 	user->unix_inflight--;
- 	spin_unlock(&unix_gc_lock);
++	if (hsfreq_prev &&
++	    ((mbps - hsfreq_prev->mbps) <= (hsfreq->mbps - mbps)))
++		hsfreq = hsfreq_prev;
++
+ 	rcsi2_write(priv, PHYPLL_REG, PHYPLL_HSFREQRANGE(hsfreq->reg));
+ 
+ 	return 0;
+-- 
+2.34.1
+
 
 
