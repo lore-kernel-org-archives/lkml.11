@@ -2,61 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 908C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A23C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:35:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242181AbiAXIeH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:34:07 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:58706 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242127AbiAXIeG (ORCPT
+        id S242202AbiAXIfb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:35:31 -0500
+Received: from eage.unicloud.com ([220.194.70.58]:37451 "EHLO
+        spam.unicloud.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242184AbiAXIf3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:34:06 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=hsiangkao@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V2gQ.wI_1643013242;
-Received: from B-P7TQMD6M-0146.local(mailfrom:hsiangkao@linux.alibaba.com fp:SMTPD_---0V2gQ.wI_1643013242)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 24 Jan 2022 16:34:04 +0800
-Date:   Mon, 24 Jan 2022 16:34:02 +0800
-From:   Gao Xiang <hsiangkao@linux.alibaba.com>
-To:     Chao Yu <chao@kernel.org>
-Cc:     linux-erofs@lists.ozlabs.org, Christoph Hellwig <hch@lst.de>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] erofs: fix fsdax partition offset handling
-Message-ID: <Ye5kehup+iQ3g+q/@B-P7TQMD6M-0146.local>
-References: <20220113051845.244461-1-hsiangkao@linux.alibaba.com>
- <d424369b-c559-bf63-bbb3-71886f1799c9@kernel.org>
+        Mon, 24 Jan 2022 03:35:29 -0500
+X-Greylist: delayed 1013 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jan 2022 03:35:28 EST
+Received: from spam.unicloud.com (localhost [127.0.0.2] (may be forged))
+        by spam.unicloud.com with ESMTP id 20O8IZTI013105;
+        Mon, 24 Jan 2022 16:18:35 +0800 (GMT-8)
+        (envelope-from luofei@unicloud.com)
+Received: from eage.unicloud.com ([220.194.70.35])
+        by spam.unicloud.com with ESMTP id 20O8FmIt011955;
+        Mon, 24 Jan 2022 16:15:48 +0800 (GMT-8)
+        (envelope-from luofei@unicloud.com)
+Received: from localhost.localdomain (10.10.1.7) by zgys-ex-mb09.Unicloud.com
+ (10.10.0.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2375.17; Mon, 24
+ Jan 2022 16:15:47 +0800
+From:   luofei <luofei@unicloud.com>
+To:     <tony.luck@intel.com>, <bp@alien8.de>, <tglx@linutronix.de>,
+        <mingo@redhat.com>, <dave.hansen@linux.intel.com>, <x86@kernel.org>
+CC:     <hpa@zytor.com>, <linux-edac@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, luofei <luofei@unicloud.com>
+Subject: [PATCH] x86/mce: Always call kill_me_maybe() to handle memory failure in user mode
+Date:   Mon, 24 Jan 2022 03:15:01 -0500
+Message-ID: <20220124081501.235236-1-luofei@unicloud.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <d424369b-c559-bf63-bbb3-71886f1799c9@kernel.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.10.1.7]
+X-ClientProxiedBy: zgys-ex-mb07.Unicloud.com (10.10.0.27) To
+ zgys-ex-mb09.Unicloud.com (10.10.0.24)
+X-DNSRBL: 
+X-MAIL: spam.unicloud.com 20O8IZTI013105
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 03:11:35PM +0800, Chao Yu wrote:
-> On 2022/1/13 13:18, Gao Xiang wrote:
-> > After seeking time on testing today upstream fsdax, I found it
-> > actually doesn't work well as below:
-> > 
-> > [  186.492983] ------------[ cut here ]------------
-> > [  186.493629] WARNING: CPU: 1 PID: 205 at fs/iomap/iter.c:33 iomap_iter+0x2f6/0x310
-> > 
-> > The problem is that m_dax_part_off should be applied to physical
-> > addresses and very sorry about that I didn't catch this eariler.
-> > 
-> > Anyway, let's fix it up now. Also, I need to find a way to set up
-> > a standalone testcase to look after this later.
-> > 
-> > Fixes: de2051147771 ("fsdax: shift partition offset handling into the file systems")
-> > Signed-off-by: Gao Xiang <hsiangkao@linux.alibaba.com>
-> 
-> Reviewed-by: Chao Yu <chao@kernel.org>
+Just killing the current process is not enough, it is necessory
+to offload the faulty page.
 
-Thanks for the review! I will send this together with other misc
-fixes this or next week..
+In the virtualization scenario, qemu does not set MCG_STATUS_RIPV by
+default. When injecting an SRAR error into the virtual machine, only
+the current process will be killed, but the faulty page will be
+released and reused, which is very likely to cause the virtual
+machine to crash.
 
-Thanks,
-Gao Xiang
+Signed-off-by: luofei <luofei@unicloud.com>
+---
+ arch/x86/kernel/cpu/mce/core.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-> 
-> Thanks,
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 5818b837fd4d..bc6c353b9250 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1519,10 +1519,8 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 		BUG_ON(!on_thread_stack() || !user_mode(regs));
+ 
+ 		if (kill_current_task)
+-			queue_task_work(&m, msg, kill_me_now);
+-		else
+-			queue_task_work(&m, msg, kill_me_maybe);
+-
++			force_sig(SIGBUS);
++		queue_task_work(&m, msg, kill_me_maybe);
+ 	} else {
+ 		/*
+ 		 * Handle an MCE which has happened in kernel space but from
+-- 
+2.27.0
+
