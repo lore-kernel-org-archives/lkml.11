@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CEDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3159C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447904AbiAXVLj (ORCPT
+        id S1447924AbiAXVLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:11:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40190 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389949AbiAXUpD (ORCPT
+        Mon, 24 Jan 2022 16:11:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390267AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3064C0613B0;
+        Mon, 24 Jan 2022 11:55:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3136860B11;
-        Mon, 24 Jan 2022 20:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0669DC340E5;
-        Mon, 24 Jan 2022 20:44:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E68CB811F9;
+        Mon, 24 Jan 2022 19:55:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DE41C340E5;
+        Mon, 24 Jan 2022 19:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057078;
-        bh=YljHBSu8U7fYgPuBxiqBxuJLS3a+IyXUlt9fCs6zb+E=;
+        s=korg; t=1643054146;
+        bh=m7A0ETu85jMiQuAlInkxOU6TY3zIaUQmSPd4T4pwPHU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UT4dvYCS03Guinbh0NFD/ZCrG5c007EplAMXJpbIQx+x9m2VOezPhKdHSkrqL8vSu
-         vV3ptC0TP9l6J7GeL32jDQ53GFQuJ7M4rnymHPNHDLVR4A8S042N26EvqFxamhh/Mt
-         cJW4HCfWoFiEzlCeZBEtpZKbbzuXID4/u7SmdyNA=
+        b=ZersNLfPYfw+PipKtxf6QccZ4QU5vjmo5e+pV4cqQr5+nTmYUr+Wx6rSQ5Gxa0K3r
+         Dme5yxkh25qKXsFTpCz9nV3IESUGW2VYJNH8TVylPtjIjtZll4PW31K7C5bEMIZJx7
+         bIkPnRHvlBOq/0N7EXErlob0nImxREvzg2k+Dcsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 695/846] parisc: Fix lpa and lpa_user defines
-Date:   Mon, 24 Jan 2022 19:43:32 +0100
-Message-Id: <20220124184125.027440777@linuxfoundation.org>
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 294/563] ASoC: fsl_asrc: refine the check of available clock divider
+Date:   Mon, 24 Jan 2022 19:40:59 +0100
+Message-Id: <20220124184034.608451972@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,84 +50,159 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-commit db19c6f1a2a353cc8dec35b4789733a3cf6e2838 upstream.
+[ Upstream commit 320386343451ab6a3577e0ee200dac56a6182944 ]
 
-While working on the rewrite to the light-weight syscall and futex code, I
-experimented with using a hash index based on the user physical address of
-atomic variable. This exposed two problems with the lpa and lpa_user defines.
+According to RM, the clock divider range is from 1 to 8, clock
+prescaling ratio may be any power of 2 from 1 to 128.
+So the supported divider is not all the value between
+1 and 1024, just limited value in that range.
 
-Because of the copy instruction, the pa argument needs to be an early clobber
-argument. This prevents gcc from allocating the va and pa arguments to the same
-register.
+Create table for the supported divder and add function to
+check the clock divider is available by comparing with
+the table.
 
-Secondly, the lpa instruction can cause a page fault so we need to catch
-exceptions.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Fixes: 116d753308cf ("parisc: Use lpa instruction to load physical addresses in driver code")
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org # v5.2+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: d0250cf4f2ab ("ASoC: fsl_asrc: Add an option to select internal ratio mode")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1641380883-20709-1-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/special_insns.h |   44 +++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 20 deletions(-)
+ sound/soc/fsl/fsl_asrc.c | 69 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 58 insertions(+), 11 deletions(-)
 
---- a/arch/parisc/include/asm/special_insns.h
-+++ b/arch/parisc/include/asm/special_insns.h
-@@ -2,28 +2,32 @@
- #ifndef __PARISC_SPECIAL_INSNS_H
- #define __PARISC_SPECIAL_INSNS_H
+diff --git a/sound/soc/fsl/fsl_asrc.c b/sound/soc/fsl/fsl_asrc.c
+index 02c81d2e34ad0..5e3c71f025f45 100644
+--- a/sound/soc/fsl/fsl_asrc.c
++++ b/sound/soc/fsl/fsl_asrc.c
+@@ -19,6 +19,7 @@
+ #include "fsl_asrc.h"
  
--#define lpa(va)	({			\
--	unsigned long pa;		\
--	__asm__ __volatile__(		\
--		"copy %%r0,%0\n\t"	\
--		"lpa %%r0(%1),%0"	\
--		: "=r" (pa)		\
--		: "r" (va)		\
--		: "memory"		\
--	);				\
--	pa;				\
-+#define lpa(va)	({					\
-+	unsigned long pa;				\
-+	__asm__ __volatile__(				\
-+		"copy %%r0,%0\n"			\
-+		"8:\tlpa %%r0(%1),%0\n"			\
-+		"9:\n"					\
-+		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
-+		: "=&r" (pa)				\
-+		: "r" (va)				\
-+		: "memory"				\
-+	);						\
-+	pa;						\
- })
+ #define IDEAL_RATIO_DECIMAL_DEPTH 26
++#define DIVIDER_NUM  64
  
--#define lpa_user(va)	({		\
--	unsigned long pa;		\
--	__asm__ __volatile__(		\
--		"copy %%r0,%0\n\t"	\
--		"lpa %%r0(%%sr3,%1),%0"	\
--		: "=r" (pa)		\
--		: "r" (va)		\
--		: "memory"		\
--	);				\
--	pa;				\
-+#define lpa_user(va)	({				\
-+	unsigned long pa;				\
-+	__asm__ __volatile__(				\
-+		"copy %%r0,%0\n"			\
-+		"8:\tlpa %%r0(%%sr3,%1),%0\n"		\
-+		"9:\n"					\
-+		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
-+		: "=&r" (pa)				\
-+		: "r" (va)				\
-+		: "memory"				\
-+	);						\
-+	pa;						\
- })
+ #define pair_err(fmt, ...) \
+ 	dev_err(&asrc->pdev->dev, "Pair %c: " fmt, 'A' + index, ##__VA_ARGS__)
+@@ -101,6 +102,55 @@ static unsigned char clk_map_imx8qxp[2][ASRC_CLK_MAP_LEN] = {
+ 	},
+ };
  
- #define mfctl(reg)	({		\
++/*
++ * According to RM, the divider range is 1 ~ 8,
++ * prescaler is power of 2 from 1 ~ 128.
++ */
++static int asrc_clk_divider[DIVIDER_NUM] = {
++	1,  2,  4,  8,  16,  32,  64,  128,  /* divider = 1 */
++	2,  4,  8, 16,  32,  64, 128,  256,  /* divider = 2 */
++	3,  6, 12, 24,  48,  96, 192,  384,  /* divider = 3 */
++	4,  8, 16, 32,  64, 128, 256,  512,  /* divider = 4 */
++	5, 10, 20, 40,  80, 160, 320,  640,  /* divider = 5 */
++	6, 12, 24, 48,  96, 192, 384,  768,  /* divider = 6 */
++	7, 14, 28, 56, 112, 224, 448,  896,  /* divider = 7 */
++	8, 16, 32, 64, 128, 256, 512, 1024,  /* divider = 8 */
++};
++
++/*
++ * Check if the divider is available for internal ratio mode
++ */
++static bool fsl_asrc_divider_avail(int clk_rate, int rate, int *div)
++{
++	u32 rem, i;
++	u64 n;
++
++	if (div)
++		*div = 0;
++
++	if (clk_rate == 0 || rate == 0)
++		return false;
++
++	n = clk_rate;
++	rem = do_div(n, rate);
++
++	if (div)
++		*div = n;
++
++	if (rem != 0)
++		return false;
++
++	for (i = 0; i < DIVIDER_NUM; i++) {
++		if (n == asrc_clk_divider[i])
++			break;
++	}
++
++	if (i == DIVIDER_NUM)
++		return false;
++
++	return true;
++}
++
+ /**
+  * fsl_asrc_sel_proc - Select the pre-processing and post-processing options
+  * @inrate: input sample rate
+@@ -330,12 +380,12 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	enum asrc_word_width input_word_width;
+ 	enum asrc_word_width output_word_width;
+ 	u32 inrate, outrate, indiv, outdiv;
+-	u32 clk_index[2], div[2], rem[2];
++	u32 clk_index[2], div[2];
+ 	u64 clk_rate;
+ 	int in, out, channels;
+ 	int pre_proc, post_proc;
+ 	struct clk *clk;
+-	bool ideal;
++	bool ideal, div_avail;
+ 
+ 	if (!config) {
+ 		pair_err("invalid pair config\n");
+@@ -415,8 +465,7 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	clk = asrc_priv->asrck_clk[clk_index[ideal ? OUT : IN]];
+ 
+ 	clk_rate = clk_get_rate(clk);
+-	rem[IN] = do_div(clk_rate, inrate);
+-	div[IN] = (u32)clk_rate;
++	div_avail = fsl_asrc_divider_avail(clk_rate, inrate, &div[IN]);
+ 
+ 	/*
+ 	 * The divider range is [1, 1024], defined by the hardware. For non-
+@@ -425,7 +474,7 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	 * only result in different converting speeds. So remainder does not
+ 	 * matter, as long as we keep the divider within its valid range.
+ 	 */
+-	if (div[IN] == 0 || (!ideal && (div[IN] > 1024 || rem[IN] != 0))) {
++	if (div[IN] == 0 || (!ideal && !div_avail)) {
+ 		pair_err("failed to support input sample rate %dHz by asrck_%x\n",
+ 				inrate, clk_index[ideal ? OUT : IN]);
+ 		return -EINVAL;
+@@ -436,13 +485,12 @@ static int fsl_asrc_config_pair(struct fsl_asrc_pair *pair, bool use_ideal_rate)
+ 	clk = asrc_priv->asrck_clk[clk_index[OUT]];
+ 	clk_rate = clk_get_rate(clk);
+ 	if (ideal && use_ideal_rate)
+-		rem[OUT] = do_div(clk_rate, IDEAL_RATIO_RATE);
++		div_avail = fsl_asrc_divider_avail(clk_rate, IDEAL_RATIO_RATE, &div[OUT]);
+ 	else
+-		rem[OUT] = do_div(clk_rate, outrate);
+-	div[OUT] = clk_rate;
++		div_avail = fsl_asrc_divider_avail(clk_rate, outrate, &div[OUT]);
+ 
+ 	/* Output divider has the same limitation as the input one */
+-	if (div[OUT] == 0 || (!ideal && (div[OUT] > 1024 || rem[OUT] != 0))) {
++	if (div[OUT] == 0 || (!ideal && !div_avail)) {
+ 		pair_err("failed to support output sample rate %dHz by asrck_%x\n",
+ 				outrate, clk_index[OUT]);
+ 		return -EINVAL;
+@@ -621,8 +669,7 @@ static void fsl_asrc_select_clk(struct fsl_asrc_priv *asrc_priv,
+ 			clk_index = asrc_priv->clk_map[j][i];
+ 			clk_rate = clk_get_rate(asrc_priv->asrck_clk[clk_index]);
+ 			/* Only match a perfect clock source with no remainder */
+-			if (clk_rate != 0 && (clk_rate / rate[j]) <= 1024 &&
+-			    (clk_rate % rate[j]) == 0)
++			if (fsl_asrc_divider_avail(clk_rate, rate[j], NULL))
+ 				break;
+ 		}
+ 
+-- 
+2.34.1
+
 
 
