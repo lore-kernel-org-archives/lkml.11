@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 983B6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58966C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388393AbiAYAOG (ORCPT
+        id S2373245AbiAYANZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:14:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53418 "EHLO
+        Mon, 24 Jan 2022 19:13:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457499AbiAXX2Q (ORCPT
+        with ESMTP id S1850695AbiAXXah (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDF52C01D7FB;
-        Mon, 24 Jan 2022 13:32:17 -0800 (PST)
+        Mon, 24 Jan 2022 18:30:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C815EC0AD1AF;
+        Mon, 24 Jan 2022 13:35:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8ACCEB8105C;
-        Mon, 24 Jan 2022 21:32:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BCD4C340E4;
-        Mon, 24 Jan 2022 21:32:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65DB4614CB;
+        Mon, 24 Jan 2022 21:35:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 765A0C340E4;
+        Mon, 24 Jan 2022 21:35:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059935;
-        bh=kYzQ6x4/8WDwUsKjGgcujq30v/9ofPlAvon/fiopj00=;
+        s=korg; t=1643060100;
+        bh=Y3b/AAusapEvGqBUnrjEZn2kCsA/rAJP2AKEvANrqow=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oJrWUXi2vxbgCPV2sF5oWKv2H1PXleQVcB/lmwkr36GM0ZWY+on95eCMTO6IopfwV
-         LlB9xqXfQHFmeArSRoYPph8oK2J7qDPdUUEHIjBC7+9+BmKV9A5eGS1r5kgf/8ygnf
-         e3EqN0xw/HgOrCQ4r8yCTWBtiKxn36SQiW3/I+Hs=
+        b=Zve/PpyJAOaHE0zIjdDplWV/Wj4t36U4Tz9hf/Tx+ygX+8/1ZaJryE1cq0LSYbe4I
+         ViGtOkmwp5kd7dUfY43pffbMeFHj79RcKjVV5BhZ9ophpQ6YK3ftBnbhzgMeMiTHIT
+         5Da9xoGAMSoLvx/E0hKrBKV6ZJcuUFklYWS0dJSw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        linux-renesas-soc@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0784/1039] PCI: rcar: Check if device is runtime suspended instead of __clk_is_enabled()
-Date:   Mon, 24 Jan 2022 19:42:53 +0100
-Message-Id: <20220124184151.639481546@linuxfoundation.org>
+        stable@vger.kernel.org, Chen Wandun <chenwandun@huawei.com>,
+        Oscar Salvador <osalvador@suse.de>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Wang Kefeng <wangkefeng.wang@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0832/1039] mm/page_isolation: unset migratetype directly for non Buddy page
+Date:   Mon, 24 Jan 2022 19:43:41 +0100
+Message-Id: <20220124184153.249107968@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -58,70 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marek.vasut+renesas@gmail.com>
+From: Chen Wandun <chenwandun@huawei.com>
 
-[ Upstream commit d2a14b54989e9ccea8401895fdfbc213bd1f56af ]
+[ Upstream commit 721fb891ad0b3956d5c168b2931e3e5e4fb7ca40 ]
 
-Replace __clk_is_enabled() with pm_runtime_suspended(),
-as __clk_is_enabled() was checking the wrong bus clock
-and caused the following build error too:
-  arm-linux-gnueabi-ld: drivers/pci/controller/pcie-rcar-host.o: in function `rcar_pcie_aarch32_abort_handler':
-  pcie-rcar-host.c:(.text+0xdd0): undefined reference to `__clk_is_enabled'
+In unset_migratetype_isolate(), we can bypass the call to
+move_freepages_block() for non-buddy pages.
 
-Link: https://lore.kernel.org/r/20211115204641.12941-1-marek.vasut@gmail.com
-Fixes: a115b1bd3af0 ("PCI: rcar: Add L1 link state fix into data abort hook")
-Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Acked-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Bjorn Helgaas <bhelgaas@google.com>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: Wolfram Sang <wsa@the-dreams.de>
-Cc: Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-Cc: linux-renesas-soc@vger.kernel.org
+It will save a few cpu cycles for some situations such as cma and
+hugetlb when allocating continue pages, in these situation function
+alloc_contig_pages will be called.
+
+alloc_contig_pages
+	__alloc_contig_migrate_range
+	isolate_freepages_range ==> pages has been remove from buddy
+	undo_isolate_page_range
+		unset_migratetype_isolate ==> can directly set migratetype
+
+[osalvador@suse.de: changelog tweak]
+
+Link: https://lkml.kernel.org/r/20211229033649.2760586-1-chenwandun@huawei.com
+Fixes: 3c605096d315 ("mm/page_alloc: restrict max order of merging on isolated pageblock")
+Signed-off-by: Chen Wandun <chenwandun@huawei.com>
+Reviewed-by: Oscar Salvador <osalvador@suse.de>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Wang Kefeng <wangkefeng.wang@huawei.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-rcar-host.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ mm/page_isolation.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/pcie-rcar-host.c b/drivers/pci/controller/pcie-rcar-host.c
-index e12c2d8be05a3..780e60159993c 100644
---- a/drivers/pci/controller/pcie-rcar-host.c
-+++ b/drivers/pci/controller/pcie-rcar-host.c
-@@ -50,10 +50,10 @@ struct rcar_msi {
-  */
- static void __iomem *pcie_base;
- /*
-- * Static copy of bus clock pointer, so we can check whether the clock
-- * is enabled or not.
-+ * Static copy of PCIe device pointer, so we can check whether the
-+ * device is runtime suspended or not.
-  */
--static struct clk *pcie_bus_clk;
-+static struct device *pcie_dev;
- #endif
- 
- /* Structure representing the PCIe interface */
-@@ -792,7 +792,7 @@ static int rcar_pcie_get_resources(struct rcar_pcie_host *host)
- #ifdef CONFIG_ARM
- 	/* Cache static copy for L1 link state fixup hook on aarch32 */
- 	pcie_base = pcie->base;
--	pcie_bus_clk = host->bus_clk;
-+	pcie_dev = pcie->dev;
- #endif
- 
- 	return 0;
-@@ -1062,7 +1062,7 @@ static int rcar_pcie_aarch32_abort_handler(unsigned long addr,
- 
- 	spin_lock_irqsave(&pmsr_lock, flags);
- 
--	if (!pcie_base || !__clk_is_enabled(pcie_bus_clk)) {
-+	if (!pcie_base || pm_runtime_suspended(pcie_dev)) {
- 		ret = 1;
- 		goto unlock_exit;
+diff --git a/mm/page_isolation.c b/mm/page_isolation.c
+index f67c4c70f17f6..6a0ddda6b3c53 100644
+--- a/mm/page_isolation.c
++++ b/mm/page_isolation.c
+@@ -115,7 +115,7 @@ static void unset_migratetype_isolate(struct page *page, unsigned migratetype)
+ 	 * onlining - just onlined memory won't immediately be considered for
+ 	 * allocation.
+ 	 */
+-	if (!isolated_page) {
++	if (!isolated_page && PageBuddy(page)) {
+ 		nr_pages = move_freepages_block(zone, page, migratetype, NULL);
+ 		__mod_zone_freepage_state(zone, nr_pages, migratetype);
  	}
 -- 
 2.34.1
