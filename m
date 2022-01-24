@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE39C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D726C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587906AbiAXWaE (ORCPT
+        id S1587971AbiAXWaV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:30:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47772 "EHLO
+        Mon, 24 Jan 2022 17:30:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50300 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456084AbiAXVhs (ORCPT
+        with ESMTP id S1456325AbiAXVio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:48 -0500
+        Mon, 24 Jan 2022 16:38:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4957CB812A7;
-        Mon, 24 Jan 2022 21:37:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 617EAC340E4;
-        Mon, 24 Jan 2022 21:37:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF872B81233;
+        Mon, 24 Jan 2022 21:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BB0C340E4;
+        Mon, 24 Jan 2022 21:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060262;
-        bh=TrEyxXScUQN2ndIprFfTUzN2MsbyjUrfc//izk3BMCk=;
+        s=korg; t=1643060315;
+        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DeJU6osTOOhIoC29NF3vjDJ+1aRVrQI/+NQV4Ch9H8YyHm4BN0hH4XRF8dGo8EOYI
-         xWll1l4ba5KQWc89WyLa4qqqP6mA/E59T0daOW+FwkO8wbKOgkjjEjx+VCuY3vT1OE
-         pBAt8+b5EqXrTtrHOPEhgSBW4nqJZhtytMUtvcDg=
+        b=cenakRCK9CnTOdZM4c2d6HdhVsNEiRteH3JRptVZhoBSyjlcYg5qKT4ZItgxIWzEO
+         UbIHWjpr+Fm4/kYGYF39w89YLLunWLolbGoSGJ4DCmhGh0m/9bAsTIt5hQzlcyDjbH
+         qhdNW8plCebWFm30/Fa64BW7a2w7CyPsQFw00MTw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunguang Xu <brookxu@tencent.com>,
-        kernel test robot <lkp@intel.com>, Jan Kara <jack@suse.cz>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.16 0891/1039] ext4: fix a possible ABBA deadlock due to busy PA
-Date:   Mon, 24 Jan 2022 19:44:40 +0100
-Message-Id: <20220124184155.237744472@linuxfoundation.org>
+        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Stuart Hayes <stuart.w.hayes@gmail.com>
+Subject: [PATCH 5.16 0874/1039] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
+Date:   Mon, 24 Jan 2022 19:44:23 +0100
+Message-Id: <20220124184154.674800632@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,154 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunguang Xu <brookxu@tencent.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit 8c80fb312d7abf8bcd66cca1d843a80318a2c522 upstream.
+commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
 
-We found on older kernel (3.10) that in the scenario of insufficient
-disk space, system may trigger an ABBA deadlock problem, it seems that
-this problem still exists in latest kernel, try to fix it here. The
-main process triggered by this problem is that task A occupies the PA
-and waits for the jbd2 transaction finish, the jbd2 transaction waits
-for the completion of task B's IO (plug_list), but task B waits for
-the release of PA by task A to finish discard, which indirectly forms
-an ABBA deadlock. The related calltrace is as follows:
+The Power Fault Detected bit in the Slot Status register differs from
+all other hotplug events in that it is sticky:  It can only be cleared
+after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
 
-    Task A
-    vfs_write
-    ext4_mb_new_blocks()
-    ext4_mb_mark_diskspace_used()       JBD2
-    jbd2_journal_get_write_access()  -> jbd2_journal_commit_transaction()
-  ->schedule()                          filemap_fdatawait()
- |                                              |
- | Task B                                       |
- | do_unlinkat()                                |
- | ext4_evict_inode()                           |
- | jbd2_journal_begin_ordered_truncate()        |
- | filemap_fdatawrite_range()                   |
- | ext4_mb_new_blocks()                         |
-  -ext4_mb_discard_group_preallocations() <-----
+  If a power controller detects a main power fault on the hot-plug slot,
+  it must automatically set its internal main power fault latch [...].
+  The main power fault latch is cleared when software turns off power to
+  the hot-plug slot.
 
-Here, try to cancel ext4_mb_discard_group_preallocations() internal
-retry due to PA busy, and do a limited number of retries inside
-ext4_mb_discard_preallocations(), which can circumvent the above
-problems, but also has some advantages:
+The stickiness used to cause interrupt storms and infinite loops which
+were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
+interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
+software notification on empty slots").
 
-1. Since the PA is in a busy state, if other groups have free PAs,
-   keeping the current PA may help to reduce fragmentation.
-2. Continue to traverse forward instead of waiting for the current
-   group PA to be released. In most scenarios, the PA discard time
-   can be reduced.
+Unfortunately in 2020 the infinite loop issue was inadvertently
+reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
+race"):  The hardirq handler pciehp_isr() clears the PFD bit until
+pciehp's power_fault_detected flag is set.  That happens in the IRQ
+thread pciehp_ist(), which never learns of the event because the hardirq
+handler is stuck in an infinite loop.  Fix by setting the
+power_fault_detected flag already in the hardirq handler.
 
-However, in the case of smaller free space, if only a few groups have
-space, then due to multiple traversals of the group, it may increase
-CPU overhead. But in contrast, I feel that the overall benefit is
-better than the cost.
-
-Signed-off-by: Chunguang Xu <brookxu@tencent.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/1637630277-23496-1-git-send-email-brookxu.cn@gmail.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
+Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
+Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
+Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
+Reported-by: Joseph Bao <joseph.bao@intel.com>
+Tested-by: Joseph Bao <joseph.bao@intel.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Cc: stable@vger.kernel.org # v4.19+
+Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/mballoc.c |   40 ++++++++++++++++++----------------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
+ drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -4814,7 +4814,7 @@ ext4_mb_release_group_pa(struct ext4_bud
-  */
- static noinline_for_stack int
- ext4_mb_discard_group_preallocations(struct super_block *sb,
--					ext4_group_t group, int needed)
-+				     ext4_group_t group, int *busy)
- {
- 	struct ext4_group_info *grp = ext4_get_group_info(sb, group);
- 	struct buffer_head *bitmap_bh = NULL;
-@@ -4822,8 +4822,7 @@ ext4_mb_discard_group_preallocations(str
- 	struct list_head list;
- 	struct ext4_buddy e4b;
- 	int err;
--	int busy = 0;
--	int free, free_total = 0;
-+	int free = 0;
+--- a/drivers/pci/hotplug/pciehp_hpc.c
++++ b/drivers/pci/hotplug/pciehp_hpc.c
+@@ -642,6 +642,8 @@ read_status:
+ 	 */
+ 	if (ctrl->power_fault_detected)
+ 		status &= ~PCI_EXP_SLTSTA_PFD;
++	else if (status & PCI_EXP_SLTSTA_PFD)
++		ctrl->power_fault_detected = true;
  
- 	mb_debug(sb, "discard preallocation for group %u\n", group);
- 	if (list_empty(&grp->bb_prealloc_list))
-@@ -4846,19 +4845,14 @@ ext4_mb_discard_group_preallocations(str
- 		goto out_dbg;
+ 	events |= status;
+ 	if (!events) {
+@@ -651,7 +653,7 @@ read_status:
  	}
  
--	if (needed == 0)
--		needed = EXT4_CLUSTERS_PER_GROUP(sb) + 1;
--
- 	INIT_LIST_HEAD(&list);
--repeat:
--	free = 0;
- 	ext4_lock_group(sb, group);
- 	list_for_each_entry_safe(pa, tmp,
- 				&grp->bb_prealloc_list, pa_group_list) {
- 		spin_lock(&pa->pa_lock);
- 		if (atomic_read(&pa->pa_count)) {
- 			spin_unlock(&pa->pa_lock);
--			busy = 1;
-+			*busy = 1;
- 			continue;
- 		}
- 		if (pa->pa_deleted) {
-@@ -4898,22 +4892,13 @@ repeat:
- 		call_rcu(&(pa)->u.pa_rcu, ext4_mb_pa_callback);
+ 	if (status) {
+-		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
++		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
+ 
+ 		/*
+ 		 * In MSI mode, all event bits must be zero before the port
+@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
  	}
  
--	free_total += free;
--
--	/* if we still need more blocks and some PAs were used, try again */
--	if (free_total < needed && busy) {
--		ext4_unlock_group(sb, group);
--		cond_resched();
--		busy = 0;
--		goto repeat;
--	}
- 	ext4_unlock_group(sb, group);
- 	ext4_mb_unload_buddy(&e4b);
- 	put_bh(bitmap_bh);
- out_dbg:
- 	mb_debug(sb, "discarded (%d) blocks preallocated for group %u bb_free (%d)\n",
--		 free_total, group, grp->bb_free);
--	return free_total;
-+		 free, group, grp->bb_free);
-+	return free;
- }
- 
- /*
-@@ -5455,13 +5440,24 @@ static int ext4_mb_discard_preallocation
- {
- 	ext4_group_t i, ngroups = ext4_get_groups_count(sb);
- 	int ret;
--	int freed = 0;
-+	int freed = 0, busy = 0;
-+	int retry = 0;
- 
- 	trace_ext4_mb_discard_preallocations(sb, needed);
-+
-+	if (needed == 0)
-+		needed = EXT4_CLUSTERS_PER_GROUP(sb) + 1;
-+ repeat:
- 	for (i = 0; i < ngroups && needed > 0; i++) {
--		ret = ext4_mb_discard_group_preallocations(sb, i, needed);
-+		ret = ext4_mb_discard_group_preallocations(sb, i, &busy);
- 		freed += ret;
- 		needed -= ret;
-+		cond_resched();
-+	}
-+
-+	if (needed > 0 && busy && ++retry < 3) {
-+		busy = 0;
-+		goto repeat;
- 	}
- 
- 	return freed;
+ 	/* Check Power Fault Detected */
+-	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
+-		ctrl->power_fault_detected = 1;
++	if (events & PCI_EXP_SLTSTA_PFD) {
+ 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
+ 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
+ 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
 
 
