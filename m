@@ -2,95 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24EFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:02:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA32FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238135AbiAXOCd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:02:33 -0500
-Received: from mail-wm1-f50.google.com ([209.85.128.50]:47051 "EHLO
-        mail-wm1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238136AbiAXOCc (ORCPT
+        id S238156AbiAXOCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:02:40 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:51021 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238154AbiAXOCg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:02:32 -0500
-Received: by mail-wm1-f50.google.com with SMTP id a203-20020a1c98d4000000b0034d2956eb04so1372444wme.5;
-        Mon, 24 Jan 2022 06:02:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=THU4jK8TMCvPkYwnRlwAVctd3mj6SQNDR24XQxhu4+0=;
-        b=KsDoKjUv2QSX1vscJ+xxbvD4woDY3dO6pOOnt3O/9ycWd45HP4DGP2WqqQYKtqNGRh
-         pyXklvYL+/I3QgaqVlbRhV+7CRLRnnj8YsU1JMhJNaEbfXS9exdU07xzCH5zO2OLTX/h
-         zzYuwWwNgkLhcirf4r4S/io4l7cQVOidDR0fmHXfpYtdB2I6rchIBRHxH2fvRrTayrHy
-         OiY5mNyOH8VxT6As3yZ+BUmGb/zdiKJo8+JGifhgC65R14BrSj3xzNEdddu9M2h2QcA3
-         hEOJhMGVDkz8i/QddZkoMy47HVqY+oz0/t3oruYayT0iI8dQOAioWo0sy8lSfe/p73eD
-         gCoQ==
-X-Gm-Message-State: AOAM531c4paxanHTtNGAern1xXyTLzEcEIyEKNNA1grE2P1ESzHSi4DN
-        wIsfNw2V0fsazmeHxQalijk=
-X-Google-Smtp-Source: ABdhPJww5yfltt0+zq2PHbn2mD/HvnB+5pJIrqjhflb5W4S5NoJLdhhqq8/MabUEsqvCVzoBXrIvIA==
-X-Received: by 2002:a1c:f002:: with SMTP id a2mr1961082wmb.29.1643032950560;
-        Mon, 24 Jan 2022 06:02:30 -0800 (PST)
-Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
-        by smtp.gmail.com with ESMTPSA id b15sm13677648wrs.93.2022.01.24.06.02.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 06:02:30 -0800 (PST)
-Date:   Mon, 24 Jan 2022 14:02:28 +0000
-From:   Wei Liu <wei.liu@kernel.org>
-To:     Helge Deller <deller@gmx.de>
-Cc:     Wei Liu <wei.liu@kernel.org>,
-        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Hu <weh@microsoft.com>, Dexuan Cui <decui@microsoft.com>,
-        "drawat.floss@gmail.com" <drawat.floss@gmail.com>,
-        hhei <hhei@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-Subject: Re: [PATCH 1/1] video: hyperv_fb: Fix validation of screen resolution
-Message-ID: <20220124140228.ywtxgrx3jqngmbqt@liuwe-devbox-debian-v2>
-References: <1642360711-2335-1-git-send-email-mikelley@microsoft.com>
- <MN2PR21MB1295CE3BD15D4EB257A158DCCA569@MN2PR21MB1295.namprd21.prod.outlook.com>
- <20220123215606.fzycryooluavtar4@liuwe-devbox-debian-v2>
- <MWHPR21MB1593ED650DA82BC3009F66CED75D9@MWHPR21MB1593.namprd21.prod.outlook.com>
- <20220123223030.ijdzrunduww76jiq@liuwe-devbox-debian-v2>
- <e396a22d-7e0e-73a4-d831-f69dc854bfa8@gmx.de>
- <20220124133119.3yxfr7ypmmdotm6h@liuwe-devbox-debian-v2>
- <cb4323b6-99f0-c813-502a-2fbe107353ee@gmx.de>
+        Mon, 24 Jan 2022 09:02:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643032956; x=1674568956;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=FzD2XGTF/bLkKovwrBSu85+pYRRSWYyu6nXfaWkmH4Y=;
+  b=TpL61cS1N9VjXph0DCrqX7yAVx4EH4buX6XI5zJKHlIxhPoBGPZT5y2y
+   FIzLjmQ/KbZztoPkTghnUnMiyiEpQlCYgZ0oHTrLHLAcXjnPgmAfxRdyO
+   up7l2f3LKzNcdWDxr785O5sR5IQrKL/6/J3VOCCVPQqK0tGNGEp1kM+oX
+   o=;
+Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 Jan 2022 06:02:35 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:02:35 -0800
+Received: from [10.216.45.46] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 24 Jan
+ 2022 06:02:32 -0800
+Message-ID: <4f2ada96-234f-31d8-664a-c84f5b461385@quicinc.com>
+Date:   Mon, 24 Jan 2022 19:32:01 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cb4323b6-99f0-c813-502a-2fbe107353ee@gmx.de>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: synchronize_rcu_expedited gets stuck in hotplug path
+Content-Language: en-US
+To:     <paulmck@kernel.org>, Tejun Heo <tj@kernel.org>
+CC:     lkml <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, <jiangshanlai@gmail.com>
+References: <7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com>
+ <20220118200646.GJ947480@paulmck-ThinkPad-P17-Gen-1>
+ <Yece9mH3nzwGxar6@slm.duckdns.org>
+ <20220118214155.GK947480@paulmck-ThinkPad-P17-Gen-1>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <20220118214155.GK947480@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 02:48:57PM +0100, Helge Deller wrote:
-> On 1/24/22 14:31, Wei Liu wrote:
-[...]
-> >>
-> >> Linus hasn't pulled my tree yet, and he will probably not before the
-> >> next merge window. So, if this is an urgent bugfix for you, I can offer
-> >> to drop it from the fbdev tree and that you take it through the hyperv-fixes tree.
-> >> In that case you may add an Acked-by: Helge Deller <deller@gmx.de>.
-> >> Just let me know what you prefer.
-> >
-> > Hi Helge
-> >
-> > Yes, I would like to upstream it as soon as possible so that it can
-> > propagate to stable trees and be backported by downstream vendors.
-> >
-> > I will pick it up in hyperv-fixes. Please drop it from your for-next
-> > tree.
-> 
-> Dropped now from fbdev tree.
 
-Thanks! I added your ack and pushed the patch to hyperv-fixes.
+On 1/19/2022 3:11 AM, Paul E. McKenney wrote:
+> On Tue, Jan 18, 2022 at 10:11:34AM -1000, Tejun Heo wrote:
+>> Hello,
+>>
+>> On Tue, Jan 18, 2022 at 12:06:46PM -0800, Paul E. McKenney wrote:
+>>> Interesting.  Adding Tejun and Lai on CC for their perspective.
+>>>
+>>> As you say, the incoming CPU invoked synchronize_rcu_expedited() which
+>>> in turn invoked queue_work().  By default, workqueues will of course
+>>> queue that work on the current CPU.  But in this case, the CPU's bit
+>>> is not yet set in the cpu_active_mask.  Thus, a workqueue scheduled on
+>>> the incoming CPU won't be invoked until CPUHP_AP_ACTIVE, which won't
+>>> be reached until after the grace period ends, which cannot happen until
+>>> the workqueue handler is invoked.
+>>>
+>>> I could imagine doing something as shown in the (untested) patch below,
+>>> but first does this help?
+>>>
+>>> If it does help, would this sort of check be appropriate here or
+>>> should it instead go into workqueues?
+>> Maybe it can be solved by rearranging the hotplug sequence but it's fragile
+>> to schedule per-cpu work items from hotplug paths. Maybe the whole issue can
+>> be side-stepped by making synchronize_rcu_expedited() use unbound workqueue
+>> instead? Does it require to be per-cpu?
+> Good point!
+>
+> And now that you mention it, RCU expedited grace periods already avoid
+> using workqueues during early boot.  The (again untested) patch below
+> extends that approach to incoming CPUs.
+>
+> Thoughts?
 
-Wei.
+Hi Paul,
 
-> 
-> Thanks!
-> Helge
+We are not seeing the issue after this patch.
+Can we merge this patch ?
+
+-Mukesh
+
+>
+> 							Thanx, Paul
+>
+> ------------------------------------------------------------------------
+>
+> diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+> index 60197ea24ceb9..1a45667402260 100644
+> --- a/kernel/rcu/tree_exp.h
+> +++ b/kernel/rcu/tree_exp.h
+> @@ -816,7 +816,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp)
+>    */
+>   void synchronize_rcu_expedited(void)
+>   {
+> -	bool boottime = (rcu_scheduler_active == RCU_SCHEDULER_INIT);
+> +	bool no_wq;
+>   	struct rcu_exp_work rew;
+>   	struct rcu_node *rnp;
+>   	unsigned long s;
+> @@ -841,9 +841,15 @@ void synchronize_rcu_expedited(void)
+>   	if (exp_funnel_lock(s))
+>   		return;  /* Someone else did our work for us. */
+>   
+> +	/* Don't use workqueue during boot or from an incoming CPU. */
+> +	preempt_disable();
+> +	no_wq = rcu_scheduler_active == RCU_SCHEDULER_INIT ||
+> +		!cpumask_test_cpu(smp_processor_id(), cpu_active_mask);
+> +	preempt_enable();
+> +
+>   	/* Ensure that load happens before action based on it. */
+> -	if (unlikely(boottime)) {
+> -		/* Direct call during scheduler init and early_initcalls(). */
+> +	if (unlikely(no_wq)) {
+> +		/* Direct call for scheduler init, early_initcall()s, and incoming CPUs. */
+>   		rcu_exp_sel_wait_wake(s);
+>   	} else {
+>   		/* Marshall arguments & schedule the expedited grace period. */
+> @@ -861,7 +867,7 @@ void synchronize_rcu_expedited(void)
+>   	/* Let the next expedited grace period start. */
+>   	mutex_unlock(&rcu_state.exp_mutex);
+>   
+> -	if (likely(!boottime))
+> +	if (likely(!no_wq))
+>   		destroy_work_on_stack(&rew.rew_work);
+>   }
+>   EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
