@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 775BCC35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E576EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409357AbiAYAZo (ORCPT
+        id S3409391AbiAYAZy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:25:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59022 "EHLO
+        Mon, 24 Jan 2022 19:25:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450302AbiAXVyz (ORCPT
+        with ESMTP id S1448972AbiAXVyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:54:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73D7C0C0912;
-        Mon, 24 Jan 2022 12:35:06 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1E5C08B4FA;
+        Mon, 24 Jan 2022 12:34:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 93CA6B8121C;
-        Mon, 24 Jan 2022 20:35:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB15FC340E5;
-        Mon, 24 Jan 2022 20:35:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B6FC61530;
+        Mon, 24 Jan 2022 20:34:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84502C340E5;
+        Mon, 24 Jan 2022 20:34:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056504;
-        bh=oXLBzOz/hkAg5gBd5Fy/0nL79/vChLwPGP35T3oMc8g=;
+        s=korg; t=1643056483;
+        bh=UH/NsbM9mt79CzA1kPcHg2YVaT+xnxkxbBGOOFUagss=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zEFr4ZlUxmJf+CcDL4DXnJtLaXEEuiRUTsAcP+9T05AEJotbpLvG5A0rnokJV6+0/
-         iaVAyLFp4OMICbU1fJ03NBWz/k9n5G0suHm5uZipAmexqc18McUNDk/6jv+PUV9PxQ
-         JuBKmB9fd25J4VlsTV7KjJfqwd8tG1saqy5lzqjI=
+        b=NdbV5FwiRMwrHGZVZnr8blp31FVaBSjL+brfKJtoT34mv3jiUGg6+TuW8Zh5XSWyu
+         t4ikbYzBDfIT7YAnCcK6Z++CoyARdp4Goq1whCRTXW7SyZYepVGYY/8/v0dAuTR5Xh
+         DAcv2cd9jSEbRNGCRNPw8ONi2iTuJP2RJBlthGf8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 474/846] media: atomisp-ov2680: Fix ov2680_set_fmt() clobbering the exposure
-Date:   Mon, 24 Jan 2022 19:39:51 +0100
-Message-Id: <20220124184117.365624390@linuxfoundation.org>
+Subject: [PATCH 5.15 498/846] drm/amd/display: add else to avoid double destroy clk_mgr
+Date:   Mon, 24 Jan 2022 19:40:15 +0100
+Message-Id: <20220124184118.201266166@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,137 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Martin Leung <Martin.Leung@amd.com>
 
-[ Upstream commit 4492289c31364d28c2680b43b18883385a5d216c ]
+[ Upstream commit 11dff0e871037a6ad978e52f826a2eb7f5fb274a ]
 
-Now that we restore the default or last user set exposure setting on
-power_up() there is no need for the registers written by ov2680_set_fmt()
-to write to the exposure register.
+[Why & How]
+when changing some code we accidentally
+changed else if-> if. reverting that.
 
-Not doing so fixes the exposure always being reset to the value from
-the res->regs array after a set_fmt().
-
-Link: https://lore.kernel.org/linux-media/20211107171549.267583-11-hdegoede@redhat.com
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Signed-off-by: Martin Leung <Martin.Leung@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/i2c/ov2680.h | 24 ----------------------
- 1 file changed, 24 deletions(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/i2c/ov2680.h b/drivers/staging/media/atomisp/i2c/ov2680.h
-index 874115f35fcad..798b28e134b64 100644
---- a/drivers/staging/media/atomisp/i2c/ov2680.h
-+++ b/drivers/staging/media/atomisp/i2c/ov2680.h
-@@ -289,8 +289,6 @@ static struct ov2680_reg const ov2680_global_setting[] = {
-  */
- static struct ov2680_reg const ov2680_QCIF_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -334,8 +332,6 @@ static struct ov2680_reg const ov2680_QCIF_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_CIF_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -377,8 +373,6 @@ static struct ov2680_reg const ov2680_CIF_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_QVGA_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -420,8 +414,6 @@ static struct ov2680_reg const ov2680_QVGA_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_656x496_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -463,8 +455,6 @@ static struct ov2680_reg const ov2680_656x496_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_720x592_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x26},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0x00}, // X_ADDR_START;
- 	{0x3802, 0x00},
-@@ -508,8 +498,6 @@ static struct ov2680_reg const ov2680_720x592_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_800x600_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x26},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -551,8 +539,6 @@ static struct ov2680_reg const ov2680_800x600_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_720p_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -594,8 +580,6 @@ static struct ov2680_reg const ov2680_720p_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1296x976_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -637,8 +621,6 @@ static struct ov2680_reg const ov2680_1296x976_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x90},
- 	{0x3802, 0x00},
-@@ -682,8 +664,6 @@ static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
- 
- static struct ov2680_reg const ov2680_1616x916_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -726,8 +706,6 @@ static struct ov2680_reg const ov2680_1616x916_30fps[] = {
- #if 0
- static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -769,8 +747,6 @@ static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1616x1216_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
+index bb31541f80723..6420527fe476c 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
+@@ -306,8 +306,7 @@ void dc_destroy_clk_mgr(struct clk_mgr *clk_mgr_base)
+ 	case FAMILY_NV:
+ 		if (ASICREV_IS_SIENNA_CICHLID_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
+ 			dcn3_clk_mgr_destroy(clk_mgr);
+-		}
+-		if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
++		} else if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
+ 			dcn3_clk_mgr_destroy(clk_mgr);
+ 		}
+ 		if (ASICREV_IS_BEIGE_GOBY_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
 -- 
 2.34.1
 
