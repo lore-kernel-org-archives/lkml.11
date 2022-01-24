@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D992DC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE27FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578172AbiAXWBy (ORCPT
+        id S1578130AbiAXWBp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:01:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38794 "EHLO
+        Mon, 24 Jan 2022 17:01:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38674 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450358AbiAXVUW (ORCPT
+        with ESMTP id S1450269AbiAXVUJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:20:22 -0500
+        Mon, 24 Jan 2022 16:20:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 95021B81188;
-        Mon, 24 Jan 2022 21:20:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2258AC340E4;
-        Mon, 24 Jan 2022 21:20:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03601B81142;
+        Mon, 24 Jan 2022 21:20:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28BFEC340E4;
+        Mon, 24 Jan 2022 21:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059218;
-        bh=KgD6qxy+fP2fvSM/3e8PrWESYFntT/ISgWQqCE2FJS0=;
+        s=korg; t=1643059205;
+        bh=Me67gsWeV+RFSnXE3+KumzwdeAVvLxMDCMedH2J8DJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dtQziMlkN1DA1sQX3v5vYrP8o3b5jNuuGHhWUe+hoo2Opw/aF8hmNApSfRaau6+6c
-         yhsn+WTGaBHqcJeUrkbborYVSmzGtDzuLLudrOMIh8Lsqj6RWZxCWLMt83xvfQxmoE
-         zyAlgB3oL2OFgbTHRSJGurzBukFVMe8CdLuV8fZg=
+        b=z7cn0C9B4oaPvcEpHKzJc4Z9wtO8aRzYgUHHaedSfDR4r2jCGAZajiqGlbE6Hfm4f
+         LgD/KOaNr3pZW3NvCYzpkIfbHo67m0Njbi7SVQ/3VPaoZP/RhcXmXE/93bt8Q9kQ3A
+         k7+gOTNIvyZhcnTLOj3mixnbr+camGeyNdxP34TY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0541/1039] Bluetooth: Fix memory leak of hci device
-Date:   Mon, 24 Jan 2022 19:38:50 +0100
-Message-Id: <20220124184143.466693673@linuxfoundation.org>
+        stable@vger.kernel.org, Merlijn Wajer <merlijn@wizzup.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0538/1039] leds: lp55xx: initialise output direction from dts
+Date:   Mon, 24 Jan 2022 19:38:47 +0100
+Message-Id: <20220124184143.361853911@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,63 +47,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Merlijn Wajer <merlijn@wizzup.org>
 
-[ Upstream commit 75d9b8559ac36e059238ee4f8e33cd86086586ba ]
+[ Upstream commit 9e87a8da747bf72365abb79e6f64fcca955b4f56 ]
 
-Fault injection test reported memory leak of hci device as follows:
+Commit a5d3d1adc95f ("leds: lp55xx: Initialize enable GPIO direction to
+output") attempts to fix this, but the fix did not work since at least
+for the Nokia N900 the value needs to be set to HIGH, per the device
+tree. So rather than hardcoding the value to a potentially invalid value
+for some devices, let's set direction in lp55xx_init_device.
 
-unreferenced object 0xffff88800b858000 (size 8192):
-  comm "kworker/0:2", pid 167, jiffies 4294955747 (age 557.148s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
-  backtrace:
-    [<0000000070eb1059>] kmem_cache_alloc_trace mm/slub.c:3208
-    [<00000000015eb521>] hci_alloc_dev_priv include/linux/slab.h:591
-    [<00000000dcfc1e21>] bpa10x_probe include/net/bluetooth/hci_core.h:1240
-    [<000000005d3028c7>] usb_probe_interface drivers/usb/core/driver.c:397
-    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
-    [<0000000024cab3f0>] __driver_probe_device drivers/base/dd.c:751
-    [<00000000202135cb>] driver_probe_device drivers/base/dd.c:782
-    [<000000000761f2bc>] __device_attach_driver drivers/base/dd.c:899
-    [<00000000f7d63134>] bus_for_each_drv drivers/base/bus.c:427
-    [<00000000c9551f0b>] __device_attach drivers/base/dd.c:971
-    [<000000007f79bd16>] bus_probe_device drivers/base/bus.c:487
-    [<000000007bb8b95a>] device_add drivers/base/core.c:3364
-    [<000000009564d9ea>] usb_set_configuration drivers/usb/core/message.c:2171
-    [<00000000e4657087>] usb_generic_driver_probe drivers/usb/core/generic.c:239
-    [<0000000071ede518>] usb_probe_device drivers/usb/core/driver.c:294
-    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
-
-hci_alloc_dev() do not init the device's flag. And hci_free_dev()
-using put_device() to free the memory allocated for this device,
-but it calls just put_device(dev) only in case of HCI_UNREGISTER
-flag is set, So any error handing before hci_register_dev() success
-will cause memory leak.
-
-To avoid this behaviour we can using kfree() to release dev before
-hci_register_dev() success.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: a5d3d1adc95f ("leds: lp55xx: Initialize enable GPIO direction to output")
+Fixes: 92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
+Fixes: ac219bf3c9bd ("leds: lp55xx: Convert to use GPIO descriptors")
+Signed-off-by: Merlijn Wajer <merlijn@wizzup.org>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Pavel Machek <pavel@ucw.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sysfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/leds/leds-lp55xx-common.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
-index 7827639ecf5c3..4e3e0451b08c1 100644
---- a/net/bluetooth/hci_sysfs.c
-+++ b/net/bluetooth/hci_sysfs.c
-@@ -86,6 +86,8 @@ static void bt_host_release(struct device *dev)
+diff --git a/drivers/leds/leds-lp55xx-common.c b/drivers/leds/leds-lp55xx-common.c
+index d1657c46ee2f8..9fdfc1b9a1a0c 100644
+--- a/drivers/leds/leds-lp55xx-common.c
++++ b/drivers/leds/leds-lp55xx-common.c
+@@ -439,6 +439,8 @@ int lp55xx_init_device(struct lp55xx_chip *chip)
+ 		return -EINVAL;
  
- 	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
- 		hci_release_dev(hdev);
-+	else
-+		kfree(hdev);
- 	module_put(THIS_MODULE);
- }
+ 	if (pdata->enable_gpiod) {
++		gpiod_direction_output(pdata->enable_gpiod, 0);
++
+ 		gpiod_set_consumer_name(pdata->enable_gpiod, "LP55xx enable");
+ 		gpiod_set_value(pdata->enable_gpiod, 0);
+ 		usleep_range(1000, 2000); /* Keep enable down at least 1ms */
+@@ -694,7 +696,7 @@ struct lp55xx_platform_data *lp55xx_of_populate_pdata(struct device *dev,
+ 	of_property_read_u8(np, "clock-mode", &pdata->clock_mode);
+ 
+ 	pdata->enable_gpiod = devm_gpiod_get_optional(dev, "enable",
+-						      GPIOD_OUT_LOW);
++						      GPIOD_ASIS);
+ 	if (IS_ERR(pdata->enable_gpiod))
+ 		return ERR_CAST(pdata->enable_gpiod);
  
 -- 
 2.34.1
