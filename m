@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D92E9C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD683C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348047AbiAXTOq (ORCPT
+        id S1347957AbiAXTOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:14:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35890 "EHLO
+        Mon, 24 Jan 2022 14:14:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35572 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237220AbiAXTFz (ORCPT
+        with ESMTP id S1345483AbiAXTFo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:55 -0500
+        Mon, 24 Jan 2022 14:05:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A3D37611ED;
-        Mon, 24 Jan 2022 19:05:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6370EC340EB;
-        Mon, 24 Jan 2022 19:05:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64F8D60917;
+        Mon, 24 Jan 2022 19:05:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FF69C340E5;
+        Mon, 24 Jan 2022 19:05:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051153;
-        bh=NCBCmpJAkW1jJaAwf+XUd1Y5ZBMcBU0xFh2pR28EVag=;
+        s=korg; t=1643051143;
+        bh=gUBygmoEBQDPFQekCp2li5xY7NKosJ7ZgGesRhBIraQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UgyXhRY6LC8KuY8P2guoOFmchF/Qhdh/5hbBEkcovaRZe0Q0ajMOtZRQkbhQ0lTEG
-         2peVIkTZcoh/dcmJVu/qDbG0khLI3G5pgfk/2Md9cxBKpWepjv0J/CKZQMGmhHA3It
-         Fh6JtDJ/rOxWoNNoTLCLLdXZiBGgdpVQfA1x/FdU=
+        b=2OtncbY9G1m/Z3Y01GYouL82l6YDa3tvcqF73UtvPftN2DQrzXHj+mRhksPgpdVNN
+         TTfDny4R5vu3fB8plnbNNfbZ/rIy0RsqSew+SBIPeN+DiZBv/ZOUluB4JQDpWJuwG8
+         ywOdYp5lZT/z9IMr5zzJsWNvLTfuxo2jivGK/e/I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 039/186] media: dmxdev: fix UAF when dvb_register_device() fails
-Date:   Mon, 24 Jan 2022 19:41:54 +0100
-Message-Id: <20220124183938.383795085@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 067/186] net: mcs7830: handle usb read errors properly
+Date:   Mon, 24 Jan 2022 19:42:22 +0100
+Message-Id: <20220124183939.276113106@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,102 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit ab599eb11882f834951c436cc080c3455ba32b9b ]
+[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
 
-I got a use-after-free report:
+Syzbot reported uninit value in mcs7830_bind(). The problem was in
+missing validation check for bytes read via usbnet_read_cmd().
 
-dvbdev: dvb_register_device: failed to create device dvb1.dvr0 (-12)
-...
-==================================================================
-BUG: KASAN: use-after-free in dvb_dmxdev_release+0xce/0x2f0
-...
-Call Trace:
- dump_stack_lvl+0x6c/0x8b
- print_address_description.constprop.0+0x48/0x70
- kasan_report.cold+0x82/0xdb
- __asan_load4+0x6b/0x90
- dvb_dmxdev_release+0xce/0x2f0
-...
-Allocated by task 7666:
- kasan_save_stack+0x23/0x50
- __kasan_kmalloc+0x83/0xa0
- kmem_cache_alloc_trace+0x22e/0x470
- dvb_register_device+0x12f/0x980
- dvb_dmxdev_init+0x1f3/0x230
-...
-Freed by task 7666:
- kasan_save_stack+0x23/0x50
- kasan_set_track+0x20/0x30
- kasan_set_free_info+0x24/0x40
- __kasan_slab_free+0xf2/0x130
- kfree+0xd1/0x5c0
- dvb_register_device.cold+0x1ac/0x1fa
- dvb_dmxdev_init+0x1f3/0x230
-...
+usbnet_read_cmd() internally calls usb_control_msg(), that returns
+number of bytes read. Code should validate that requested number of bytes
+was actually read.
 
-When dvb_register_device() in dvb_dmxdev_init() fails, dvb_dmxdev_init()
-does not return a failure, and the memory pointed to by dvbdev or
-dvr_dvbdev is invalid at this point. If they are used subsequently, it
-will result in UFA or null-ptr-deref.
+So, this patch adds missing size validation check inside
+mcs7830_get_reg() to prevent uninit value bugs
 
-If dvb_register_device() in dvb_dmxdev_init() fails, fix the bug by making
-dvb_dmxdev_init() return an error as well.
-
-Link: https://lore.kernel.org/linux-media/20211015085741.1203283-1-wanghai38@huawei.com
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/dvb-core/dmxdev.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ drivers/net/usb/mcs7830.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/dvb-core/dmxdev.c b/drivers/media/dvb-core/dmxdev.c
-index 51009b2718a3e..ab9c4dba2a695 100644
---- a/drivers/media/dvb-core/dmxdev.c
-+++ b/drivers/media/dvb-core/dmxdev.c
-@@ -1209,7 +1209,7 @@ static const struct dvb_device dvbdev_dvr = {
- };
- int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
+diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
+index 5a47e5510ca82..c0f52a622964f 100644
+--- a/drivers/net/usb/mcs7830.c
++++ b/drivers/net/usb/mcs7830.c
+@@ -121,8 +121,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
+ 
+ static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
  {
--	int i;
-+	int i, ret;
- 
- 	if (dmxdev->demux->open(dmxdev->demux) < 0)
- 		return -EUSERS;
-@@ -1227,14 +1227,26 @@ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
- 					    DMXDEV_STATE_FREE);
- 	}
- 
--	dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
-+	ret = dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
- 			    DVB_DEVICE_DEMUX, dmxdev->filternum);
--	dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
-+	if (ret < 0)
-+		goto err_register_dvbdev;
+-	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
+-				0x0000, index, data, size);
++	int ret;
 +
-+	ret = dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
- 			    dmxdev, DVB_DEVICE_DVR, dmxdev->filternum);
++	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
++			      0x0000, index, data, size);
 +	if (ret < 0)
-+		goto err_register_dvr_dvbdev;
- 
- 	dvb_ringbuffer_init(&dmxdev->dvr_buffer, NULL, 8192);
- 
- 	return 0;
++		return ret;
++	else if (ret < size)
++		return -ENODATA;
 +
-+err_register_dvr_dvbdev:
-+	dvb_unregister_device(dmxdev->dvbdev);
-+err_register_dvbdev:
-+	vfree(dmxdev->filter);
-+	dmxdev->filter = NULL;
 +	return ret;
  }
  
- EXPORT_SYMBOL(dvb_dmxdev_init);
+ static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
 -- 
 2.34.1
 
