@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 749E7C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DEA4C3526D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351137AbiAXT0C (ORCPT
+        id S1351203AbiAXT0K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:26:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43284 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347027AbiAXTSY (ORCPT
+        Mon, 24 Jan 2022 14:26:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347799AbiAXTSn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:18:24 -0500
+        Mon, 24 Jan 2022 14:18:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6085C09425D;
+        Mon, 24 Jan 2022 11:07:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2E82B810BD;
-        Mon, 24 Jan 2022 19:18:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED846C340E5;
-        Mon, 24 Jan 2022 19:18:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 914EDB81238;
+        Mon, 24 Jan 2022 19:07:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC477C340E5;
+        Mon, 24 Jan 2022 19:07:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051901;
-        bh=+aGuwueJniqiioIn5b6jEmBIotGjO8kDhMbexpL+TjI=;
+        s=korg; t=1643051235;
+        bh=5AK/ZD+OO4TiPDAZvOFjQFvLrOlNWLTVM/ikSQ8BP24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LKG5CevZBwwjQ/ySvay91VzDpfzS/Gh0/UnNvovFfP4NzKNKHp8Oo2G0ByKeLewwn
-         Ej/qEPagEMi7VPTmmLj+jrQe1zpM/K8LsoKVnDFQCd9s5F2FZP5QZqrXjoGbWFfCfY
-         mgfIF/NbOHNO6yDWg0cpWFeRWig9BD8juLSD/DO4=
+        b=wAQ3nMD06A5xCYTnsdKmPFybpr6iAVcg+LwqCmi+/Vodo4+TmiSgUmjMRDQ7Xidju
+         QIV0oR11+uWjeMNPwlWOmh/YILuaxLBiHIy0SoYDBP2PcIAYqRQanseyqOFChcepQ3
+         OljslQ4sAsHCaApRjChy5jW75Sxiu6vChzR/J/4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 124/239] usb: gadget: f_fs: Use stream_open() for endpoint files
-Date:   Mon, 24 Jan 2022 19:42:42 +0100
-Message-Id: <20220124183947.047032517@linuxfoundation.org>
+Subject: [PATCH 4.14 097/186] HSI: core: Fix return freed object in hsi_new_client
+Date:   Mon, 24 Jan 2022 19:42:52 +0100
+Message-Id: <20220124183940.237290348@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,63 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
+[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
 
-Function fs endpoint file operations are synchronized via an interruptible
-mutex wait. However we see threads that do ep file operations concurrently
-are getting blocked for the mutex lock in __fdget_pos(). This is an
-uninterruptible wait and we see hung task warnings and kernel panic
-if hung_task_panic systcl is enabled if host does not send/receive
-the data for long time.
+cl is freed on error of calling device_register, but this
+object is return later, which will cause uaf issue. Fix it
+by return NULL on error.
 
-The reason for threads getting blocked in __fdget_pos() is due to
-the file position protection introduced by the commit 9c225f2655e3
-("vfs: atomic f_pos accesses as per POSIX"). Since function fs
-endpoint files does not have the notion of the file position, switch
-to the stream mode. This will bypass the file position mutex and
-threads will be blocked in interruptible state for the function fs
-mutex.
-
-It should not affects user space as we are only changing the task state
-changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
-for the USB transfers to be finished. However there is a slight change to
-the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
-getting blocked inside fdget_pos(). Now they reach to function fs and error
-code is returned. The non blocking behavior is actually honoured now.
-
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hsi/hsi_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index f070082124742..9271a7009a00f 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -607,7 +607,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
- 	file->private_data = ffs;
- 	ffs_data_opened(ffs);
+diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
+index 71895da63810b..daf2de837a30a 100644
+--- a/drivers/hsi/hsi_core.c
++++ b/drivers/hsi/hsi_core.c
+@@ -115,6 +115,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
+ 	if (device_register(&cl->device) < 0) {
+ 		pr_err("hsi: failed to register client: %s\n", info->name);
+ 		put_device(&cl->device);
++		goto err;
+ 	}
  
--	return 0;
-+	return stream_open(inode, file);
- }
- 
- static int ffs_ep0_release(struct inode *inode, struct file *file)
-@@ -1071,7 +1071,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
- 	file->private_data = epfile;
- 	ffs_data_opened(epfile->ffs);
- 
--	return 0;
-+	return stream_open(inode, file);
- }
- 
- static int ffs_aio_cancel(struct kiocb *kiocb)
+ 	return cl;
 -- 
 2.34.1
 
