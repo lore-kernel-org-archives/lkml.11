@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D57DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A55FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374881AbiAYAS3 (ORCPT
+        id S2374801AbiAYASR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:18:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
+        Mon, 24 Jan 2022 19:18:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385856AbiAXXdz (ORCPT
+        with ESMTP id S2359437AbiAXXch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:33:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A53AC07596B;
-        Mon, 24 Jan 2022 13:35:36 -0800 (PST)
+        Mon, 24 Jan 2022 18:32:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 455ECC019B11;
+        Mon, 24 Jan 2022 11:52:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1906FB81057;
-        Mon, 24 Jan 2022 21:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 504F2C340E4;
-        Mon, 24 Jan 2022 21:35:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7BA760BA1;
+        Mon, 24 Jan 2022 19:52:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4AD3C340E5;
+        Mon, 24 Jan 2022 19:52:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060133;
-        bh=a0YiCG/23n5Ij4udWEzbiqQJ3Zz1ama6V6tpi+vrVtk=;
+        s=korg; t=1643053939;
+        bh=BLuA5+HRtipvLUDV44kxQsi5XLKyu1GrNFQ4hzvmezk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VnHKxBOwKipeZPKX+BQpw9s4r9SLt+UoIvpsOZlmyZsusLd23S6AjKYE9fIqMK62N
-         R0AhqEmrMV1DZK464xFpinFeCT5fTh1XllVjGImlZefwqXgQBFT126GUaMKliyyLeX
-         VYytnGcfT+7mDF7MDiHiepcs1ldIN29W4BFMOtmM=
+        b=GrrYteh85/bBML5Q/1K7hfJ14U+XPpbW5cVpr4P2bWVmtFcBnqp5XXqqYmQzGI4yy
+         tjs+7kPhcsp0trFYcLwR0+016a5t6ATuCn3Go+GUOdHaJz3hgRVEGBxlzGjJvEynl3
+         LA6/a/0fR4K91eFLp2FK63yx7oYDVk2sx8oNSjF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
-        syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0833/1039] hugetlbfs: fix off-by-one error in hugetlb_vmdelete_list()
-Date:   Mon, 24 Jan 2022 19:43:42 +0100
-Message-Id: <20220124184153.284397402@linuxfoundation.org>
+Subject: [PATCH 5.10 227/563] ax25: uninitialized variable in ax25_setsockopt()
+Date:   Mon, 24 Jan 2022 19:39:52 +0100
+Message-Id: <20220124184032.295666377@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,58 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit d6aba4c8e20d4d2bf65d589953f6d891c178f3a3 ]
+[ Upstream commit 9371937092d5fd502032c1bb4475b36b39b1f1b3 ]
 
-Pass "end - 1" instead of "end" when walking the interval tree in
-hugetlb_vmdelete_list() to fix an inclusive vs.  exclusive bug.  The two
-callers that pass a non-zero "end" treat it as exclusive, whereas the
-interval tree iterator expects an inclusive "last".  E.g.  punching a
-hole in a file that precisely matches the size of a single hugepage,
-with a vma starting right on the boundary, will result in
-unmap_hugepage_range() being called twice, with the second call having
-start==end.
+The "opt" variable is unsigned long but we only copy 4 bytes from
+the user so the lower 4 bytes are uninitialized.
 
-The off-by-one error doesn't cause functional problems as
-__unmap_hugepage_range() turns into a massive nop due to
-short-circuiting its for-loop on "address < end".  But, the mmu_notifier
-invocations to invalid_range_{start,end}() are passed a bogus zero-sized
-range, which may be unexpected behavior for secondary MMUs.
+I have changed the integer overflow checks from ULONG to UINT as well.
+This is a slight API change but I don't expect it to break anything.
 
-The bug was exposed by commit ed922739c919 ("KVM: Use interval tree to
-do fast hva lookup in memslots"), currently queued in the KVM tree for
-5.17, which added a WARN to detect ranges with start==end.
-
-Link: https://lkml.kernel.org/r/20211228234257.1926057-1-seanjc@google.com
-Fixes: 1bfad99ab425 ("hugetlbfs: hugetlb_vmtruncate_list() needs to take a range to delete")
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Reported-by: syzbot+4e697fe80a31aa7efe21@syzkaller.appspotmail.com
-Reviewed-by: Mike Kravetz <mike.kravetz@oracle.com>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/hugetlbfs/inode.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ net/ax25/af_ax25.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
---- a/fs/hugetlbfs/inode.c
-+++ b/fs/hugetlbfs/inode.c
-@@ -409,10 +409,11 @@ hugetlb_vmdelete_list(struct rb_root_cac
- 	struct vm_area_struct *vma;
+diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
+index 22278807b3f36..5e84dce5ff7ae 100644
+--- a/net/ax25/af_ax25.c
++++ b/net/ax25/af_ax25.c
+@@ -536,7 +536,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
+ 	ax25_cb *ax25;
+ 	struct net_device *dev;
+ 	char devname[IFNAMSIZ];
+-	unsigned long opt;
++	unsigned int opt;
+ 	int res = 0;
  
- 	/*
--	 * end == 0 indicates that the entire range after
--	 * start should be unmapped.
-+	 * end == 0 indicates that the entire range after start should be
-+	 * unmapped.  Note, end is exclusive, whereas the interval tree takes
-+	 * an inclusive "last".
- 	 */
--	vma_interval_tree_foreach(vma, root, start, end ? end : ULONG_MAX) {
-+	vma_interval_tree_foreach(vma, root, start, end ? end - 1 : ULONG_MAX) {
- 		unsigned long v_offset;
- 		unsigned long v_end;
+ 	if (level != SOL_AX25)
+@@ -568,7 +568,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
+ 		break;
  
+ 	case AX25_T1:
+-		if (opt < 1 || opt > ULONG_MAX / HZ) {
++		if (opt < 1 || opt > UINT_MAX / HZ) {
+ 			res = -EINVAL;
+ 			break;
+ 		}
+@@ -577,7 +577,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
+ 		break;
+ 
+ 	case AX25_T2:
+-		if (opt < 1 || opt > ULONG_MAX / HZ) {
++		if (opt < 1 || opt > UINT_MAX / HZ) {
+ 			res = -EINVAL;
+ 			break;
+ 		}
+@@ -593,7 +593,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
+ 		break;
+ 
+ 	case AX25_T3:
+-		if (opt < 1 || opt > ULONG_MAX / HZ) {
++		if (opt < 1 || opt > UINT_MAX / HZ) {
+ 			res = -EINVAL;
+ 			break;
+ 		}
+@@ -601,7 +601,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
+ 		break;
+ 
+ 	case AX25_IDLE:
+-		if (opt > ULONG_MAX / (60 * HZ)) {
++		if (opt > UINT_MAX / (60 * HZ)) {
+ 			res = -EINVAL;
+ 			break;
+ 		}
+-- 
+2.34.1
+
 
 
