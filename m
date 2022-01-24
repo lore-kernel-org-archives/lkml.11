@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37E9FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A20FEC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359720AbiAXUAF (ORCPT
+        id S1359744AbiAXUAI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:00:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348804AbiAXTkz (ORCPT
+        Mon, 24 Jan 2022 15:00:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39434 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355810AbiAXToB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37F65C0613E6;
-        Mon, 24 Jan 2022 11:19:39 -0800 (PST)
+        Mon, 24 Jan 2022 14:44:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4B39B81249;
-        Mon, 24 Jan 2022 19:19:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07B2FC340E7;
-        Mon, 24 Jan 2022 19:19:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EAB961551;
+        Mon, 24 Jan 2022 19:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B611C340E5;
+        Mon, 24 Jan 2022 19:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051976;
-        bh=QMWYLrt8iQbcEWQT/CMGJk+AiXwb31DZVl21V+GXoQs=;
+        s=korg; t=1643053439;
+        bh=6QMkhBO2A5xRflXt1DL3EZsmSg63ySjvEOpDd53WQDI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J39H91+yz2I/u6FG6PevGIiCQToQ/jszeZI3NnbPUnBPbMarO7e4Qe/N4QIx3h05n
-         PLgyKc3QTlh/ogSa2iZ/EzjtHqK83XQsQdzzBKdWMGr9MukrjQREnGccKmMvTrkV13
-         WPweaFB1RuxTvVl0AvB+Pb1ncZ5XnNkgBwE6L4G4=
+        b=00//uaMMfHT9pOlNg+UzgBTfkhWXJkjkG/NTcFR0piyPQCBZcmjq6BhJaytBRkzgp
+         QfmTbegaLXEZigDycrYOg17cPKfMIULqhksedhbDYUzfW+NKCvhG0ZJqBZDnnvKIkn
+         CnIufwUDDFqN3w34wbfZoeTyIHlefjP9WNvqgOrE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 115/239] ASoC: samsung: idma: Check of ioremap return value
-Date:   Mon, 24 Jan 2022 19:42:33 +0100
-Message-Id: <20220124183946.761209146@linuxfoundation.org>
+Subject: [PATCH 5.10 064/563] media: videobuf2: Fix the size printk format
+Date:   Mon, 24 Jan 2022 19:37:09 +0100
+Message-Id: <20220124184026.623024397@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Dillon Min <dillon.minfei@gmail.com>
 
-[ Upstream commit 3ecb46755eb85456b459a1a9f952c52986bce8ec ]
+[ Upstream commit c9ee220d76775e42f35d634479c978d9350077d3 ]
 
-Because of the potential failure of the ioremap(), the buf->area could
-be NULL.
-Therefore, we need to check it and return -ENOMEM in order to transfer
-the error.
+Since the type of parameter size is unsigned long,
+it should printk by %lu, instead of %ld, fix it.
 
-Fixes: f09aecd50f39 ("ASoC: SAMSUNG: Add I2S0 internal dma driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20211228034026.1659385-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 7952be9b6ece ("media: drivers/media/common/videobuf2: rename from videobuf")
+Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/idma.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/media/common/videobuf2/videobuf2-dma-contig.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/samsung/idma.c b/sound/soc/samsung/idma.c
-index b1f09b942410d..e397f5e10e33e 100644
---- a/sound/soc/samsung/idma.c
-+++ b/sound/soc/samsung/idma.c
-@@ -369,6 +369,8 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
- 	buf->addr = idma.lp_tx_addr;
- 	buf->bytes = idma_hardware.buffer_bytes_max;
- 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
-+	if (!buf->area)
-+		return -ENOMEM;
+diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+index 2f3a5996d3fc9..fe626109ef4db 100644
+--- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
++++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+@@ -150,7 +150,7 @@ static void *vb2_dc_alloc(struct device *dev, unsigned long attrs,
+ 	buf->cookie = dma_alloc_attrs(dev, size, &buf->dma_addr,
+ 					GFP_KERNEL | gfp_flags, buf->attrs);
+ 	if (!buf->cookie) {
+-		dev_err(dev, "dma_alloc_coherent of size %ld failed\n", size);
++		dev_err(dev, "dma_alloc_coherent of size %lu failed\n", size);
+ 		kfree(buf);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+@@ -196,9 +196,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
+ 
+ 	vma->vm_ops->open(vma);
+ 
+-	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %ld\n",
+-		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
+-		buf->size);
++	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %lu\n",
++		 __func__, (unsigned long)buf->dma_addr, vma->vm_start,
++		 buf->size);
  
  	return 0;
  }
