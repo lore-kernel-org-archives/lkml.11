@@ -2,41 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDE12C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:11:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B7E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:11:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344548AbiAXTL2 (ORCPT
+        id S1344258AbiAXTLj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:11:28 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60634 "EHLO
+        Mon, 24 Jan 2022 14:11:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34454 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344936AbiAXTEC (ORCPT
+        with ESMTP id S1344264AbiAXTEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:04:02 -0500
+        Mon, 24 Jan 2022 14:04:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D563B60B86;
-        Mon, 24 Jan 2022 19:03:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7FE9C340E5;
-        Mon, 24 Jan 2022 19:03:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFBFA60BB9;
+        Mon, 24 Jan 2022 19:04:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA52CC340E5;
+        Mon, 24 Jan 2022 19:04:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051038;
-        bh=mhPuVfgRFd2RapL/z1cdkOW64XqvZopmkecBub3MIng=;
+        s=korg; t=1643051047;
+        bh=6tmTeqTNP3KBX1hcRrZiqO7BaY+kpbpNKJCvnuGuh6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K0yIUOGkXw593BVt1k2ca/dZ9S64D5oYS+CFIivWENePLjasLeM1Ja/HiiRFliPYW
-         b1jSb2G6UpH473jBCJdK32EP5urGWQmUJGL1bPM/VFcBNPLyYi1l1Nf+MV4UBe/+ot
-         hsxHzos7FiNNjdBgCt3RTFt+SXX0H6q9f/HwiAW0=
+        b=Sei37dZnb/b1cjnbP5FhLM4bBaJ5WSsb+paEDKgCHHcJwBBV5+FE3aLMxw5gx9phv
+         ESQojyg1jypBF1XHOZJoLNPO+8CPuclC/1RrDGvKcUVAq9ycpEKXxOqEpCTTEsjF5D
+         tYzrYMuM6fpgg7ygTJYxJPwSzQqDZU6/d34l3ehc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 033/186] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-Date:   Mon, 24 Jan 2022 19:41:48 +0100
-Message-Id: <20220124183938.190311012@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.14 005/186] can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
+Date:   Mon, 24 Jan 2022 19:41:20 +0100
+Message-Id: <20220124183937.289648163@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,54 +45,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
+commit 4a8737ff068724f509d583fef404d349adba80d6 upstream.
 
-I got a kernel BUG report when doing fault injection test:
+The received data contains the channel the received data is associated
+with. If the channel number is bigger than the actual number of
+channels assume broken or malicious USB device and shut it down.
 
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-...
-RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
-...
-Call Trace:
- proto_unregister+0x83/0x220
- cmtp_cleanup_sockets+0x37/0x40 [cmtp]
- cmtp_exit+0xe/0x1f [cmtp]
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+This fixes the error found by clang:
 
-If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
-success. This will cause a kernel bug when accessing uncreated ctmp
-related data when the module exits.
+| drivers/net/can/usb/gs_usb.c:386:6: error: variable 'dev' is used
+|                                     uninitialized whenever 'if' condition is true
+|         if (hf->channel >= GS_MAX_INTF)
+|             ^~~~~~~~~~~~~~~~~~~~~~~~~~
+| drivers/net/can/usb/gs_usb.c:474:10: note: uninitialized use occurs here
+|                           hf, dev->gs_hf_size, gs_usb_receive_bulk_callback,
+|                               ^~~
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/all/20211210091158.408326-1-mkl@pengutronix.de
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Cc: stable@vger.kernel.org
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/cmtp/core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/can/usb/gs_usb.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index 9873684a9d8ff..4764ed73f33bf 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -499,9 +499,7 @@ static int __init cmtp_init(void)
- {
- 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -328,7 +328,7 @@ static void gs_usb_receive_bulk_callback
  
--	cmtp_init_sockets();
--
--	return 0;
-+	return cmtp_init_sockets();
- }
+ 	/* device reports out of range channel id */
+ 	if (hf->channel >= GS_MAX_INTF)
+-		goto resubmit_urb;
++		goto device_detach;
  
- static void __exit cmtp_exit(void)
--- 
-2.34.1
-
+ 	dev = usbcan->canch[hf->channel];
+ 
+@@ -413,6 +413,7 @@ static void gs_usb_receive_bulk_callback
+ 
+ 	/* USB failure take down all interfaces */
+ 	if (rc == -ENODEV) {
++ device_detach:
+ 		for (rc = 0; rc < GS_MAX_INTF; rc++) {
+ 			if (usbcan->canch[rc])
+ 				netif_device_detach(usbcan->canch[rc]->netdev);
 
 
