@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E61AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0153C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376682AbiAXUDd (ORCPT
+        id S1352023AbiAXUDi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:03:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350507AbiAXTZA (ORCPT
+        Mon, 24 Jan 2022 15:03:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43278 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356318AbiAXTpx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:25:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149B2C08C5CE;
-        Mon, 24 Jan 2022 11:11:44 -0800 (PST)
+        Mon, 24 Jan 2022 14:45:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6D26B8121A;
-        Mon, 24 Jan 2022 19:11:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEE6EC340E5;
-        Mon, 24 Jan 2022 19:11:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD9A961298;
+        Mon, 24 Jan 2022 19:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8216EC340E5;
+        Mon, 24 Jan 2022 19:45:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051501;
-        bh=8aW4a3keyYk8sRa/ZJU3iMDDx20CQs9LRAQ6w3cZQFE=;
+        s=korg; t=1643053552;
+        bh=H+uq4ZVZklWR33YUhdiDaf9uMY5fP9Hv3t8Qu8VlFXM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMd2EqTehv6efDu9aCIRuxbaEYcqRWQfKucFwP2Iv4vC76/dyBDNmWgCRBM/r69k7
-         ZqOWoCs7+lWM6gwNb6axWpK3SyWgd9nragGjj//5c4rvyJuvQSNsSCvN+YD1Abl2WU
-         reQRow8VTpcwR3MCulih99BTlJXXn4pELTHqdO6w=
+        b=zYZTZPCFCHzHcQ0TOgS1tMiTtoMgRelFCq4zxyE4axTlD8XhvvqqwtHBy9mwThz8x
+         KEq/1WST9x6qwDPXgwhVyLmexrK+Bw7hkgj/1iWe3WE/0MrQkZ0fi5ZtvI0Oq4qzYr
+         +a5P7EoRypogWuTP1LcYJfERcFRtOmpgcfVAl+ps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Ryabinin <arbn@yandex-team.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 4.14 150/186] cputime, cpuacct: Include guest time in user time in cpuacct.stat
-Date:   Mon, 24 Jan 2022 19:43:45 +0100
-Message-Id: <20220124183941.930879858@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 101/563] crypto: qat - fix undetected PFVF timeout in ACK loop
+Date:   Mon, 24 Jan 2022 19:37:46 +0100
+Message-Id: <20220124184027.892805700@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,44 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Ryabinin <arbn@yandex-team.com>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-commit 9731698ecb9c851f353ce2496292ff9fcea39dff upstream.
+[ Upstream commit 5002200b4fedd7e90e4fbc2e5c42a4b3351df814 ]
 
-cpuacct.stat in no-root cgroups shows user time without guest time
-included int it. This doesn't match with user time shown in root
-cpuacct.stat and /proc/<pid>/stat. This also affects cgroup2's cpu.stat
-in the same way.
+If the remote function did not ACK the reception of a message, the
+function __adf_iov_putmsg() could detect it as a collision.
 
-Make account_guest_time() to add user time to cgroup's cpustat to
-fix this.
+This was due to the fact that the collision and the timeout checks after
+the ACK loop were in the wrong order. The timeout must be checked at the
+end of the loop, so fix by swapping the order of the two checks.
 
-Fixes: ef12fefabf94 ("cpuacct: add per-cgroup utime/stime statistics")
-Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20211115164607.23784-1-arbn@yandex-team.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9b768e8a3909 ("crypto: qat - detect PFVF collision after ACK")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Co-developed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/cputime.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/qat/qat_common/adf_pf2vf_msg.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---- a/kernel/sched/cputime.c
-+++ b/kernel/sched/cputime.c
-@@ -150,10 +150,10 @@ void account_guest_time(struct task_stru
+diff --git a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+index 7b34273d18937..74afafc84c716 100644
+--- a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
++++ b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+@@ -132,6 +132,12 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
+ 		val = ADF_CSR_RD(pmisc_bar_addr, pf2vf_offset);
+ 	} while ((val & int_bit) && (count++ < ADF_IOV_MSG_ACK_MAX_RETRY));
  
- 	/* Add guest time to cpustat. */
- 	if (task_nice(p) > 0) {
--		cpustat[CPUTIME_NICE] += cputime;
-+		task_group_account_field(p, CPUTIME_NICE, cputime);
- 		cpustat[CPUTIME_GUEST_NICE] += cputime;
- 	} else {
--		cpustat[CPUTIME_USER] += cputime;
-+		task_group_account_field(p, CPUTIME_USER, cputime);
- 		cpustat[CPUTIME_GUEST] += cputime;
++	if (val & int_bit) {
++		dev_dbg(&GET_DEV(accel_dev), "ACK not received from remote\n");
++		val &= ~int_bit;
++		ret = -EIO;
++	}
++
+ 	if (val != msg) {
+ 		dev_dbg(&GET_DEV(accel_dev),
+ 			"Collision - PFVF CSR overwritten by remote function\n");
+@@ -139,12 +145,6 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
+ 		goto out;
  	}
- }
+ 
+-	if (val & int_bit) {
+-		dev_dbg(&GET_DEV(accel_dev), "ACK not received from remote\n");
+-		val &= ~int_bit;
+-		ret = -EIO;
+-	}
+-
+ 	/* Finished with the PFVF CSR; relinquish it and leave msg in CSR */
+ 	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, val & ~local_in_use_mask);
+ out:
+-- 
+2.34.1
+
 
 
