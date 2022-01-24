@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 817BFC2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30CEC3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456169AbiAXVh6 (ORCPT
+        id S1377642AbiAXViE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:37:58 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54438 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444979AbiAXVBu (ORCPT
+        Mon, 24 Jan 2022 16:38:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444937AbiAXVBq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:01:50 -0500
+        Mon, 24 Jan 2022 16:01:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95F29C04C074;
+        Mon, 24 Jan 2022 12:02:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5122D60C17;
-        Mon, 24 Jan 2022 21:01:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 314AFC340E5;
-        Mon, 24 Jan 2022 21:01:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3BCCCB81218;
+        Mon, 24 Jan 2022 20:02:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64263C340E5;
+        Mon, 24 Jan 2022 20:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058109;
-        bh=RCFUEYNF8zNosS4379XW1Pwb4Rx5S5veAVuWvZxUI2s=;
+        s=korg; t=1643054562;
+        bh=xU/E0UOkkueNXhNTpQtFR0kqDRHiSMIPw0I95vr7Xqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D9Y1WObEbu60uL+ms9Q57TeIsgGg/5orLASjVI8T0vsj+Utq58Z6cU1ViqemjWf3c
-         QDXL51TY+xbGlAH9o56lF+GKMwruOw69hg3Q2JCZrY95/MsEqdY0W/dUD8+QUSalBY
-         f80ceAgvkVpHEjmbcjwYarQ80r/PM9MPpURaNK6c=
+        b=ieiNdeBn39DBLpTWENtubSho5QRsO7H0OHdj7qsBOFs9X4sEjiV/F4LJir4bCb6p5
+         tE13HsQkbwshWthuk3oavUyQhcavGZfZD65ileg6PhhB9I/fL9sfGgUZ522Jd1h3PT
+         62B0hMiDq5CZjc5ikOjQEvh/SW6wpYdjDxkmo7eI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0184/1039] libbpf: Silence uninitialized warning/error in btf_dump_dump_type_data
-Date:   Mon, 24 Jan 2022 19:32:53 +0100
-Message-Id: <20220124184131.467285436@linuxfoundation.org>
+Subject: [PATCH 5.10 396/563] mac80211: allow non-standard VHT MCS-10/11
+Date:   Mon, 24 Jan 2022 19:42:41 +0100
+Message-Id: <20220124184038.122519714@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,48 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Maguire <alan.maguire@oracle.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 43174f0d4597325cb91f1f1f55263eb6e6101036 ]
+[ Upstream commit 04be6d337d37400ad5b3d5f27ca87645ee5a18a3 ]
 
-When compiling libbpf with gcc 4.8.5, we see:
+Some AP can possibly try non-standard VHT rate and mac80211 warns and drops
+packets, and leads low TCP throughput.
 
-  CC       staticobjs/btf_dump.o
-btf_dump.c: In function ‘btf_dump_dump_type_data.isra.24’:
-btf_dump.c:2296:5: error: ‘err’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
-  if (err < 0)
-     ^
-cc1: all warnings being treated as errors
-make: *** [staticobjs/btf_dump.o] Error 1
+    Rate marked as a VHT rate but data is invalid: MCS: 10, NSS: 2
+    WARNING: CPU: 1 PID: 7817 at net/mac80211/rx.c:4856 ieee80211_rx_list+0x223/0x2f0 [mac8021
 
-While gcc 4.8.5 is too old to build the upstream kernel, it's possible it
-could be used to build standalone libbpf which suffers from the same problem.
-Silence the error by initializing 'err' to 0.  The warning/error seems to be
-a false positive since err is set early in the function.  Regardless we
-shouldn't prevent libbpf from building for this.
+Since commit c27aa56a72b8 ("cfg80211: add VHT rate entries for MCS-10 and MCS-11")
+has added, mac80211 adds this support as well.
 
-Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/1638180040-8037-1-git-send-email-alan.maguire@oracle.com
+After this patch, throughput is good and iw can get the bitrate:
+    rx bitrate:	975.1 MBit/s VHT-MCS 10 80MHz short GI VHT-NSS 2
+or
+    rx bitrate:	1083.3 MBit/s VHT-MCS 11 80MHz short GI VHT-NSS 2
+
+Buglink: https://bugzilla.suse.com/show_bug.cgi?id=1192891
+Reported-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://lore.kernel.org/r/20220103013623.17052-1-pkshih@realtek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 2 +-
+ net/mac80211/rx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index 17db62b5002e8..5cae71600631b 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -2194,7 +2194,7 @@ static int btf_dump_dump_type_data(struct btf_dump *d,
- 				   __u8 bits_offset,
- 				   __u8 bit_sz)
- {
--	int size, err;
-+	int size, err = 0;
- 
- 	size = btf_dump_type_data_check_overflow(d, t, id, data, bits_offset);
- 	if (size < 0)
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 6a24431b90095..d27c444a19ed1 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4800,7 +4800,7 @@ void ieee80211_rx_list(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+ 				goto drop;
+ 			break;
+ 		case RX_ENC_VHT:
+-			if (WARN_ONCE(status->rate_idx > 9 ||
++			if (WARN_ONCE(status->rate_idx > 11 ||
+ 				      !status->nss ||
+ 				      status->nss > 8,
+ 				      "Rate marked as a VHT rate but data is invalid: MCS: %d, NSS: %d\n",
 -- 
 2.34.1
 
