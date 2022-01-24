@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D89C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F35C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451059AbiAXVWD (ORCPT
+        id S1451078AbiAXVWE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50694 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442263AbiAXUyF (ORCPT
+        Mon, 24 Jan 2022 16:22:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47652 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442282AbiAXUyL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:54:05 -0500
+        Mon, 24 Jan 2022 15:54:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB39FB81057;
-        Mon, 24 Jan 2022 20:54:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A03C340E5;
-        Mon, 24 Jan 2022 20:54:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4796960B11;
+        Mon, 24 Jan 2022 20:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21F93C340E5;
+        Mon, 24 Jan 2022 20:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057641;
-        bh=DJ/cYkr8MzqT7hAfv92BLVMqYFrXoXo4x8FHMhWFLhY=;
+        s=korg; t=1643057650;
+        bh=MFXndqI8cxiHslc/dNlSaB1r9JTjhtiZBSwFf6F0MWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fGcfkbLaDVVm198A5cZ2HKt1l0v9NB1sq1yBxmUOETbudFczMc5gJ7smNHrlLCkIb
-         pr2SKm9k/eW7xHuZcg2bC1F3Feqt6EwI5UfUcB+nSWTmlpxN2LqSZnYhHGx4BE6d/j
-         Jm22oy1LR8jebJ1VQxVCN1HbaZcWVE169kNbc5W8=
+        b=RN5XSu4x+4I7lIaV5IqOITU4SiDvbdIq3binhcXMFPTfvsG4iPK5uEcUr4xra2MLE
+         gCwj9JsElybIgnI8IwRJbkfAfYpbY1wAGPSlI+xArmzhF6VWgWK3GXQWBzjiuIshSP
+         C6pMLAEiBmfgClA7S7Kgk2jGAeGgVueJ9Fi/NA6M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Subject: [PATCH 5.16 0014/1039] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
-Date:   Mon, 24 Jan 2022 19:30:03 +0100
-Message-Id: <20220124184125.622205194@linuxfoundation.org>
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Nobuhiro Iwamatsu <iwamatsu@nigauri.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.16 0034/1039] rtc: cmos: take rtc_lock while reading from CMOS
+Date:   Mon, 24 Jan 2022 19:30:23 +0100
+Message-Id: <20220124184126.276033378@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,102 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
+commit 454f47ff464325223129b9b5b8d0b61946ec704d upstream.
 
-Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
-(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
-a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
+Reading from the CMOS involves writing to the index register and then
+reading from the data register. Therefore access to the CMOS has to be
+serialized with rtc_lock. This invocation of CMOS_READ was not
+serialized, which could cause trouble when other code is accessing CMOS
+at the same time.
 
-KASAN report:
+Use spin_lock_irq() like the rest of the function.
 
-  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
-  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+Nothing in kernel modifies the RTC_DM_BINARY bit, so there could be a
+separate pair of spin_lock_irq() / spin_unlock_irq() before doing the
+math.
 
-  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x59
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   __kasan_report.cold+0x117/0x11c
-   ? mark_lock+0x480/0x4f0
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   kasan_report+0x38/0x50
-   nfc_alloc_send_skb+0x2d/0xc0
-   nfc_llcp_send_ui_frame+0x18c/0x2a0
-   ? nfc_llcp_send_i_frame+0x230/0x230
-   ? __local_bh_enable_ip+0x86/0xe0
-   ? llcp_sock_connect+0x470/0x470
-   ? llcp_sock_connect+0x470/0x470
-   sock_sendmsg+0x8e/0xa0
-   ____sys_sendmsg+0x253/0x3f0
-   ...
-
-The issue was visible only with multiple simultaneous calls to bind() and
-sendmsg(), which resulted in most of the bind() calls to fail.  The
-bind() was failing on checking if there is available WKS/SDP/SAP
-(respective bit in 'struct nfc_llcp_local' fields).  When there was no
-available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
-socket was able to trigger mentioned NULL pointer dereference of
-nfc_llcp_sock->dev.
-
-The code looks simply racy and currently it protects several paths
-against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
-in error paths of bind().  The llcp_sock_sendmsg() did not have such
-check but called function nfc_llcp_send_ui_frame() had, although not
-protected with lock_sock().
-
-Therefore the race could look like (same socket is used all the time):
-  CPU0                                     CPU1
-  ====                                     ====
-  llcp_sock_bind()
-  - lock_sock()
-    - success
-  - release_sock()
-  - return 0
-                                           llcp_sock_sendmsg()
-                                           - lock_sock()
-                                           - release_sock()
-  llcp_sock_bind(), same socket
-  - lock_sock()
-    - error
-                                           - nfc_llcp_send_ui_frame()
-                                             - if (!llcp_sock->local)
-    - llcp_sock->local = NULL
-    - nfc_put_device(dev)
-                                             - dereference llcp_sock->dev
-  - release_sock()
-  - return -ERRNO
-
-The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
-lock, which is racy and ineffective check.  Instead, its caller
-llcp_sock_sendmsg(), should perform the check inside lock_sock().
-
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Reviewed-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211210200131.153887-2-mat.jonczyk@o2.pl
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/nfc/llcp_sock.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/rtc/rtc-cmos.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -789,6 +789,11 @@ static int llcp_sock_sendmsg(struct sock
+--- a/drivers/rtc/rtc-cmos.c
++++ b/drivers/rtc/rtc-cmos.c
+@@ -457,7 +457,10 @@ static int cmos_set_alarm(struct device
+ 	min = t->time.tm_min;
+ 	sec = t->time.tm_sec;
  
- 	lock_sock(sk);
- 
-+	if (!llcp_sock->local) {
-+		release_sock(sk);
-+		return -ENODEV;
-+	}
++	spin_lock_irq(&rtc_lock);
+ 	rtc_control = CMOS_READ(RTC_CONTROL);
++	spin_unlock_irq(&rtc_lock);
 +
- 	if (sk->sk_type == SOCK_DGRAM) {
- 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
- 				 msg->msg_name);
+ 	if (!(rtc_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
+ 		/* Writing 0xff means "don't care" or "match all".  */
+ 		mon = (mon <= 12) ? bin2bcd(mon) : 0xff;
 
 
