@@ -2,53 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92A8DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D10C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451753AbiAXVXc (ORCPT
+        id S1451997AbiAXVXy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:32 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49438 "EHLO
+        Mon, 24 Jan 2022 16:23:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49742 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443106AbiAXU4R (ORCPT
+        with ESMTP id S1443357AbiAXU4o (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:56:17 -0500
+        Mon, 24 Jan 2022 15:56:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0ABA9611C2;
-        Mon, 24 Jan 2022 20:56:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7F74C340E5;
-        Mon, 24 Jan 2022 20:56:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46EDE60B11;
+        Mon, 24 Jan 2022 20:56:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E1D2C340E5;
+        Mon, 24 Jan 2022 20:56:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057776;
-        bh=JZyEK+DcrtqbQuaMruTet9FOk+71sfIzk2bs8DB1wEU=;
+        s=korg; t=1643057803;
+        bh=PSnOz8+2zdvBrxOTMHC/DW/3Ey4OxIgreWCpGuumD1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tG/SO+iNKbQDqIEwgGOFL3qDuYoFnDtNOgd/wyjmg1eQFVu7lHeAHm85vwnyICeTG
-         qnApm7fF+1TPwQY9WGyL6zNxOEqL2qBU861z1uMQt2QEExJUnM0SmFvVnnQM5OA21z
-         uaoPhcf9ULxNnAGSFvMS5eehJchRs2parzgFwEL8=
+        b=aiKx61+vY1wQd9xuXoPDZN9nNrnAUhJeUdWY+S5LzZaH4gNFiMRXTG3bfjFNeUVi9
+         K/W8zIWUOFZSuKcr4KN2bv9yVGNnQJ5rcR+AkJPiMLC0DYZEkL5gtYOdm4QmNdZN3a
+         6SQjzVpDfPYhkWBFFtxlftkaQVmJ3fJEnXKLGUeM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Borislav Petkov <bp@alien8.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.16 0075/1039] mm_zone: add function to check if managed dma zone exists
-Date:   Mon, 24 Jan 2022 19:31:04 +0100
-Message-Id: <20220124184127.693277380@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0052/1039] media: pvrusb2: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:30:41 +0100
+Message-Id: <20220124184126.884775655@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -60,169 +47,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baoquan He <bhe@redhat.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 62b3107073646e0946bd97ff926832bafb846d17 upstream.
+commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
 
-Patch series "Handle warning of allocation failure on DMA zone w/o
-managed pages", v4.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-**Problem observed:
-On x86_64, when crash is triggered and entering into kdump kernel, page
-allocation failure can always be seen.
-
- ---------------------------------
- DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
- swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
- CPU: 0 PID: 1 Comm: swapper/0
- Call Trace:
-  dump_stack+0x7f/0xa1
-  warn_alloc.cold+0x72/0xd6
-  ......
-  __alloc_pages+0x24d/0x2c0
-  ......
-  dma_atomic_pool_init+0xdb/0x176
-  do_one_initcall+0x67/0x320
-  ? rcu_read_lock_sched_held+0x3f/0x80
-  kernel_init_freeable+0x290/0x2dc
-  ? rest_init+0x24f/0x24f
-  kernel_init+0xa/0x111
-  ret_from_fork+0x22/0x30
- Mem-Info:
- ------------------------------------
-
-***Root cause:
-In the current kernel, it assumes that DMA zone must have managed pages
-and try to request pages if CONFIG_ZONE_DMA is enabled. While this is not
-always true. E.g in kdump kernel of x86_64, only low 1M is presented and
-locked down at very early stage of boot, so that this low 1M won't be
-added into buddy allocator to become managed pages of DMA zone. This
-exception will always cause page allocation failure if page is requested
-from DMA zone.
-
-***Investigation:
-This failure happens since below commit merged into linus's tree.
-  1a6a9044b967 x86/setup: Remove CONFIG_X86_RESERVE_LOW and reservelow= options
-  23721c8e92f7 x86/crash: Remove crash_reserve_low_1M()
-  f1d4d47c5851 x86/setup: Always reserve the first 1M of RAM
-  7c321eb2b843 x86/kdump: Remove the backup region handling
-  6f599d84231f x86/kdump: Always reserve the low 1M when the crashkernel option is specified
-
-Before them, on x86_64, the low 640K area will be reused by kdump kernel.
-So in kdump kernel, the content of low 640K area is copied into a backup
-region for dumping before jumping into kdump. Then except of those firmware
-reserved region in [0, 640K], the left area will be added into buddy
-allocator to become available managed pages of DMA zone.
-
-However, after above commits applied, in kdump kernel of x86_64, the low
-1M is reserved by memblock, but not released to buddy allocator. So any
-later page allocation requested from DMA zone will fail.
-
-At the beginning, if crashkernel is reserved, the low 1M need be locked
-down because AMD SME encrypts memory making the old backup region
-mechanims impossible when switching into kdump kernel.
-
-Later, it was also observed that there are BIOSes corrupting memory
-under 1M. To solve this, in commit f1d4d47c5851, the entire region of
-low 1M is always reserved after the real mode trampoline is allocated.
-
-Besides, recently, Intel engineer mentioned their TDX (Trusted domain
-extensions) which is under development in kernel also needs to lock down
-the low 1M. So we can't simply revert above commits to fix the page allocation
-failure from DMA zone as someone suggested.
-
-***Solution:
-Currently, only DMA atomic pool and dma-kmalloc will initialize and
-request page allocation with GFP_DMA during bootup.
-
-So only initializ DMA atomic pool when DMA zone has available managed
-pages, otherwise just skip the initialization.
-
-For dma-kmalloc(), for the time being, let's mute the warning of
-allocation failure if requesting pages from DMA zone while no manged
-pages.  Meanwhile, change code to use dma_alloc_xx/dma_map_xx API to
-replace kmalloc(GFP_DMA), or do not use GFP_DMA when calling kmalloc() if
-not necessary.  Christoph is posting patches to fix those under
-drivers/scsi/.  Finally, we can remove the need of dma-kmalloc() as people
-suggested.
-
-This patch (of 3):
-
-In some places of the current kernel, it assumes that dma zone must have
-managed pages if CONFIG_ZONE_DMA is enabled.  While this is not always
-true.  E.g in kdump kernel of x86_64, only low 1M is presented and locked
-down at very early stage of boot, so that there's no managed pages at all
-in DMA zone.  This exception will always cause page allocation failure if
-page is requested from DMA zone.
-
-Here add function has_managed_dma() and the relevant helper functions to
-check if there's DMA zone with managed pages.  It will be used in later
-patches.
-
-Link: https://lkml.kernel.org/r/20211223094435.248523-1-bhe@redhat.com
-Link: https://lkml.kernel.org/r/20211223094435.248523-2-bhe@redhat.com
-Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Pekka Enberg <penberg@kernel.org>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Cc: stable@vger.kernel.org      # 2.6.18
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/mmzone.h |    9 +++++++++
- mm/page_alloc.c        |   15 +++++++++++++++
- 2 files changed, 24 insertions(+)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -1047,6 +1047,15 @@ static inline int is_highmem_idx(enum zo
- #endif
- }
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -1467,7 +1467,7 @@ static int pvr2_upload_firmware1(struct
+ 	for (address = 0; address < fwsize; address += 0x800) {
+ 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
+ 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
+-				       0, fw_ptr, 0x800, HZ);
++				       0, fw_ptr, 0x800, 1000);
+ 	}
  
-+#ifdef CONFIG_ZONE_DMA
-+bool has_managed_dma(void);
-+#else
-+static inline bool has_managed_dma(void)
-+{
-+	return false;
-+}
-+#endif
-+
- /**
-  * is_highmem - helper function to quickly check if a struct zone is a
-  *              highmem zone or not.  This is an attempt to keep references
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -9460,3 +9460,18 @@ bool take_page_off_buddy(struct page *pa
- 	return ret;
- }
- #endif
-+
-+#ifdef CONFIG_ZONE_DMA
-+bool has_managed_dma(void)
-+{
-+	struct pglist_data *pgdat;
-+
-+	for_each_online_pgdat(pgdat) {
-+		struct zone *zone = &pgdat->node_zones[ZONE_DMA];
-+
-+		if (managed_zone(zone))
-+			return true;
-+	}
-+	return false;
-+}
-+#endif /* CONFIG_ZONE_DMA */
+ 	trace_firmware("Upload done, releasing device's CPU");
+@@ -1605,7 +1605,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
+ 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
+ 
+ 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
+-				    &actual_length, HZ);
++				    &actual_length, 1000);
+ 		ret |= (actual_length != bcnt);
+ 		if (ret) break;
+ 		fw_done += bcnt;
+@@ -3438,7 +3438,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
+ 						      0xa0,0xc0,
+ 						      address,0,
+ 						      hdw->fw_buffer+address,
+-						      0x800,HZ);
++						      0x800,1000);
+ 				if (ret < 0) break;
+ 			}
+ 
+@@ -3977,7 +3977,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
+ 	/* Write the CPUCS register on the 8051.  The lsb of the register
+ 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
+ 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
+-	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
++	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
+ 	if (ret < 0) {
+ 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
+ 			   "cpureset_assert(%d) error=%d",val,ret);
 
 
