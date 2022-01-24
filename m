@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD4BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84455C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387002AbiAXUgN (ORCPT
+        id S1387039AbiAXUgP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:36:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41546 "EHLO
+        Mon, 24 Jan 2022 15:36:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41806 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355694AbiAXUOk (ORCPT
+        with ESMTP id S1379421AbiAXUPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:14:40 -0500
+        Mon, 24 Jan 2022 15:15:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45A0E6091A;
-        Mon, 24 Jan 2022 20:14:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05341C340E7;
-        Mon, 24 Jan 2022 20:14:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D0E86091B;
+        Mon, 24 Jan 2022 20:15:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 074F7C340E5;
+        Mon, 24 Jan 2022 20:14:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055279;
-        bh=87EGaLCvwwvOqdzfY5gZL3MVLBoAuuQp2zJygvRpI54=;
+        s=korg; t=1643055300;
+        bh=8HdrVk2KIH8ByhHcq3OL63Nlh/N9PJP7ZMm16YNDHgw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gCn8ceXirsgetcJY+Q2ppnUjlY5Zp+UExLD6dUT/9Poz+ujoo4e1qAPxfsS1vZ8/u
-         P+8RlUU8jzoWclIhuaOpy5MSvdzalvH9lamVV1C8ECWZ+/D3Sxje/QcgoTsjkVJbW9
-         SfZxNraw4wJevmU+eXTDmuu6oE4gBhXcsAoHn0R8=
+        b=LnHqHz1JSI+VjytjkKsOOb6hutH94zWBMmrUVwL6MgJvRqs//tjoxJWUS80CY50mw
+         HQVikrV3d2Q7rfM26y3vjwHd3z01zNfd5AWI6gal3UyMTT6qmto6zfQdh8sKQTxGel
+         FPUIknw8nr18ssFiW0owxSqxPuu2nVMGAQ5ZCMlU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 099/846] wcn36xx: Fix DMA channel enable/disable cycle
-Date:   Mon, 24 Jan 2022 19:33:36 +0100
-Message-Id: <20220124184104.406710679@linuxfoundation.org>
+Subject: [PATCH 5.15 105/846] bpftool: Fix memory leak in prog_dump()
+Date:   Mon, 24 Jan 2022 19:33:42 +0100
+Message-Id: <20220124184104.614069581@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,123 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Quentin Monnet <quentin@isovalent.com>
 
-[ Upstream commit 89dcb1da611d9b3ff0728502d58372fdaae9ebff ]
+[ Upstream commit ebbd7f64a3fbe9e0f235e39fc244ee9735e2a52a ]
 
-Right now we have a broken sequence where we enable DMA channel interrupts
-which can be left enabled and never disabled if we hit an error path.
+Following the extraction of prog_dump() from do_dump(), the struct btf
+allocated in prog_dump() is no longer freed on error; the struct
+bpf_prog_linfo is not freed at all. Make sure we release them before
+exiting the function.
 
-Worse still when we unload the driver, the DMA channel interrupt bits are
-left intact. About the only saving grace here is that we do remember to
-disable the wcnss interrupt when unload the driver.
-
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211105122152.1580542-2-bryan.odonoghue@linaro.org
+Fixes: ec2025095cf6 ("bpftool: Match several programs with same tag")
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211110114632.24537-2-quentin@isovalent.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/dxe.c | 38 ++++++++++++++++++--------
- 1 file changed, 27 insertions(+), 11 deletions(-)
+ tools/bpf/bpftool/prog.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
-index aff04ef662663..0c4f63f1312f8 100644
---- a/drivers/net/wireless/ath/wcn36xx/dxe.c
-+++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
-@@ -272,6 +272,21 @@ static int wcn36xx_dxe_enable_ch_int(struct wcn36xx *wcn, u16 wcn_ch)
- 	return 0;
- }
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index fe59404e87046..f8755beb3d9eb 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -629,8 +629,8 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 	char func_sig[1024];
+ 	unsigned char *buf;
+ 	__u32 member_len;
++	int fd, err = -1;
+ 	ssize_t n;
+-	int fd;
  
-+static void wcn36xx_dxe_disable_ch_int(struct wcn36xx *wcn, u16 wcn_ch)
-+{
-+	int reg_data = 0;
-+
-+	wcn36xx_dxe_read_register(wcn,
-+				  WCN36XX_DXE_INT_MASK_REG,
-+				  &reg_data);
-+
-+	reg_data &= ~wcn_ch;
-+
-+	wcn36xx_dxe_write_register(wcn,
-+				   WCN36XX_DXE_INT_MASK_REG,
-+				   (int)reg_data);
-+}
-+
- static int wcn36xx_dxe_fill_skb(struct device *dev,
- 				struct wcn36xx_dxe_ctl *ctl,
- 				gfp_t gfp)
-@@ -869,7 +884,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		WCN36XX_DXE_WQ_TX_L);
+ 	if (mode == DUMP_JITED) {
+ 		if (info->jited_prog_len == 0 || !info->jited_prog_insns) {
+@@ -669,7 +669,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		if (fd < 0) {
+ 			p_err("can't open file %s: %s", filepath,
+ 			      strerror(errno));
+-			return -1;
++			goto exit_free;
+ 		}
  
- 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
+ 		n = write(fd, buf, member_len);
+@@ -677,7 +677,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		if (n != (ssize_t)member_len) {
+ 			p_err("error writing output file: %s",
+ 			      n < 0 ? strerror(errno) : "short write");
+-			return -1;
++			goto exit_free;
+ 		}
  
- 	/***************************************/
- 	/* Init descriptors for TX HIGH channel */
-@@ -893,9 +907,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
+ 		if (json_output)
+@@ -691,7 +691,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 						     info->netns_ino,
+ 						     &disasm_opt);
+ 			if (!name)
+-				return -1;
++				goto exit_free;
+ 		}
  
- 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
- 
--	/* Enable channel interrupts */
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
--
- 	/***************************************/
- 	/* Init descriptors for RX LOW channel */
- 	/***************************************/
-@@ -905,7 +916,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		goto out_err_rxl_ch;
+ 		if (info->nr_jited_func_lens && info->jited_func_lens) {
+@@ -786,9 +786,12 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		kernel_syms_destroy(&dd);
  	}
  
--
- 	/* For RX we need to preallocated buffers */
- 	wcn36xx_dxe_ch_alloc_skb(wcn, &wcn->dxe_rx_l_ch);
+-	btf__free(btf);
++	err = 0;
  
-@@ -928,9 +938,6 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		WCN36XX_DXE_REG_CTL_RX_L,
- 		WCN36XX_DXE_CH_DEFAULT_CTL_RX_L);
+-	return 0;
++exit_free:
++	btf__free(btf);
++	bpf_prog_linfo__free(prog_linfo);
++	return err;
+ }
  
--	/* Enable channel interrupts */
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
--
- 	/***************************************/
- 	/* Init descriptors for RX HIGH channel */
- 	/***************************************/
-@@ -962,15 +969,18 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
- 		WCN36XX_DXE_REG_CTL_RX_H,
- 		WCN36XX_DXE_CH_DEFAULT_CTL_RX_H);
- 
--	/* Enable channel interrupts */
--	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
--
- 	ret = wcn36xx_dxe_request_irqs(wcn);
- 	if (ret < 0)
- 		goto out_err_irq;
- 
- 	timer_setup(&wcn->tx_ack_timer, wcn36xx_dxe_tx_timer, 0);
- 
-+	/* Enable channel interrupts */
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
-+	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
-+
- 	return 0;
- 
- out_err_irq:
-@@ -987,6 +997,12 @@ out_err_txh_ch:
- 
- void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
- {
-+	/* Disable channel interrupts */
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
-+	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
-+
- 	free_irq(wcn->tx_irq, wcn);
- 	free_irq(wcn->rx_irq, wcn);
- 	del_timer(&wcn->tx_ack_timer);
+ static int do_dump(int argc, char **argv)
 -- 
 2.34.1
 
