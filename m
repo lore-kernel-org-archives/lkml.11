@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0BDAC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 761E1C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586224AbiAXWZy (ORCPT
+        id S1586262AbiAXW0E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:25:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48810 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358050AbiAXV2a (ORCPT
+        Mon, 24 Jan 2022 17:26:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41684 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449207AbiAXV2W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:28:30 -0500
+        Mon, 24 Jan 2022 16:28:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C83A614CB;
-        Mon, 24 Jan 2022 21:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F6FC340E4;
-        Mon, 24 Jan 2022 21:28:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 34FA8B815B0;
+        Mon, 24 Jan 2022 21:28:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 618C3C340E8;
+        Mon, 24 Jan 2022 21:28:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059707;
-        bh=g46A/5qUCfI59y4i02SYj+GUKatopABI5zCyp83hnhs=;
+        s=korg; t=1643059691;
+        bh=35lOTX6cm3m1nD+3sw8XpEL6aINTmKJuCTuO6dclzwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iPUp1UHDU6fjnaQGcG31JU1jfzms27x1NFpGMPkeuTeFKt7GNakGS5SHuOFWGvUDY
-         0VOPKQgvdBLBg2gcLvVBWZJpkTmSkX3m9dzCbmSAUJ1DGkE3l3rfmWRrC1kAyPfD1t
-         YaItYf+OEBQVXhwI7bKmWPAOBqdB8yBpxLXe+6lw=
+        b=bQuRHEZcTqyNPV91LVDf3kYVGiB7f8brIbslg0f7Q5nWAZq2xohyGBdz8F4bzfeEu
+         QqiF9FvyXiF/LUb1kJ/YNPhN3iVyt6uVR9OuVbZpo8hqJbr626/ftmqltGirqbB+w5
+         KuSi4k955uqne2Df+HpztccqaHZHKytO7Cg2aL8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jinzhou Su <Jinzhou.Su@amd.com>,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Huang Rui <ray.huang@amd.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        David Yat Sin <david.yatsin@amd.com>,
+        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0707/1039] ACPI: CPPC: Check present CPUs for determining _CPC is valid
-Date:   Mon, 24 Jan 2022 19:41:36 +0100
-Message-Id: <20220124184149.100976704@linuxfoundation.org>
+Subject: [PATCH 5.16 0702/1039] drm/amdgpu: Dont inherit GEM object VMAs in child process
+Date:   Mon, 24 Jan 2022 19:41:31 +0100
+Message-Id: <20220124184148.931014095@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,41 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
 
-[ Upstream commit 2aeca6bd02776d7f56a49a32be0dd184f204d888 ]
+[ Upstream commit fbcdbfde87509d523132b59f661a355c731139d0 ]
 
-As this is a static check, it should be based upon what is currently
-present on the system. This makes probeing more deterministic.
+When an application having open file access to a node forks, its shared
+mappings also get reflected in the address space of child process even
+though it cannot access them with the object permissions applied. With the
+existing permission checks on the gem objects, it might be reasonable to
+also create the VMAs with VM_DONTCOPY flag so a user space application
+doesn't need to explicitly call the madvise(addr, len, MADV_DONTFORK)
+system call to prevent the pages in the mapped range to appear in the
+address space of the child process. It also prevents the memory leaks
+due to additional reference counts on the mapped BOs in the child
+process that prevented freeing the memory in the parent for which we had
+worked around earlier in the user space inside the thunk library.
 
-While local APIC flags field (lapic_flags) of cpu core in MADT table is
-0, then the cpu core won't be enabled. In this case, _CPC won't be found
-in this core, and return back to _CPC invalid with walking through
-possible cpus (include disable cpus). This is not expected, so switch to
-check present CPUs instead.
+Additionally, we faced this issue when using CRIU to checkpoint restore
+an application that had such inherited mappings in the child which
+confuse CRIU when it mmaps on restore. Having this flag set for the
+render node VMAs helps. VMAs mapped via KFD already take care of this so
+this is needed only for the render nodes.
 
-Reported-by: Jinzhou Su <Jinzhou.Su@amd.com>
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Signed-off-by: Huang Rui <ray.huang@amd.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+To limit the impact of the change to user space consumers such as OpenGL
+etc, limit it to KFD BOs only.
+
+Acked-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: David Yat Sin <david.yatsin@amd.com>
+Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/cppc_acpi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
-index b62c87b8ce4a9..12a156d8283e6 100644
---- a/drivers/acpi/cppc_acpi.c
-+++ b/drivers/acpi/cppc_acpi.c
-@@ -411,7 +411,7 @@ bool acpi_cpc_valid(void)
- 	struct cpc_desc *cpc_ptr;
- 	int cpu;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+index a1e63ba4c54a5..630dc99e49086 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
+@@ -264,6 +264,9 @@ static int amdgpu_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_str
+ 	    !(vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
+ 		vma->vm_flags &= ~VM_MAYWRITE;
  
--	for_each_possible_cpu(cpu) {
-+	for_each_present_cpu(cpu) {
- 		cpc_ptr = per_cpu(cpc_desc_ptr, cpu);
- 		if (!cpc_ptr)
- 			return false;
++	if (bo->kfd_bo)
++		vma->vm_flags |= VM_DONTCOPY;
++
+ 	return drm_gem_ttm_mmap(obj, vma);
+ }
+ 
 -- 
 2.34.1
 
