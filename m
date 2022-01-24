@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73439C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD24C35274
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351008AbiAXTZp (ORCPT
+        id S1351070AbiAXTZy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:25:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347616AbiAXTQ6 (ORCPT
+        Mon, 24 Jan 2022 14:25:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43012 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344204AbiAXTSD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:16:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8809C033273;
-        Mon, 24 Jan 2022 11:06:36 -0800 (PST)
+        Mon, 24 Jan 2022 14:18:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FA45B8119D;
-        Mon, 24 Jan 2022 19:06:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDB74C340E5;
-        Mon, 24 Jan 2022 19:06:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A169BB8119D;
+        Mon, 24 Jan 2022 19:18:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C47DDC340E5;
+        Mon, 24 Jan 2022 19:17:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051194;
-        bh=/3qmslt+K3K1qMeM8xqJO/taeKRTw9pAJyNeUNJOogE=;
+        s=korg; t=1643051879;
+        bh=wNJQ1Il1mgRJmfGV4m1U3Mn/8rvUO5cjMqt67o9ex3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fTb92MLCQM//5X1gg6HRgrUX+UJocvZM3Lgh7R7WfcQ3Je/AfWYK2RqB7YVMyjgze
-         a3lKAB55QSQDGqw9ZRRJig6pI3yGikb2Xmal9UyFzMOA7QrYv7cavH9QvBPgnhrGIG
-         BwTag1BX1xxIUXB5DwEpWywDxgKQacK7INCvOST4=
+        b=rf1AAih5/uUNZqAE08GtnsSZpeDs/6a7oOem084WAcufKqHJ5QhPz9DX0GdU/d4G8
+         ffCaaGtYRk8ibSBKmC4B1j2f6vkUBdDEc/Z4hEfqpZ87M8d38AeNzVCJ72nBLuqTo3
+         evUoeeKGMXpkonnMBPeKSM9RZXMydNrmZPVOvqHk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 085/186] RDMA/cxgb4: Set queue pair state when being queried
-Date:   Mon, 24 Jan 2022 19:42:40 +0100
-Message-Id: <20220124183939.849919375@linuxfoundation.org>
+Subject: [PATCH 4.19 117/239] mips: lantiq: add support for clk_set_parent()
+Date:   Mon, 24 Jan 2022 19:42:35 +0100
+Message-Id: <20220124183946.829927628@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit e375b9c92985e409c4bb95dd43d34915ea7f5e28 ]
+[ Upstream commit 76f66dfd60dc5d2f9dec22d99091fea1035c5d03 ]
 
-The API for ib_query_qp requires the driver to set cur_qp_state on return,
-add the missing set.
+Provide a simple implementation of clk_set_parent() in the lantiq
+subarch so that callers of it will build without errors.
 
-Fixes: 67bbc05512d8 ("RDMA/cxgb4: Add query_qp support")
-Link: https://lore.kernel.org/r/20211220152530.60399-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes these build errors:
+
+ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
+ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
+
+Fixes: 171bb2f19ed6 ("MIPS: Lantiq: Add initial support for Lantiq SoCs")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: kernel test robot <lkp@intel.com>
+--to=linux-mips@vger.kernel.org --cc="John Crispin <john@phrozen.org>" --cc="Jonathan Cameron <jic23@kernel.org>" --cc="Russell King <linux@armlinux.org.uk>" --cc="Andy Shevchenko <andy.shevchenko@gmail.com>" --cc=alsa-devel@alsa-project.org --to="Thomas Bogendoerfer <tsbogend@alpha.franken.de>"
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/cxgb4/qp.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/mips/lantiq/clk.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/infiniband/hw/cxgb4/qp.c b/drivers/infiniband/hw/cxgb4/qp.c
-index 3255615807299..225d4466fcb24 100644
---- a/drivers/infiniband/hw/cxgb4/qp.c
-+++ b/drivers/infiniband/hw/cxgb4/qp.c
-@@ -2115,6 +2115,7 @@ int c4iw_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
- 	memset(attr, 0, sizeof *attr);
- 	memset(init_attr, 0, sizeof *init_attr);
- 	attr->qp_state = to_ib_qp_state(qhp->attr.state);
-+	attr->cur_qp_state = to_ib_qp_state(qhp->attr.state);
- 	init_attr->cap.max_send_wr = qhp->attr.sq_num_entries;
- 	init_attr->cap.max_recv_wr = qhp->attr.rq_num_entries;
- 	init_attr->cap.max_send_sge = qhp->attr.sq_max_sges;
+diff --git a/arch/mips/lantiq/clk.c b/arch/mips/lantiq/clk.c
+index a8e309dcd38d7..f5fab99d1751c 100644
+--- a/arch/mips/lantiq/clk.c
++++ b/arch/mips/lantiq/clk.c
+@@ -166,6 +166,12 @@ struct clk *clk_get_parent(struct clk *clk)
+ }
+ EXPORT_SYMBOL(clk_get_parent);
+ 
++int clk_set_parent(struct clk *clk, struct clk *parent)
++{
++	return 0;
++}
++EXPORT_SYMBOL(clk_set_parent);
++
+ static inline u32 get_counter_resolution(void)
+ {
+ 	u32 res;
 -- 
 2.34.1
 
