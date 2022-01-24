@@ -2,127 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D101C35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D3FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448486AbiAXVMl (ORCPT
+        id S1448402AbiAXVMf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:41 -0500
-Received: from mga03.intel.com ([134.134.136.65]:35515 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1390882AbiAXUqe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643057193; x=1674593193;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ujacmyO/PuoKNYdTwG8FMRiUMSIRWymHhVuwGwF59xk=;
-  b=YIW/i+TZwgQZF8HdHnZbCvSPlV1wMQHB2mtNF+djAmaDRlkw44kIlQId
-   6tg//mbwzkVkVvBrr6ZyNRb4gCyfba5YyJvk+vsdgxIFD86kS7LdNW1TH
-   L2cAfzhHbZvJQn4Zcb+UaKPjY43XrU/Re9Oh8Aw6nEyHXw5U1KH6+hPJM
-   zmLZKxQcaCIEjCC2rlPQ4a+mwUncRsP/hnUTlefkUHLrcXVBTgj1eQDA+
-   XKAVuMAfpR7eYjYtft1Ca8hI88I6QYY14odU8UGU874Kp80T4YRdvNnbm
-   kqUQpijkDvH6H6yBduZM5hZvzORyz9jy2ho47cLq7t2AA1UOwE1NvEc5D
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246089183"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="246089183"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:33:17 -0800
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="494750089"
-Received: from otcwcpicx3.sc.intel.com ([172.25.55.73])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:33:16 -0800
-Date:   Mon, 24 Jan 2022 12:33:12 -0800
-From:   Fenghua Yu <fenghua.yu@intel.com>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>,
-        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-Message-ID: <Ye8NCAKoGF/AsLfs@otcwcpicx3.sc.intel.com>
-References: <20211217220136.2762116-1-fenghua.yu@intel.com>
- <20211217220136.2762116-6-fenghua.yu@intel.com>
- <87ee4w6g1n.ffs@tglx>
+        Mon, 24 Jan 2022 16:12:35 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:6353 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390807AbiAXUqZ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 15:46:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643057186; x=1674593186;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=GRbUMXJdZdTwUnYKR/ryNDqpfjnJkqgWc+WnYEkkLro=;
+  b=evgr4pyi8HwMiTnEnnSnaaPsR3vRS9aHceyf1hh7GnzAgViff9/4j1Pg
+   thxPw7XuPrwTKBPDgYVHxJ1Vlk0Qcz6pRnOC8K2rDi93rwYDyvuGwxsp8
+   K2qZNLZwXJqSMWUsFRFz8bzHNHh9SW4ZtwkiC3fr5BtmlPCV5uk7IWHk8
+   I=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 24 Jan 2022 12:46:23 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 12:46:22 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 24 Jan 2022 12:46:20 -0800
+Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 24 Jan 2022 12:46:20 -0800
+From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
+To:     <robdclark@gmail.com>, <sean@poorly.run>, <swboyd@chromium.org>,
+        <vkoul@kernel.org>, <daniel@ffwll.ch>, <airlied@linux.ie>,
+        <agross@kernel.org>, <dmitry.baryshkov@linaro.org>,
+        <bjorn.andersson@linaro.org>
+CC:     <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
+        <quic_khsieh@quicinc.com>, <freedreno@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-arm-msm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] drm/msm/dp: always add fail-safe mode into connector mode list
+Date:   Mon, 24 Jan 2022 12:46:10 -0800
+Message-ID: <1643057170-10413-1-git-send-email-quic_khsieh@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ee4w6g1n.ffs@tglx>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Thomas,
+Some of DP link compliant test expects to return fail-safe mode
+if prefer detailed timing mode can not be supported by mainlink's
+lane and rate after link training. Therefore add fail-safe mode
+into connector mode list as backup mode. This patch fixes test
+case 4.2.2.1.
 
-On Mon, Jan 24, 2022 at 09:21:24PM +0100, Thomas Gleixner wrote:
-> On Fri, Dec 17 2021 at 22:01, Fenghua Yu wrote:
-> > diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-> > index bd41405d34e9..ee2294e02716 100644
-> > --- a/drivers/iommu/iommu-sva-lib.c
-> > +++ b/drivers/iommu/iommu-sva-lib.c
-> > @@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
-> >   *
-> >   * Try to allocate a PASID for this mm, or take a reference to the existing one
-> >   * provided it fits within the [@min, @max] range. On success the PASID is
-> > - * available in mm->pasid, and must be released with iommu_sva_free_pasid().
-> > - * @min must be greater than 0, because 0 indicates an unused mm->pasid.
-> > + * available in mm->pasid and will be available for the lifetime of the mm.
-> >   *
-> >   * Returns 0 on success and < 0 on error.
-> >   */
-> > @@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
-> >  		return -EINVAL;
-> >  
-> >  	mutex_lock(&iommu_sva_lock);
-> > -	if (mm->pasid) {
-> > -		if (mm->pasid >= min && mm->pasid <= max)
-> > -			ioasid_get(mm->pasid);
-> > -		else
-> > +	/* Is a PASID already associated with this mm? */
-> > +	if (pasid_valid(mm->pasid)) {
-> > +		if (mm->pasid < min || mm->pasid >= max)
-> >  			ret = -EOVERFLOW;
-> > -	} else {
-> > -		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-> > -		if (pasid == INVALID_IOASID)
-> > -			ret = -ENOMEM;
-> > -		else
-> > -			mm->pasid = pasid;
-> > +		goto out;
-> >  	}
-> > +
-> > +	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-> > +	if (!pasid_valid(pasid))
-> > +		ret = -ENOMEM;
-> > +	else
-> > +		mm_pasid_get(mm, pasid);
-> 
-> Hrm. This is odd.
-> 
-> > +/* Associate a PASID with an mm_struct: */
-> > +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
-> > +{
-> > +	mm->pasid = pasid;
-> > +}
-> 
-> This does not get anything. It sets the allocated PASID in the mm. The
-> refcount on the PASID was already taken by the allocation. So this
-> should be mm_pasid_set() or mm_pasid_install(), right?
+Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+---
+ drivers/gpu/drm/msm/dp/dp_panel.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Ok. Will change mm_pasid_get() to mm_pasid_set().
+diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
+index 3b02922..7743b45 100644
+--- a/drivers/gpu/drm/msm/dp/dp_panel.c
++++ b/drivers/gpu/drm/msm/dp/dp_panel.c
+@@ -221,6 +221,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
+ 		if (drm_add_modes_noedid(connector, 640, 480))
+ 			drm_set_preferred_mode(connector, 640, 480);
+ 		mutex_unlock(&connector->dev->mode_config.mutex);
++	} else {
++		/* always add fail-safe mode as backup mode */
++		mutex_lock(&connector->dev->mode_config.mutex);
++		drm_add_modes_noedid(connector, 640, 480);
++		mutex_unlock(&connector->dev->mode_config.mutex);
+ 	}
+ 
+ 	if (panel->aux_cfg_update_done) {
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
-Thank you very much for your review!
-
--Fenghua
