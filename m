@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9986EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1214BC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2368847AbiAYAAP (ORCPT
+        id S2368917AbiAYAAd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:00:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        Mon, 24 Jan 2022 19:00:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847701AbiAXXUX (ORCPT
+        with ESMTP id S1847692AbiAXXUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:20:23 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4CCC028BE4;
-        Mon, 24 Jan 2022 13:28:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1523C028C33;
+        Mon, 24 Jan 2022 13:28:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4996D614DD;
-        Mon, 24 Jan 2022 21:28:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DA93C340E5;
-        Mon, 24 Jan 2022 21:28:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7003761583;
+        Mon, 24 Jan 2022 21:28:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55749C340EC;
+        Mon, 24 Jan 2022 21:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059710;
-        bh=S3oWCTD/UPBgHiBeKcRHNlnH9qKO6/9FriHWj32grDE=;
+        s=korg; t=1643059704;
+        bh=dXBOlCuoOPukKy5ijeo0ko66jl0mtrClLVGnUYITNaU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jTuBxhcbIv9cIuCyHfTebxWS5HhMnY88IoQhs/NwHmdeDAXwZZFLpadRSvHZFhf43
-         1piDxRoY4aNWOCCWiJsTAFzt9E45qILz1lvyT/F2QZ193YUz1F00g9DR5O5E0R44TG
-         itFjqPp6DyfwwQ9D5YDwIJ6k4wiEkT9NdxeWIquI=
+        b=2Lb6tpTZ09g38vloY7V9Uv0X9S458Gjse6J0F+D4l1++2kau3ynChQJB0Cwtg1psg
+         /2k9ssOUCUzvHCNPGNKSBsAVpMWSRsdhUXgFNbKaYIWtPG6saemMfHop8VzABQzlxZ
+         cUIZmLoxDEW2p3P/E6VNJOZO4bGa+6G53wEXQjpw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tedd Ho-Jeong An <tedd.an@intel.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0690/1039] Bluetooth: btintel: Add missing quirks and msft ext for legacy bootloader
-Date:   Mon, 24 Jan 2022 19:41:19 +0100
-Message-Id: <20220124184148.539751242@linuxfoundation.org>
+Subject: [PATCH 5.16 0706/1039] ACPI: battery: Add the ThinkPad "Not Charging" quirk
+Date:   Mon, 24 Jan 2022 19:41:35 +0100
+Message-Id: <20220124184149.069081921@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,65 +52,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tedd Ho-Jeong An <tedd.an@intel.com>
+From: Thomas Weißschuh <linux@weissschuh.net>
 
-[ Upstream commit 3547a008c8962df2175db1e78b80f27e027ec549 ]
+[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
 
-This patch add missing HCI quirks and MSFT extension for legacy
-bootloader when it is running in the operational firmware.
+The EC/ACPI firmware on Lenovo ThinkPads used to report a status
+of "Unknown" when the battery is between the charge start and
+charge stop thresholds. On Windows, it reports "Not Charging"
+so the quirk has been added to also report correctly.
 
-Signed-off-by: Tedd Ho-Jeong An <tedd.an@intel.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Now the "status" attribute returns "Not Charging" when the
+battery on ThinkPads is not physicaly charging.
+
+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btintel.c | 26 ++++++++++++++++++++++----
- 1 file changed, 22 insertions(+), 4 deletions(-)
+ drivers/acpi/battery.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/drivers/bluetooth/btintel.c b/drivers/bluetooth/btintel.c
-index b11567b0fd9ab..851a0c9b8fae5 100644
---- a/drivers/bluetooth/btintel.c
-+++ b/drivers/bluetooth/btintel.c
-@@ -2493,10 +2493,14 @@ static int btintel_setup_combined(struct hci_dev *hdev)
- 	case 0x12:      /* ThP */
- 	case 0x13:      /* HrP */
- 	case 0x14:      /* CcP */
--		/* Some legacy bootloader devices from JfP supports both old
--		 * and TLV based HCI_Intel_Read_Version command. But we don't
--		 * want to use the TLV based setup routines for those legacy
--		 * bootloader device.
-+		/* Some legacy bootloader devices starting from JfP,
-+		 * the operational firmware supports both old and TLV based
-+		 * HCI_Intel_Read_Version command based on the command
-+		 * parameter.
-+		 *
-+		 * For upgrading firmware case, the TLV based version cannot
-+		 * be used because the firmware filename for legacy bootloader
-+		 * is based on the old format.
- 		 *
- 		 * Also, it is not easy to convert TLV based version from the
- 		 * legacy version format.
-@@ -2508,6 +2512,20 @@ static int btintel_setup_combined(struct hci_dev *hdev)
- 		err = btintel_read_version(hdev, &ver);
- 		if (err)
- 			return err;
-+
-+		/* Apply the device specific HCI quirks
-+		 *
-+		 * All Legacy bootloader devices support WBS
-+		 */
-+		set_bit(HCI_QUIRK_WIDEBAND_SPEECH_SUPPORTED, &hdev->quirks);
-+
-+		/* Valid LE States quirk for JfP/ThP familiy */
-+		if (ver.hw_variant == 0x11 || ver.hw_variant == 0x12)
-+			set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
-+
-+		/* Setup MSFT Extension support */
-+		btintel_set_msft_opcode(hdev, ver.hw_variant);
-+
- 		err = btintel_bootloader_setup(hdev, &ver);
+diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
+index 8afa85d6eb6a7..ead0114f27c9f 100644
+--- a/drivers/acpi/battery.c
++++ b/drivers/acpi/battery.c
+@@ -53,6 +53,7 @@ static int battery_bix_broken_package;
+ static int battery_notification_delay_ms;
+ static int battery_ac_is_broken;
+ static int battery_check_pmic = 1;
++static int battery_quirk_notcharging;
+ static unsigned int cache_time = 1000;
+ module_param(cache_time, uint, 0644);
+ MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
+@@ -217,6 +218,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
+ 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+ 		else if (acpi_battery_is_charged(battery))
+ 			val->intval = POWER_SUPPLY_STATUS_FULL;
++		else if (battery_quirk_notcharging)
++			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+ 		else
+ 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
  		break;
- 	case 0x17:
+@@ -1111,6 +1114,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
+ 	return 0;
+ }
+ 
++static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
++{
++	battery_quirk_notcharging = 1;
++	return 0;
++}
++
+ static const struct dmi_system_id bat_dmi_table[] __initconst = {
+ 	{
+ 		/* NEC LZ750/LS */
+@@ -1155,6 +1164,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
+ 			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
+ 		},
+ 	},
++	{
++		/*
++		 * On Lenovo ThinkPads the BIOS specification defines
++		 * a state when the bits for charging and discharging
++		 * are both set to 0. That state is "Not Charging".
++		 */
++		.callback = battery_quirk_not_charging,
++		.ident = "Lenovo ThinkPad",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
++		},
++	},
+ 	{},
+ };
+ 
 -- 
 2.34.1
 
