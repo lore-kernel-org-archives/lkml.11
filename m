@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC5FC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21CCAC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386930AbiAXUgI (ORCPT
+        id S1386715AbiAXUfy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:36:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352811AbiAXUOO (ORCPT
+        Mon, 24 Jan 2022 15:35:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54330 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355096AbiAXUNO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:14:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DFEC0604E7;
-        Mon, 24 Jan 2022 11:37:38 -0800 (PST)
+        Mon, 24 Jan 2022 15:13:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1BA07B81235;
-        Mon, 24 Jan 2022 19:37:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3086DC340E5;
-        Mon, 24 Jan 2022 19:37:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 41A4FB8123D;
+        Mon, 24 Jan 2022 20:13:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F542C340E5;
+        Mon, 24 Jan 2022 20:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053055;
-        bh=ql6piuZkCz58r60WoTyFBToaCwhIxWa4iazsS4gyJgk=;
+        s=korg; t=1643055191;
+        bh=WpOyy6PjwGpfsS2pWgBqOag+9MmARwpgbKe9wRIksXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UTOPelgHsgv+A0EOdD3EHSBbBBPMGlBwq4APl20IzMCVFAB3muK8vsdQ1b6rSfis4
-         suDDxQ0+Pe57JAf7Y0XzuXC8R8+IfS7l4oaPNht+IE8mAWUiodJCbZF+ATBKww2Qo8
-         jInuQ4hPjerezC3vWYay/DNn6bu9iMC5mDKaVohY=
+        b=b7cfSma+BTnrKux0BO9qqBEoLquQSER5K7m2zAkdRaRMQfaORFeQIXUQiVH4gDHo+
+         yZspvoUL0MXuIt6kBPTzcFGP18HOI8wG/1B3kHg8ZH6E8sb4FGQ/qikTqLgbGczmL8
+         Q2c+LA9AS8DQpEv0rCSotT4cWXnedfk0A/GqL9cU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.4 261/320] PCI: pci-bridge-emul: Properly mark reserved PCIe bits in PCI config space
-Date:   Mon, 24 Jan 2022 19:44:05 +0100
-Message-Id: <20220124184002.859435416@linuxfoundation.org>
+        stable@vger.kernel.org, Sam Bingner <sam@bingner.com>,
+        Yifeng Li <tomli@tomli.me>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: [PATCH 5.15 069/846] PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
+Date:   Mon, 24 Jan 2022 19:33:06 +0100
+Message-Id: <20220124184103.354813744@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,53 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Yifeng Li <tomli@tomli.me>
 
-commit 7b067ac63a5730d2fae18399fed7e45f23d36912 upstream.
+commit e445375882883f69018aa669b67cbb37ec873406 upstream.
 
-Some bits in PCI config space are reserved when device is PCIe. Properly
-define behavior of PCI registers for PCIe emulated bridge and ensure that
-it would not be possible change these reserved bits.
+Like other SATA controller chips in the Marvell 88SE91xx series, the
+Marvell 88SE9125 has the same DMA requester ID hardware bug that prevents
+it from working under IOMMU.  Add it to the list of devices that need the
+quirk.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-3-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Without this patch, device initialization fails with DMA errors:
+
+  ata8: softreset failed (1st FIS failed)
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Write NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
+  DMAR: DRHD: handling fault status reg 2
+  DMAR: [DMA Read NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
+
+After applying the patch, the controller can be successfully initialized:
+
+  ata8: SATA link up 1.5 Gbps (SStatus 113 SControl 330)
+  ata8.00: ATAPI: PIONEER BD-RW   BDR-207M, 1.21, max UDMA/100
+  ata8.00: configured for UDMA/100
+  scsi 7:0:0:0: CD-ROM            PIONEER  BD-RW   BDR-207M 1.21 PQ: 0 ANSI: 5
+
+Link: https://lore.kernel.org/r/YahpKVR+McJVDdkD@work
+Reported-by: Sam Bingner <sam@bingner.com>
+Tested-by: Sam Bingner <sam@bingner.com>
+Tested-by: Yifeng Li <tomli@tomli.me>
+Signed-off-by: Yifeng Li <tomli@tomli.me>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
+Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
 Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci-bridge-emul.c |   21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/pci/quirks.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -300,6 +300,27 @@ int pci_bridge_emul_init(struct pci_brid
- 			kfree(bridge->pci_regs_behavior);
- 			return -ENOMEM;
- 		}
-+		/* These bits are applicable only for PCI and reserved on PCIe */
-+		bridge->pci_regs_behavior[PCI_CACHE_LINE_SIZE / 4].ro &=
-+			~GENMASK(15, 8);
-+		bridge->pci_regs_behavior[PCI_COMMAND / 4].ro &=
-+			~((PCI_COMMAND_SPECIAL | PCI_COMMAND_INVALIDATE |
-+			   PCI_COMMAND_VGA_PALETTE | PCI_COMMAND_WAIT |
-+			   PCI_COMMAND_FAST_BACK) |
-+			  (PCI_STATUS_66MHZ | PCI_STATUS_FAST_BACK |
-+			   PCI_STATUS_DEVSEL_MASK) << 16);
-+		bridge->pci_regs_behavior[PCI_PRIMARY_BUS / 4].ro &=
-+			~GENMASK(31, 24);
-+		bridge->pci_regs_behavior[PCI_IO_BASE / 4].ro &=
-+			~((PCI_STATUS_66MHZ | PCI_STATUS_FAST_BACK |
-+			   PCI_STATUS_DEVSEL_MASK) << 16);
-+		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].rw &=
-+			~((PCI_BRIDGE_CTL_MASTER_ABORT |
-+			   BIT(8) | BIT(9) | BIT(11)) << 16);
-+		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].ro &=
-+			~((PCI_BRIDGE_CTL_FAST_BACK) << 16);
-+		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].w1c &=
-+			~(BIT(10) << 16);
- 	}
- 
- 	if (flags & PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR) {
+--- a/drivers/pci/quirks.c
++++ b/drivers/pci/quirks.c
+@@ -4103,6 +4103,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_M
+ 			 quirk_dma_func1_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
+ 			 quirk_dma_func1_alias);
++/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c136 */
++DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9125,
++			 quirk_dma_func1_alias);
+ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9128,
+ 			 quirk_dma_func1_alias);
+ /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
 
 
