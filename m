@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFE5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DACB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344969AbiAXTLS (ORCPT
+        id S1346337AbiAXTMe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:11:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34064 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344881AbiAXTDx (ORCPT
+        Mon, 24 Jan 2022 14:12:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60084 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345409AbiAXTDj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:03:53 -0500
+        Mon, 24 Jan 2022 14:03:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B24386090A;
-        Mon, 24 Jan 2022 19:03:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 761EFC340E5;
-        Mon, 24 Jan 2022 19:03:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A87EB81229;
+        Mon, 24 Jan 2022 19:03:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCA47C340E5;
+        Mon, 24 Jan 2022 19:03:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051032;
-        bh=FBpLweNsG17/BrIwf/ySgIu5kDMsZLPCXK62LWBx9Sw=;
+        s=korg; t=1643051016;
+        bh=Z+3gYJluckRbcTIpsFaWUA0l42oo2yBU1kbM0QAyt5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cIvf9fYz/SfW4hm0wYKrVP3sbAyrOwGXqRhmLyB5IkIdtR50DDHtqYYefo6pqCuaY
-         qRZ4wEUBY5FP33xeVyjU1CgQzADzCT/St1qUyzbmN2kQ6cuqUayXjdf+SDRSb3pBQv
-         6QGF5WXUvE2TNl+w4gHog/S4bSDaxKC+oYFZBKdc=
+        b=oom0yE52oZjvL+Pdie9Cf3XdYC/XAWiukDEH7/UVgqGjTN3KD1pirGFmAJFDja+Cb
+         zoNV6KQadAHIscHtAtTlHs9C3ltaov86Y6bO1ZfMkqPp5OIYAt637bF6ISnZD4/rw9
+         YJk+1oLi1e636v3QMic5GvmyZPWDxufKJLKqie+0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gang Li <ligang.bdlg@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.14 031/186] shmem: fix a race between shmem_unused_huge_shrink and shmem_evict_inode
-Date:   Mon, 24 Jan 2022 19:41:46 +0100
-Message-Id: <20220124183938.123752792@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.14 027/186] media: redrat3: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:42 +0100
+Message-Id: <20220124183937.994872985@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -50,172 +47,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gang Li <ligang.bdlg@bytedance.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 62c9827cbb996c2c04f615ecd783ce28bcea894b upstream.
+commit 2adc965c8bfa224e11ecccf9c92fd458c4236428 upstream.
 
-Fix a data race in commit 779750d20b93 ("shmem: split huge pages beyond
-i_size under memory pressure").
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Here are call traces causing race:
-
-   Call Trace 1:
-     shmem_unused_huge_shrink+0x3ae/0x410
-     ? __list_lru_walk_one.isra.5+0x33/0x160
-     super_cache_scan+0x17c/0x190
-     shrink_slab.part.55+0x1ef/0x3f0
-     shrink_node+0x10e/0x330
-     kswapd+0x380/0x740
-     kthread+0xfc/0x130
-     ? mem_cgroup_shrink_node+0x170/0x170
-     ? kthread_create_on_node+0x70/0x70
-     ret_from_fork+0x1f/0x30
-
-   Call Trace 2:
-     shmem_evict_inode+0xd8/0x190
-     evict+0xbe/0x1c0
-     do_unlinkat+0x137/0x330
-     do_syscall_64+0x76/0x120
-     entry_SYSCALL_64_after_hwframe+0x3d/0xa2
-
-A simple explanation:
-
-Image there are 3 items in the local list (@list).  In the first
-traversal, A is not deleted from @list.
-
-  1)    A->B->C
-        ^
-        |
-        pos (leave)
-
-In the second traversal, B is deleted from @list.  Concurrently, A is
-deleted from @list through shmem_evict_inode() since last reference
-counter of inode is dropped by other thread.  Then the @list is corrupted.
-
-  2)    A->B->C
-        ^  ^
-        |  |
-     evict pos (drop)
-
-We should make sure the inode is either on the global list or deleted from
-any local list before iput().
-
-Fixed by moving inodes back to global list before we put them.
-
-[akpm@linux-foundation.org: coding style fixes]
-
-Link: https://lkml.kernel.org/r/20211125064502.99983-1-ligang.bdlg@bytedance.com
-Fixes: 779750d20b93 ("shmem: split huge pages beyond i_size under memory pressure")
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/shmem.c |   37 +++++++++++++++++++++----------------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ drivers/media/rc/redrat3.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -450,7 +450,7 @@ static unsigned long shmem_unused_huge_s
- 	struct shmem_inode_info *info;
- 	struct page *page;
- 	unsigned long batch = sc ? sc->nr_to_scan : 128;
--	int removed = 0, split = 0;
-+	int split = 0;
+--- a/drivers/media/rc/redrat3.c
++++ b/drivers/media/rc/redrat3.c
+@@ -415,7 +415,7 @@ static int redrat3_send_cmd(int cmd, str
+ 	udev = rr3->udev;
+ 	res = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0), cmd,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      0x0000, 0x0000, data, sizeof(u8), HZ * 10);
++			      0x0000, 0x0000, data, sizeof(u8), 10000);
  
- 	if (list_empty(&sbinfo->shrinklist))
- 		return SHRINK_STOP;
-@@ -465,7 +465,6 @@ static unsigned long shmem_unused_huge_s
- 		/* inode is about to be evicted */
- 		if (!inode) {
- 			list_del_init(&info->shrinklist);
--			removed++;
- 			goto next;
- 		}
+ 	if (res < 0) {
+ 		dev_err(rr3->dev, "%s: Error sending rr3 cmd res %d, data %d",
+@@ -491,7 +491,7 @@ static u32 redrat3_get_timeout(struct re
+ 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
+ 	ret = usb_control_msg(rr3->udev, pipe, RR3_GET_IR_PARAM,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, HZ * 5);
++			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, 5000);
+ 	if (ret != len)
+ 		dev_warn(rr3->dev, "Failed to read timeout from hardware\n");
+ 	else {
+@@ -521,7 +521,7 @@ static int redrat3_set_timeout(struct rc
+ 	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), RR3_SET_IR_PARAM,
+ 		     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+ 		     RR3_IR_IO_SIG_TIMEOUT, 0, timeout, sizeof(*timeout),
+-		     HZ * 25);
++		     25000);
+ 	dev_dbg(dev, "set ir parm timeout %d ret 0x%02x\n",
+ 						be32_to_cpu(*timeout), ret);
  
-@@ -473,12 +472,12 @@ static unsigned long shmem_unused_huge_s
- 		if (round_up(inode->i_size, PAGE_SIZE) ==
- 				round_up(inode->i_size, HPAGE_PMD_SIZE)) {
- 			list_move(&info->shrinklist, &to_remove);
--			removed++;
- 			goto next;
- 		}
+@@ -553,32 +553,32 @@ static void redrat3_reset(struct redrat3
+ 	*val = 0x01;
+ 	rc = usb_control_msg(udev, rxpipe, RR3_RESET,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			     RR3_CPUCS_REG_ADDR, 0, val, len, HZ * 25);
++			     RR3_CPUCS_REG_ADDR, 0, val, len, 25000);
+ 	dev_dbg(dev, "reset returned 0x%02x\n", rc);
  
- 		list_move(&info->shrinklist, &list);
- next:
-+		sbinfo->shrinklist_len--;
- 		if (!--batch)
- 			break;
- 	}
-@@ -498,7 +497,7 @@ next:
- 		inode = &info->vfs_inode;
+ 	*val = length_fuzz;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, HZ * 25);
++			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm len fuzz %d rc 0x%02x\n", *val, rc);
  
- 		if (nr_to_split && split >= nr_to_split)
--			goto leave;
-+			goto move_back;
+ 	*val = (65536 - (minimum_pause * 2000)) / 256;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_MIN_PAUSE, 0, val, len, HZ * 25);
++			     RR3_IR_IO_MIN_PAUSE, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm min pause %d rc 0x%02x\n", *val, rc);
  
- 		page = find_get_page(inode->i_mapping,
- 				(inode->i_size & HPAGE_PMD_MASK) >> PAGE_SHIFT);
-@@ -512,38 +511,44 @@ next:
- 		}
+ 	*val = periods_measure_carrier;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_PERIODS_MF, 0, val, len, HZ * 25);
++			     RR3_IR_IO_PERIODS_MF, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm periods measure carrier %d rc 0x%02x", *val,
+ 									rc);
  
- 		/*
--		 * Leave the inode on the list if we failed to lock
--		 * the page at this time.
-+		 * Move the inode on the list back to shrinklist if we failed
-+		 * to lock the page at this time.
- 		 *
- 		 * Waiting for the lock may lead to deadlock in the
- 		 * reclaim path.
- 		 */
- 		if (!trylock_page(page)) {
- 			put_page(page);
--			goto leave;
-+			goto move_back;
- 		}
+ 	*val = RR3_DRIVER_MAXLENS;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, HZ * 25);
++			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm max lens %d rc 0x%02x\n", *val, rc);
  
- 		ret = split_huge_page(page);
- 		unlock_page(page);
- 		put_page(page);
+ 	kfree(val);
+@@ -596,7 +596,7 @@ static void redrat3_get_firmware_rev(str
+ 	rc = usb_control_msg(rr3->udev, usb_rcvctrlpipe(rr3->udev, 0),
+ 			     RR3_FW_VERSION,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			     0, 0, buffer, RR3_FW_VERSION_LEN, HZ * 5);
++			     0, 0, buffer, RR3_FW_VERSION_LEN, 5000);
  
--		/* If split failed leave the inode on the list */
-+		/* If split failed move the inode on the list back to shrinklist */
- 		if (ret)
--			goto leave;
-+			goto move_back;
+ 	if (rc >= 0)
+ 		dev_info(rr3->dev, "Firmware rev: %s", buffer);
+@@ -836,14 +836,14 @@ static int redrat3_transmit_ir(struct rc
  
- 		split++;
- drop:
- 		list_del_init(&info->shrinklist);
--		removed++;
--leave:
-+		goto put;
-+move_back:
-+		/*
-+		 * Make sure the inode is either on the global list or deleted
-+		 * from any local list before iput() since it could be deleted
-+		 * in another thread once we put the inode (then the local list
-+		 * is corrupted).
-+		 */
-+		spin_lock(&sbinfo->shrinklist_lock);
-+		list_move(&info->shrinklist, &sbinfo->shrinklist);
-+		sbinfo->shrinklist_len++;
-+		spin_unlock(&sbinfo->shrinklist_lock);
-+put:
- 		iput(inode);
- 	}
+ 	pipe = usb_sndbulkpipe(rr3->udev, rr3->ep_out->bEndpointAddress);
+ 	ret = usb_bulk_msg(rr3->udev, pipe, irdata,
+-			    sendbuf_len, &ret_len, 10 * HZ);
++			    sendbuf_len, &ret_len, 10000);
+ 	dev_dbg(dev, "sent %d bytes, (ret %d)\n", ret_len, ret);
  
--	spin_lock(&sbinfo->shrinklist_lock);
--	list_splice_tail(&list, &sbinfo->shrinklist);
--	sbinfo->shrinklist_len -= removed;
--	spin_unlock(&sbinfo->shrinklist_lock);
--
- 	return split;
- }
+ 	/* now tell the hardware to transmit what we sent it */
+ 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
+ 	ret = usb_control_msg(rr3->udev, pipe, RR3_TX_SEND_SIGNAL,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      0, 0, irdata, 2, HZ * 10);
++			      0, 0, irdata, 2, 10000);
  
+ 	if (ret < 0)
+ 		dev_err(dev, "Error: control msg send failed, rc %d\n", ret);
 
 
