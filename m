@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 321C7C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C7CFC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452713AbiAXV0Q (ORCPT
+        id S1452283AbiAXVY3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51470 "EHLO
+        Mon, 24 Jan 2022 16:24:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50862 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444251AbiAXVAb (ORCPT
+        with ESMTP id S1353026AbiAXU6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:00:31 -0500
+        Mon, 24 Jan 2022 15:58:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A09AB61320;
-        Mon, 24 Jan 2022 21:00:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 820B1C340E5;
-        Mon, 24 Jan 2022 21:00:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5CEC61365;
+        Mon, 24 Jan 2022 20:58:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90921C340E5;
+        Mon, 24 Jan 2022 20:58:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058030;
-        bh=fH45R+ON9VtofQLm2ZUtUvYmVRrVZ/+s/iF2FwrMnWw=;
+        s=korg; t=1643057884;
+        bh=RO+5N/zhRhahqWndNfd+YsjyavI19TV9eMuwRXShToo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aM0r7OA3fNQxv+OS44+WIQSfqyRgk7S0h9kqfVFDgGhWnj4GWwGjJPF/Shco50pjF
-         cIsf4jPLwQ12gm2Uff/l6rBmkG6XsH7zmJVQzJTZn11/rT0q0BGME2D1PsoBRTZN22
-         RPFPRXDKPsr9dACznJiY3t+I8PQFK5eARywtwM1I=
+        b=TIFpWiSCkkbm9r38mtPAp7mSTovnYEy7aKVudpVvgeOluvHWCW+B/D7GvcqnY2M5z
+         GuTKR2dFSMExAQixtP3U9J/xtGdorTkHgZw9mXP91uTdARIMYyCrTKxJ6BEanVeMgP
+         Kpq3bfuaq0mKHDlnU7i2/SUbNElUN3Vxr58ixcRk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0125/1039] media: atomisp: fix inverted error check for ia_css_mipi_is_source_port_valid()
-Date:   Mon, 24 Jan 2022 19:31:54 +0100
-Message-Id: <20220124184129.346371798@linuxfoundation.org>
+Subject: [PATCH 5.16 0110/1039] libbpf: Free up resources used by inner map definition
+Date:   Mon, 24 Jan 2022 19:31:39 +0100
+Message-Id: <20220124184128.836185058@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,76 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit d21ce8c2f7bf6d737b60c09f86db141b9e8e47f0 ]
+[ Upstream commit 8f7b239ea8cfdc8e64c875ee417fed41431a1f37 ]
 
-The function ia_css_mipi_is_source_port_valid() returns true if the port
-is valid. So, we can't use the existing err variable as is.
+It's not enough to just free(map->inner_map), as inner_map itself can
+have extra memory allocated, like map name.
 
-To fix this issue while reusing that variable, invert the return value
-when assigning it to the variable.
-
-Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 646f02ffdd49 ("libbpf: Add BTF-defined map-in-map support")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-3-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/sh_css_mipi.c   | 24 ++++++++++++-------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ tools/lib/bpf/libbpf.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-index 65fc93c5d56bc..c1f2f6151c5f8 100644
---- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-@@ -423,10 +423,12 @@ allocate_mipi_frames(struct ia_css_pipe *pipe,
- 		return 0; /* AM TODO: Check  */
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 5367bc8e52073..509f3719409bb 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -9028,7 +9028,10 @@ int bpf_map__set_inner_map_fd(struct bpf_map *map, int fd)
+ 		pr_warn("error: inner_map_fd already specified\n");
+ 		return libbpf_err(-EINVAL);
  	}
- 
--	if (!IS_ISP2401)
-+	if (!IS_ISP2401) {
- 		port = (unsigned int)pipe->stream->config.source.port.port;
--	else
--		err = ia_css_mipi_is_source_port_valid(pipe, &port);
-+	} else {
-+		/* Returns true if port is valid. So, invert it */
-+		err = !ia_css_mipi_is_source_port_valid(pipe, &port);
+-	zfree(&map->inner_map);
++	if (map->inner_map) {
++		bpf_map__destroy(map->inner_map);
++		zfree(&map->inner_map);
 +	}
- 
- 	assert(port < N_CSI_PORTS);
- 
-@@ -553,10 +555,12 @@ free_mipi_frames(struct ia_css_pipe *pipe)
- 			return err;
- 		}
- 
--		if (!IS_ISP2401)
-+		if (!IS_ISP2401) {
- 			port = (unsigned int)pipe->stream->config.source.port.port;
--		else
--			err = ia_css_mipi_is_source_port_valid(pipe, &port);
-+		} else {
-+			/* Returns true if port is valid. So, invert it */
-+			err = !ia_css_mipi_is_source_port_valid(pipe, &port);
-+		}
- 
- 		assert(port < N_CSI_PORTS);
- 
-@@ -665,10 +669,12 @@ send_mipi_frames(struct ia_css_pipe *pipe)
- 		/* TODO: AM: maybe this should be returning an error. */
- 	}
- 
--	if (!IS_ISP2401)
-+	if (!IS_ISP2401) {
- 		port = (unsigned int)pipe->stream->config.source.port.port;
--	else
--		err = ia_css_mipi_is_source_port_valid(pipe, &port);
-+	} else {
-+		/* Returns true if port is valid. So, invert it */
-+		err = !ia_css_mipi_is_source_port_valid(pipe, &port);
-+	}
- 
- 	assert(port < N_CSI_PORTS);
- 
+ 	map->inner_map_fd = fd;
+ 	return 0;
+ }
 -- 
 2.34.1
 
