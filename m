@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF349C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE0FC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421704AbiAYC1d (ORCPT
+        id S3421677AbiAYC1a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33974 "EHLO
+        Mon, 24 Jan 2022 21:27:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33768 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349172AbiAXUHM (ORCPT
+        with ESMTP id S1378349AbiAXUGy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:07:12 -0500
+        Mon, 24 Jan 2022 15:06:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B906131D;
-        Mon, 24 Jan 2022 20:07:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83EFFC340E5;
-        Mon, 24 Jan 2022 20:07:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6CBA6131E;
+        Mon, 24 Jan 2022 20:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DFFC340E5;
+        Mon, 24 Jan 2022 20:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054831;
-        bh=bTFoX/N6uoPeZfsGy7J1VXRKpnYHbB47AS5vmroa+hU=;
+        s=korg; t=1643054813;
+        bh=X8v3YWVXZicOC7ikzRWWDSDNRdYKZm6bnipEV3B3dsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0e67oGZvX7TN207OLwdKmtS5tHUErLOlU4wRRl48B/6ntRMp/RDlY0trDrDpYW3bK
-         d0rw2ArRXY5AbWqTSXU6wzHjF1CoI36B6j4pXZ1hm7vba1Jr69FET8dajqZRwwxwhk
-         0edQpd4Z0laz/KMG/vhY81O2GcbFF0wkwwL2cWKQ=
+        b=PsZa9qXJn7KnMaDKo0SuZi5V2Fq+Ph5k035jOPgyAYxE7DEhak1yoj38a5RUJqACc
+         eNyp34qJMH2rNgKGCHNa2vapK6eZUgLPbeicnSFkoVJdJZOgw7KerS0OrkWB9jDgmx
+         RuBvjIVMeQwhGqXHsH8KCe8HkPeCRO2QPmF8QSuc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Stephen Boyd <sboyd@kernel.org>
-Subject: [PATCH 5.10 517/563] clk: Emit a stern warning with writable debugfs enabled
-Date:   Mon, 24 Jan 2022 19:44:42 +0100
-Message-Id: <20220124184042.331859164@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 512/563] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
+Date:   Mon, 24 Jan 2022 19:44:37 +0100
+Message-Id: <20220124184042.167854518@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,51 +46,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <sboyd@kernel.org>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-commit 489a71964f9d74e697a12cd0ace20ed829eb1f93 upstream.
+commit 3f7c239c7844d2044ed399399d97a5f1c6008e1b upstream.
 
-We don't want vendors to be enabling this part of the clk code and
-shipping it to customers. Exposing the ability to change clk frequencies
-and parents via debugfs is potentially damaging to the system if folks
-don't know what they're doing. Emit a strong warning so that the message
-is clear: don't enable this outside of development systems.
+As reported by sparse: In the remove path, the driver would attempt to
+unmap its own priv pointer - instead of the io memory that it mapped
+in probe.
 
-Fixes: 37215da5553e ("clk: Add support for setting clk_rate via debugfs")
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Link: https://lore.kernel.org/r/20211210014237.2130300-1-sboyd@kernel.org
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/clk.c |   18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ drivers/net/ethernet/freescale/xgmac_mdio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/clk/clk.c
-+++ b/drivers/clk/clk.c
-@@ -3314,6 +3314,24 @@ static int __init clk_debug_init(void)
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -320,9 +320,10 @@ err_ioremap:
+ static int xgmac_mdio_remove(struct platform_device *pdev)
  {
- 	struct clk_core *core;
+ 	struct mii_bus *bus = platform_get_drvdata(pdev);
++	struct mdio_fsl_priv *priv = bus->priv;
  
-+#ifdef CLOCK_ALLOW_WRITE_DEBUGFS
-+	pr_warn("\n");
-+	pr_warn("********************************************************************\n");
-+	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("**  WRITEABLE clk DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("** This means that this kernel is built to expose clk operations  **\n");
-+	pr_warn("** such as parent or rate setting, enabling, disabling, etc.      **\n");
-+	pr_warn("** to userspace, which may compromise security on your system.    **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("** If you see this message and you are not debugging the          **\n");
-+	pr_warn("** kernel, report this immediately to your vendor!                **\n");
-+	pr_warn("**                                                                **\n");
-+	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
-+	pr_warn("********************************************************************\n");
-+#endif
-+
- 	rootdir = debugfs_create_dir("clk", NULL);
+ 	mdiobus_unregister(bus);
+-	iounmap(bus->priv);
++	iounmap(priv->mdio_base);
+ 	mdiobus_free(bus);
  
- 	debugfs_create_file("clk_summary", 0444, rootdir, &all_lists,
+ 	return 0;
 
 
