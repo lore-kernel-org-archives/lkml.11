@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC34C4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D25C35272
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383186AbiAXU0z (ORCPT
+        id S1383167AbiAXU0y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54838 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347509AbiAXT6b (ORCPT
+        Mon, 24 Jan 2022 15:26:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44306 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347497AbiAXT6k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:58:31 -0500
+        Mon, 24 Jan 2022 14:58:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D086660B02;
-        Mon, 24 Jan 2022 19:58:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA024C340E5;
-        Mon, 24 Jan 2022 19:58:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91783B80FA1;
+        Mon, 24 Jan 2022 19:58:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC051C340E5;
+        Mon, 24 Jan 2022 19:58:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054305;
-        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
+        s=korg; t=1643054317;
+        bh=9Df3ZJ+2b4VOrSeXn0WahFNQGHuymqCiY1adXrjqDfY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QuN7KRleVxvKtb7ekSR5PDdUAomPSZdo42sXLDwVXaLHqz9UnLfGECrrvhNX+PglG
-         +I9EIGTRC3QbanLPz7HQhvTKTinlpZZONvvtGkw6RP7eNseoxte+2Lv3zIvFD5Y5eh
-         f1g/qEnAdfQ3HQqXOweuH4DoT7b1R+HLqsc9rCO8=
+        b=AijO7NF/AVB/IWqp5HTh0IwZnGmnsmELso+sUzQ0F7mvE2UaGtrm1ciOYAdJ8d/Tc
+         IJ4txUkQPGAcHL2EMnQKOusgcSUOSGO+cxcHFagitBXul3KqXDbiX7CRotXnaI3Ur/
+         927CSLflZv1HCwPW4cPxQxr/8ek+tvI5wa4+voBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rkardell@mida.se,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Shaul Triebitz <shaul.triebitz@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 345/563] media: m920x: dont use stack on USB reads
-Date:   Mon, 24 Jan 2022 19:41:50 +0100
-Message-Id: <20220124184036.351610038@linuxfoundation.org>
+Subject: [PATCH 5.10 348/563] iwlwifi: mvm: avoid clearing a just saved session protection id
+Date:   Mon, 24 Jan 2022 19:41:53 +0100
+Message-Id: <20220124184036.441853434@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,57 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Shaul Triebitz <shaul.triebitz@intel.com>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit 8e967c137df3b236d2075f9538cb888129425d1a ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+When scheduling a session protection the id is saved but
+then it may be cleared when calling iwl_mvm_te_clear_data
+(if a previous session protection is currently active).
+Fix it by saving the id after calling iwl_mvm_te_clear_data.
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
-
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204130722.b0743a588d14.I098fef6677d0dab3ef1b6183ed206a10bab01eb2@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index 4bb5b82599a79..691e05833db19 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
-+
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index a633ad5f8ca4e..3f081cdea09ca 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -1166,15 +1166,10 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
+ 							mvmvif->color)),
+ 		.action = cpu_to_le32(FW_CTXT_ACTION_ADD),
++		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
+ 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
+ 	};
  
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
-+
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
+-	/* The time_event_data.id field is reused to save session
+-	 * protection's configuration.
+-	 */
+-	mvmvif->time_event_data.id = SESSION_PROTECT_CONF_ASSOC;
+-	cmd.conf_id = cpu_to_le32(mvmvif->time_event_data.id);
+-
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+ 	spin_lock_bh(&mvm->time_event_lock);
+@@ -1188,6 +1183,11 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 	}
+ 
+ 	iwl_mvm_te_clear_data(mvm, te_data);
++	/*
++	 * The time_event_data.id field is reused to save session
++	 * protection's configuration.
++	 */
++	te_data->id = le32_to_cpu(cmd.conf_id);
+ 	te_data->duration = le32_to_cpu(cmd.duration_tu);
+ 	spin_unlock_bh(&mvm->time_event_lock);
+ 
 -- 
 2.34.1
 
