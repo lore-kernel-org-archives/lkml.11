@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BDBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F836C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345944AbiAXTEt (ORCPT
+        id S1345986AbiAXTEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:04:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56764 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343972AbiAXS5o (ORCPT
+        Mon, 24 Jan 2022 14:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344554AbiAXS6D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:44 -0500
+        Mon, 24 Jan 2022 13:58:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07FD6C0613E8;
+        Mon, 24 Jan 2022 10:55:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2B361571;
-        Mon, 24 Jan 2022 18:57:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C2F0C340E5;
-        Mon, 24 Jan 2022 18:57:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B85CAB8122C;
+        Mon, 24 Jan 2022 18:55:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C696FC340E5;
+        Mon, 24 Jan 2022 18:55:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050663;
-        bh=Qjjcms0dCT2MCUurdm3bONYYlLGmNucgLwcM9IbxerE=;
+        s=korg; t=1643050530;
+        bh=6eJMNFLC4J4YXEf8UTR8rPyP5Sm6y2D30rxDWjAaccU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LCpIuFmHfdgEV/6wEf6JytC1c0lRO8d7n+/UA4TOT7GFxRp+zuwi1p83Pbk6EPrnI
-         HHNUSJL75ibyQWQKQLyH4RPETIAUPHxu1gs+Xlj/Lz8SaU9GwVSH4qOchzQfm18nl7
-         OkkxRmsuzPP4ii83/j9Yzy0naN+NcLoXvts1UnQM=
+        b=RlLBnA6vHwwoO2gTXb6t8kzAqOnlnN1xMYgnqz+guPypnl4xrautXQE11f+mA86Q4
+         P15imPggJTp68hERIggNIaEIozQ6ytpegSr1Y5opRb1P026QIGKtZsBlzzE6W+QPYB
+         yjRjxpIl2st27GJkxbnuWZH9/6bMAmSv6ecnxbUo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 072/157] RDMA/cxgb4: Set queue pair state when being queried
-Date:   Mon, 24 Jan 2022 19:42:42 +0100
-Message-Id: <20220124183935.077018026@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Subject: [PATCH 4.9 031/157] Bluetooth: stop proccessing malicious adv data
+Date:   Mon, 24 Jan 2022 19:42:01 +0100
+Message-Id: <20220124183933.790385755@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -48,35 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit e375b9c92985e409c4bb95dd43d34915ea7f5e28 ]
+[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
 
-The API for ib_query_qp requires the driver to set cur_qp_state on return,
-add the missing set.
+Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
+problem was in missing validaion check.
 
-Fixes: 67bbc05512d8 ("RDMA/cxgb4: Add query_qp support")
-Link: https://lore.kernel.org/r/20211220152530.60399-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+We should check if data is not malicious and we can read next data block.
+If we won't check ptr validness, code can read a way beyond skb->end and
+it can cause problems, of course.
+
+Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
+Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/cxgb4/qp.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/bluetooth/hci_event.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/cxgb4/qp.c b/drivers/infiniband/hw/cxgb4/qp.c
-index 87bc7b0db892b..2eeac8401c927 100644
---- a/drivers/infiniband/hw/cxgb4/qp.c
-+++ b/drivers/infiniband/hw/cxgb4/qp.c
-@@ -1974,6 +1974,7 @@ int c4iw_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
- 	memset(attr, 0, sizeof *attr);
- 	memset(init_attr, 0, sizeof *init_attr);
- 	attr->qp_state = to_ib_qp_state(qhp->attr.state);
-+	attr->cur_qp_state = to_ib_qp_state(qhp->attr.state);
- 	init_attr->cap.max_send_wr = qhp->attr.sq_num_entries;
- 	init_attr->cap.max_recv_wr = qhp->attr.rq_num_entries;
- 	init_attr->cap.max_send_sge = qhp->attr.sq_max_sges;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index f9484755a9baf..17cfd9f8e98e0 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4967,7 +4967,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
+ 
+-		if (ev->length <= HCI_MAX_AD_LENGTH) {
++		if (ev->length <= HCI_MAX_AD_LENGTH &&
++		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+ 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+ 					   ev->bdaddr_type, NULL, 0, rssi,
+@@ -4977,6 +4978,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		}
+ 
+ 		ptr += sizeof(*ev) + ev->length + 1;
++
++		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
++			break;
++		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 -- 
 2.34.1
 
