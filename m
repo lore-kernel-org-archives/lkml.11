@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E789C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768D4C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575106AbiAXVvC (ORCPT
+        id S1575148AbiAXVvF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:51:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38556 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449430AbiAXVPe (ORCPT
+        Mon, 24 Jan 2022 16:51:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35796 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449526AbiAXVPp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:15:34 -0500
+        Mon, 24 Jan 2022 16:15:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B57A61425;
-        Mon, 24 Jan 2022 21:15:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 620D0C340E4;
-        Mon, 24 Jan 2022 21:15:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 88CAEB80FA1;
+        Mon, 24 Jan 2022 21:15:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AEA95C340E4;
+        Mon, 24 Jan 2022 21:15:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058933;
-        bh=LQqVUSu1kkMBojTaP0fomJ/poZ8XZ9pus7ucI9OB5X4=;
+        s=korg; t=1643058942;
+        bh=zBpNwWKSqsso1OByKSC4HcnXg0qiDGwuZ+0URWSstR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zi39S5m2cQmLfiRRHAxn3iAVwFaiJIXnRxHWwF3Lm9e/7qo+ukzNm1ExSGKt7DidL
-         wqet9t1JQutt6osp3f9rw7biwthZa7MzlSUkxtKKPnGGhJwIhJR7I0K2roFjffIHzQ
-         mr40cHgqg8UP7k6184Fu5CzywMGc3aRCz6Av0qCE=
+        b=qvOMz2ni0JUC9fmp9eTnnhM3yWbO2iSo8UnaP2EEsHG/jE3H5a8X00k7VeRPev02z
+         Akh9D8MZSGCEClY/sPXOSAlxS0/q5rYmJpzGXXBi5ZE33CugKmo7nbHjgFOexu/Zfo
+         mtkVZCmFavhAtBtsrm8Gg7B1VPXgR0ZCmr9B4/Vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0450/1039] RDMA/hns: Validate the pkey index
-Date:   Mon, 24 Jan 2022 19:37:19 +0100
-Message-Id: <20220124184140.421187760@linuxfoundation.org>
+Subject: [PATCH 5.16 0453/1039] clk: renesas: rzg2l: propagate return value of_genpd_add_provider_simple()
+Date:   Mon, 24 Jan 2022 19:37:22 +0100
+Message-Id: <20220124184140.528054004@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,35 +48,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
+[ Upstream commit 33748744f15a110a233b6ae0380f476006e770f0 ]
 
-Before query pkey, make sure that the queried index is valid.
+of_genpd_add_provider_simple() might fail, this patch makes sure we check
+the return value of of_genpd_add_provider_simple() by propagating the
+return value to the caller of rzg2l_cpg_add_clk_domain().
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: ef3c613ccd68a ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20211117115101.28281-3-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/clk/renesas/rzg2l-cpg.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
-index 4194b626f3c65..8233bec053ee3 100644
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -270,6 +270,9 @@ static enum rdma_link_layer hns_roce_get_link_layer(struct ib_device *device,
- static int hns_roce_query_pkey(struct ib_device *ib_dev, u32 port, u16 index,
- 			       u16 *pkey)
- {
-+	if (index > 0)
-+		return -EINVAL;
-+
- 	*pkey = PKEY_ID;
+diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
+index 4f04ff57d468a..aafd1879ff562 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.c
++++ b/drivers/clk/renesas/rzg2l-cpg.c
+@@ -878,8 +878,7 @@ static int __init rzg2l_cpg_add_clk_domain(struct device *dev)
+ 	if (ret)
+ 		return ret;
  
- 	return 0;
+-	of_genpd_add_provider_simple(np, genpd);
+-	return 0;
++	return of_genpd_add_provider_simple(np, genpd);
+ }
+ 
+ static int __init rzg2l_cpg_probe(struct platform_device *pdev)
 -- 
 2.34.1
 
