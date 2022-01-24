@@ -2,78 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D1CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F9DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:54:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245671AbiAXSyN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:13 -0500
-Received: from mail-qk1-f174.google.com ([209.85.222.174]:43606 "EHLO
-        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245656AbiAXSw1 (ORCPT
+        id S1344302AbiAXSyP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:54:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51594 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245665AbiAXSw3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:27 -0500
-Received: by mail-qk1-f174.google.com with SMTP id h2so21394780qkp.10;
-        Mon, 24 Jan 2022 10:52:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JVltL7XfUr78OBdyLqEqOu/YRzCA0cEoywdSG9wAfwo=;
-        b=QJ58ryjU0BQnhokNxWiSvx9LVJwvpRNeTjeCa7g5uqbTy6E9pv4SzezeQnGTPQcvYm
-         QQgaIWSpdt/RWwmso62q/DYncSFGhGGOJDQcPLiwqvy/X8ucaeyM8sAguAMXYjX5WH8V
-         +FP/z9eeimYBcPQUsRAJxiWRYGOOts4wBFoKeuHADnfTwnGpAgY5QdrgKI2zhaLcEkgJ
-         fNOm17Fze2vFZPl7Gx+vU6mWOzbhmA0MYXWYNjJXD2Fy0MwytP904gXmZ+GVLAsjn34x
-         zYEQVjdBrIVpxAHKO1IXyFtQO9j+3uNqTqwgX2O9CqTiNfygiLvxE5OjvUuga8IXiWz+
-         MdFA==
-X-Gm-Message-State: AOAM5328EF22RW5au7gQUBSdOKnMVMs4/R7IOtYCmclHB/6PYcievHFn
-        h0eIp75pgzzLfbS8pASIQ5NN0Q9JL3KtqqxW23w=
-X-Google-Smtp-Source: ABdhPJx7TK2MvPwVSaAnSh01KupVk1iv0Pp7EXSDqNuAkHni9KT1XFQY2XONmQZbwXzKfAEkNwUa4j5bzUrEm8hJr20=
-X-Received: by 2002:a05:620a:1a97:: with SMTP id bl23mr12176564qkb.621.1643050346792;
- Mon, 24 Jan 2022 10:52:26 -0800 (PST)
+        Mon, 24 Jan 2022 13:52:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAFED614DF;
+        Mon, 24 Jan 2022 18:52:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83D0EC340E5;
+        Mon, 24 Jan 2022 18:52:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643050348;
+        bh=eiYg0iM2iJ3C43B6e4lYIqT+CDmMTJ/3boG0NTD4FaI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eKYDSkeUscFojejx/b4ViOJ1bFrFE7TuVfrH1GHK3c3XE+RR8mzG8oafhfucdhRCd
+         MlsUDElLo6Tz/GeUWbV7xW9Xtp+MOzgSSngVFnJtfgR6XDYZWsU5qKxPD3csCmnx1d
+         pirIvmXJlk1z2dPSu68gxtAXpJeyZyNsgctXMDLo=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 056/114] RDMA/cxgb4: Set queue pair state when being queried
+Date:   Mon, 24 Jan 2022 19:42:31 +0100
+Message-Id: <20220124183928.833978329@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
+References: <20220124183927.095545464@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220111103346.2660639-1-abailon@baylibre.com> <7hilu9xe7n.fsf@baylibre.com>
-In-Reply-To: <7hilu9xe7n.fsf@baylibre.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 24 Jan 2022 19:52:11 +0100
-Message-ID: <CAJZ5v0gZFBEKDt6S0H91F5xCjC3qtT6B+cTnv6u1nijMHkc8jA@mail.gmail.com>
-Subject: Re: [PATCH v4 RESEND 0/2] Add a generic virtual thermal sensor
-To:     Kevin Hilman <khilman@baylibre.com>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ben.tseng@mediatek.com, Matthias Kaehlcke <mka@chromium.org>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 5:58 PM Kevin Hilman <khilman@baylibre.com> wrote:
->
-> Daniel, Amit,
->
-> Alexandre Bailon <abailon@baylibre.com> writes:
->
-> > This series add a virtual thermal sensor.
-> > It could be used to get a temperature using some thermal sensors.
-> > Currently, the supported operations are max, min and avg.
-> > The virtual sensor could be easily extended to support others operations.
-> >
-> > Changes in v2:
-> > - Fix some warnings / errors reported by kernel test robot
-> > - rename some struct and functions with a more accurate name
-> > - update the dt bindings: rename type attribute to aggregation-function
-> > - factorize a little bit the aggregation functions
-> > Changes in v3:
-> > - Aggregate thermal zone instead of thermal sensors
-> > - Use try_get_module / put_module to prevent thermal providers to be removed
-> > - Update the bindings, to be more accurate
-> > Changes in v4:
-> > - Fix two warnings reported by kernel test robot
->
-> Any more feedback on this series?
+From: Kamal Heib <kamalheib1@gmail.com>
 
-Hopefully, I'll get to it this week and I'll let you know.
+[ Upstream commit e375b9c92985e409c4bb95dd43d34915ea7f5e28 ]
+
+The API for ib_query_qp requires the driver to set cur_qp_state on return,
+add the missing set.
+
+Fixes: 67bbc05512d8 ("RDMA/cxgb4: Add query_qp support")
+Link: https://lore.kernel.org/r/20211220152530.60399-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/infiniband/hw/cxgb4/qp.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/infiniband/hw/cxgb4/qp.c b/drivers/infiniband/hw/cxgb4/qp.c
+index 67e4002bd776e..31a8119685114 100644
+--- a/drivers/infiniband/hw/cxgb4/qp.c
++++ b/drivers/infiniband/hw/cxgb4/qp.c
+@@ -1896,6 +1896,7 @@ int c4iw_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
+ 	memset(attr, 0, sizeof *attr);
+ 	memset(init_attr, 0, sizeof *init_attr);
+ 	attr->qp_state = to_ib_qp_state(qhp->attr.state);
++	attr->cur_qp_state = to_ib_qp_state(qhp->attr.state);
+ 	init_attr->cap.max_send_wr = qhp->attr.sq_num_entries;
+ 	init_attr->cap.max_recv_wr = qhp->attr.rq_num_entries;
+ 	init_attr->cap.max_send_sge = qhp->attr.sq_max_sges;
+-- 
+2.34.1
+
+
+
