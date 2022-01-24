@@ -2,107 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C3CBC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8D1C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422583AbiAYCbj (ORCPT
+        id S3422559AbiAYCbf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35740 "EHLO
+        Mon, 24 Jan 2022 21:31:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348791AbiAXUTX (ORCPT
+        with ESMTP id S1347413AbiAXUTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:19:23 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA20C07597F
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:38:57 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id e81so27161877oia.6
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:38:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=kwkbTwrBzC5jE9f2nafUwAahS6VU0ATjJ7MFCgX616c=;
-        b=mWzdzA6qhipKU0Y435He/wNbJHmgEgP9OP8ykZrxXsJZKtUyYKTa7HDaY/sn7/3hw/
-         t4JkQkLEWBIXqUzmazVAIkbKn2Pq2GhSbf5eHq211Qwc0uXY8RLYXjjyKX5W2LC+pqQZ
-         2QA1rTJe5w1qbfpd9/fp2/IL7+zE8+duxtWtA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=kwkbTwrBzC5jE9f2nafUwAahS6VU0ATjJ7MFCgX616c=;
-        b=5H5nt8HGBfBR3Kdip6TwoEtH+9rRs0HSt7YmSPh4V/JBSQhYSuSa2F0nJtakf/O3Qv
-         kLkUpD1X9aW7PxrV3Vr1sDnQ+NO3KStJC+y4lMH7jsSoIjpzhTf8b1PfPc5KvUbo9BDI
-         lpV8Fiq+liX7IMCCIjPqpCjeMn4RTOXLjXyE35m1j28Tm6A/LZt/veAiBGwb7Rz4DVlM
-         UeMW5uw1+VBAkylo7+BypERO/o9UC486EHcdQPLPNPfaQefJ3tI9o1PFJdRWs80nJVhi
-         OM8qq0gH8XGTVcKtoZoFjNw11Ix3m1/+0b4bg5NixRxm2yhSOoBf/Mu/FxRzeGVXvRFw
-         tTpQ==
-X-Gm-Message-State: AOAM531ikJ/X4XhtXtLqDCIrodV0sZQPMOKUeQxYZNxdpRpJUL9DfHsC
-        3oD6cx2FpNwdrkUHsnKkoaCXGVeqVpM9q5gjq3A/zfXgMNc=
-X-Google-Smtp-Source: ABdhPJwiCnqu6yM4uv/PV0S4Qz6YlQlrhPVpkOJMdAypGHgIGkKVo6c8u59L5EKFTyd32VvCZwg4u2QBBm+6bRT9OCc=
-X-Received: by 2002:aca:f241:: with SMTP id q62mr2885361oih.64.1643053137039;
- Mon, 24 Jan 2022 11:38:57 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 24 Jan 2022 11:38:56 -0800
+        Mon, 24 Jan 2022 15:19:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB46EC07596F;
+        Mon, 24 Jan 2022 11:38:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BDFA6148B;
+        Mon, 24 Jan 2022 19:38:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D62FC340E5;
+        Mon, 24 Jan 2022 19:38:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053125;
+        bh=PivZKGnOzd2O9y7F4oVeB7DXqDj2PYX04tcxn/ZNV40=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=O5BboJwV54oG3Q9rROPBqkr5HR0SKE/8Q6zDC6S4T5PddCca6MnKz96ucpwD1NVYq
+         sIj+vOKS/P9DIX4RYsHMxMet9jU0ks6aC/mumr6+oORSMCeb2H79FZzqCO59iE1nQh
+         gejM0+8KCYm0jwKSvcKgZoZdIteZQJLSNyyecy44=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.4 285/320] Revert "net/mlx5: Add retry mechanism to the command entry index allocation"
+Date:   Mon, 24 Jan 2022 19:44:29 +0100
+Message-Id: <20220124184003.661305647@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <20220124165745.16277-1-tdas@codeaurora.org>
-References: <20220124165745.16277-1-tdas@codeaurora.org>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 24 Jan 2022 11:38:56 -0800
-Message-ID: <CAE-0n53pZG+LG8v35O6untzjn6H9dDOyrTX8Q4joHjcV3GAWSQ@mail.gmail.com>
-Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio
- clock controllers
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>
-Cc:     Douglas Anderson <dianders@chromium.org>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Taniya Das (2022-01-24 08:57:45)
-> diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> index 937c2e0e93eb..0aa834ce6b61 100644
-> --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> @@ -1744,6 +1746,47 @@
->                         #clock-cells = <1>;
->                 };
->
-> +               lpass_audiocc: clock-controller@3300000 {
-> +                       compatible = "qcom,sc7280-lpassaudiocc";
-> +                       reg = <0  0x03300000 0 0x30000>;
-> +                       clocks = <&rpmhcc RPMH_CXO_CLK>,
-> +                              <&lpass_aon LPASS_AON_CC_MAIN_RCG_CLK_SRC>;
-> +                       clock-names = "bi_tcxo", "lpass_aon_cc_main_rcg_clk_src";
-> +                       power-domains = <&lpass_aon LPASS_AON_CC_LPASS_AUDIO_HM_GDSC>;
-> +                       #clock-cells = <1>;
-> +                       #power-domain-cells = <1>;
-> +               };
-> +
-> +               lpass_aon: clock-controller@3380000 {
-> +                       compatible = "qcom,sc7280-lpassaoncc";
-> +                       reg = <0  0x03380000 0 0x30000>;
-> +                       clocks = <&rpmhcc RPMH_CXO_CLK>,
-> +                              <&rpmhcc RPMH_CXO_CLK_A>,
-> +                              <&lpasscc LPASS_CORE_CC_CORE_CLK>;
-> +                       clock-names = "bi_tcxo", "bi_tcxo_ao", "iface";
-> +                       #clock-cells = <1>;
-> +                       #power-domain-cells = <1>;
-> +               };
-> +
-> +               lpasscore: clock-controller@3900000 {
-> +                       compatible = "qcom,sc7280-lpasscorecc";
-> +                       reg = <0  0x03900000 0 0x50000>;
+From: Moshe Shemesh <moshe@nvidia.com>
 
-Nitpick: Why the extra space here? ^ Applies to all three above.
+commit 4f6626b0e140867fd6d5a2e9d4ceaef97f10f46a upstream.
 
-> +                       clocks =  <&rpmhcc RPMH_CXO_CLK>;
-> +                       clock-names = "bi_tcxo";
-> +                       power-domains = <&lpass_hm LPASS_CORE_CC_LPASS_CORE_HM_GDSC>;
-> +                       #clock-cells = <1>;
-> +                       #power-domain-cells = <1>;
+This reverts commit 410bd754cd73c4a2ac3856d9a03d7b08f9c906bf.
+
+The reverted commit had added a retry mechanism to the command entry
+index allocation. The previous patch ensures that there is a free
+command entry index once the command work handler holds the command
+semaphore. Thus the retry mechanism is not needed.
+
+Fixes: 410bd754cd73 ("net/mlx5: Add retry mechanism to the command entry index allocation")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
+
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -887,25 +887,6 @@ static bool opcode_allowed(struct mlx5_c
+ 	return cmd->allowed_opcode == opcode;
+ }
+ 
+-static int cmd_alloc_index_retry(struct mlx5_cmd *cmd)
+-{
+-	unsigned long alloc_end = jiffies + msecs_to_jiffies(1000);
+-	int idx;
+-
+-retry:
+-	idx = cmd_alloc_index(cmd);
+-	if (idx < 0 && time_before(jiffies, alloc_end)) {
+-		/* Index allocation can fail on heavy load of commands. This is a temporary
+-		 * situation as the current command already holds the semaphore, meaning that
+-		 * another command completion is being handled and it is expected to release
+-		 * the entry index soon.
+-		 */
+-		cpu_relax();
+-		goto retry;
+-	}
+-	return idx;
+-}
+-
+ static void cmd_work_handler(struct work_struct *work)
+ {
+ 	struct mlx5_cmd_work_ent *ent = container_of(work, struct mlx5_cmd_work_ent, work);
+@@ -923,7 +904,7 @@ static void cmd_work_handler(struct work
+ 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
+ 	down(sem);
+ 	if (!ent->page_queue) {
+-		alloc_ret = cmd_alloc_index_retry(cmd);
++		alloc_ret = cmd_alloc_index(cmd);
+ 		if (alloc_ret < 0) {
+ 			mlx5_core_err(dev, "failed to allocate command entry\n");
+ 			if (ent->callback) {
+
+
