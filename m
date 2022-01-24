@@ -2,41 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67BFFC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1094AC35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235750AbiAXTum (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:50:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37660 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355211AbiAXTkN (ORCPT
+        id S1357611AbiAXTvE (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:51:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344690AbiAXTkg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:13 -0500
+        Mon, 24 Jan 2022 14:40:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB1B8C07A966;
+        Mon, 24 Jan 2022 11:19:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D1EF6153D;
-        Mon, 24 Jan 2022 19:40:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75482C340E5;
-        Mon, 24 Jan 2022 19:40:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 707BDB81232;
+        Mon, 24 Jan 2022 19:19:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99063C340E5;
+        Mon, 24 Jan 2022 19:19:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053212;
-        bh=vwRGDU4N4TbEApmcUFKQ4hpx5acenT08Vv9AbCWceh8=;
+        s=korg; t=1643051961;
+        bh=vvYjAPxxL+ZjqcEidLvpz0cKF/e03ciPhpXnnDJYgtQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zGGbO5yH3okHFASZyKbZ6qc6YgSQt677DGCmKh8qggMeDlgIJGbOuNX6CaBD7n6wf
-         ETnPbgQCa5cxSsfC+yvhV5fmWwLMv6v7R09U0b/hoWsb+IHcS47RHgFUoC6SNAdWBp
-         gJsyeosvORYxTTWT9rYp+P3Hw8gXMRPtX469b+X8=
+        b=Cmh+Ceo3l2mFIYF7+bvm5LNHjLPGXXOZb1Ad06pYUB66RVO39VZH5xN5WWlqZo8Au
+         BcBh3Wy/h82vcxdYkpu9pgj19eIBIUShmghVYC7Z79/CRvpZtaa99kwdiFKAuSWzne
+         Olx8HkTlZwAdnr4jnFhU6NJsRSGu3U78e1dsQ5gw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.4 279/320] Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
-Date:   Mon, 24 Jan 2022 19:44:23 +0100
-Message-Id: <20220124184003.466568032@linuxfoundation.org>
+        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 110/239] RDMA/core: Let ib_find_gid() continue search even after empty entry
+Date:   Mon, 24 Jan 2022 19:42:28 +0100
+Message-Id: <20220124183946.600613206@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,39 +52,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Avihai Horon <avihaih@nvidia.com>
 
-commit 82ca67321f55a8d1da6ac3ed611da3c32818bb37 upstream.
+[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
 
-The config RANDOMIZE_SLAB does not exist, the authors probably intended to
-refer to the config RANDOMIZE_BASE, which provides kernel address-space
-randomization. They probably just confused SLAB with BASE (these two
-four-letter words coincidentally share three common letters), as they also
-point out the config SLAB_FREELIST_RANDOM as further randomization within
-the same sentence.
+Currently, ib_find_gid() will stop searching after encountering the first
+empty GID table entry. This behavior is wrong since neither IB nor RoCE
+spec enforce tightly packed GID tables.
 
-Fix the reference of the config for kernel address-space randomization to
-the config that provides that.
+For example, when a valid GID entry exists at index N, and if a GID entry
+is empty at index N-1, ib_find_gid() will fail to find the valid entry.
 
-Fixes: 6e88559470f5 ("Documentation: Add section about CPU vulnerabilities for Spectre")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Link: https://lore.kernel.org/r/20211230171940.27558-1-lukas.bulwahn@gmail.com
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by making ib_find_gid() continue searching even after encountering
+missing entries.
+
+Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
+Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
+Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/hw-vuln/spectre.rst |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/infiniband/core/device.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/Documentation/admin-guide/hw-vuln/spectre.rst
-+++ b/Documentation/admin-guide/hw-vuln/spectre.rst
-@@ -468,7 +468,7 @@ Spectre variant 2
-    before invoking any firmware code to prevent Spectre variant 2 exploits
-    using the firmware.
- 
--   Using kernel address space randomization (CONFIG_RANDOMIZE_SLAB=y
-+   Using kernel address space randomization (CONFIG_RANDOMIZE_BASE=y
-    and CONFIG_SLAB_FREELIST_RANDOM=y in the kernel configuration) makes
-    attacks on the kernel generally more difficult.
- 
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index 6a585c3e21923..ffd0f43e2129f 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -1039,7 +1039,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
+ 		for (i = 0; i < device->port_immutable[port].gid_tbl_len; ++i) {
+ 			ret = rdma_query_gid(device, port, i, &tmp_gid);
+ 			if (ret)
+-				return ret;
++				continue;
++
+ 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
+ 				*port_num = port;
+ 				if (index)
+-- 
+2.34.1
+
 
 
