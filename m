@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71151C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3787C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346354AbiAXTFZ (ORCPT
+        id S1346389AbiAXTF1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:05:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57388 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345360AbiAXTAK (ORCPT
+        Mon, 24 Jan 2022 14:05:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345496AbiAXTAV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:10 -0500
+        Mon, 24 Jan 2022 14:00:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D144CC0617A9;
+        Mon, 24 Jan 2022 10:57:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B27FCB8119D;
-        Mon, 24 Jan 2022 19:00:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2837C340E5;
-        Mon, 24 Jan 2022 19:00:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8EA58B81227;
+        Mon, 24 Jan 2022 18:57:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CB4C340E5;
+        Mon, 24 Jan 2022 18:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050807;
-        bh=4jx1Bl4S5uQyeaT0H4TWgXfSBRxVssLycfkRR4kmCkU=;
+        s=korg; t=1643050676;
+        bh=5NY77zdV9ozn/+VEAlvfkSk/XENHtvV6igQMct3x6Ls=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CaYt9ENsPHL31F3ng/UEsgKGmXW/2Sh2PjUe68INQrCSlDyFZObqonXN0swwjVy2E
-         qaa36zOmWnlmck1TQRKfOMRgqj6Rggs8UUDMOdlSayY4ySyaWYrXKODa22h59EjMtX
-         qXEQe4xaNouaMExAlBe4zgJ6qnIseb1963gx07r8=
+        b=lQaNuxM4oZGQh1j2icAQG+PnRTpPwRSjjuwuKgWTfkjVBCPB/laO4qcs7TPVcGN+d
+         bIerxKSBhgAZZx7QrVe/+ngPfRNL/n9tRudn+1JaDNKmm56mrC9UG+kp8wtPHaRzwh
+         ww5+ZD+G/Cw+N7NqcMXT2ZYflszIg3TU8UvbXvcw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rkardell@mida.se,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 085/157] media: m920x: dont use stack on USB reads
-Date:   Mon, 24 Jan 2022 19:42:55 +0100
-Message-Id: <20220124183935.484109346@linuxfoundation.org>
+Subject: [PATCH 4.9 045/157] media: msi001: fix possible null-ptr-deref in msi001_probe()
+Date:   Mon, 24 Jan 2022 19:42:15 +0100
+Message-Id: <20220124183934.223028602@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,57 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+I got a null-ptr-deref report:
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
+BUG: kernel NULL pointer dereference, address: 0000000000000060
+...
+RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
+...
+Call Trace:
+ msi001_probe+0x13b/0x24b [msi001]
+ spi_probe+0xeb/0x130
+...
+ do_syscall_64+0x35/0xb0
 
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
+In msi001_probe(), if the creation of control for bandwidth_auto
+fails, there will be a null-ptr-deref issue when it is used in
+v4l2_ctrl_auto_cluster().
+
+Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
+
+Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
+Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/media/tuners/msi001.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index eafc5c82467f4..5b806779e2106 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -284,6 +284,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
+diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
+index 3a12ef35682b5..64d98517f470f 100644
+--- a/drivers/media/tuners/msi001.c
++++ b/drivers/media/tuners/msi001.c
+@@ -464,6 +464,13 @@ static int msi001_probe(struct spi_device *spi)
+ 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
+ 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
+ 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
++	if (dev->hdl.error) {
++		ret = dev->hdl.error;
++		dev_err(&spi->dev, "Could not initialize controls\n");
++		/* control init failed, free handler */
++		goto err_ctrl_handler_free;
++	}
 +
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -291,9 +298,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
-+
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
+ 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
+ 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
+ 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
 -- 
 2.34.1
 
