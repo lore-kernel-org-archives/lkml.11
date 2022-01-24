@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3343CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21FC9C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239752AbiAXTrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:47:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58390 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354593AbiAXTgu (ORCPT
+        id S239165AbiAXTrt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:47:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34360 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354331AbiAXTgb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:36:50 -0500
+        Mon, 24 Jan 2022 14:36:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7F4FB81229;
-        Mon, 24 Jan 2022 19:36:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17A4C340E5;
-        Mon, 24 Jan 2022 19:36:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC9A260909;
+        Mon, 24 Jan 2022 19:36:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4013C340E5;
+        Mon, 24 Jan 2022 19:36:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053007;
-        bh=+4Y45NR2lyzG41zk6KY232Sml1e0lHoiQZKzYnmhRPk=;
+        s=korg; t=1643052990;
+        bh=HouZgAats866R4r1zSh6Cjti9p5j8T6zOH2vHVEIsVA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IkT13YGt2JSQZs78+o4bBK6HiXy0YMsbysQIhIv9A7ddgjNMJaqchQxSXcWCED2R1
-         UhWsPlJzYfK8eQUpjb3J4DALJbF7/Y5O+6rpMWa9dcVZcuinALaORJj3p2t4WbgPm9
-         zTe6/je2d6IlCwmaFe79vC6RtJ85NcUXmkArh5bw=
+        b=2ax1hrUYe5XNcuQ9TfXg/3wJMd4AQ1byLQt8D8yvq8hEDW9j2BnDMQyoQv1mXOAWu
+         uDX8V/IDEhN1tpJMHpqUfAcixe/3jjJbAIcUZP95PX4Rhx6NRl7bu+8Gq/YXNWTC/J
+         EWib6mFMuaaEYa1fDQ9KAclf7C73vZLqmMv0cD8Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Lenny Szubowicz <lszubowi@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 238/320] powerpc: handle kdump appropriately with crash_kexec_post_notifiers option
-Date:   Mon, 24 Jan 2022 19:43:42 +0100
-Message-Id: <20220124184002.088618195@linuxfoundation.org>
+Subject: [PATCH 5.4 206/320] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
+Date:   Mon, 24 Jan 2022 19:43:10 +0100
+Message-Id: <20220124184000.641096927@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,73 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 219572d2fc4135b5ce65c735d881787d48b10e71 ]
+[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
 
-Kdump can be triggered after panic_notifers since commit f06e5153f4ae2
-("kernel/panic.c: add "crash_kexec_post_notifiers" option for kdump
-after panic_notifers") introduced crash_kexec_post_notifiers option.
-But using this option would mean smp_send_stop(), that marks all other
-CPUs as offline, gets called before kdump is triggered. As a result,
-kdump routines fail to save other CPUs' registers. To fix this, kdump
-friendly crash_smp_send_stop() function was introduced with kernel
-commit 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump
-friendly version in panic path"). Override this kdump friendly weak
-function to handle crash_kexec_post_notifiers option appropriately
-on powerpc.
+ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-[Fixed signature of crash_stop_this_cpu() - reported by lkp@intel.com]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211207103719.91117-1-hbathini@linux.ibm.com
+If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
+acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
+obtain return_desc which may require additional resolution with
+the help of acpi_ex_read_data_from_field (). If the latter fails,
+the reference counter of the original return_desc is decremented
+which is incorrect, because acpi_ns_get_attached_object () does not
+increment the reference counter of the object returned by it.
+
+This issue may lead to premature deletion of the attached object
+while it is still attached and a use-after-free and crash in the
+host OS.  For example, this may happen when on evaluation of ref_of()
+a local region field where there is no registered handler for the
+given Operation Region.
+
+Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
+after a acpi_ex_read_data_from_field () failure.
+
+Link: https://github.com/acpica/acpica/commit/d984f120
+Link: https://github.com/acpica/acpica/pull/685
+Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/smp.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ drivers/acpi/acpica/exoparg1.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
-index 82dff003a7fd6..4de63ec2e1551 100644
---- a/arch/powerpc/kernel/smp.c
-+++ b/arch/powerpc/kernel/smp.c
-@@ -582,6 +582,36 @@ void crash_send_ipi(void (*crash_ipi_callback)(struct pt_regs *))
- }
- #endif
+diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
+index 06e35ea098234..6d84618ba3871 100644
+--- a/drivers/acpi/acpica/exoparg1.c
++++ b/drivers/acpi/acpica/exoparg1.c
+@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
+ 						    (walk_state, return_desc,
+ 						     &temp_desc);
+ 						if (ACPI_FAILURE(status)) {
+-							goto cleanup;
++							return_ACPI_STATUS
++							    (status);
+ 						}
  
-+#ifdef CONFIG_NMI_IPI
-+static void crash_stop_this_cpu(struct pt_regs *regs)
-+#else
-+static void crash_stop_this_cpu(void *dummy)
-+#endif
-+{
-+	/*
-+	 * Just busy wait here and avoid marking CPU as offline to ensure
-+	 * register data is captured appropriately.
-+	 */
-+	while (1)
-+		cpu_relax();
-+}
-+
-+void crash_smp_send_stop(void)
-+{
-+	static bool stopped = false;
-+
-+	if (stopped)
-+		return;
-+
-+	stopped = true;
-+
-+#ifdef CONFIG_NMI_IPI
-+	smp_send_nmi_ipi(NMI_IPI_ALL_OTHERS, crash_stop_this_cpu, 1000000);
-+#else
-+	smp_call_function(crash_stop_this_cpu, NULL, 0);
-+#endif /* CONFIG_NMI_IPI */
-+}
-+
- #ifdef CONFIG_NMI_IPI
- static void nmi_stop_this_cpu(struct pt_regs *regs)
- {
+ 						return_desc = temp_desc;
 -- 
 2.34.1
 
