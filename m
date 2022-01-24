@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 392CFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E4EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245009AbiAXTIf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:08:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60844 "EHLO
+        id S1344428AbiAXTIn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:08:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:32836 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344517AbiAXTCP (ORCPT
+        with ESMTP id S237110AbiAXTCX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:15 -0500
+        Mon, 24 Jan 2022 14:02:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9132B60BAD;
-        Mon, 24 Jan 2022 19:02:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 468ACC340E5;
-        Mon, 24 Jan 2022 19:02:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 353D260BFB;
+        Mon, 24 Jan 2022 19:02:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C3D5C340E5;
+        Mon, 24 Jan 2022 19:02:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050933;
-        bh=iWOkdgPCQQjl1CePs+iFke75cLkjFCy3GlkrB5GhPvY=;
+        s=korg; t=1643050942;
+        bh=TpG7FVjmqICJYubPQPE/JrnyvkEd1i2n0LOWSOYT5vM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sNqmBylp0bo4jKIcD+k2r49JSTlyIFdNWTKK6lT99xalI1NuUnxKcgBANkY5ieUPR
-         WUFDExrpAaS+QifRXqAqIi/JCtaG1QmQNv7o4zWNnxokfhWnlQgOQQfXr+Hj1nbLw8
-         RPmziA0DJkiaRptE5l1SYGOMSIpOeMuWpfAsvtAQ=
+        b=0g3rHd0qiKXPaWCF3wZwW5HuS2+oZz/P+aqB6VjFO/1Br6hm1A/BhrCYg6bhgZKlh
+         jRV7ywqDGtYygjAAum8eYBI9ZJ1TescR6d4f/9hb3f2SbSJq7x+Xw394aEqYL0HDHT
+         rd+11hZ0DaeqbQK+zvuh7uYDeOA48bzH3KSquxTM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Braun <michael-dev@fami-braun.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        Davidlohr Bueso <dbueso@suse.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 150/157] gianfar: fix jumbo packets+napi+rx overrun crash
-Date:   Mon, 24 Jan 2022 19:44:00 +0100
-Message-Id: <20220124183937.520465560@linuxfoundation.org>
+Subject: [PATCH 4.9 153/157] lib/timerqueue: Rely on rbtree semantics for next timer
+Date:   Mon, 24 Jan 2022 19:44:03 +0100
+Message-Id: <20220124183937.610181088@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -46,97 +47,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Braun <michael-dev@fami-braun.de>
+From: Davidlohr Bueso <dave@stgolabs.net>
 
-commit d8861bab48b6c1fc3cdbcab8ff9d1eaea43afe7f upstream.
+commit 511885d7061eda3eb1faf3f57dcc936ff75863f1 upstream.
 
-When using jumbo packets and overrunning rx queue with napi enabled,
-the following sequence is observed in gfar_add_rx_frag:
+Simplify the timerqueue code by using cached rbtrees and rely on the tree
+leftmost node semantics to get the timer with earliest expiration time.
+This is a drop in conversion, and therefore semantics remain untouched.
 
-   | lstatus                              |       | skb                   |
-t  | lstatus,  size, flags                | first | len, data_len, *ptr   |
----+--------------------------------------+-------+-----------------------+
-13 | 18002348, 9032, INTERRUPT LAST       | 0     | 9600, 8000,  f554c12e |
-12 | 10000640, 1600, INTERRUPT            | 0     | 8000, 6400,  f554c12e |
-11 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  f554c12e |
-10 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  f554c12e |
-09 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  f554c12e |
-08 | 14000640, 1600, INTERRUPT FIRST      | 0     | 1600, 0,     f554c12e |
-07 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     f554c12e |
-06 | 1c000080, 128,  INTERRUPT LAST FIRST | 1     | 0,    0,     abf3bd6e |
-05 | 18002348, 9032, INTERRUPT LAST       | 0     | 8000, 6400,  c5a57780 |
-04 | 10000640, 1600, INTERRUPT            | 0     | 6400, 4800,  c5a57780 |
-03 | 10000640, 1600, INTERRUPT            | 0     | 4800, 3200,  c5a57780 |
-02 | 10000640, 1600, INTERRUPT            | 0     | 3200, 1600,  c5a57780 |
-01 | 10000640, 1600, INTERRUPT            | 0     | 1600, 0,     c5a57780 |
-00 | 14000640, 1600, INTERRUPT FIRST      | 1     | 0,    0,     c5a57780 |
+The runtime overhead of cached rbtrees is be pretty much the same as the
+current head->next method, noting that when removing the leftmost node,
+a common operation for the timerqueue, the rb_next(leftmost) is O(1) as
+well, so the next timer will either be the right node or its parent.
+Therefore no extra pointer chasing. Finally, the size of the struct
+timerqueue_head remains the same.
 
-So at t=7 a new packets is started but not finished, probably due to rx
-overrun - but rx overrun is not indicated in the flags. Instead a new
-packets starts at t=8. This results in skb->len to exceed size for the LAST
-fragment at t=13 and thus a negative fragment size added to the skb.
+Passes several hours of rcutorture.
 
-This then crashes:
-
-kernel BUG at include/linux/skbuff.h:2277!
-Oops: Exception in kernel mode, sig: 5 [#1]
-...
-NIP [c04689f4] skb_pull+0x2c/0x48
-LR [c03f62ac] gfar_clean_rx_ring+0x2e4/0x844
-Call Trace:
-[ec4bfd38] [c06a84c4] _raw_spin_unlock_irqrestore+0x60/0x7c (unreliable)
-[ec4bfda8] [c03f6a44] gfar_poll_rx_sq+0x48/0xe4
-[ec4bfdc8] [c048d504] __napi_poll+0x54/0x26c
-[ec4bfdf8] [c048d908] net_rx_action+0x138/0x2c0
-[ec4bfe68] [c06a8f34] __do_softirq+0x3a4/0x4fc
-[ec4bfed8] [c0040150] run_ksoftirqd+0x58/0x70
-[ec4bfee8] [c0066ecc] smpboot_thread_fn+0x184/0x1cc
-[ec4bff08] [c0062718] kthread+0x140/0x144
-[ec4bff38] [c0012350] ret_from_kernel_thread+0x14/0x1c
-
-This patch fixes this by checking for computed LAST fragment size, so a
-negative sized fragment is never added.
-In order to prevent the newer rx frame from getting corrupted, the FIRST
-flag is checked to discard the incomplete older frame.
-
-Signed-off-by: Michael Braun <michael-dev@fami-braun.de>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Ben Hutchings <ben@decadent.org.uk>
+Signed-off-by: Davidlohr Bueso <dbueso@suse.de>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Link: https://lkml.kernel.org/r/20190724152323.bojciei3muvfxalm@linux-r8p5
+[bwh: While this was supposed to be just refactoring, it also fixed a
+ security flaw (CVE-2021-20317).  Backported to 4.9:
+ - Deleted code in timerqueue_del() is different before commit d852d39432f5
+   "timerqueue: Use rb_entry_safe() instead of open-coding it"
+ - Adjust context]
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/gianfar.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ include/linux/timerqueue.h |   13 ++++++-------
+ lib/timerqueue.c           |   31 ++++++++++++-------------------
+ 2 files changed, 18 insertions(+), 26 deletions(-)
 
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -2947,6 +2947,10 @@ static bool gfar_add_rx_frag(struct gfar
- 		if (lstatus & BD_LFLAG(RXBD_LAST))
- 			size -= skb->len;
+--- a/include/linux/timerqueue.h
++++ b/include/linux/timerqueue.h
+@@ -11,8 +11,7 @@ struct timerqueue_node {
+ };
  
-+		WARN(size < 0, "gianfar: rx fragment size underflow");
-+		if (size < 0)
-+			return false;
-+
- 		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
- 				rxb->page_offset + RXBUF_ALIGNMENT,
- 				size, GFAR_RXB_TRUESIZE);
-@@ -3108,6 +3112,17 @@ int gfar_clean_rx_ring(struct gfar_priv_
- 		if (lstatus & BD_LFLAG(RXBD_EMPTY))
- 			break;
+ struct timerqueue_head {
+-	struct rb_root head;
+-	struct timerqueue_node *next;
++	struct rb_root_cached rb_root;
+ };
  
-+		/* lost RXBD_LAST descriptor due to overrun */
-+		if (skb &&
-+		    (lstatus & BD_LFLAG(RXBD_FIRST))) {
-+			/* discard faulty buffer */
-+			dev_kfree_skb(skb);
-+			skb = NULL;
-+			rx_queue->stats.rx_dropped++;
+ 
+@@ -28,13 +27,14 @@ extern struct timerqueue_node *timerqueu
+  *
+  * @head: head of timerqueue
+  *
+- * Returns a pointer to the timer node that has the
+- * earliest expiration time.
++ * Returns a pointer to the timer node that has the earliest expiration time.
+  */
+ static inline
+ struct timerqueue_node *timerqueue_getnext(struct timerqueue_head *head)
+ {
+-	return head->next;
++	struct rb_node *leftmost = rb_first_cached(&head->rb_root);
 +
-+			/* can continue normally */
++	return rb_entry(leftmost, struct timerqueue_node, node);
+ }
+ 
+ static inline void timerqueue_init(struct timerqueue_node *node)
+@@ -44,7 +44,6 @@ static inline void timerqueue_init(struc
+ 
+ static inline void timerqueue_init_head(struct timerqueue_head *head)
+ {
+-	head->head = RB_ROOT;
+-	head->next = NULL;
++	head->rb_root = RB_ROOT_CACHED;
+ }
+ #endif /* _LINUX_TIMERQUEUE_H */
+--- a/lib/timerqueue.c
++++ b/lib/timerqueue.c
+@@ -38,9 +38,10 @@
+  */
+ bool timerqueue_add(struct timerqueue_head *head, struct timerqueue_node *node)
+ {
+-	struct rb_node **p = &head->head.rb_node;
++	struct rb_node **p = &head->rb_root.rb_root.rb_node;
+ 	struct rb_node *parent = NULL;
+-	struct timerqueue_node  *ptr;
++	struct timerqueue_node *ptr;
++	bool leftmost = true;
+ 
+ 	/* Make sure we don't add nodes that are already added */
+ 	WARN_ON_ONCE(!RB_EMPTY_NODE(&node->node));
+@@ -48,19 +49,17 @@ bool timerqueue_add(struct timerqueue_he
+ 	while (*p) {
+ 		parent = *p;
+ 		ptr = rb_entry(parent, struct timerqueue_node, node);
+-		if (node->expires.tv64 < ptr->expires.tv64)
++		if (node->expires.tv64 < ptr->expires.tv64) {
+ 			p = &(*p)->rb_left;
+-		else
++		} else {
+ 			p = &(*p)->rb_right;
++			leftmost = false;
 +		}
+ 	}
+ 	rb_link_node(&node->node, parent, p);
+-	rb_insert_color(&node->node, &head->head);
++	rb_insert_color_cached(&node->node, &head->rb_root, leftmost);
+ 
+-	if (!head->next || node->expires.tv64 < head->next->expires.tv64) {
+-		head->next = node;
+-		return true;
+-	}
+-	return false;
++	return leftmost;
+ }
+ EXPORT_SYMBOL_GPL(timerqueue_add);
+ 
+@@ -76,16 +75,10 @@ bool timerqueue_del(struct timerqueue_he
+ {
+ 	WARN_ON_ONCE(RB_EMPTY_NODE(&node->node));
+ 
+-	/* update next pointer */
+-	if (head->next == node) {
+-		struct rb_node *rbn = rb_next(&node->node);
+-
+-		head->next = rbn ?
+-			rb_entry(rbn, struct timerqueue_node, node) : NULL;
+-	}
+-	rb_erase(&node->node, &head->head);
++	rb_erase_cached(&node->node, &head->rb_root);
+ 	RB_CLEAR_NODE(&node->node);
+-	return head->next != NULL;
 +
- 		/* order rx buffer descriptor reads */
- 		rmb();
++	return !RB_EMPTY_ROOT(&head->rb_root.rb_root);
+ }
+ EXPORT_SYMBOL_GPL(timerqueue_del);
  
 
 
