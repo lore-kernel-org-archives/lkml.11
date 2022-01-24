@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6C6C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCF5C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373384AbiAYANm (ORCPT
+        id S2373409AbiAYANq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:13:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53432 "EHLO
+        Mon, 24 Jan 2022 19:13:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585430AbiAXX2Q (ORCPT
+        with ESMTP id S1583831AbiAXX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D882CC06137A;
-        Mon, 24 Jan 2022 13:33:13 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF09BC0A8848;
+        Mon, 24 Jan 2022 13:32:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 766EA61305;
-        Mon, 24 Jan 2022 21:33:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D0FC340E4;
-        Mon, 24 Jan 2022 21:33:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9A3D8B80FA1;
+        Mon, 24 Jan 2022 21:32:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF2EFC340E4;
+        Mon, 24 Jan 2022 21:32:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059992;
-        bh=1gE0J90otQHDAvwfXnYKScuN2a71uYD8y8dwjg4ylJE=;
+        s=korg; t=1643059977;
+        bh=qYDOpIwbffRx83ZsylOR2lWYM5jvsut86DHKdCbumBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KqUoJFtGiS6sb395vkGUK5NbzkXNDj6BO0UvNs9rkI/MKIq/wBVEWoBqJRq3LvFeX
-         npw2vmYLaq9KrvJjTbLFMZLOid8iWXbciFOjUqNb8ZkWISmCOIu3/zjoF6P6Tf7eQh
-         sL0kaTvsmZTV8CvA72j3ldShAm+iGiEPc2qZIrN0=
+        b=OtubRWtarnD6d5BeVX5XYOxByDMjTpRpDshYajqECoVfbR0tJFQ96y2pXGumT3kyA
+         b9dkqDZqlvMlH21pONLKyV5kEA8dH/1Ixtz7rJfOnEkjirAfYYd6jfSIIS1A39gekv
+         4eVFPkDBu3uUwgdajYPdLmrYjF7Kqzin9dHkU4Nk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Beau Belgrave <beaub@linux.microsoft.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Jay Chen <jkchen@linux.alibaba.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0796/1039] tracing: Do not let synth_events block other dyn_event systems during create
-Date:   Mon, 24 Jan 2022 19:43:05 +0100
-Message-Id: <20220124184152.059694230@linuxfoundation.org>
+Subject: [PATCH 5.16 0765/1039] irqchip/gic-v4: Disable redistributors view of the VPE table at boot time
+Date:   Mon, 24 Jan 2022 19:42:34 +0100
+Message-Id: <20220124184151.026668579@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,57 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Beau Belgrave <beaub@linux.microsoft.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 4f67cca70c0f615e9cfe6ac42244f3416ec60877 ]
+[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
 
-synth_events is returning -EINVAL if the dyn_event create command does
-not contain ' \t'. This prevents other systems from getting called back.
-synth_events needs to return -ECANCELED in these cases when the command
-is not targeting the synth_event system.
+Jay Chen reported that using a kdump kernel on a GICv4.1 system
+results in a RAS error being delivered when the secondary kernel
+configures the ITS's view of the new VPE table.
 
-Link: https://lore.kernel.org/linux-trace-devel/20210930223821.11025-1-beaub@linux.microsoft.com
+As it turns out, that's because each RD still has a pointer to
+the previous instance of the VPE table, and that particular
+implementation is very upset by seeing two bits of the HW that
+should point to the same table with different values.
 
-Fixes: c9e759b1e8456 ("tracing: Rework synthetic event command parsing")
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
-Signed-off-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
+To solve this, let's invalidate any reference that any RD has to
+the VPE table when discovering the RDs. The ITS can then be
+programmed as expected.
+
+Reported-by: Jay Chen <jkchen@linux.alibaba.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
+Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_events_synth.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/kernel/trace/trace_events_synth.c b/kernel/trace/trace_events_synth.c
-index ca9c13b2ecf4b..4b5a637d3ec00 100644
---- a/kernel/trace/trace_events_synth.c
-+++ b/kernel/trace/trace_events_synth.c
-@@ -2054,6 +2054,13 @@ static int create_synth_event(const char *raw_command)
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index daec3309b014d..86397522e7864 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -920,6 +920,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
+ {
+ 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
  
- 	last_cmd_set(raw_command);
- 
-+	name = raw_command;
++	/* Boot-time cleanip */
++	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
++		u64 val;
 +
-+	/* Don't try to process if not our system */
-+	if (name[0] != 's' || name[1] != ':')
-+		return -ECANCELED;
-+	name += 2;
++		/* Deactivate any present vPE */
++		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
++		if (val & GICR_VPENDBASER_Valid)
++			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
++					      ptr + SZ_128K + GICR_VPENDBASER);
 +
- 	p = strpbrk(raw_command, " \t");
- 	if (!p) {
- 		synth_err(SYNTH_ERR_INVALID_CMD, 0);
-@@ -2062,12 +2069,6 @@ static int create_synth_event(const char *raw_command)
++		/* Mark the VPE table as invalid */
++		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
++		val &= ~GICR_VPROPBASER_4_1_VALID;
++		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
++	}
++
+ 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
  
- 	fields = skip_spaces(p);
- 
--	name = raw_command;
--
--	if (name[0] != 's' || name[1] != ':')
--		return -ECANCELED;
--	name += 2;
--
- 	/* This interface accepts group name prefix */
- 	if (strchr(name, '/')) {
- 		len = str_has_prefix(name, SYNTH_SYSTEM "/");
+ 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
 -- 
 2.34.1
 
