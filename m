@@ -2,110 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CEE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:34:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4852C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:37:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbiAXJeQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:34:16 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:24077 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234332AbiAXJeL (ORCPT
+        id S232130AbiAXJhc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229629AbiAXJha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:34:11 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 20O9QVHs054146;
-        Mon, 24 Jan 2022 17:26:31 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from JammyHuang-PC.aspeed.com (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 24 Jan
- 2022 17:33:48 +0800
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-To:     <eajames@linux.ibm.com>, <mchehab@kernel.org>, <joel@jms.id.au>,
-        <andrew@aj.id.au>, <linux-media@vger.kernel.org>,
-        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 1/4] media: aspeed: Correct value for h-total-pixels
-Date:   Mon, 24 Jan 2022 17:33:42 +0800
-Message-ID: <20220124093345.3935-2-jammy_huang@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124093345.3935-1-jammy_huang@aspeedtech.com>
-References: <20220124093345.3935-1-jammy_huang@aspeedtech.com>
+        Mon, 24 Jan 2022 04:37:30 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3986C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 01:37:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=z/r63EfvVm9RGMh2KAen4T39zB4cnOCdcpB+cKli6kk=; b=44hIObpmhtBGdpXCw/Owm1z15D
+        gX3B43MrVba/2WBdQfup9/lzCAMQUm574OPNrXbV9oozMfw5HxE96QnNtc8jdo9JbaFSEQsq69UHq
+        xYViMyqTzihvBZAyNoQHnIh39jq5hr7SBtYvZn3S3GW1s3LiVnrPbxdul/P8pIUT5cGDzRuLcyJ6J
+        o098rl9sploiMtLIIa/7RPAv8stiyivLwWVQ6wSaI3BMD5kYiYImyma7TCz8XIy9B2+iB8Wc2ODZq
+        v9IJe+4PH9SUnn+OHDjjsVrp0A0cctGZf45rGQv1GUhVOYhPAQ5RapGmD/t7d5wsFASILlYgnlSzZ
+        1xm7p5YA==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nBvmr-002p4d-M0; Mon, 24 Jan 2022 09:37:21 +0000
+Date:   Mon, 24 Jan 2022 01:37:21 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Lu Baolu <baolu.lu@linux.intel.com>
+Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Kevin Tian <kevin.tian@intel.com>,
+        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Liu Yi L <yi.l.liu@intel.com>,
+        Jacob jun Pan <jacob.jun.pan@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 7/7] iommu: Add iommu_domain::domain_ops
+Message-ID: <Ye5zUapC/YcZs7kl@infradead.org>
+References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
+ <20220124071103.2097118-8-baolu.lu@linux.intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 20O9QVHs054146
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124071103.2097118-8-baolu.lu@linux.intel.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Previous reg-field, 0x98[11:0], stands for the period of the detected
-hsync signal.
-Use the correct reg, 0xa0, to get h-total in pixels.
+On Mon, Jan 24, 2022 at 03:11:02PM +0800, Lu Baolu wrote:
+> Add a domain specific callback set, domain_ops, for vendor iommu driver
+> to provide domain specific operations. Move domain-specific callbacks
+> from iommu_ops to the domain_ops and hook them when a domain is allocated.
 
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
-v3:
- - no update
-v2:
- - no update
----
- drivers/media/platform/aspeed-video.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Ah, that's what I meant earlier.  Perfect!
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index b388bc56ce81..d5f77b205175 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -166,7 +166,7 @@
- #define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
- 
- #define VE_MODE_DETECT_STATUS		0x098
--#define  VE_MODE_DETECT_H_PIXELS	GENMASK(11, 0)
-+#define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
- #define  VE_MODE_DETECT_V_LINES_SHF	16
- #define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
- #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
-@@ -177,6 +177,8 @@
- #define  VE_SYNC_STATUS_VSYNC_SHF	16
- #define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
- 
-+#define VE_H_TOTAL_PIXELS		0x0A0
-+
- #define VE_INTERRUPT_CTRL		0x304
- #define VE_INTERRUPT_STATUS		0x308
- #define  VE_INTERRUPT_MODE_DETECT_WD	BIT(0)
-@@ -938,6 +940,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 	u32 src_lr_edge;
- 	u32 src_tb_edge;
- 	u32 sync;
-+	u32 htotal;
- 	struct v4l2_bt_timings *det = &video->detected_timings;
- 
- 	det->width = MIN_WIDTH;
-@@ -983,6 +986,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 		src_tb_edge = aspeed_video_read(video, VE_SRC_TB_EDGE_DET);
- 		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
- 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
-+		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
- 
- 		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
- 			VE_SRC_TB_EDGE_DET_BOT_SHF;
-@@ -999,8 +1003,7 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
- 			VE_SRC_LR_EDGE_DET_RT_SHF;
- 		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
- 		det->hfrontporch = video->frame_left;
--		det->hbackporch = (mds & VE_MODE_DETECT_H_PIXELS) -
--			video->frame_right;
-+		det->hbackporch = htotal - video->frame_right;
- 		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
- 		if (video->frame_left > video->frame_right)
- 			continue;
--- 
-2.25.1
+Nit:  I don't think vendor is the right term here.
 
+Maybe something like:
+
+iommut: split struct iommu_ops
+
+Move the domain specific operations out of struct iommu_ops into a new
+structure that only has domain specific operations.  This solves
+the problem of needing to know if the method vector for a given
+operation needs to be retreived from the device or th domain.
+
+> +struct domain_ops {
+
+This needs to keep an iommu in the name, i.e. iommu_domain_ops.
+
+> +	phys_addr_t (*iova_to_phys)(struct iommu_domain *domain, dma_addr_t iova);
+
+Overly long line.
+
+> +static inline void iommu_domain_set_ops(struct iommu_domain *domain,
+> +					const struct domain_ops *ops)
+> +{
+> +	domain->ops = ops;
+> +}
+
+Do we really need this helper?
+
+> +static const struct domain_ops amd_domain_ops;
+
+Can we avoid these forward declarations or would that cause too much
+churn?
