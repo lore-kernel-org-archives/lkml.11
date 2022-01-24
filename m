@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 774B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:24:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21157C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354365AbiAXUY3 (ORCPT
+        id S1351710AbiAXUYf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:24:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49206 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357770AbiAXTvq (ORCPT
+        Mon, 24 Jan 2022 15:24:35 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39910 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354724AbiAXTv1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:51:46 -0500
+        Mon, 24 Jan 2022 14:51:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2295601B6;
-        Mon, 24 Jan 2022 19:51:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93A27C340E5;
-        Mon, 24 Jan 2022 19:51:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37A9CB811F3;
+        Mon, 24 Jan 2022 19:51:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69D57C340E5;
+        Mon, 24 Jan 2022 19:51:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053905;
-        bh=zYvhXmgk5raJcaWJoqoTorEjCgspp2OTg+ecp5a6CF8=;
+        s=korg; t=1643053884;
+        bh=RTtE72TEKRptEnT9avhBLidZKHxVwDtJvr7QQ0QGyVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bB4AhEl+8eQuy7HCEyDEQ7mwvUpZAjTw0YTmHsVVOBjr089i5Kk3RZY4TUjRcEmQx
-         yk2iN7IvGFcpYr2f4N2wzdehzcqqQj94Bd9z8yEsH+rtFc+0g+KMeDepXTUgnmGj+5
-         sRbECibJ0ccO/ilp3Uf5V4UTNBqxvQrFC4FgTN9k=
+        b=F+TUmL3nh3/phT4BMuw7tcwY4ABe9QcDEegr32klRSRrRkC+JWzyKLVp3Cs2n30Bs
+         2VC/wRG5eWsU6DEZ/KTT5JtT9t2hYc0wI+AjUN6k3vxn8KwaQTKtEZswTqmXOmv/KO
+         2xd6N4HmAbXG1Je4994OevbprSPzpzyK++xi6B2E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, etkaar <lists.netfilter.org@prvy.eu>,
+        Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 182/563] mmc: meson-mx-sdhc: add IRQ check
-Date:   Mon, 24 Jan 2022 19:39:07 +0100
-Message-Id: <20220124184030.714161210@linuxfoundation.org>
+Subject: [PATCH 5.10 207/563] netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone
+Date:   Mon, 24 Jan 2022 19:39:32 +0100
+Message-Id: <20220124184031.583468907@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,42 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 77bed755e0f06135faccdd3948863703f9a6e640 ]
+[ Upstream commit 23c54263efd7cb605e2f7af72717a2a951999217 ]
 
-The driver neglects to check the result of platform_get_irq()'s call and
-blithely passes the negative error codes to devm_request_threaded_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL, overriding
-an original error code. Stop calling devm_request_threaded_irq() with the
-invalid IRQ #s.
+This is needed in case a new transaction is made that doesn't insert any
+new elements into an already existing set.
 
-Fixes: e4bf1b0970ef ("mmc: host: meson-mx-sdhc: new driver for the Amlogic Meson SDHC host")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Link: https://lore.kernel.org/r/20211217202717.10041-2-s.shtylyov@omp.ru
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Else, after second 'nft -f ruleset.txt', lookups in such a set will fail
+because ->lookup() encounters raw_cpu_ptr(m->scratch) == NULL.
+
+For the initial rule load, insertion of elements takes care of the
+allocation, but for rule reloads this isn't guaranteed: we might not
+have additions to the set.
+
+Fixes: 3c4287f62044a90e ("nf_tables: Add set type for arbitrary concatenation of ranges")
+Reported-by: etkaar <lists.netfilter.org@prvy.eu>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/meson-mx-sdhc-mmc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ net/netfilter/nft_set_pipapo.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/mmc/host/meson-mx-sdhc-mmc.c b/drivers/mmc/host/meson-mx-sdhc-mmc.c
-index 8fdd0bbbfa21f..28aa78aa08f3f 100644
---- a/drivers/mmc/host/meson-mx-sdhc-mmc.c
-+++ b/drivers/mmc/host/meson-mx-sdhc-mmc.c
-@@ -854,6 +854,11 @@ static int meson_mx_sdhc_probe(struct platform_device *pdev)
- 		goto err_disable_pclk;
- 
- 	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		ret = irq;
-+		goto err_disable_pclk;
-+	}
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index 2d73f265b12c9..f67c4436c5d31 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -1290,6 +1290,11 @@ static struct nft_pipapo_match *pipapo_clone(struct nft_pipapo_match *old)
+ 	if (!new->scratch_aligned)
+ 		goto out_scratch;
+ #endif
++	for_each_possible_cpu(i)
++		*per_cpu_ptr(new->scratch, i) = NULL;
 +
- 	ret = devm_request_threaded_irq(dev, irq, meson_mx_sdhc_irq,
- 					meson_mx_sdhc_irq_thread, IRQF_ONESHOT,
- 					NULL, host);
++	if (pipapo_realloc_scratch(new, old->bsize_max))
++		goto out_scratch_realloc;
+ 
+ 	rcu_head_init(&new->rcu);
+ 
+@@ -1334,6 +1339,9 @@ out_lt:
+ 		kvfree(dst->lt);
+ 		dst--;
+ 	}
++out_scratch_realloc:
++	for_each_possible_cpu(i)
++		kfree(*per_cpu_ptr(new->scratch, i));
+ #ifdef NFT_PIPAPO_ALIGN
+ 	free_percpu(new->scratch_aligned);
+ #endif
 -- 
 2.34.1
 
