@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D57DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F02FC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349004AbiAXTUC (ORCPT
+        id S1349027AbiAXTUE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37484 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239179AbiAXTLZ (ORCPT
+        Mon, 24 Jan 2022 14:20:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41294 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345985AbiAXTLr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:25 -0500
+        Mon, 24 Jan 2022 14:11:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 106FDB81239;
-        Mon, 24 Jan 2022 19:11:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF96C340E5;
-        Mon, 24 Jan 2022 19:11:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FB0660917;
+        Mon, 24 Jan 2022 19:11:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26F05C340E7;
+        Mon, 24 Jan 2022 19:11:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051482;
-        bh=cM8e0f4FcNE+MacCiN8jXQAKoaEqErh8xnFDFuWA15U=;
+        s=korg; t=1643051504;
+        bh=k21YH/uuN8XFtF3EbvXNG34739hKfvE7WtQ6riUioMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TkCYuUfzt8vj3KdgaoHyAeBnq3vqzR1uZLWp8ig1Fu+MQkwd57qfWgxSVesT6XzWV
-         VKECPRRHgCBsNaPU/W0YOA6w8UtPrYIR6jvk4vLh5z++wXpyh7k9zgLJFm2stZy59H
-         mG9VCOQcHETOUGEWvZDtNa+hk2+1o1inlVBsqG1o=
+        b=agBFyL9rMi0VT7+Hr01ACFCZture83+kE1usEUdCzGOpTtHc0EC7YhF/2HP7thZS+
+         OgxEsMz05FHfiWDjEdx0ebKKiWtRtkabYXfzy2qbJFtOaBjzZYB1+Ch9ZG4uGJ2Ovs
+         2iLzro+bCqm+vBzJrR31VpYOmKv9YVm+vQsNgdU4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.14 175/186] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
-Date:   Mon, 24 Jan 2022 19:44:10 +0100
-Message-Id: <20220124183942.745157911@linuxfoundation.org>
+        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Subject: [PATCH 4.14 151/186] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
+Date:   Mon, 24 Jan 2022 19:43:46 +0100
+Message-Id: <20220124183941.961355122@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,50 +46,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-commit 912f7c6f7fac273f40e621447cf17d14b50d6e5b upstream.
+commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
 
-The hardware channel next descriptor view structure contains just
-fields of 32 bits, while dma_addr_t can be of type u64 or u32
-depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
-what the hardware expects.
+With the introduction of 6GHz channels the scan guard timeout should
+be adjusted to account for the following extreme case:
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-11-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+- All 6GHz channels are scanned passively: 58 channels.
+- The scan is fragmented with the following parameters: 3 fragments,
+  95 TUs suspend time, 44 TUs maximal out of channel time.
+
+The above would result with scan time of more than 24 seconds. Thus,
+set the timeout to 30 seconds.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |   18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -232,15 +232,15 @@ struct at_xdmac {
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -1364,7 +1364,7 @@ static int iwl_mvm_check_running_scans(s
+ 	return -EIO;
+ }
  
- /* Linked List Descriptor */
- struct at_xdmac_lld {
--	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
--	u32		mbr_ubc;	/* Microblock Control Member */
--	dma_addr_t	mbr_sa;		/* Source Address Member */
--	dma_addr_t	mbr_da;		/* Destination Address Member */
--	u32		mbr_cfg;	/* Configuration Register */
--	u32		mbr_bc;		/* Block Control Register */
--	u32		mbr_ds;		/* Data Stride Register */
--	u32		mbr_sus;	/* Source Microblock Stride Register */
--	u32		mbr_dus;	/* Destination Microblock Stride Register */
-+	u32 mbr_nda;	/* Next Descriptor Member */
-+	u32 mbr_ubc;	/* Microblock Control Member */
-+	u32 mbr_sa;	/* Source Address Member */
-+	u32 mbr_da;	/* Destination Address Member */
-+	u32 mbr_cfg;	/* Configuration Register */
-+	u32 mbr_bc;	/* Block Control Register */
-+	u32 mbr_ds;	/* Data Stride Register */
-+	u32 mbr_sus;	/* Source Microblock Stride Register */
-+	u32 mbr_dus;	/* Destination Microblock Stride Register */
- };
+-#define SCAN_TIMEOUT 20000
++#define SCAN_TIMEOUT 30000
  
- /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
+ void iwl_mvm_scan_timeout_wk(struct work_struct *work)
+ {
 
 
