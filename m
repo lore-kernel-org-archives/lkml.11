@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C91EC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B66C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423218AbiAYCdT (ORCPT
+        id S3423189AbiAYCdH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:33:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34424 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383317AbiAXU1I (ORCPT
+        Mon, 24 Jan 2022 21:33:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48630 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349338AbiAXUWn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:27:08 -0500
+        Mon, 24 Jan 2022 15:22:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24DAAB81229;
-        Mon, 24 Jan 2022 20:27:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FF71C340E5;
-        Mon, 24 Jan 2022 20:27:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A23D61232;
+        Mon, 24 Jan 2022 20:22:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7FBAC340E5;
+        Mon, 24 Jan 2022 20:22:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056025;
-        bh=mjBorZuh81adqdEcOrTZhe5u/IELOWwaGcD5RCrxOGQ=;
+        s=korg; t=1643055755;
+        bh=j9dt6hXW5l1S9dvtzJQJskZSb1b6kG2Bxkt0mnoPWbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b5mW+c/gVUkQJDW+TTcgF+4FCtqLyx8HNriRcUWn0huL7XxyRzDKHL5a6Jm4Hz0fw
-         4MjY1scImaRBvtlchYy3FJjuu/V7ZvsDj0/tcR1Tt31x0/RNM8k4S/ti3R9lvoTHSa
-         VTE/T4oF+yC5+Mlhsfd0DAs2JYMBy5u8qhX0FJ8I=
+        b=ysktzoqN93yeKKOrHYRNh3/NN6oqGiYckCr4+QGIG+FUPBEMsRSKGoTqq+wD8fvQf
+         5cqVarfALSlpCXJcMbMcK4NySM44kpTGmeTRaX3z6bwkM2WsQa4xywC4e7VuyepgAw
+         CXOqD4HYzpHFHjGb1V1En6NM8ZHKohTq+GM38PqM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, kernelbot <kernel-bot@kylinos.cn>,
+        Jackie Liu <liuyun01@kylinos.cn>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 345/846] net/mlx5: Set command entry semaphore up once got index free
-Date:   Mon, 24 Jan 2022 19:37:42 +0100
-Message-Id: <20220124184112.833270532@linuxfoundation.org>
+Subject: [PATCH 5.15 222/846] drm/msm/dp: displayPort driver need algorithm rational
+Date:   Mon, 24 Jan 2022 19:35:39 +0100
+Message-Id: <20220124184108.573059964@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,70 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Jackie Liu <liuyun01@kylinos.cn>
 
-[ Upstream commit 8e715cd613a1e872b9d918e912d90b399785761a ]
+[ Upstream commit 53d22794711ad630f40d59dd726bd260d77d585f ]
 
-Avoid a race where command work handler may fail to allocate command
-entry index, by holding the command semaphore down till command entry
-index is being freed.
+Let's select RATIONAL with dp driver. avoid like:
 
-Fixes: 410bd754cd73 ("net/mlx5: Add retry mechanism to the command entry index allocation")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+[...]
+x86_64-linux-gnu-ld: drivers/gpu/drm/msm/dp/dp_catalog.o: in function `dp_catalog_ctrl_config_msa':
+dp_catalog.c:(.text+0x57e): undefined reference to `rational_best_approximation'
+
+Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
+Reported-by: kernelbot <kernel-bot@kylinos.cn>
+Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+Link: https://lore.kernel.org/r/20211110070950.3355597-2-liu.yun@linux.dev
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/gpu/drm/msm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-index bea35530c2d0b..a0704be46e507 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -147,8 +147,12 @@ static void cmd_ent_put(struct mlx5_cmd_work_ent *ent)
- 	if (!refcount_dec_and_test(&ent->refcnt))
- 		return;
- 
--	if (ent->idx >= 0)
--		cmd_free_index(ent->cmd, ent->idx);
-+	if (ent->idx >= 0) {
-+		struct mlx5_cmd *cmd = ent->cmd;
-+
-+		cmd_free_index(cmd, ent->idx);
-+		up(ent->page_queue ? &cmd->pages_sem : &cmd->sem);
-+	}
- 
- 	cmd_free_ent(ent);
- }
-@@ -1594,8 +1598,6 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
- 	vector = vec & 0xffffffff;
- 	for (i = 0; i < (1 << cmd->log_sz); i++) {
- 		if (test_bit(i, &vector)) {
--			struct semaphore *sem;
--
- 			ent = cmd->ent_arr[i];
- 
- 			/* if we already completed the command, ignore it */
-@@ -1618,10 +1620,6 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
- 			    dev->state == MLX5_DEVICE_STATE_INTERNAL_ERROR)
- 				cmd_ent_put(ent);
- 
--			if (ent->page_queue)
--				sem = &cmd->pages_sem;
--			else
--				sem = &cmd->sem;
- 			ent->ts2 = ktime_get_ns();
- 			memcpy(ent->out->first.data, ent->lay->out, sizeof(ent->lay->out));
- 			dump_command(dev, ent, 0);
-@@ -1675,7 +1673,6 @@ static void mlx5_cmd_comp_handler(struct mlx5_core_dev *dev, u64 vec, bool force
- 				 */
- 				complete(&ent->done);
- 			}
--			up(sem);
- 		}
- 	}
- }
+diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
+index 3ddf739a6f9b8..c49b239231190 100644
+--- a/drivers/gpu/drm/msm/Kconfig
++++ b/drivers/gpu/drm/msm/Kconfig
+@@ -63,6 +63,7 @@ config DRM_MSM_HDMI_HDCP
+ config DRM_MSM_DP
+ 	bool "Enable DisplayPort support in MSM DRM driver"
+ 	depends on DRM_MSM
++	select RATIONAL
+ 	default y
+ 	help
+ 	  Compile in support for DP driver in MSM DRM driver. DP external
 -- 
 2.34.1
 
