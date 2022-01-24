@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A658C3526C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A438C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314770AbiAYCvo (ORCPT
+        id S1314910AbiAYCwE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347065AbiAXVFL (ORCPT
+        Mon, 24 Jan 2022 21:52:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58008 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442455AbiAXVF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05737C055A94;
-        Mon, 24 Jan 2022 12:04:31 -0800 (PST)
+        Mon, 24 Jan 2022 16:05:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6A13B811FB;
-        Mon, 24 Jan 2022 20:04:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E21B9C340E5;
-        Mon, 24 Jan 2022 20:04:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CD946143D;
+        Mon, 24 Jan 2022 21:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDB3DC340E8;
+        Mon, 24 Jan 2022 21:05:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054668;
-        bh=1W7QnzWemca3+VHrxEBDJsad3MM3/pf0E4IB4zUs6LA=;
+        s=korg; t=1643058324;
+        bh=VMKrBuXEekjkIWHWkoqddSFajUZpNRkPS7zlR8F06+w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p8GcmPvcQA6sgSZ+00ofn+xjsHT7CIPoDKBnUZibiXyvmqOOXP/KHHFTtV2lex4cS
-         u0T0mQubQYJ82mYLlwXpbTV8mIkQX4yLcivF9cVTOQPv/s8XlFey8KffBmqzqjrXwo
-         nhKr6zPKsEi/b+YXcGJ3TtGkRHik64upYyq8ablU=
+        b=pmRH3mNghiN15OThU1rD0kGhcX7t8+Hy+hXkTI6CFv6PlLizhyiUfKTLtt3Cyfl9O
+         D+tKRzdiRYBjYWKk+aOINHfk/urNYgfljHdiVUvSDMDOZ6dXw9CWv+CLgg+hgJTcxx
+         2BBdc8T6qhPB6+Fyr2JcW5gI+LNDmOvJH8frsAJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Ye Guojin <ye.guojin@zte.com.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Michael Walle <michael@walle.cc>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 432/563] MIPS: OCTEON: add put_device() after of_find_device_by_node()
-Date:   Mon, 24 Jan 2022 19:43:17 +0100
-Message-Id: <20220124184039.394739063@linuxfoundation.org>
+Subject: [PATCH 5.16 0252/1039] mtd: spi-nor: Get rid of nor->page_size
+Date:   Mon, 24 Jan 2022 19:34:01 +0100
+Message-Id: <20220124184133.797138495@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,65 +49,152 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
+[ Upstream commit 5854d4a6cc356ba3e16d8593ac1c089a32d1759c ]
 
-This was found by coccicheck:
-./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 324, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 387, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
+nor->page_size duplicated what nor->params->page_size indicates
+for no good reason. page_size is a flash parameter of fixed value
+and it is better suited to be found in nor->params->page_size.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Reviewed-by: Michael Walle <michael@walle.cc>
+Link: https://lore.kernel.org/r/20211029172633.886453-5-tudor.ambarus@microchip.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/cavium-octeon/octeon-platform.c | 2 ++
- arch/mips/cavium-octeon/octeon-usb.c      | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/mtd/spi-nor/core.c   | 19 +++++++++----------
+ drivers/mtd/spi-nor/xilinx.c | 17 ++++++++++-------
+ include/linux/mtd/spi-nor.h  |  2 --
+ 3 files changed, 19 insertions(+), 19 deletions(-)
 
-diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
-index d56e9b9d2e434..a994022e32c9f 100644
---- a/arch/mips/cavium-octeon/octeon-platform.c
-+++ b/arch/mips/cavium-octeon/octeon-platform.c
-@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
+diff --git a/drivers/mtd/spi-nor/core.c b/drivers/mtd/spi-nor/core.c
+index cc08bd707378f..fa66dfed002d2 100644
+--- a/drivers/mtd/spi-nor/core.c
++++ b/drivers/mtd/spi-nor/core.c
+@@ -1952,6 +1952,7 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 	struct spi_nor *nor = mtd_to_spi_nor(mtd);
+ 	size_t page_offset, page_remain, i;
+ 	ssize_t ret;
++	u32 page_size = nor->params->page_size;
  
- 	pd->dev.platform_data = &octeon_ehci_pdata;
- 	octeon_ehci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
+ 	dev_dbg(nor->dev, "to 0x%08x, len %zd\n", (u32)to, len);
  
- 	return ret;
- }
-@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
+@@ -1968,16 +1969,15 @@ static int spi_nor_write(struct mtd_info *mtd, loff_t to, size_t len,
+ 		 * calculated with an AND operation. On the other cases we
+ 		 * need to do a modulus operation (more expensive).
+ 		 */
+-		if (is_power_of_2(nor->page_size)) {
+-			page_offset = addr & (nor->page_size - 1);
++		if (is_power_of_2(page_size)) {
++			page_offset = addr & (page_size - 1);
+ 		} else {
+ 			uint64_t aux = addr;
  
- 	pd->dev.platform_data = &octeon_ohci_pdata;
- 	octeon_ohci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
- 	return ret;
- }
-diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
-index 950e6c6e86297..fa87e5aa1811d 100644
---- a/arch/mips/cavium-octeon/octeon-usb.c
-+++ b/arch/mips/cavium-octeon/octeon-usb.c
-@@ -544,6 +544,7 @@ static int __init dwc3_octeon_device_init(void)
- 			devm_iounmap(&pdev->dev, base);
- 			devm_release_mem_region(&pdev->dev, res->start,
- 						resource_size(res));
-+			put_device(&pdev->dev);
+-			page_offset = do_div(aux, nor->page_size);
++			page_offset = do_div(aux, page_size);
  		}
- 	} while (node != NULL);
+ 		/* the size of data remaining on the first page */
+-		page_remain = min_t(size_t,
+-				    nor->page_size - page_offset, len - i);
++		page_remain = min_t(size_t, page_size - page_offset, len - i);
  
+ 		addr = spi_nor_convert_addr(nor, addr);
+ 
+@@ -3094,7 +3094,7 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+ 	 * We need the bounce buffer early to read/write registers when going
+ 	 * through the spi-mem layer (buffers have to be DMA-able).
+ 	 * For spi-mem drivers, we'll reallocate a new buffer if
+-	 * nor->page_size turns out to be greater than PAGE_SIZE (which
++	 * nor->params->page_size turns out to be greater than PAGE_SIZE (which
+ 	 * shouldn't happen before long since NOR pages are usually less
+ 	 * than 1KB) after spi_nor_scan() returns.
+ 	 */
+@@ -3171,8 +3171,7 @@ int spi_nor_scan(struct spi_nor *nor, const char *name,
+ 		mtd->flags |= MTD_NO_ERASE;
+ 
+ 	mtd->dev.parent = dev;
+-	nor->page_size = nor->params->page_size;
+-	mtd->writebufsize = nor->page_size;
++	mtd->writebufsize = nor->params->page_size;
+ 
+ 	if (of_property_read_bool(np, "broken-flash-reset"))
+ 		nor->flags |= SNOR_F_BROKEN_RESET;
+@@ -3341,8 +3340,8 @@ static int spi_nor_probe(struct spi_mem *spimem)
+ 	 * and add this logic so that if anyone ever adds support for such
+ 	 * a NOR we don't end up with buffer overflows.
+ 	 */
+-	if (nor->page_size > PAGE_SIZE) {
+-		nor->bouncebuf_size = nor->page_size;
++	if (nor->params->page_size > PAGE_SIZE) {
++		nor->bouncebuf_size = nor->params->page_size;
+ 		devm_kfree(nor->dev, nor->bouncebuf);
+ 		nor->bouncebuf = devm_kmalloc(nor->dev,
+ 					      nor->bouncebuf_size,
+diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
+index 1138bdbf41998..0658e47564bac 100644
+--- a/drivers/mtd/spi-nor/xilinx.c
++++ b/drivers/mtd/spi-nor/xilinx.c
+@@ -28,11 +28,12 @@ static const struct flash_info xilinx_parts[] = {
+  */
+ static u32 s3an_convert_addr(struct spi_nor *nor, u32 addr)
+ {
++	u32 page_size = nor->params->page_size;
+ 	u32 offset, page;
+ 
+-	offset = addr % nor->page_size;
+-	page = addr / nor->page_size;
+-	page <<= (nor->page_size > 512) ? 10 : 9;
++	offset = addr % page_size;
++	page = addr / page_size;
++	page <<= (page_size > 512) ? 10 : 9;
+ 
+ 	return page | offset;
+ }
+@@ -40,6 +41,7 @@ static u32 s3an_convert_addr(struct spi_nor *nor, u32 addr)
+ static int xilinx_nor_setup(struct spi_nor *nor,
+ 			    const struct spi_nor_hwcaps *hwcaps)
+ {
++	u32 page_size;
+ 	int ret;
+ 
+ 	ret = spi_nor_xread_sr(nor, nor->bouncebuf);
+@@ -64,10 +66,11 @@ static int xilinx_nor_setup(struct spi_nor *nor,
+ 	 */
+ 	if (nor->bouncebuf[0] & XSR_PAGESIZE) {
+ 		/* Flash in Power of 2 mode */
+-		nor->page_size = (nor->page_size == 264) ? 256 : 512;
+-		nor->mtd.writebufsize = nor->page_size;
+-		nor->mtd.size = 8 * nor->page_size * nor->info->n_sectors;
+-		nor->mtd.erasesize = 8 * nor->page_size;
++		page_size = (nor->params->page_size == 264) ? 256 : 512;
++		nor->params->page_size = page_size;
++		nor->mtd.writebufsize = page_size;
++		nor->mtd.size = 8 * page_size * nor->info->n_sectors;
++		nor->mtd.erasesize = 8 * page_size;
+ 	} else {
+ 		/* Flash in Default addressing mode */
+ 		nor->params->convert_addr = s3an_convert_addr;
+diff --git a/include/linux/mtd/spi-nor.h b/include/linux/mtd/spi-nor.h
+index f67457748ed84..fc90fce26e337 100644
+--- a/include/linux/mtd/spi-nor.h
++++ b/include/linux/mtd/spi-nor.h
+@@ -371,7 +371,6 @@ struct spi_nor_flash_parameter;
+  * @bouncebuf_size:	size of the bounce buffer
+  * @info:		SPI NOR part JEDEC MFR ID and other info
+  * @manufacturer:	SPI NOR manufacturer
+- * @page_size:		the page size of the SPI NOR
+  * @addr_width:		number of address bytes
+  * @erase_opcode:	the opcode for erasing a sector
+  * @read_opcode:	the read opcode
+@@ -401,7 +400,6 @@ struct spi_nor {
+ 	size_t			bouncebuf_size;
+ 	const struct flash_info	*info;
+ 	const struct spi_nor_manufacturer *manufacturer;
+-	u32			page_size;
+ 	u8			addr_width;
+ 	u8			erase_opcode;
+ 	u8			read_opcode;
 -- 
 2.34.1
 
