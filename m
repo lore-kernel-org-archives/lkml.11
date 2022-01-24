@@ -2,44 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C52C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F6CC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421509AbiAYC1D (ORCPT
+        id S3421552AbiAYC1K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45688 "EHLO
+        Mon, 24 Jan 2022 21:27:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47772 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350929AbiAXTui (ORCPT
+        with ESMTP id S1354921AbiAXTuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:50:38 -0500
+        Mon, 24 Jan 2022 14:50:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E468260B03;
-        Mon, 24 Jan 2022 19:50:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC67CC340E5;
-        Mon, 24 Jan 2022 19:50:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9768E60B02;
+        Mon, 24 Jan 2022 19:50:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7135AC340E5;
+        Mon, 24 Jan 2022 19:50:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053836;
-        bh=UCxDnoM5ZMozC2PjxW1JyBuEh17gqFvQToMn369sdiU=;
+        s=korg; t=1643053851;
+        bh=CMAFuYCxD3n3x60E7psobpsZULWljbebeyEgXDEvhw4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UMh5MnxK5zfZGVcNKCuqgDDRNIPrpXhPozvc7EL9IpKBsJNGh3mGhkSZg7h/5hkks
-         RoaekyoUKQsj6fMFCUZJ6Z+SEAfG35R/o4Ik3JIVjvII8C5uPiyQrAspjGlNgV+IRo
-         l2aIvOkXpaZ5vxi7aOULWda2PS8Fxq5Ze+ke/K6k=
+        b=xH4ZPOT6sxDCNePWylVBn6CW1fl9If+JHWfJVPUEGVMkw4S5jYKz1CuqJcJt2ocoM
+         WvoAVo5IRL9X29t+QFrQV7riIobclnrQfEcBm+ha7RHxb2ZuBFel91U8bIktXCWML7
+         sZmupnV3AFtHRcZ2GcoMePFu+Ef+MunfXTXIgoQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 193/563] backlight: qcom-wled: Use cpu_to_le16 macro to perform conversion
-Date:   Mon, 24 Jan 2022 19:39:18 +0100
-Message-Id: <20220124184031.108040168@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 197/563] x86/boot/compressed: Move CLANG_FLAGS to beginning of KBUILD_CFLAGS
+Date:   Mon, 24 Jan 2022 19:39:22 +0100
+Message-Id: <20220124184031.248771405@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,94 +46,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 0a139358548968b2ff308257b4fbeec7badcc3e1 ]
+[ Upstream commit 5fe392ff9d1f7254a1fbb3f72d9893088e4d23eb ]
 
-The kernel already provides appropriate primitives to perform endianness
-conversion which should be used in favour of manual bit-wrangling.
+When cross compiling i386_defconfig on an arm64 host with clang, there
+are a few instances of '-Waddress-of-packed-member' and
+'-Wgnu-variable-sized-type-not-at-end' in arch/x86/boot/compressed/,
+which should both be disabled with the cc-disable-warning calls in that
+directory's Makefile, which indicates that cc-disable-warning is failing
+at the point of testing these flags.
 
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211115203459.1634079-4-marijn.suijten@somainline.org
+The cc-disable-warning calls fail because at the point that the flags
+are tested, KBUILD_CFLAGS has '-march=i386' without $(CLANG_FLAGS),
+which has the '--target=' flag to tell clang what architecture it is
+targeting. Without the '--target=' flag, the host architecture (arm64)
+is used and i386 is not a valid value for '-march=' in that case. This
+error can be seen by adding some logging to try-run:
+
+  clang-14: error: the clang compiler does not support '-march=i386'
+
+Invoking the compiler has to succeed prior to calling cc-option or
+cc-disable-warning in order to accurately test whether or not the flag
+is supported; if it doesn't, the requested flag can never be added to
+the compiler flags. Move $(CLANG_FLAGS) to the beginning of KBUILD_FLAGS
+so that any new flags that might be added in the future can be
+accurately tested.
+
+Fixes: d5cbd80e302d ("x86/boot: Add $(CLANG_FLAGS) to compressed KBUILD_CFLAGS")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211222163040.1961481-1-nathan@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/backlight/qcom-wled.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ arch/x86/boot/compressed/Makefile | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
-index 70fcee74866a5..13368044d0a75 100644
---- a/drivers/video/backlight/qcom-wled.c
-+++ b/drivers/video/backlight/qcom-wled.c
-@@ -231,14 +231,14 @@ struct wled {
- static int wled3_set_brightness(struct wled *wled, u16 brightness)
- {
- 	int rc, i;
--	u8 v[2];
-+	__le16 v;
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 6004047d25fdd..bf91e0a36d77f 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -28,7 +28,11 @@ KCOV_INSTRUMENT		:= n
+ targets := vmlinux vmlinux.bin vmlinux.bin.gz vmlinux.bin.bz2 vmlinux.bin.lzma \
+ 	vmlinux.bin.xz vmlinux.bin.lzo vmlinux.bin.lz4 vmlinux.bin.zst
  
--	v[0] = brightness & 0xff;
--	v[1] = (brightness >> 8) & 0xf;
-+	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
+-KBUILD_CFLAGS := -m$(BITS) -O2
++# CLANG_FLAGS must come before any cc-disable-warning or cc-option calls in
++# case of cross compiling, as it has the '--target=' flag, which is needed to
++# avoid errors with '-march=i386', and future flags may depend on the target to
++# be valid.
++KBUILD_CFLAGS := -m$(BITS) -O2 $(CLANG_FLAGS)
+ KBUILD_CFLAGS += -fno-strict-aliasing -fPIE
+ KBUILD_CFLAGS += -DDISABLE_BRANCH_PROFILING
+ cflags-$(CONFIG_X86_32) := -march=i386
+@@ -46,7 +50,6 @@ KBUILD_CFLAGS += -D__DISABLE_EXPORTS
+ # Disable relocation relaxation in case the link is not PIE.
+ KBUILD_CFLAGS += $(call as-option,-Wa$(comma)-mrelax-relocations=no)
+ KBUILD_CFLAGS += -include $(srctree)/include/linux/hidden.h
+-KBUILD_CFLAGS += $(CLANG_FLAGS)
  
- 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
- 		rc = regmap_bulk_write(wled->regmap, wled->ctrl_addr +
--				       WLED3_SINK_REG_BRIGHT(i), v, 2);
-+				       WLED3_SINK_REG_BRIGHT(i),
-+				       &v, sizeof(v));
- 		if (rc < 0)
- 			return rc;
- 	}
-@@ -250,18 +250,18 @@ static int wled4_set_brightness(struct wled *wled, u16 brightness)
- {
- 	int rc, i;
- 	u16 low_limit = wled->max_brightness * 4 / 1000;
--	u8 v[2];
-+	__le16 v;
- 
- 	/* WLED4's lower limit of operation is 0.4% */
- 	if (brightness > 0 && brightness < low_limit)
- 		brightness = low_limit;
- 
--	v[0] = brightness & 0xff;
--	v[1] = (brightness >> 8) & 0xf;
-+	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
- 
- 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
- 		rc = regmap_bulk_write(wled->regmap, wled->sink_addr +
--				       WLED4_SINK_REG_BRIGHT(i), v, 2);
-+				       WLED4_SINK_REG_BRIGHT(i),
-+				       &v, sizeof(v));
- 		if (rc < 0)
- 			return rc;
- 	}
-@@ -273,21 +273,20 @@ static int wled5_set_brightness(struct wled *wled, u16 brightness)
- {
- 	int rc, offset;
- 	u16 low_limit = wled->max_brightness * 1 / 1000;
--	u8 v[2];
-+	__le16 v;
- 
- 	/* WLED5's lower limit is 0.1% */
- 	if (brightness < low_limit)
- 		brightness = low_limit;
- 
--	v[0] = brightness & 0xff;
--	v[1] = (brightness >> 8) & 0x7f;
-+	v = cpu_to_le16(brightness & WLED5_SINK_REG_BRIGHT_MAX_15B);
- 
- 	offset = (wled->cfg.mod_sel == MOD_A) ?
- 		  WLED5_SINK_REG_MOD_A_BRIGHTNESS_LSB :
- 		  WLED5_SINK_REG_MOD_B_BRIGHTNESS_LSB;
- 
- 	rc = regmap_bulk_write(wled->regmap, wled->sink_addr + offset,
--			       v, 2);
-+			       &v, sizeof(v));
- 	return rc;
- }
- 
+ # sev-es.c indirectly inludes inat-table.h which is generated during
+ # compilation and stored in $(objtree). Add the directory to the includes so
 -- 
 2.34.1
 
