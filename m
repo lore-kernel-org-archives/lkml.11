@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DBD0C3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED903C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581217AbiAXWLY (ORCPT
+        id S1581139AbiAXWLS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33918 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359768AbiAXVOW (ORCPT
+        Mon, 24 Jan 2022 17:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449130AbiAXVO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:14:22 -0500
+        Mon, 24 Jan 2022 16:14:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8719C06E012;
+        Mon, 24 Jan 2022 12:11:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F321B81243;
-        Mon, 24 Jan 2022 21:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23C2EC340E5;
-        Mon, 24 Jan 2022 21:14:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76B90B811F9;
+        Mon, 24 Jan 2022 20:11:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9380CC340E5;
+        Mon, 24 Jan 2022 20:11:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058859;
-        bh=tLYKVPrk6SwB3glulpE2TPmStGQfWvn/PQr44b2j16Y=;
+        s=korg; t=1643055077;
+        bh=pOMuClDdtMKtaAUzzkfbJsxX0oBaFCtga5RqV+vM42Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XgYw4whTmsFkoXqPi68o5le/aGQDK8lgnUovxt8I0eFjad64kU411GHnRDMJAeIcs
-         USMoNVVHIFGVyvgPZiLtlj05pUVgbBSV6/nv9ILYgiPbYKO0vyHJucX0qGvEGDadjm
-         B6uxRc0iVH6x/2Pt9HLunhsCTRsdTqKGi/sxzWAk=
+        b=cN11vv9K2qqGNn2/Hme/J0zpPLTZfc8e32bXuIHT4BjfPtanbwx5Eb+xubRW8Sy9J
+         qKKR6TOe/EKwSzQgcFf9puXXYzdK1rL+oa6WpjNAngmK8r5YWYqtSIg6cVxOTNpm5S
+         IgBu80wTv0AOBxMBwyWr4KMECIS/BBn8UruKt55k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0425/1039] ax25: uninitialized variable in ax25_setsockopt()
-Date:   Mon, 24 Jan 2022 19:36:54 +0100
-Message-Id: <20220124184139.589701660@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 033/846] net: phy: marvell: add Marvell specific PHY loopback
+Date:   Mon, 24 Jan 2022 19:32:30 +0100
+Message-Id: <20220124184102.076987359@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,75 +50,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
 
-[ Upstream commit 9371937092d5fd502032c1bb4475b36b39b1f1b3 ]
+commit 020a45aff1190c32b1087cd75b57fbf6bff46ea6 upstream.
 
-The "opt" variable is unsigned long but we only copy 4 bytes from
-the user so the lower 4 bytes are uninitialized.
+Existing genphy_loopback() is not applicable for Marvell PHY. Besides
+configuring bit-6 and bit-13 in Page 0 Register 0 (Copper Control
+Register), it is also required to configure same bits  in Page 2
+Register 21 (MAC Specific Control Register 2) according to speed of
+the loopback is operating.
 
-I have changed the integer overflow checks from ULONG to UINT as well.
-This is a slight API change but I don't expect it to break anything.
+Tested working on Marvell88E1510 PHY for all speeds (1000/100/10Mbps).
 
-Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+FIXME: Based on trial and error test, it seem 1G need to have delay between
+soft reset and loopback enablement.
+
+Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/phy/marvell.c |   56 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index cfca99e295b80..02f43f3e2c564 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -536,7 +536,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 	ax25_cb *ax25;
- 	struct net_device *dev;
- 	char devname[IFNAMSIZ];
--	unsigned long opt;
-+	unsigned int opt;
- 	int res = 0;
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -189,6 +189,8 @@
+ #define MII_88E1510_GEN_CTRL_REG_1_MODE_RGMII_SGMII	0x4
+ #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
  
- 	if (level != SOL_AX25)
-@@ -568,7 +568,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
++#define MII_88E1510_MSCR_2		0x15
++
+ #define MII_VCT5_TX_RX_MDI0_COUPLING	0x10
+ #define MII_VCT5_TX_RX_MDI1_COUPLING	0x11
+ #define MII_VCT5_TX_RX_MDI2_COUPLING	0x12
+@@ -1932,6 +1934,58 @@ static void marvell_get_stats(struct phy
+ 		data[i] = marvell_get_stat(phydev, i);
+ }
  
- 	case AX25_T1:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -577,7 +577,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T2:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -593,7 +593,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T3:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -601,7 +601,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_IDLE:
--		if (opt > ULONG_MAX / (60 * HZ)) {
-+		if (opt > UINT_MAX / (60 * HZ)) {
- 			res = -EINVAL;
- 			break;
- 		}
--- 
-2.34.1
-
++static int m88e1510_loopback(struct phy_device *phydev, bool enable)
++{
++	int err;
++
++	if (enable) {
++		u16 bmcr_ctl = 0, mscr2_ctl = 0;
++
++		if (phydev->speed == SPEED_1000)
++			bmcr_ctl = BMCR_SPEED1000;
++		else if (phydev->speed == SPEED_100)
++			bmcr_ctl = BMCR_SPEED100;
++
++		if (phydev->duplex == DUPLEX_FULL)
++			bmcr_ctl |= BMCR_FULLDPLX;
++
++		err = phy_write(phydev, MII_BMCR, bmcr_ctl);
++		if (err < 0)
++			return err;
++
++		if (phydev->speed == SPEED_1000)
++			mscr2_ctl = BMCR_SPEED1000;
++		else if (phydev->speed == SPEED_100)
++			mscr2_ctl = BMCR_SPEED100;
++
++		err = phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
++				       MII_88E1510_MSCR_2, BMCR_SPEED1000 |
++				       BMCR_SPEED100, mscr2_ctl);
++		if (err < 0)
++			return err;
++
++		/* Need soft reset to have speed configuration takes effect */
++		err = genphy_soft_reset(phydev);
++		if (err < 0)
++			return err;
++
++		/* FIXME: Based on trial and error test, it seem 1G need to have
++		 * delay between soft reset and loopback enablement.
++		 */
++		if (phydev->speed == SPEED_1000)
++			msleep(1000);
++
++		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
++				  BMCR_LOOPBACK);
++	} else {
++		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
++		if (err < 0)
++			return err;
++
++		return phy_config_aneg(phydev);
++	}
++}
++
+ static int marvell_vct5_wait_complete(struct phy_device *phydev)
+ {
+ 	int i;
+@@ -3078,7 +3132,7 @@ static struct phy_driver marvell_drivers
+ 		.get_sset_count = marvell_get_sset_count,
+ 		.get_strings = marvell_get_strings,
+ 		.get_stats = marvell_get_stats,
+-		.set_loopback = genphy_loopback,
++		.set_loopback = m88e1510_loopback,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+ 		.cable_test_start = marvell_vct7_cable_test_start,
 
 
