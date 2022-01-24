@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2236EC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 538D6C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350717AbiAXTZO (ORCPT
+        id S1350793AbiAXTZV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:25:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45504 "EHLO
+        Mon, 24 Jan 2022 14:25:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46090 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343689AbiAXTQX (ORCPT
+        with ESMTP id S243013AbiAXTQw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:16:23 -0500
+        Mon, 24 Jan 2022 14:16:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EF7A56131E;
-        Mon, 24 Jan 2022 19:16:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE33C340E5;
-        Mon, 24 Jan 2022 19:16:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35464613B3;
+        Mon, 24 Jan 2022 19:16:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17CE8C340E5;
+        Mon, 24 Jan 2022 19:16:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051782;
-        bh=FFc92ucDMk1pQ5zu/eaB0zb0C06jywc23rLv9Ce6chs=;
+        s=korg; t=1643051810;
+        bh=eZnupatPIV3ci7NnZFNHGOgaYKGfQO9VVbfWgx6Ag74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qAd2QmHKvqEZpJU+pt0u5MOMHeDsu4St9UlWL3O5/rgdU95VelllKkqsYTubYQcCC
-         MgHJ3H1q+2PMQYUKzRqki1cM6SS4Pjrc0L08UJlvhQYOODE8p5SPNpN7IrIfHuufTz
-         zYcd2wQlXZxsVd4Rc38QPDWobERZYWVyRLUR6Hn0=
+        b=vXKlrLywV4pgrqcBvjHWqCN1gjqBiSi5+sLeoISwSZs6bNcKsZZLVPUaqwXMCy1it
+         G3nrBVqk4B3JhQuuxAwrPiStS+grNWK9Hjn0L3X7VnPxIQ/eW+YQ0cEcz4ColQe400
+         b7Nf3JI6y8WNBdb9QSrzLDwUKlNqdptfBcst9dGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 086/239] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
-Date:   Mon, 24 Jan 2022 19:42:04 +0100
-Message-Id: <20220124183945.853766473@linuxfoundation.org>
+Subject: [PATCH 4.19 094/239] can: softing: softing_startstop(): fix set but not used variable warning
+Date:   Mon, 24 Jan 2022 19:42:12 +0100
+Message-Id: <20220124183946.099402713@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,52 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 977d2e7c63c3d04d07ba340b39987742e3241554 ]
+[ Upstream commit 370d988cc529598ebaec6487d4f84c2115dc696b ]
 
-In nonstatic_find_mem_region(), pcmcia_make_resource() is assigned to
-res and used in pci_bus_alloc_resource(). There a dereference of res
-in pci_bus_alloc_resource(), which could lead to a NULL pointer
-dereference on failure of pcmcia_make_resource().
+In the function softing_startstop() the variable error_reporting is
+assigned but not used. The code that uses this variable is commented
+out. Its stated that the functionality is not finally verified.
 
-Fix this bug by adding a check of res.
+To fix the warning:
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+| drivers/net/can/softing/softing_fw.c:424:9: error: variable 'error_reporting' set but not used [-Werror,-Wunused-but-set-variable]
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+remove the comment, activate the code, but add a "0 &&" to the if
+expression and rely on the optimizer rather than the preprocessor to
+remove the code.
 
-Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Link: https://lore.kernel.org/all/20220109103126.1872833-1-mkl@pengutronix.de
+Fixes: 03fd3cf5a179 ("can: add driver for Softing card")
+Cc: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pcmcia/rsrc_nonstatic.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/can/softing/softing_fw.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
-index 5cb29d6951df2..123420cac6b54 100644
---- a/drivers/pcmcia/rsrc_nonstatic.c
-+++ b/drivers/pcmcia/rsrc_nonstatic.c
-@@ -815,6 +815,9 @@ static struct resource *nonstatic_find_mem_region(u_long base, u_long num,
- 	unsigned long min, max;
- 	int ret, i, j;
- 
-+	if (!res)
-+		return NULL;
+diff --git a/drivers/net/can/softing/softing_fw.c b/drivers/net/can/softing/softing_fw.c
+index aac58ce6e371a..209eddeb822e5 100644
+--- a/drivers/net/can/softing/softing_fw.c
++++ b/drivers/net/can/softing/softing_fw.c
+@@ -576,18 +576,19 @@ int softing_startstop(struct net_device *dev, int up)
+ 		if (ret < 0)
+ 			goto failed;
+ 	}
+-	/* enable_error_frame */
+-	/*
 +
- 	low = low || !(s->features & SS_CAP_PAGE_REGS);
- 
- 	data.mask = align - 1;
++	/* enable_error_frame
++	 *
+ 	 * Error reporting is switched off at the moment since
+ 	 * the receiving of them is not yet 100% verified
+ 	 * This should be enabled sooner or later
+-	 *
+-	if (error_reporting) {
++	 */
++	if (0 && error_reporting) {
+ 		ret = softing_fct_cmd(card, 51, "enable_error_frame");
+ 		if (ret < 0)
+ 			goto failed;
+ 	}
+-	*/
++
+ 	/* initialize interface */
+ 	iowrite16(1, &card->dpram[DPRAM_FCT_PARAM + 2]);
+ 	iowrite16(1, &card->dpram[DPRAM_FCT_PARAM + 4]);
 -- 
 2.34.1
 
