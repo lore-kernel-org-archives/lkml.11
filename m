@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E23DC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEA1BC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576031AbiAXVwy (ORCPT
+        id S1576354AbiAXVx0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38990 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450514AbiAXVUo (ORCPT
+        Mon, 24 Jan 2022 16:53:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450662AbiAXVVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:20:44 -0500
+        Mon, 24 Jan 2022 16:21:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4203CC0604D5;
+        Mon, 24 Jan 2022 12:15:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7B927B8122A;
-        Mon, 24 Jan 2022 21:20:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DDDC340E4;
-        Mon, 24 Jan 2022 21:20:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03487B8122D;
+        Mon, 24 Jan 2022 20:15:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E4D1C340E5;
+        Mon, 24 Jan 2022 20:15:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059242;
-        bh=jSECrfroaRL6gnqItNOsQdsp2IFqaB2YwhTsNYAREpQ=;
+        s=korg; t=1643055334;
+        bh=Of7o8sUp1oF0WnG3m2QjNpOrdoJeej0KI0tKW8m4LpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FK+WdRPGTGbxXmsYUEMr4CGo1hbxvACrv9wdL7J2lY6KR4QnbFBSiyS4hctE3lxO7
-         rB5PXpFVyxXDqSY0JeJtP8Dx9P61EAISci+W21z9KfpiXawQ+bvX73MwLtpCWTeYXh
-         8vFmOhxgWmgIUNSYsvO57qXZHLfYoTlZHvhivRhc=
+        b=WWggblfSrHy+k88gY4OJy9rItJfft5HNzntYLCyritFZlqc6Xzf4o0xKtdid0j59b
+         1wevG6FHckwW7EnPncAPUmjlQ+nie4YRX1BIARuApvec9Q6qciMMMNekvbyJtxhDp9
+         EpxLJk7EYe4+JAXpi6TGSYYtbK5AwJCqhkVp6M60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0517/1039] powerpc/xive: Add missing null check after calling kmalloc
-Date:   Mon, 24 Jan 2022 19:38:26 +0100
-Message-Id: <20220124184142.670010140@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        xinhui pan <xinhui.pan@amd.com>
+Subject: [PATCH 5.15 075/846] drm/ttm: Put BO in its memory managers lru list
+Date:   Mon, 24 Jan 2022 19:33:12 +0100
+Message-Id: <20220124184103.575400530@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,41 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gmail.com>
+From: xinhui pan <xinhui.pan@amd.com>
 
-[ Upstream commit 18dbfcdedc802f9500b2c29794f22a31d27639c0 ]
+commit 781050b0a3164934857c300bb0bc291e38c26b6f upstream.
 
-Commit 930914b7d528fc ("powerpc/xive: Add a debugfs file to dump
-internal XIVE state") forgot to add a null check.
+After we move BO to a new memory region, we should put it to
+the new memory manager's lru list regardless we unlock the resv or not.
 
-Add it.
-
-Fixes: 930914b7d528fc6b0249bffc00564100bcf6ef75 ("powerpc/xive: Add a debugfs file to dump internal XIVE state")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
-Reviewed-by: Cédric Le Goater <clg@kaod.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211226135314.251221-1-ammar.faizi@intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: xinhui pan <xinhui.pan@amd.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211110043149.57554-1-xinhui.pan@amd.com
+Signed-off-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/ttm/ttm_bo.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index f143b6f111ac0..1179632560b8d 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -653,6 +653,9 @@ static int xive_spapr_debug_show(struct seq_file *m, void *private)
- 	struct xive_irq_bitmap *xibm;
- 	char *buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
+--- a/drivers/gpu/drm/ttm/ttm_bo.c
++++ b/drivers/gpu/drm/ttm/ttm_bo.c
+@@ -724,6 +724,8 @@ int ttm_mem_evict_first(struct ttm_devic
+ 	ret = ttm_bo_evict(bo, ctx);
+ 	if (locked)
+ 		ttm_bo_unreserve(bo);
++	else
++		ttm_bo_move_to_lru_tail_unlocked(bo);
  
-+	if (!buf)
-+		return -ENOMEM;
-+
- 	list_for_each_entry(xibm, &xive_irq_bitmaps, list) {
- 		memset(buf, 0, PAGE_SIZE);
- 		bitmap_print_to_pagebuf(true, buf, xibm->bitmap, xibm->count);
--- 
-2.34.1
-
+ 	ttm_bo_put(bo);
+ 	return ret;
 
 
