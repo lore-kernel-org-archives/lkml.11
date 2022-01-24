@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BABC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 762ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376517AbiAXVFW (ORCPT
+        id S1353037AbiAXVFl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:05:22 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38466 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344586AbiAXUm7 (ORCPT
+        Mon, 24 Jan 2022 16:05:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389732AbiAXUm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:59 -0500
+        Mon, 24 Jan 2022 15:42:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BC5C04967A;
+        Mon, 24 Jan 2022 11:53:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF4D46090B;
-        Mon, 24 Jan 2022 20:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94926C340E7;
-        Mon, 24 Jan 2022 20:42:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F99460B02;
+        Mon, 24 Jan 2022 19:53:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE3F6C36AE9;
+        Mon, 24 Jan 2022 19:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056976;
-        bh=6V+sC1g13i8VXCbalZh08XyriymrAMskwoCmd6usGJM=;
+        s=korg; t=1643053981;
+        bh=EdRBPmg9UuzN3RscHx/sISlmgsII/q5Oql95LbXNop0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KjwnAWiNHRzwriymVPrdQd2PbwLUDQASokNNW02Gzg37y/dP1GuzbQooC73Cp4+5f
-         KDbhALck5c2tjQWCUJ7pKuwuLb3PZ2q4W0vnOmqEgH8UIucXeTdsyumeIrrABuUalK
-         W0vLX25IB9Yu5lbstLkU33WNxmA6a9YXsFA6PlO8=
+        b=JglY1Pcb11z48W8Ayv51vQTBUR/iXXTqciITs6xLa/Zo4IbugFZW++tVK14HT6rRf
+         ilWy8svjnw6oiBfuoiHPWCyH1FELTwroq6KAgZYRf57q2NKVnjHWbKBmcOLVh2mp54
+         jhwk6aq8/qSGibf/wwJkB5CGPpm/Y3hWRm0Sioi0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 662/846] phy: mediatek: Fix missing check in mtk_mipi_tx_probe
-Date:   Mon, 24 Jan 2022 19:42:59 +0100
-Message-Id: <20220124184123.904083131@linuxfoundation.org>
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 213/563] Bluetooth: hci_qca: Fix NULL vs IS_ERR_OR_NULL check in qca_serdev_probe
+Date:   Mon, 24 Jan 2022 19:39:38 +0100
+Message-Id: <20220124184031.819170738@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +52,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 399c91c3f30531593e5ff6ca7b53f47092128669 ]
+[ Upstream commit 6845667146a28c09b5dfc401c1ad112374087944 ]
 
-The of_device_get_match_data() function may return NULL.
-Add check to prevent potential null dereference.
+The function devm_gpiod_get_index() return error pointers on error.
+Thus devm_gpiod_get_index_optional() could return NULL and error pointers.
+The same as devm_gpiod_get_optional() function. Using IS_ERR_OR_NULL()
+check to catch error pointers.
 
+Fixes: 77131dfe ("Bluetooth: hci_qca: Replace devm_gpiod_get() with devm_gpiod_get_optional()")
 Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20211224082103.7658-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/mediatek/phy-mtk-mipi-dsi.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/bluetooth/hci_qca.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/phy/mediatek/phy-mtk-mipi-dsi.c b/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
-index 28ad9403c4414..67b005d5b9e35 100644
---- a/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
-+++ b/drivers/phy/mediatek/phy-mtk-mipi-dsi.c
-@@ -146,6 +146,8 @@ static int mtk_mipi_tx_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 4f8a32601c1b6..dc7ee5dd2eeca 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -1990,7 +1990,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
  
- 	mipi_tx->driver_data = of_device_get_match_data(dev);
-+	if (!mipi_tx->driver_data)
-+		return -ENODEV;
- 
- 	mipi_tx->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(mipi_tx->regs))
+ 		qcadev->bt_en = devm_gpiod_get_optional(&serdev->dev, "enable",
+ 					       GPIOD_OUT_LOW);
+-		if (!qcadev->bt_en) {
++		if (IS_ERR_OR_NULL(qcadev->bt_en)) {
+ 			dev_warn(&serdev->dev, "failed to acquire enable gpio\n");
+ 			power_ctrl_enabled = false;
+ 		}
 -- 
 2.34.1
 
