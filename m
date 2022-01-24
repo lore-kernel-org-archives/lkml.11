@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A1DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35DAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243291AbiAXPDg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:03:36 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19100 "EHLO mga02.intel.com"
+        id S243447AbiAXPDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:03:40 -0500
+Received: from mga01.intel.com ([192.55.52.88]:64673 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240206AbiAXPCb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S240210AbiAXPCb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 10:02:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643036551; x=1674572551;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cmM37ONetmfy+H/QLu0tbdNtpNyWydlaLbgWJ54yjjA=;
-  b=W8uFv7VBoT16cJ/Mdev/lSajPYl0Uzmb6ptX8HVIwuVPpFo3YD60snTx
-   5ZnL2fviT/tJhkKSx0ye4BEyBiNE4sTYIKl9FZKJBuJvW1rRE+AWN3yuv
-   9FBd8dymKiadv6I9jpDY1n8mlzJ7VJ+5kWAyNDvSdkek8VgmMdkOIsEHF
-   R/GZq8bWV6ZzPZXNchHmGttDQTCrOKiUPNYAXKCugN7nFe6jl8hzPtHiH
-   JuOZxUdex6r88G4X3AM0nq+vN5h4f0PLGVW3fqWtxWNGVsL10C2AAPnA0
-   Jhfq33hFA58KkHQNx1FydB1jUKkVmzRCHDLiGoM2hC/+4PpQcxAf1BvAz
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233423319"
+  bh=cIq4wkLg68PMcrcMSOZIfkxpvIMypkjtFrhM/WVfcdg=;
+  b=gHuSh9yRFLeBX6J0TUyJHWIgjZY1zlENzl1JiD2+geV2HrRibKzQNikQ
+   +uGkviFUtZLovAvSIpDEME95aa6TejeAb6kqgcwmDIlDJ6gT5PWsqwB6/
+   7PCkn59gIZgrgR1VcfxRuum/zMfY4fqJTQKHv91hkys3Wtjjc6xC2LnSJ
+   2Ekne76K8lLfRG8bxwe+OwLtpybHWZSAUCWRLC7BY8BADyM2A998pNwC2
+   TZDOgs3PVqUhZ1jHDsaS5jq14nyVMnFrus8FXMS779KEzynhWq1H42CVW
+   DJ2AU3jKawt3+Iz+lYhkppoKKs4UUR9YkZyaFfkjMTXRuWtM1Z75uLVBB
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270498646"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233423319"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:26 -0800
+   d="scan'208";a="270498646"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:30 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="695447691"
+   d="scan'208";a="479104738"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 24 Jan 2022 07:02:19 -0800
+  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 07:02:24 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id E64BA9E0; Mon, 24 Jan 2022 17:02:19 +0200 (EET)
+        id 68E7CCD2; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -47,9 +47,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv2 12/29] x86/boot/compressed: Support TDX guest port I/O at decompression time
-Date:   Mon, 24 Jan 2022 18:01:58 +0300
-Message-Id: <20220124150215.36893-13-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv2 23/29] x86/tdx: Add helper to convert memory between shared and private
+Date:   Mon, 24 Jan 2022 18:02:09 +0300
+Message-Id: <20220124150215.36893-24-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
 References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
@@ -59,210 +59,153 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Port I/O instructions trigger #VE in the TDX environment. In response to
-the exception, kernel emulates these instructions using hypercalls.
+Intel TDX protects guest memory from VMM access. Any memory that is
+required for communication with the VMM must be explicitly shared.
 
-But during early boot, on the decompression stage, it is cumbersome to
-deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
-handling.
+It is a two-step process: the guest sets the shared bit in the page
+table entry and notifies VMM about the change. The notification happens
+using MapGPA hypercall.
 
-Hook up TDX-specific port I/O helpers if booting in TDX environment.
+Conversion back to private memory requires clearing the shared bit,
+notifying VMM with MapGPA hypercall following with accepting the memory
+with AcceptPage hypercall.
 
+Provide a helper to do conversion between shared and private memory.
+It is going to be used by the following patch.
+
+Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+Reviewed-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/boot/compressed/Makefile |  2 +-
- arch/x86/boot/compressed/tdcall.S |  3 ++
- arch/x86/boot/compressed/tdx.c    | 59 +++++++++++++++++++++++++++++++
- arch/x86/include/asm/shared/tdx.h | 23 ++++++++++++
- arch/x86/include/asm/tdx.h        | 21 -----------
- 5 files changed, 86 insertions(+), 22 deletions(-)
- create mode 100644 arch/x86/boot/compressed/tdcall.S
+ arch/x86/include/asm/tdx.h |  9 +++++
+ arch/x86/kernel/tdx.c      | 78 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 87 insertions(+)
 
-diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
-index 732f6b21ecbd..8fd0e6ae2e1f 100644
---- a/arch/x86/boot/compressed/Makefile
-+++ b/arch/x86/boot/compressed/Makefile
-@@ -101,7 +101,7 @@ ifdef CONFIG_X86_64
- endif
- 
- vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
--vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o
-+vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o
- 
- vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
- efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
-diff --git a/arch/x86/boot/compressed/tdcall.S b/arch/x86/boot/compressed/tdcall.S
-new file mode 100644
-index 000000000000..aafadc136c88
---- /dev/null
-+++ b/arch/x86/boot/compressed/tdcall.S
-@@ -0,0 +1,3 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+
-+#include "../../kernel/tdcall.S"
-diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
-index 6853376fe69a..f2e1449c74cd 100644
---- a/arch/x86/boot/compressed/tdx.c
-+++ b/arch/x86/boot/compressed/tdx.c
-@@ -5,6 +5,10 @@
- 
- #include "../cpuflags.h"
- #include "../string.h"
-+#include "../io.h"
-+
-+#include <vdso/limits.h>
-+#include <uapi/asm/vmx.h>
- 
- #include <asm/shared/tdx.h>
- 
-@@ -15,6 +19,54 @@ bool early_is_tdx_guest(void)
- 	return tdx_guest_detected;
- }
- 
-+static inline unsigned int tdx_io_in(int size, int port)
-+{
-+	struct tdx_hypercall_output out;
-+
-+	__tdx_hypercall(TDX_HYPERCALL_STANDARD, EXIT_REASON_IO_INSTRUCTION,
-+			size, 0, port, 0, &out);
-+
-+	return out.r10 ? UINT_MAX : out.r11;
-+}
-+
-+static inline void tdx_io_out(int size, int port, u64 value)
-+{
-+	struct tdx_hypercall_output out;
-+
-+	__tdx_hypercall(TDX_HYPERCALL_STANDARD, EXIT_REASON_IO_INSTRUCTION,
-+			size, 1, port, value, &out);
-+}
-+
-+static inline unsigned char tdx_inb(int port)
-+{
-+	return tdx_io_in(1, port);
-+}
-+
-+static inline unsigned short tdx_inw(int port)
-+{
-+	return tdx_io_in(2, port);
-+}
-+
-+static inline unsigned int tdx_inl(int port)
-+{
-+	return tdx_io_in(4, port);
-+}
-+
-+static inline void tdx_outb(unsigned char value, int port)
-+{
-+	tdx_io_out(1, port, value);
-+}
-+
-+static inline void tdx_outw(unsigned short value, int port)
-+{
-+	tdx_io_out(2, port, value);
-+}
-+
-+static inline void tdx_outl(unsigned int value, int port)
-+{
-+	tdx_io_out(4, port, value);
-+}
-+
- void early_tdx_detect(void)
- {
- 	u32 eax, sig[3];
-@@ -26,4 +78,11 @@ void early_tdx_detect(void)
- 
- 	/* Cache TDX guest feature status */
- 	tdx_guest_detected = true;
-+
-+	pio_ops.inb = tdx_inb;
-+	pio_ops.inw = tdx_inw;
-+	pio_ops.inl = tdx_inl;
-+	pio_ops.outb = tdx_outb;
-+	pio_ops.outw = tdx_outw;
-+	pio_ops.outl = tdx_outl;
- }
-diff --git a/arch/x86/include/asm/shared/tdx.h b/arch/x86/include/asm/shared/tdx.h
-index 12bede46d048..4a0218bedc75 100644
---- a/arch/x86/include/asm/shared/tdx.h
-+++ b/arch/x86/include/asm/shared/tdx.h
-@@ -1,7 +1,30 @@
- #ifndef _ASM_X86_SHARED_TDX_H
- #define _ASM_X86_SHARED_TDX_H
- 
-+#include <linux/types.h>
-+
-+/*
-+ * Used in __tdx_hypercall() to gather the output registers' values
-+ * of the TDCALL instruction when requesting services from the VMM.
-+ * This is a software only structure and not part of the TDX
-+ * module/VMM ABI.
-+ */
-+struct tdx_hypercall_output {
-+	u64 r10;
-+	u64 r11;
-+	u64 r12;
-+	u64 r13;
-+	u64 r14;
-+	u64 r15;
-+};
-+
-+#define TDX_HYPERCALL_STANDARD  0
-+
- #define TDX_CPUID_LEAF_ID	0x21
- #define TDX_IDENT		"IntelTDX    "
- 
-+/* Used to request services from the VMM */
-+u64 __tdx_hypercall(u64 type, u64 fn, u64 r12, u64 r13, u64 r14,
-+		    u64 r15, struct tdx_hypercall_output *out);
-+
- #endif
 diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-index 53f7dd0fbe58..27eb4ab2fdd2 100644
+index c6a279e67dff..f6a5fb4bf72c 100644
 --- a/arch/x86/include/asm/tdx.h
 +++ b/arch/x86/include/asm/tdx.h
-@@ -7,8 +7,6 @@
- #include <asm/ptrace.h>
- #include <asm/shared/tdx.h>
+@@ -57,6 +57,8 @@ bool tdx_early_handle_ve(struct pt_regs *regs);
  
--#define TDX_HYPERCALL_STANDARD  0
--
- /*
-  * Used in __tdx_module_call() to gather the output registers'
-  * values of the TDCALL instruction when requesting services from
-@@ -24,21 +22,6 @@ struct tdx_module_output {
- 	u64 r11;
- };
+ phys_addr_t tdx_shared_mask(void);
  
--/*
-- * Used in __tdx_hypercall() to gather the output registers' values
-- * of the TDCALL instruction when requesting services from the VMM.
-- * This is a software only structure and not part of the TDX
-- * module/VMM ABI.
-- */
--struct tdx_hypercall_output {
--	u64 r10;
--	u64 r11;
--	u64 r12;
--	u64 r13;
--	u64 r14;
--	u64 r15;
--};
--
- /*
-  * Used by the #VE exception handler to gather the #VE exception
-  * info from the TDX module. This is a software only structure
-@@ -64,10 +47,6 @@ bool is_tdx_guest(void);
- u64 __tdx_module_call(u64 fn, u64 rcx, u64 rdx, u64 r8, u64 r9,
- 		      struct tdx_module_output *out);
++int tdx_hcall_request_gpa_type(phys_addr_t start, phys_addr_t end, bool enc);
++
+ #else
  
--/* Used to request services from the VMM */
--u64 __tdx_hypercall(u64 type, u64 fn, u64 r12, u64 r13, u64 r14,
--		    u64 r15, struct tdx_hypercall_output *out);
--
- bool tdx_get_ve_info(struct ve_info *ve);
+ static inline void tdx_early_init(void) { };
+@@ -67,6 +69,13 @@ static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
  
- bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
+ static inline phys_addr_t tdx_shared_mask(void) { return 0; }
+ 
++
++static inline int tdx_hcall_request_gpa_type(phys_addr_t start,
++					     phys_addr_t end, bool enc)
++{
++	return -ENODEV;
++}
++
+ #endif /* CONFIG_INTEL_TDX_GUEST */
+ 
+ #if defined(CONFIG_KVM_GUEST) && defined(CONFIG_INTEL_TDX_GUEST)
+diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
+index 3bf6621eae7d..ea638c6ecb92 100644
+--- a/arch/x86/kernel/tdx.c
++++ b/arch/x86/kernel/tdx.c
+@@ -13,6 +13,10 @@
+ /* TDX module Call Leaf IDs */
+ #define TDX_GET_INFO			1
+ #define TDX_GET_VEINFO			3
++#define TDX_ACCEPT_PAGE			6
++
++/* TDX hypercall Leaf IDs */
++#define TDVMCALL_MAP_GPA		0x10001
+ 
+ /* See Exit Qualification for I/O Instructions in VMX documentation */
+ #define VE_IS_IO_IN(exit_qual)		(((exit_qual) & 8) ? 1 : 0)
+@@ -97,6 +101,80 @@ static void tdx_get_info(void)
+ 	td_info.attributes = out.rdx;
+ }
+ 
++static bool tdx_accept_page(phys_addr_t gpa, enum pg_level pg_level)
++{
++	/*
++	 * Pass the page physical address to the TDX module to accept the
++	 * pending, private page.
++	 *
++	 * Bits 2:0 if GPA encodes page size: 0 - 4K, 1 - 2M, 2 - 1G.
++	 */
++	switch (pg_level) {
++	case PG_LEVEL_4K:
++		break;
++	case PG_LEVEL_2M:
++		gpa |= 1;
++		break;
++	case PG_LEVEL_1G:
++		gpa |= 2;
++		break;
++	default:
++		return true;
++	}
++
++	return __tdx_module_call(TDX_ACCEPT_PAGE, gpa, 0, 0, 0, NULL);
++}
++
++/*
++ * Inform the VMM of the guest's intent for this physical page: shared with
++ * the VMM or private to the guest.  The VMM is expected to change its mapping
++ * of the page in response.
++ */
++int tdx_hcall_request_gpa_type(phys_addr_t start, phys_addr_t end, bool enc)
++{
++	u64 ret;
++
++	if (end <= start)
++		return -EINVAL;
++
++	if (!enc) {
++		start |= tdx_shared_mask();
++		end |= tdx_shared_mask();
++	}
++
++	/*
++	 * Notify the VMM about page mapping conversion. More info about ABI
++	 * can be found in TDX Guest-Host-Communication Interface (GHCI),
++	 * sec "TDG.VP.VMCALL<MapGPA>"
++	 */
++	ret = _tdx_hypercall(TDVMCALL_MAP_GPA, start, end - start, 0, 0, NULL);
++
++	if (ret)
++		ret = -EIO;
++
++	if (ret || !enc)
++		return ret;
++
++	/*
++	 * For shared->private conversion, accept the page using
++	 * TDX_ACCEPT_PAGE TDX module call.
++	 */
++	while (start < end) {
++		/* Try 2M page accept first if possible */
++		if (!(start & ~PMD_MASK) && end - start >= PMD_SIZE &&
++		    !tdx_accept_page(start, PG_LEVEL_2M)) {
++			start += PMD_SIZE;
++			continue;
++		}
++
++		if (tdx_accept_page(start, PG_LEVEL_4K))
++			return -EIO;
++		start += PAGE_SIZE;
++	}
++
++	return 0;
++}
++
+ static u64 __cpuidle _tdx_halt(const bool irq_disabled, const bool do_sti)
+ {
+ 	/*
 -- 
 2.34.1
 
