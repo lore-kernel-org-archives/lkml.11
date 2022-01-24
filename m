@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B0ACC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F699C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314946AbiAYCwG (ORCPT
+        id S1315063AbiAYCw0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:52:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46764 "EHLO
+        Mon, 24 Jan 2022 21:52:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353048AbiAXVFl (ORCPT
+        with ESMTP id S1377008AbiAXVGb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15913C06176C;
-        Mon, 24 Jan 2022 12:06:17 -0800 (PST)
+        Mon, 24 Jan 2022 16:06:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E13C9C0613E5;
+        Mon, 24 Jan 2022 12:06:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87613B8122F;
-        Mon, 24 Jan 2022 20:06:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC94CC340E5;
-        Mon, 24 Jan 2022 20:06:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80B0460B89;
+        Mon, 24 Jan 2022 20:06:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EBDCC340E5;
+        Mon, 24 Jan 2022 20:06:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054774;
-        bh=AaF7euI3kYHd/11AknQCQrpr2iggUpjasga3Y3juYgM=;
+        s=korg; t=1643054815;
+        bh=x1ittnNsJWwt1zDpNreQd8A+qpmVXaypmHKKZugegkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rY9NJH9q3AgnYvZolDffUSAKiC2S6rhogsgQiBohOQWXdZ0zGAJHg6J2vkZCwPbXY
-         oIbNU73lzT7O6GCuUnQL1rSHNMY6FDgrTk9wkVOfTpgr58/bYFvU5Syvdlil44+UTb
-         sZmnlqvvow5sWdX5DlQMcEDjMJdUQw+irFf0ctm8=
+        b=QaKh3sv44ZbE/OsW2u3q7xyppB/iTprxUrkCJ/CQV753D10ECtK2x1qYvH6mOu0fw
+         2yTkr8q8x+J4sbNEncFPY3PFCN2qNcoy4tfQwx31M5lZYhdlct78bpuWgKKQoY0Drj
+         Abw3phjneJpGuiKT3iYXcqJmXc/MnzkvtBn/rhnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.10 465/563] PCI: pci-bridge-emul: Fix definitions of reserved bits
-Date:   Mon, 24 Jan 2022 19:43:50 +0100
-Message-Id: <20220124184040.541717331@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.10 513/563] parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
+Date:   Mon, 24 Jan 2022 19:44:38 +0100
+Message-Id: <20220124184042.197847238@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,94 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 12998087d9f48b66965b97412069c7826502cd7e upstream.
+commit d24846a4246b6e61ecbd036880a4adf61681d241 upstream.
 
-Some bits in PCI_EXP registers are reserved for non-root ports. Driver
-pci-bridge-emul.c implements PCIe Root Port device therefore it should not
-allow setting reserved bits of registers.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
 
-Properly define non-reserved bits for all PCI_EXP registers.
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-5-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
+Fix memory leak by calling kobject_put().
+
+Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use kobject_init_and_add")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci-bridge-emul.c |   36 +++++++++++++++++++++++++-----------
- 1 file changed, 25 insertions(+), 11 deletions(-)
+ drivers/parisc/pdc_stable.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -176,41 +176,55 @@ struct pci_bridge_reg_behavior pcie_cap_
- 	[PCI_CAP_LIST_ID / 4] = {
- 		/*
- 		 * Capability ID, Next Capability Pointer and
--		 * Capabilities register are all read-only.
-+		 * bits [14:0] of Capabilities register are all read-only.
-+		 * Bit 15 of Capabilities register is reserved.
- 		 */
--		.ro = ~0,
-+		.ro = GENMASK(30, 0),
- 	},
+--- a/drivers/parisc/pdc_stable.c
++++ b/drivers/parisc/pdc_stable.c
+@@ -979,8 +979,10 @@ pdcs_register_pathentries(void)
+ 		entry->kobj.kset = paths_kset;
+ 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
+ 					   "%s", entry->name);
+-		if (err)
++		if (err) {
++			kobject_put(&entry->kobj);
+ 			return err;
++		}
  
- 	[PCI_EXP_DEVCAP / 4] = {
--		.ro = ~0,
-+		/*
-+		 * Bits [31:29] and [17:16] are reserved.
-+		 * Bits [27:18] are reserved for non-upstream ports.
-+		 * Bits 28 and [14:6] are reserved for non-endpoint devices.
-+		 * Other bits are read-only.
-+		 */
-+		.ro = BIT(15) | GENMASK(5, 0),
- 	},
- 
- 	[PCI_EXP_DEVCTL / 4] = {
--		/* Device control register is RW */
--		.rw = GENMASK(15, 0),
-+		/*
-+		 * Device control register is RW, except bit 15 which is
-+		 * reserved for non-endpoints or non-PCIe-to-PCI/X bridges.
-+		 */
-+		.rw = GENMASK(14, 0),
- 
- 		/*
- 		 * Device status register has bits 6 and [3:0] W1C, [5:4] RO,
--		 * the rest is reserved
-+		 * the rest is reserved. Also bit 6 is reserved for non-upstream
-+		 * ports.
- 		 */
--		.w1c = (BIT(6) | GENMASK(3, 0)) << 16,
-+		.w1c = GENMASK(3, 0) << 16,
- 		.ro = GENMASK(5, 4) << 16,
- 	},
- 
- 	[PCI_EXP_LNKCAP / 4] = {
--		/* All bits are RO, except bit 23 which is reserved */
--		.ro = lower_32_bits(~BIT(23)),
-+		/*
-+		 * All bits are RO, except bit 23 which is reserved and
-+		 * bit 18 which is reserved for non-upstream ports.
-+		 */
-+		.ro = lower_32_bits(~(BIT(23) | PCI_EXP_LNKCAP_CLKPM)),
- 	},
- 
- 	[PCI_EXP_LNKCTL / 4] = {
- 		/*
- 		 * Link control has bits [15:14], [11:3] and [1:0] RW, the
--		 * rest is reserved.
-+		 * rest is reserved. Bit 8 is reserved for non-upstream ports.
- 		 *
- 		 * Link status has bits [13:0] RO, and bits [15:14]
- 		 * W1C.
- 		 */
--		.rw = GENMASK(15, 14) | GENMASK(11, 3) | GENMASK(1, 0),
-+		.rw = GENMASK(15, 14) | GENMASK(11, 9) | GENMASK(7, 3) | GENMASK(1, 0),
- 		.ro = GENMASK(13, 0) << 16,
- 		.w1c = GENMASK(15, 14) << 16,
- 	},
+ 		/* kobject is now registered */
+ 		write_lock(&entry->rw_lock);
 
 
