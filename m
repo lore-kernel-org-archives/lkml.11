@@ -2,87 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B03BCC35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E7C0C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2364363AbiAXXr2 (ORCPT
+        id S2364308AbiAXXrO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:47:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45684 "EHLO
+        Mon, 24 Jan 2022 18:47:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1840878AbiAXWzj (ORCPT
+        with ESMTP id S1356393AbiAXWz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:55:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDD8CC0680A6;
-        Mon, 24 Jan 2022 13:09:32 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D6B161451;
-        Mon, 24 Jan 2022 21:09:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD62C340E5;
-        Mon, 24 Jan 2022 21:09:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058572;
-        bh=/CjwGGaAUdmDEBm/a/YjAd8KE0FRV4xADIfrAnFqqX8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zF0v6gTZSEUTpfCTtpF3so4tOZMrDhuNyje+5hE4c4D0vgQUvPAylWRZ6aUeAccM2
-         MkKuWZHNC+MavCXmWOKt87zuGM7uPam7mx5SJFHmVthh/mDbXMrXzCUUSbH0qalGVx
-         HdTISxWGS0OAkIjL+n+V2Q2kaRG6QLEPPNSgXtJQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0331/1039] iwlwifi: mvm: set protected flag only for NDP ranging
-Date:   Mon, 24 Jan 2022 19:35:20 +0100
-Message-Id: <20220124184136.439036135@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 17:55:59 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47B88C0680BA
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:10:04 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id x7so52565891lfu.8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:10:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:organization:content-transfer-encoding;
+        bh=18KJwP2b3bz21HNcarg1aueiUUVE21tAdU9ddUfz3qA=;
+        b=OsU66u99/x9BMUkHF9xzX6B+3gW1+rFX/a5ajDSKkmI+Ml+RsGLwJcN7JhZK+OT7dm
+         cU8aqIG3qqoDrU87ET/8ybgc7Jm5cqpBemP3uHyJGEKWFA0QY7LNJ1ESp3A3/qdm4Fip
+         kC0V31Xmqgd4rJ+ELdHRdnexUMoExv+HeUz5qiMdyydSC36Qz5iyCMNDR7fLJZnzSAoE
+         pI+YTJOUwp9lIRfNxLNe7FUgbuTropK2DhTsfHQfQG5bQIppNMU+kAwK6SjIBLDYlleD
+         B00RxjzHjF7oDhMSanZlXxBIHPMI5+KwX4k4yfQlCe3FPPW4OJmwz7zsvNFhMu76XY2j
+         8Q8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:organization:content-transfer-encoding;
+        bh=18KJwP2b3bz21HNcarg1aueiUUVE21tAdU9ddUfz3qA=;
+        b=fWo/jya+Yu6wpuiqyQM5BWX+U2HW5ShFhgyZgC1flx/3+PkTHU1dJ55q4IP1tcKMKL
+         a05Jjhw0TnXQv93VXgbXAPQdhBIp6q/JxFmgF6yNGJkmUdIim00geT5IXF81tejxPhpR
+         2LcShUzz527CHDCyXWKpiBx+7eZitMfDAA5WDQnPEXv5LObUVUy2BV7xcH50LZ7vpc8i
+         Sp1VoSsathNgmDQaQzRU89m+7L6GWqU2ZpnECC2dawEzHltSwvAh/mdSA6SA62/0895p
+         h3NwoUNObHzSOs+QZXGbveFuFfGKpFwYZQ4anoUiJtph/JGCEhEd+TV6IME9rs5WEQrk
+         GF6A==
+X-Gm-Message-State: AOAM531aAjaa/DxJOI5lygOifnH+4HBAkA6GiDExhYeTDwppAPai4be+
+        ch+CzRIrflZVc9zdh4eHbz9rGg==
+X-Google-Smtp-Source: ABdhPJx1pyioZV8vVJaZ/osAiGzQwUgAQxRhIch0itGT6l2sjz4Li/Ml+l5UapkdJMtwl+taHu1mOQ==
+X-Received: by 2002:a05:6512:33d1:: with SMTP id d17mr6920429lfg.647.1643058602643;
+        Mon, 24 Jan 2022 13:10:02 -0800 (PST)
+Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
+        by smtp.gmail.com with ESMTPSA id t12sm1009115ljj.118.2022.01.24.13.10.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 13:10:02 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net 1/2] net: dsa: Move VLAN filtering syncing out of dsa_switch_bridge_leave
+Date:   Mon, 24 Jan 2022 22:09:43 +0100
+Message-Id: <20220124210944.3749235-2-tobias@waldekranz.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220124210944.3749235-1-tobias@waldekranz.com>
+References: <20220124210944.3749235-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Organization: Westermo
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avraham Stern <avraham.stern@intel.com>
+Most of dsa_switch_bridge_leave was, in fact, dealing with the syncing
+of VLAN filtering for switches on which that is a global
+setting. Separate the two phases to prepare for the cross-chip related
+bugfix in the following commit.
 
-[ Upstream commit 6bb2ea37c02db98cb677f978cfcb833ca608c5eb ]
-
-Don't use protected ranging negotiation for FTM ranging as responders
-that support only FTM ranging don't expect the FTM request to be
-protected.
-
-Signed-off-by: Avraham Stern <avraham.stern@intel.com>
-Fixes: 517a5eb9fab2 ("iwlwifi: mvm: when associated with PMF, use protected NDP ranging negotiation")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219132536.f50ed0e3c6b3.Ibff247ee9d4e6e0a1a2d08a3c8a4bbb37e6829dd@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/dsa/switch.c | 38 +++++++++++++++++++++++++-------------
+ 1 file changed, 25 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-index 3e6c13fc74eb0..9449d1af3c11a 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-@@ -511,7 +511,7 @@ iwl_mvm_ftm_put_target(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
- 		rcu_read_lock();
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index e3c7d2627a61..9f9b70d6070a 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -113,26 +113,15 @@ static int dsa_switch_bridge_join(struct dsa_switch *ds,
+ 	return dsa_tag_8021q_bridge_join(ds, info);
+ }
  
- 		sta = rcu_dereference(mvm->fw_id_to_mac_id[mvmvif->ap_sta_id]);
--		if (sta->mfp)
-+		if (sta->mfp && (peer->ftm.trigger_based || peer->ftm.non_trigger_based))
- 			FTM_PUT_FLAG(PMF);
+-static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+-				   struct dsa_notifier_bridge_info *info)
++static int dsa_switch_sync_vlan_filtering(struct dsa_switch *ds,
++					  struct dsa_notifier_bridge_info *info)
+ {
+-	struct dsa_switch_tree *dst = ds->dst;
+ 	struct netlink_ext_ack extack = {0};
+ 	bool change_vlan_filtering = false;
+ 	bool vlan_filtering;
+ 	struct dsa_port *dp;
+ 	int err;
  
- 		rcu_read_unlock();
+-	if (dst->index == info->tree_index && ds->index == info->sw_index &&
+-	    ds->ops->port_bridge_leave)
+-		ds->ops->port_bridge_leave(ds, info->port, info->bridge);
+-
+-	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
+-	    ds->ops->crosschip_bridge_leave)
+-		ds->ops->crosschip_bridge_leave(ds, info->tree_index,
+-						info->sw_index, info->port,
+-						info->bridge);
+-
+ 	if (ds->needs_standalone_vlan_filtering &&
+ 	    !br_vlan_enabled(info->bridge.dev)) {
+ 		change_vlan_filtering = true;
+@@ -172,6 +161,29 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
+ 			return err;
+ 	}
+ 
++	return 0;
++}
++
++static int dsa_switch_bridge_leave(struct dsa_switch *ds,
++				   struct dsa_notifier_bridge_info *info)
++{
++	struct dsa_switch_tree *dst = ds->dst;
++	int err;
++
++	if (dst->index == info->tree_index && ds->index == info->sw_index &&
++	    ds->ops->port_bridge_leave)
++		ds->ops->port_bridge_leave(ds, info->port, info->bridge);
++
++	if ((dst->index != info->tree_index || ds->index != info->sw_index) &&
++	    ds->ops->crosschip_bridge_leave)
++		ds->ops->crosschip_bridge_leave(ds, info->tree_index,
++						info->sw_index, info->port,
++						info->bridge);
++
++	err = dsa_switch_sync_vlan_filtering(ds, info);
++	if (err)
++		return err;
++
+ 	return dsa_tag_8021q_bridge_leave(ds, info);
+ }
+ 
 -- 
-2.34.1
-
-
+2.25.1
 
