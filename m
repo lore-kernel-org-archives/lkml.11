@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 775AAC3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3177BC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1458040AbiAXVmn (ORCPT
+        id S1457969AbiAXVmi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58932 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230110AbiAXVIw (ORCPT
+        Mon, 24 Jan 2022 16:42:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:32966 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376690AbiAXVI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:08:52 -0500
+        Mon, 24 Jan 2022 16:08:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D21DDB80FA3;
-        Mon, 24 Jan 2022 21:08:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F258BC340E5;
-        Mon, 24 Jan 2022 21:08:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CC29611C8;
+        Mon, 24 Jan 2022 21:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B7A8C340E5;
+        Mon, 24 Jan 2022 21:08:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058528;
-        bh=YjrVxM7CLUaCdnPq3WETDJ47sLozfT7aDhMUijcqU08=;
+        s=korg; t=1643058534;
+        bh=U34xLw7vLnMhPRMLE74VQLXUltGjNNpQh3KyPaDdGas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CfOE1GmC2M/18GoO9qbgk/J6bJ0TRAbpDZP21DCaXRU/65dBiBJ5bRefVlEHaAO4P
-         W1fm+qyPwMfA59Mc98+UIxwohTEWeObqOM653cZEhfigaS7AhHTtxCusWZLQE9Or1r
-         QJlLrElDsZSlK1Qe2TdJUnhSA3FmCs9+mTf4aEkY=
+        b=EzJxtWuo27T+EZ7/viY6Ar9I30cr9zYw454CLRTuVQDuRgznNcKMOMd3RSkDti/9q
+         f2K0ukNLp999jMnMsCKnbOgrJkkTbkkyrSPwXdr3CQ7c3gjdTKU4y+YXkKY/p+xDUd
+         VH9oNbK7/l2ea/YY8GViZXU+7qLZl9MWpthpjFWo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, YN Chen <YN.Chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
         Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0318/1039] mt76: mt7921: fix possible resume failure
-Date:   Mon, 24 Jan 2022 19:35:07 +0100
-Message-Id: <20220124184135.983197973@linuxfoundation.org>
+Subject: [PATCH 5.16 0320/1039] mt76: connac: align MCU_EXT definitions with 7915 driver
+Date:   Mon, 24 Jan 2022 19:35:09 +0100
+Message-Id: <20220124184136.051857288@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,56 +46,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 5375001bb4ce22801bf3bb566cc3e67d2d3a5dc0 ]
+[ Upstream commit 9d8d136cf0b6d5578442f38ea9eefdf67cc84fc4 ]
 
-Fix the possible resume failure due to mt76_connac_mcu_set_hif_suspend
-timeout.
+Align MCU_EXT and MCU_FW definitions between mt76_connac and mt7915
+driver. This is a preliminary patch to reuse mt76_connac in mt7915
+driver.
 
-That is because clearing the flag pm->suspended too early opened up a race
-window, where mt7921_poll_tx/rx scheduled a ps_work to put the device in
-doze mode, that is unexpected for the device is being resumed from the
-suspend state and would make the remaining MCU comamnds in resume handler
-failed to execute.
-
-Fixes: ffa1bf97425b ("mt76: mt7921: introduce PM support")
-Co-developed-by: YN Chen <YN.Chen@mediatek.com>
-Signed-off-by: YN Chen <YN.Chen@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7921/pci.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ .../net/wireless/mediatek/mt76/mt7615/mcu.c   | 16 ++++++-------
+ .../wireless/mediatek/mt76/mt76_connac_mcu.h  | 24 +++++++++++++++++--
+ .../net/wireless/mediatek/mt76/mt7921/mcu.c   |  2 +-
+ 3 files changed, 31 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-index c29dde23d4ab1..40186e6cd865e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -313,7 +313,6 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
- 	struct mt76_connac_pm *pm = &dev->pm;
- 	int i, err;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index 397a8bb67ffbf..2232afed72912 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -176,7 +176,7 @@ int mt7615_mcu_parse_response(struct mt76_dev *mdev, int cmd,
+ 	if (cmd == MCU_CMD_PATCH_SEM_CONTROL) {
+ 		skb_pull(skb, sizeof(*rxd) - 4);
+ 		ret = *skb->data;
+-	} else if (cmd == MCU_EXT_CMD(GET_TEMP)) {
++	} else if (cmd == MCU_EXT_CMD(THERMAL_CTRL)) {
+ 		skb_pull(skb, sizeof(*rxd));
+ 		ret = le32_to_cpu(*(__le32 *)skb->data);
+ 	} else if (cmd == MCU_EXT_QUERY(RF_REG_ACCESS)) {
+@@ -2095,8 +2095,8 @@ int mt7615_mcu_set_fcc5_lpn(struct mt7615_dev *dev, int val)
+ 		.min_lpn = cpu_to_le16(val),
+ 	};
  
--	pm->suspended = false;
- 	err = pci_set_power_state(pdev, PCI_D0);
- 	if (err)
- 		return err;
-@@ -351,7 +350,13 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
- 	if (!pm->ds_enable)
- 		mt76_connac_mcu_set_deep_sleep(&dev->mt76, false);
- 
--	return mt76_connac_mcu_set_hif_suspend(mdev, false);
-+	err = mt76_connac_mcu_set_hif_suspend(mdev, false);
-+	if (err)
-+		return err;
-+
-+	pm->suspended = false;
-+
-+	return err;
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(SET_RDD_TH), &req,
+-				 sizeof(req), true);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(SET_RADAR_TH),
++				 &req, sizeof(req), true);
  }
- #endif /* CONFIG_PM */
  
+ int mt7615_mcu_set_pulse_th(struct mt7615_dev *dev,
+@@ -2124,8 +2124,8 @@ int mt7615_mcu_set_pulse_th(struct mt7615_dev *dev,
+ #undef  __req_field
+ 	};
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(SET_RDD_TH), &req,
+-				 sizeof(req), true);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(SET_RADAR_TH),
++				 &req, sizeof(req), true);
+ }
+ 
+ int mt7615_mcu_set_radar_th(struct mt7615_dev *dev, int index,
+@@ -2171,8 +2171,8 @@ int mt7615_mcu_set_radar_th(struct mt7615_dev *dev, int index,
+ #undef __req_field_u32
+ 	};
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(SET_RDD_TH), &req,
+-				 sizeof(req), true);
++	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(SET_RADAR_TH),
++				 &req, sizeof(req), true);
+ }
+ 
+ int mt7615_mcu_rdd_send_pattern(struct mt7615_dev *dev)
+@@ -2372,7 +2372,7 @@ int mt7615_mcu_get_temperature(struct mt7615_dev *dev)
+ 		u8 rsv[3];
+ 	} req = {};
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(GET_TEMP),
++	return mt76_mcu_send_msg(&dev->mt76, MCU_EXT_CMD(THERMAL_CTRL),
+ 				 &req, sizeof(req), true);
+ }
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+index 1c7a99bc26261..9dbb6ae9f21da 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+@@ -516,17 +516,21 @@ enum {
+ enum {
+ 	MCU_EXT_CMD_EFUSE_ACCESS = 0x01,
+ 	MCU_EXT_CMD_RF_REG_ACCESS = 0x02,
++	MCU_EXT_CMD_RF_TEST = 0x04,
+ 	MCU_EXT_CMD_PM_STATE_CTRL = 0x07,
+ 	MCU_EXT_CMD_CHANNEL_SWITCH = 0x08,
+ 	MCU_EXT_CMD_SET_TX_POWER_CTRL = 0x11,
+ 	MCU_EXT_CMD_FW_LOG_2_HOST = 0x13,
++	MCU_EXT_CMD_TXBF_ACTION = 0x1e,
+ 	MCU_EXT_CMD_EFUSE_BUFFER_MODE = 0x21,
++	MCU_EXT_CMD_THERMAL_PROT = 0x23,
+ 	MCU_EXT_CMD_STA_REC_UPDATE = 0x25,
+ 	MCU_EXT_CMD_BSS_INFO_UPDATE = 0x26,
+ 	MCU_EXT_CMD_EDCA_UPDATE = 0x27,
+ 	MCU_EXT_CMD_DEV_INFO_UPDATE = 0x2A,
+-	MCU_EXT_CMD_GET_TEMP = 0x2c,
++	MCU_EXT_CMD_THERMAL_CTRL = 0x2c,
+ 	MCU_EXT_CMD_WTBL_UPDATE = 0x32,
++	MCU_EXT_CMD_SET_DRR_CTRL = 0x36,
+ 	MCU_EXT_CMD_SET_RDD_CTRL = 0x3a,
+ 	MCU_EXT_CMD_ATE_CTRL = 0x3d,
+ 	MCU_EXT_CMD_PROTECT_CTRL = 0x3e,
+@@ -535,13 +539,28 @@ enum {
+ 	MCU_EXT_CMD_RX_HDR_TRANS = 0x47,
+ 	MCU_EXT_CMD_MUAR_UPDATE = 0x48,
+ 	MCU_EXT_CMD_BCN_OFFLOAD = 0x49,
++	MCU_EXT_CMD_RX_AIRTIME_CTRL = 0x4a,
+ 	MCU_EXT_CMD_SET_RX_PATH = 0x4e,
++	MCU_EXT_CMD_EFUSE_FREE_BLOCK = 0x4f,
+ 	MCU_EXT_CMD_TX_POWER_FEATURE_CTRL = 0x58,
+ 	MCU_EXT_CMD_RXDCOC_CAL = 0x59,
++	MCU_EXT_CMD_GET_MIB_INFO = 0x5a,
+ 	MCU_EXT_CMD_TXDPD_CAL = 0x60,
+ 	MCU_EXT_CMD_CAL_CACHE = 0x67,
+-	MCU_EXT_CMD_SET_RDD_TH = 0x7c,
++	MCU_EXT_CMD_SET_RADAR_TH = 0x7c,
+ 	MCU_EXT_CMD_SET_RDD_PATTERN = 0x7d,
++	MCU_EXT_CMD_MWDS_SUPPORT = 0x80,
++	MCU_EXT_CMD_SET_SER_TRIGGER = 0x81,
++	MCU_EXT_CMD_SCS_CTRL = 0x82,
++	MCU_EXT_CMD_TWT_AGRT_UPDATE = 0x94,
++	MCU_EXT_CMD_FW_DBG_CTRL = 0x95,
++	MCU_EXT_CMD_OFFCH_SCAN_CTRL = 0x9a,
++	MCU_EXT_CMD_SET_RDD_TH = 0x9d,
++	MCU_EXT_CMD_MURU_CTRL = 0x9f,
++	MCU_EXT_CMD_SET_SPR = 0xa8,
++	MCU_EXT_CMD_GROUP_PRE_CAL_INFO = 0xab,
++	MCU_EXT_CMD_DPD_PRE_CAL_INFO = 0xac,
++	MCU_EXT_CMD_PHY_STAT_INFO = 0xad,
+ };
+ 
+ enum {
+@@ -561,6 +580,7 @@ enum {
+ 	MCU_CMD_PATCH_START_REQ = MCU_FW_PREFIX | 0x05,
+ 	MCU_CMD_PATCH_FINISH_REQ = MCU_FW_PREFIX | 0x07,
+ 	MCU_CMD_PATCH_SEM_CONTROL = MCU_FW_PREFIX | 0x10,
++	MCU_CMD_WA_PARAM = 0xc4,
+ 	MCU_CMD_EXT_CID = 0xed,
+ 	MCU_CMD_FW_SCATTER = MCU_FW_PREFIX | 0xee,
+ 	MCU_CMD_RESTART_DL_REQ = MCU_FW_PREFIX | 0xef,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+index 50f0c13f1c41e..51650e9e1845a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -182,7 +182,7 @@ int mt7921_mcu_parse_response(struct mt76_dev *mdev, int cmd,
+ 	if (cmd == MCU_CMD_PATCH_SEM_CONTROL) {
+ 		skb_pull(skb, sizeof(*rxd) - 4);
+ 		ret = *skb->data;
+-	} else if (cmd == MCU_EXT_CMD(GET_TEMP)) {
++	} else if (cmd == MCU_EXT_CMD(THERMAL_CTRL)) {
+ 		skb_pull(skb, sizeof(*rxd) + 4);
+ 		ret = le32_to_cpu(*(__le32 *)skb->data);
+ 	} else if (cmd == MCU_EXT_CMD(EFUSE_ACCESS)) {
 -- 
 2.34.1
 
