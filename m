@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB269C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8BAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315339AbiAYCxO (ORCPT
+        id S1315407AbiAYCxU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:53:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446089AbiAXVGn (ORCPT
+        Mon, 24 Jan 2022 21:53:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59310 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348762AbiAXVGs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:06:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2FEAC06136B;
-        Mon, 24 Jan 2022 12:07:22 -0800 (PST)
+        Mon, 24 Jan 2022 16:06:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5F842B810BD;
-        Mon, 24 Jan 2022 20:07:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E728C340E5;
-        Mon, 24 Jan 2022 20:07:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CCED7612E9;
+        Mon, 24 Jan 2022 21:06:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90D5CC340E5;
+        Mon, 24 Jan 2022 21:06:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054840;
-        bh=QQYbblQ35leF5mIDeINDGQFfwan87gWS7LaQi2QXxZI=;
+        s=korg; t=1643058405;
+        bh=+VyVfYj83dZxsimPLx22dq/9IYfnUuhTlUu61BPlxBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xT0ymktvrfA6sG0TT+iKfB8fTas5BsE3O//P2oWzUAxsIw7JxYDdOjCqLJtqVCYbt
-         H/UxeblPCOwzfmO9UNNykZ7mvvQpPzFMQihhm7qmC5VxNAmPSxHkO5qMM9TZt/tWfj
-         Aiql5XJeIMAB4ZGnBnTT3lEVufgPnCUhCqfjABVw=
+        b=Qoz0/kz2WP2TBwb6zYSLX1IkgLR3RlvNyAllMOM+eu5VwZgTbCczTzE2BJHpTcwl5
+         shaUwoK5K2uqk76LaxoJWTyUOhf9U1CZ44ZILFmI0o1wc4RQY7wMQPnDAaIbvrGSap
+         PetKoplorpSN4ScYn2AC5H2ir9Oj2P+iVwTyB5z0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 520/563] net: axienet: increase reset timeout
-Date:   Mon, 24 Jan 2022 19:44:45 +0100
-Message-Id: <20220124184042.421883072@linuxfoundation.org>
+        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0279/1039] libbpf: Fix gen_loader assumption on number of programs.
+Date:   Mon, 24 Jan 2022 19:34:28 +0100
+Message-Id: <20220124184134.661928656@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,58 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-commit 2e5644b1bab2ccea9cfc7a9520af95b94eb0dbf1 upstream.
+[ Upstream commit 259172bb6514758ce3be1610c500b51a9f44212a ]
 
-The previous timeout of 1ms was too short to handle some cases where the
-core is reset just after the input clocks were started, which will
-be introduced in an upcoming patch. Increase the timeout to 50ms. Also
-simplify the reset timeout checking to use read_poll_timeout.
+libbpf's obj->nr_programs includes static and global functions. That number
+could be higher than the actual number of bpf programs going be loaded by
+gen_loader. Passing larger nr_programs to bpf_gen__init() doesn't hurt. Those
+exra stack slots will stay as zero. bpf_gen__finish() needs to check that
+actual number of progs that gen_loader saw is less than or equal to
+obj->nr_programs.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ba05fd36b851 ("libbpf: Perform map fd cleanup for gen_loader in case of error")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   19 +++++++++----------
- 1 file changed, 9 insertions(+), 10 deletions(-)
+ tools/lib/bpf/gen_loader.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -496,7 +496,8 @@ static void axienet_setoptions(struct ne
- 
- static int __axienet_device_reset(struct axienet_local *lp)
+diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+index 4ac65afc99e50..737e7cbe3e547 100644
+--- a/tools/lib/bpf/gen_loader.c
++++ b/tools/lib/bpf/gen_loader.c
+@@ -371,8 +371,9 @@ int bpf_gen__finish(struct bpf_gen *gen, int nr_progs, int nr_maps)
  {
--	u32 timeout;
-+	u32 value;
-+	int ret;
+ 	int i;
  
- 	/* Reset Axi DMA. This would reset Axi Ethernet core as well. The reset
- 	 * process of Axi DMA takes a while to complete as all pending
-@@ -506,15 +507,13 @@ static int __axienet_device_reset(struct
- 	 * they both reset the entire DMA core, so only one needs to be used.
- 	 */
- 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET, XAXIDMA_CR_RESET_MASK);
--	timeout = DELAY_OF_ONE_MILLISEC;
--	while (axienet_dma_in32(lp, XAXIDMA_TX_CR_OFFSET) &
--				XAXIDMA_CR_RESET_MASK) {
--		udelay(1);
--		if (--timeout == 0) {
--			netdev_err(lp->ndev, "%s: DMA reset timeout!\n",
--				   __func__);
--			return -ETIMEDOUT;
--		}
-+	ret = read_poll_timeout(axienet_dma_in32, value,
-+				!(value & XAXIDMA_CR_RESET_MASK),
-+				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
-+				XAXIDMA_TX_CR_OFFSET);
-+	if (ret) {
-+		dev_err(lp->dev, "%s: DMA reset timeout!\n", __func__);
-+		return ret;
+-	if (nr_progs != gen->nr_progs || nr_maps != gen->nr_maps) {
+-		pr_warn("progs/maps mismatch\n");
++	if (nr_progs < gen->nr_progs || nr_maps != gen->nr_maps) {
++		pr_warn("nr_progs %d/%d nr_maps %d/%d mismatch\n",
++			nr_progs, gen->nr_progs, nr_maps, gen->nr_maps);
+ 		gen->error = -EFAULT;
+ 		return gen->error;
  	}
- 
- 	return 0;
+-- 
+2.34.1
+
 
 
