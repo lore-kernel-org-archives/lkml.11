@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C362EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC03FC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444942AbiAXVBq (ORCPT
+        id S1444958AbiAXVBs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59758 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351042AbiAXUid (ORCPT
+        Mon, 24 Jan 2022 16:01:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40934 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350856AbiAXUic (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:38:33 -0500
+        Mon, 24 Jan 2022 15:38:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E03E61540;
-        Mon, 24 Jan 2022 20:38:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB84C340E5;
-        Mon, 24 Jan 2022 20:38:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33C55B8122A;
+        Mon, 24 Jan 2022 20:38:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52ADAC340E5;
+        Mon, 24 Jan 2022 20:38:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056711;
-        bh=XzhNkZxyer8awJv+RVsKsH09udznovulrHjfciVCME4=;
+        s=korg; t=1643056708;
+        bh=HhDQ5gUAkE/Ixxh28y5d77/aIlgKWeORJlSTctk8v88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dwer9x51lsvtfX1cNjU4B3ksRevVvyI6lUH32Fu1j39sKD8FlW1g3WYR0NOrILUBL
-         GcRVHa+TECmq/oFekO0qVnhb/Z1Lb99ls0Wy4qk1aAMMfs62XgInnrhav5/yxKAPdz
-         vrkxh5R/xujx5fmdR2PxpY9FWT+QuoWvqF1nEBSo=
+        b=Khxs4ATfEb9W4H/VdFttibX7o/A2C0qV0mltJyU+jCWcY/c5dqo3hE1Sfij0OGuol
+         zFX8s40TIl+wpb2FNoh++adMUxLlTrN3IQGXl+hGvKUD49DU1zbrSoLRMsahBPLYgs
+         iCRF2Vid7bXcAAEockPwjTozM8n9LFVTO7OV4ky4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 542/846] x86/mce: Allow instrumentation during task work queueing
-Date:   Mon, 24 Jan 2022 19:40:59 +0100
-Message-Id: <20220124184119.719790464@linuxfoundation.org>
+        stable@vger.kernel.org, Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 573/846] rtw88: 8822c: update rx settings to prevent potential hw deadlock
+Date:   Mon, 24 Jan 2022 19:41:30 +0100
+Message-Id: <20220124184120.804482602@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,50 +47,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit 4fbce464db81a42f9a57ee242d6150ec7f996415 ]
+[ Upstream commit c1afb26727d9e507d3e17a9890e7aaf7fc85cd55 ]
 
-Fixes
+These settings enables mac to detect and recover when rx fifo
+circuit deadlock occurs. Previous version missed this, so we fix it.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xdb1: call to queue_task_work() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-6-bp@alien8.de
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211217012708.8623-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 193204aee8801..c8d121085c8f7 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1454,6 +1454,14 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 	if (worst != MCE_AR_SEVERITY && !kill_current_task)
- 		goto out;
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 6bb55e663fc36..69512856bb462 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1859,7 +1859,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
  
-+	/*
-+	 * Enable instrumentation around the external facilities like
-+	 * task_work_add() (via queue_task_work()), fixup_exception() etc.
-+	 * For now, that is. Fixing this properly would need a lot more involved
-+	 * reorganization.
-+	 */
-+	instrumentation_begin();
-+
- 	/* Fault was in user mode and we need to take some action */
- 	if ((m.cs & 3) == 3) {
- 		/* If this triggers there is no way to recover. Die hard. */
-@@ -1479,6 +1487,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 		if (m.kflags & MCE_IN_KERNEL_COPYIN)
- 			queue_task_work(&m, msg, kill_current_task);
- 	}
-+
-+	instrumentation_end();
-+
- out:
- 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
- }
+ 	/* default rx filter setting */
+ 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
+-			  BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
++			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
+ 			  BIT_AB | BIT_AM | BIT_APM;
+ 
+ 	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index 112faa60f653e..d9fbddd7b0f35 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -131,7 +131,7 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+index f1789155e9016..247f26e3e8192 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -204,7 +204,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+index f3ad079967a68..bc87e3cb9cdce 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -1962,7 +1962,7 @@ static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ #define WLAN_MAC_INT_MIG_CFG		0x33330000
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
 -- 
 2.34.1
 
