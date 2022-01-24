@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 663D6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E61FAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376339AbiAXUBZ (ORCPT
+        id S1376370AbiAXUBc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:01:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57606 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354722AbiAXTh2 (ORCPT
+        Mon, 24 Jan 2022 15:01:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352416AbiAXThV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:37:28 -0500
+        Mon, 24 Jan 2022 14:37:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAA5C034012;
+        Mon, 24 Jan 2022 11:17:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE29CB811F9;
-        Mon, 24 Jan 2022 19:37:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C789C340E5;
-        Mon, 24 Jan 2022 19:37:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BEE160909;
+        Mon, 24 Jan 2022 19:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68B11C340E5;
+        Mon, 24 Jan 2022 19:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053045;
-        bh=LexXsOHLM2Zyt+r8gcyKj5jMn+0GNWWGVK2D4CaDRiY=;
+        s=korg; t=1643051845;
+        bh=hoGmMt6X0klq0+u7iW/1fCYXghyAHMkMKI5zDTPe7y0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a9AnDRd6HaerK29si4FEmlWR9M6sMpA6ZIG2Fa4mdLyozEy7y+0awWN68GUruUoHq
-         OGHAalf/Gptaxoi+ZYg7CVMijPBEKuxv1x7/6/OQzgZzW1pOi4HyFS2ic/hAxqQQQO
-         81TmxZVpP1qG+OmQ1/lByemgWn6WmvWYPWDcrFjs=
+        b=AEU2wC2z9vKDnMngquQdHrei289fV7pZjb7am5zcmYlG3Hd03M9klKGrhup5urzxq
+         UORk8tMEx1YNxFjUtl50EWFQ7JI8gU9xgNaw2mzOKfzTJCcudXx4hTrhzUZk+Jfbwk
+         xwnpantNstUOqhsN+3nbl518qt1QEMquSlhU7Exo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zain Wang <wzz@rock-chips.com>,
-        Tomasz Figa <tfiga@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Paul <seanpaul@chromium.org>,
-        Brian Norris <briannorris@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>
-Subject: [PATCH 5.4 258/320] drm/bridge: analogix_dp: Make PSR-exit block less
-Date:   Mon, 24 Jan 2022 19:44:02 +0100
-Message-Id: <20220124184002.765011039@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 104/239] ASoC: uniphier: drop selecting non-existing SND_SOC_UNIPHIER_AIO_DMA
+Date:   Mon, 24 Jan 2022 19:42:22 +0100
+Message-Id: <20220124183946.409590500@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,86 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit c4c6ef229593366ab593d4d424addc7025b54a76 upstream.
+[ Upstream commit 49f893253ab43566e34332a969324531fea463f6 ]
 
-Prior to commit 6c836d965bad ("drm/rockchip: Use the helpers for PSR"),
-"PSR exit" used non-blocking analogix_dp_send_psr_spd(). The refactor
-started using the blocking variant, for a variety of reasons -- quoting
-Sean Paul's potentially-faulty memory:
+Commit f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common
+driver") adds configs SND_SOC_UNIPHIER_{LD11,PXS2}, which select the
+non-existing config SND_SOC_UNIPHIER_AIO_DMA.
 
-"""
- - To avoid racing a subsequent PSR entry (if exit takes a long time)
- - To avoid racing disable/modeset
- - We're not displaying new content while exiting PSR anyways, so there
-   is minimal utility in allowing frames to be submitted
- - We're lying to userspace telling them frames are on the screen when
-   we're just dropping them on the floor
-"""
+Hence, ./scripts/checkkconfigsymbols.py warns:
 
-However, I'm finding that this blocking transition is causing upwards of
-60+ ms of unneeded latency on PSR-exit, to the point that initial cursor
-movements when leaving PSR are unbearably jumpy.
+  SND_SOC_UNIPHIER_AIO_DMA
+  Referencing files: sound/soc/uniphier/Kconfig
 
-It turns out that we need to meet in the middle somewhere: Sean is right
-that we were "lying to userspace" with a non-blocking PSR-exit, but the
-new blocking behavior is also waiting too long:
+Probably, there is actually no further config intended to be selected
+here. So, just drop selecting the non-existing config.
 
-According to the eDP specification, the sink device must support PSR
-entry transitions from both state 4 (ACTIVE_RESYNC) and state 0
-(INACTIVE). It also states that in ACTIVE_RESYNC, "the Sink device must
-display the incoming active frames from the Source device with no
-visible glitches and/or artifacts."
-
-Thus, for our purposes, we only need to wait for ACTIVE_RESYNC before
-moving on; we are ready to display video, and subsequent PSR-entry is
-safe.
-
-Tested on a Samsung Chromebook Plus (i.e., Rockchip RK3399 Gru Kevin),
-where this saves about 60ms of latency, for PSR-exit that used to
-take about 80ms.
-
-Fixes: 6c836d965bad ("drm/rockchip: Use the helpers for PSR")
-Cc: <stable@vger.kernel.org>
-Cc: Zain Wang <wzz@rock-chips.com>
-Cc: Tomasz Figa <tfiga@chromium.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Sean Paul <seanpaul@chromium.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Sean Paul <seanpaul@chromium.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211103135112.v3.1.I67612ea073c3306c71b46a87be894f79707082df@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common driver")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/r/20211125095158.8394-2-lukas.bulwahn@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/bridge/analogix/analogix_dp_reg.c |   14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ sound/soc/uniphier/Kconfig | 2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/gpu/drm/bridge/analogix/analogix_dp_reg.c
-+++ b/drivers/gpu/drm/bridge/analogix/analogix_dp_reg.c
-@@ -1086,11 +1086,21 @@ int analogix_dp_send_psr_spd(struct anal
- 	if (!blocking)
- 		return 0;
- 
-+	/*
-+	 * db[1]!=0: entering PSR, wait for fully active remote frame buffer.
-+	 * db[1]==0: exiting PSR, wait for either
-+	 *  (a) ACTIVE_RESYNC - the sink "must display the
-+	 *      incoming active frames from the Source device with no visible
-+	 *      glitches and/or artifacts", even though timings may still be
-+	 *      re-synchronizing; or
-+	 *  (b) INACTIVE - the transition is fully complete.
-+	 */
- 	ret = readx_poll_timeout(analogix_dp_get_psr_status, dp, psr_status,
- 		psr_status >= 0 &&
- 		((vsc->db[1] && psr_status == DP_PSR_SINK_ACTIVE_RFB) ||
--		(!vsc->db[1] && psr_status == DP_PSR_SINK_INACTIVE)), 1500,
--		DP_TIMEOUT_PSR_LOOP_MS * 1000);
-+		(!vsc->db[1] && (psr_status == DP_PSR_SINK_ACTIVE_RESYNC ||
-+				 psr_status == DP_PSR_SINK_INACTIVE))),
-+		1500, DP_TIMEOUT_PSR_LOOP_MS * 1000);
- 	if (ret) {
- 		dev_warn(dp->dev, "Failed to apply PSR %d\n", ret);
- 		return ret;
+diff --git a/sound/soc/uniphier/Kconfig b/sound/soc/uniphier/Kconfig
+index aa3592ee1358b..ddfa6424c656b 100644
+--- a/sound/soc/uniphier/Kconfig
++++ b/sound/soc/uniphier/Kconfig
+@@ -23,7 +23,6 @@ config SND_SOC_UNIPHIER_LD11
+ 	tristate "UniPhier LD11/LD20 Device Driver"
+ 	depends on SND_SOC_UNIPHIER
+ 	select SND_SOC_UNIPHIER_AIO
+-	select SND_SOC_UNIPHIER_AIO_DMA
+ 	help
+ 	  This adds ASoC driver for Socionext UniPhier LD11/LD20
+ 	  input and output that can be used with other codecs.
+@@ -34,7 +33,6 @@ config SND_SOC_UNIPHIER_PXS2
+ 	tristate "UniPhier PXs2 Device Driver"
+ 	depends on SND_SOC_UNIPHIER
+ 	select SND_SOC_UNIPHIER_AIO
+-	select SND_SOC_UNIPHIER_AIO_DMA
+ 	help
+ 	  This adds ASoC driver for Socionext UniPhier PXs2
+ 	  input and output that can be used with other codecs.
+-- 
+2.34.1
+
 
 
