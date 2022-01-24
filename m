@@ -2,40 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A22C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5BBDC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350342AbiAXTry (ORCPT
+        id S1350497AbiAXTrz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:47:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34544 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354633AbiAXTgy (ORCPT
+        Mon, 24 Jan 2022 14:47:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57292 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354617AbiAXTgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:36:54 -0500
+        Mon, 24 Jan 2022 14:36:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D236E6141C;
-        Mon, 24 Jan 2022 19:36:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABC58C340E5;
-        Mon, 24 Jan 2022 19:36:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A7007B8119D;
+        Mon, 24 Jan 2022 19:36:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B55AC340E7;
+        Mon, 24 Jan 2022 19:36:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053013;
-        bh=N9z9CA+DDyeJ2G05kqCDHc2y8kstWZPWxKWqeGhvqvs=;
+        s=korg; t=1643053010;
+        bh=OZWrIYlmNnJeEG49q0gkOrjQAqbKYs8wTiNAlmZYCOk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C/4mcIM8BDORH1AMLuJUQcUCnZgzBmXUp9o28BnK96r5Mz0vv5zYtI/PAzUcXF3y6
-         Dkebau1MxwmCTxu9FCNl0AZbkXUQod1dXm6eIup8fz6QAoWdRiuKXfIOiQ4k4EDDE/
-         7lrOPL9lYOMVZZZClDoAEZuAvrd1IsrlMnuSQDLU=
+        b=l/6rC2AADJeNwy/1WEL5C6PawFECLFilfmEAhJVXJsKKcIIP6WWgM3wszNxVxqJvr
+         7yf/I1LLZaMMFLS1AacRYtQi8Lh1u9JmvEYN0FfypNlMaIj5cW0SjtxJs9i3zK55aD
+         ij6aLFJhQ+lapsy61Y0nNCA+3wYq2vZz9Izjgv/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Li <Meng.Li@windriver.com>,
-        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.4 248/320] crypto: caam - replace this_cpu_ptr with raw_cpu_ptr
-Date:   Mon, 24 Jan 2022 19:43:52 +0100
-Message-Id: <20220124184002.429181031@linuxfoundation.org>
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Lionel Debieve <lionel.debieve@st.com>,
+        Nicolas Toromanoff <nicolas.toromanoff@st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Subject: [PATCH 5.4 247/320] crypto: stm32/crc32 - Fix kernel BUG triggered in probe()
+Date:   Mon, 24 Jan 2022 19:43:51 +0100
+Message-Id: <20220124184002.395346406@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,54 +53,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Li <Meng.Li@windriver.com>
+From: Marek Vasut <marex@denx.de>
 
-commit efd21e10fc3bf4c6da122470a5ae89ec4ed8d180 upstream.
+commit 29009604ad4e3ef784fd9b9fef6f23610ddf633d upstream.
 
-When enable the kernel debug config, there is below calltrace detected:
-BUG: using smp_processor_id() in preemptible [00000000] code: cryptomgr_test/339
-caller is debug_smp_processor_id+0x20/0x30
-CPU: 9 PID: 339 Comm: cryptomgr_test Not tainted 5.10.63-yocto-standard #1
-Hardware name: NXP Layerscape LX2160ARDB (DT)
-Call trace:
- dump_backtrace+0x0/0x1a0
- show_stack+0x24/0x30
- dump_stack+0xf0/0x13c
- check_preemption_disabled+0x100/0x110
- debug_smp_processor_id+0x20/0x30
- dpaa2_caam_enqueue+0x10c/0x25c
- ......
- cryptomgr_test+0x38/0x60
- kthread+0x158/0x164
- ret_from_fork+0x10/0x38
-According to the comment in commit ac5d15b4519f("crypto: caam/qi2
- - use affine DPIOs "), because preemption is no longer disabled
-while trying to enqueue an FQID, it might be possible to run the
-enqueue on a different CPU(due to migration, when in process context),
-however this wouldn't be a functionality issue. But there will be
-above calltrace when enable kernel debug config. So, replace this_cpu_ptr
-with raw_cpu_ptr to avoid above call trace.
+The include/linux/crypto.h struct crypto_alg field cra_driver_name description
+states "Unique name of the transformation provider. " ... " this contains the
+name of the chip or provider and the name of the transformation algorithm."
 
-Fixes: ac5d15b4519f ("crypto: caam/qi2 - use affine DPIOs")
-Cc: stable@vger.kernel.org
-Signed-off-by: Meng Li <Meng.Li@windriver.com>
-Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
+In case of the stm32-crc driver, field cra_driver_name is identical for all
+registered transformation providers and set to the name of the driver itself,
+which is incorrect. This patch fixes it by assigning a unique cra_driver_name
+to each registered transformation provider.
+
+The kernel crash is triggered when the driver calls crypto_register_shashes()
+which calls crypto_register_shash(), which calls crypto_register_alg(), which
+calls __crypto_register_alg(), which returns -EEXIST, which is propagated
+back through this call chain. Upon -EEXIST from crypto_register_shash(), the
+crypto_register_shashes() starts unregistering the providers back, and calls
+crypto_unregister_shash(), which calls crypto_unregister_alg(), and this is
+where the BUG() triggers due to incorrect cra_refcnt.
+
+Fixes: b51dbe90912a ("crypto: stm32 - Support for STM32 CRC32 crypto module")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: <stable@vger.kernel.org> # 4.12+
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Fabien Dessenne <fabien.dessenne@st.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Lionel Debieve <lionel.debieve@st.com>
+Cc: Nicolas Toromanoff <nicolas.toromanoff@st.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+To: linux-crypto@vger.kernel.org
+Acked-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/caam/caamalg_qi2.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/crypto/stm32/stm32-crc32.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/crypto/caam/caamalg_qi2.c
-+++ b/drivers/crypto/caam/caamalg_qi2.c
-@@ -5421,7 +5421,7 @@ int dpaa2_caam_enqueue(struct device *de
- 	dpaa2_fd_set_len(&fd, dpaa2_fl_get_len(&req->fd_flt[1]));
- 	dpaa2_fd_set_flc(&fd, req->flc_dma);
- 
--	ppriv = this_cpu_ptr(priv->ppriv);
-+	ppriv = raw_cpu_ptr(priv->ppriv);
- 	for (i = 0; i < (priv->dpseci_attr.num_tx_queues << 1); i++) {
- 		err = dpaa2_io_service_enqueue_fq(ppriv->dpio, ppriv->req_fqid,
- 						  &fd);
+--- a/drivers/crypto/stm32/stm32-crc32.c
++++ b/drivers/crypto/stm32/stm32-crc32.c
+@@ -230,7 +230,7 @@ static struct shash_alg algs[] = {
+ 		.digestsize     = CHKSUM_DIGEST_SIZE,
+ 		.base           = {
+ 			.cra_name               = "crc32",
+-			.cra_driver_name        = DRIVER_NAME,
++			.cra_driver_name        = "stm32-crc32-crc32",
+ 			.cra_priority           = 200,
+ 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
+ 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
+@@ -252,7 +252,7 @@ static struct shash_alg algs[] = {
+ 		.digestsize     = CHKSUM_DIGEST_SIZE,
+ 		.base           = {
+ 			.cra_name               = "crc32c",
+-			.cra_driver_name        = DRIVER_NAME,
++			.cra_driver_name        = "stm32-crc32-crc32c",
+ 			.cra_priority           = 200,
+ 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
+ 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
 
 
