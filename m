@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59520C3526D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8B4C3526E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413095AbiAYAiY (ORCPT
+        id S3413131AbiAYAi2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:38:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2363974AbiAXXq1 (ORCPT
+        Mon, 24 Jan 2022 19:38:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59174 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354330AbiAXVHG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:46:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC9E6C061A0F;
-        Mon, 24 Jan 2022 11:12:57 -0800 (PST)
+        Mon, 24 Jan 2022 16:07:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A63E6090A;
-        Mon, 24 Jan 2022 19:12:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 426DAC340E5;
-        Mon, 24 Jan 2022 19:12:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C30B7B8105C;
+        Mon, 24 Jan 2022 21:07:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D308EC340E5;
+        Mon, 24 Jan 2022 21:07:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051576;
-        bh=4120A8VZL9g296UsoEXLhv0BwjBUN3MDhIHhMhZ5CP4=;
+        s=korg; t=1643058423;
+        bh=ZTyiFhQJN4fI0ohqFr2xGTdcTomL+FISSSU8k9rBfuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RBKeoU8fApu7RDFmHsDH735UfsPLP1g2IsN22yU2DDk3eGcOWblZG2Te1V2kuPniv
-         vuN2pNgrZq3+Cpipxj1gow6ymJGdwHhderOl6QSVsuw2+Qs8AGWTh80dflsVKm41J9
-         nbIfzikHPSrYH85O4vz6j2K1PTPJavDskMaG1UB4=
+        b=sn76BkUr7b3v3qs36ZCZdh8d/ix7VC4wsUKL4SmEhD+yciE8m3LzI60mb/Nqb8GzN
+         dJOOZDr8EfItfLUsAbYi/QhHdLSf88mCiSNk+vaABv37mvYLC/9J6dNInu0Vup/nYD
+         9+jAk4Di3Z18rbporIDUhNC41utHDXI5L+vy3bZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan McDowell <noodles@earth.li>,
-        Alan Stern <stern@rowland.harvard.edu>
-Subject: [PATCH 4.19 002/239] USB: core: Fix bug in resuming hubs handling of wakeup requests
-Date:   Mon, 24 Jan 2022 19:40:40 +0100
-Message-Id: <20220124183943.194108428@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0284/1039] perf/arm-cmn: Fix CPU hotplug unregistration
+Date:   Mon, 24 Jan 2022 19:34:33 +0100
+Message-Id: <20220124184134.829380525@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,69 +46,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Robin Murphy <robin.murphy@arm.com>
 
-commit 0f663729bb4afc92a9986b66131ebd5b8a9254d1 upstream.
+[ Upstream commit 56c7c6eaf3eb8ac1ec40d56096c0f2b27250da5f ]
 
-Bugzilla #213839 reports a 7-port hub that doesn't work properly when
-devices are plugged into some of the ports; the kernel goes into an
-unending disconnect/reinitialize loop as shown in the bug report.
+Attempting to migrate the PMU context after we've unregistered the PMU
+device, or especially if we never successfully registered it in the
+first place, is a woefully bad idea. It's also fundamentally pointless
+anyway. Make sure to unregister an instance from the hotplug handler
+*without* invoking the teardown callback.
 
-This "7-port hub" comprises two four-port hubs with one plugged into
-the other; the failures occur when a device is plugged into one of the
-downstream hub's ports.  (These hubs have other problems too.  For
-example, they bill themselves as USB-2.0 compliant but they only run
-at full speed.)
-
-It turns out that the failures are caused by bugs in both the kernel
-and the hub.  The hub's bug is that it reports a different
-bmAttributes value in its configuration descriptor following a remote
-wakeup (0xe0 before, 0xc0 after -- the wakeup-support bit has
-changed).
-
-The kernel's bug is inside the hub driver's resume handler.  When
-hub_activate() sees that one of the hub's downstream ports got a
-wakeup request from a child device, it notes this fact by setting the
-corresponding bit in the hub->change_bits variable.  But this variable
-is meant for connection changes, not wakeup events; setting it causes
-the driver to believe the downstream port has been disconnected and
-then connected again (in addition to having received a wakeup
-request).
-
-Because of this, the hub driver then tries to check whether the device
-currently plugged into the downstream port is the same as the device
-that had been attached there before.  Normally this check succeeds and
-wakeup handling continues with no harm done (which is why the bug
-remained undetected until now).  But with these dodgy hubs, the check
-fails because the config descriptor has changed.  This causes the hub
-driver to reinitialize the child device, leading to the
-disconnect/reinitialize loop described in the bug report.
-
-The proper way to note reception of a downstream wakeup request is
-to set a bit in the hub->event_bits variable instead of
-hub->change_bits.  That way the hub driver will realize that something
-has happened to the port but will not think the port and child device
-have been disconnected.  This patch makes that change.
-
-Cc: <stable@vger.kernel.org>
-Tested-by: Jonathan McDowell <noodles@earth.li>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YdCw7nSfWYPKWQoD@rowland.harvard.edu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 0ba64770a2f2 ("perf: Add Arm CMN-600 PMU driver")
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/2c221d745544774e4b07583b65b5d4d94f7e0fe4.1638530442.git.robin.murphy@arm.com
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hub.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/perf/arm-cmn.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1197,7 +1197,7 @@ static void hub_activate(struct usb_hub
- 			 */
- 			if (portchange || (hub_is_superspeed(hub->hdev) &&
- 						port_resumed))
--				set_bit(port1, hub->change_bits);
-+				set_bit(port1, hub->event_bits);
+diff --git a/drivers/perf/arm-cmn.c b/drivers/perf/arm-cmn.c
+index bc3cba5f8c5dc..400eb7f579dce 100644
+--- a/drivers/perf/arm-cmn.c
++++ b/drivers/perf/arm-cmn.c
+@@ -1561,7 +1561,8 @@ static int arm_cmn_probe(struct platform_device *pdev)
  
- 		} else if (udev->persist_enabled) {
- #ifdef CONFIG_PM
+ 	err = perf_pmu_register(&cmn->pmu, name, -1);
+ 	if (err)
+-		cpuhp_state_remove_instance(arm_cmn_hp_state, &cmn->cpuhp_node);
++		cpuhp_state_remove_instance_nocalls(arm_cmn_hp_state, &cmn->cpuhp_node);
++
+ 	return err;
+ }
+ 
+@@ -1572,7 +1573,7 @@ static int arm_cmn_remove(struct platform_device *pdev)
+ 	writel_relaxed(0, cmn->dtc[0].base + CMN_DT_DTC_CTL);
+ 
+ 	perf_pmu_unregister(&cmn->pmu);
+-	cpuhp_state_remove_instance(arm_cmn_hp_state, &cmn->cpuhp_node);
++	cpuhp_state_remove_instance_nocalls(arm_cmn_hp_state, &cmn->cpuhp_node);
+ 	return 0;
+ }
+ 
+-- 
+2.34.1
+
 
 
