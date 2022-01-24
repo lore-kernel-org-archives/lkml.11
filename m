@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7068BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A22C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457862AbiAXVmY (ORCPT
+        id S1457920AbiAXVmb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:24 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60762 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446482AbiAXVIb (ORCPT
+        Mon, 24 Jan 2022 16:42:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59474 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377237AbiAXVHk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:08:31 -0500
+        Mon, 24 Jan 2022 16:07:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CBED61361;
-        Mon, 24 Jan 2022 21:08:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CEAEC340E5;
-        Mon, 24 Jan 2022 21:08:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C37BB81142;
+        Mon, 24 Jan 2022 21:07:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC9C6C340E5;
+        Mon, 24 Jan 2022 21:07:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058509;
-        bh=HXjDHTULbYoyZnnI4A4Z2OtgSDnzKFFpNgxUn8IpImg=;
+        s=korg; t=1643058457;
+        bh=ar8hptmGNbDlKZ4ZidwdBp6iuwtu7qWVz0456y+JxaY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JnWj9FJu/MDmrkd4UKwauROOfa4KMSjuQq84Gtg6VMgPO+mrk+E34IllnwgY1DniX
-         sVi+h18oUWAIMrt34aXc4liDzU2USJVV715ciA0nELWQi9lTn0y/F9KB0vQpnCopeV
-         PEwdJxo8us5FLIccwBafG5KcVjWgXfyL8FqFZLdk=
+        b=QPT+G7vTFHZVX3Cpxc0Vmky8hSYjjZ/HPbjGn2oLNc9tJSnxXSEzNMNxsUu1sR01/
+         rn8EJRLLis4SRfwjiRpB2jiEOwGrnt0AoUD3u+yuT8lmpYor/qpqxbWkt9z9h5V7Td
+         OIAn0LYSKlVaIrirgsGIQLO7v/WTovtAOo73/aco=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0313/1039] mt76: mt7921: move mt76_connac_mcu_set_hif_suspend to bus-related files
-Date:   Mon, 24 Jan 2022 19:35:02 +0100
-Message-Id: <20220124184135.825063313@linuxfoundation.org>
+        stable@vger.kernel.org, Sricharan R <sricharan@codeaurora.org>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0294/1039] arm64: dts: qcom: ipq6018: Fix gpio-ranges property
+Date:   Mon, 24 Jan 2022 19:34:43 +0100
+Message-Id: <20220124184135.165730543@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,179 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-[ Upstream commit 6906aa93eb93d54a42ce1902f00d6ea04ecb039b ]
+[ Upstream commit 72cb4c48a46a7cfa58eb5842c0d3672ddd5bd9ad ]
 
-This is a preliminary patch for the following patch
-("mt76: mt7921s: fix the device cannot sleep deeply in suspend).
+There must be three parameters in gpio-ranges property. Fixes this not
+very helpful error message:
 
-mt76_connac_mcu_set_hif_suspend eventually would be handled in each
-bus-level suspend/resume handler in either mt7921/sdio.c or mt7921/pci.c
-depending on what type of the bus the device is running on. We can move
-mt76_connac_mcu_set_hif_suspend to bus-related files to simplify the logic.
+  OF: /soc/pinctrl@1000000: (null) = 3 found 3
 
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Fixes: 1e8277854b49 ("arm64: dts: Add ipq6018 SoC and CP01 board support")
+Cc: Sricharan R <sricharan@codeaurora.org>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/8a744cfd96aff5754bfdcf7298d208ddca5b319a.1638862030.git.baruch@tkos.co.il
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/mediatek/mt76/mt7921/main.c   | 13 ++-----------
- .../net/wireless/mediatek/mt76/mt7921/pci.c    | 18 +++++-------------
- .../net/wireless/mediatek/mt76/mt7921/sdio.c   | 18 +++++-------------
- 3 files changed, 12 insertions(+), 37 deletions(-)
+ arch/arm64/boot/dts/qcom/ipq6018.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-index b144f5491798a..e022251b40069 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
-@@ -1232,7 +1232,6 @@ static int mt7921_suspend(struct ieee80211_hw *hw,
- {
- 	struct mt7921_dev *dev = mt7921_hw_dev(hw);
- 	struct mt7921_phy *phy = mt7921_hw_phy(hw);
--	int err;
+diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+index 933b56103a464..66ec5615651d4 100644
+--- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
++++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
+@@ -220,7 +220,7 @@
+ 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
+ 			gpio-controller;
+ 			#gpio-cells = <2>;
+-			gpio-ranges = <&tlmm 0 80>;
++			gpio-ranges = <&tlmm 0 0 80>;
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
  
- 	cancel_delayed_work_sync(&phy->scan_work);
- 	cancel_delayed_work_sync(&phy->mt76->mac_work);
-@@ -1250,25 +1249,18 @@ static int mt7921_suspend(struct ieee80211_hw *hw,
- 					    mt76_connac_mcu_set_suspend_iter,
- 					    &dev->mphy);
- 
--	err = mt76_connac_mcu_set_hif_suspend(&dev->mt76, true);
--
- 	mt7921_mutex_release(dev);
- 
--	return err;
-+	return 0;
- }
- 
- static int mt7921_resume(struct ieee80211_hw *hw)
- {
- 	struct mt7921_dev *dev = mt7921_hw_dev(hw);
- 	struct mt7921_phy *phy = mt7921_hw_phy(hw);
--	int err;
- 
- 	mt7921_mutex_acquire(dev);
- 
--	err = mt76_connac_mcu_set_hif_suspend(&dev->mt76, false);
--	if (err < 0)
--		goto out;
--
- 	set_bit(MT76_STATE_RUNNING, &phy->mt76->state);
- 	clear_bit(MT76_STATE_SUSPEND, &phy->mt76->state);
- 	ieee80211_iterate_active_interfaces(hw,
-@@ -1278,11 +1270,10 @@ static int mt7921_resume(struct ieee80211_hw *hw)
- 
- 	ieee80211_queue_delayed_work(hw, &phy->mt76->mac_work,
- 				     MT7921_WATCHDOG_TIME);
--out:
- 
- 	mt7921_mutex_release(dev);
- 
--	return err;
-+	return 0;
- }
- 
- static void mt7921_set_wakeup(struct ieee80211_hw *hw, bool enabled)
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-index 305b63fa1a8a9..c29dde23d4ab1 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/pci.c
-@@ -235,7 +235,6 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
- 	struct mt76_dev *mdev = pci_get_drvdata(pdev);
- 	struct mt7921_dev *dev = container_of(mdev, struct mt7921_dev, mt76);
- 	struct mt76_connac_pm *pm = &dev->pm;
--	bool hif_suspend;
- 	int i, err;
- 
- 	pm->suspended = true;
-@@ -246,12 +245,9 @@ static int mt7921_pci_suspend(struct pci_dev *pdev, pm_message_t state)
- 	if (err < 0)
- 		goto restore_suspend;
- 
--	hif_suspend = !test_bit(MT76_STATE_SUSPEND, &dev->mphy.state);
--	if (hif_suspend) {
--		err = mt76_connac_mcu_set_hif_suspend(mdev, true);
--		if (err)
--			goto restore_suspend;
--	}
-+	err = mt76_connac_mcu_set_hif_suspend(mdev, true);
-+	if (err)
-+		goto restore_suspend;
- 
- 	/* always enable deep sleep during suspend to reduce
- 	 * power consumption
-@@ -302,8 +298,7 @@ restore_napi:
- 	if (!pm->ds_enable)
- 		mt76_connac_mcu_set_deep_sleep(&dev->mt76, false);
- 
--	if (hif_suspend)
--		mt76_connac_mcu_set_hif_suspend(mdev, false);
-+	mt76_connac_mcu_set_hif_suspend(mdev, false);
- 
- restore_suspend:
- 	pm->suspended = false;
-@@ -356,10 +351,7 @@ static int mt7921_pci_resume(struct pci_dev *pdev)
- 	if (!pm->ds_enable)
- 		mt76_connac_mcu_set_deep_sleep(&dev->mt76, false);
- 
--	if (!test_bit(MT76_STATE_SUSPEND, &dev->mphy.state))
--		err = mt76_connac_mcu_set_hif_suspend(mdev, false);
--
--	return err;
-+	return mt76_connac_mcu_set_hif_suspend(mdev, false);
- }
- #endif /* CONFIG_PM */
- 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
-index ddf0eeb8b6889..5fee489c7a998 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/sdio.c
-@@ -203,7 +203,6 @@ static int mt7921s_suspend(struct device *__dev)
- 	struct mt7921_dev *dev = sdio_get_drvdata(func);
- 	struct mt76_connac_pm *pm = &dev->pm;
- 	struct mt76_dev *mdev = &dev->mt76;
--	bool hif_suspend;
- 	int err;
- 
- 	pm->suspended = true;
-@@ -214,12 +213,9 @@ static int mt7921s_suspend(struct device *__dev)
- 	if (err < 0)
- 		goto restore_suspend;
- 
--	hif_suspend = !test_bit(MT76_STATE_SUSPEND, &dev->mphy.state);
--	if (hif_suspend) {
--		err = mt76_connac_mcu_set_hif_suspend(mdev, true);
--		if (err)
--			goto restore_suspend;
--	}
-+	err = mt76_connac_mcu_set_hif_suspend(mdev, true);
-+	if (err)
-+		goto restore_suspend;
- 
- 	/* always enable deep sleep during suspend to reduce
- 	 * power consumption
-@@ -253,8 +249,7 @@ restore_worker:
- 	if (!pm->ds_enable)
- 		mt76_connac_mcu_set_deep_sleep(mdev, false);
- 
--	if (hif_suspend)
--		mt76_connac_mcu_set_hif_suspend(mdev, false);
-+	mt76_connac_mcu_set_hif_suspend(mdev, false);
- 
- restore_suspend:
- 	pm->suspended = false;
-@@ -285,10 +280,7 @@ static int mt7921s_resume(struct device *__dev)
- 	if (!pm->ds_enable)
- 		mt76_connac_mcu_set_deep_sleep(mdev, false);
- 
--	if (!test_bit(MT76_STATE_SUSPEND, &dev->mphy.state))
--		err = mt76_connac_mcu_set_hif_suspend(mdev, false);
--
--	return err;
-+	return mt76_connac_mcu_set_hif_suspend(mdev, false);
- }
- 
- static const struct dev_pm_ops mt7921s_pm_ops = {
 -- 
 2.34.1
 
