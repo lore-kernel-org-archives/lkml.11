@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F71C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:29:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29382C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:33:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377015AbiAXV3c (ORCPT
+        id S1450434AbiAXV3j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:29:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443499AbiAXU5I (ORCPT
+        Mon, 24 Jan 2022 16:29:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51108 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391368AbiAXU6Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:57:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A713EC054866;
-        Mon, 24 Jan 2022 12:00:52 -0800 (PST)
+        Mon, 24 Jan 2022 15:58:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63FC3B8122A;
-        Mon, 24 Jan 2022 20:00:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77AF4C340E8;
-        Mon, 24 Jan 2022 20:00:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D37F261320;
+        Mon, 24 Jan 2022 20:58:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E9AEC340E5;
+        Mon, 24 Jan 2022 20:58:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054450;
-        bh=twGCo6Va5F3vSA9YOP7NgbYkHKzZtHUGT0pyg9iWBIs=;
+        s=korg; t=1643057893;
+        bh=eSFAMSNBJ2+1DUCDbG0cVf4bszUJGYhA/TtF+L2iozU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q061FsHD2tbA8waY01+bt7dwRiPMZ3xblangEGXfpqHxPtJyEvtGjbo+kw4jIC/OZ
-         nWh3uxpJloZpZfhrtB9u4o/xZAAPtxK23btqp1OjDmmxANK3jUyM68inCNIQfLrZMx
-         m8q+czoYUDZ8R66eJdLS0Pt47MiVZCVQTJ8S9wFw=
+        b=TTZjFucKDsoK/YCRKc5ycnGUFfuB6oai/7PDpSEhOagZqBStMETuxzDVFyzQisVmF
+         Epry6mK+fnmBqS1Si/E1cWU8oqLWldzl8BBaUNMzSGgwXZ6/2qyAzTVkSYPkiFcupD
+         b8Ahmjnnf/lORUiz/LRcLxBKPYCoxU6e0UzV5A8E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 361/563] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Mon, 24 Jan 2022 19:42:06 +0100
-Message-Id: <20220124184036.899291970@linuxfoundation.org>
+Subject: [PATCH 5.16 0086/1039] drm/bridge: display-connector: fix an uninitialized pointer in probe()
+Date:   Mon, 24 Jan 2022 19:31:15 +0100
+Message-Id: <20220124184128.057152528@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,46 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
+[ Upstream commit 189723fbe9aca18d6f7d638c59a40288030932b5 ]
 
-The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
-any bugged program, and even attaching a correct program to a NIC
-not supporting the given action.
+The "label" pointer is used for debug output.  The code assumes that it
+is either NULL or valid, but it is never set to NULL.  It is either
+valid or uninitialized.
 
-The resulting splat, beyond polluting the logs, fouls automated tools:
-e.g. a syzkaller reproducers using an XDP program returning an
-unsupported action will never pass validation.
-
-Replace the WARN_ONCE with a less intrusive pr_warn_once().
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
+Fixes: 0c275c30176b ("drm/bridge: Add bridge driver for display connectors")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211013080825.GE6010@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/bridge/display-connector.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 706c31ae65b01..7fa4283f2a8c0 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7921,9 +7921,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+diff --git a/drivers/gpu/drm/bridge/display-connector.c b/drivers/gpu/drm/bridge/display-connector.c
+index 05eb759da6fc6..847a0dce7f1d3 100644
+--- a/drivers/gpu/drm/bridge/display-connector.c
++++ b/drivers/gpu/drm/bridge/display-connector.c
+@@ -107,7 +107,7 @@ static int display_connector_probe(struct platform_device *pdev)
  {
- 	const u32 act_max = XDP_REDIRECT;
+ 	struct display_connector *conn;
+ 	unsigned int type;
+-	const char *label;
++	const char *label = NULL;
+ 	int ret;
  
--	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
--		  act > act_max ? "Illegal" : "Driver unsupported",
--		  act);
-+	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+		     act > act_max ? "Illegal" : "Driver unsupported",
-+		     act);
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
- 
+ 	conn = devm_kzalloc(&pdev->dev, sizeof(*conn), GFP_KERNEL);
 -- 
 2.34.1
 
