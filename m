@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 968A0C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7149EC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447839AbiAXVLd (ORCPT
+        id S1447788AbiAXVL2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:11:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42256 "EHLO
+        Mon, 24 Jan 2022 16:11:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390184AbiAXUpD (ORCPT
+        with ESMTP id S1390230AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD76C061381;
-        Mon, 24 Jan 2022 11:54:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7C9C061396;
+        Mon, 24 Jan 2022 11:55:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C6CD61012;
-        Mon, 24 Jan 2022 19:54:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82AE6C340E5;
-        Mon, 24 Jan 2022 19:54:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B030360B02;
+        Mon, 24 Jan 2022 19:55:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802DDC340E5;
+        Mon, 24 Jan 2022 19:55:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054090;
-        bh=6j0VPUnXttJfHiteE5SxThT+4Mz+16P0Y0QVdGbg2/k=;
+        s=korg; t=1643054137;
+        bh=4F+FoEJCjA5dc535C82+wg9z4q7LEbCQMztv5Eb7YX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=y2RpqiQnpMLiWlVt3opMIG63jgQtApxmGOwApqSbp6SkeWEr95vxgV2bwTC6o/RKg
-         piawuthXqJXp2NrIcVfL0nYTYP9RaMRRPn9qIORHCS3tC61YqZOCDNSTQDj9hmyZQB
-         G+7gct8lGddLL8Cee3eBP60w2Elfw7+h/W9CAGrg=
+        b=iiYS0Py4XIQ08NX6b06t6PjXLOta0vw5ZKxO3vMlJVxpLul4RW080D9WyHhGztAkJ
+         thAeRo3TxksxPMWMaD6jYLgAeDfYCGshn6EAySpQixgLh/5jVE6RrgADugovL4oDn+
+         5fGmrFycEHbF4R6YccfMJbo32FCZ/l7wEndM6N3w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 275/563] mips: fix Kconfig reference to PHYS_ADDR_T_64BIT
-Date:   Mon, 24 Jan 2022 19:40:40 +0100
-Message-Id: <20220124184033.951928346@linuxfoundation.org>
+Subject: [PATCH 5.10 283/563] ASoC: mediatek: Check for error clk pointer
+Date:   Mon, 24 Jan 2022 19:40:48 +0100
+Message-Id: <20220124184034.226566770@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,50 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit a670c82d9ca4f1e7385d9d6f26ff41a50fbdd944 ]
+[ Upstream commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e ]
 
-Commit d4a451d5fc84 ("arch: remove the ARCH_PHYS_ADDR_T_64BIT config
-symbol") removes config ARCH_PHYS_ADDR_T_64BIT with all instances of that
-config refactored appropriately. Since then, it is recommended to use the
-config PHYS_ADDR_T_64BIT instead.
+Yes, you are right and now the return code depending on the
+init_clks().
 
-Commit 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
-introduces the expression "!(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))"
-for config CPU_SUPPORTS_HUGEPAGES, which unintentionally refers to the
-non-existing symbol ARCH_PHYS_ADDR_T_64BIT instead of the intended
-PHYS_ADDR_T_64BIT.
-
-Fix this Kconfig reference to the intended PHYS_ADDR_T_64BIT.
-
-This issue was identified with the script ./scripts/checkkconfigsymbols.py.
-I then reported it on the mailing list and Paul confirmed the mistake in
-the linked email thread.
-
-Link: https://lore.kernel.org/lkml/H8IU3R.H5QVNRA077PT@crapouillou.net/
-Suggested-by: Paul Cercueil <paul@crapouillou.net>
-Fixes: 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 6078c651947a ("soc: mediatek: Refine scpsys to support multiple platform")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20211222015157.1025853-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/soc/mediatek/mtk-scpsys.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index db8fe5d7a2377..3442bdd4314cb 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -2150,7 +2150,7 @@ config CPU_SUPPORTS_ADDRWINCFG
- 	bool
- config CPU_SUPPORTS_HUGEPAGES
- 	bool
--	depends on !(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))
-+	depends on !(32BIT && (PHYS_ADDR_T_64BIT || EVA))
- config MIPS_PGD_C0_CONTEXT
- 	bool
- 	default y if 64BIT && (CPU_MIPSR2 || CPU_MIPSR6) && !CPU_XLP
+diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
+index ca75b14931ec9..670cc82d17dc2 100644
+--- a/drivers/soc/mediatek/mtk-scpsys.c
++++ b/drivers/soc/mediatek/mtk-scpsys.c
+@@ -411,12 +411,17 @@ out:
+ 	return ret;
+ }
+ 
+-static void init_clks(struct platform_device *pdev, struct clk **clk)
++static int init_clks(struct platform_device *pdev, struct clk **clk)
+ {
+ 	int i;
+ 
+-	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
++	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
+ 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
++		if (IS_ERR(clk[i]))
++			return PTR_ERR(clk[i]);
++	}
++
++	return 0;
+ }
+ 
+ static struct scp *init_scp(struct platform_device *pdev,
+@@ -426,7 +431,7 @@ static struct scp *init_scp(struct platform_device *pdev,
+ {
+ 	struct genpd_onecell_data *pd_data;
+ 	struct resource *res;
+-	int i, j;
++	int i, j, ret;
+ 	struct scp *scp;
+ 	struct clk *clk[CLK_MAX];
+ 
+@@ -481,7 +486,9 @@ static struct scp *init_scp(struct platform_device *pdev,
+ 
+ 	pd_data->num_domains = num;
+ 
+-	init_clks(pdev, clk);
++	ret = init_clks(pdev, clk);
++	if (ret)
++		return ERR_PTR(ret);
+ 
+ 	for (i = 0; i < num; i++) {
+ 		struct scp_domain *scpd = &scp->domains[i];
 -- 
 2.34.1
 
