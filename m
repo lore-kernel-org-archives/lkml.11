@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 615F2C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BD36C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352384AbiAXTaP (ORCPT
+        id S1352441AbiAXTa3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:30:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41852 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349641AbiAXTVF (ORCPT
+        Mon, 24 Jan 2022 14:30:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349832AbiAXTVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:21:05 -0500
+        Mon, 24 Jan 2022 14:21:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9697EC061797;
+        Mon, 24 Jan 2022 11:08:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6092FB8121F;
-        Mon, 24 Jan 2022 19:21:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 901EFC340E5;
-        Mon, 24 Jan 2022 19:21:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DDBF60EC4;
+        Mon, 24 Jan 2022 19:08:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42681C340E5;
+        Mon, 24 Jan 2022 19:08:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052063;
-        bh=ybTUdVpSs4tP9fA30UA8SByCPb6Bm5xSjfuBftAAKl0=;
+        s=korg; t=1643051301;
+        bh=pQnXVxQeSfUMLf41pmrb63t4YYQ2bvU2J9f+z1HT2PQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hSEVsva8gp9WT/49Idq8clXMkx+YJO+Pvmo2X7uD+P+yskS9dSPOwVn4ncGqBO97H
-         aJVhXPgbk/nlRfKY4zz88oOf4q2+rqT2Pz+5IKzlcpCGrUfPptW9mnj+06o8/je5oa
-         c/x+2r2ixaYFNHK7Xthjb1D0wYjLrvKUqVlS62Dk=
+        b=KbjnB8FlYfkT6qPx/lNFPR3MeYX+4sNqlqzz5UfnoGRVN+wc3ulapmmjk4fpMjhDy
+         7N2t8Ni8MzGMvXgsYHb61u4hD0xro6mXl+nr9C5lQUS9edhanHcMUpmeYzMSlOeYmN
+         DodnOHUtmv/5FMedXEEqBLg1LWR5C6itHP5mlD2g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        Lukas Wunner <lukas@wunner.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 175/239] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 24 Jan 2022 19:43:33 +0100
-Message-Id: <20220124183948.668143983@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mark Asselstine <mark.asselstine@windriver.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 119/186] ACPICA: Utilities: Avoid deleting the same object twice in a row
+Date:   Mon, 24 Jan 2022 19:43:14 +0100
+Message-Id: <20220124183940.941645419@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,56 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
 
-Where does this register write come from?
+If original_count is 0 in acpi_ut_update_ref_count (),
+acpi_ut_delete_internal_obj () is invoked for the target object, which is
+incorrect, because that object has been deleted once already and the
+memory allocated to store it may have been reclaimed and allocated
+for a different purpose by the host OS.  Moreover, a confusing debug
+message following the "Reference Count is already zero, cannot
+decrement" warning is printed in that case.
 
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
+To fix this issue, make acpi_ut_update_ref_count () return after finding
+that original_count is 0 and printing the above warning.
 
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://github.com/acpica/acpica/commit/c11af67d
+Link: https://github.com/acpica/acpica/pull/652
+Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/acpi/acpica/utdelete.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 2c37d11726aba..13f882e5e7b76 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -452,14 +452,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
+index 61a979d0fbc5a..64a90ba71f18c 100644
+--- a/drivers/acpi/acpica/utdelete.c
++++ b/drivers/acpi/acpica/utdelete.c
+@@ -442,6 +442,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
+ 			ACPI_WARNING((AE_INFO,
+ 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
+ 				      object));
++			return;
+ 		}
  
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+ 		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
 -- 
 2.34.1
 
