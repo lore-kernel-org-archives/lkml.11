@@ -2,120 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBB9C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEE1EC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843036AbiAXXDM (ORCPT
+        id S1843078AbiAXXDP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
+        Mon, 24 Jan 2022 18:03:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577048AbiAXV5L (ORCPT
+        with ESMTP id S1576941AbiAXV5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:57:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 407C6C02C307;
-        Mon, 24 Jan 2022 12:38:50 -0800 (PST)
+        Mon, 24 Jan 2022 16:57:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 677E7C038AE1;
+        Mon, 24 Jan 2022 12:38:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AB910B811FB;
-        Mon, 24 Jan 2022 20:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D935BC340E5;
-        Mon, 24 Jan 2022 20:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056727;
-        bh=uSOMnpLBoWbmn1u3zPszgvPwiLRvJiLR/eIsGJPtN6k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VlnZ9FEFV8Z/vlL5DcAMmrV91gnMG2/FH1b8mLNbpap387C2v+lxDVR2ytt8xSx8r
-         DSco0Tv/RHCnJJoTw5AhxhJ/r8Od0AbdGJfcPT0gYKX9WsaJjW0T2SDnzmQ/5ydIbF
-         WtZPMkC8yCBC5R3qiIWfz6U1JR4zFwj8zAoOuH5o=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
-        David Gow <davidgow@google.com>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 547/846] kunit: Dont crash if no parameters are generated
-Date:   Mon, 24 Jan 2022 19:41:04 +0100
-Message-Id: <20220124184119.893371050@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48FAA61540;
+        Mon, 24 Jan 2022 20:38:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7052C340EC;
+        Mon, 24 Jan 2022 20:38:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643056700;
+        bh=l7cvZgIsIwqv4LAC60bKrfGQYbIF6mK9Jif6GEmnsdk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=W1X8vk3LKgVfUy7Kw+UryhTphoi9IbtbvcpEFh+TsjwcQM5gsT/1cRF6QT1mvpDi5
+         +UFp9wwyd5No619fazpvWgRoNWwhxIhNU7kjoCdbhN9Iewa7vGOPmIQp/DdNYJMejk
+         /ofSQmlsnouHl/1ce6SimQ/07ngoCIriRroMgsvN9I245Gl9l9gpqfDpgr3SAVivw0
+         RWi9j96uvlmEpZr9KwqA76aJLLfhBOT9VqDMuFZP8++jeEEvurhEzku1pCXtNKx03S
+         UEFYN5lHXLCg/yQmemvyJnwTVbnAvWcp5+V6w2uVbBLH0ETDrdSBYOX3QwYwkWd8cE
+         uleuvYJi+lodQ==
+Date:   Mon, 24 Jan 2022 14:45:04 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
+        carnil@debian.org, Kees Cook <keescook@chromium.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: Re: [PATCH] Revert "Makefile: Do not quote value for
+ CONFIG_CC_IMPLICIT_FALLTHROUGH"
+Message-ID: <20220124204504.GB11735@embeddedor>
+References: <20220120053100.408816-1-masahiroy@kernel.org>
+ <CAKwvOd=52G2J2nXRbefjJ57B_ySZaZ6SD8UwwHziZMPoR6ABHQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOd=52G2J2nXRbefjJ57B_ySZaZ6SD8UwwHziZMPoR6ABHQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Gow <davidgow@google.com>
+On Mon, Jan 24, 2022 at 11:55:43AM -0800, Nick Desaulniers wrote:
+> + Salvatore, Kees, Gustavo, Nathan
+> 
+> On Wed, Jan 19, 2022 at 9:31 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+> >
+> > This reverts commit cd8c917a56f20f48748dd43d9ae3caff51d5b987.
+> >
+> > Commit 129ab0d2d9f3 ("kbuild: do not quote string values in
+> > include/config/auto.conf") provided the final solution.
+> >
+> > Now reverting the temporary workaround.
+> >
+> > Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> 
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-[ Upstream commit 37dbb4c7c7442dbfc9b651e4ddd4afe30b26afc9 ]
+Great!
 
-It's possible that a parameterised test could end up with zero
-parameters. At the moment, the test function will nevertheless be called
-with NULL as the parameter. Instead, don't try to run the test code, and
-just mark the test as SKIPped.
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
-Reported-by: Daniel Latypov <dlatypov@google.com>
-Signed-off-by: David Gow <davidgow@google.com>
-Reviewed-by: Daniel Latypov <dlatypov@google.com>
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- lib/kunit/test.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+Thanks
+--
+Gustavo
 
-diff --git a/lib/kunit/test.c b/lib/kunit/test.c
-index f246b847024e3..9aef816e573c1 100644
---- a/lib/kunit/test.c
-+++ b/lib/kunit/test.c
-@@ -504,16 +504,18 @@ int kunit_run_tests(struct kunit_suite *suite)
- 		struct kunit_result_stats param_stats = { 0 };
- 		test_case->status = KUNIT_SKIPPED;
- 
--		if (test_case->generate_params) {
-+		if (!test_case->generate_params) {
-+			/* Non-parameterised test. */
-+			kunit_run_case_catch_errors(suite, test_case, &test);
-+			kunit_update_stats(&param_stats, test.status);
-+		} else {
- 			/* Get initial param. */
- 			param_desc[0] = '\0';
- 			test.param_value = test_case->generate_params(NULL, param_desc);
--		}
- 
--		do {
--			kunit_run_case_catch_errors(suite, test_case, &test);
-+			while (test.param_value) {
-+				kunit_run_case_catch_errors(suite, test_case, &test);
- 
--			if (test_case->generate_params) {
- 				if (param_desc[0] == '\0') {
- 					snprintf(param_desc, sizeof(param_desc),
- 						 "param-%d", test.param_index);
-@@ -530,11 +532,11 @@ int kunit_run_tests(struct kunit_suite *suite)
- 				param_desc[0] = '\0';
- 				test.param_value = test_case->generate_params(test.param_value, param_desc);
- 				test.param_index++;
--			}
- 
--			kunit_update_stats(&param_stats, test.status);
-+				kunit_update_stats(&param_stats, test.status);
-+			}
-+		}
- 
--		} while (test.param_value);
- 
- 		kunit_print_test_stats(&test, param_stats);
- 
--- 
-2.34.1
-
-
-
+> 
+> > ---
+> >
+> >  Makefile | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/Makefile b/Makefile
+> > index 3f07f0f04475..c94559a97dca 100644
+> > --- a/Makefile
+> > +++ b/Makefile
+> > @@ -778,7 +778,7 @@ stackp-flags-$(CONFIG_STACKPROTECTOR_STRONG)      := -fstack-protector-strong
+> >  KBUILD_CFLAGS += $(stackp-flags-y)
+> >
+> >  KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
+> > -KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH:"%"=%)
+> > +KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
+> >
+> >  ifdef CONFIG_CC_IS_CLANG
+> >  KBUILD_CPPFLAGS += -Qunused-arguments
+> > --
+> > 2.32.0
+> >
+> 
+> 
+> -- 
+> Thanks,
+> ~Nick Desaulniers
