@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D885C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2368667AbiAXX7q (ORCPT
+        id S2368785AbiAYAAD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:59:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
+        Mon, 24 Jan 2022 19:00:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847648AbiAXXUP (ORCPT
+        with ESMTP id S1847520AbiAXXUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:20:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1F0AC028C20;
-        Mon, 24 Jan 2022 13:28:05 -0800 (PST)
+        Mon, 24 Jan 2022 18:20:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0123DC06F8FA;
+        Mon, 24 Jan 2022 13:27:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FCF4B815A3;
-        Mon, 24 Jan 2022 21:28:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5B7EC340EE;
-        Mon, 24 Jan 2022 21:28:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E1FC6136E;
+        Mon, 24 Jan 2022 21:27:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74362C340E4;
+        Mon, 24 Jan 2022 21:27:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059683;
-        bh=F1XJP86QbRwonoLiEZokl4JXQQnS7jSJrjYRteoU7C4=;
+        s=korg; t=1643059657;
+        bh=rYM9exfV6ZPmhtkluUdEqD0mCu5N6+8LDBYWPagDUt8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IhJv4K+y+itXVmTW/IPX2R3xTRsxZKzqzvsFT1XxnQumOoKcGSjSlzUenPXYuaKX9
-         QHs9BVrVltbp+yXXck/g7ghtivFYx2snRnCNAiFPiY7ANYwRVLEER75nR7s1rOFcdg
-         T/woezF9ZvbbDm5LDZ4pa4QpikhJkUUDbxv0OsCA=
+        b=LBK/NM46JX+w3eOofAdkUqVNGdQkhnEnAdEvhB6ktrrgc1fiGMS+nL7agJvXNAdFx
+         greilT4ZRMA8s+dAPlOar3V4oPr7fDjYxuy7v11CptRIzzTr3i6+2I+TdmyrQx2v7+
+         K83G9ABDFoFTyBV3+2RKmPOwWTe5YTC2QktwZHM4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
-        Bob Moore <robert.moore@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0699/1039] ACPICA: Fix wrong interpretation of PCC address
-Date:   Mon, 24 Jan 2022 19:41:28 +0100
-Message-Id: <20220124184148.838374027@linuxfoundation.org>
+Subject: [PATCH 5.16 0656/1039] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 24 Jan 2022 19:40:45 +0100
+Message-Id: <20220124184147.424248585@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,84 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit 9a3b8655db1ada31c82189ae13f40eb25da48c35 ]
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
 
-ACPICA commit 41be6afacfdaec2dba3a5ed368736babc2a7aa5c
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
 
-With the PCC Opregion in the firmware and we are hitting below kernel crash:
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
 
--->8
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
- Workqueue: pm pm_runtime_work
- pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : __memcpy+0x54/0x260
- lr : acpi_ex_write_data_to_field+0xb8/0x194
- Call trace:
-  __memcpy+0x54/0x260
-  acpi_ex_store_object_to_node+0xa4/0x1d4
-  acpi_ex_store+0x44/0x164
-  acpi_ex_opcode_1A_1T_1R+0x25c/0x508
-  acpi_ds_exec_end_op+0x1b4/0x44c
-  acpi_ps_parse_loop+0x3a8/0x614
-  acpi_ps_parse_aml+0x90/0x2f4
-  acpi_ps_execute_method+0x11c/0x19c
-  acpi_ns_evaluate+0x1ec/0x2b0
-  acpi_evaluate_object+0x170/0x2b0
-  acpi_device_set_power+0x118/0x310
-  acpi_dev_suspend+0xd4/0x180
-  acpi_subsys_runtime_suspend+0x28/0x38
-  __rpm_callback+0x74/0x328
-  rpm_suspend+0x2d8/0x624
-  pm_runtime_work+0xa4/0xb8
-  process_one_work+0x194/0x25c
-  worker_thread+0x260/0x49c
-  kthread+0x14c/0x30c
-  ret_from_fork+0x10/0x20
- Code: f9000006 f81f80a7 d65f03c0 361000c2 (b9400026)
- ---[ end trace 24d8a032fa77b68a ]---
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
 
-The reason for the crash is that the PCC channel index passed via region.address
-in acpi_ex_store_object_to_node is interpreted as the channel subtype
-incorrectly.
-
-Assuming the PCC op_region support is not used by any other type, let us
-remove the subtype check as the AML has no access to the subtype information.
-Once we remove it, the kernel crash disappears and correctly complains about
-missing PCC Opregion handler.
-
-ACPI Error: No handler for Region [PFRM] ((____ptrval____)) [PCC] (20210730/evregion-130)
-ACPI Error: Region PCC (ID=10) has no handler (20210730/exfldio-261)
-ACPI Error: Aborting method \_SB.ETH0._PS3 due to previous error (AE_NOT_EXIST) (20210730/psparse-531)
-
-Link: https://github.com/acpica/acpica/commit/41be6afa
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/exfield.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
-index 06f3c9df1e22d..8618500f23b39 100644
---- a/drivers/acpi/acpica/exfield.c
-+++ b/drivers/acpi/acpica/exfield.c
-@@ -330,12 +330,7 @@ acpi_ex_write_data_to_field(union acpi_operand_object *source_desc,
- 		       obj_desc->field.base_byte_offset,
- 		       source_desc->buffer.pointer, data_length);
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 68edf7a615be5..5447c47157aa5 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -708,6 +708,8 @@ try_again:
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
  
--		if ((obj_desc->field.region_obj->region.address ==
--		     PCC_MASTER_SUBSPACE
--		     && MASTER_SUBSPACE_COMMAND(obj_desc->field.
--						base_byte_offset))
--		    || GENERIC_SUBSPACE_COMMAND(obj_desc->field.
--						base_byte_offset)) {
-+		if (MASTER_SUBSPACE_COMMAND(obj_desc->field.base_byte_offset)) {
++	card->ocr = ocr_card;
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -820,7 +822,7 @@ try_again:
+ 			goto mismatch;
+ 		}
+ 	}
+-	card->ocr = ocr_card;
++
+ 	mmc_fixup_device(card, sdio_fixup_methods);
  
- 			/* Perform the write */
- 
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
 -- 
 2.34.1
 
