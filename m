@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BF3C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2364868AbiAXXtf (ORCPT
+        id S2364927AbiAXXtv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:49:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
+        Mon, 24 Jan 2022 18:49:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1844719AbiAXXKI (ORCPT
+        with ESMTP id S1844754AbiAXXKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:10:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4A6C09F83C;
-        Mon, 24 Jan 2022 13:18:13 -0800 (PST)
+        Mon, 24 Jan 2022 18:10:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716E9C0A0285;
+        Mon, 24 Jan 2022 13:18:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BE99B81057;
-        Mon, 24 Jan 2022 21:18:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1F2C340E4;
-        Mon, 24 Jan 2022 21:18:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FABB614A8;
+        Mon, 24 Jan 2022 21:18:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C28A2C340E4;
+        Mon, 24 Jan 2022 21:18:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059091;
-        bh=t17sdjoAhhTXB6mNYjmpfzPShpRY5qOINxI54UzVfxY=;
+        s=korg; t=1643059103;
+        bh=CHPzfW6i5bXLXtdsGALLpzo6sxfPO+RZtns6yyzQsS4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v8savHB4RRxlDPLgUIqZDBlXb6Y7JAUiIptlbguALrSbW3EZ6MYRJCSwYioKG/evQ
-         ZX4cnRT2Do1eLGCCTKN0+J2RGT815rgduZLJ1TwUBEBDWB+Y3g+gE+N1NDRwqtJj2q
-         tbkiBPHnaD+9/xOA9/Cz81ad9ZmjVdF6YtTwe3Pw=
+        b=eLV/Eh/ZRff51G0ujXwdMedbVNX41Ex8/IXUBizB2xpCUvgHGHUdiUyyisPy1qnuq
+         t9c9Ez86gegZkbvBcXVEw9lv22THeFZDurmex0YE+Hm2sq67S1egD2XBQ7m58e3xw2
+         3eR23Z9MvCvtaohwkrdMCRsjVTw4L7+o9QEbg2Bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Syed Nayyar Waris <syednwaris@gmail.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0501/1039] counter: 104-quad-8: Fix persistent enabled events bug
-Date:   Mon, 24 Jan 2022 19:38:10 +0100
-Message-Id: <20220124184142.105182450@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Xiang Chen <chenxiang66@hisilicon.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH 5.16 0504/1039] scsi: block: pm: Always set request queue runtime active in blk_post_runtime_resume()
+Date:   Mon, 24 Jan 2022 19:38:13 +0100
+Message-Id: <20220124184142.209470147@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,190 +53,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit c95cc0d95702523f8f361b802c9b7d4eeae07f5d ]
+[ Upstream commit 6e1fcab00a23f7fe9f4fe9704905a790efa1eeab ]
 
-A bug exists if the user executes a COUNTER_ADD_WATCH_IOCTL ioctl call,
-and then executes a COUNTER_DISABLE_EVENTS_IOCTL ioctl call. Disabling
-the events should disable the 104-QUAD-8 interrupts, but because of this
-bug the interrupts are not disabling.
+John Garry reported a deadlock that occurs when trying to access a
+runtime-suspended SATA device.  For obscure reasons, the rescan procedure
+causes the link to be hard-reset, which disconnects the device.
 
-The reason this bug is occurring is because quad8_events_configure() is
-called when COUNTER_DISABLE_EVENTS_IOCTL is handled, but the
-next_irq_trigger[] array has not been cleared before it is checked in
-the loop.
+The rescan tries to carry out a runtime resume when accessing the device.
+scsi_rescan_device() holds the SCSI device lock and won't release it until
+it can put commands onto the device's block queue.  This can't happen until
+the queue is successfully runtime-resumed or the device is unregistered.
+But the runtime resume fails because the device is disconnected, and
+__scsi_remove_device() can't do the unregistration because it can't get the
+device lock.
 
-This patch fixes the bug by removing the next_irq_trigger array and
-instead utilizing a different algorithm of walking the events_list list
-for the current requested events. When a COUNTER_DISABLE_EVENTS_IOCTL is
-handled, events_list will be empty and thus all device channels end up
-with interrupts disabled.
+The best way to resolve this deadlock appears to be to allow the block
+queue to start running again even after an unsuccessful runtime resume.
+The idea is that the driver or the SCSI error handler will need to be able
+to use the queue to resolve the runtime resume failure.
 
-Fixes: 7aa2ba0df651 ("counter: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8")
-Cc: Syed Nayyar Waris <syednwaris@gmail.com>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-Link: https://lore.kernel.org/r/5fd5731cec1c251acee30eefb7c19160d03c9d39.1640072891.git.vilhelm.gray@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch removes the err argument to blk_post_runtime_resume() and makes
+the routine act as though the resume was successful always.  This fixes the
+deadlock.
+
+Link: https://lore.kernel.org/r/1639999298-244569-4-git-send-email-chenxiang66@hisilicon.com
+Fixes: e27829dc92e5 ("scsi: serialize ->rescan against ->remove")
+Reported-and-tested-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/counter/104-quad-8.c | 82 +++++++++++++++++-------------------
- 1 file changed, 39 insertions(+), 43 deletions(-)
+ block/blk-pm.c         | 22 +++++++---------------
+ drivers/scsi/scsi_pm.c |  2 +-
+ include/linux/blk-pm.h |  2 +-
+ 3 files changed, 9 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 1cbd60aaed697..a97027db0446d 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -14,6 +14,7 @@
- #include <linux/interrupt.h>
- #include <linux/isa.h>
- #include <linux/kernel.h>
-+#include <linux/list.h>
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/types.h>
-@@ -44,7 +45,6 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
-  * @ab_enable:		array of A and B inputs enable configurations
-  * @preset_enable:	array of set_to_preset_on_index attribute configurations
-  * @irq_trigger:	array of current IRQ trigger function configurations
-- * @next_irq_trigger:	array of next IRQ trigger function configurations
-  * @synchronous_mode:	array of index function synchronous mode configurations
-  * @index_polarity:	array of index function polarity configurations
-  * @cable_fault_enable:	differential encoder cable status enable configurations
-@@ -61,7 +61,6 @@ struct quad8 {
- 	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
- 	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
- 	unsigned int irq_trigger[QUAD8_NUM_COUNTERS];
--	unsigned int next_irq_trigger[QUAD8_NUM_COUNTERS];
- 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
- 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
- 	unsigned int cable_fault_enable;
-@@ -390,7 +389,6 @@ static int quad8_action_read(struct counter_device *counter,
- }
- 
- enum {
--	QUAD8_EVENT_NONE = -1,
- 	QUAD8_EVENT_CARRY = 0,
- 	QUAD8_EVENT_COMPARE = 1,
- 	QUAD8_EVENT_CARRY_BORROW = 2,
-@@ -402,34 +400,49 @@ static int quad8_events_configure(struct counter_device *counter)
- 	struct quad8 *const priv = counter->priv;
- 	unsigned long irq_enabled = 0;
- 	unsigned long irqflags;
--	size_t channel;
-+	struct counter_event_node *event_node;
-+	unsigned int next_irq_trigger;
- 	unsigned long ior_cfg;
- 	unsigned long base_offset;
- 
- 	spin_lock_irqsave(&priv->lock, irqflags);
- 
--	/* Enable interrupts for the requested channels, disable for the rest */
--	for (channel = 0; channel < QUAD8_NUM_COUNTERS; channel++) {
--		if (priv->next_irq_trigger[channel] == QUAD8_EVENT_NONE)
--			continue;
-+	list_for_each_entry(event_node, &counter->events_list, l) {
-+		switch (event_node->event) {
-+		case COUNTER_EVENT_OVERFLOW:
-+			next_irq_trigger = QUAD8_EVENT_CARRY;
-+			break;
-+		case COUNTER_EVENT_THRESHOLD:
-+			next_irq_trigger = QUAD8_EVENT_COMPARE;
-+			break;
-+		case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
-+			next_irq_trigger = QUAD8_EVENT_CARRY_BORROW;
-+			break;
-+		case COUNTER_EVENT_INDEX:
-+			next_irq_trigger = QUAD8_EVENT_INDEX;
-+			break;
-+		default:
-+			/* should never reach this path */
-+			spin_unlock_irqrestore(&priv->lock, irqflags);
-+			return -EINVAL;
-+		}
- 
--		if (priv->irq_trigger[channel] != priv->next_irq_trigger[channel]) {
--			/* Save new IRQ function configuration */
--			priv->irq_trigger[channel] = priv->next_irq_trigger[channel];
-+		/* Skip configuration if it is the same as previously set */
-+		if (priv->irq_trigger[event_node->channel] == next_irq_trigger)
-+			continue;
- 
--			/* Load configuration to I/O Control Register */
--			ior_cfg = priv->ab_enable[channel] |
--				  priv->preset_enable[channel] << 1 |
--				  priv->irq_trigger[channel] << 3;
--			base_offset = priv->base + 2 * channel + 1;
--			outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
--		}
-+		/* Save new IRQ function configuration */
-+		priv->irq_trigger[event_node->channel] = next_irq_trigger;
- 
--		/* Reset next IRQ trigger function configuration */
--		priv->next_irq_trigger[channel] = QUAD8_EVENT_NONE;
-+		/* Load configuration to I/O Control Register */
-+		ior_cfg = priv->ab_enable[event_node->channel] |
-+			  priv->preset_enable[event_node->channel] << 1 |
-+			  priv->irq_trigger[event_node->channel] << 3;
-+		base_offset = priv->base + 2 * event_node->channel + 1;
-+		outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
- 
- 		/* Enable IRQ line */
--		irq_enabled |= BIT(channel);
-+		irq_enabled |= BIT(event_node->channel);
- 	}
- 
- 	outb(irq_enabled, priv->base + QUAD8_REG_INDEX_INTERRUPT);
-@@ -442,35 +455,20 @@ static int quad8_events_configure(struct counter_device *counter)
- static int quad8_watch_validate(struct counter_device *counter,
- 				const struct counter_watch *watch)
+diff --git a/block/blk-pm.c b/block/blk-pm.c
+index 17bd020268d42..2dad62cc15727 100644
+--- a/block/blk-pm.c
++++ b/block/blk-pm.c
+@@ -163,27 +163,19 @@ EXPORT_SYMBOL(blk_pre_runtime_resume);
+ /**
+  * blk_post_runtime_resume - Post runtime resume processing
+  * @q: the queue of the device
+- * @err: return value of the device's runtime_resume function
+  *
+  * Description:
+- *    Update the queue's runtime status according to the return value of the
+- *    device's runtime_resume function. If the resume was successful, call
+- *    blk_set_runtime_active() to do the real work of restarting the queue.
++ *    For historical reasons, this routine merely calls blk_set_runtime_active()
++ *    to do the real work of restarting the queue.  It does this regardless of
++ *    whether the device's runtime-resume succeeded; even if it failed the
++ *    driver or error handler will need to communicate with the device.
+  *
+  *    This function should be called near the end of the device's
+  *    runtime_resume callback.
+  */
+-void blk_post_runtime_resume(struct request_queue *q, int err)
++void blk_post_runtime_resume(struct request_queue *q)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct counter_event_node *event_node;
+-	if (!q->dev)
+-		return;
+-	if (!err) {
+-		blk_set_runtime_active(q);
+-	} else {
+-		spin_lock_irq(&q->queue_lock);
+-		q->rpm_status = RPM_SUSPENDED;
+-		spin_unlock_irq(&q->queue_lock);
+-	}
++	blk_set_runtime_active(q);
+ }
+ EXPORT_SYMBOL(blk_post_runtime_resume);
  
- 	if (watch->channel > QUAD8_NUM_COUNTERS - 1)
- 		return -EINVAL;
+@@ -201,7 +193,7 @@ EXPORT_SYMBOL(blk_post_runtime_resume);
+  * runtime PM status and re-enable peeking requests from the queue. It
+  * should be called before first request is added to the queue.
+  *
+- * This function is also called by blk_post_runtime_resume() for successful
++ * This function is also called by blk_post_runtime_resume() for
+  * runtime resumes.  It does everything necessary to restart the queue.
+  */
+ void blk_set_runtime_active(struct request_queue *q)
+diff --git a/drivers/scsi/scsi_pm.c b/drivers/scsi/scsi_pm.c
+index b5a858c29488a..f06ca9d2a597d 100644
+--- a/drivers/scsi/scsi_pm.c
++++ b/drivers/scsi/scsi_pm.c
+@@ -181,7 +181,7 @@ static int sdev_runtime_resume(struct device *dev)
+ 	blk_pre_runtime_resume(sdev->request_queue);
+ 	if (pm && pm->runtime_resume)
+ 		err = pm->runtime_resume(dev);
+-	blk_post_runtime_resume(sdev->request_queue, err);
++	blk_post_runtime_resume(sdev->request_queue);
  
- 	switch (watch->event) {
- 	case COUNTER_EVENT_OVERFLOW:
--		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
--			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_CARRY;
--		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_CARRY)
--			return -EINVAL;
--		return 0;
- 	case COUNTER_EVENT_THRESHOLD:
--		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
--			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_COMPARE;
--		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_COMPARE)
--			return -EINVAL;
--		return 0;
- 	case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
--		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
--			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_CARRY_BORROW;
--		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_CARRY_BORROW)
--			return -EINVAL;
--		return 0;
- 	case COUNTER_EVENT_INDEX:
--		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
--			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_INDEX;
--		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_INDEX)
--			return -EINVAL;
-+		list_for_each_entry(event_node, &counter->next_events_list, l)
-+			if (watch->channel == event_node->channel &&
-+				watch->event != event_node->event)
-+				return -EINVAL;
- 		return 0;
- 	default:
- 		return -EINVAL;
-@@ -1183,8 +1181,6 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 		outb(QUAD8_CTR_IOR, base_offset + 1);
- 		/* Disable index function; negative index polarity */
- 		outb(QUAD8_CTR_IDR, base_offset + 1);
--		/* Initialize next IRQ trigger function configuration */
--		priv->next_irq_trigger[i] = QUAD8_EVENT_NONE;
- 	}
- 	/* Disable Differential Encoder Cable Status for all channels */
- 	outb(0xFF, base[id] + QUAD8_DIFF_ENCODER_CABLE_STATUS);
+ 	return err;
+ }
+diff --git a/include/linux/blk-pm.h b/include/linux/blk-pm.h
+index b80c65aba2493..2580e05a8ab67 100644
+--- a/include/linux/blk-pm.h
++++ b/include/linux/blk-pm.h
+@@ -14,7 +14,7 @@ extern void blk_pm_runtime_init(struct request_queue *q, struct device *dev);
+ extern int blk_pre_runtime_suspend(struct request_queue *q);
+ extern void blk_post_runtime_suspend(struct request_queue *q, int err);
+ extern void blk_pre_runtime_resume(struct request_queue *q);
+-extern void blk_post_runtime_resume(struct request_queue *q, int err);
++extern void blk_post_runtime_resume(struct request_queue *q);
+ extern void blk_set_runtime_active(struct request_queue *q);
+ #else
+ static inline void blk_pm_runtime_init(struct request_queue *q,
 -- 
 2.34.1
 
