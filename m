@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C093BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3411640AbiAYAeN (ORCPT
+        id S3411785AbiAYAes (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:34:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47494 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455232AbiAXVfD (ORCPT
+        Mon, 24 Jan 2022 19:34:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57252 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2363403AbiAXXo0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:03 -0500
+        Mon, 24 Jan 2022 18:44:26 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EEFBC0FE684;
+        Mon, 24 Jan 2022 13:39:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55991B8105C;
-        Mon, 24 Jan 2022 21:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E888C340E4;
-        Mon, 24 Jan 2022 21:34:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1789E614B4;
+        Mon, 24 Jan 2022 21:39:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCA1C340E7;
+        Mon, 24 Jan 2022 21:39:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060098;
-        bh=C1j676FUP8iWuGVMyB82H13nsJjOvitU5NC+K+waxcc=;
+        s=korg; t=1643060351;
+        bh=T4NY8zqPRR6WKhwieFaRIRF4HrYhvq77oMAZe4cIyL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n/2Xr4gJqLYRpWTah8xtQIR0nqDKldX6fyJKow1kK2XmArf7Zj8fGx/UKOHvzMx7u
-         zdqwG/9ciH6zgot3gbs/9bHpegkFLQab65YIA012cdPFBa2sq5ATdXA2Ux9BK5/PEH
-         D+VmhkKecnnr+GAsFMIUx+YL0NhyMapFv6r1qyDI=
+        b=TJa/P/eLeqNLh85IoqBUP58tayy1wqIySTbigFHencJffqiyJ5cnPF5rYVYfLmTft
+         m5i2Altt85dDt+AqVNkXeYFjvGseG0cMLCLLBpchKJkWeAQxd6BgI1DtzvA15Pq3WO
+         WuOBSKqJv/JF6BA2SoEgu1cVGFH1azSGH37VKtKw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Nicolas Pitre <npitre@baylibre.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0795/1039] i3c/master/mipi-i3c-hci: Fix a potentially infinite loop in hci_dat_v1_get_index()
-Date:   Mon, 24 Jan 2022 19:43:04 +0100
-Message-Id: <20220124184152.025168739@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 0920/1039] scsi: core: Show SCMD_LAST in text form
+Date:   Mon, 24 Jan 2022 19:45:09 +0100
+Message-Id: <20220124184156.224871831@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,47 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 3f43926f271287fb1744c9ac9ae1122497f2b0c2 ]
+commit 3369046e54ca8f82e0cb17740643da2d80d3cfa8 upstream.
 
-The code in 'hci_dat_v1_get_index()' really looks like a hand coded version
-of 'for_each_set_bit()', except that a +1 is missing when searching for the
-next set bit.
+The SCSI debugfs code supports showing information about pending commands,
+including translating SCSI command flags from numeric into text format.
+Also convert the SCMD_LAST flag from numeric into text form.
 
-This really looks odd and it seems that it will loop until 'dat_w0_read()'
-returns the expected result.
-
-So use 'for_each_set_bit()' instead. It is less verbose and should be more
-correct.
-
-Fixes: 9ad9a52cce28 ("i3c/master: introduce the mipi-i3c-hci driver")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Acked-by: Nicolas Pitre <npitre@baylibre.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/0cdf3cb10293ead1acd271fdb8a70369c298c082.1637186628.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211129194609.3466071-4-bvanassche@acm.org
+Fixes: 8930a6c20791 ("scsi: core: add support for request batching")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i3c/master/mipi-i3c-hci/dat_v1.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/scsi/scsi_debugfs.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i3c/master/mipi-i3c-hci/dat_v1.c b/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
-index 783e551a2c85a..97bb49ff5b53b 100644
---- a/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
-+++ b/drivers/i3c/master/mipi-i3c-hci/dat_v1.c
-@@ -160,9 +160,7 @@ static int hci_dat_v1_get_index(struct i3c_hci *hci, u8 dev_addr)
- 	unsigned int dat_idx;
- 	u32 dat_w0;
+--- a/drivers/scsi/scsi_debugfs.c
++++ b/drivers/scsi/scsi_debugfs.c
+@@ -9,6 +9,7 @@
+ static const char *const scsi_cmd_flags[] = {
+ 	SCSI_CMD_FLAG_NAME(TAGGED),
+ 	SCSI_CMD_FLAG_NAME(INITIALIZED),
++	SCSI_CMD_FLAG_NAME(LAST),
+ };
+ #undef SCSI_CMD_FLAG_NAME
  
--	for (dat_idx = find_first_bit(hci->DAT_data, hci->DAT_entries);
--	     dat_idx < hci->DAT_entries;
--	     dat_idx = find_next_bit(hci->DAT_data, hci->DAT_entries, dat_idx)) {
-+	for_each_set_bit(dat_idx, hci->DAT_data, hci->DAT_entries) {
- 		dat_w0 = dat_w0_read(dat_idx);
- 		if (FIELD_GET(DAT_0_DYNAMIC_ADDRESS, dat_w0) == dev_addr)
- 			return dat_idx;
--- 
-2.34.1
-
 
 
