@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BADEC35276
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D6AC41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344034AbiAXV0k (ORCPT
+        id S1452883AbiAXV1O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391192AbiAXUrD (ORCPT
+        Mon, 24 Jan 2022 16:27:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47186 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391084AbiAXUqz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:47:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09341C0424D8;
-        Mon, 24 Jan 2022 11:57:32 -0800 (PST)
+        Mon, 24 Jan 2022 15:46:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80781B81218;
-        Mon, 24 Jan 2022 19:57:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FDFBC33DA0;
-        Mon, 24 Jan 2022 19:57:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9510DB812A4;
+        Mon, 24 Jan 2022 20:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9761C340E5;
+        Mon, 24 Jan 2022 20:46:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054250;
-        bh=mMVMuisXCIt+zCi8F5XYc+fsmSAixmNaldXMRbfRe4I=;
+        s=korg; t=1643057213;
+        bh=/CkJZbBS/noqHTVzt9gb1OaMJAK407vUfQxtvkkrFfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TU/o+f6rnXqlsgW1HlLNttZdlrrgw1ptwsndQYtQ3t4OlPardNnFSaRTgtNl8Zl35
-         mxhGQojMAp3tABAGz0zIPRURJ7ZK57LOqOXLVCJuo4pUBUILo0gI5SyxHUp9Cf9UZ3
-         YPKDJsbCs1UlEmfRsW74b49rKq1i8mh6Q1uyNUa8=
+        b=DfwMs2jyL1H7yxkWFiogEhGmI6bFvi4chSMeM3WiB7BDIT/2BWoOm0+e/di7vabBE
+         TBamEpfM5SoZPvQ7+tsTITRzlelkME2fPxM3y43cjs8DZL0eYUsozakPnDPUFFVx3a
+         5LzidQX+yv7Gxv/8jVC23rBKsrDz1CfdHu+8F/24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 328/563] mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
-Date:   Mon, 24 Jan 2022 19:41:33 +0100
-Message-Id: <20220124184035.773561830@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.15 738/846] Documentation: ACPI: Fix data node reference documentation
+Date:   Mon, 24 Jan 2022 19:44:15 +0100
+Message-Id: <20220124184126.451066352@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,68 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-[ Upstream commit 04d80663f67ccef893061b49ec8a42ff7045ae84 ]
+commit a11174952205d082f1658fab4314f0caf706e0a8 upstream.
 
-Currently, with an unknown recv_type, mwifiex_usb_recv
-just return -1 without restoring the skb. Next time
-mwifiex_usb_rx_complete is invoked with the same skb,
-calling skb_put causes skb_over_panic.
+The data node reference documentation was missing a package that must
+contain the property values, instead property name and multiple values
+being present in a single package. This is not aligned with the _DSD
+spec.
 
-The bug is triggerable with a compromised/malfunctioning
-usb device. After applying the patch, skb_over_panic
-no longer shows up with the same input.
+Fix it by adding the package for the values.
 
-Attached is the panic report from fuzzing.
-skbuff: skb_over_panic: text:000000003bf1b5fa
- len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
- tail:0x844 end:0x840 dev:<NULL>
-kernel BUG at net/core/skbuff.c:109!
-invalid opcode: 0000 [#1] SMP KASAN NOPTI
-CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
-RIP: 0010:skb_panic+0x15f/0x161
-Call Trace:
- <IRQ>
- ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
- skb_put.cold+0x24/0x24
- mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
- </IRQ>
+Also add the missing "reg" properties to two numbered nodes.
 
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: b10134a3643d ("ACPI: property: Document hierarchical data extension references")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/firmware-guide/acpi/dsd/data-node-references.rst |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
-index 9736aa0ab7fd4..8f01fcbe93961 100644
---- a/drivers/net/wireless/marvell/mwifiex/usb.c
-+++ b/drivers/net/wireless/marvell/mwifiex/usb.c
-@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
- 		default:
- 			mwifiex_dbg(adapter, ERROR,
- 				    "unknown recv_type %#x\n", recv_type);
--			return -1;
-+			ret = -1;
-+			goto exit_restore_skb;
+--- a/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
++++ b/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
+@@ -5,7 +5,7 @@
+ Referencing hierarchical data nodes
+ ===================================
+ 
+-:Copyright: |copy| 2018 Intel Corporation
++:Copyright: |copy| 2018, 2021 Intel Corporation
+ :Author: Sakari Ailus <sakari.ailus@linux.intel.com>
+ 
+ ACPI in general allows referring to device objects in the tree only.
+@@ -52,12 +52,14 @@ the ANOD object which is also the final
+ 	    Name (NOD0, Package() {
+ 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+ 		Package () {
++		    Package () { "reg", 0 },
+ 		    Package () { "random-property", 3 },
  		}
- 		break;
- 	case MWIFIEX_USB_EP_DATA:
--- 
-2.34.1
-
+ 	    })
+ 	    Name (NOD1, Package() {
+ 		ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+ 		Package () {
++		    Package () { "reg", 1 },
+ 		    Package () { "anothernode", "ANOD" },
+ 		}
+ 	    })
+@@ -74,7 +76,11 @@ the ANOD object which is also the final
+ 	    Name (_DSD, Package () {
+ 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+ 		Package () {
+-		    Package () { "reference", ^DEV0, "node@1", "anothernode" },
++		    Package () {
++			"reference", Package () {
++			    ^DEV0, "node@1", "anothernode"
++			}
++		    },
+ 		}
+ 	    })
+ 	}
 
 
