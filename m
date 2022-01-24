@@ -2,139 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B861C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:59:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA95C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:59:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240296AbiAXM7O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:59:14 -0500
-Received: from foss.arm.com ([217.140.110.172]:33250 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242878AbiAXM67 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:58:59 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id AF1D7113E;
+        id S242994AbiAXM7P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:59:15 -0500
+Received: from shards.monkeyblade.net ([23.128.96.9]:41644 "EHLO
+        mail.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242918AbiAXM7B (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:59:01 -0500
+Received: from localhost (cpc147930-brnt3-2-0-cust60.4-2.cable.virginm.net [86.15.196.61])
+        by mail.monkeyblade.net (Postfix) with ESMTPSA id DD61F83FD219;
         Mon, 24 Jan 2022 04:58:58 -0800 (PST)
-Received: from p8cg001049571a15.arm.com (unknown [10.163.43.190])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id D46AE3F774;
-        Mon, 24 Jan 2022 04:58:55 -0800 (PST)
-From:   Anshuman Khandual <anshuman.khandual@arm.com>
-To:     linux-mm@kvack.org
-Cc:     linux-kernel@vger.kernel.org, hch@infradead.org,
-        akpm@linux-foundation.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Nick Hu <nickhu@andestech.com>
-Subject: [RFC V1 27/31] nds32/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
-Date:   Mon, 24 Jan 2022 18:27:04 +0530
-Message-Id: <1643029028-12710-28-git-send-email-anshuman.khandual@arm.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
+Date:   Mon, 24 Jan 2022 12:58:54 +0000 (GMT)
+Message-Id: <20220124.125854.376101757936359699.davem@davemloft.net>
+To:     anshuman.khandual@arm.com
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        hch@infradead.org, akpm@linux-foundation.org,
+        khalid.aziz@oracle.com, sparclinux@vger.kernel.org
+Subject: Re: [RFC V1 06/31] sparc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1643029028-12710-7-git-send-email-anshuman.khandual@arm.com>
 References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
+        <1643029028-12710-7-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: Mew version 6.8 on Emacs 27.2
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.6.2 (mail.monkeyblade.net [0.0.0.0]); Mon, 24 Jan 2022 04:59:00 -0800 (PST)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This defines and exports a platform specific custom vm_get_page_prot() via
-subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
-macros can be dropped which are no longer needed.
+From: Anshuman Khandual <anshuman.khandual@arm.com>
+Date: Mon, 24 Jan 2022 18:26:43 +0530
 
-Cc: Nick Hu <nickhu@andestech.com>
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
----
- arch/nds32/Kconfig               |  1 +
- arch/nds32/include/asm/pgtable.h | 17 -------------
- arch/nds32/mm/mmap.c             | 41 ++++++++++++++++++++++++++++++++
- 3 files changed, 42 insertions(+), 17 deletions(-)
+> This defines and exports a platform specific custom vm_get_page_prot() via
+> subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+> macros can be dropped which are no longer needed.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Khalid Aziz <khalid.aziz@oracle.com>
+> Cc: sparclinux@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 
-diff --git a/arch/nds32/Kconfig b/arch/nds32/Kconfig
-index 4d1421b18734..576e05479925 100644
---- a/arch/nds32/Kconfig
-+++ b/arch/nds32/Kconfig
-@@ -10,6 +10,7 @@ config NDS32
- 	select ARCH_HAS_DMA_PREP_COHERENT
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU
- 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
-+	select ARCH_HAS_VM_GET_PAGE_PROT
- 	select ARCH_WANT_FRAME_POINTERS if FTRACE
- 	select CLKSRC_MMIO
- 	select CLONE_BACKWARDS
-diff --git a/arch/nds32/include/asm/pgtable.h b/arch/nds32/include/asm/pgtable.h
-index 419f984eef70..79f64ed734cb 100644
---- a/arch/nds32/include/asm/pgtable.h
-+++ b/arch/nds32/include/asm/pgtable.h
-@@ -152,23 +152,6 @@ extern void __pgd_error(const char *file, int line, unsigned long val);
- #endif /* __ASSEMBLY__ */
- 
- /*         xwr */
--#define __P000  (PAGE_NONE | _PAGE_CACHE_SHRD)
--#define __P001  (PAGE_READ | _PAGE_CACHE_SHRD)
--#define __P010  (PAGE_COPY | _PAGE_CACHE_SHRD)
--#define __P011  (PAGE_COPY | _PAGE_CACHE_SHRD)
--#define __P100  (PAGE_EXEC | _PAGE_CACHE_SHRD)
--#define __P101  (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD)
--#define __P110  (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD)
--#define __P111  (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD)
--
--#define __S000  (PAGE_NONE | _PAGE_CACHE_SHRD)
--#define __S001  (PAGE_READ | _PAGE_CACHE_SHRD)
--#define __S010  (PAGE_RDWR | _PAGE_CACHE_SHRD)
--#define __S011  (PAGE_RDWR | _PAGE_CACHE_SHRD)
--#define __S100  (PAGE_EXEC | _PAGE_CACHE_SHRD)
--#define __S101  (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD)
--#define __S110  (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD)
--#define __S111  (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD)
- 
- #ifndef __ASSEMBLY__
- /*
-diff --git a/arch/nds32/mm/mmap.c b/arch/nds32/mm/mmap.c
-index 1bdf5e7d1b43..bfb3929d634a 100644
---- a/arch/nds32/mm/mmap.c
-+++ b/arch/nds32/mm/mmap.c
-@@ -71,3 +71,44 @@ arch_get_unmapped_area(struct file *filp, unsigned long addr,
- 	info.align_offset = pgoff << PAGE_SHIFT;
- 	return vm_unmapped_area(&info);
- }
-+
-+pgprot_t vm_get_page_prot(unsigned long vm_flags)
-+{
-+	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
-+	case VM_NONE:
-+		return (PAGE_NONE | _PAGE_CACHE_SHRD);
-+	case VM_READ:
-+		return (PAGE_READ | _PAGE_CACHE_SHRD);
-+	case VM_WRITE:
-+		return (PAGE_COPY | _PAGE_CACHE_SHRD);
-+	case VM_READ | VM_WRITE:
-+		return (PAGE_COPY | _PAGE_CACHE_SHRD);
-+	case VM_EXEC:
-+		return (PAGE_EXEC | _PAGE_CACHE_SHRD);
-+	case VM_EXEC | VM_READ:
-+		return (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD);
-+	case VM_EXEC | VM_WRITE:
-+		return (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD);
-+	case VM_EXEC | VM_READ | VM_WRITE:
-+		return (PAGE_COPY | _PAGE_E | _PAGE_CACHE_SHRD);
-+	case VM_SHARED:
-+		return (PAGE_NONE | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_READ:
-+		return (PAGE_READ | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_WRITE:
-+		return (PAGE_RDWR | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_READ | VM_WRITE:
-+		return (PAGE_RDWR | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_EXEC:
-+		return (PAGE_EXEC | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_EXEC | VM_READ:
-+		return (PAGE_READ | _PAGE_E | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_EXEC | VM_WRITE:
-+		return (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD);
-+	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
-+		return (PAGE_RDWR | _PAGE_E | _PAGE_CACHE_SHRD);
-+	default:
-+		BUILD_BUG();
-+	}
-+}
-+EXPORT_SYMBOL(vm_get_page_prot);
--- 
-2.25.1
-
+Acked-by: David S. Miller <davem@davemloft.net>
