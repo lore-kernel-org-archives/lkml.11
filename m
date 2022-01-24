@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC5B4C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD880C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3420990AbiAYCZz (ORCPT
+        id S3421185AbiAYC01 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:25:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48310 "EHLO
+        Mon, 24 Jan 2022 21:26:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38266 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350254AbiAXTYo (ORCPT
+        with ESMTP id S1344431AbiAXTsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:24:44 -0500
+        Mon, 24 Jan 2022 14:48:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B69EB8122C;
-        Mon, 24 Jan 2022 19:24:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE68C340E5;
-        Mon, 24 Jan 2022 19:24:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75973B8124C;
+        Mon, 24 Jan 2022 19:48:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94E18C340EF;
+        Mon, 24 Jan 2022 19:48:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052282;
-        bh=64djAcdFOZX9lox2mWpaTdgR3LKocNI2zq5giDpMUEs=;
+        s=korg; t=1643053717;
+        bh=1Xu0fY9+VgGKTdVcFCdBa37F4Om7SvBXrvrP+wodbko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UO5PPYXD240o8DvYSFmBoqyqQu5ooV1RJcbUqlIdwEP18RueMhAIUUvIua5NGINfR
-         stUvh8EG9RYTY8EV2H4gaq9CSoWoNYzRCLqd1Y1qPuLzlenPsLqnh7MqszRm6+rRjV
-         ja9U4k+aTMqCS/WvbAUs7JpF9UwgvNWpy7/ldfHw=
+        b=mGcgHpsmMPkru30ejAkt5iQCm9opDL1FJFCiTerXg+XQoOozmP1+qb0vM5nNjXgWs
+         3eyr+uVS229MnJAMT7kg28P3djciYumER3/9NAkI5GRW1mNKDLpAfA/Ax+AXTbX4ml
+         aHWH1pvLBJFLVfn9p9O2b4WmhRjdYaeVNuBT/yZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julius Werner <jwerner@chromium.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.19 212/239] firmware: Update Kconfig help text for Google firmware
-Date:   Mon, 24 Jan 2022 19:44:10 +0100
-Message-Id: <20220124183949.855915546@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 155/563] crypto: stm32/cryp - fix xts and race condition in crypto_engine requests
+Date:   Mon, 24 Jan 2022 19:38:40 +0100
+Message-Id: <20220124184029.752812235@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,40 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-commit d185a3466f0cd5af8f1c5c782c53bc0e6f2e7136 upstream.
+[ Upstream commit d703c7a994ee34b7fa89baf21631fca0aa9f17fc ]
 
-The help text for GOOGLE_FIRMWARE states that it should only be
-enabled when building a kernel for Google's own servers.  However,
-many of the drivers dependent on it are also useful on Chromebooks or
-on any platform using coreboot.
+Don't erase key:
+If key is erased before the crypto_finalize_.*_request() call, some
+pending process will run with a key={ 0 }.
+Moreover if the key is reset at end of request, it breaks xts chaining
+mode, as for last xts block (in case input len is not a multiple of
+block) a new AES request is started without calling again set_key().
 
-Update the help text to reflect this double duty.
+Fixes: 9e054ec21ef8 ("crypto: stm32 - Support for STM32 CRYP crypto module")
 
-Fixes: d384d6f43d1e ("firmware: google memconsole: Add coreboot support")
-Reviewed-by: Julius Werner <jwerner@chromium.org>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Link: https://lore.kernel.org/r/20180618225540.GD14131@decadent.org.uk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/google/Kconfig |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/firmware/google/Kconfig
-+++ b/drivers/firmware/google/Kconfig
-@@ -2,9 +2,9 @@ menuconfig GOOGLE_FIRMWARE
- 	bool "Google Firmware Drivers"
- 	default n
- 	help
--	  These firmware drivers are used by Google's servers.  They are
--	  only useful if you are working directly on one of their
--	  proprietary servers.  If in doubt, say "N".
-+	  These firmware drivers are used by Google servers,
-+	  Chromebooks and other devices using coreboot firmware.
-+	  If in doubt, say "N".
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index d13b262b36252..e2bcc4f98b0ae 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -674,8 +674,6 @@ static void stm32_cryp_finish_req(struct stm32_cryp *cryp, int err)
+ 	else
+ 		crypto_finalize_skcipher_request(cryp->engine, cryp->req,
+ 						   err);
+-
+-	memset(cryp->ctx->key, 0, cryp->ctx->keylen);
+ }
  
- if GOOGLE_FIRMWARE
- 
+ static int stm32_cryp_cpu_start(struct stm32_cryp *cryp)
+-- 
+2.34.1
+
 
 
