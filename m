@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1F5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26850C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356071AbiAXUOq (ORCPT
+        id S1379834AbiAXUPK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:14:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351774AbiAXTwn (ORCPT
+        Mon, 24 Jan 2022 15:15:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42050 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358395AbiAXTzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7B6C061390;
-        Mon, 24 Jan 2022 11:25:52 -0800 (PST)
+        Mon, 24 Jan 2022 14:55:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA916B8121C;
-        Mon, 24 Jan 2022 19:25:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A94C340E7;
-        Mon, 24 Jan 2022 19:25:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32386B8124B;
+        Mon, 24 Jan 2022 19:55:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54190C340E5;
+        Mon, 24 Jan 2022 19:55:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052349;
-        bh=9RUyuV8X8p3XqKTR+JMGeYvUPlLzZu6EXdN0cDot12U=;
+        s=korg; t=1643054105;
+        bh=u6wn5hvtFVt0BP/ZgDwafgBXxb/0euiS2/J+gFOmtrM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jGfM0FtFBuYL8zT9ZLMb1023ZtWPp8DrHbrtRZYOGMRQcZ/yApHP9lSH//f2DMhli
-         Ee0OChyttWZKjX4zw1LaKQWiGMA52o+2FfpT1gvCUX+xtKw+FpcMTUnM50w0AISk50
-         5it6ENzg+0NdiXq9nrScdZPOl62QTW/lQBgwAm0U=
+        b=T2TAwvXlYHz3db0xdqsq2mEuNccd2WOPph+pAhtaxM8StXhrKE3CW+02gOc/dWuX/
+         Me5FMiAfhwB11v5A0dB4bCOHxJB/TYjCBZ17chH7qGgJFEYru9CJtgBqPyAwmMcSIE
+         RhU3sykJ8SbRFWdZixvIEOJ3vG0CDNuQisCjME0M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Han Xu <han.xu@nxp.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.4 008/320] mtd: rawnand: gpmi: Remove explicit default gpmi clock setting for i.MX6
-Date:   Mon, 24 Jan 2022 19:39:52 +0100
-Message-Id: <20220124183954.052845191@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Cezary Rojewski <cezary.rojewski@intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 279/563] ASoC: Intel: catpt: Test dmaengine_submit() result before moving on
+Date:   Mon, 24 Jan 2022 19:40:44 +0100
+Message-Id: <20220124184034.086005621@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Riedmueller <s.riedmueller@phytec.de>
+From: Cezary Rojewski <cezary.rojewski@intel.com>
 
-commit aa1baa0e6c1aa4872e481dce4fc7fd6f3dd8496b upstream.
+[ Upstream commit 2a9a72e290d4a4741e673f86b9fba9bfb319786d ]
 
-There is no need to explicitly set the default gpmi clock rate during
-boot for the i.MX 6 since this is done during nand_detect anyway.
+After calling dmaengine_submit(), the submitted transfer descriptor
+belongs to the DMA engine. Pointer to that descriptor may no longer be
+valid after the call and should be tested before awaiting transfer
+completion.
 
-Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
-Cc: stable@vger.kernel.org
-Acked-by: Han Xu <han.xu@nxp.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-1-ceggers@arri.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Kevin Tian <kevin.tian@intel.com>
+Suggested-by: Dave Jiang <dave.jiang@intel.com>
+Fixes: 4fac9b31d0b9 ("ASoC: Intel: Add catpt base members")
+Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
+Link: https://lore.kernel.org/r/20211216115743.2130622-2-cezary.rojewski@intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    9 ---------
- 1 file changed, 9 deletions(-)
+ sound/soc/intel/catpt/dsp.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -1204,15 +1204,6 @@ static int gpmi_get_clks(struct gpmi_nan
- 		r->clock[i] = clk;
- 	}
+diff --git a/sound/soc/intel/catpt/dsp.c b/sound/soc/intel/catpt/dsp.c
+index 9e807b9417321..38a92bbc1ed56 100644
+--- a/sound/soc/intel/catpt/dsp.c
++++ b/sound/soc/intel/catpt/dsp.c
+@@ -65,6 +65,7 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
+ {
+ 	struct dma_async_tx_descriptor *desc;
+ 	enum dma_status status;
++	int ret;
  
--	if (GPMI_IS_MX6(this))
--		/*
--		 * Set the default value for the gpmi clock.
--		 *
--		 * If you want to use the ONFI nand which is in the
--		 * Synchronous Mode, you should change the clock as you need.
--		 */
--		clk_set_rate(r->clock[0], 22000000);
--
- 	return 0;
+ 	desc = dmaengine_prep_dma_memcpy(chan, dst_addr, src_addr, size,
+ 					 DMA_CTRL_ACK);
+@@ -77,13 +78,22 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
+ 	catpt_updatel_shim(cdev, HMDC,
+ 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id),
+ 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id));
+-	dmaengine_submit(desc);
++
++	ret = dma_submit_error(dmaengine_submit(desc));
++	if (ret) {
++		dev_err(cdev->dev, "submit tx failed: %d\n", ret);
++		goto clear_hdda;
++	}
++
+ 	status = dma_wait_for_async_tx(desc);
++	ret = (status == DMA_COMPLETE) ? 0 : -EPROTO;
++
++clear_hdda:
+ 	/* regardless of status, disable access to HOST memory in demand mode */
+ 	catpt_updatel_shim(cdev, HMDC,
+ 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id), 0);
  
- err_clock:
+-	return (status == DMA_COMPLETE) ? 0 : -EPROTO;
++	return ret;
+ }
+ 
+ int catpt_dma_memcpy_todsp(struct catpt_dev *cdev, struct dma_chan *chan,
+-- 
+2.34.1
+
 
 
