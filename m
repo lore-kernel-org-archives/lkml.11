@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6710EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E528C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349350AbiAXTUh (ORCPT
+        id S1349431AbiAXTUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38010 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345760AbiAXTMM (ORCPT
+        Mon, 24 Jan 2022 14:20:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39938 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346286AbiAXTMd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:12:12 -0500
+        Mon, 24 Jan 2022 14:12:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3AD62B8121B;
-        Mon, 24 Jan 2022 19:12:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52FADC340E7;
-        Mon, 24 Jan 2022 19:12:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7C3F612DE;
+        Mon, 24 Jan 2022 19:12:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87D79C340E5;
+        Mon, 24 Jan 2022 19:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051530;
-        bh=zpx+7nESMQRkYZtXzoI6bEZjlXJJH0cIuPu5M2wgOws=;
+        s=korg; t=1643051552;
+        bh=2pDpaWx5MhnyIcZv45hliHuSeHM25XYVHYfE71ZrZbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=00kg9WOJAOv+tZQddc/KhDmkDMDjdp5VXbwdI48iuqezOthDJfSYMmBTWrKkFUcJk
-         07dvDb/XSnuAV+rdikWZwu7TkAepjwxBRLNx1JK+LW2dLycuvU/nSBbjh/1jnaUnJw
-         p91Kxw0BZ3qTJJZ0eQfYeJvdwMznFK19fmAmnCZw=
+        b=y/KWYyGrACCQQZ8Q8INgQyOle8pjMkHEBRnRMXGZRI+d8I/zCptItjqLbbrPRW6bO
+         lpQIpvJc19sQj0IbHFZ112tDKwxocro9WMrkoCjnAXGPICjzQsgV6ufxgAQJznEjUU
+         8mcPDGPvhFmKyrVh3O0RSop8XBGHEi3UVxYBjaS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andy Spencer <aspencer@spacex.com>,
-        Jim Gruen <jgruen@spacex.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.14 184/186] gianfar: simplify FCS handling and fix memory leak
-Date:   Mon, 24 Jan 2022 19:44:19 +0100
-Message-Id: <20220124183943.021876700@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        =?UTF-8?q?D=C3=A1vid=20Bolvansk=C3=BD?= <david.bolvansky@gmail.com>,
+        =?UTF-8?q?Ville=20Syrj=C3=A4l=C3=A4?= 
+        <ville.syrjala@linux.intel.com>
+Subject: [PATCH 4.19 012/239] drm/i915: Avoid bitwise vs logical OR warning in snb_wm_latency_quirk()
+Date:   Mon, 24 Jan 2022 19:40:50 +0100
+Message-Id: <20220124183943.505209038@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,73 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Spencer <aspencer@spacex.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit d903ec77118c09f93a610b384d83a6df33a64fe6 upstream.
+commit 2e70570656adfe1c5d9a29940faa348d5f132199 upstream.
 
-Previously, buffer descriptors containing only the frame check sequence
-(FCS) were skipped and not added to the skb. However, the page reference
-count was still incremented, leading to a memory leak.
+A new warning in clang points out a place in this file where a bitwise
+OR is being used with boolean types:
 
-Fixing this inside gfar_add_rx_frag() is difficult due to reserved
-memory handling and page reuse. Instead, move the FCS handling to
-gfar_process_frame() and trim off the FCS before passing the skb up the
-networking stack.
+drivers/gpu/drm/i915/intel_pm.c:3066:12: warning: use of bitwise '|' with boolean operands [-Wbitwise-instead-of-logical]
+        changed = ilk_increase_wm_latency(dev_priv, dev_priv->wm.pri_latency, 12) |
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Signed-off-by: Andy Spencer <aspencer@spacex.com>
-Signed-off-by: Jim Gruen <jgruen@spacex.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Cc: Ben Hutchings <ben@decadent.org.uk>
+This construct is intentional, as it allows every one of the calls to
+ilk_increase_wm_latency() to occur (instead of short circuiting with
+logical OR) while still caring about the result of each call.
+
+To make this clearer to the compiler, use the '|=' operator to assign
+the result of each ilk_increase_wm_latency() call to changed, which
+keeps the meaning of the code the same but makes it obvious that every
+one of these calls is expected to happen.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1473
+Reported-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Suggested-by: Dávid Bolvanský <david.bolvansky@gmail.com>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Ville Syrjälä <ville.syrjala@linux.intel.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211014211916.3550122-1-nathan@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/gianfar.c |   23 +++++++----------------
- 1 file changed, 7 insertions(+), 16 deletions(-)
+ drivers/gpu/drm/i915/intel_pm.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -2936,29 +2936,17 @@ static bool gfar_add_rx_frag(struct gfar
- {
- 	int size = lstatus & BD_LENGTH_MASK;
- 	struct page *page = rxb->page;
--	bool last = !!(lstatus & BD_LFLAG(RXBD_LAST));
--
--	/* Remove the FCS from the packet length */
--	if (last)
--		size -= ETH_FCS_LEN;
+--- a/drivers/gpu/drm/i915/intel_pm.c
++++ b/drivers/gpu/drm/i915/intel_pm.c
+@@ -3002,9 +3002,9 @@ static void snb_wm_latency_quirk(struct
+ 	 * The BIOS provided WM memory latency values are often
+ 	 * inadequate for high resolution displays. Adjust them.
+ 	 */
+-	changed = ilk_increase_wm_latency(dev_priv, dev_priv->wm.pri_latency, 12) |
+-		ilk_increase_wm_latency(dev_priv, dev_priv->wm.spr_latency, 12) |
+-		ilk_increase_wm_latency(dev_priv, dev_priv->wm.cur_latency, 12);
++	changed = ilk_increase_wm_latency(dev_priv, dev_priv->wm.pri_latency, 12);
++	changed |= ilk_increase_wm_latency(dev_priv, dev_priv->wm.spr_latency, 12);
++	changed |= ilk_increase_wm_latency(dev_priv, dev_priv->wm.cur_latency, 12);
  
- 	if (likely(first)) {
- 		skb_put(skb, size);
- 	} else {
- 		/* the last fragments' length contains the full frame length */
--		if (last)
-+		if (lstatus & BD_LFLAG(RXBD_LAST))
- 			size -= skb->len;
- 
--		/* Add the last fragment if it contains something other than
--		 * the FCS, otherwise drop it and trim off any part of the FCS
--		 * that was already received.
--		 */
--		if (size > 0)
--			skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
--					rxb->page_offset + RXBUF_ALIGNMENT,
--					size, GFAR_RXB_TRUESIZE);
--		else if (size < 0)
--			pskb_trim(skb, skb->len + size);
-+		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, page,
-+				rxb->page_offset + RXBUF_ALIGNMENT,
-+				size, GFAR_RXB_TRUESIZE);
- 	}
- 
- 	/* try reuse page */
-@@ -3071,6 +3059,9 @@ static void gfar_process_frame(struct ne
- 	if (priv->padding)
- 		skb_pull(skb, priv->padding);
- 
-+	/* Trim off the FCS */
-+	pskb_trim(skb, skb->len - ETH_FCS_LEN);
-+
- 	if (ndev->features & NETIF_F_RXCSUM)
- 		gfar_rx_checksum(skb, fcb);
- 
+ 	if (!changed)
+ 		return;
 
 
