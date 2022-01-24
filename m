@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F8CC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A91FC3526D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580965AbiAXWLC (ORCPT
+        id S1581347AbiAXWLf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40340 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451624AbiAXVXP (ORCPT
+        Mon, 24 Jan 2022 17:11:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46448 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452467AbiAXVZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:15 -0500
+        Mon, 24 Jan 2022 16:25:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DFE44B81243;
-        Mon, 24 Jan 2022 21:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC30C340E4;
-        Mon, 24 Jan 2022 21:23:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29DA6614B4;
+        Mon, 24 Jan 2022 21:25:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7115C340E4;
+        Mon, 24 Jan 2022 21:25:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059392;
-        bh=NBZwb+w58QMDjJ3m+I4ByKYJLaNzKx9svwiZth3P9Ek=;
+        s=korg; t=1643059539;
+        bh=Z9z2k7+ea3Dsq7vTSGa3vYhfE6fXQi4kHtwHMBIPnx0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OPMbOortj3zWynw7aiJzJZsb0pfaZ8MC+KFH3aQDdgTQ748yqVCIXqRT97zS6vFfn
-         7hzSg7y/4M1cNnvPCbAenY7rkUlaKjnnTt5uHcEXpIdLCGKVoIBjjuI5gCUFjrBWi+
-         23+ruUMC8/28DWG+bcVKTxWCRInbNv3sI69uSumk=
+        b=VXamC/nZmF05uPxeTdFdWAT4J5vAeAK6Bp4fixSIsjISIzKPGerc7P/BHWbs3uEtn
+         Hg9+Wp61Ttyy91dVdlpnDtFF+dwq6vMGjDMEfYWZJ3W98c356CIkLe+xQLQ9txDKbJ
+         LN/ctKYQSCGBBa1owhCJAKae8Uy2+RkNzuhASr1w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mansur Alisha Shaik <mansur@codeaurora.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
+        Zhou Qingyang <zhou1615@umn.edu>,
+        Philip Yang <Philip.Yang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0601/1039] media: venus: avoid calling core_clk_setrate() concurrently during concurrent video sessions
-Date:   Mon, 24 Jan 2022 19:39:50 +0100
-Message-Id: <20220124184145.542235986@linuxfoundation.org>
+Subject: [PATCH 5.16 0648/1039] drm/amdkfd: Fix error handling in svm_range_add
+Date:   Mon, 24 Jan 2022 19:40:37 +0100
+Message-Id: <20220124184147.136072350@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,207 +49,237 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mansur Alisha Shaik <mansur@codeaurora.org>
+From: Felix Kuehling <Felix.Kuehling@amd.com>
 
-[ Upstream commit 91f2b7d269e5c885c38c7ffa261f5276bd42f907 ]
+[ Upstream commit 726be40607264b180a2b336c81e1dcff941de618 ]
 
-In existing implementation, core_clk_setrate() is getting called
-concurrently in concurrent video sessions. Before the previous call to
-core_clk_setrate returns, new call to core_clk_setrate is invoked from
-another video session running concurrently. This results in latest
-calculated frequency being set (higher/lower) instead of actual frequency
-required for that video session. It also results in stability crashes
-mention below. These resources are specific to video core, hence keeping
-under core lock would ensure that they are estimated for all running video
-sessions and called once for the video core.
+Add null-pointer check after the last svm_range_new call. This was
+originally reported by Zhou Qingyang <zhou1615@umn.edu> based on a
+static analyzer.
 
-Crash logs:
+To avoid duplicating the unwinding code from svm_range_handle_overlap,
+I merged the two functions into one.
 
-[    1.900089] WARNING: CPU: 4 PID: 1 at drivers/opp/debugfs.c:33 opp_debug_remove_one+0x2c/0x48
-[    1.908493] Modules linked in:
-[    1.911524] CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.10.67 #35 f8edb8c30cf2dd6838495dd9ef9be47af7f5f60c
-[    1.921036] Hardware name: Qualcomm Technologies, Inc. sc7280 IDP SKU2 platform (DT)
-[    1.928673] pstate: 60800009 (nZCv daif -PAN +UAO -TCO BTYPE=--)
-[    1.934608] pc : opp_debug_remove_one+0x2c/0x48
-[    1.939080] lr : opp_debug_remove_one+0x2c/0x48
-[    1.943560] sp : ffffffc011d7b7f0
-[    1.946836] pmr_save: 000000e0
-[    1.949854] x29: ffffffc011d7b7f0 x28: ffffffc010733bbc
-[    1.955104] x27: ffffffc010733ba8 x26: ffffff8083cedd00
-[    1.960355] x25: 0000000000000001 x24: 0000000000000000
-[    1.965603] x23: ffffff8083cc2878 x22: ffffff8083ceb900
-[    1.970852] x21: ffffff8083ceb910 x20: ffffff8083cc2800
-[    1.976101] x19: ffffff8083ceb900 x18: 00000000ffff0a10
-[    1.981352] x17: ffffff80837a5620 x16: 00000000000000ec
-[    1.986601] x15: ffffffc010519ad4 x14: 0000000000000003
-[    1.991849] x13: 0000000000000004 x12: 0000000000000001
-[    1.997100] x11: c0000000ffffdfff x10: 00000000ffffffff
-[    2.002348] x9 : d2627c580300dc00 x8 : d2627c580300dc00
-[    2.007596] x7 : 0720072007200720 x6 : ffffff80802ecf00
-[    2.012845] x5 : 0000000000190004 x4 : 0000000000000000
-[    2.018094] x3 : ffffffc011d7b478 x2 : ffffffc011d7b480
-[    2.023343] x1 : 00000000ffffdfff x0 : 0000000000000017
-[    2.028594] Call trace:
-[    2.031022]  opp_debug_remove_one+0x2c/0x48
-[    2.035160]  dev_pm_opp_put+0x94/0xb0
-[    2.038780]  _opp_remove_all+0x7c/0xc8
-[    2.042486]  _opp_remove_all_static+0x54/0x7c
-[    2.046796]  dev_pm_opp_remove_table+0x74/0x98
-[    2.051183]  devm_pm_opp_of_table_release+0x18/0x24
-[    2.056001]  devm_action_release+0x1c/0x28
-[    2.060053]  release_nodes+0x23c/0x2b8
-[    2.063760]  devres_release_group+0xcc/0xd0
-[    2.067900]  component_bind+0xac/0x168
-[    2.071608]  component_bind_all+0x98/0x124
-[    2.075664]  msm_drm_bind+0x1e8/0x678
-[    2.079287]  try_to_bring_up_master+0x60/0x134
-[    2.083674]  component_master_add_with_match+0xd8/0x120
-[    2.088834]  msm_pdev_probe+0x20c/0x2a0
-[    2.092629]  platform_drv_probe+0x9c/0xbc
-[    2.096598]  really_probe+0x11c/0x46c
-[    2.100217]  driver_probe_device+0x8c/0xf0
-[    2.104270]  device_driver_attach+0x54/0x78
-[    2.108407]  __driver_attach+0x48/0x148
-[    2.112201]  bus_for_each_dev+0x88/0xd4
-[    2.115998]  driver_attach+0x2c/0x38
-[    2.119534]  bus_add_driver+0x10c/0x200
-[    2.123330]  driver_register+0x6c/0x104
-[    2.127122]  __platform_driver_register+0x4c/0x58
-[    2.131767]  msm_drm_register+0x6c/0x70
-[    2.135560]  do_one_initcall+0x64/0x23c
-[    2.139357]  do_initcall_level+0xac/0x15c
-[    2.143321]  do_initcalls+0x5c/0x9c
-[    2.146778]  do_basic_setup+0x2c/0x38
-[    2.150401]  kernel_init_freeable+0xf8/0x15c
-[    2.154622]  kernel_init+0x1c/0x11c
-[    2.158079]  ret_from_fork+0x10/0x30
-[    2.161615] ---[ end trace a2cc45a0f784b212 ]---
-
-[    2.166272] Removing OPP: 300000000
-
-Signed-off-by: Mansur Alisha Shaik <mansur@codeaurora.org>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Zhou Qingyang <zhou1615@umn.edu>
+Reviewed-by: Philip Yang <Philip.Yang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../media/platform/qcom/venus/pm_helpers.c    | 28 +++++++++----------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 138 ++++++++++-----------------
+ 1 file changed, 49 insertions(+), 89 deletions(-)
 
-diff --git a/drivers/media/platform/qcom/venus/pm_helpers.c b/drivers/media/platform/qcom/venus/pm_helpers.c
-index 184f0cea2fdb8..cb48c5ff3dee2 100644
---- a/drivers/media/platform/qcom/venus/pm_helpers.c
-+++ b/drivers/media/platform/qcom/venus/pm_helpers.c
-@@ -163,14 +163,12 @@ static u32 load_per_type(struct venus_core *core, u32 session_type)
- 	struct venus_inst *inst = NULL;
- 	u32 mbs_per_sec = 0;
- 
--	mutex_lock(&core->lock);
- 	list_for_each_entry(inst, &core->instances, list) {
- 		if (inst->session_type != session_type)
- 			continue;
- 
- 		mbs_per_sec += load_per_instance(inst);
- 	}
--	mutex_unlock(&core->lock);
- 
- 	return mbs_per_sec;
- }
-@@ -219,14 +217,12 @@ static int load_scale_bw(struct venus_core *core)
- 	struct venus_inst *inst = NULL;
- 	u32 mbs_per_sec, avg, peak, total_avg = 0, total_peak = 0;
- 
--	mutex_lock(&core->lock);
- 	list_for_each_entry(inst, &core->instances, list) {
- 		mbs_per_sec = load_per_instance(inst);
- 		mbs_to_bw(inst, mbs_per_sec, &avg, &peak);
- 		total_avg += avg;
- 		total_peak += peak;
- 	}
--	mutex_unlock(&core->lock);
- 
- 	/*
- 	 * keep minimum bandwidth vote for "video-mem" path,
-@@ -253,8 +249,9 @@ static int load_scale_v1(struct venus_inst *inst)
- 	struct device *dev = core->dev;
- 	u32 mbs_per_sec;
- 	unsigned int i;
--	int ret;
-+	int ret = 0;
- 
-+	mutex_lock(&core->lock);
- 	mbs_per_sec = load_per_type(core, VIDC_SESSION_TYPE_ENC) +
- 		      load_per_type(core, VIDC_SESSION_TYPE_DEC);
- 
-@@ -279,17 +276,19 @@ set_freq:
- 	if (ret) {
- 		dev_err(dev, "failed to set clock rate %lu (%d)\n",
- 			freq, ret);
--		return ret;
-+		goto exit;
- 	}
- 
- 	ret = load_scale_bw(core);
- 	if (ret) {
- 		dev_err(dev, "failed to set bandwidth (%d)\n",
- 			ret);
--		return ret;
-+		goto exit;
- 	}
- 
--	return 0;
-+exit:
-+	mutex_unlock(&core->lock);
-+	return ret;
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index 3cb4681c5f539..c0b8f4ff80b8a 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -943,7 +943,7 @@ svm_range_split(struct svm_range *prange, uint64_t start, uint64_t last,
  }
  
- static int core_get_v1(struct venus_core *core)
-@@ -1116,13 +1115,13 @@ static int load_scale_v4(struct venus_inst *inst)
- 	struct device *dev = core->dev;
- 	unsigned long freq = 0, freq_core1 = 0, freq_core2 = 0;
- 	unsigned long filled_len = 0;
--	int i, ret;
-+	int i, ret = 0;
+ static int
+-svm_range_split_tail(struct svm_range *prange, struct svm_range *new,
++svm_range_split_tail(struct svm_range *prange,
+ 		     uint64_t new_last, struct list_head *insert_list)
+ {
+ 	struct svm_range *tail;
+@@ -955,7 +955,7 @@ svm_range_split_tail(struct svm_range *prange, struct svm_range *new,
+ }
  
- 	for (i = 0; i < inst->num_input_bufs; i++)
- 		filled_len = max(filled_len, inst->payloads[i]);
+ static int
+-svm_range_split_head(struct svm_range *prange, struct svm_range *new,
++svm_range_split_head(struct svm_range *prange,
+ 		     uint64_t new_start, struct list_head *insert_list)
+ {
+ 	struct svm_range *head;
+@@ -1764,49 +1764,54 @@ static struct svm_range *svm_range_clone(struct svm_range *old)
+ }
  
- 	if (inst->session_type == VIDC_SESSION_TYPE_DEC && !filled_len)
--		return 0;
-+		return ret;
+ /**
+- * svm_range_handle_overlap - split overlap ranges
+- * @svms: svm range list header
+- * @new: range added with this attributes
+- * @start: range added start address, in pages
+- * @last: range last address, in pages
+- * @update_list: output, the ranges attributes are updated. For set_attr, this
+- *               will do validation and map to GPUs. For unmap, this will be
+- *               removed and unmap from GPUs
+- * @insert_list: output, the ranges will be inserted into svms, attributes are
+- *               not changes. For set_attr, this will add into svms.
+- * @remove_list:output, the ranges will be removed from svms
+- * @left: the remaining range after overlap, For set_attr, this will be added
+- *        as new range.
++ * svm_range_add - add svm range and handle overlap
++ * @p: the range add to this process svms
++ * @start: page size aligned
++ * @size: page size aligned
++ * @nattr: number of attributes
++ * @attrs: array of attributes
++ * @update_list: output, the ranges need validate and update GPU mapping
++ * @insert_list: output, the ranges need insert to svms
++ * @remove_list: output, the ranges are replaced and need remove from svms
+  *
+- * Total have 5 overlap cases.
++ * Check if the virtual address range has overlap with any existing ranges,
++ * split partly overlapping ranges and add new ranges in the gaps. All changes
++ * should be applied to the range_list and interval tree transactionally. If
++ * any range split or allocation fails, the entire update fails. Therefore any
++ * existing overlapping svm_ranges are cloned and the original svm_ranges left
++ * unchanged.
+  *
+- * This function handles overlap of an address interval with existing
+- * struct svm_ranges for applying new attributes. This may require
+- * splitting existing struct svm_ranges. All changes should be applied to
+- * the range_list and interval tree transactionally. If any split operation
+- * fails, the entire update fails. Therefore the existing overlapping
+- * svm_ranges are cloned and the original svm_ranges left unchanged. If the
+- * transaction succeeds, the modified clones are added and the originals
+- * freed. Otherwise the clones are removed and the old svm_ranges remain.
++ * If the transaction succeeds, the caller can update and insert clones and
++ * new ranges, then free the originals.
+  *
+- * Context: The caller must hold svms->lock
++ * Otherwise the caller can free the clones and new ranges, while the old
++ * svm_ranges remain unchanged.
++ *
++ * Context: Process context, caller must hold svms->lock
++ *
++ * Return:
++ * 0 - OK, otherwise error code
+  */
+ static int
+-svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+-			 unsigned long start, unsigned long last,
+-			 struct list_head *update_list,
+-			 struct list_head *insert_list,
+-			 struct list_head *remove_list,
+-			 unsigned long *left)
++svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
++	      uint32_t nattr, struct kfd_ioctl_svm_attribute *attrs,
++	      struct list_head *update_list, struct list_head *insert_list,
++	      struct list_head *remove_list)
+ {
++	unsigned long last = start + size - 1UL;
++	struct svm_range_list *svms = &p->svms;
+ 	struct interval_tree_node *node;
++	struct svm_range new = {0};
+ 	struct svm_range *prange;
+ 	struct svm_range *tmp;
+ 	int r = 0;
  
- 	freq = calculate_inst_freq(inst, filled_len);
- 	inst->clk_data.freq = freq;
-@@ -1138,7 +1137,6 @@ static int load_scale_v4(struct venus_inst *inst)
- 			freq_core2 += inst->clk_data.freq;
++	pr_debug("svms 0x%p [0x%llx 0x%lx]\n", &p->svms, start, last);
++
+ 	INIT_LIST_HEAD(update_list);
+ 	INIT_LIST_HEAD(insert_list);
+ 	INIT_LIST_HEAD(remove_list);
++	svm_range_apply_attrs(p, &new, nattr, attrs);
+ 
+ 	node = interval_tree_iter_first(&svms->objects, start, last);
+ 	while (node) {
+@@ -1834,14 +1839,14 @@ svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+ 
+ 			if (node->start < start) {
+ 				pr_debug("change old range start\n");
+-				r = svm_range_split_head(prange, new, start,
++				r = svm_range_split_head(prange, start,
+ 							 insert_list);
+ 				if (r)
+ 					goto out;
+ 			}
+ 			if (node->last > last) {
+ 				pr_debug("change old range last\n");
+-				r = svm_range_split_tail(prange, new, last,
++				r = svm_range_split_tail(prange, last,
+ 							 insert_list);
+ 				if (r)
+ 					goto out;
+@@ -1853,7 +1858,7 @@ svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+ 			prange = old;
  		}
- 	}
--	mutex_unlock(&core->lock);
  
- 	freq = max(freq_core1, freq_core2);
+-		if (!svm_range_is_same_attrs(prange, new))
++		if (!svm_range_is_same_attrs(prange, &new))
+ 			list_add(&prange->update_list, update_list);
  
-@@ -1163,17 +1161,19 @@ set_freq:
- 	if (ret) {
- 		dev_err(dev, "failed to set clock rate %lu (%d)\n",
- 			freq, ret);
--		return ret;
-+		goto exit;
+ 		/* insert a new node if needed */
+@@ -1873,8 +1878,16 @@ svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+ 		start = next_start;
  	}
  
- 	ret = load_scale_bw(core);
- 	if (ret) {
- 		dev_err(dev, "failed to set bandwidth (%d)\n",
- 			ret);
--		return ret;
-+		goto exit;
- 	}
+-	if (left && start <= last)
+-		*left = last - start + 1;
++	/* add a final range at the end if needed */
++	if (start <= last) {
++		prange = svm_range_new(svms, start, last);
++		if (!prange) {
++			r = -ENOMEM;
++			goto out;
++		}
++		list_add(&prange->insert_list, insert_list);
++		list_add(&prange->update_list, update_list);
++	}
  
--	return 0;
-+exit:
-+	mutex_unlock(&core->lock);
-+	return ret;
+ out:
+ 	if (r)
+@@ -2894,59 +2907,6 @@ svm_range_is_valid(struct kfd_process *p, uint64_t start, uint64_t size)
+ 				  NULL);
  }
  
- static const struct venus_pm_ops pm_ops_v4 = {
+-/**
+- * svm_range_add - add svm range and handle overlap
+- * @p: the range add to this process svms
+- * @start: page size aligned
+- * @size: page size aligned
+- * @nattr: number of attributes
+- * @attrs: array of attributes
+- * @update_list: output, the ranges need validate and update GPU mapping
+- * @insert_list: output, the ranges need insert to svms
+- * @remove_list: output, the ranges are replaced and need remove from svms
+- *
+- * Check if the virtual address range has overlap with the registered ranges,
+- * split the overlapped range, copy and adjust pages address and vram nodes in
+- * old and new ranges.
+- *
+- * Context: Process context, caller must hold svms->lock
+- *
+- * Return:
+- * 0 - OK, otherwise error code
+- */
+-static int
+-svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
+-	      uint32_t nattr, struct kfd_ioctl_svm_attribute *attrs,
+-	      struct list_head *update_list, struct list_head *insert_list,
+-	      struct list_head *remove_list)
+-{
+-	uint64_t last = start + size - 1UL;
+-	struct svm_range_list *svms;
+-	struct svm_range new = {0};
+-	struct svm_range *prange;
+-	unsigned long left = 0;
+-	int r = 0;
+-
+-	pr_debug("svms 0x%p [0x%llx 0x%llx]\n", &p->svms, start, last);
+-
+-	svm_range_apply_attrs(p, &new, nattr, attrs);
+-
+-	svms = &p->svms;
+-
+-	r = svm_range_handle_overlap(svms, &new, start, last, update_list,
+-				     insert_list, remove_list, &left);
+-	if (r)
+-		return r;
+-
+-	if (left) {
+-		prange = svm_range_new(svms, last - left + 1, last);
+-		list_add(&prange->insert_list, insert_list);
+-		list_add(&prange->update_list, update_list);
+-	}
+-
+-	return 0;
+-}
+-
+ /**
+  * svm_range_best_prefetch_location - decide the best prefetch location
+  * @prange: svm range structure
 -- 
 2.34.1
 
