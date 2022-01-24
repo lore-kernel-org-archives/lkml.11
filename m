@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F74EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC862C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374458AbiAYARF (ORCPT
+        id S2374929AbiAYASe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54000 "EHLO
+        Mon, 24 Jan 2022 19:18:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850701AbiAXXah (ORCPT
+        with ESMTP id S1351191AbiAXXdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:30:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DDAC07595C;
-        Mon, 24 Jan 2022 13:35:09 -0800 (PST)
+        Mon, 24 Jan 2022 18:33:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1248EC041887;
+        Mon, 24 Jan 2022 11:53:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAFD2B80CCF;
-        Mon, 24 Jan 2022 21:35:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC8AC340E4;
-        Mon, 24 Jan 2022 21:35:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5CF36090B;
+        Mon, 24 Jan 2022 19:53:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7978DC340E5;
+        Mon, 24 Jan 2022 19:53:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060106;
-        bh=2XYLbk5nhzUYg8pfk+MC07Cy/191v7DzF5yYA5/9A2g=;
+        s=korg; t=1643054016;
+        bh=GGL5qBjAJAJlWnNI7YGaJP/NQE4ZhQ0sFC6FbR+0c/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2crNjcGraS2Qb0DqyzfY9o22BuSUa545pUfqggfpIhAijd6Lan9nnXq0mbwOmWyVN
-         Ubts6YHatFNcvhZWstCpw1MGJPikvjQFdQNReaEgEe0MzuvLJnrfKlHL4/fpFLWa/R
-         FR7dibf5rT6e4mal/qpTmgXkVoQyLk68QWWuO8sw=
+        b=e32gB4WGgUQzHLXQqiXqCNopSoVhguL0IjLDoPEGy9nT+FXghqPpt36GMyuFSRSGw
+         4XbLsY5ZVpyjesbZ2gtIVy3m5Aivi9Io9TrMwrbI3uBD88NDME/pK0Zh6KjjJW/kR6
+         zwSOlIHRqt1fccxVjux0S1LDrVe8EiUL6EJng1xY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Svyatoslav Ryhel <clamor95@gmail.com>
-Subject: [PATCH 5.16 0842/1039] mfd: tps65910: Set PWR_OFF bit during driver probe
-Date:   Mon, 24 Jan 2022 19:43:51 +0100
-Message-Id: <20220124184153.596841349@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 218/563] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_frame_init_v1_buttonpad
+Date:   Mon, 24 Jan 2022 19:39:43 +0100
+Message-Id: <20220124184031.985855200@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,62 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-commit 7620ad0bdfac1efff4a1228cd36ae62a9d8206b0 upstream.
+[ Upstream commit aa320fdbbbb482c19100f51461bd0069753ce3d7 ]
 
-The PWR_OFF bit needs to be set in order to power off properly, without
-hanging PMIC. This bit needs to be set early in order to allow thermal
-protection of NVIDIA Terga SoCs to power off hardware properly, otherwise
-a battery re-plug may be needed on some devices to recover after the hang.
+The function performs a check on the hdev input parameters, however, it
+is used before the check.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Tested-by: Svyatoslav Ryhel <clamor95@gmail.com> # ASUS TF201
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211124190104.23554-1-digetx@gmail.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Initialize the udev variable after the sanity check to avoid a
+possible NULL pointer dereference.
+
+Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
+Addresses-Coverity-ID: 1443763 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/tps65910.c |   22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/hid/hid-uclogic-params.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/mfd/tps65910.c
-+++ b/drivers/mfd/tps65910.c
-@@ -436,15 +436,6 @@ static void tps65910_power_off(void)
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index df12178a80da5..38f9bbad81c17 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -451,7 +451,7 @@ static int uclogic_params_frame_init_v1_buttonpad(
+ {
+ 	int rc;
+ 	bool found = false;
+-	struct usb_device *usb_dev = hid_to_usb_dev(hdev);
++	struct usb_device *usb_dev;
+ 	char *str_buf = NULL;
+ 	const size_t str_len = 16;
  
- 	tps65910 = dev_get_drvdata(&tps65910_i2c_client->dev);
- 
--	/*
--	 * The PWR_OFF bit needs to be set separately, before transitioning
--	 * to the OFF state. It enables the "sequential" power-off mode on
--	 * TPS65911, it's a NO-OP on TPS65910.
--	 */
--	if (regmap_set_bits(tps65910->regmap, TPS65910_DEVCTRL,
--			    DEVCTRL_PWR_OFF_MASK) < 0)
--		return;
--
- 	regmap_update_bits(tps65910->regmap, TPS65910_DEVCTRL,
- 			   DEVCTRL_DEV_OFF_MASK | DEVCTRL_DEV_ON_MASK,
- 			   DEVCTRL_DEV_OFF_MASK);
-@@ -504,6 +495,19 @@ static int tps65910_i2c_probe(struct i2c
- 	tps65910_sleepinit(tps65910, pmic_plat_data);
- 
- 	if (pmic_plat_data->pm_off && !pm_power_off) {
-+		/*
-+		 * The PWR_OFF bit needs to be set separately, before
-+		 * transitioning to the OFF state. It enables the "sequential"
-+		 * power-off mode on TPS65911, it's a NO-OP on TPS65910.
-+		 */
-+		ret = regmap_set_bits(tps65910->regmap, TPS65910_DEVCTRL,
-+				      DEVCTRL_PWR_OFF_MASK);
-+		if (ret) {
-+			dev_err(&i2c->dev, "failed to set power-off mode: %d\n",
-+				ret);
-+			return ret;
-+		}
-+
- 		tps65910_i2c_client = i2c;
- 		pm_power_off = tps65910_power_off;
+@@ -461,6 +461,8 @@ static int uclogic_params_frame_init_v1_buttonpad(
+ 		goto cleanup;
  	}
+ 
++	usb_dev = hid_to_usb_dev(hdev);
++
+ 	/*
+ 	 * Enable generic button mode
+ 	 */
+-- 
+2.34.1
+
 
 
