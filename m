@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B735C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C0B9C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573715AbiAXVpl (ORCPT
+        id S1573749AbiAXVpq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:41 -0500
+        Mon, 24 Jan 2022 16:45:46 -0500
 Received: from ams.source.kernel.org ([145.40.68.75]:59654 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447046AbiAXVJ5 (ORCPT
+        with ESMTP id S1446321AbiAXVHw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:57 -0500
+        Mon, 24 Jan 2022 16:07:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1977EB81233;
-        Mon, 24 Jan 2022 21:09:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36667C340E5;
-        Mon, 24 Jan 2022 21:09:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AD77B812A4;
+        Mon, 24 Jan 2022 21:07:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD39C340E5;
+        Mon, 24 Jan 2022 21:07:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058593;
-        bh=2/G4H/z6ZjT0mBnaR+ViTzd1dhM7FMwdV/1uFN7ooNs=;
+        s=korg; t=1643058470;
+        bh=KcnNIjP6Rz+rHunKoXuupK88UPEDoviX5kS4HSHMa6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gW2jXS0E5vEYhGBBlfSjBAePFWVzSJ/t1Xy4ACmz2ozVrdjqu2ylaEdCfDP5p3rem
-         383vHHcvNwhzeQc3hCjIclr7CygIzM292I8VLoaq4Q9rsfgh4b382UCDI1Zexqi5Rm
-         0vi1SgkXJpMVgyNu6ZZld/E0vy9GyQzLj7jAv+Fc=
+        b=Pyuu7nsxmi7ZJDdcmi4SS2H/UbkpTuCrzfex8B8HZyOkmK9zORobpaDnY/Cz+/Aik
+         JDu9O/bEMFIXEvqH7oqrulsMLwsPh9pXerF/ru/4SPsG8ABkSeJzj+IluFN1q49AxP
+         fEq7YP+hdfaRHQqZujwNyTwUe3wOnZ6UCoSOz/5c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0306/1039] arm64: dts: marvell: cn9130: enable CP0 GPIO controllers
-Date:   Mon, 24 Jan 2022 19:34:55 +0100
-Message-Id: <20220124184135.596706810@linuxfoundation.org>
+Subject: [PATCH 5.16 0266/1039] xfrm: fix a small bug in xfrm_sa_len()
+Date:   Mon, 24 Jan 2022 19:34:15 +0100
+Message-Id: <20220124184134.247461826@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,44 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 0734f8311ce72c9041e5142769eff2083889c172 ]
+[ Upstream commit 7770a39d7c63faec6c4f33666d49a8cb664d0482 ]
 
-CN9130 has a built-in CP115 which has 2 GPIO controllers, but unlike in
-Armada 7k and 8k both are left disabled by the SoC DTSI.
+copy_user_offload() will actually push a struct struct xfrm_user_offload,
+which is different than (struct xfrm_state *)->xso
+(struct xfrm_state_offload)
 
-This first of all makes no sense as they are always present due to being
-SoC built-in and its an issue as boards like CN9130-CRB use the CPO GPIO2
-pins for regulators and SD card support without enabling them first.
-
-So, enable both of them like Armada 7k and 8k do.
-
-Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
-
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: d77e38e612a01 ("xfrm: Add an IPsec hardware offloading API")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/cn9130.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ net/xfrm/xfrm_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-index 71769ac7f0585..327b04134134f 100644
---- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
-+++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-@@ -42,3 +42,11 @@
- #undef CP11X_PCIE0_BASE
- #undef CP11X_PCIE1_BASE
- #undef CP11X_PCIE2_BASE
-+
-+&cp0_gpio1 {
-+	status = "okay";
-+};
-+
-+&cp0_gpio2 {
-+	status = "okay";
-+};
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 7c36cc1f3d79c..0a2d2bae28316 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -3058,7 +3058,7 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
+ 	if (x->props.extra_flags)
+ 		l += nla_total_size(sizeof(x->props.extra_flags));
+ 	if (x->xso.dev)
+-		 l += nla_total_size(sizeof(x->xso));
++		 l += nla_total_size(sizeof(struct xfrm_user_offload));
+ 	if (x->props.smark.v | x->props.smark.m) {
+ 		l += nla_total_size(sizeof(x->props.smark.v));
+ 		l += nla_total_size(sizeof(x->props.smark.m));
 -- 
 2.34.1
 
