@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E807C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AFE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346169AbiAXTMb (ORCPT
+        id S1344969AbiAXTLS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:12:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33758 "EHLO
+        Mon, 24 Jan 2022 14:11:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34064 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344776AbiAXTDe (ORCPT
+        with ESMTP id S1344881AbiAXTDx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:03:34 -0500
+        Mon, 24 Jan 2022 14:03:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E2AD860B82;
-        Mon, 24 Jan 2022 19:03:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1DCEC340E5;
-        Mon, 24 Jan 2022 19:03:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B24386090A;
+        Mon, 24 Jan 2022 19:03:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 761EFC340E5;
+        Mon, 24 Jan 2022 19:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051010;
-        bh=3fRVJbvYCMh2hgxAvyGf4mfvv6IZ1ArQL+PgRGLWcFM=;
+        s=korg; t=1643051032;
+        bh=FBpLweNsG17/BrIwf/ySgIu5kDMsZLPCXK62LWBx9Sw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SC1c5MV9WN35G/4Lm5RduB4eiBHl6N/E/m8seI4gZLX/yTgaoWXpyJW/9Kyg9hYnM
-         Olop0jjlohneWLGgq3wdx9STrANvqjSIMLrSFZwH9tJYGZ3cTWe2iUJf4sS9tWt+bk
-         13eS3OfvcBLhzeQbHLD8P+OHQCG/oP670KoBE1iQ=
+        b=cIvf9fYz/SfW4hm0wYKrVP3sbAyrOwGXqRhmLyB5IkIdtR50DDHtqYYefo6pqCuaY
+         qRZ4wEUBY5FP33xeVyjU1CgQzADzCT/St1qUyzbmN2kQ6cuqUayXjdf+SDRSb3pBQv
+         6QGF5WXUvE2TNl+w4gHog/S4bSDaxKC+oYFZBKdc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.14 025/186] media: s2255: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:40 +0100
-Message-Id: <20220124183937.929418306@linuxfoundation.org>
+        stable@vger.kernel.org, Gang Li <ligang.bdlg@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        Hugh Dickins <hughd@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 4.14 031/186] shmem: fix a race between shmem_unused_huge_shrink and shmem_evict_inode
+Date:   Mon, 24 Jan 2022 19:41:46 +0100
+Message-Id: <20220124183938.123752792@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,45 +50,172 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Gang Li <ligang.bdlg@bytedance.com>
 
-commit f71d272ad4e354097020a4e6b1dc6e4b59feb50f upstream.
+commit 62c9827cbb996c2c04f615ecd783ce28bcea894b upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+Fix a data race in commit 779750d20b93 ("shmem: split huge pages beyond
+i_size under memory pressure").
 
-Use the common control-message timeout define for the five-second
-timeouts.
+Here are call traces causing race:
 
-Fixes: 38f993ad8b1f ("V4L/DVB (8125): This driver adds support for the Sensoray 2255 devices.")
-Cc: stable@vger.kernel.org      # 2.6.27
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+   Call Trace 1:
+     shmem_unused_huge_shrink+0x3ae/0x410
+     ? __list_lru_walk_one.isra.5+0x33/0x160
+     super_cache_scan+0x17c/0x190
+     shrink_slab.part.55+0x1ef/0x3f0
+     shrink_node+0x10e/0x330
+     kswapd+0x380/0x740
+     kthread+0xfc/0x130
+     ? mem_cgroup_shrink_node+0x170/0x170
+     ? kthread_create_on_node+0x70/0x70
+     ret_from_fork+0x1f/0x30
+
+   Call Trace 2:
+     shmem_evict_inode+0xd8/0x190
+     evict+0xbe/0x1c0
+     do_unlinkat+0x137/0x330
+     do_syscall_64+0x76/0x120
+     entry_SYSCALL_64_after_hwframe+0x3d/0xa2
+
+A simple explanation:
+
+Image there are 3 items in the local list (@list).  In the first
+traversal, A is not deleted from @list.
+
+  1)    A->B->C
+        ^
+        |
+        pos (leave)
+
+In the second traversal, B is deleted from @list.  Concurrently, A is
+deleted from @list through shmem_evict_inode() since last reference
+counter of inode is dropped by other thread.  Then the @list is corrupted.
+
+  2)    A->B->C
+        ^  ^
+        |  |
+     evict pos (drop)
+
+We should make sure the inode is either on the global list or deleted from
+any local list before iput().
+
+Fixed by moving inodes back to global list before we put them.
+
+[akpm@linux-foundation.org: coding style fixes]
+
+Link: https://lkml.kernel.org/r/20211125064502.99983-1-ligang.bdlg@bytedance.com
+Fixes: 779750d20b93 ("shmem: split huge pages beyond i_size under memory pressure")
+Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
+Reviewed-by: Muchun Song <songmuchun@bytedance.com>
+Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Cc: Hugh Dickins <hughd@google.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/s2255/s2255drv.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ mm/shmem.c |   37 +++++++++++++++++++++----------------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
---- a/drivers/media/usb/s2255/s2255drv.c
-+++ b/drivers/media/usb/s2255/s2255drv.c
-@@ -1911,7 +1911,7 @@ static long s2255_vendor_req(struct s225
- 				    USB_TYPE_VENDOR | USB_RECIP_DEVICE |
- 				    USB_DIR_IN,
- 				    Value, Index, buf,
--				    TransferBufferLength, HZ * 5);
-+				    TransferBufferLength, USB_CTRL_SET_TIMEOUT);
+--- a/mm/shmem.c
++++ b/mm/shmem.c
+@@ -450,7 +450,7 @@ static unsigned long shmem_unused_huge_s
+ 	struct shmem_inode_info *info;
+ 	struct page *page;
+ 	unsigned long batch = sc ? sc->nr_to_scan : 128;
+-	int removed = 0, split = 0;
++	int split = 0;
  
- 		if (r >= 0)
- 			memcpy(TransferBuffer, buf, TransferBufferLength);
-@@ -1920,7 +1920,7 @@ static long s2255_vendor_req(struct s225
- 		r = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
- 				    Request, USB_TYPE_VENDOR | USB_RECIP_DEVICE,
- 				    Value, Index, buf,
--				    TransferBufferLength, HZ * 5);
-+				    TransferBufferLength, USB_CTRL_SET_TIMEOUT);
+ 	if (list_empty(&sbinfo->shrinklist))
+ 		return SHRINK_STOP;
+@@ -465,7 +465,6 @@ static unsigned long shmem_unused_huge_s
+ 		/* inode is about to be evicted */
+ 		if (!inode) {
+ 			list_del_init(&info->shrinklist);
+-			removed++;
+ 			goto next;
+ 		}
+ 
+@@ -473,12 +472,12 @@ static unsigned long shmem_unused_huge_s
+ 		if (round_up(inode->i_size, PAGE_SIZE) ==
+ 				round_up(inode->i_size, HPAGE_PMD_SIZE)) {
+ 			list_move(&info->shrinklist, &to_remove);
+-			removed++;
+ 			goto next;
+ 		}
+ 
+ 		list_move(&info->shrinklist, &list);
+ next:
++		sbinfo->shrinklist_len--;
+ 		if (!--batch)
+ 			break;
  	}
- 	kfree(buf);
- 	return r;
+@@ -498,7 +497,7 @@ next:
+ 		inode = &info->vfs_inode;
+ 
+ 		if (nr_to_split && split >= nr_to_split)
+-			goto leave;
++			goto move_back;
+ 
+ 		page = find_get_page(inode->i_mapping,
+ 				(inode->i_size & HPAGE_PMD_MASK) >> PAGE_SHIFT);
+@@ -512,38 +511,44 @@ next:
+ 		}
+ 
+ 		/*
+-		 * Leave the inode on the list if we failed to lock
+-		 * the page at this time.
++		 * Move the inode on the list back to shrinklist if we failed
++		 * to lock the page at this time.
+ 		 *
+ 		 * Waiting for the lock may lead to deadlock in the
+ 		 * reclaim path.
+ 		 */
+ 		if (!trylock_page(page)) {
+ 			put_page(page);
+-			goto leave;
++			goto move_back;
+ 		}
+ 
+ 		ret = split_huge_page(page);
+ 		unlock_page(page);
+ 		put_page(page);
+ 
+-		/* If split failed leave the inode on the list */
++		/* If split failed move the inode on the list back to shrinklist */
+ 		if (ret)
+-			goto leave;
++			goto move_back;
+ 
+ 		split++;
+ drop:
+ 		list_del_init(&info->shrinklist);
+-		removed++;
+-leave:
++		goto put;
++move_back:
++		/*
++		 * Make sure the inode is either on the global list or deleted
++		 * from any local list before iput() since it could be deleted
++		 * in another thread once we put the inode (then the local list
++		 * is corrupted).
++		 */
++		spin_lock(&sbinfo->shrinklist_lock);
++		list_move(&info->shrinklist, &sbinfo->shrinklist);
++		sbinfo->shrinklist_len++;
++		spin_unlock(&sbinfo->shrinklist_lock);
++put:
+ 		iput(inode);
+ 	}
+ 
+-	spin_lock(&sbinfo->shrinklist_lock);
+-	list_splice_tail(&list, &sbinfo->shrinklist);
+-	sbinfo->shrinklist_len -= removed;
+-	spin_unlock(&sbinfo->shrinklist_lock);
+-
+ 	return split;
+ }
+ 
 
 
