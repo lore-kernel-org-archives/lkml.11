@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2929FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F6FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348123AbiAXT1z (ORCPT
+        id S1348151AbiAXT2C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:27:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42900 "EHLO
+        Mon, 24 Jan 2022 14:28:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41852 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345004AbiAXTRx (ORCPT
+        with ESMTP id S1347558AbiAXTQ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:17:53 -0500
+        Mon, 24 Jan 2022 14:16:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54614B81236;
-        Mon, 24 Jan 2022 19:17:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68744C340E5;
-        Mon, 24 Jan 2022 19:17:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0CF73B8122C;
+        Mon, 24 Jan 2022 19:16:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31811C340E5;
+        Mon, 24 Jan 2022 19:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051870;
-        bh=anLyqKY8xcsWg1zMq4nAdOxhcpkR8TKpIZYGmfktLU4=;
+        s=korg; t=1643051813;
+        bh=X/v5IuwqHcVUCiRsJOL2BOtTSjI51ZmzRnPqQBxRUMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zHUzKFuyYj7O1ztLjR97lT868Q6hocO/pXeMPdFbA1pq3neEzxn1xDIK/4BP62G0R
-         lCainNlY+5lz5D+ZiEOC0ii5KGtVOcO3/67dvPQXC33G0+FET7/5CLp60ftcFk6Gth
-         qqh7DvEmpUCeEsVY5nQxXEX571Ha4RGbMWtA9JhY=
+        b=UxCrMJ/LjWevn7QxgJlI6RGRpkx39TJlbDdEjKd3uiC43El5j5Ggr93YUUoGRq8k3
+         RNyZBreBIp6TMfGWERM0D1yEiUcx6LZSxYjVDDlfpiAHsf5IxcSR6xmxedhipMGodz
+         3SPag0I4v8Gm6Bo0gnnWgsUkJa1iOLq7rkSW4jZ4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 070/239] media: saa7146: mxb: Fix a NULL pointer dereference in mxb_attach()
-Date:   Mon, 24 Jan 2022 19:41:48 +0100
-Message-Id: <20220124183945.355676783@linuxfoundation.org>
+Subject: [PATCH 4.19 095/239] can: xilinx_can: xcan_probe(): check for error irq
+Date:   Mon, 24 Jan 2022 19:42:13 +0100
+Message-Id: <20220124183946.129286782@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,62 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 0407c49ebe330333478440157c640fffd986f41b ]
+[ Upstream commit c6564c13dae25cd7f8e1de5127b4da4500ee5844 ]
 
-In mxb_attach(dev, info), saa7146_vv_init() is called to allocate a
-new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of mxb_probe(dev). There is a dereference of dev->vv_data
-in saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init().
+For the possible failure of the platform_get_irq(), the returned irq
+could be error number and will finally cause the failure of the
+request_irq().
 
-Fix this bug by adding a check of saa7146_vv_init().
+Consider that platform_get_irq() can now in certain cases return
+-EPROBE_DEFER, and the consequences of letting request_irq()
+effectively convert that into -EINVAL, even at probe time rather than
+later on. So it might be better to check just now.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_MXB=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 03b1930efd3c ("V4L/DVB: saa7146: fix regression of the av7110/budget-av driver")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: b1201e44f50b ("can: xilinx CAN controller support")
+Link: https://lore.kernel.org/all/20211224021324.1447494-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/mxb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/can/xilinx_can.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/saa7146/mxb.c b/drivers/media/pci/saa7146/mxb.c
-index 6e25654da2567..bfa7a7d15dbf6 100644
---- a/drivers/media/pci/saa7146/mxb.c
-+++ b/drivers/media/pci/saa7146/mxb.c
-@@ -695,10 +695,16 @@ static struct saa7146_ext_vv vv_data;
- static int mxb_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct mxb *mxb;
-+	int ret;
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index b01c6da4dd814..90447a420ec7c 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -1536,7 +1536,12 @@ static int xcan_probe(struct platform_device *pdev)
+ 	spin_lock_init(&priv->tx_lock);
  
- 	DEB_EE("dev:%p\n", dev);
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		ERR("Error in saa7146_vv_init()");
-+		return ret;
-+	}
+ 	/* Get IRQ for the device */
+-	ndev->irq = platform_get_irq(pdev, 0);
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		goto err_free;
 +
- 	if (mxb_probe(dev)) {
- 		saa7146_vv_release(dev);
- 		return -1;
++	ndev->irq = ret;
++
+ 	ndev->flags |= IFF_ECHO;	/* We support local echo */
+ 
+ 	platform_set_drvdata(pdev, ndev);
 -- 
 2.34.1
 
