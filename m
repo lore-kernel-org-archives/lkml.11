@@ -2,115 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D291DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1637C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235164AbiAXNxh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:53:37 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:50099 "EHLO
+        id S235477AbiAXNy7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:54:59 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:41928 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235042AbiAXNxg (ORCPT
+        by vger.kernel.org with ESMTP id S229696AbiAXNy6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:53:36 -0500
+        Mon, 24 Jan 2022 08:54:58 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643032415;
+        s=mimecast20190719; t=1643032497;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=10jjCwVWraQntNdBxVG806Q7wvKbwg1gvSBpyTQbEiA=;
-        b=HWww4wEp+ry8Vubd0tXvNWJpXKEO2w1UNqd8lX05XgKGFOIxMp53uDZSsoBR5MK0KBEgUz
-        j/OgvV4HehAOSP8whj8Ngv7ZEUFZ2slkoQs/iaS69A8MmQb0qGxR96KvFPeHlspqGTxk/o
-        rkK8QhsL8mog0tXf65eJV0vmjx4xiNs=
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
- [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/3Zaur0RiXMvQoYarsskyjbAUyo7mdjsj0Z7CFVYRXE=;
+        b=C2JWsL9Yxak8pUHWZY+6dotbgHvAq7+vpjNjZfCfCFxVkcC6Fjr/LyyGhApyTlAvcIrv2i
+        BM537YpdI4V4qt8W92unGpZGvnxv44aNNewz/ZJ/WmBanJN2PkN089hhD5U4Wj/e31WpWv
+        83XW5S8/n50u8yLa3N0miiJ5Ev9e2S0=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-619-PqWAcv5DP3CJ0M4jJSaVqQ-1; Mon, 24 Jan 2022 08:53:34 -0500
-X-MC-Unique: PqWAcv5DP3CJ0M4jJSaVqQ-1
-Received: by mail-oi1-f199.google.com with SMTP id bq20-20020a05680823d400b002cac339e9b0so9165683oib.4
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:53:34 -0800 (PST)
+ us-mta-593-KlN5CxySPuuoGZlJeusd0w-1; Mon, 24 Jan 2022 08:54:54 -0500
+X-MC-Unique: KlN5CxySPuuoGZlJeusd0w-1
+Received: by mail-ed1-f71.google.com with SMTP id c11-20020a056402120b00b0040321cea9d4so13149226edw.23
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:54:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=10jjCwVWraQntNdBxVG806Q7wvKbwg1gvSBpyTQbEiA=;
-        b=hYOohnvFodlE3HLhecagvcgBbKDKDU15KscULDTNwNLUKLG4ogChkUUpnfFuXTChaW
-         1u36UcrGSpJVdzNEvPLGzKGLU8ZlT6urkTyQTirD8kncU+Xz/cULXQCxMA56El6ofZPc
-         X6XD5DDmQ+Mr7yKvuSJbaExdsHTZYoUWUqTrSaUG9kOAv/YZGhvMkTUBgvMyjvBmmf/C
-         DF4McgnnuvONgNw7R7hwfRtvpHkjuGb78WMbr/g0F18reXTFSDBR8lFZj99GGhlWh0EU
-         439SPNvHb0j0cugh0/UhHNzbgnX8DrnS0Vy5ylx1H+1TUBYPcwus/kIHToguhYetr7ti
-         bPSQ==
-X-Gm-Message-State: AOAM531gtSrYJT54i1//qVnZVIYswJ5bI4O+xxLbdwxlFgCECViO5jOQ
-        NIQ1iv5ZBbLKD6wkP+bpmjrWg28vElFyobt0MUR3xAowpylRS7FyD4oSmIeT0wwFoimcUQcr1ZY
-        wrMv3wq8iHUm0ULeVvQY6kSeg
-X-Received: by 2002:a4a:d095:: with SMTP id i21mr3016411oor.66.1643032414029;
-        Mon, 24 Jan 2022 05:53:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwXcXYp8AXPTplh6to4AiTnWP2fz7OgXjj9IzEQpUNCJmvn968uNUEQkbgSQYBOEJwbNzIXMA==
-X-Received: by 2002:a4a:d095:: with SMTP id i21mr3016389oor.66.1643032413803;
-        Mon, 24 Jan 2022 05:53:33 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id v26sm1881619ooq.20.2022.01.24.05.53.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 05:53:33 -0800 (PST)
-From:   trix@redhat.com
-To:     evan.quan@amd.com, alexander.deucher@amd.com,
-        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, nathan@kernel.org, ndesaulniers@google.com,
-        lijo.lazar@amd.com, darren.powell@amd.com, guchun.chen@amd.com,
-        Arunpravin.PaneerSelvam@amd.com, andrey.grodzovsky@amd.com
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] drm/amd/pm: set min,max to 0 if there is no get_dpm_ultimate_freq function
-Date:   Mon, 24 Jan 2022 05:52:59 -0800
-Message-Id: <20220124135259.1057828-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        bh=/3Zaur0RiXMvQoYarsskyjbAUyo7mdjsj0Z7CFVYRXE=;
+        b=7nuZPXgjXGK7/oPfi6Ine4DnuYzCummydvCbNk2gtivzmoIQ5LLKhi1QiTzvjy+3mz
+         7WDcbhSMYKkA2Wb2UUZ/BAJAIL+iGrQBh6fAxGco2xllDUHOON3e0vbUC1gUSeNYOUSR
+         ha7ElBQHzKe/+i71Tcy5ke6OsTxu0AStqUpKNVyKUKU5sygV++HV3iKfW7vqZ1XIA5S6
+         /BEwTFRrTzYOgaeD7aHOpOMm5h4qqtvi59y1+VR4dTJP7rQHdOLkLNeeQLnEEbmpVAvu
+         y5KT/322uzOMjLyf5wnBBBmfcW0tZuBzM8IrDxsWkTKFdJsoLXcqcSBihb8SpoPmUM/w
+         zipw==
+X-Gm-Message-State: AOAM530CeN46Z4k/ZARzSKDJL4y6BTd756cYOE/chuZs3ZIgLEoM8RNd
+        3zpdk3L0Sjz4M1K9/TppLrokOFEPSsGDGjRR3wmoBeYtYCEOyedJUE3FnUKl0mL40D4NDEZ6ROD
+        Dgy+zROooNrZLv37u6DEEJ65U
+X-Received: by 2002:a17:906:f986:: with SMTP id li6mr12367426ejb.175.1643032492884;
+        Mon, 24 Jan 2022 05:54:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJymqDgBWmnVcfUVI2SVKWFtt9uJD92FqsAwiMmp9N8DafCXiA4FzKnkBFHMFNdZDWpCeC4fBw==
+X-Received: by 2002:a17:906:f986:: with SMTP id li6mr12367415ejb.175.1643032492674;
+        Mon, 24 Jan 2022 05:54:52 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id a20sm6646957edb.12.2022.01.24.05.54.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 05:54:52 -0800 (PST)
+Message-ID: <f23b9a9d-8d37-9863-50cc-0e0c4befafdb@redhat.com>
+Date:   Mon, 24 Jan 2022 14:54:51 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] KVM: remove async parameter of hva_to_pfn_remapped()
+Content-Language: en-US
+To:     Xianting Tian <xianting.tian@linux.alibaba.com>
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220124020456.156386-1-xianting.tian@linux.alibaba.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220124020456.156386-1-xianting.tian@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On 1/24/22 03:04, Xianting Tian wrote:
+> The async parameter of hva_to_pfn_remapped() is not used, so remove it.
+> 
+> Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+> ---
+>   virt/kvm/kvm_main.c | 7 +++----
+>   1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> index 9a20f2299..876315093 100644
+> --- a/virt/kvm/kvm_main.c
+> +++ b/virt/kvm/kvm_main.c
+> @@ -2463,9 +2463,8 @@ static int kvm_try_get_pfn(kvm_pfn_t pfn)
+>   }
+>   
+>   static int hva_to_pfn_remapped(struct vm_area_struct *vma,
+> -			       unsigned long addr, bool *async,
+> -			       bool write_fault, bool *writable,
+> -			       kvm_pfn_t *p_pfn)
+> +			       unsigned long addr, bool write_fault,
+> +			       bool *writable, kvm_pfn_t *p_pfn)
+>   {
+>   	kvm_pfn_t pfn;
+>   	pte_t *ptep;
+> @@ -2575,7 +2574,7 @@ kvm_pfn_t hva_to_pfn(unsigned long addr, bool atomic, bool *async,
+>   	if (vma == NULL)
+>   		pfn = KVM_PFN_ERR_FAULT;
+>   	else if (vma->vm_flags & (VM_IO | VM_PFNMAP)) {
+> -		r = hva_to_pfn_remapped(vma, addr, async, write_fault, writable, &pfn);
+> +		r = hva_to_pfn_remapped(vma, addr, write_fault, writable, &pfn);
+>   		if (r == -EAGAIN)
+>   			goto retry;
+>   		if (r < 0)
 
-clang static analysis reports this represenative problem
-amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
-        return clk_freq * 100;
-               ~~~~~~~~ ^
+Queued, thanks.
 
-If there is no get_dpm_ultimate_freq function,
-smu_get_dpm_freq_range returns success without setting the
-output min,max parameters.  Because this is an extern function,
-set the min,max to 0 when there is no get_dpm_ultimate_freq.
-
-Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-index 5ace30434e603..35fbe51f52eaa 100644
---- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-+++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
-@@ -121,11 +121,17 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
- 	if (!min && !max)
- 		return -EINVAL;
- 
--	if (smu->ppt_funcs->get_dpm_ultimate_freq)
-+	if (smu->ppt_funcs->get_dpm_ultimate_freq) {
- 		ret = smu->ppt_funcs->get_dpm_ultimate_freq(smu,
- 							    clk_type,
- 							    min,
- 							    max);
-+	} else {
-+		if (min)
-+			*min = 0;
-+		if (max)
-+			*max = 0;
-+	}
- 
- 	return ret;
- }
--- 
-2.26.3
+Paolo
 
