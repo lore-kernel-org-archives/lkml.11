@@ -2,153 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F49C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C65F8C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:04:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1316690AbiAYC60 (ORCPT
+        id S1316735AbiAYC6f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:58:26 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:50179 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3415164AbiAYA6B (ORCPT
+        Mon, 24 Jan 2022 21:58:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3415250AbiAYA7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:58:01 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjT3q0XSKz4xNp;
-        Tue, 25 Jan 2022 11:57:58 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643072279;
-        bh=f3nUSDyey+3emcvOFkTIpsD48NeCC0JpEvrTdXnbHP8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=RnaYgb9Nr+gkbn/N2LHSY3O5bGhTKez+ktdy6lt/XryTllaTxSsOaj3Hl1YfqJN6Y
-         0LBHL7CcjaU/F/33nP8ZpfBWzYuSXiedrTPl+Gg4ayhHn9doCs/InvlRKTFu5VvOYI
-         py6MNsANyDR0rCbB7Zory7W4hBzLTN7AhxMOptCrc4l7C1a0eP4hWpCbD1FK41ORY3
-         MgSq21hkI63cbgDfZrCLJWZ3P8pT7/WBWXazSJEd/gqHMwFWO+1TBcIR5YDTD26q48
-         6hhay9bLYH12Iw67zk8sQNFCNPifFioNj5hpUN0Xm2w9ja/XEo7d67L4kCldRffPZ2
-         t6VABksOW+Deg==
-Date:   Tue, 25 Jan 2022 11:57:57 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Kees Cook <keescook@chromium.org>, David Sterba <dsterba@suse.cz>
-Cc:     David Sterba <dsterba@suse.com>, Omar Sandoval <osandov@fb.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the kspp tree
-Message-ID: <20220125115757.20bc45e8@canb.auug.org.au>
+        Mon, 24 Jan 2022 19:59:31 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 761C8C06B59C
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:21 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id k18so16354657wrg.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:21 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aZhdR7WzThndblzZsr8d03scH0vKnQACS9be2wdEni8=;
+        b=r+JoXgviNYzPT9NLyF1ZN0EZpKKzUsI32D2OUkXsOXnGv/8yfSE8cHQ0ivUW/PVLqr
+         rq255ukBTU4Z8NnNoucRXFPDtyjPXsYKcjOmGdmIhki0d738Y+A9H0kcW0KHPmLuQkCG
+         H4513rfEGAc94GP2oaPUx7g1OHrbWNclgWU4jQVFe7kpJA3Nz/jps+AFh40Fe6vsRvq4
+         k1OFO3+19YSJP2GWDPN+oCtiI4MCstHNsKPdPvgIZgudWvCKJIaNyM9Tl8VD3Xg/OPDA
+         G1aBA3MPtgt6W86hwAZAiU/0ToC2ub8pATcVCdhj8EMCltPSUd+u8jiVpCzIcKMBKbva
+         U1/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aZhdR7WzThndblzZsr8d03scH0vKnQACS9be2wdEni8=;
+        b=7sSVk3oMNiu4/118gnm2KcnhNZWrtFNOleGCH4p9w7luvPoBF7dcIedIZNnVB2In6p
+         YMjeWnkyoqWbME4Mx/4RZFzpblJ9VQ6uzN64kBjJIPRmTCDIpyRG6f4MDHEPXXOODavY
+         fpeDz6Kv64HGLj5Zn1YMnf6W3jYH3FO5remNVwx9ZM4Ap/ogYnS92+pXFVtyE/L8i9CR
+         DaTSZbKb5GGpTy/gllI+yRgbeYE+CcWNGNNOW5zrOdX0SSb+nbh0MV2KId6kvAaCiWga
+         4RFNY1L+SFcPXtrLhH/U3FzNO/2kGoS76wVgZwvpFn6pk/uM8PerwYOsnV13gMhQlqPg
+         ihmA==
+X-Gm-Message-State: AOAM531sMhCU3U00MOCwFhZU2itNKr1Sa9lAioPUqRl/1I3xgA6FEU7w
+        vBnplT4EfOmgPnQij0rknqFQqA==
+X-Google-Smtp-Source: ABdhPJxcKyahmF6MlNwDoAkTtr7eAnTxLu5plcMBwLNt4+53GfA0dcQcZWzbUVK+cVwSV+DSx6JFwQ==
+X-Received: by 2002:adf:eb88:: with SMTP id t8mr15408011wrn.291.1643064260084;
+        Mon, 24 Jan 2022 14:44:20 -0800 (PST)
+Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
+        by smtp.gmail.com with ESMTPSA id i3sm15010613wru.33.2022.01.24.14.44.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 14:44:19 -0800 (PST)
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     gregkh@linuxfoundation.org
+Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
+        straube.linux@gmail.com, martin@kaiser.cx,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+Subject: [PATCH 00/10] Cleanup and removal of DBG_88E macro
+Date:   Mon, 24 Jan 2022 22:44:05 +0000
+Message-Id: <20220124224415.831-1-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/mWXtgt44xfe97I9Ky8aKrVT";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/mWXtgt44xfe97I9Ky8aKrVT
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+This series does a few things in order to effect the removal of the
+DBG_88E macro:
 
-Hi all,
+(1) It removes previously converted calls for consistency.
+(2) It removes all current DBG_88E calls.
+(3) It removes all aliased DBG_88E calls.
+(4) It removes the GlobalDebugLevel flag and the file that defines it.
 
-After merging the kspp tree, today's linux-next build (x86_64
-allmodconfig) failed like this:
+By its very nature, it is a large patchset, so I've tried to group as
+appropriate. I went by file as I did the work, which led to over 40
+patches originally, so I've listed the largest C files as their own
+patches and then grouped everything else by subdir which gives closer
+sizes for the other patches.
 
-In file included from include/linux/string.h:253,
-                 from include/linux/bitmap.h:11,
-                 from include/linux/cpumask.h:12,
-                 from arch/x86/include/asm/cpumask.h:5,
-                 from arch/x86/include/asm/msr.h:11,
-                 from arch/x86/include/asm/processor.h:22,
-                 from arch/x86/include/asm/cpufeature.h:5,
-                 from arch/x86/include/asm/thread_info.h:53,
-                 from include/linux/thread_info.h:60,
-                 from arch/x86/include/asm/preempt.h:7,
-                 from include/linux/preempt.h:78,
-                 from include/linux/spinlock.h:55,
-                 from include/linux/wait.h:9,
-                 from include/linux/mempool.h:8,
-                 from include/linux/bio.h:8,
-                 from fs/btrfs/ioctl.c:7:
-In function 'fortify_memcpy_chk',
-    inlined from 'btrfs_ioctl_encoded_write' at fs/btrfs/ioctl.c:5082:3:
-include/linux/fortify-string.h:316:25: error: call to '__write_overflow_fie=
-ld' declared with attribute warning: detected write beyond size of field (1=
-st parameter); maybe use struct_group()? [-Werror=3Dattribute-warning]
-  316 |                         __write_overflow_field(p_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-include/linux/fortify-string.h:324:25: error: call to '__read_overflow2_fie=
-ld' declared with attribute warning: detected read beyond size of field (2n=
-d parameter); maybe use struct_group()? [-Werror=3Dattribute-warning]
-  324 |                         __read_overflow2_field(q_size_field, size);
-      |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-cc1: all warnings being treated as errors
+Phillip Potter (10):
+  staging: r8188eu: remove previously added dev_dbg and netdev_dbg calls
+  staging: r8188eu: remove smaller sets of DBG_88E calls from core dir
+  staging: r8188eu: remove DBG_88E calls from core/rtw_mlme_ext.c
+  staging: r8188eu: remove all DBG_88E calls from hal dir
+  staging: r8188eu: remove smaller sets of DBG_88E calls from os_dep dir
+  staging: r8188eu: remove DBG_88E calls from os_dep/ioctl_linux.c
+  staging: r8188eu: remove DBG_88E call from include/usb_ops.h
+  staging: r8188eu: remove all remaining aliased DBG_88E calls
+  staging: r8188eu: remove DBG_88E macro definition
+  staging: r8188eu: remove GlobalDebugLevel flag
 
-Caused by commit
+ drivers/staging/r8188eu/Makefile              |   1 -
+ drivers/staging/r8188eu/core/rtw_ap.c         | 108 +----
+ drivers/staging/r8188eu/core/rtw_br_ext.c     |  59 +--
+ drivers/staging/r8188eu/core/rtw_cmd.c        |  12 +-
+ drivers/staging/r8188eu/core/rtw_ieee80211.c  |  37 +-
+ drivers/staging/r8188eu/core/rtw_ioctl_set.c  |  15 +-
+ drivers/staging/r8188eu/core/rtw_iol.c        |  10 +-
+ drivers/staging/r8188eu/core/rtw_mlme.c       |  54 +--
+ drivers/staging/r8188eu/core/rtw_mlme_ext.c   | 343 +--------------
+ drivers/staging/r8188eu/core/rtw_p2p.c        |  61 +--
+ drivers/staging/r8188eu/core/rtw_pwrctrl.c    |  49 +--
+ drivers/staging/r8188eu/core/rtw_recv.c       |  73 +--
+ drivers/staging/r8188eu/core/rtw_security.c   |  19 +-
+ drivers/staging/r8188eu/core/rtw_sta_mgt.c    |   6 -
+ drivers/staging/r8188eu/core/rtw_wlan_util.c  | 102 +----
+ drivers/staging/r8188eu/core/rtw_xmit.c       |  62 +--
+ drivers/staging/r8188eu/hal/HalPwrSeqCmd.c    |   4 +-
+ drivers/staging/r8188eu/hal/hal_intf.c        |   3 -
+ drivers/staging/r8188eu/hal/odm_debug.c       |   6 -
+ drivers/staging/r8188eu/hal/rtl8188e_cmd.c    |  43 +-
+ .../staging/r8188eu/hal/rtl8188e_hal_init.c   |  95 +---
+ drivers/staging/r8188eu/hal/rtl8188e_phycfg.c |   3 -
+ drivers/staging/r8188eu/hal/rtl8188eu_recv.c  |   5 -
+ drivers/staging/r8188eu/hal/rtl8188eu_xmit.c  |   8 +-
+ drivers/staging/r8188eu/hal/usb_halinit.c     |  62 +--
+ drivers/staging/r8188eu/hal/usb_ops_linux.c   |  31 +-
+ drivers/staging/r8188eu/include/rtw_br_ext.h  |   5 -
+ drivers/staging/r8188eu/include/rtw_debug.h   |   8 -
+ drivers/staging/r8188eu/include/usb_ops.h     |   5 +-
+ drivers/staging/r8188eu/os_dep/ioctl_linux.c  | 416 +-----------------
+ drivers/staging/r8188eu/os_dep/mlme_linux.c   |   4 -
+ drivers/staging/r8188eu/os_dep/os_intfs.c     |  34 +-
+ .../staging/r8188eu/os_dep/osdep_service.c    |   2 -
+ drivers/staging/r8188eu/os_dep/usb_intf.c     |  84 +---
+ .../staging/r8188eu/os_dep/usb_ops_linux.c    |  18 +-
+ drivers/staging/r8188eu/os_dep/xmit_linux.c   |   6 +-
+ 36 files changed, 166 insertions(+), 1687 deletions(-)
+ delete mode 100644 drivers/staging/r8188eu/hal/odm_debug.c
 
-  602670289b69 ("fortify: Detect struct member overflows in memcpy() at com=
-pile-time")
-
-interacting with commit
-
-  504e1ebb6316 ("btrfs: add BTRFS_IOC_ENCODED_WRITE")
-
-from the btrfs tree.
-
-I applied the following hack:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 11:47:17 +1100
-Subject: [PATCH] fix up for "btrfs: add BTRFS_IOC_ENCODED_WRITE"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- fs/btrfs/ioctl.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
-index 73ad918a05a9..d34620034f8e 100644
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -5079,9 +5079,14 @@ static int btrfs_ioctl_encoded_write(struct file *fi=
-le, void __user *argp,
- 		}
- 		args.iov =3D compat_ptr(args32.iov);
- 		args.iovcnt =3D args32.iovcnt;
--		memcpy(&args.offset, &args32.offset,
--		       sizeof(args) -
--		       offsetof(struct btrfs_ioctl_encoded_io_args, offset));
-+		args.offset =3D args32.offset;
-+		args.flags =3D args32.flags;
-+		args.len =3D args32.len;
-+		args.unencoded_len =3D args32.unencoded_len;
-+		args.unencoded_offset =3D args32.unencoded_offset;
-+		args.compression =3D args32.compression;
-+		args.encryption =3D args32.encryption;
-+		memcpy(args.reserved, args32.reserved, sizeof(args.reserved));
- #else
- 		return -ENOTTY;
- #endif
---=20
+-- 
 2.34.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/mWXtgt44xfe97I9Ky8aKrVT
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvSxYACgkQAVBC80lX
-0GwcMAf/Uzc/nOW403lZ3BYhmmg5KZfP7Or66ER6ha2sNYSk49gJywjWh+mOnNNn
-tcsHBMMY6Sc6fpSdx/fWrblFXkd1uEkURwJXDkpMAwGFEcqoNhu4mgKQ3QhDZGgg
-UUrj5L4xAwwKrQgP6S0v4qYssePA3R9+dJnmanfcQVGKuZWno2X7xI9GT8avUYnn
-gldlJGatHzSJRYpTj0dZ5E+5DFmsp8x0ZYZWWJtbQufnq2O2WEUFTWtL6l4+ZHq3
-yBW4z960YKrJq0m8S0t/d1rmBYeECsNMoVVx5RV/7eXOIpHyLcG+BvtpVRoNElmi
-6kNEEmHQQEf9owTgvXAcvj9/jcHLiA==
-=0n8w
------END PGP SIGNATURE-----
-
---Sig_/mWXtgt44xfe97I9Ky8aKrVT--
