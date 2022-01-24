@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E54FFC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF3AC2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385952AbiAXUet (ORCPT
+        id S1386032AbiAXUe5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34364 "EHLO
+        Mon, 24 Jan 2022 15:34:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355449AbiAXUNl (ORCPT
+        with ESMTP id S1355441AbiAXUNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:13:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45665C06177D;
-        Mon, 24 Jan 2022 11:36:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD9EAC06177A;
+        Mon, 24 Jan 2022 11:36:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C53AB80FA1;
-        Mon, 24 Jan 2022 19:36:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3848AC340E5;
-        Mon, 24 Jan 2022 19:36:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 648BAB81239;
+        Mon, 24 Jan 2022 19:36:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73F75C340E5;
+        Mon, 24 Jan 2022 19:36:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053001;
-        bh=pAudh+TsOSpSnD0nYfPANG+aRUPcTOqHL2dBB7d7S30=;
+        s=korg; t=1643052984;
+        bh=kH5gr8b1BThPsKuYxjw5b3QRMMbMoAjYI1p+XaHELZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0+Ca3MzlY+4e4erCPR5HI8bgVqtzrzIxCZwHR5tfN+NaWDIwKq/DmB4xFnzHBKiRi
-         8+E4zC69pxwT0RqQMF8zv2ABLwY8yrdX/LBUKSbSKsF8stoYQDPyIbmJoBLi/9wmbk
-         cHWRSMDTgYvHDkIjG5SlpmqNt0sbf8AhX1RUwk7U=
+        b=F/BGVKbcV9gazL3A9YkDNEwukInEL3wlfr/PgQ6bpxQcqLSW7x9dWxcFGGzvdUHID
+         8qtOLaEfmlIxs/UERMhW5NSsPb8b2y1/d14xm1E80VEIt0sdwoCOiq7561iCvl3Bg/
+         63l+66xEQlh/+OMRmuSlt9ER2u4+4TVCVnzYuwlw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 210/320] ACPI: battery: Add the ThinkPad "Not Charging" quirk
-Date:   Mon, 24 Jan 2022 19:43:14 +0100
-Message-Id: <20220124184000.766334316@linuxfoundation.org>
+Subject: [PATCH 5.4 236/320] scsi: lpfc: Trigger SLI4 firmware dump before doing driver cleanup
+Date:   Mon, 24 Jan 2022 19:43:40 +0100
+Message-Id: <20220124184002.011801274@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -52,80 +51,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Weißschuh <linux@weissschuh.net>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
+[ Upstream commit 7dd2e2a923173d637c272e483966be8e96a72b64 ]
 
-The EC/ACPI firmware on Lenovo ThinkPads used to report a status
-of "Unknown" when the battery is between the charge start and
-charge stop thresholds. On Windows, it reports "Not Charging"
-so the quirk has been added to also report correctly.
+Extraneous teardown routines are present in the firmware dump path causing
+altered states in firmware captures.
 
-Now the "status" attribute returns "Not Charging" when the
-battery on ThinkPads is not physicaly charging.
+When a firmware dump is requested via sysfs, trigger the dump immediately
+without tearing down structures and changing adapter state.
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+The driver shall rely on pre-existing firmware error state clean up
+handlers to restore the adapter.
+
+Link: https://lore.kernel.org/r/20211204002644.116455-6-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/battery.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ drivers/scsi/lpfc/lpfc.h         |  2 +-
+ drivers/scsi/lpfc/lpfc_attr.c    | 62 ++++++++++++++++++++------------
+ drivers/scsi/lpfc/lpfc_hbadisc.c |  8 ++++-
+ drivers/scsi/lpfc/lpfc_sli.c     |  6 ----
+ 4 files changed, 48 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 6e96ed68b3379..4e0aea5f008e3 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -65,6 +65,7 @@ static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
- static int battery_check_pmic = 1;
-+static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -233,6 +234,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (battery_quirk_notcharging)
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
- 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
- 		break;
-@@ -1337,6 +1340,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
- 	return 0;
- }
+diff --git a/drivers/scsi/lpfc/lpfc.h b/drivers/scsi/lpfc/lpfc.h
+index 8943d42fc406e..0b69f4f713778 100644
+--- a/drivers/scsi/lpfc/lpfc.h
++++ b/drivers/scsi/lpfc/lpfc.h
+@@ -735,7 +735,6 @@ struct lpfc_hba {
+ #define HBA_DEVLOSS_TMO         0x2000 /* HBA in devloss timeout */
+ #define HBA_RRQ_ACTIVE		0x4000 /* process the rrq active list */
+ #define HBA_IOQ_FLUSH		0x8000 /* FCP/NVME I/O queues being flushed */
+-#define HBA_FW_DUMP_OP		0x10000 /* Skips fn reset before FW dump */
+ #define HBA_RECOVERABLE_UE	0x20000 /* Firmware supports recoverable UE */
+ #define HBA_FORCED_LINK_SPEED	0x40000 /*
+ 					 * Firmware supports Forced Link Speed
+@@ -744,6 +743,7 @@ struct lpfc_hba {
+ #define HBA_FLOGI_ISSUED	0x100000 /* FLOGI was issued */
+ #define HBA_DEFER_FLOGI		0x800000 /* Defer FLOGI till read_sparm cmpl */
  
-+static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
-+{
-+	battery_quirk_notcharging = 1;
-+	return 0;
-+}
++	struct completion *fw_dump_cmpl; /* cmpl event tracker for fw_dump */
+ 	uint32_t fcp_ring_in_use; /* When polling test if intr-hndlr active*/
+ 	struct lpfc_dmabuf slim2p;
+ 
+diff --git a/drivers/scsi/lpfc/lpfc_attr.c b/drivers/scsi/lpfc/lpfc_attr.c
+index f0ecfe565660a..1c541a600149b 100644
+--- a/drivers/scsi/lpfc/lpfc_attr.c
++++ b/drivers/scsi/lpfc/lpfc_attr.c
+@@ -1537,25 +1537,25 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
+ 	before_fc_flag = phba->pport->fc_flag;
+ 	sriov_nr_virtfn = phba->cfg_sriov_nr_virtfn;
+ 
+-	/* Disable SR-IOV virtual functions if enabled */
+-	if (phba->cfg_sriov_nr_virtfn) {
+-		pci_disable_sriov(pdev);
+-		phba->cfg_sriov_nr_virtfn = 0;
+-	}
++	if (opcode == LPFC_FW_DUMP) {
++		init_completion(&online_compl);
++		phba->fw_dump_cmpl = &online_compl;
++	} else {
++		/* Disable SR-IOV virtual functions if enabled */
++		if (phba->cfg_sriov_nr_virtfn) {
++			pci_disable_sriov(pdev);
++			phba->cfg_sriov_nr_virtfn = 0;
++		}
+ 
+-	if (opcode == LPFC_FW_DUMP)
+-		phba->hba_flag |= HBA_FW_DUMP_OP;
++		status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
+ 
+-	status = lpfc_do_offline(phba, LPFC_EVT_OFFLINE);
++		if (status != 0)
++			return status;
+ 
+-	if (status != 0) {
+-		phba->hba_flag &= ~HBA_FW_DUMP_OP;
+-		return status;
++		/* wait for the device to be quiesced before firmware reset */
++		msleep(100);
+ 	}
+ 
+-	/* wait for the device to be quiesced before firmware reset */
+-	msleep(100);
+-
+ 	reg_val = readl(phba->sli4_hba.conf_regs_memmap_p +
+ 			LPFC_CTL_PDEV_CTL_OFFSET);
+ 
+@@ -1584,24 +1584,42 @@ lpfc_sli4_pdev_reg_request(struct lpfc_hba *phba, uint32_t opcode)
+ 		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
+ 				"3153 Fail to perform the requested "
+ 				"access: x%x\n", reg_val);
++		if (phba->fw_dump_cmpl)
++			phba->fw_dump_cmpl = NULL;
+ 		return rc;
+ 	}
+ 
+ 	/* keep the original port state */
+-	if (before_fc_flag & FC_OFFLINE_MODE)
+-		goto out;
+-
+-	init_completion(&online_compl);
+-	job_posted = lpfc_workq_post_event(phba, &status, &online_compl,
+-					   LPFC_EVT_ONLINE);
+-	if (!job_posted)
++	if (before_fc_flag & FC_OFFLINE_MODE) {
++		if (phba->fw_dump_cmpl)
++			phba->fw_dump_cmpl = NULL;
+ 		goto out;
++	}
+ 
+-	wait_for_completion(&online_compl);
++	/* Firmware dump will trigger an HA_ERATT event, and
++	 * lpfc_handle_eratt_s4 routine already handles bringing the port back
++	 * online.
++	 */
++	if (opcode == LPFC_FW_DUMP) {
++		wait_for_completion(phba->fw_dump_cmpl);
++	} else  {
++		init_completion(&online_compl);
++		job_posted = lpfc_workq_post_event(phba, &status, &online_compl,
++						   LPFC_EVT_ONLINE);
++		if (!job_posted)
++			goto out;
+ 
++		wait_for_completion(&online_compl);
++	}
+ out:
+ 	/* in any case, restore the virtual functions enabled as before */
+ 	if (sriov_nr_virtfn) {
++		/* If fw_dump was performed, first disable to clean up */
++		if (opcode == LPFC_FW_DUMP) {
++			pci_disable_sriov(pdev);
++			phba->cfg_sriov_nr_virtfn = 0;
++		}
 +
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1381,6 +1390,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
- 		},
- 	},
-+	{
-+		/*
-+		 * On Lenovo ThinkPads the BIOS specification defines
-+		 * a state when the bits for charging and discharging
-+		 * are both set to 0. That state is "Not Charging".
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Lenovo ThinkPad",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
-+		},
-+	},
- 	{},
- };
+ 		sriov_err =
+ 			lpfc_sli_probe_sriov_nr_virtfn(phba, sriov_nr_virtfn);
+ 		if (!sriov_err)
+diff --git a/drivers/scsi/lpfc/lpfc_hbadisc.c b/drivers/scsi/lpfc/lpfc_hbadisc.c
+index 0dc1d56ff4709..0abce779fbb13 100644
+--- a/drivers/scsi/lpfc/lpfc_hbadisc.c
++++ b/drivers/scsi/lpfc/lpfc_hbadisc.c
+@@ -628,10 +628,16 @@ lpfc_work_done(struct lpfc_hba *phba)
+ 	if (phba->pci_dev_grp == LPFC_PCI_DEV_OC)
+ 		lpfc_sli4_post_async_mbox(phba);
  
+-	if (ha_copy & HA_ERATT)
++	if (ha_copy & HA_ERATT) {
+ 		/* Handle the error attention event */
+ 		lpfc_handle_eratt(phba);
+ 
++		if (phba->fw_dump_cmpl) {
++			complete(phba->fw_dump_cmpl);
++			phba->fw_dump_cmpl = NULL;
++		}
++	}
++
+ 	if (ha_copy & HA_MBATT)
+ 		lpfc_sli_handle_mb_event(phba);
+ 
+diff --git a/drivers/scsi/lpfc/lpfc_sli.c b/drivers/scsi/lpfc/lpfc_sli.c
+index 51bab0979527b..bd908dd273078 100644
+--- a/drivers/scsi/lpfc/lpfc_sli.c
++++ b/drivers/scsi/lpfc/lpfc_sli.c
+@@ -4498,12 +4498,6 @@ lpfc_sli4_brdreset(struct lpfc_hba *phba)
+ 	phba->fcf.fcf_flag = 0;
+ 	spin_unlock_irq(&phba->hbalock);
+ 
+-	/* SLI4 INTF 2: if FW dump is being taken skip INIT_PORT */
+-	if (phba->hba_flag & HBA_FW_DUMP_OP) {
+-		phba->hba_flag &= ~HBA_FW_DUMP_OP;
+-		return rc;
+-	}
+-
+ 	/* Now physically reset the device */
+ 	lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
+ 			"0389 Performing PCI function reset!\n");
 -- 
 2.34.1
 
