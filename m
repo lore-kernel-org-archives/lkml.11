@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B344C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F4E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:39:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347693AbiAXTjP (ORCPT
+        id S1354211AbiAXTjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:39:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58052 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353154AbiAXTdU (ORCPT
+        Mon, 24 Jan 2022 14:39:18 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56438 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353222AbiAXTdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:33:20 -0500
+        Mon, 24 Jan 2022 14:33:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 064EE61482;
-        Mon, 24 Jan 2022 19:33:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAE5DC340E5;
-        Mon, 24 Jan 2022 19:33:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FF84B811FB;
+        Mon, 24 Jan 2022 19:33:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29B2AC340E5;
+        Mon, 24 Jan 2022 19:33:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052794;
-        bh=stwyFcwrHvk0WqGjAaEa8Do+lR1jsqKuLO+DyPAgQIg=;
+        s=korg; t=1643052810;
+        bh=z3KHjrtjkrAJ1l60+JVSkvpB2u2zxdDMwLh9FzYWkM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XSLHR4tI29L8zV5qi7Rl0HA83b/Yqko0E6ns/1MJfetoQrZVIUNvEmtf/xNGqrRJo
-         oiOJf1HkIJ8MXA4pPx0GcIC2Thj0o0BOgUR15ah9QWrcVmXiAuEzIugb+qJKRtWr8U
-         CNKigvPIGgMWjzuKXboSBz0yhWOistla9HjGg+nY=
+        b=eaT2bYcJPpqC4kXQPUSVMzK5zNTwDVesxhNLr4dm1ZEV/ob+7bsIO1BBCypGGWCLO
+         py8fYe2WwjLjAB5rMvK7QByA1B06mPenxald7olN2nwRf7LJIXRmjx4WMNKnf8aUjW
+         rTkJlfggZ34iAsA0FCzAd2WFq2mtDBs4aQPvUaSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 177/320] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:42:41 +0100
-Message-Id: <20220124183959.678602776@linuxfoundation.org>
+Subject: [PATCH 5.4 182/320] net: phy: prefer 1000baseT over 1000baseKX
+Date:   Mon, 24 Jan 2022 19:42:46 +0100
+Message-Id: <20220124183959.854124738@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,71 +50,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+[ Upstream commit f20f94f7f52c4685c81754f489ffcc72186e8bdb ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+The PHY settings table is supposed to be sorted by descending match
+priority - in other words, earlier entries are preferred over later
+entries.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
+The order of 1000baseKX/Full and 1000baseT/Full is such that we
+prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
+a lot rarer than 1000baseT/Full, and thus is much less likely to
+be preferred.
 
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
+This causes phylink problems - it means a fixed link specifying a
+speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
+rather than 1000baseT/Full as would be expected - and since we offer
+userspace a software emulation of a conventional copper PHY, we want
+to offer copper modes in preference to anything else. However, we do
+still want to allow the rarer modes as well.
 
-Fix this bug by adding a check of saa7146_vv_init().
+Hence, let's reorder these two modes to prefer copper.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index bf5e55348f159..31388597386aa 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
- 
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 9412669b579c7..84064120918f0 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -128,11 +128,11 @@ static const struct phy_setting settings[] = {
+ 	PHY_SETTING(   2500, FULL,   2500baseT_Full		),
+ 	PHY_SETTING(   2500, FULL,   2500baseX_Full		),
+ 	/* 1G */
+-	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
+ 	PHY_SETTING(   1000, FULL,   1000baseT_Full		),
+ 	PHY_SETTING(   1000, HALF,   1000baseT_Half		),
+ 	PHY_SETTING(   1000, FULL,   1000baseT1_Full		),
+ 	PHY_SETTING(   1000, FULL,   1000baseX_Full		),
++	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
+ 	/* 100M */
+ 	PHY_SETTING(    100, FULL,    100baseT_Full		),
+ 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
 -- 
 2.34.1
 
