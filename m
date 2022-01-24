@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6415C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:24:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3019AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583852AbiAXWYO (ORCPT
+        id S1381632AbiAXWY3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:24:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51898 "EHLO
+        Mon, 24 Jan 2022 17:24:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442669AbiAXVZK (ORCPT
+        with ESMTP id S1447543AbiAXVK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:10 -0500
+        Mon, 24 Jan 2022 16:10:58 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 266F1C0A1CEE;
-        Mon, 24 Jan 2022 12:18:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB8AFC09D326;
+        Mon, 24 Jan 2022 12:09:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3EBAB81255;
-        Mon, 24 Jan 2022 20:17:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08814C36AE7;
-        Mon, 24 Jan 2022 20:17:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98B68B8122C;
+        Mon, 24 Jan 2022 20:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2782C340E5;
+        Mon, 24 Jan 2022 20:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055478;
-        bh=fntRpshkPH1kBf19IZiQRtlhXjIeJ4hCEiSlfehiMwY=;
+        s=korg; t=1643054941;
+        bh=r8GhSghsTWhs/kPYweBGTn+V7itGNTAEK1ngaeBmVa4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JI9WtABl8eZx5lJDdtvI5wsjER8U264XrPbGfeHPa8hWHjL8Ua4DMhoQejmvOWPKg
-         +PdRXeBL9M1E3VntH/BNX6amYh5HuiJ1LUWkhMMbqUBxKowFUHjE5qln0bzMwgXRyP
-         47uf2u4KboCuzKm3DzTaXZHGwlrmIoOKoNR+xxlg=
+        b=CzUXSVPVkV6kzN9cwHe9FW41GizXazz4rfaqvLwAY76PTe1R5fig+xoWNrIgZRCTV
+         XM3hpdigPno6om4joDqTAPkPDtJcUug2yJlBynZYTDmVNRmf/oO+bcF72Bg5LRx9gs
+         PzP6zJC3FXPrQz5q6TfX+V2aQPkkgg6m5o5ZYzrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 165/846] media: si470x-i2c: fix possible memory leak in si470x_i2c_probe()
-Date:   Mon, 24 Jan 2022 19:34:42 +0100
-Message-Id: <20220124184106.668730319@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?=E7=85=A7=E5=B1=B1=E5=91=A8=E4=B8=80=E9=83=8E?= 
+        <teruyama@springboard-inc.jp>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 553/563] net: sfp: fix high power modules without diagnostic monitoring
+Date:   Mon, 24 Jan 2022 19:45:18 +0100
+Message-Id: <20220124184043.566189264@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,62 +52,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit ef054e345ed8c79ce1121a3599b5a2dfd78e57a0 ]
+commit 5765cee119bf5a36c94d20eceb37c445508934be upstream.
 
-n the 'radio->hdl.error' error handling, ctrl handler allocated by
-v4l2_ctrl_new_std() does not released, and caused memory leak as
-follows:
+Commit 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change
+modules") unintetionally changed the semantics for high power modules
+without the digital diagnostics monitoring. We repeatedly attempt to
+read the power status from the non-existing 0xa2 address in a futile
+hope this failure is temporary:
 
-unreferenced object 0xffff888033d54200 (size 256):
-  comm "i2c-si470x-19", pid 909, jiffies 4294914203 (age 8.072s)
-  hex dump (first 32 bytes):
-    e8 69 11 03 80 88 ff ff 00 46 d5 33 80 88 ff ff  .i.......F.3....
-    10 42 d5 33 80 88 ff ff 10 42 d5 33 80 88 ff ff  .B.3.....B.3....
-  backtrace:
-    [<00000000086bd4ed>] __kmalloc_node+0x1eb/0x360
-    [<00000000bdb68871>] kvmalloc_node+0x66/0x120
-    [<00000000fac74e4c>] v4l2_ctrl_new+0x7b9/0x1c60 [videodev]
-    [<00000000693bf940>] v4l2_ctrl_new_std+0x19b/0x270 [videodev]
-    [<00000000c0cb91bc>] si470x_i2c_probe+0x2d3/0x9a0 [radio_si470x_i2c]
-    [<0000000056a6f01f>] i2c_device_probe+0x4d8/0xbe0
+[    8.856051] sfp sfp-eth3: module NTT              0000000000000000 rev 0000  sn 0000000000000000 dc 160408
+[    8.865843] mvpp2 f4000000.ethernet eth3: switched to inband/1000base-x link mode
+[    8.873469] sfp sfp-eth3: Failed to read EEPROM: -5
+[    8.983251] sfp sfp-eth3: Failed to read EEPROM: -5
+[    9.103250] sfp sfp-eth3: Failed to read EEPROM: -5
 
-Fix the error handling path to avoid memory leak.
+We previosuly assumed such modules were powered up in the correct mode,
+continuing without further configuration as long as the required power
+class was supported by the host.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 8c081b6f9a9b ("media: radio: Critical v4l2 registration...")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Restore this behaviour, while preserving the intent of subsequent
+patches to avoid the "Address Change Sequence not supported" warning
+if we are not going to be accessing the DDM address.
+
+Fixes: 7cfa9c92d0a3 ("net: sfp: avoid power switch on address-change modules")
+Reported-by: 照山周一郎 <teruyama@springboard-inc.jp>
+Tested-by: 照山周一郎 <teruyama@springboard-inc.jp>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/radio/si470x/radio-si470x-i2c.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/phy/sfp.c |   25 +++++++++++++++++++++----
+ 1 file changed, 21 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/radio/si470x/radio-si470x-i2c.c b/drivers/media/radio/si470x/radio-si470x-i2c.c
-index a972c0705ac79..76d39e2e87706 100644
---- a/drivers/media/radio/si470x/radio-si470x-i2c.c
-+++ b/drivers/media/radio/si470x/radio-si470x-i2c.c
-@@ -368,7 +368,7 @@ static int si470x_i2c_probe(struct i2c_client *client)
- 	if (radio->hdl.error) {
- 		retval = radio->hdl.error;
- 		dev_err(&client->dev, "couldn't register control\n");
--		goto err_dev;
-+		goto err_all;
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -1589,17 +1589,20 @@ static int sfp_sm_probe_for_phy(struct s
+ static int sfp_module_parse_power(struct sfp *sfp)
+ {
+ 	u32 power_mW = 1000;
++	bool supports_a2;
+ 
+ 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_POWER_DECL))
+ 		power_mW = 1500;
+ 	if (sfp->id.ext.options & cpu_to_be16(SFP_OPTIONS_HIGH_POWER_LEVEL))
+ 		power_mW = 2000;
+ 
++	supports_a2 = sfp->id.ext.sff8472_compliance !=
++				SFP_SFF8472_COMPLIANCE_NONE ||
++		      sfp->id.ext.diagmon & SFP_DIAGMON_DDM;
++
+ 	if (power_mW > sfp->max_power_mW) {
+ 		/* Module power specification exceeds the allowed maximum. */
+-		if (sfp->id.ext.sff8472_compliance ==
+-			SFP_SFF8472_COMPLIANCE_NONE &&
+-		    !(sfp->id.ext.diagmon & SFP_DIAGMON_DDM)) {
++		if (!supports_a2) {
+ 			/* The module appears not to implement bus address
+ 			 * 0xa2, so assume that the module powers up in the
+ 			 * indicated mode.
+@@ -1616,11 +1619,25 @@ static int sfp_module_parse_power(struct
+ 		}
  	}
  
- 	/* video device initialization */
-@@ -463,7 +463,6 @@ static int si470x_i2c_probe(struct i2c_client *client)
- 	return 0;
- err_all:
- 	v4l2_ctrl_handler_free(&radio->hdl);
--err_dev:
- 	v4l2_device_unregister(&radio->v4l2_dev);
- err_initial:
- 	return retval;
--- 
-2.34.1
-
++	if (power_mW <= 1000) {
++		/* Modules below 1W do not require a power change sequence */
++		sfp->module_power_mW = power_mW;
++		return 0;
++	}
++
++	if (!supports_a2) {
++		/* The module power level is below the host maximum and the
++		 * module appears not to implement bus address 0xa2, so assume
++		 * that the module powers up in the indicated mode.
++		 */
++		return 0;
++	}
++
+ 	/* If the module requires a higher power mode, but also requires
+ 	 * an address change sequence, warn the user that the module may
+ 	 * not be functional.
+ 	 */
+-	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE && power_mW > 1000) {
++	if (sfp->id.ext.diagmon & SFP_DIAGMON_ADDRMODE) {
+ 		dev_warn(sfp->dev,
+ 			 "Address Change Sequence not supported but module requires %u.%uW, module may not be functional\n",
+ 			 power_mW / 1000, (power_mW / 100) % 10);
 
 
