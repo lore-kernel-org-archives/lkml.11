@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF78CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:32:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 040AFC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356536AbiAXWcu (ORCPT
+        id S1588507AbiAXWdD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:32:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51208 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456592AbiAXVjf (ORCPT
+        Mon, 24 Jan 2022 17:33:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58036 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444637AbiAXVjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:35 -0500
+        Mon, 24 Jan 2022 16:39:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B8E0B8105C;
-        Mon, 24 Jan 2022 21:39:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B87CC340E4;
-        Mon, 24 Jan 2022 21:39:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64EAD612E5;
+        Mon, 24 Jan 2022 21:39:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D26AC340E4;
+        Mon, 24 Jan 2022 21:39:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060373;
-        bh=Tc9AOZYZp2DQFZcIzTfoE35W2ly/fEgxYSyopAgJIBE=;
+        s=korg; t=1643060366;
+        bh=MwVDU5KHXsZMAwuTBPhjmF0Tyu+ExRo7B82mYWrX2lQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2L6/8r7ZV1OCC0AEwbWXnX7FEBzN/Rto8GNZr6Qo9EwK8jzumXVT/d4MNq7RppVUI
-         AGAG5I8E/nSuMjZBBArvDsUUMQS8OJTzGuYCxqp8sEGvGNj4DYLaS4XE8LetL78qhd
-         NTVCbbSaMH+1E5qf6KaDuKyxQYNS8e/1r9plqMbI=
+        b=icgJoUL/oGhuK3ZuQgraHVw/m+NO10p/fitA4OFn5NH3J/9IKJT5t4AtBTSRscZDb
+         sZj62ylWqGyl8DiP2ssluTBrM534u8s18p1L+1IMA1lyPpdNAXCVVXUnbBsZqwzbpm
+         nmpinDyeKaDd/iZdCQyEsnfy/+ORNYAY0yOLyXYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.16 0926/1039] RDMA/rxe: Fix a typo in opcode name
-Date:   Mon, 24 Jan 2022 19:45:15 +0100
-Message-Id: <20220124184156.418140518@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas Van <lucas.van@intel.com>,
+        Dave Jiang <dave.jiang@intel.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.16 0924/1039] dmaengine: idxd: fix wq settings post wq disable
+Date:   Mon, 24 Jan 2022 19:45:13 +0100
+Message-Id: <20220124184156.355071904@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,34 +47,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Dave Jiang <dave.jiang@intel.com>
 
-commit 8d1cfb884e881efd69a3be4ef10772c71cb22216 upstream.
+commit 0f225705cf6536826318180831e18a74595efc8d upstream.
 
-There is a redundant ']' in the name of opcode IB_OPCODE_RC_SEND_MIDDLE,
-so just fix it.
+By the spec, wq size and group association is not changeable unless device
+is disabled. Exclude clearing the shadow copy on wq disable/reset. This
+allows wq type to be changed after disable to be re-enabled.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20211218112320.3558770-1-cgxu519@mykernel.net
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Move the size and group association to its own cleanup and only call it
+during device disable.
+
+Fixes: 0dcfe41e9a4c ("dmanegine: idxd: cleanup all device related bits after disabling device")
+Reported-by: Lucas Van <lucas.van@intel.com>
+Tested-by: Lucas Van <lucas.van@intel.com>
+Signed-off-by: Dave Jiang <dave.jiang@intel.com>
+Link: https://lore.kernel.org/r/163951291732.2987775.13576571320501115257.stgit@djiang5-desk3.ch.intel.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_opcode.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/dma/idxd/device.c |   12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/drivers/infiniband/sw/rxe/rxe_opcode.c
-+++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
-@@ -117,7 +117,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NU
+--- a/drivers/dma/idxd/device.c
++++ b/drivers/dma/idxd/device.c
+@@ -382,8 +382,6 @@ static void idxd_wq_disable_cleanup(stru
+ 	lockdep_assert_held(&wq->wq_lock);
+ 	memset(wq->wqcfg, 0, idxd->wqcfg_size);
+ 	wq->type = IDXD_WQT_NONE;
+-	wq->size = 0;
+-	wq->group = NULL;
+ 	wq->threshold = 0;
+ 	wq->priority = 0;
+ 	wq->ats_dis = 0;
+@@ -392,6 +390,15 @@ static void idxd_wq_disable_cleanup(stru
+ 	memset(wq->name, 0, WQ_NAME_SIZE);
+ }
+ 
++static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
++{
++	lockdep_assert_held(&wq->wq_lock);
++
++	idxd_wq_disable_cleanup(wq);
++	wq->size = 0;
++	wq->group = NULL;
++}
++
+ static void idxd_wq_ref_release(struct percpu_ref *ref)
+ {
+ 	struct idxd_wq *wq = container_of(ref, struct idxd_wq, wq_active);
+@@ -699,6 +706,7 @@ static void idxd_device_wqs_clear_state(
+ 
+ 		if (wq->state == IDXD_WQ_ENABLED) {
+ 			idxd_wq_disable_cleanup(wq);
++			idxd_wq_device_reset_cleanup(wq);
+ 			wq->state = IDXD_WQ_DISABLED;
  		}
- 	},
- 	[IB_OPCODE_RC_SEND_MIDDLE]		= {
--		.name	= "IB_OPCODE_RC_SEND_MIDDLE]",
-+		.name	= "IB_OPCODE_RC_SEND_MIDDLE",
- 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_SEND_MASK
- 				| RXE_MIDDLE_MASK,
- 		.length = RXE_BTH_BYTES,
+ 	}
 
 
