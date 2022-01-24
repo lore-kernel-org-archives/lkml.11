@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCF5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F031C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373409AbiAYANq (ORCPT
+        id S2373431AbiAYANt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:13:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52476 "EHLO
+        Mon, 24 Jan 2022 19:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583831AbiAXX2Q (ORCPT
+        with ESMTP id S1587671AbiAXX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF09BC0A8848;
-        Mon, 24 Jan 2022 13:32:59 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06AD9C06137C;
+        Mon, 24 Jan 2022 13:33:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A3D8B80FA1;
-        Mon, 24 Jan 2022 21:32:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF2EFC340E4;
-        Mon, 24 Jan 2022 21:32:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A16B61305;
+        Mon, 24 Jan 2022 21:33:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B87FC340E4;
+        Mon, 24 Jan 2022 21:33:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059977;
-        bh=qYDOpIwbffRx83ZsylOR2lWYM5jvsut86DHKdCbumBU=;
+        s=korg; t=1643060003;
+        bh=1JwUsDPGsn0+DgdjBcBpmV32LGvRqYu/Cx8GkXso3cM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OtubRWtarnD6d5BeVX5XYOxByDMjTpRpDshYajqECoVfbR0tJFQ96y2pXGumT3kyA
-         b9dkqDZqlvMlH21pONLKyV5kEA8dH/1Ixtz7rJfOnEkjirAfYYd6jfSIIS1A39gekv
-         4eVFPkDBu3uUwgdajYPdLmrYjF7Kqzin9dHkU4Nk=
+        b=T84VTGmrSEwEAsFE+UjQQRLYdaOYlXrJmeuU54KrCf0Jzb7DBfeWyDAKNlIm8VBhO
+         6yO+2jYzhrtUq3sUMRjtqixrhaCT+PGvJWccIs8gNEHUG1ruXD32o5QVDxJZJev26t
+         hBb4uR7/QsSZISYNI1xuYtwoQQqs3OJGXjfQ9oy0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jay Chen <jkchen@linux.alibaba.com>,
-        Marc Zyngier <maz@kernel.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
         Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0765/1039] irqchip/gic-v4: Disable redistributors view of the VPE table at boot time
-Date:   Mon, 24 Jan 2022 19:42:34 +0100
-Message-Id: <20220124184151.026668579@linuxfoundation.org>
+Subject: [PATCH 5.16 0807/1039] PCI: mvebu: Fix support for DEVCAP2, DEVCTL2 and LNKCTL2 registers on emulated bridge
+Date:   Mon, 24 Jan 2022 19:43:16 +0100
+Message-Id: <20220124184152.438249854@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,60 +51,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
+[ Upstream commit 4ab34548c55fbbb3898306a47dfaccd4860e1ccb ]
 
-Jay Chen reported that using a kdump kernel on a GICv4.1 system
-results in a RAS error being delivered when the secondary kernel
-configures the ITS's view of the new VPE table.
+Armada XP and new hardware supports access to DEVCAP2, DEVCTL2 and LNKCTL2
+configuration registers of PCIe core via PCIE_CAP_PCIEXP. So export them
+via emulated software root bridge.
 
-As it turns out, that's because each RD still has a pointer to
-the previous instance of the VPE table, and that particular
-implementation is very upset by seeing two bits of the HW that
-should point to the same table with different values.
+Pre-XP hardware does not support these registers and returns zeros.
 
-To solve this, let's invalidate any reference that any RD has to
-the VPE table when discovering the RDs. The ITS can then be
-programmed as expected.
-
-Reported-by: Jay Chen <jkchen@linux.alibaba.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
-Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
+Link: https://lore.kernel.org/r/20211125124605.25915-16-pali@kernel.org
+Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/pci/controller/pci-mvebu.c | 23 +++++++++++++++++++++++
+ 1 file changed, 23 insertions(+)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index daec3309b014d..86397522e7864 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -920,6 +920,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
- {
- 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index 618c34e8879ec..ffcbb8d1d09d5 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -524,6 +524,18 @@ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 		*value = mvebu_readl(port, PCIE_RC_RTSTA);
+ 		break;
  
-+	/* Boot-time cleanip */
-+	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
-+		u64 val;
++	case PCI_EXP_DEVCAP2:
++		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCAP2);
++		break;
 +
-+		/* Deactivate any present vPE */
-+		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
-+		if (val & GICR_VPENDBASER_Valid)
-+			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
-+					      ptr + SZ_128K + GICR_VPENDBASER);
++	case PCI_EXP_DEVCTL2:
++		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL2);
++		break;
 +
-+		/* Mark the VPE table as invalid */
-+		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
-+		val &= ~GICR_VPROPBASER_4_1_VALID;
-+		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
-+	}
++	case PCI_EXP_LNKCTL2:
++		*value = mvebu_readl(port, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL2);
++		break;
 +
- 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
+ 	default:
+ 		return PCI_BRIDGE_EMUL_NOT_HANDLED;
+ 	}
+@@ -615,6 +627,17 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+ 		if (new & PCI_EXP_RTSTA_PME)
+ 			mvebu_writel(port, ~PCIE_INT_PM_PME, PCIE_INT_CAUSE_OFF);
+ 		break;
++
++	case PCI_EXP_DEVCTL2:
++		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_DEVCTL2);
++		break;
++
++	case PCI_EXP_LNKCTL2:
++		mvebu_writel(port, new, PCIE_CAP_PCIEXP + PCI_EXP_LNKCTL2);
++		break;
++
++	default:
++		break;
+ 	}
+ }
  
- 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
 -- 
 2.34.1
 
