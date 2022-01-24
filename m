@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F392C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1C2C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314975AbiAYCwI (ORCPT
+        id S1314997AbiAYCwN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:52:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353004AbiAXVFt (ORCPT
+        Mon, 24 Jan 2022 21:52:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56130 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446008AbiAXVGA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:49 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C18C06177F;
-        Mon, 24 Jan 2022 12:06:31 -0800 (PST)
+        Mon, 24 Jan 2022 16:06:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DCFEB8122F;
-        Mon, 24 Jan 2022 20:06:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5EA3C340E5;
-        Mon, 24 Jan 2022 20:06:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 15B2860C60;
+        Mon, 24 Jan 2022 21:05:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07DADC340E7;
+        Mon, 24 Jan 2022 21:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054789;
-        bh=chR8q+WKD2uFEc4mwI/c7D3xEq11yM9yTEw/Rw4Sum0=;
+        s=korg; t=1643058358;
+        bh=/DgqTbH+xxPRtgjYWV9bVu1oAOUCw0uXfaKZbOLN0uc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CB9lS/9TqAaMUT7pKMZ2q5ri4cQamdpV5U13tKEJTzgNDE/UIyMTpgSq0Eas4sbsR
-         6NfG4LqD7ixOpgTMtuNZAViadzNiXZxZKsGI4cjgDR/K13YUw1LQ06hfoXj+X+gAjp
-         L91XZPtpvjfgjVkw1P3Wxqqvqc6FCYurOOUEcP1c=
+        b=1tb/cMOBS2cLfycTf7I6+zENmeyBFQ3E1+OFzEGZRzvdPBAYU/uAPCKn1zDMnj0Yq
+         mWEmbwEz47PPImVHUdO4pFVw4XQgg2JGz2aB7s3Kug67oyTxfZGdwWGd6ACUKzqhXs
+         Hcr235m7Yy+wa2MtkCVLok7ZgOUw+isWx+H7wQ/U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [PATCH 5.10 460/563] PCI: xgene: Fix IB window setup
-Date:   Mon, 24 Jan 2022 19:43:45 +0100
-Message-Id: <20220124184040.370956063@linuxfoundation.org>
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0231/1039] sched/fair: Fix per-CPU kthread and wakee stacking for asym CPU capacity
+Date:   Mon, 24 Jan 2022 19:33:40 +0100
+Message-Id: <20220124184133.084799295@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,43 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Vincent Donnefort <vincent.donnefort@arm.com>
 
-commit c7a75d07827a1f33d566e18e6098379cc2a0c2b2 upstream.
+[ Upstream commit 014ba44e8184e1acf93e0cbb7089ee847802f8f0 ]
 
-Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-broke PCI support on XGene. The cause is the IB resources are now sorted
-in address order instead of being in DT dma-ranges order. The result is
-which inbound registers are used for each region are swapped. I don't
-know the details about this h/w, but it appears that IB region 0
-registers can't handle a size greater than 4GB. In any case, limiting
-the size for region 0 is enough to get back to the original assignment
-of dma-ranges to regions.
+select_idle_sibling() has a special case for tasks woken up by a per-CPU
+kthread where the selected CPU is the previous one. For asymmetric CPU
+capacity systems, the assumption was that the wakee couldn't have a
+bigger utilization during task placement than it used to have during the
+last activation. That was not considering uclamp.min which can completely
+change between two task activations and as a consequence mandates the
+fitness criterion asym_fits_capacity(), even for the exit path described
+above.
 
-Link: https://lore.kernel.org/all/CA+enf=v9rY_xnZML01oEgKLmvY1NGBUUhnSJaETmXtDtXfaczA@mail.gmail.com/
-Link: https://lore.kernel.org/r/20211129173637.303201-1-robh@kernel.org
-Fixes: 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-Reported-by: Stéphane Graber <stgraber@ubuntu.com>
-Tested-by: Stéphane Graber <stgraber@ubuntu.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
-Cc: stable@vger.kernel.org # v5.5+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b4c9c9f15649 ("sched/fair: Prefer prev cpu in asymmetric wakeup path")
+Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Reviewed-by: Dietmar Eggemann <dietmar.eggemann@arm.com>
+Link: https://lkml.kernel.org/r/20211129173115.4006346-1-vincent.donnefort@arm.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-xgene.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/sched/fair.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/pci/controller/pci-xgene.c
-+++ b/drivers/pci/controller/pci-xgene.c
-@@ -467,7 +467,7 @@ static int xgene_pcie_select_ib_reg(u8 *
- 		return 1;
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 97d89516fbea2..f2cf047b25e56 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6400,7 +6400,8 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
+ 	if (is_per_cpu_kthread(current) &&
+ 	    in_task() &&
+ 	    prev == smp_processor_id() &&
+-	    this_rq()->nr_running <= 1) {
++	    this_rq()->nr_running <= 1 &&
++	    asym_fits_capacity(task_util, prev)) {
+ 		return prev;
  	}
  
--	if ((size > SZ_1K) && (size < SZ_1T) && !(*ib_reg_mask & (1 << 0))) {
-+	if ((size > SZ_1K) && (size < SZ_4G) && !(*ib_reg_mask & (1 << 0))) {
- 		*ib_reg_mask |= (1 << 0);
- 		return 0;
- 	}
+-- 
+2.34.1
+
 
 
