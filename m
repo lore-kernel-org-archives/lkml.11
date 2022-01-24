@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00309C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E76C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373151AbiAYANN (ORCPT
+        id S2373195AbiAYANT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
+        Mon, 24 Jan 2022 19:13:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1842147AbiAXX2e (ORCPT
+        with ESMTP id S1850382AbiAXX3w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:34 -0500
+        Mon, 24 Jan 2022 18:29:52 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED8EC075D02;
-        Mon, 24 Jan 2022 13:34:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD16C0A8880;
+        Mon, 24 Jan 2022 13:34:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C598614FE;
-        Mon, 24 Jan 2022 21:34:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D5EC340E4;
-        Mon, 24 Jan 2022 21:34:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D639614CB;
+        Mon, 24 Jan 2022 21:34:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7DA0C340E4;
+        Mon, 24 Jan 2022 21:34:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060059;
-        bh=nwhDRCmxaQ9ylnl0o8WM7gB9W7pbXqOdwinkHErgie8=;
+        s=korg; t=1643060071;
+        bh=7DerX0b8DALAtu6wevcGsJHv/dcYVQh4/h5h4IeCgWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u9NeBzo2bVV7wgNir+PdvwDj57dhprLi4GR1Dhi6wmoD6zGkMatyYdJ/4xbOeLQe6
-         5pHqSpbe7Xn3K5FqyvubhQb1X60fOzzJJUkGS5kAeNorzSiy/wIRXzfs4vUuLW+fY3
-         /CXgJlxxK9S8QMQzx17GO+KJEvHHuo63nbB8sEio=
+        b=hU0UN28UAz0bk/y0EyLR65JG//bYGiiHiev/4UbrxCoOlPTa7KJE0dPx29G/AVNgi
+         LlIu/Cb9iUNVrfjE4BKgSqrvqDZ0UKf16qgBLYmql+kAcWLkA9Kwn393kpC9pDhedP
+         UqqWbWGQCjkAypm5fc+u6LlRVjL3IrHCRKhhaLNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dario Binacchi <dariobin@libero.it>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        Xiaoke Wang <xkernel.wang@foxmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0798/1039] Input: ti_am335x_tsc - fix STEPCONFIG setup for Z2
-Date:   Mon, 24 Jan 2022 19:43:07 +0100
-Message-Id: <20220124184152.124989565@linuxfoundation.org>
+Subject: [PATCH 5.16 0828/1039] tracing/probes: check the return value of kstrndup() for pbuf
+Date:   Mon, 24 Jan 2022 19:43:37 +0100
+Message-Id: <20220124184153.119249971@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,39 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dario Binacchi <dariobin@libero.it>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 6bfeb6c21e1bdc11c328b7d996d20f0f73c6b9b0 ]
+[ Upstream commit 1c1857d400355e96f0fe8b32adc6fa7594d03b52 ]
 
-The Z2 step configuration doesn't erase the SEL_INP_SWC_3_0 bit-field
-before setting the ADC channel. This way its value could be corrupted by
-the ADC channel selected for the Z1 coordinate.
+kstrndup() is a memory allocation-related function, it returns NULL when
+some internal memory errors happen. It is better to check the return
+value of it so to catch the memory error in time.
 
-Fixes: 8c896308feae ("input: ti_am335x_adc: use only FIFO0 and clean up a little")
-Signed-off-by: Dario Binacchi <dariobin@libero.it>
-Link: https://lore.kernel.org/r/20211212125358.14416-3-dariobin@libero.it
-Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Link: https://lkml.kernel.org/r/tencent_4D6E270731456EB88712ED7F13883C334906@qq.com
+
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Fixes: a42e3c4de964 ("tracing/probe: Add immediate string parameter support")
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/input/touchscreen/ti_am335x_tsc.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ kernel/trace/trace_probe.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
-index fd3ffdd23470b..cfc943423241f 100644
---- a/drivers/input/touchscreen/ti_am335x_tsc.c
-+++ b/drivers/input/touchscreen/ti_am335x_tsc.c
-@@ -196,7 +196,10 @@ static void titsc_step_config(struct titsc *ts_dev)
- 			STEPCONFIG_OPENDLY);
+diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
+index 3ed2a3f372972..bb4605b60de79 100644
+--- a/kernel/trace/trace_probe.c
++++ b/kernel/trace/trace_probe.c
+@@ -356,6 +356,8 @@ static int __parse_imm_string(char *str, char **pbuf, int offs)
+ 		return -EINVAL;
+ 	}
+ 	*pbuf = kstrndup(str, len - 1, GFP_KERNEL);
++	if (!*pbuf)
++		return -ENOMEM;
+ 	return 0;
+ }
  
- 	end_step++;
--	config |= STEPCONFIG_INP(ts_dev->inp_yn);
-+	config = STEPCONFIG_MODE_HWSYNC |
-+			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
-+			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
-+			STEPCONFIG_INP(ts_dev->inp_yn);
- 	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
- 	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
- 			STEPCONFIG_OPENDLY);
 -- 
 2.34.1
 
