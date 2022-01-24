@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A2D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344465AbiAXS71 (ORCPT
+        id S1344920AbiAXS7h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44174 "EHLO
+        Mon, 24 Jan 2022 13:59:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343568AbiAXS5F (ORCPT
+        with ESMTP id S1343515AbiAXS5A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 331D7C061759;
-        Mon, 24 Jan 2022 10:55:12 -0800 (PST)
+        Mon, 24 Jan 2022 13:57:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5515BC061755;
+        Mon, 24 Jan 2022 10:55:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C702E61509;
-        Mon, 24 Jan 2022 18:55:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B2F4C340E5;
-        Mon, 24 Jan 2022 18:55:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EA1BB8121A;
+        Mon, 24 Jan 2022 18:55:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34293C340E5;
+        Mon, 24 Jan 2022 18:55:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050511;
-        bh=qAKyD/fvJ7v//yJ2hNYiXSdEGeERP8oQyMU7qc6xpG4=;
+        s=korg; t=1643050504;
+        bh=hImpkszlYouxmdM/301iwqVHx5Xo0QnkQ+plX6an+o4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qj5r8VgBucjV9A9U5ciASlC0KsRaOkI172OpLnXETypxg2Q3ubMQqU/tWLkgPtUwD
-         CpiQNE8VsdmIig8BBMxG36OR1SyH4jRnquHbr5FbMlXXLV3bWAU4ka67HXEF+Xbl3l
-         2WAuvZ7ovovcQxvubnEkqMtaKbxCZNTZqZm7kzjg=
+        b=zeRAw5hQAE61LH9Fazva9USpb2jGq5b0avfFCIFioCqboykEYvXhaTtl6eNCuapfy
+         AN/MLReO/HywAKt64lS83Iu5HFR/mfhuDxVPSaFaJvYnmJxwZSsVz0Q62YQYRhDdl3
+         LuS4Sl+PXEOtVfV5JioUcKb1gYl33uWSQy4/ituM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 008/157] random: fix data race on crng init time
-Date:   Mon, 24 Jan 2022 19:41:38 +0100
-Message-Id: <20220124183933.050687345@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.9 024/157] media: pvrusb2: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:54 +0100
+Message-Id: <20220124183933.560152782@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -50,71 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 009ba8568be497c640cab7571f7bfd18345d7b24 upstream.
+commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
 
-_extract_crng() does plain loads of crng->init_time and
-crng_global_init_time, which causes undefined behavior if
-crng_reseed() and RNDRESEEDCRNG modify these corrently.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Use READ_ONCE() and WRITE_ONCE() to make the behavior defined.
-
-Don't fix the race on crng->init_time by protecting it with crng->lock,
-since it's not a problem for duplicate reseedings to occur.  I.e., the
-lockless access with READ_ONCE() is fine.
-
-Fixes: d848e5f8e1eb ("random: add new ioctl RNDRESEEDCRNG")
-Fixes: e192be9d9a30 ("random: replace non-blocking pool with a Chacha20-based CRNG")
-Cc: stable@vger.kernel.org
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Cc: stable@vger.kernel.org      # 2.6.18
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -908,7 +908,7 @@ static void crng_reseed(struct crng_stat
- 		crng->state[i+4] ^= buf.key[i] ^ rv;
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -1488,7 +1488,7 @@ static int pvr2_upload_firmware1(struct
+ 	for (address = 0; address < fwsize; address += 0x800) {
+ 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
+ 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
+-				       0, fw_ptr, 0x800, HZ);
++				       0, fw_ptr, 0x800, 1000);
  	}
- 	memzero_explicit(&buf, sizeof(buf));
--	crng->init_time = jiffies;
-+	WRITE_ONCE(crng->init_time, jiffies);
- 	if (crng == &primary_crng && crng_init < 2) {
- 		numa_crng_init();
- 		crng_init = 2;
-@@ -946,12 +946,15 @@ static inline void crng_wait_ready(void)
- static void _extract_crng(struct crng_state *crng,
- 			  __u8 out[CHACHA20_BLOCK_SIZE])
- {
--	unsigned long v, flags;
-+	unsigned long v, flags, init_time;
  
--	if (crng_ready() &&
--	    (time_after(crng_global_init_time, crng->init_time) ||
--	     time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL)))
--		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
-+	if (crng_ready()) {
-+		init_time = READ_ONCE(crng->init_time);
-+		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
-+		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
-+			crng_reseed(crng, crng == &primary_crng ?
-+				    &input_pool : NULL);
-+	}
- 	spin_lock_irqsave(&crng->lock, flags);
- 	if (arch_get_random_long(&v))
- 		crng->state[14] ^= v;
-@@ -1916,7 +1919,7 @@ static long random_ioctl(struct file *f,
- 		if (crng_init < 2)
- 			return -ENODATA;
- 		crng_reseed(&primary_crng, &input_pool);
--		crng_global_init_time = jiffies - 1;
-+		WRITE_ONCE(crng_global_init_time, jiffies - 1);
- 		return 0;
- 	default:
- 		return -EINVAL;
+ 	trace_firmware("Upload done, releasing device's CPU");
+@@ -1627,7 +1627,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
+ 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
+ 
+ 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
+-				    &actual_length, HZ);
++				    &actual_length, 1000);
+ 		ret |= (actual_length != bcnt);
+ 		if (ret) break;
+ 		fw_done += bcnt;
+@@ -3486,7 +3486,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
+ 						      0xa0,0xc0,
+ 						      address,0,
+ 						      hdw->fw_buffer+address,
+-						      0x800,HZ);
++						      0x800,1000);
+ 				if (ret < 0) break;
+ 			}
+ 
+@@ -4011,7 +4011,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
+ 	/* Write the CPUCS register on the 8051.  The lsb of the register
+ 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
+ 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
+-	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
++	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
+ 	if (ret < 0) {
+ 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
+ 			   "cpureset_assert(%d) error=%d",val,ret);
 
 
