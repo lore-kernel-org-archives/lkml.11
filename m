@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A720C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6512C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441834AbiAXUvn (ORCPT
+        id S1441858AbiAXUvp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:51:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35208 "EHLO
+        Mon, 24 Jan 2022 15:51:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35288 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384001AbiAXU2h (ORCPT
+        with ESMTP id S1384029AbiAXU2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:28:37 -0500
+        Mon, 24 Jan 2022 15:28:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5637EB8119E;
-        Mon, 24 Jan 2022 20:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E79C340E5;
-        Mon, 24 Jan 2022 20:28:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50CE4B8123F;
+        Mon, 24 Jan 2022 20:28:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D612C340E5;
+        Mon, 24 Jan 2022 20:28:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056114;
-        bh=Md4ZH5I6rM15jQTYj4f4nWYyhIsKhAhF5qdEF3guwUA=;
+        s=korg; t=1643056123;
+        bh=gCqnxCSztncfwgpQ6vakkyq1OCHii8Ag/97TwT4IkCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=euRQ3hnDFtaiGd4JawNGRIbpvAXZFkyUSHQDqmJkjwOh5c/vy9Veau01tF4xNclOp
-         XSewu//ybOBrmL3OfZXfxEVS8frMCQdc/xfpD4fAWMbrXVGte7El6z8+YSzoBF/tne
-         yaNCSxMRJm9lVK6WdO+ELBB02aCNf/12yg/i+JQE=
+        b=tSTZL8WsTEQZnVcLqGktUo1FZAuEe6TA00I5TmBXjSWiyG67Oi5aW//hTHEXP2RzT
+         1Futgj15Y+OOsAKMtzqZyzH74X4/mG7XW3saFLvM9rgrJxqgBUt/qg5473QYuZ9KPe
+         ULnvxAwlG905J4KPRfCc81SY3WFc2DPQ7Xz5lNjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 376/846] ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
-Date:   Mon, 24 Jan 2022 19:38:13 +0100
-Message-Id: <20220124184113.898915453@linuxfoundation.org>
+Subject: [PATCH 5.15 379/846] RDMA/hns: Validate the pkey index
+Date:   Mon, 24 Jan 2022 19:38:16 +0100
+Message-Id: <20220124184114.008408143@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,38 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-[ Upstream commit 80bd64af75b4bb11c0329bc66c35da2ddfb66d88 ]
+[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
 
-snd_ctl_remove() has to be called with card->controls_rwsem held (when
-called after the card instantiation).  This patch add the missing
-rwsem calls around it.
+Before query pkey, make sure that the queried index is valid.
 
-Fixes: d13bd412dce2 ("ALSA: hda - Manage kcontrol lists")
-Link: https://lore.kernel.org/r/20211116071314.15065-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
+Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/hda_codec.c | 3 +++
+ drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
-index 0c4a337c9fc0d..eda70814369bd 100644
---- a/sound/pci/hda/hda_codec.c
-+++ b/sound/pci/hda/hda_codec.c
-@@ -1727,8 +1727,11 @@ void snd_hda_ctls_clear(struct hda_codec *codec)
+diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
+index 5d39bd08582af..6012340e6d69e 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_main.c
++++ b/drivers/infiniband/hw/hns/hns_roce_main.c
+@@ -269,6 +269,9 @@ static enum rdma_link_layer hns_roce_get_link_layer(struct ib_device *device,
+ static int hns_roce_query_pkey(struct ib_device *ib_dev, u32 port, u16 index,
+ 			       u16 *pkey)
  {
- 	int i;
- 	struct hda_nid_item *items = codec->mixers.list;
++	if (index > 0)
++		return -EINVAL;
 +
-+	down_write(&codec->card->controls_rwsem);
- 	for (i = 0; i < codec->mixers.used; i++)
- 		snd_ctl_remove(codec->card, items[i].kctl);
-+	up_write(&codec->card->controls_rwsem);
- 	snd_array_free(&codec->mixers);
- 	snd_array_free(&codec->nids);
- }
+ 	*pkey = PKEY_ID;
+ 
+ 	return 0;
 -- 
 2.34.1
 
