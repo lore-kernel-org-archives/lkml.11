@@ -2,63 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3371DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A217BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233745AbiAXJ1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:27:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233714AbiAXJ1J (ORCPT
+        id S233749AbiAXJ2h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:28:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36982 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233202AbiAXJ2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:27:09 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A362C06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 01:27:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=l2WBiCb5duYJRA9nKpihqrJOH1Qjg6utSrFiu8qAdtc=; b=QJzPfSs0P3liK7LMTnQqe2qmQq
-        8Vbmsa8CEm0JBoO9R9eeEbkhupPQvTi3sTOVIzQRR/GPPNDzEqhcCfwtK7xO3Wz3+6sx1iemMdJMS
-        PJBvuoI1ucdr5BkHQTJE8g2CdoryHGx2rmr7Yyhc3kpoeECbyn2Ki3y8xiViS+WRn6apyH2z9nmB8
-        bp9PHU0ku0JzpsSc8xh9tbk3wpkhmVsqCruvw5ntp2UdEXKNC0+f9G5WUlWVpXeQBergEeg/3g92F
-        VHCxoFyKShOMKqtQ5ajh4xb02FWyt96s8K7DMFUKd++ch61AbvNe8GHCS3OC8F94QRE8bmhuCFWmN
-        CwYc6v7w==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nBvcq-002n5N-9C; Mon, 24 Jan 2022 09:27:00 +0000
-Date:   Mon, 24 Jan 2022 01:27:00 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/7] iommu: Remove aux-domain related interfaces and
- iommu_ops
-Message-ID: <Ye5w5NHbqwtsIuQl@infradead.org>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-5-baolu.lu@linux.intel.com>
+        Mon, 24 Jan 2022 04:28:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643016513;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PU7JbFuDwdFKk/VjKzygUczh9Zjw5LHX5d/gO46ICZ4=;
+        b=IUEkFkL/yErZDKKqXP/gtz/Ayn6Y58BH0XSEsnqY7NPbZmxNZTWU7hjVNC46IWogPGS8RF
+        0jjBjcQp5LerJCGMSnNJdq52Znmo9jxxfpsdglPzaTJbkWbD+WrMRZ9Gtticj3OnwTrW2V
+        tzhbv0OWYhuDFCCIts6Ozn7wGnC4EM4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-664-h86HWp00MZiTOBQxiU5KBw-1; Mon, 24 Jan 2022 04:28:29 -0500
+X-MC-Unique: h86HWp00MZiTOBQxiU5KBw-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 6CE8B5108D;
+        Mon, 24 Jan 2022 09:28:27 +0000 (UTC)
+Received: from localhost (unknown [10.43.135.229])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id C25C770D52;
+        Mon, 24 Jan 2022 09:28:24 +0000 (UTC)
+Date:   Mon, 24 Jan 2022 10:28:23 +0100
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Russell King <linux@arm.linux.org.uk>
+Subject: Re: [PATCH RFC V1 net-next 3/4] net: Let the active time stamping
+ layer be selectable.
+Message-ID: <Ye5xN6sQvsfX1lmn@localhost>
+References: <20220103232555.19791-4-richardcochran@gmail.com>
+ <20220120164832.xdebp5vykib6h6dp@skbuf>
+ <Yeoqof1onvrcWGNp@lunn.ch>
+ <20220121040508.GA7588@hoboy.vegasvil.org>
+ <20220121145035.z4yv2qsub5mr7ljs@skbuf>
+ <20220121152820.GA15600@hoboy.vegasvil.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220124071103.2097118-5-baolu.lu@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220121152820.GA15600@hoboy.vegasvil.org>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Looks good,
+On Fri, Jan 21, 2022 at 07:28:20AM -0800, Richard Cochran wrote:
+> On Fri, Jan 21, 2022 at 02:50:36PM +0000, Vladimir Oltean wrote:
+> > So as I mentioned earlier, the use case would be hardware performance
+> > testing and diagnosing. You may consider that as not that important, but
+> > this is basically what I had to do for several months, and even wrote
+> > a program for that, that collects packet timestamps at all possible points.
+> 
+> This is not possible without making a brand new CMSG to accommodate
+> time stamps from all the various layers.
 
-Reviewed-by: Christoph Hellwig <hch@lst.de>
+FWIW, scm_timestamping has three fields and the middle one no longer
+seems to be used. If a new socket/timestamping option enabled all
+three (SW, MAC, PHY) timestamps in the cmsg, I think that would be a
+nice feature.
+
+There are applications that receive both SW and HW timestamps in order
+to fall back to SW when a HW timestamp glitched or is missing. This
+could be extended to three levels with MAC and PHY timestamps.
+
+> That is completely out of scope for this series.
+> 
+> The only practical use case of this series is to switch from PHY back to MAC.
+
+From an admin point of view, it makes sense to me to have an option to
+disable PHY timestamps for the whole device if there are issues with
+it. For debugging and applications, it would be nice to have an option
+to get all of them at the same time.
+
+-- 
+Miroslav Lichvar
+
