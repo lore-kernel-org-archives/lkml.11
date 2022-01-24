@@ -2,76 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAEBC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88565C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843430AbiAXXD7 (ORCPT
+        id S1843357AbiAXXDw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:59 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:46620 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1578136AbiAXWBq (ORCPT
+        Mon, 24 Jan 2022 18:03:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1458035AbiAXVzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:01:46 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id 00A691F438FC
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643061705;
-        bh=NKf8TvwzU0j7IGKB6x0vL0tnEezd/yNb8Y6+kHqjC5k=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jnObaf8yIubXRT8EWRCozHf1frnWUj1CvdgrSl+UVhQ0Fws4oJAJlz9/U24/v2C8z
-         UElVzD64if7lhfUNI4TnEQcimOoyvR7h3qLEWEqbgfmdrLIczdPbkgrBN9zP6Pv/K3
-         1av1cZdI+NN/bjs3ZUbovXOly5dU5eUbWrdXZWuGKobufO0CZLG3/Y/qBAmkugBNyp
-         hfFQG3EDqVrKiASVd/YplS2IHkNYUEO/6BIqRxyKcd+gjXr3DfWLzq1Pvl8uYIRqf9
-         SYPF1gafP9FCfSAnAMAU7bcYNkg93vPSPpxlVF1I+O3BNK8zPqiUAaFJV+G0GB+65C
-         3XjM8TU6ZlWoQ==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Detlev Casanova <detlev.casanova@collabora.com>
-Subject: [PATCH v3 8/9] regulator/rpi-panel-attiny: Use the regmap cache
-Date:   Mon, 24 Jan 2022 17:01:28 -0500
-Message-Id: <20220124220129.158891-9-detlev.casanova@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124220129.158891-1-detlev.casanova@collabora.com>
-References: <20220124220129.158891-1-detlev.casanova@collabora.com>
+        Mon, 24 Jan 2022 16:55:06 -0500
+Received: from mail.itouring.de (mail.itouring.de [IPv6:2a01:4f8:a0:4463::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0E27C07E2A6;
+        Mon, 24 Jan 2022 12:36:43 -0800 (PST)
+Received: from tux.applied-asynchrony.com (p5b07e69a.dip0.t-ipconnect.de [91.7.230.154])
+        by mail.itouring.de (Postfix) with ESMTPSA id 6DE0D103765;
+        Mon, 24 Jan 2022 21:36:39 +0100 (CET)
+Received: from [192.168.100.221] (hho.applied-asynchrony.com [192.168.100.221])
+        by tux.applied-asynchrony.com (Postfix) with ESMTP id 13DC6F0160A;
+        Mon, 24 Jan 2022 21:36:39 +0100 (CET)
+Subject: Re: [PATCH 5.15 000/846] 5.15.17-rc1 review
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>
+References: <20220124184100.867127425@linuxfoundation.org>
+From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+Organization: Applied Asynchrony, Inc.
+Message-ID: <29a0f562-af46-f4d0-182c-09c8d99e0a93@applied-asynchrony.com>
+Date:   Mon, 24 Jan 2022 21:36:39 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+On 2022-01-24 19:31, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.17 release.
 
-The I2C to the Atmel is very fussy, and locks up easily on
-Pi0-3 particularly on reads.
+Oh noes :(
 
-The LCD power status is controlled solely by this driver, so
-rather than reading it back from the Atmel, use the regmap cache
-to avoid reading values.
+   DESCEND bpf/resolve_btfids
+   MKDIR     /tmp/linux-5.15.17/tools/bpf/resolve_btfids//libbpf
+   GEN     /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/bpf_helper_defs.h
+   MKDIR   /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/
+   CC      /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/libbpf.o
+libbpf.c: In function 'bpf_object__elf_collect':
+libbpf.c:3038:31: error: invalid type argument of '->' (have 'GElf_Shdr' {aka 'Elf64_Shdr'})
+  3038 |                         if (sh->sh_type != SHT_PROGBITS)
+       |                               ^~
+libbpf.c:3042:31: error: invalid type argument of '->' (have 'GElf_Shdr' {aka 'Elf64_Shdr'})
+  3042 |                         if (sh->sh_type != SHT_PROGBITS)
+       |                               ^~
+make[4]: *** [/tmp/linux-5.15.17/tools/build/Makefile.build:97: /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/libbpf.o] Error 1
+make[3]: *** [Makefile:158: /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/libbpf-in.o] Error 2
+make[2]: *** [Makefile:44: /tmp/linux-5.15.17/tools/bpf/resolve_btfids//libbpf/libbpf.a] Error 2
+make[1]: *** [Makefile:72: bpf/resolve_btfids] Error 2
+make: *** [Makefile:1371: tools/bpf/resolve_btfids] Error 2
 
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
----
- drivers/regulator/rpi-panel-attiny-regulator.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reverting "libbpf-validate-that-.btf-and-.btf.ext-sections-cont.patcht" aka
+this one:
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index 8090b9a485b5..6e408a4b2c21 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -76,7 +76,7 @@ static const struct regmap_config attiny_regmap_config = {
- 	.val_bits = 8,
- 	.disable_locking = 1,
- 	.max_register = REG_WRITE_DATA_L,
--	.cache_type = REGCACHE_NONE,
-+	.cache_type = REGCACHE_RBTREE,
- };
- 
- static int attiny_set_port_state(struct attiny_lcd *state, int reg, u8 val)
--- 
-2.34.1
+> Andrii Nakryiko <andrii@kernel.org>
+>      libbpf: Validate that .BTF and .BTF.ext sections contain data
 
+makes it build & run fine. I looked for followups but couldn't find anything that
+stood out, maybe the BPF folks (cc'ed) know what's missing/wrong.
+
+cheers
+Holger
