@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C573C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C79BC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379232AbiAXUKo (ORCPT
+        id S1379269AbiAXUK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
+        Mon, 24 Jan 2022 15:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352597AbiAXTw7 (ORCPT
+        with ESMTP id S1357862AbiAXTxF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:59 -0500
+        Mon, 24 Jan 2022 14:53:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B39C061397;
-        Mon, 24 Jan 2022 11:26:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 549C6C0613AD;
+        Mon, 24 Jan 2022 11:26:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA55C61490;
-        Mon, 24 Jan 2022 19:26:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDACC340E5;
-        Mon, 24 Jan 2022 19:26:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E77C261540;
+        Mon, 24 Jan 2022 19:26:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC3CAC339E5;
+        Mon, 24 Jan 2022 19:26:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052392;
-        bh=Jz8l2tb5cXNmDSk3HR4LSQ6/l4bmgntUbC1cSU0TCuI=;
+        s=korg; t=1643052401;
+        bh=gTOwM/AJNlhw90ddlzY29TznZrDBWvCqLnrdpaZbPLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F7+yRoJzMJEmK4n4vmK7TRRqQIhwTC/SWUgnsf5Jn4ulssXU6reuOfa9sK+bkkhbr
-         BTB3QHSQWjUNmroqODQRZseqwLU0bnA7TwvUggNFR18KwJ9SqB3/VKXC7kFBUViMxp
-         EkBB4Es+v08cCJ2ormbE7swVrkdYEoUetJciw7jc=
+        b=S3eE/dmDcBjqnlRuL5n84dzpdETRFksU2dWqyG1utm0aGg+DnN8j9CFAuoEbS0moG
+         1gjlKguPgjXbVcQ0Fk3kgOkG13nNkmsFJsQzW/vgwBCGR1UWWICjyWJiOG5nNzsRhR
+         i4JrqAowEon06cvAKfRoQ/hJ65YJvAKNApCpklFE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: [PATCH 5.4 026/320] iommu/io-pgtable-arm-v7s: Add error handle for page table allocation failure
-Date:   Mon, 24 Jan 2022 19:40:10 +0100
-Message-Id: <20220124183954.649197168@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 046/320] arm64: dts: meson-gxbb-wetek: fix HDMI in early boot
+Date:   Mon, 24 Jan 2022 19:40:30 +0100
+Message-Id: <20220124183955.313991239@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,49 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yunfei Wang <yf.wang@mediatek.com>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-commit a556cfe4cabc6d79cbb7733f118bbb420b376fe6 upstream.
+[ Upstream commit 8182a35868db5f053111d5d9d4da8fcb3f99259d ]
 
-In __arm_v7s_alloc_table function:
-iommu call kmem_cache_alloc to allocate page table, this function
-allocate memory may fail, when kmem_cache_alloc fails to allocate
-table, call virt_to_phys will be abnomal and return unexpected phys
-and goto out_free, then call kmem_cache_free to release table will
-trigger KE, __get_free_pages and free_pages have similar problem,
-so add error handle for page table allocation failure.
+Mark the VDDIO_AO18 regulator always-on and set hdmi-supply for the hdmi_tx
+node to ensure HDMI is powered in the early stages of boot.
 
-Fixes: 29859aeb8a6e ("iommu/io-pgtable-arm-v7s: Abort allocation when table address overflows the PTE")
-Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
-Cc: <stable@vger.kernel.org> # 5.10.*
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/20211207113315.29109-1-yf.wang@mediatek.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: fb72c03e0e32 ("ARM64: dts: meson-gxbb-wetek: add a wetek specific dtsi to cleanup hub and play2")
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211012052522.30873-2-christianshewitt@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/io-pgtable-arm-v7s.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/iommu/io-pgtable-arm-v7s.c
-+++ b/drivers/iommu/io-pgtable-arm-v7s.c
-@@ -244,13 +244,17 @@ static void *__arm_v7s_alloc_table(int l
- 			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
- 	else if (lvl == 2)
- 		table = kmem_cache_zalloc(data->l2_tables, gfp);
-+
-+	if (!table)
-+		return NULL;
-+
- 	phys = virt_to_phys(table);
- 	if (phys != (arm_v7s_iopte)phys) {
- 		/* Doesn't fit in PTE */
- 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
- 		goto out_free;
- 	}
--	if (table && !cfg->coherent_walk) {
-+	if (!cfg->coherent_walk) {
- 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
- 		if (dma_mapping_error(dev, dma))
- 			goto out_free;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
+index e3d17569d98ad..d7d0b65713841 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
+@@ -64,6 +64,7 @@
+ 		regulator-name = "VDDIO_AO18";
+ 		regulator-min-microvolt = <1800000>;
+ 		regulator-max-microvolt = <1800000>;
++		regulator-always-on;
+ 	};
+ 
+ 	vcc_3v3: regulator-vcc_3v3 {
+@@ -157,6 +158,7 @@
+ 	status = "okay";
+ 	pinctrl-0 = <&hdmi_hpd_pins>, <&hdmi_i2c_pins>;
+ 	pinctrl-names = "default";
++	hdmi-supply = <&vddio_ao18>;
+ };
+ 
+ &hdmi_tx_tmds_port {
+-- 
+2.34.1
+
 
 
