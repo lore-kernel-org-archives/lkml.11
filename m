@@ -2,171 +2,277 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE6CCC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86812C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839644AbiAXWvf (ORCPT
+        id S1839983AbiAXWwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:51:35 -0500
-Received: from msg-1.mailo.com ([213.182.54.11]:59460 "EHLO msg-1.mailo.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1353398AbiAXVoA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:00 -0500
-X-Greylist: delayed 1031 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jan 2022 16:43:50 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mailoo.org; s=mailo;
-        t=1643060024; bh=m7W6RdZpIgs59F0laXJf0Oc8HLBV9e38nx+omeEnpBg=;
-        h=X-EA-Auth:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding;
-        b=OzAzqfJYpLMRYrXSCI8edvfcm7O0ilHpX70hiYQxP0mt0Gump9QTdJbovdjodQT6X
-         Dkx1fRmcaZwS/nbIP5N5qm3miXGAWDYdhAK3nUREmLzcRJO2y+Wi4itM1EFcyZGrrj
-         3PtjsiDzA0dIPlU5+mDic0RYakLo41oFpCobWbik=
-Received: by b-1.in.mailobj.net [192.168.90.11] with ESMTP
-        via proxy.mailoo.org [213.182.55.207]
-        Mon, 24 Jan 2022 22:33:44 +0100 (CET)
-X-EA-Auth: EDqcBVgmuuR4MXWZLtn2hvWfmbbVYs19RD5uzKiPRG+2hbUcqx6KPCfOoHHAaYCNQ9ioZBlwWIZhC+Ikpahewb7f5X0B5JkOMi0X/DNwwbo=
-From:   Vincent Knecht <vincent.knecht@mailoo.org>
-To:     dmitry.torokhov@gmail.com, stephan@gerhold.net
-Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, phone-devel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Vincent Knecht <vincent.knecht@mailoo.org>
-Subject: [PATCH v2 5/5] Input: msg2638 - Add support for msg2138 key events
-Date:   Mon, 24 Jan 2022 22:33:37 +0100
-Message-Id: <20220124213337.756051-1-vincent.knecht@mailoo.org>
+        Mon, 24 Jan 2022 17:52:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56584 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1458146AbiAXVmr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 16:42:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430DBC07A957;
+        Mon, 24 Jan 2022 12:31:08 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01544B8123F;
+        Mon, 24 Jan 2022 20:31:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A116C340E5;
+        Mon, 24 Jan 2022 20:31:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056265;
+        bh=dMH0TrLfYPk5E/hAHhxg0Py6sv4hdcdjMM7UmDRYzEg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=N9Fw7VBJwNZzV5Wc6J58Ss+FxhZshRA5GaTAPi7kEYQtllG6mWY+I9n9chxrqwJmR
+         r6YgCPrAgYsMuImtMdnMBLKufCt1PH++lKWlT47QBEBfvrj0XzO26PgKxGdgc9zmS5
+         vG5l41XeljZbQYqGHoDtmWqulrlEtlPDLktj5SbY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Martijn Coenen <maco@android.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Todd Kjos <tkjos@google.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 399/846] binder: avoid potential data leakage when copying txn
+Date:   Mon, 24 Jan 2022 19:38:36 +0100
+Message-Id: <20220124184114.718027021@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124212611.752603-1-vincent.knecht@mailoo.org>
-References: <20220124212611.752603-1-vincent.knecht@mailoo.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some devices with msg2138 have back/menu/home keys.
-Add support for them.
+From: Todd Kjos <tkjos@google.com>
 
-Signed-off-by: Vincent Knecht <vincent.knecht@mailoo.org>
----
-v2:
-- no change
----
- drivers/input/touchscreen/msg2638.c | 53 +++++++++++++++++++++++++----
- 1 file changed, 47 insertions(+), 6 deletions(-)
+[ Upstream commit 6d98eb95b450a75adb4516a1d33652dc78d2b20c ]
 
-diff --git a/drivers/input/touchscreen/msg2638.c b/drivers/input/touchscreen/msg2638.c
-index 73e1b4d550fb..36069b30ab9b 100644
---- a/drivers/input/touchscreen/msg2638.c
-+++ b/drivers/input/touchscreen/msg2638.c
-@@ -29,6 +29,8 @@
- #define MSG2138_MAX_FINGERS		2
- #define MSG2638_MAX_FINGERS		5
+Transactions are copied from the sender to the target
+first and objects like BINDER_TYPE_PTR and BINDER_TYPE_FDA
+are then fixed up. This means there is a short period where
+the sender's version of these objects are visible to the
+target prior to the fixups.
+
+Instead of copying all of the data first, copy data only
+after any needed fixups have been applied.
+
+Fixes: 457b9a6f09f0 ("Staging: android: add binder driver")
+Reviewed-by: Martijn Coenen <maco@android.com>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Todd Kjos <tkjos@google.com>
+Link: https://lore.kernel.org/r/20211130185152.437403-3-tkjos@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/android/binder.c | 94 ++++++++++++++++++++++++++++++----------
+ 1 file changed, 70 insertions(+), 24 deletions(-)
+
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index 7d29d3d931a79..99ae919255f4d 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -1608,15 +1608,21 @@ static void binder_cleanup_transaction(struct binder_transaction *t,
+ /**
+  * binder_get_object() - gets object and checks for valid metadata
+  * @proc:	binder_proc owning the buffer
++ * @u:		sender's user pointer to base of buffer
+  * @buffer:	binder_buffer that we're parsing.
+  * @offset:	offset in the @buffer at which to validate an object.
+  * @object:	struct binder_object to read into
+  *
+- * Return:	If there's a valid metadata object at @offset in @buffer, the
++ * Copy the binder object at the given offset into @object. If @u is
++ * provided then the copy is from the sender's buffer. If not, then
++ * it is copied from the target's @buffer.
++ *
++ * Return:	If there's a valid metadata object at @offset, the
+  *		size of that object. Otherwise, it returns zero. The object
+  *		is read into the struct binder_object pointed to by @object.
+  */
+ static size_t binder_get_object(struct binder_proc *proc,
++				const void __user *u,
+ 				struct binder_buffer *buffer,
+ 				unsigned long offset,
+ 				struct binder_object *object)
+@@ -1626,10 +1632,16 @@ static size_t binder_get_object(struct binder_proc *proc,
+ 	size_t object_size = 0;
  
-+#define MAX_BUTTONS			4
-+
- #define CHIP_ON_DELAY_MS		15
- #define FIRMWARE_ON_DELAY_MS		50
- #define RESET_DELAY_MIN_US		10000
-@@ -72,6 +74,8 @@ struct msg2638_ts_data {
- 	struct regulator_bulk_data supplies[2];
- 	struct gpio_desc *reset_gpiod;
- 	int max_fingers;
-+	u32 keycodes[MAX_BUTTONS];
-+	int num_keycodes;
- };
- 
- static u8 msg2638_checksum(u8 *data, u32 length)
-@@ -85,6 +89,19 @@ static u8 msg2638_checksum(u8 *data, u32 length)
- 	return (u8)((-sum) & 0xFF);
- }
- 
-+static void msg2138_report_keys(struct msg2638_ts_data *msg2638, u8 keys)
-+{
-+	int i;
-+
-+	/* keys can be 0x00 or 0xff when all keys have been released */
-+	if (keys == 0xff)
-+		keys = 0;
-+
-+	for (i = 0; i < msg2638->num_keycodes; ++i)
-+		input_report_key(msg2638->input_dev, msg2638->keycodes[i],
-+				 !!(keys & BIT(i)));
-+}
-+
- static irqreturn_t msg2138_ts_irq_handler(int irq, void *msg2638_handler)
- {
- 	struct msg2638_ts_data *msg2638 = msg2638_handler;
-@@ -121,9 +138,12 @@ static irqreturn_t msg2138_ts_irq_handler(int irq, void *msg2638_handler)
- 	p0 = &touch_event.pkt[0];
- 	p1 = &touch_event.pkt[1];
- 
--	/* Ignore non-pressed finger data */
--	if (p0->xy_hi == 0xFF && p0->x_low == 0xFF && p0->y_low == 0xFF)
-+	/* Ignore non-pressed finger data, but check for key code */
-+	if (p0->xy_hi == 0xFF && p0->x_low == 0xFF && p0->y_low == 0xFF) {
-+		if (p1->xy_hi == 0xFF && p1->y_low == 0xFF)
-+			msg2138_report_keys(msg2638, p1->x_low);
- 		goto report;
+ 	read_size = min_t(size_t, sizeof(*object), buffer->data_size - offset);
+-	if (offset > buffer->data_size || read_size < sizeof(*hdr) ||
+-	    binder_alloc_copy_from_buffer(&proc->alloc, object, buffer,
+-					  offset, read_size))
++	if (offset > buffer->data_size || read_size < sizeof(*hdr))
+ 		return 0;
++	if (u) {
++		if (copy_from_user(object, u + offset, read_size))
++			return 0;
++	} else {
++		if (binder_alloc_copy_from_buffer(&proc->alloc, object, buffer,
++						  offset, read_size))
++			return 0;
 +	}
  
- 	x = (((p0->xy_hi & 0xF0) << 4) | p0->x_low);
- 	y = (((p0->xy_hi & 0x0F) << 8) | p0->y_low);
-@@ -283,6 +303,7 @@ static int msg2638_init_input_dev(struct msg2638_ts_data *msg2638)
- 	struct device *dev = &msg2638->client->dev;
- 	struct input_dev *input_dev;
- 	int error;
-+	int i;
+ 	/* Ok, now see if we read a complete object. */
+ 	hdr = &object->hdr;
+@@ -1702,7 +1714,7 @@ static struct binder_buffer_object *binder_validate_ptr(
+ 					  b, buffer_offset,
+ 					  sizeof(object_offset)))
+ 		return NULL;
+-	object_size = binder_get_object(proc, b, object_offset, object);
++	object_size = binder_get_object(proc, NULL, b, object_offset, object);
+ 	if (!object_size || object->hdr.type != BINDER_TYPE_PTR)
+ 		return NULL;
+ 	if (object_offsetp)
+@@ -1767,7 +1779,8 @@ static bool binder_validate_fixup(struct binder_proc *proc,
+ 		unsigned long buffer_offset;
+ 		struct binder_object last_object;
+ 		struct binder_buffer_object *last_bbo;
+-		size_t object_size = binder_get_object(proc, b, last_obj_offset,
++		size_t object_size = binder_get_object(proc, NULL, b,
++						       last_obj_offset,
+ 						       &last_object);
+ 		if (object_size != sizeof(*last_bbo))
+ 			return false;
+@@ -1882,7 +1895,7 @@ static void binder_transaction_buffer_release(struct binder_proc *proc,
+ 		if (!binder_alloc_copy_from_buffer(&proc->alloc, &object_offset,
+ 						   buffer, buffer_offset,
+ 						   sizeof(object_offset)))
+-			object_size = binder_get_object(proc, buffer,
++			object_size = binder_get_object(proc, NULL, buffer,
+ 							object_offset, &object);
+ 		if (object_size == 0) {
+ 			pr_err("transaction release %d bad object at offset %lld, size %zd\n",
+@@ -2455,6 +2468,7 @@ static void binder_transaction(struct binder_proc *proc,
+ 	binder_size_t off_start_offset, off_end_offset;
+ 	binder_size_t off_min;
+ 	binder_size_t sg_buf_offset, sg_buf_end_offset;
++	binder_size_t user_offset = 0;
+ 	struct binder_proc *target_proc = NULL;
+ 	struct binder_thread *target_thread = NULL;
+ 	struct binder_node *target_node = NULL;
+@@ -2469,6 +2483,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 	int t_debug_id = atomic_inc_return(&binder_last_id);
+ 	char *secctx = NULL;
+ 	u32 secctx_sz = 0;
++	const void __user *user_buffer = (const void __user *)
++				(uintptr_t)tr->data.ptr.buffer;
  
- 	input_dev = devm_input_allocate_device(dev);
- 	if (!input_dev) {
-@@ -299,6 +320,14 @@ static int msg2638_init_input_dev(struct msg2638_ts_data *msg2638)
- 	input_dev->open = msg2638_input_open;
- 	input_dev->close = msg2638_input_close;
+ 	e = binder_transaction_log_add(&binder_transaction_log);
+ 	e->debug_id = t_debug_id;
+@@ -2780,19 +2796,6 @@ static void binder_transaction(struct binder_proc *proc,
+ 	t->buffer->clear_on_free = !!(t->flags & TF_CLEAR_BUF);
+ 	trace_binder_transaction_alloc_buf(t->buffer);
  
-+	if (msg2638->num_keycodes) {
-+		input_dev->keycode = msg2638->keycodes;
-+		input_dev->keycodemax = msg2638->num_keycodes;
-+		input_dev->keycodesize = sizeof(msg2638->keycodes[0]);
-+		for (i = 0; i < msg2638->num_keycodes; i++)
-+			input_set_capability(input_dev, EV_KEY, msg2638->keycodes[i]);
-+	}
+-	if (binder_alloc_copy_user_to_buffer(
+-				&target_proc->alloc,
+-				t->buffer, 0,
+-				(const void __user *)
+-					(uintptr_t)tr->data.ptr.buffer,
+-				tr->data_size)) {
+-		binder_user_error("%d:%d got transaction with invalid data ptr\n",
+-				proc->pid, thread->pid);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -EFAULT;
+-		return_error_line = __LINE__;
+-		goto err_copy_data_failed;
+-	}
+ 	if (binder_alloc_copy_user_to_buffer(
+ 				&target_proc->alloc,
+ 				t->buffer,
+@@ -2837,6 +2840,7 @@ static void binder_transaction(struct binder_proc *proc,
+ 		size_t object_size;
+ 		struct binder_object object;
+ 		binder_size_t object_offset;
++		binder_size_t copy_size;
+ 
+ 		if (binder_alloc_copy_from_buffer(&target_proc->alloc,
+ 						  &object_offset,
+@@ -2848,8 +2852,27 @@ static void binder_transaction(struct binder_proc *proc,
+ 			return_error_line = __LINE__;
+ 			goto err_bad_offset;
+ 		}
+-		object_size = binder_get_object(target_proc, t->buffer,
+-						object_offset, &object);
 +
- 	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_X);
- 	input_set_capability(input_dev, EV_ABS, ABS_MT_POSITION_Y);
++		/*
++		 * Copy the source user buffer up to the next object
++		 * that will be processed.
++		 */
++		copy_size = object_offset - user_offset;
++		if (copy_size && (user_offset > object_offset ||
++				binder_alloc_copy_user_to_buffer(
++					&target_proc->alloc,
++					t->buffer, user_offset,
++					user_buffer + user_offset,
++					copy_size))) {
++			binder_user_error("%d:%d got transaction with invalid data ptr\n",
++					proc->pid, thread->pid);
++			return_error = BR_FAILED_REPLY;
++			return_error_param = -EFAULT;
++			return_error_line = __LINE__;
++			goto err_copy_data_failed;
++		}
++		object_size = binder_get_object(target_proc, user_buffer,
++				t->buffer, object_offset, &object);
+ 		if (object_size == 0 || object_offset < off_min) {
+ 			binder_user_error("%d:%d got transaction with invalid offset (%lld, min %lld max %lld) or object.\n",
+ 					  proc->pid, thread->pid,
+@@ -2861,6 +2884,11 @@ static void binder_transaction(struct binder_proc *proc,
+ 			return_error_line = __LINE__;
+ 			goto err_bad_offset;
+ 		}
++		/*
++		 * Set offset to the next buffer fragment to be
++		 * copied
++		 */
++		user_offset = object_offset + object_size;
  
-@@ -367,10 +396,16 @@ static int msg2638_ts_probe(struct i2c_client *client)
- 		return error;
+ 		hdr = &object.hdr;
+ 		off_min = object_offset + object_size;
+@@ -2956,9 +2984,14 @@ static void binder_transaction(struct binder_proc *proc,
+ 			}
+ 			ret = binder_translate_fd_array(fda, parent, t, thread,
+ 							in_reply_to);
+-			if (ret < 0) {
++			if (!ret)
++				ret = binder_alloc_copy_to_buffer(&target_proc->alloc,
++								  t->buffer,
++								  object_offset,
++								  fda, sizeof(*fda));
++			if (ret) {
+ 				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
++				return_error_param = ret > 0 ? -EINVAL : ret;
+ 				return_error_line = __LINE__;
+ 				goto err_translate_failed;
+ 			}
+@@ -3028,6 +3061,19 @@ static void binder_transaction(struct binder_proc *proc,
+ 			goto err_bad_object_type;
+ 		}
  	}
- 
--	error = msg2638_init_input_dev(msg2638);
--	if (error) {
--		dev_err(dev, "Failed to initialize input device: %d\n", error);
--		return error;
-+	msg2638->num_keycodes =
-+		of_property_read_variable_u32_array(dev->of_node, "linux,keycodes",
-+						    msg2638->keycodes, 0,
-+						    ARRAY_SIZE(msg2638->keycodes));
-+	if (msg2638->num_keycodes == -EINVAL) {
-+		msg2638->num_keycodes = 0;
-+	} else if (msg2638->num_keycodes < 0) {
-+		dev_err(dev, "Unable to parse linux,keycodes property: %d\n",
-+			msg2638->num_keycodes);
-+		return msg2638->num_keycodes;
- 	}
- 
- 	error = devm_request_threaded_irq(dev, client->irq,
-@@ -382,6 +417,12 @@ static int msg2638_ts_probe(struct i2c_client *client)
- 		return error;
- 	}
- 
-+	error = msg2638_init_input_dev(msg2638);
-+	if (error) {
-+		dev_err(dev, "Failed to initialize input device: %d\n", error);
-+		return error;
++	/* Done processing objects, copy the rest of the buffer */
++	if (binder_alloc_copy_user_to_buffer(
++				&target_proc->alloc,
++				t->buffer, user_offset,
++				user_buffer + user_offset,
++				tr->data_size - user_offset)) {
++		binder_user_error("%d:%d got transaction with invalid data ptr\n",
++				proc->pid, thread->pid);
++		return_error = BR_FAILED_REPLY;
++		return_error_param = -EFAULT;
++		return_error_line = __LINE__;
++		goto err_copy_data_failed;
 +	}
-+
- 	return 0;
- }
- 
+ 	if (t->buffer->oneway_spam_suspect)
+ 		tcomplete->type = BINDER_WORK_TRANSACTION_ONEWAY_SPAM_SUSPECT;
+ 	else
 -- 
 2.34.1
 
