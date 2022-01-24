@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59C27C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27164C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842427AbiAXXBv (ORCPT
+        id S1843059AbiAXXDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:01:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
+        Mon, 24 Jan 2022 18:03:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458122AbiAXVzI (ORCPT
+        with ESMTP id S1577015AbiAXV5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:08 -0500
+        Mon, 24 Jan 2022 16:57:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0D6DC07E2AB;
-        Mon, 24 Jan 2022 12:37:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86AA8C09427B;
+        Mon, 24 Jan 2022 12:38:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E1C06154F;
-        Mon, 24 Jan 2022 20:37:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2365FC340E5;
-        Mon, 24 Jan 2022 20:37:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25A53614FF;
+        Mon, 24 Jan 2022 20:38:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2EE7C340E5;
+        Mon, 24 Jan 2022 20:38:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056643;
-        bh=zDM+ojreXxp6aysR43uWqt69LDkwRD5ECLE0praKzMQ=;
+        s=korg; t=1643056724;
+        bh=iIcfM+H8IGt2OdfW65l2nBT0+BJsI2zRIUQJ8nSCAbE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QQReqEVIQ1GNqm/syZ7oP2IVr8OPeYuM6idgZ8cfhbqnppsU9e/j99Zk/WTNVNMua
-         jW97WUPmOYBVgyMaAqzsCuXFB7eF0AfiTqbAyH/2SIiOG3wIZjv1tDQdIn3NQP346o
-         b6Kyt+dmZ8eJgH5M08WVFE58s0LL4yNjl/EDP9cA=
+        b=zgOLe2pEhdljyz87KUcXx56cKft5TzYR0hYwHGEtrK/ynOUt5QrX1I4rVaMmxGQHE
+         S338iMBfwjqNDiUukzmbe7Q2WWCsVb14zC8MSQKZWeMWL3Og01XCDC2PTHhMv0UiaQ
+         tnDx9idniwHTUczUmvyfZnr5Zwywiv9I9+D1OxWo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mikhail Rudenko <mike.rudenko@gmail.com>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Suresh Kumar <suresh2514@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 553/846] media: rockchip: rkisp1: use device name for debugfs subdir name
-Date:   Mon, 24 Jan 2022 19:41:10 +0100
-Message-Id: <20220124184120.106923829@linuxfoundation.org>
+Subject: [PATCH 5.15 546/846] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
+Date:   Mon, 24 Jan 2022 19:41:03 +0100
+Message-Id: <20220124184119.858064545@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,42 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mikhail Rudenko <mike.rudenko@gmail.com>
+From: Suresh Kumar <surkumar@redhat.com>
 
-[ Upstream commit c2611e479f5d9b05108270e1ab423955486b4457 ]
+[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
 
-While testing Rockchip RK3399 with both ISPs enabled, a dmesg error
-was observed:
-```
-[   15.559141] debugfs: Directory 'rkisp1' with parent '/' already present!
-```
+Currently "bond_should_notify_peers: slave ..." messages are printed whenever
+"bond_should_notify_peers" function is called.
 
-Fix it by using the device name for the debugfs subdirectory name
-instead of the driver name, thus preventing name collision.
++++
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+...
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
++++
 
-Link: https://lore.kernel.org/linux-media/20211010175457.438627-1-mike.rudenko@gmail.com
-Signed-off-by: Mikhail Rudenko <mike.rudenko@gmail.com>
-Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+This is confusing and can also clutter up debug logs.
+Print logs only when the peer notification happens.
+
+Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/bonding/bond_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c b/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c
-index 7474150b94ed3..560f928c37520 100644
---- a/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c
-+++ b/drivers/media/platform/rockchip/rkisp1/rkisp1-dev.c
-@@ -426,7 +426,7 @@ static void rkisp1_debug_init(struct rkisp1_device *rkisp1)
- {
- 	struct rkisp1_debug *debug = &rkisp1->debug;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 77dc79a7f5748..d779fed900ffa 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1096,9 +1096,6 @@ static bool bond_should_notify_peers(struct bonding *bond)
+ 	slave = rcu_dereference(bond->curr_active_slave);
+ 	rcu_read_unlock();
  
--	debug->debugfs_dir = debugfs_create_dir(RKISP1_DRIVER_NAME, NULL);
-+	debug->debugfs_dir = debugfs_create_dir(dev_name(rkisp1->dev), NULL);
- 	debugfs_create_ulong("data_loss", 0444, debug->debugfs_dir,
- 			     &debug->data_loss);
- 	debugfs_create_ulong("outform_size_err", 0444,  debug->debugfs_dir,
+-	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
+-		   slave ? slave->dev->name : "NULL");
+-
+ 	if (!slave || !bond->send_peer_notif ||
+ 	    bond->send_peer_notif %
+ 	    max(1, bond->params.peer_notif_delay) != 0 ||
+@@ -1106,6 +1103,9 @@ static bool bond_should_notify_peers(struct bonding *bond)
+ 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
+ 		return false;
+ 
++	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
++		   slave ? slave->dev->name : "NULL");
++
+ 	return true;
+ }
+ 
 -- 
 2.34.1
 
