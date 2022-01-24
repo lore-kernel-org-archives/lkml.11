@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E381FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:43:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729ACC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:43:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837224AbiAXWnP (ORCPT
+        id S1380376AbiAXWnc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:43:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55274 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456529AbiAXVj3 (ORCPT
+        Mon, 24 Jan 2022 17:43:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58172 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456656AbiAXVjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74889C0613A2;
-        Mon, 24 Jan 2022 12:24:34 -0800 (PST)
+        Mon, 24 Jan 2022 16:39:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB06BB811F9;
-        Mon, 24 Jan 2022 20:24:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F452C340E5;
-        Mon, 24 Jan 2022 20:24:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C57F961320;
+        Mon, 24 Jan 2022 21:39:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C0D1C340E4;
+        Mon, 24 Jan 2022 21:39:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055871;
-        bh=WXG9DE4l41tkq1K1dZtis6c/+68uvRHriGktdbzlswM=;
+        s=korg; t=1643060382;
+        bh=+BDUmWzDpbNKA6uaUxFGDtNlu/yX6lufH5trVT1hoQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xnC70p8SzntVtehnCq3SxWPWmdNRlk+7TaFV9/NqYrn/X2URjQVZwvm7vUcJ42P7o
-         tIeWhjHTUiRL160rMSl4qQrTSpCY0m4Lz1E16dZFJwaBsJ3cgEJEVcvhDGrZKlaV/3
-         kyMbGFI1jYChKAJYzbtNku1G3ykZ7tZ3kXhM0UV0=
+        b=hZdl742s60GrL+W/FNMoCM0YsskyQimzX1d/RkPOy4SFCInSEj/fYZW/Hp0wrDtHC
+         l1SLUnQtZw2j35YBLX1JK6KyPNfQTez7TqivhdV23rogdz8yoOKmjzpsnqtpuYblLE
+         JKCITLp2pxtScglynkYt/yxH/uJpDMc2yVz2G7bE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 260/846] xfrm: state and policy should fail if XFRMA_IF_ID 0
-Date:   Mon, 24 Jan 2022 19:36:17 +0100
-Message-Id: <20220124184109.892793038@linuxfoundation.org>
+        stable@vger.kernel.org, Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.16 0929/1039] powerpc/cell: Fix clang -Wimplicit-fallthrough warning
+Date:   Mon, 24 Jan 2022 19:45:18 +0100
+Message-Id: <20220124184156.519856258@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,84 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-[ Upstream commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 ]
+commit e89257e28e844f5d1d39081bb901d9f1183a7705 upstream.
 
-xfrm ineterface does not allow xfrm if_id = 0
-fail to create or update xfrm state and policy.
+Clang warns:
 
-With this commit:
- ip xfrm policy add src 192.0.2.1 dst 192.0.2.2 dir out if_id 0
- RTNETLINK answers: Invalid argument
+arch/powerpc/platforms/cell/pervasive.c:81:2: error: unannotated fall-through between switch labels
+        case SRR1_WAKEEE:
+        ^
+arch/powerpc/platforms/cell/pervasive.c:81:2: note: insert 'break;' to avoid fall-through
+        case SRR1_WAKEEE:
+        ^
+        break;
+1 error generated.
 
- ip xfrm state add src 192.0.2.1 dst 192.0.2.2 proto esp spi 1 \
-            reqid 1 mode tunnel aead 'rfc4106(gcm(aes))' \
-            0x1111111111111111111111111111111111111111 96 if_id 0
- RTNETLINK answers: Invalid argument
+Clang is more pedantic than GCC, which does not warn when failing
+through to a case that is just break or return. Clang's version is more
+in line with the kernel's own stance in deprecated.rst. Add athe missing
+break to silence the warning.
 
-v1->v2 change:
- - add Fixes: tag
-
-Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6e83985b0f6e ("powerpc/cbe: Do not process external or decremeter interrupts from sreset")
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211207110228.698956-1-anders.roxell@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xfrm/xfrm_user.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/cell/pervasive.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 11574314de09f..5ad7530f65457 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -621,8 +621,13 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
- 
- 	xfrm_smark_init(attrs, &x->props.smark);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!x->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
- 	if (err)
-@@ -1413,8 +1418,13 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	mark = xfrm_mark_get(attrs, &m);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!if_id) {
-+			err = -EINVAL;
-+			goto out_noput;
-+		}
-+	}
- 
- 	if (p->info.seq) {
- 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-@@ -1727,8 +1737,13 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
- 
- 	xfrm_mark_get(attrs, &xp->mark);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!xp->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	return xp;
-  error:
--- 
-2.34.1
-
+--- a/arch/powerpc/platforms/cell/pervasive.c
++++ b/arch/powerpc/platforms/cell/pervasive.c
+@@ -78,6 +78,7 @@ static int cbe_system_reset_exception(st
+ 	switch (regs->msr & SRR1_WAKEMASK) {
+ 	case SRR1_WAKEDEC:
+ 		set_dec(1);
++		break;
+ 	case SRR1_WAKEEE:
+ 		/*
+ 		 * Handle these when interrupts get re-enabled and we take
 
 
