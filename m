@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97867C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A051C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348596AbiAXTi2 (ORCPT
+        id S1349718AbiAXThn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:38:28 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60426 "EHLO
+        Mon, 24 Jan 2022 14:37:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59702 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348935AbiAXTdD (ORCPT
+        with ESMTP id S1345179AbiAXTcU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:33:03 -0500
+        Mon, 24 Jan 2022 14:32:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A518161451;
-        Mon, 24 Jan 2022 19:33:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E108C340E5;
-        Mon, 24 Jan 2022 19:33:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 34B69614A8;
+        Mon, 24 Jan 2022 19:32:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AC78C340E7;
+        Mon, 24 Jan 2022 19:32:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052782;
-        bh=cMWfF3LQ/nrwIEZTaE5UU7LojT9m35M4Ai0G8V+NHt4=;
+        s=korg; t=1643052738;
+        bh=k/Lz/Zo8RSedFrd/Cb57u0V3RMctMpavMVRb8b8/edc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SdaUOSQ7VQfVohEfrxv5FeuhnZvRfJhbrJhUKSsYT71jLCGU/NwQX9zm3jUxoiQGK
-         5HotdXB1Xb7r37V1GQYBj1ESwyi7Ck/Nv7cSwIHLf2W0MG5xAyKq/BMcUMbRZPaKNM
-         39JkpgyGB5XobdKPSnkEjIxZQVTWAEYUZjz9YCeA=
+        b=o+vFfqqBTfdJYK6XzOvdlqAYQFiNPXJx9Un/9tEIbhSbqOlDJOCFlUKGR/rsczmpP
+         eU3xqZ9ugLwIMDI4JmRNom5kU0lvxtDnFd3HbkmXDSA24ghS0AaiKfZimr7FNMW3nU
+         rZii2Ejine6TlSGPT8P8OiLEUlrnplIKqGdhc4o4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 139/320] RDMA/cma: Let cma_resolve_ib_dev() continue search even after empty entry
-Date:   Mon, 24 Jan 2022 19:42:03 +0100
-Message-Id: <20220124183958.379115860@linuxfoundation.org>
+Subject: [PATCH 5.4 158/320] ARM: shmobile: rcar-gen2: Add missing of_node_put()
+Date:   Mon, 24 Jan 2022 19:42:22 +0100
+Message-Id: <20220124183959.009971247@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,63 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avihai Horon <avihaih@nvidia.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-[ Upstream commit 20679094a0161c94faf77e373fa3f7428a8e14bd ]
+[ Upstream commit 85744f2d938c5f3cfc44cb6533c157469634da93 ]
 
-Currently, when cma_resolve_ib_dev() searches for a matching GID it will
-stop searching after encountering the first empty GID table entry. This
-behavior is wrong since neither IB nor RoCE spec enforce tightly packed
-GID tables.
+Fix following coccicheck warning:
+./arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c:156:1-33: Function
+for_each_matching_node_and_match should have of_node_put() before break
+and goto.
 
-For example, when the matching valid GID entry exists at index N, and if a
-GID entry is empty at index N-1, cma_resolve_ib_dev() will fail to find
-the matching valid entry.
+Early exits from for_each_matching_node_and_match() should decrement the
+node reference counter.
 
-Fix it by making cma_resolve_ib_dev() continue searching even after
-encountering missing entries.
-
-Fixes: f17df3b0dede ("RDMA/cma: Add support for AF_IB to rdma_resolve_addr()")
-Link: https://lore.kernel.org/r/b7346307e3bb396c43d67d924348c6c496493991.1639055490.git.leonro@nvidia.com
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Mark Zhang <markzhang@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Link: https://lore.kernel.org/r/20211018014503.7598-1-wanjiabing@vivo.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/cma.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index ec9e9598894f6..5e2b688e36fca 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -820,6 +820,7 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
- 	u16 pkey, index;
- 	u8 p;
- 	enum ib_port_state port_state;
-+	int ret;
- 	int i;
+diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+index ee949255ced3f..09ef73b99dd86 100644
+--- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
++++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+@@ -154,8 +154,10 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		return -ENODEV;
  
- 	cma_dev = NULL;
-@@ -838,9 +839,14 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
+ 	for_each_matching_node_and_match(np, rcar_gen2_quirk_match, &id) {
+-		if (!of_device_is_available(np))
++		if (!of_device_is_available(np)) {
++			of_node_put(np);
+ 			break;
++		}
  
- 			if (ib_get_cached_port_state(cur_dev->device, p, &port_state))
- 				continue;
--			for (i = 0; !rdma_query_gid(cur_dev->device,
--						    p, i, &gid);
--			     i++) {
-+
-+			for (i = 0; i < cur_dev->device->port_data[p].immutable.gid_tbl_len;
-+			     ++i) {
-+				ret = rdma_query_gid(cur_dev->device, p, i,
-+						     &gid);
-+				if (ret)
-+					continue;
-+
- 				if (!memcmp(&gid, dgid, sizeof(gid))) {
- 					cma_dev = cur_dev;
- 					sgid = gid;
+ 		ret = of_property_read_u32(np, "reg", &addr);
+ 		if (ret)	/* Skip invalid entry and continue */
+@@ -164,6 +166,7 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		quirk = kzalloc(sizeof(*quirk), GFP_KERNEL);
+ 		if (!quirk) {
+ 			ret = -ENOMEM;
++			of_node_put(np);
+ 			goto err_mem;
+ 		}
+ 
 -- 
 2.34.1
 
