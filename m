@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B54C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68264C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848444AbiAXXWb (ORCPT
+        id S1848584AbiAXXWt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:22:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        Mon, 24 Jan 2022 18:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584586AbiAXWV3 (ORCPT
+        with ESMTP id S1587812AbiAXW3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C055C0424E1;
-        Mon, 24 Jan 2022 12:51:31 -0800 (PST)
+        Mon, 24 Jan 2022 17:29:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B41C02B866;
+        Mon, 24 Jan 2022 12:55:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EEE46B810A8;
-        Mon, 24 Jan 2022 20:51:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3229BC340E5;
-        Mon, 24 Jan 2022 20:51:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 930B8611DA;
+        Mon, 24 Jan 2022 20:55:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3CEC340E5;
+        Mon, 24 Jan 2022 20:55:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057488;
-        bh=z/kUukaJylcFxGt8AABs3R9KeYEcCOvB/8aKXDK3HDc=;
+        s=korg; t=1643057725;
+        bh=kL6LzLw+oTORP83YCmczMg/dp0X5Xod6kpxH5jq3mtE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5cTEvsFfq8wOcSAg6np3DTq/DnPrp4rx437sJo8FGYiQo46leUO3hPZdKgKn8m0J
-         e0O8TB/OHTeEyK1S2DEQFi+jmqcJ3ufaDPtgklGoBgQB4fz9JVipxspbEHD/L+uxFZ
-         sdR7EP6EwZkUGEE/sKKDtanYlx1i579mFQDsIrcs=
+        b=2rYuaOLyKO+bGs0hx1ICPgsWOdtQoSHwLBfY6wJXQhJt30Rwm1PS6nu8Txm1y+Pku
+         aKwLXov0Viwd6fop7PeUh8VlVPTYRF0WUtc/M09qE8ZysXDg941xB2lsJ28hl+Rogm
+         JP/GDnQKt1jVvtH1yzTf+b2MpZvmTxs+3or+kiyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 796/846] net: axienet: Fix TX ring slot available check
-Date:   Mon, 24 Jan 2022 19:45:13 +0100
-Message-Id: <20220124184128.409686443@linuxfoundation.org>
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [PATCH 5.16 0059/1039] lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
+Date:   Mon, 24 Jan 2022 19:30:48 +0100
+Message-Id: <20220124184127.128262775@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +52,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 996defd7f8b5dafc1d480b7585c7c62437f80c3c upstream.
+commit bc93a22a19eb2b68a16ecf04cdf4b2ed65aaf398 upstream.
 
-The check for whether a TX ring slot was available was incorrect,
-since a slot which had been loaded with transmit data but the device had
-not started transmitting would be treated as available, potentially
-causing non-transmitted slots to be overwritten. The control field in
-the descriptor should be checked, rather than the status field (which may
-only be updated when the device completes the entry).
+On a kernel without CONFIG_STRICT_KERNEL_RWX, running EXEC_RODATA
+test leads to "Illegal instruction" failure.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Looking at the content of rodata_objcopy.o, we see that the
+function content zeroes only:
+
+	Disassembly of section .rodata:
+
+	0000000000000000 <.lkdtm_rodata_do_nothing>:
+	   0:	00 00 00 00 	.long 0x0
+
+Add the contents flag in order to keep the content of the section
+while renaming it.
+
+	Disassembly of section .rodata:
+
+	0000000000000000 <.lkdtm_rodata_do_nothing>:
+	   0:	4e 80 00 20 	blr
+
+Fixes: e9e08a07385e ("lkdtm: support llvm-objcopy")
+Cc: stable@vger.kernel.org
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/8900731fbc05fb8b0de18af7133a8fc07c3c53a1.1633712176.git.christophe.leroy@csgroup.eu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/misc/lkdtm/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -643,7 +643,6 @@ static int axienet_free_tx_chain(struct
- 		if (cur_p->skb && (status & XAXIDMA_BD_STS_COMPLETE_MASK))
- 			dev_consume_skb_irq(cur_p->skb);
+--- a/drivers/misc/lkdtm/Makefile
++++ b/drivers/misc/lkdtm/Makefile
+@@ -20,7 +20,7 @@ CFLAGS_REMOVE_rodata.o		+= $(CC_FLAGS_LT
  
--		cur_p->cntrl = 0;
- 		cur_p->app0 = 0;
- 		cur_p->app1 = 0;
- 		cur_p->app2 = 0;
-@@ -651,6 +650,7 @@ static int axienet_free_tx_chain(struct
- 		cur_p->skb = NULL;
- 		/* ensure our transmit path and device don't prematurely see status cleared */
- 		wmb();
-+		cur_p->cntrl = 0;
- 		cur_p->status = 0;
- 
- 		if (sizep)
-@@ -713,7 +713,7 @@ static inline int axienet_check_tx_bd_sp
- 	/* Ensure we see all descriptor updates from device or TX IRQ path */
- 	rmb();
- 	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
--	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
-+	if (cur_p->cntrl)
- 		return NETDEV_TX_BUSY;
- 	return 0;
- }
+ OBJCOPYFLAGS :=
+ OBJCOPYFLAGS_rodata_objcopy.o	:= \
+-			--rename-section .noinstr.text=.rodata,alloc,readonly,load
++			--rename-section .noinstr.text=.rodata,alloc,readonly,load,contents
+ targets += rodata.o rodata_objcopy.o
+ $(obj)/rodata_objcopy.o: $(obj)/rodata.o FORCE
+ 	$(call if_changed,objcopy)
 
 
