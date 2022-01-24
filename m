@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CFC3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E89C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352719AbiAXTa6 (ORCPT
+        id S1352804AbiAXTbF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:30:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45960 "EHLO
+        Mon, 24 Jan 2022 14:31:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47070 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345181AbiAXTWJ (ORCPT
+        with ESMTP id S1346355AbiAXTW6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:09 -0500
+        Mon, 24 Jan 2022 14:22:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9C486B811F9;
-        Mon, 24 Jan 2022 19:22:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6C59C340E5;
-        Mon, 24 Jan 2022 19:22:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 160F2B8121B;
+        Mon, 24 Jan 2022 19:22:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CBA4C340E5;
+        Mon, 24 Jan 2022 19:22:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052126;
-        bh=/5/CJb6Fyon2cuhp/4IYOBwBZ4GC+0GuDTvi8QtMyYo=;
+        s=korg; t=1643052175;
+        bh=KMxJK1iIQOsIy0NuPpIiSoxPGHXz/J4x23TAqBxugmY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D2auywxv+Qm67H1AneJy101i1yEn3n8VCM+vrVPDQ4NOZohzseqrzWjTwnaOSviFB
-         B/qRpHATfF3DBY7wtARlaP9zPEAMrT3+DSWatOQmo53FPZD6+EFZtdrBEKki9aMdH8
-         7Dp0pMuQMi6Y15DAwvpAiVNetTzu7PudCYlbbtqg=
+        b=u2qDPfA1umsqqPCqNi5+nJ6KvpMNECCRhev1vYRpSFhfPYMdxz/92PM4O5FK5Cxrz
+         JwlA4EtvfIPuKqzQgygKU/RQQFYalEkwLKIqzL84CdKbZ+2pOWv2ozeWhsMLBqniDo
+         rnr0BjlZrV5JuGm1sK50h0x2XbtpWFGIZ3E+q/Mo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rafael Gago Castano <rgc@hms.se>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Su Bao Cheng <baocheng.su@siemens.com>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH 4.19 197/239] serial: Fix incorrect rs485 polarity on uart open
-Date:   Mon, 24 Jan 2022 19:43:55 +0100
-Message-Id: <20220124183949.373291831@linuxfoundation.org>
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 180/239] powerpc/cell: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:43:38 +0100
+Message-Id: <20220124183948.822127222@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,67 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-commit d3b3404df318504ec084213ab1065b73f49b0f1d upstream.
+[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
 
-Commit a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
-RTS") sought to deassert RTS when opening an rs485-enabled uart port.
-That way, the transceiver does not occupy the bus until it transmits
-data.
+for_each_node_by_name performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-Unfortunately, the commit mixed up the logic and *asserted* RTS instead
-of *deasserting* it:
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-The commit amended uart_port_dtr_rts(), which raises DTR and RTS when
-opening an rs232 port.  "Raising" actually means lowering the signal
-that's coming out of the uart, because an rs232 transceiver not only
-changes a signal's voltage level, it also *inverts* the signal.  See
-the simplified schematic in the MAX232 datasheet for an example:
-https://www.ti.com/lit/ds/symlink/max232.pdf
+// <smpl>
+@@
+expression e,e1;
+local idexpression n;
+@@
 
-So, to raise RTS on an rs232 port, TIOCM_RTS is *set* in port->mctrl
-and that results in the signal being driven low.
-
-In contrast to rs232, the signal level for rs485 Transmit Enable is the
-identity, not the inversion:  If the transceiver expects a "high" RTS
-signal for Transmit Enable, the signal coming out of the uart must also
-be high, so TIOCM_RTS must be *cleared* in port->mctrl.
-
-The commit did the exact opposite, but it's easy to see why given the
-confusing semantics of rs232 and rs485.  Fix it.
-
-Fixes: a6845e1e1b78 ("serial: core: Consider rs485 settings to drive RTS")
-Cc: stable@vger.kernel.org # v4.14+
-Cc: Rafael Gago Castano <rgc@hms.se>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Cc: Su Bao Cheng <baocheng.su@siemens.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/tty/serial/serial_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -159,7 +159,7 @@ static void uart_port_dtr_rts(struct uar
- 	int RTS_after_send = !!(uport->rs485.flags & SER_RS485_RTS_AFTER_SEND);
- 
- 	if (raise) {
--		if (rs485_on && !RTS_after_send) {
-+		if (rs485_on && RTS_after_send) {
- 			uart_set_mctrl(uport, TIOCM_DTR);
- 			uart_clear_mctrl(uport, TIOCM_RTS);
- 		} else {
-@@ -168,7 +168,7 @@ static void uart_port_dtr_rts(struct uar
- 	} else {
- 		unsigned int clear = TIOCM_DTR;
- 
--		clear |= (!rs485_on || !RTS_after_send) ? TIOCM_RTS : 0;
-+		clear |= (!rs485_on || RTS_after_send) ? TIOCM_RTS : 0;
- 		uart_clear_mctrl(uport, clear);
- 	}
+ for_each_node_by_name(n, e1) {
+   ... when != of_node_put(n)
+       when != e = n
+(
+   return n;
+|
++  of_node_put(n);
+?  return ...;
+)
+   ...
  }
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/platforms/cell/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
+index 12352a58072ab..d9c2c4cc60be1 100644
+--- a/arch/powerpc/platforms/cell/iommu.c
++++ b/arch/powerpc/platforms/cell/iommu.c
+@@ -1088,6 +1088,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
+ 			if (hbase < dbase || (hend > (dbase + dsize))) {
+ 				pr_debug("iommu: hash window doesn't fit in"
+ 					 "real DMA window\n");
++				of_node_put(np);
+ 				return -1;
+ 			}
+ 		}
+-- 
+2.34.1
+
 
 
