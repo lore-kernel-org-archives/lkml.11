@@ -2,44 +2,55 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A19FBC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575609AbiAXVwF (ORCPT
+        id S1575627AbiAXVwH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50946 "EHLO
+        Mon, 24 Jan 2022 16:52:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448607AbiAXVTH (ORCPT
+        with ESMTP id S1447375AbiAXVTH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:19:07 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF80C06F8DD;
-        Mon, 24 Jan 2022 12:13:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64526C06F8D5;
+        Mon, 24 Jan 2022 12:13:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 164F3B81249;
-        Mon, 24 Jan 2022 20:13:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E8A1C340E5;
-        Mon, 24 Jan 2022 20:13:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06376B811FB;
+        Mon, 24 Jan 2022 20:13:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28B8C340E5;
+        Mon, 24 Jan 2022 20:13:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055202;
-        bh=gT/igsYpfDuLStwwd+5zPYf3E/H7J/0RJfGX0HJD5AQ=;
+        s=korg; t=1643055199;
+        bh=zPh5p7FABxi5Q4+sOjWICwvNeN9fXrty6gLPGE1tFdI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E+MYtBFOSj1Fua0eqqYqeke/AIIsQjQrMV5hhK9SBtv9UptJyVObP1VdDYlo41lV0
-         lUg1q+whcwb31ivZDjYP9mrcguMC/TspHDRdrFmAU3bdaLAbUEReZM8gHviuZR0KFk
-         2b+nbhcCGkEbkPiJXA5f6iPYD+rT/9aDXIrXD3VY=
+        b=dKV1DcMo8Oc+z3+VrGF1SG8jPgr614sXP4CskWahtgIZ9bYP6QC84ep+gGwOOnwcs
+         h8qeIahjcCdSHGytCElI+UGXpDSpCU0zEoNDw5P9KIbOyGYFl8zhxI9vmy8Dfc6hON
+         hjrf36hNiLA/UN4o131FnKOHYvkG54de1kNi6wVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
-        Jouni Malinen <quic_jouni@quicinc.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "Limonciello, Mario" <Mario.Limonciello@amd.com>
-Subject: [PATCH 5.15 073/846] ath11k: add string type to search board data in board-2.bin for WCN6855
-Date:   Mon, 24 Jan 2022 19:33:10 +0100
-Message-Id: <20220124184103.495832000@linuxfoundation.org>
+        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Borislav Petkov <bp@alien8.de>, Christoph Hellwig <hch@lst.de>,
+        David Hildenbrand <david@redhat.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 072/846] mm/page_alloc.c: do not warn allocation failure on zone DMA if no managed pages
+Date:   Mon, 24 Jan 2022 19:33:09 +0100
+Message-Id: <20220124184103.464688090@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,135 +62,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Baoquan He <bhe@redhat.com>
 
-commit fc95d10ac41d75c14a81afcc8722333d8b2cf80f upstream.
+commit c4dc63f0032c77464fbd4e7a6afc22fa6913c4a7 upstream.
 
-Currently ath11k only support string type with bus, chip id and board id
-such as "bus=ahb,qmi-chip-id=1,qmi-board-id=4" for ahb bus chip and
-"bus=pci,qmi-chip-id=0,qmi-board-id=255" for PCIe bus chip in
-board-2.bin. For WCN6855, it is not enough to distinguish all different
-chips.
+In kdump kernel of x86_64, page allocation failure is observed:
 
-This is to add a new string type which include bus, chip id, board id,
-vendor, device, subsystem-vendor and subsystem-device for WCN6855.
+ kworker/u2:2: page allocation failure: order:0, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
+ CPU: 0 PID: 55 Comm: kworker/u2:2 Not tainted 5.16.0-rc4+ #5
+ Hardware name: AMD Dinar/Dinar, BIOS RDN1505B 06/05/2013
+ Workqueue: events_unbound async_run_entry_fn
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x48/0x5e
+  warn_alloc.cold+0x72/0xd6
+  __alloc_pages_slowpath.constprop.0+0xc69/0xcd0
+  __alloc_pages+0x1df/0x210
+  new_slab+0x389/0x4d0
+  ___slab_alloc+0x58f/0x770
+  __slab_alloc.constprop.0+0x4a/0x80
+  kmem_cache_alloc_trace+0x24b/0x2c0
+  sr_probe+0x1db/0x620
+  ......
+  device_add+0x405/0x920
+  ......
+  __scsi_add_device+0xe5/0x100
+  ata_scsi_scan_host+0x97/0x1d0
+  async_run_entry_fn+0x30/0x130
+  process_one_work+0x1e8/0x3c0
+  worker_thread+0x50/0x3b0
+  ? rescuer_thread+0x350/0x350
+  kthread+0x16b/0x190
+  ? set_kthread_struct+0x40/0x40
+  ret_from_fork+0x22/0x30
+  </TASK>
+ Mem-Info:
+ ......
 
-ath11k will first load board-2.bin and search in it for the board data
-with the above parameters, if matched one board data, then download it
-to firmware, if not matched any one, then ath11k will download the file
-board.bin to firmware.
+The above failure happened when calling kmalloc() to allocate buffer with
+GFP_DMA.  It requests to allocate slab page from DMA zone while no managed
+pages at all in there.
 
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
+ sr_probe()
+ --> get_capabilities()
+     --> buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
 
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Jouni Malinen <quic_jouni@quicinc.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211111065340.20187-1-quic_wgong@quicinc.com
-Cc: "Limonciello, Mario" <Mario.Limonciello@amd.com>
+Because in the current kernel, dma-kmalloc will be created as long as
+CONFIG_ZONE_DMA is enabled.  However, kdump kernel of x86_64 doesn't have
+managed pages on DMA zone since commit 6f599d84231f ("x86/kdump: Always
+reserve the low 1M when the crashkernel option is specified").  The
+failure can be always reproduced.
+
+For now, let's mute the warning of allocation failure if requesting pages
+from DMA zone while no managed pages.
+
+[akpm@linux-foundation.org: fix warning]
+
+Link: https://lkml.kernel.org/r/20211223094435.248523-4-bhe@redhat.com
+Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc: Christoph Lameter <cl@linux.com>
+Cc: Pekka Enberg <penberg@kernel.org>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: David Laight <David.Laight@ACULAB.COM>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath11k/core.c |   27 +++++++++++++++++++++------
- drivers/net/wireless/ath/ath11k/core.h |   13 +++++++++++++
- drivers/net/wireless/ath/ath11k/pci.c  |   10 ++++++++++
- 3 files changed, 44 insertions(+), 6 deletions(-)
+ mm/page_alloc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/ath/ath11k/core.c
-+++ b/drivers/net/wireless/ath/ath11k/core.c
-@@ -347,11 +347,26 @@ static int ath11k_core_create_board_name
- 		scnprintf(variant, sizeof(variant), ",variant=%s",
- 			  ab->qmi.target.bdf_ext);
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -4210,7 +4210,9 @@ void warn_alloc(gfp_t gfp_mask, nodemask
+ 	va_list args;
+ 	static DEFINE_RATELIMIT_STATE(nopage_rs, 10*HZ, 1);
  
--	scnprintf(name, name_len,
--		  "bus=%s,qmi-chip-id=%d,qmi-board-id=%d%s",
--		  ath11k_bus_str(ab->hif.bus),
--		  ab->qmi.target.chip_id,
--		  ab->qmi.target.board_id, variant);
-+	switch (ab->id.bdf_search) {
-+	case ATH11K_BDF_SEARCH_BUS_AND_BOARD:
-+		scnprintf(name, name_len,
-+			  "bus=%s,vendor=%04x,device=%04x,subsystem-vendor=%04x,subsystem-device=%04x,qmi-chip-id=%d,qmi-board-id=%d%s",
-+			  ath11k_bus_str(ab->hif.bus),
-+			  ab->id.vendor, ab->id.device,
-+			  ab->id.subsystem_vendor,
-+			  ab->id.subsystem_device,
-+			  ab->qmi.target.chip_id,
-+			  ab->qmi.target.board_id,
-+			  variant);
-+		break;
-+	default:
-+		scnprintf(name, name_len,
-+			  "bus=%s,qmi-chip-id=%d,qmi-board-id=%d%s",
-+			  ath11k_bus_str(ab->hif.bus),
-+			  ab->qmi.target.chip_id,
-+			  ab->qmi.target.board_id, variant);
-+		break;
-+	}
+-	if ((gfp_mask & __GFP_NOWARN) || !__ratelimit(&nopage_rs))
++	if ((gfp_mask & __GFP_NOWARN) ||
++	     !__ratelimit(&nopage_rs) ||
++	     ((gfp_mask & __GFP_DMA) && !has_managed_dma()))
+ 		return;
  
- 	ath11k_dbg(ab, ATH11K_DBG_BOOT, "boot using board name '%s'\n", name);
- 
-@@ -588,7 +603,7 @@ static int ath11k_core_fetch_board_data_
- 	return 0;
- }
- 
--#define BOARD_NAME_SIZE 100
-+#define BOARD_NAME_SIZE 200
- int ath11k_core_fetch_bdf(struct ath11k_base *ab, struct ath11k_board_data *bd)
- {
- 	char boardname[BOARD_NAME_SIZE];
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -47,6 +47,11 @@ enum ath11k_supported_bw {
- 	ATH11K_BW_160	= 3,
- };
- 
-+enum ath11k_bdf_search {
-+	ATH11K_BDF_SEARCH_DEFAULT,
-+	ATH11K_BDF_SEARCH_BUS_AND_BOARD,
-+};
-+
- enum wme_ac {
- 	WME_AC_BE,
- 	WME_AC_BK,
-@@ -747,6 +752,14 @@ struct ath11k_base {
- 
- 	struct completion htc_suspend;
- 
-+	struct {
-+		enum ath11k_bdf_search bdf_search;
-+		u32 vendor;
-+		u32 device;
-+		u32 subsystem_vendor;
-+		u32 subsystem_device;
-+	} id;
-+
- 	/* must be last */
- 	u8 drv_priv[0] __aligned(sizeof(void *));
- };
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -1218,6 +1218,15 @@ static int ath11k_pci_probe(struct pci_d
- 		goto err_free_core;
- 	}
- 
-+	ath11k_dbg(ab, ATH11K_DBG_BOOT, "pci probe %04x:%04x %04x:%04x\n",
-+		   pdev->vendor, pdev->device,
-+		   pdev->subsystem_vendor, pdev->subsystem_device);
-+
-+	ab->id.vendor = pdev->vendor;
-+	ab->id.device = pdev->device;
-+	ab->id.subsystem_vendor = pdev->subsystem_vendor;
-+	ab->id.subsystem_device = pdev->subsystem_device;
-+
- 	switch (pci_dev->device) {
- 	case QCA6390_DEVICE_ID:
- 		ath11k_pci_read_hw_version(ab, &soc_hw_version_major,
-@@ -1240,6 +1249,7 @@ static int ath11k_pci_probe(struct pci_d
- 		ab->hw_rev = ATH11K_HW_QCN9074_HW10;
- 		break;
- 	case WCN6855_DEVICE_ID:
-+		ab->id.bdf_search = ATH11K_BDF_SEARCH_BUS_AND_BOARD;
- 		ath11k_pci_read_hw_version(ab, &soc_hw_version_major,
- 					   &soc_hw_version_minor);
- 		switch (soc_hw_version_major) {
+ 	va_start(args, fmt);
 
 
