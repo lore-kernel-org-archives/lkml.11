@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73894C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EBC4C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850356AbiAXX3q (ORCPT
+        id S1850532AbiAXXaJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:29:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35166 "EHLO
+        Mon, 24 Jan 2022 18:30:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381012AbiAXWNM (ORCPT
+        with ESMTP id S1581137AbiAXWLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:13:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB82C02B85D;
-        Mon, 24 Jan 2022 12:43:43 -0800 (PST)
+        Mon, 24 Jan 2022 17:11:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE84C0DF2EC;
+        Mon, 24 Jan 2022 12:43:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D33CE60909;
-        Mon, 24 Jan 2022 20:43:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D4BDC340E5;
-        Mon, 24 Jan 2022 20:43:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 822A7B8121C;
+        Mon, 24 Jan 2022 20:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91B7DC340E5;
+        Mon, 24 Jan 2022 20:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057022;
-        bh=2XYLbk5nhzUYg8pfk+MC07Cy/191v7DzF5yYA5/9A2g=;
+        s=korg; t=1643057007;
+        bh=llqmotql0dU1BNpAsfO0Bt9goMpDGsF/FGV07efugkg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W7a3/cV821ncyo1fR5+T1nexwhKg5cYBwZRvCBc+5EX+03AF7wzIW6FLCgSbVkayG
-         kFjfyo/buectsGH28mNh1yuQ5+Lxk1zTcTZIO+dX0J3vz+WHc3fglK15jtSNKK40hP
-         n3J8Aa4HYU22SJPhpXLwVcvRCBeX5Z5uHeEUZpWc=
+        b=wDuehuScoYVnrWOIfoZwD3gq9mEZeOSHfypQOpk1YIIQZhPapuTil7WAgo8JhDbsx
+         n2pLFggk6fMxbecfc7GMeG8XVrlYpdkjgwCLaBXqHPu/tfQW2UB1nJl+WvA+Id1OxW
+         zykcFNJ1+lrGYrAj7PraCMZHJGMB0T3YM5ASnD9I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Svyatoslav Ryhel <clamor95@gmail.com>
-Subject: [PATCH 5.15 675/846] mfd: tps65910: Set PWR_OFF bit during driver probe
-Date:   Mon, 24 Jan 2022 19:43:12 +0100
-Message-Id: <20220124184124.355787377@linuxfoundation.org>
+        stable@vger.kernel.org, Meng Li <Meng.Li@windriver.com>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.15 671/846] crypto: caam - replace this_cpu_ptr with raw_cpu_ptr
+Date:   Mon, 24 Jan 2022 19:43:08 +0100
+Message-Id: <20220124184124.224047919@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,62 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Meng Li <Meng.Li@windriver.com>
 
-commit 7620ad0bdfac1efff4a1228cd36ae62a9d8206b0 upstream.
+commit efd21e10fc3bf4c6da122470a5ae89ec4ed8d180 upstream.
 
-The PWR_OFF bit needs to be set in order to power off properly, without
-hanging PMIC. This bit needs to be set early in order to allow thermal
-protection of NVIDIA Terga SoCs to power off hardware properly, otherwise
-a battery re-plug may be needed on some devices to recover after the hang.
+When enable the kernel debug config, there is below calltrace detected:
+BUG: using smp_processor_id() in preemptible [00000000] code: cryptomgr_test/339
+caller is debug_smp_processor_id+0x20/0x30
+CPU: 9 PID: 339 Comm: cryptomgr_test Not tainted 5.10.63-yocto-standard #1
+Hardware name: NXP Layerscape LX2160ARDB (DT)
+Call trace:
+ dump_backtrace+0x0/0x1a0
+ show_stack+0x24/0x30
+ dump_stack+0xf0/0x13c
+ check_preemption_disabled+0x100/0x110
+ debug_smp_processor_id+0x20/0x30
+ dpaa2_caam_enqueue+0x10c/0x25c
+ ......
+ cryptomgr_test+0x38/0x60
+ kthread+0x158/0x164
+ ret_from_fork+0x10/0x38
+According to the comment in commit ac5d15b4519f("crypto: caam/qi2
+ - use affine DPIOs "), because preemption is no longer disabled
+while trying to enqueue an FQID, it might be possible to run the
+enqueue on a different CPU(due to migration, when in process context),
+however this wouldn't be a functionality issue. But there will be
+above calltrace when enable kernel debug config. So, replace this_cpu_ptr
+with raw_cpu_ptr to avoid above call trace.
 
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Tested-by: Svyatoslav Ryhel <clamor95@gmail.com> # ASUS TF201
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211124190104.23554-1-digetx@gmail.com
+Fixes: ac5d15b4519f ("crypto: caam/qi2 - use affine DPIOs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Meng Li <Meng.Li@windriver.com>
+Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mfd/tps65910.c |   22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/crypto/caam/caamalg_qi2.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/mfd/tps65910.c
-+++ b/drivers/mfd/tps65910.c
-@@ -436,15 +436,6 @@ static void tps65910_power_off(void)
+--- a/drivers/crypto/caam/caamalg_qi2.c
++++ b/drivers/crypto/caam/caamalg_qi2.c
+@@ -5470,7 +5470,7 @@ int dpaa2_caam_enqueue(struct device *de
+ 	dpaa2_fd_set_len(&fd, dpaa2_fl_get_len(&req->fd_flt[1]));
+ 	dpaa2_fd_set_flc(&fd, req->flc_dma);
  
- 	tps65910 = dev_get_drvdata(&tps65910_i2c_client->dev);
- 
--	/*
--	 * The PWR_OFF bit needs to be set separately, before transitioning
--	 * to the OFF state. It enables the "sequential" power-off mode on
--	 * TPS65911, it's a NO-OP on TPS65910.
--	 */
--	if (regmap_set_bits(tps65910->regmap, TPS65910_DEVCTRL,
--			    DEVCTRL_PWR_OFF_MASK) < 0)
--		return;
--
- 	regmap_update_bits(tps65910->regmap, TPS65910_DEVCTRL,
- 			   DEVCTRL_DEV_OFF_MASK | DEVCTRL_DEV_ON_MASK,
- 			   DEVCTRL_DEV_OFF_MASK);
-@@ -504,6 +495,19 @@ static int tps65910_i2c_probe(struct i2c
- 	tps65910_sleepinit(tps65910, pmic_plat_data);
- 
- 	if (pmic_plat_data->pm_off && !pm_power_off) {
-+		/*
-+		 * The PWR_OFF bit needs to be set separately, before
-+		 * transitioning to the OFF state. It enables the "sequential"
-+		 * power-off mode on TPS65911, it's a NO-OP on TPS65910.
-+		 */
-+		ret = regmap_set_bits(tps65910->regmap, TPS65910_DEVCTRL,
-+				      DEVCTRL_PWR_OFF_MASK);
-+		if (ret) {
-+			dev_err(&i2c->dev, "failed to set power-off mode: %d\n",
-+				ret);
-+			return ret;
-+		}
-+
- 		tps65910_i2c_client = i2c;
- 		pm_power_off = tps65910_power_off;
- 	}
+-	ppriv = this_cpu_ptr(priv->ppriv);
++	ppriv = raw_cpu_ptr(priv->ppriv);
+ 	for (i = 0; i < (priv->dpseci_attr.num_tx_queues << 1); i++) {
+ 		err = dpaa2_io_service_enqueue_fq(ppriv->dpio, ppriv->req_fqid,
+ 						  &fd);
 
 
