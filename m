@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86679C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEA2C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383905AbiAXU17 (ORCPT
+        id S1383956AbiAXU2D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:27:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48884 "EHLO
+        Mon, 24 Jan 2022 15:28:03 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49082 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377617AbiAXUFp (ORCPT
+        with ESMTP id S1377971AbiAXUGE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:05:45 -0500
+        Mon, 24 Jan 2022 15:06:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4376EB8122A;
-        Mon, 24 Jan 2022 20:05:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D26EC340E5;
-        Mon, 24 Jan 2022 20:05:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B741EB81215;
+        Mon, 24 Jan 2022 20:06:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F46C340E5;
+        Mon, 24 Jan 2022 20:06:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054743;
-        bh=8YIJDSU95lxAcjy6scG6fi1Dh3ZhJhGtgJHvXafBIaQ=;
+        s=korg; t=1643054761;
+        bh=vwRGDU4N4TbEApmcUFKQ4hpx5acenT08Vv9AbCWceh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h2fGVQKPbYQn7kXeCxG7ckW+4t361KCQEtCiMCDGVT89dBzs3I4nXGB0bc/81F6SU
-         7jx+Zy/58wcq9h/YNLUBfjMmE2G5384iCIOjENkoelD8unexxXkLJplvzqTQ3ubQet
-         pIC55sWYxoHA1uKZ15hOxNtbc94w2A2ZfGCYNm+0=
+        b=Kl3Nre77F2SH0prH9ZGLj73Cdb9wF5KnVrCWuM8yBiQy6AtHyK98Q5xts/uGKCEHm
+         4jmwKGZ+yJticKJmQxEAtLwDH3IRnFaxL8fjxIQWXxbLsmUZ/gstpmNUVbAv4P9BRF
+         dknzDoEJFMP2OnrFpSqp/7F06Fpwcucho1zeJrYc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
-        Michael Rodin <mrodin@de.adit-jv.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.10 488/563] media: rcar-csi2: Optimize the selection PHTW register
-Date:   Mon, 24 Jan 2022 19:44:13 +0100
-Message-Id: <20220124184041.323136714@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.10 493/563] Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
+Date:   Mon, 24 Jan 2022 19:44:18 +0100
+Message-Id: <20220124184041.499757730@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,50 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Udipi <sudipi@jp.adit-jv.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit 549cc89cd09a85aaa16dc07ef3db811d5cf9bcb1 upstream.
+commit 82ca67321f55a8d1da6ac3ed611da3c32818bb37 upstream.
 
-PHTW register is selected based on default bit rate from Table[1].
-for the bit rates less than or equal to 250. Currently first
-value of default bit rate which is greater than or equal to
-the caculated mbps is selected. This selection can be further
-improved by selecting the default bit rate which is nearest to
-the calculated value.
+The config RANDOMIZE_SLAB does not exist, the authors probably intended to
+refer to the config RANDOMIZE_BASE, which provides kernel address-space
+randomization. They probably just confused SLAB with BASE (these two
+four-letter words coincidentally share three common letters), as they also
+point out the config SLAB_FREELIST_RANDOM as further randomization within
+the same sentence.
 
-[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.12]
+Fix the reference of the config for kernel address-space randomization to
+the config that provides that.
 
-Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
-Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 6e88559470f5 ("Documentation: Add section about CPU vulnerabilities for Spectre")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/r/20211230171940.27558-1-lukas.bulwahn@gmail.com
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/rcar-vin/rcar-csi2.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ Documentation/admin-guide/hw-vuln/spectre.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/media/platform/rcar-vin/rcar-csi2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
-@@ -976,10 +976,17 @@ static int rcsi2_phtw_write_mbps(struct
- 				 const struct rcsi2_mbps_reg *values, u16 code)
- {
- 	const struct rcsi2_mbps_reg *value;
-+	const struct rcsi2_mbps_reg *prev_value = NULL;
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -468,7 +468,7 @@ Spectre variant 2
+    before invoking any firmware code to prevent Spectre variant 2 exploits
+    using the firmware.
  
--	for (value = values; value->mbps; value++)
-+	for (value = values; value->mbps; value++) {
- 		if (value->mbps >= mbps)
- 			break;
-+		prev_value = value;
-+	}
-+
-+	if (prev_value &&
-+	    ((mbps - prev_value->mbps) <= (value->mbps - mbps)))
-+		value = prev_value;
+-   Using kernel address space randomization (CONFIG_RANDOMIZE_SLAB=y
++   Using kernel address space randomization (CONFIG_RANDOMIZE_BASE=y
+    and CONFIG_SLAB_FREELIST_RANDOM=y in the kernel configuration) makes
+    attacks on the kernel generally more difficult.
  
- 	if (!value->mbps) {
- 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
 
 
