@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A9FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A3DBC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314522AbiAYCvL (ORCPT
+        id S1314121AbiAYCuV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57696 "EHLO
+        Mon, 24 Jan 2022 21:50:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56842 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445899AbiAXVFJ (ORCPT
+        with ESMTP id S1359519AbiAXVDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:09 -0500
+        Mon, 24 Jan 2022 16:03:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A0356B8122A;
-        Mon, 24 Jan 2022 21:05:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DF8C340E5;
-        Mon, 24 Jan 2022 21:05:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3B21B81142;
+        Mon, 24 Jan 2022 21:03:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12289C340E5;
+        Mon, 24 Jan 2022 21:03:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058306;
-        bh=VPdI+TVD86eHiCgBauoaGl9SJlHqgi95GTzmkIVc46U=;
+        s=korg; t=1643058229;
+        bh=EqTivTb+Cuvp/WUP4epMML8+2J7gXezxJBji8OHg3sI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ji5ocejVTWbk28PUsfCJG3Qh58gU8F47onLnUJw5VkViF8aT1en6URwydPEFtwASu
-         2XqoG2FZ4IluDfnFN6nrZf537j+f5ItwG7BXBlFN65j4G7gd6NY7VcAZaRJAW4r+r7
-         mdQcCKnCsBly7fQc4l6zG/vqmikFSkzk47Zx/3+k=
+        b=RrFOISy9YgjJT/2F64Z5tqFS8N5idDObW+4mv94KiJZTFS7LxHdHr4J8VNBgJ8tuR
+         mA4HVWNsw0oErw+oxS+a/6RJdCRIrZLi+JvKKN7NuRzXWfM7npgvVCs7EqorhUUsBG
+         RDKPI2L5Bt2yLqWS7n9lIevNCRFb/W+ASpmasoH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ricardo Ribalda <ribalda@chromium.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Nishanth Menon <nm@ti.com>, Pratyush Yadav <p.yadav@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0246/1039] media: uvcvideo: Avoid returning invalid controls
-Date:   Mon, 24 Jan 2022 19:33:55 +0100
-Message-Id: <20220124184133.593956076@linuxfoundation.org>
+Subject: [PATCH 5.16 0220/1039] arm64: dts: ti: k3-j721e: Fix the L2 cache sets
+Date:   Mon, 24 Jan 2022 19:33:29 +0100
+Message-Id: <20220124184132.729936670@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,36 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ricardo Ribalda <ribalda@chromium.org>
+From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit 414d3b49d9fd4a0bb16a13d929027847fd094f3f ]
+[ Upstream commit e9ba3a5bc6fdc2c796c69fdaf5ed6c9957cf9f9d ]
 
-If the memory where ctrl_found is placed has the value of uvc_ctrl and
-__uvc_find_control does not find the control we will return an invalid
-index.
+A72's L2 cache[1] on J721e[2] is 1MB. A72's L2 is fixed line length of
+64 bytes and 16-way set-associative cache structure.
 
-Fixes: 6350d6a4ed487 ("media: uvcvideo: Set error_idx during ctrl_commit errors")
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+1MB of L2 / 64 (line length) = 16384 ways
+16384 ways / 16 = 1024 sets
+
+Fix the l2 cache-sets.
+
+[1] https://developer.arm.com/documentation/100095/0003/Level-2-Memory-System/About-the-L2-memory-system
+[2] http://www.ti.com/lit/pdf/spruil1
+
+Fixes: 2d87061e70de ("arm64: dts: ti: Add Support for J721E SoC")
+Reported-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20211113043639.4413-1-nm@ti.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/uvc/uvc_ctrl.c | 2 +-
+ arch/arm64/boot/dts/ti/k3-j721e.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/uvc/uvc_ctrl.c b/drivers/media/usb/uvc/uvc_ctrl.c
-index 9a25d60292558..b4f6edf968bc0 100644
---- a/drivers/media/usb/uvc/uvc_ctrl.c
-+++ b/drivers/media/usb/uvc/uvc_ctrl.c
-@@ -1639,7 +1639,7 @@ static int uvc_ctrl_find_ctrl_idx(struct uvc_entity *entity,
- 				  struct uvc_control *uvc_control)
- {
- 	struct uvc_control_mapping *mapping = NULL;
--	struct uvc_control *ctrl_found;
-+	struct uvc_control *ctrl_found = NULL;
- 	unsigned int i;
+diff --git a/arch/arm64/boot/dts/ti/k3-j721e.dtsi b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
+index a5967ba139d7e..4a3872fce5339 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721e.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e.dtsi
+@@ -88,7 +88,7 @@
+ 		cache-level = <2>;
+ 		cache-size = <0x100000>;
+ 		cache-line-size = <64>;
+-		cache-sets = <2048>;
++		cache-sets = <1024>;
+ 		next-level-cache = <&msmc_l3>;
+ 	};
  
- 	if (!entity)
 -- 
 2.34.1
 
