@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AB35C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CDAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455969AbiAXVg7 (ORCPT
+        id S1455984AbiAXVhB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:36:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43282 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391121AbiAXUq7 (ORCPT
+        Mon, 24 Jan 2022 16:37:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41414 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391015AbiAXUqs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14248C0619C9;
-        Mon, 24 Jan 2022 11:57:20 -0800 (PST)
+        Mon, 24 Jan 2022 15:46:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C792FB81269;
-        Mon, 24 Jan 2022 19:57:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0642AC340E5;
-        Mon, 24 Jan 2022 19:57:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB13B60B1A;
+        Mon, 24 Jan 2022 20:46:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CB5C340E5;
+        Mon, 24 Jan 2022 20:46:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054237;
-        bh=TYR6G0G1NNZYgGiHfvo4P7O8iCjHHs0h9Uv+G6h0s/I=;
+        s=korg; t=1643057207;
+        bh=ADWlPxviep3j3KSwqXUux5ntWlp2DypFvaeUKSbxgpI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LmTvLLaz3maq5qjfPEGmVQqBiAdsb1fO5rbjt5yUyeCnzXy1Ejrq7JFrgU+U5iTb1
-         YfqqUYoQMeIr4f6oeBt7rJaT+J4a9HHTdfKFzKeoYYxUX4O0Z10uxlhMtsKgE91h/8
-         tjVp9kOcYzpPF8FlVpR0JG1yEM42R1zWvQm97Qkc=
+        b=SilDmNG/I31KIZ7tOT8xg6lTgUxUeh7dkWq32NTeg8HWQ79yALdHWa527kKKmS36X
+         5ib+xQhrVyzfAGzyYdKAGC2ny2rzZjJGLx6t83Le4IzTko8ANr0r76XZ/k4otTh5cK
+         HI+V7AOSEzGcs70unKeVoJ1Cdu42mDY4Hb3up9gg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 290/563] mips: bcm63xx: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:40:55 +0100
-Message-Id: <20220124184034.486618910@linuxfoundation.org>
+        stable@vger.kernel.org, German Gomex <german.gomez@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>
+Subject: [PATCH 5.15 736/846] Documentation: coresight: Fix documentation issue
+Date:   Mon, 24 Jan 2022 19:44:13 +0100
+Message-Id: <20220124184126.387849341@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Mike Leach <mike.leach@linaro.org>
 
-[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
+commit 66bd1333abd7fa191f13b929c9119d6cd3df27b0 upstream.
 
-The MIPS BMC63XX subarch does not provide/support clk_set_parent().
-This causes build errors in a few drivers, so add a simple implementation
-of that function so that callers of it will build without errors.
+Fix the description of the directories and attributes used
+in cs_etm as used by perf.
 
-Fixes these build errors:
+Drop the references to the 'configurations' sub-directory which
+had been removed in an earlier version of the patchset.
 
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
-
-Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: f71cd93d5ea4 ("Documentation: coresight: Add documentation for CoreSight config")
+Reported-by: German Gomex <german.gomez@arm.com>
+Signed-off-by: Mike Leach <mike.leach@linaro.org>
+Link: https://lore.kernel.org/r/20211117164220.14883-1-mike.leach@linaro.org
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/bcm63xx/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/trace/coresight/coresight-config.rst |   16 +++++-----------
+ 1 file changed, 5 insertions(+), 11 deletions(-)
 
-diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
-index aba6e2d6a736c..dcfa0ea912fe1 100644
---- a/arch/mips/bcm63xx/clk.c
-+++ b/arch/mips/bcm63xx/clk.c
-@@ -387,6 +387,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
+--- a/Documentation/trace/coresight/coresight-config.rst
++++ b/Documentation/trace/coresight/coresight-config.rst
+@@ -211,19 +211,13 @@ also declared in the perf 'cs_etm' event
+ be selected when running trace under perf::
  
-+int clk_set_parent(struct clk *clk, struct clk *parent)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(clk_set_parent);
-+
- unsigned long clk_get_rate(struct clk *clk)
- {
- 	if (!clk)
--- 
-2.34.1
-
+     $ ls /sys/devices/cs_etm
+-    configurations  format  perf_event_mux_interval_ms  sinks  type
+-    events  nr_addr_filters  power
++    cpu0  cpu2  events  nr_addr_filters		power  subsystem  uevent
++    cpu1  cpu3  format  perf_event_mux_interval_ms	sinks  type
+ 
+-Key directories here are 'configurations' - which lists the loaded
+-configurations, and 'events' - a generic perf directory which allows
+-selection on the perf command line.::
++The key directory here is 'events' - a generic perf directory which allows
++selection on the perf command line. As with the sinks entries, this provides
++a hash of the configuration name.
+ 
+-    $ ls configurations/
+-    autofdo
+-    $ cat configurations/autofdo
+-    0xa7c3dddd
+-
+-As with the sinks entries, this provides a hash of the configuration name.
+ The entry in the 'events' directory uses perfs built in syntax generator
+ to substitute the syntax for the name when evaluating the command::
+ 
 
 
