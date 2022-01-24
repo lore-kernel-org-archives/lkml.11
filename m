@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFF0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AD3FC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362478AbiAXXm0 (ORCPT
+        id S2362521AbiAXXma (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47740 "EHLO
+        Mon, 24 Jan 2022 18:42:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843544AbiAXXEH (ORCPT
+        with ESMTP id S1843521AbiAXXEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:04:07 -0500
+        Mon, 24 Jan 2022 18:04:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B151BC06E00C;
-        Mon, 24 Jan 2022 13:16:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35811C06E003;
+        Mon, 24 Jan 2022 13:16:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5111961484;
-        Mon, 24 Jan 2022 21:16:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15D49C340E4;
-        Mon, 24 Jan 2022 21:16:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CABFA61496;
+        Mon, 24 Jan 2022 21:16:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A42BFC340E4;
+        Mon, 24 Jan 2022 21:16:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058979;
-        bh=th4VKO5Ug+nK9IqtFEODJ6OwStYjXRjMQK8H8lx4WDQ=;
+        s=korg; t=1643058970;
+        bh=s9tsxmFlqICboirL075gBp3+3Ny1m13WJnEkExbZ/tc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XRf+eJZ8fzzgxjOrp1CHCVDxxSG8cz+oeEE8FrYRm+bs0ECGbHxD6FtHLljSz0Sgu
-         hbDBadwn6dBpIjchdsvmujIq4cUN7O+le8DjqI9dyMJwuVL9pjWFL9tBeJR52UXCr6
-         qxYOJBHQOhEmmzzrKWj0oncOuqw0ExMDYrYZeD9Y=
+        b=OsygMvCFr6Nq+9QhyFNmpH8xxml2RcEDgbX6RkYcIlsYzvRR7XAoY4egeb7lRGVJD
+         wGxjoJPHl8v/Rwb/nJDv9e3zl1UaffQWt2UMeVj5KY83zuhCd5tv7DSMCZpgghuCzp
+         nKKZMMvFtYwZcClnkuoZDoj7SjtTMULhKApRPNQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0464/1039] powerpc/32s: Fix shift-out-of-bounds in KASAN init
-Date:   Mon, 24 Jan 2022 19:37:33 +0100
-Message-Id: <20220124184140.875034720@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0461/1039] dt-bindings: thermal: Fix definition of cooling-maps contribution property
+Date:   Mon, 24 Jan 2022 19:37:30 +0100
+Message-Id: <20220124184140.783230585@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,54 +52,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 
-[ Upstream commit af11dee4361b3519981fa04d014873f9d9edd6ac ]
+[ Upstream commit 49bcb1506f2e095262c01bda7fd1c0db524c91e2 ]
 
-================================================================================
-UBSAN: shift-out-of-bounds in arch/powerpc/mm/kasan/book3s_32.c:22:23
-shift exponent -1 is negative
-CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.5-gentoo-PowerMacG4 #9
-Call Trace:
-[c214be60] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
-[c214be80] [c0b99288] ubsan_epilogue+0x10/0x5c
-[c214be90] [c0b98fe0] __ubsan_handle_shift_out_of_bounds+0x94/0x138
-[c214bf00] [c1c0f010] kasan_init_region+0xd8/0x26c
-[c214bf30] [c1c0ed84] kasan_init+0xc0/0x198
-[c214bf70] [c1c08024] setup_arch+0x18/0x54c
-[c214bfc0] [c1c037f0] start_kernel+0x90/0x33c
-[c214bff0] [00003610] 0x3610
-================================================================================
+When converting the thermal-zones bindings to yaml the definition of the
+contribution property changed. The intention is the same, an integer
+value expressing a ratio of a sum on how much cooling is provided by the
+device to the zone. But after the conversion the integer value is
+limited to the range 0 to 100 and expressed as a percentage.
 
-This happens when the directly mapped memory is a power of 2.
+This is problematic for two reasons.
 
-Fix it by checking the shift and set the result to 0 when shift is -1
+- This do not match how the binding is used. Out of the 18 files that
+  make use of the property only two (ste-dbx5x0.dtsi and
+  ste-hrefv60plus.dtsi) sets it at a value that satisfy the binding,
+  100. The remaining 16 files set the value higher and fail to validate.
 
-Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215169
-Link: https://lore.kernel.org/r/15cbc3439d4ad988b225e2119ec99502a5cc6ad3.1638261744.git.christophe.leroy@csgroup.eu
+- Expressing the value as a percentage instead of a ratio of the sum is
+  confusing as there is nothing to enforce the sum in the zone is not
+  greater then 100.
+
+This patch restore the pre yaml conversion description and removes the
+value limitation allowing the usage of the bindings to validate.
+
+Fixes: 1202a442a31fd2e5 ("dt-bindings: thermal: Add yaml bindings for thermal zones")
+Reported-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Link: https://lore.kernel.org/r/20211109103045.1403686-1-niklas.soderlund+renesas@ragnatech.se
+Signed-off-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/kasan/book3s_32.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/thermal/thermal-zones.yaml       | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/arch/powerpc/mm/kasan/book3s_32.c b/arch/powerpc/mm/kasan/book3s_32.c
-index 202bd260a0095..35b287b0a8da4 100644
---- a/arch/powerpc/mm/kasan/book3s_32.c
-+++ b/arch/powerpc/mm/kasan/book3s_32.c
-@@ -19,7 +19,8 @@ int __init kasan_init_region(void *start, size_t size)
- 	block = memblock_alloc(k_size, k_size_base);
+diff --git a/Documentation/devicetree/bindings/thermal/thermal-zones.yaml b/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
+index a07de5ed0ca6a..2d34f3ccb2572 100644
+--- a/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
++++ b/Documentation/devicetree/bindings/thermal/thermal-zones.yaml
+@@ -199,12 +199,11 @@ patternProperties:
  
- 	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
--		int k_size_more = 1 << (ffs(k_size - k_size_base) - 1);
-+		int shift = ffs(k_size - k_size_base);
-+		int k_size_more = shift ? 1 << (shift - 1) : 0;
+               contribution:
+                 $ref: /schemas/types.yaml#/definitions/uint32
+-                minimum: 0
+-                maximum: 100
+                 description:
+-                  The percentage contribution of the cooling devices at the
+-                  specific trip temperature referenced in this map
+-                  to this thermal zone
++                  The cooling contribution to the thermal zone of the referred
++                  cooling device at the referred trip point. The contribution is
++                  a ratio of the sum of all cooling contributions within a
++                  thermal zone.
  
- 		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
- 		if (k_size_more >= SZ_128K)
+             required:
+               - trip
 -- 
 2.34.1
 
