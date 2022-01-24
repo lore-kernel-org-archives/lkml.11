@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3285C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C08CAC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384530AbiAXU36 (ORCPT
+        id S1384475AbiAXU3v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:29:58 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52668 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379434AbiAXULe (ORCPT
+        Mon, 24 Jan 2022 15:29:51 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36238 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354486AbiAXUJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:34 -0500
+        Mon, 24 Jan 2022 15:09:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8F733B8122F;
-        Mon, 24 Jan 2022 20:11:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9F4DC340E5;
-        Mon, 24 Jan 2022 20:11:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5E5E6091B;
+        Mon, 24 Jan 2022 20:09:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F9B7C340E5;
+        Mon, 24 Jan 2022 20:09:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055089;
-        bh=y8lN+Hpr7BXs2GnPmBGiFIRDr2dwas7k73UfycuotA8=;
+        s=korg; t=1643054963;
+        bh=8VJ5DOh9GMO1apj0w6QDm4S3TRwOpzb1AAjkoMUZWbY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vUlPM/rPzhw08ywQI1pVshvmKfnUb1aFQA8vrwqJl34EQiQIfQ1uPe3SI6o0S6qiM
-         dsHFFaUhvH9zmr18j+drNumFr3dtWWpll5ORSMsROcFrN1o96D9C3sFIgdTl+N2GkQ
-         ZWmY+ImKyfmFckmq5Ib4hAOXLX6bf/V72yv6aseE=
+        b=Y+Y6pZvUUF4a2IPKoLRyk3jzCbQZhXa22sfMhaCjHGB1kcHQWlZ4dC3HTNpCdtCaM
+         vyuYJMKTnx3zUJT31RtTXq7NwQD3cOZ/Nn5Tvvue7zCq1gN33m98ZkJORUy6ds1zXK
+         jo6IFy3KaKleXuoq4kNWzNS7PJY2BIfnjXaMi9vY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 036/846] ksmbd: add support for smb2 max credit parameter
-Date:   Mon, 24 Jan 2022 19:32:33 +0100
-Message-Id: <20220124184102.190099917@linuxfoundation.org>
+        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
+        Ralph Campbell <rcampbell@nvidia.com>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.10 560/563] mm/hmm.c: allow VM_MIXEDMAP to work with hmm_range_fault
+Date:   Mon, 24 Jan 2022 19:45:25 +0100
+Message-Id: <20220124184043.818421244@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,193 +52,147 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Alistair Popple <apopple@nvidia.com>
 
-commit 004443b3f6d722b455cf963ed7c3edd7f4772405 upstream.
+commit 87c01d57fa23de82fff593a7d070933d08755801 upstream.
 
-Add smb2 max credits parameter to adjust maximum credits value to limit
-number of outstanding requests.
+hmm_range_fault() can be used instead of get_user_pages() for devices
+which allow faulting however unlike get_user_pages() it will return an
+error when used on a VM_MIXEDMAP range.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+To make hmm_range_fault() more closely match get_user_pages() remove
+this restriction.  This requires dealing with the !ARCH_HAS_PTE_SPECIAL
+case in hmm_vma_handle_pte().  Rather than replicating the logic of
+vm_normal_page() call it directly and do a check for the zero pfn
+similar to what get_user_pages() currently does.
+
+Also add a test to hmm selftest to verify functionality.
+
+Link: https://lkml.kernel.org/r/20211104012001.2555676-1-apopple@nvidia.com
+Fixes: da4c3c735ea4 ("mm/hmm/mirror: helper to snapshot CPU page table")
+Signed-off-by: Alistair Popple <apopple@nvidia.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Cc: Jerome Glisse <jglisse@redhat.com>
+Cc: John Hubbard <jhubbard@nvidia.com>
+Cc: Zi Yan <ziy@nvidia.com>
+Cc: Ralph Campbell <rcampbell@nvidia.com>
+Cc: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/connection.h    |    1 -
- fs/ksmbd/ksmbd_netlink.h |    1 +
- fs/ksmbd/smb2misc.c      |    2 +-
- fs/ksmbd/smb2ops.c       |   16 ++++++++++++----
- fs/ksmbd/smb2pdu.c       |    8 ++++----
- fs/ksmbd/smb2pdu.h       |    1 +
- fs/ksmbd/smb_common.h    |    1 +
- fs/ksmbd/transport_ipc.c |    2 ++
- 8 files changed, 22 insertions(+), 10 deletions(-)
+ lib/test_hmm.c                         |   24 ++++++++++++++++++
+ mm/hmm.c                               |    5 ++-
+ tools/testing/selftests/vm/hmm-tests.c |   42 +++++++++++++++++++++++++++++++++
+ 3 files changed, 69 insertions(+), 2 deletions(-)
 
---- a/fs/ksmbd/connection.h
-+++ b/fs/ksmbd/connection.h
-@@ -62,7 +62,6 @@ struct ksmbd_conn {
- 	/* References which are made for this Server object*/
- 	atomic_t			r_count;
- 	unsigned short			total_credits;
--	unsigned short			max_credits;
- 	spinlock_t			credits_lock;
- 	wait_queue_head_t		req_running_q;
- 	/* Lock to protect requests list*/
---- a/fs/ksmbd/ksmbd_netlink.h
-+++ b/fs/ksmbd/ksmbd_netlink.h
-@@ -103,6 +103,7 @@ struct ksmbd_startup_request {
- 					 * we set the SPARSE_FILES bit (0x40).
- 					 */
- 	__u32	sub_auth[3];		/* Subauth value for Security ID */
-+	__u32	smb2_max_credits;	/* MAX credits */
- 	__u32	ifc_list_sz;		/* interfaces list size */
- 	__s8	____payload[];
- };
---- a/fs/ksmbd/smb2misc.c
-+++ b/fs/ksmbd/smb2misc.c
-@@ -327,7 +327,7 @@ static int smb2_validate_credit_charge(s
- 		ksmbd_debug(SMB, "Insufficient credit charge, given: %d, needed: %d\n",
- 			    credit_charge, calc_credit_num);
- 		return 1;
--	} else if (credit_charge > conn->max_credits) {
-+	} else if (credit_charge > conn->vals->max_credits) {
- 		ksmbd_debug(SMB, "Too large credit charge: %d\n", credit_charge);
- 		return 1;
- 	}
---- a/fs/ksmbd/smb2ops.c
-+++ b/fs/ksmbd/smb2ops.c
-@@ -20,6 +20,7 @@ static struct smb_version_values smb21_s
- 	.max_read_size = SMB21_DEFAULT_IOSIZE,
- 	.max_write_size = SMB21_DEFAULT_IOSIZE,
- 	.max_trans_size = SMB21_DEFAULT_IOSIZE,
-+	.max_credits = SMB2_MAX_CREDITS,
- 	.large_lock_type = 0,
- 	.exclusive_lock_type = SMB2_LOCKFLAG_EXCLUSIVE,
- 	.shared_lock_type = SMB2_LOCKFLAG_SHARED,
-@@ -45,6 +46,7 @@ static struct smb_version_values smb30_s
- 	.max_read_size = SMB3_DEFAULT_IOSIZE,
- 	.max_write_size = SMB3_DEFAULT_IOSIZE,
- 	.max_trans_size = SMB3_DEFAULT_TRANS_SIZE,
-+	.max_credits = SMB2_MAX_CREDITS,
- 	.large_lock_type = 0,
- 	.exclusive_lock_type = SMB2_LOCKFLAG_EXCLUSIVE,
- 	.shared_lock_type = SMB2_LOCKFLAG_SHARED,
-@@ -71,6 +73,7 @@ static struct smb_version_values smb302_
- 	.max_read_size = SMB3_DEFAULT_IOSIZE,
- 	.max_write_size = SMB3_DEFAULT_IOSIZE,
- 	.max_trans_size = SMB3_DEFAULT_TRANS_SIZE,
-+	.max_credits = SMB2_MAX_CREDITS,
- 	.large_lock_type = 0,
- 	.exclusive_lock_type = SMB2_LOCKFLAG_EXCLUSIVE,
- 	.shared_lock_type = SMB2_LOCKFLAG_SHARED,
-@@ -97,6 +100,7 @@ static struct smb_version_values smb311_
- 	.max_read_size = SMB3_DEFAULT_IOSIZE,
- 	.max_write_size = SMB3_DEFAULT_IOSIZE,
- 	.max_trans_size = SMB3_DEFAULT_TRANS_SIZE,
-+	.max_credits = SMB2_MAX_CREDITS,
- 	.large_lock_type = 0,
- 	.exclusive_lock_type = SMB2_LOCKFLAG_EXCLUSIVE,
- 	.shared_lock_type = SMB2_LOCKFLAG_SHARED,
-@@ -198,7 +202,6 @@ void init_smb2_1_server(struct ksmbd_con
- 	conn->ops = &smb2_0_server_ops;
- 	conn->cmds = smb2_0_server_cmds;
- 	conn->max_cmds = ARRAY_SIZE(smb2_0_server_cmds);
--	conn->max_credits = SMB2_MAX_CREDITS;
- 	conn->signing_algorithm = SIGNING_ALG_HMAC_SHA256;
- 
- 	if (server_conf.flags & KSMBD_GLOBAL_FLAG_SMB2_LEASES)
-@@ -216,7 +219,6 @@ void init_smb3_0_server(struct ksmbd_con
- 	conn->ops = &smb3_0_server_ops;
- 	conn->cmds = smb2_0_server_cmds;
- 	conn->max_cmds = ARRAY_SIZE(smb2_0_server_cmds);
--	conn->max_credits = SMB2_MAX_CREDITS;
- 	conn->signing_algorithm = SIGNING_ALG_AES_CMAC;
- 
- 	if (server_conf.flags & KSMBD_GLOBAL_FLAG_SMB2_LEASES)
-@@ -241,7 +243,6 @@ void init_smb3_02_server(struct ksmbd_co
- 	conn->ops = &smb3_0_server_ops;
- 	conn->cmds = smb2_0_server_cmds;
- 	conn->max_cmds = ARRAY_SIZE(smb2_0_server_cmds);
--	conn->max_credits = SMB2_MAX_CREDITS;
- 	conn->signing_algorithm = SIGNING_ALG_AES_CMAC;
- 
- 	if (server_conf.flags & KSMBD_GLOBAL_FLAG_SMB2_LEASES)
-@@ -266,7 +267,6 @@ int init_smb3_11_server(struct ksmbd_con
- 	conn->ops = &smb3_11_server_ops;
- 	conn->cmds = smb2_0_server_cmds;
- 	conn->max_cmds = ARRAY_SIZE(smb2_0_server_cmds);
--	conn->max_credits = SMB2_MAX_CREDITS;
- 	conn->signing_algorithm = SIGNING_ALG_AES_CMAC;
- 
- 	if (server_conf.flags & KSMBD_GLOBAL_FLAG_SMB2_LEASES)
-@@ -305,3 +305,11 @@ void init_smb2_max_trans_size(unsigned i
- 	smb302_server_values.max_trans_size = sz;
- 	smb311_server_values.max_trans_size = sz;
+--- a/lib/test_hmm.c
++++ b/lib/test_hmm.c
+@@ -965,9 +965,33 @@ static long dmirror_fops_unlocked_ioctl(
+ 	return 0;
  }
-+
-+void init_smb2_max_credits(unsigned int sz)
+ 
++static int dmirror_fops_mmap(struct file *file, struct vm_area_struct *vma)
 +{
-+	smb21_server_values.max_credits = sz;
-+	smb30_server_values.max_credits = sz;
-+	smb302_server_values.max_credits = sz;
-+	smb311_server_values.max_credits = sz;
++	unsigned long addr;
++
++	for (addr = vma->vm_start; addr < vma->vm_end; addr += PAGE_SIZE) {
++		struct page *page;
++		int ret;
++
++		page = alloc_page(GFP_KERNEL | __GFP_ZERO);
++		if (!page)
++			return -ENOMEM;
++
++		ret = vm_insert_page(vma, addr, page);
++		if (ret) {
++			__free_page(page);
++			return ret;
++		}
++		put_page(page);
++	}
++
++	return 0;
 +}
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -310,7 +310,7 @@ int smb2_set_rsp_credits(struct ksmbd_wo
++
+ static const struct file_operations dmirror_fops = {
+ 	.open		= dmirror_fops_open,
+ 	.release	= dmirror_fops_release,
++	.mmap		= dmirror_fops_mmap,
+ 	.unlocked_ioctl = dmirror_fops_unlocked_ioctl,
+ 	.llseek		= default_llseek,
+ 	.owner		= THIS_MODULE,
+--- a/mm/hmm.c
++++ b/mm/hmm.c
+@@ -296,7 +296,8 @@ static int hmm_vma_handle_pte(struct mm_
+ 	 * Since each architecture defines a struct page for the zero page, just
+ 	 * fall through and treat it like a normal page.
+ 	 */
+-	if (pte_special(pte) && !pte_devmap(pte) &&
++	if (!vm_normal_page(walk->vma, addr, pte) &&
++	    !pte_devmap(pte) &&
+ 	    !is_zero_pfn(pte_pfn(pte))) {
+ 		if (hmm_pte_need_fault(hmm_vma_walk, pfn_req_flags, 0)) {
+ 			pte_unmap(ptep);
+@@ -514,7 +515,7 @@ static int hmm_vma_walk_test(unsigned lo
+ 	struct hmm_range *range = hmm_vma_walk->range;
+ 	struct vm_area_struct *vma = walk->vma;
  
- 	hdr->CreditCharge = req_hdr->CreditCharge;
+-	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP | VM_MIXEDMAP)) &&
++	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP)) &&
+ 	    vma->vm_flags & VM_READ)
+ 		return 0;
  
--	if (conn->total_credits > conn->max_credits) {
-+	if (conn->total_credits > conn->vals->max_credits) {
- 		hdr->CreditRequest = 0;
- 		pr_err("Total credits overflow: %d\n", conn->total_credits);
- 		return -EINVAL;
-@@ -331,12 +331,12 @@ int smb2_set_rsp_credits(struct ksmbd_wo
- 	if (hdr->Command == SMB2_NEGOTIATE)
- 		aux_max = 0;
- 	else
--		aux_max = conn->max_credits - credit_charge;
-+		aux_max = conn->vals->max_credits - credit_charge;
- 	aux_credits = min_t(unsigned short, aux_credits, aux_max);
- 	credits_granted = credit_charge + aux_credits;
- 
--	if (conn->max_credits - conn->total_credits < credits_granted)
--		credits_granted = conn->max_credits -
-+	if (conn->vals->max_credits - conn->total_credits < credits_granted)
-+		credits_granted = conn->vals->max_credits -
- 			conn->total_credits;
- 
- 	conn->total_credits += credits_granted;
---- a/fs/ksmbd/smb2pdu.h
-+++ b/fs/ksmbd/smb2pdu.h
-@@ -1647,6 +1647,7 @@ int init_smb3_11_server(struct ksmbd_con
- void init_smb2_max_read_size(unsigned int sz);
- void init_smb2_max_write_size(unsigned int sz);
- void init_smb2_max_trans_size(unsigned int sz);
-+void init_smb2_max_credits(unsigned int sz);
- 
- bool is_smb2_neg_cmd(struct ksmbd_work *work);
- bool is_smb2_rsp(struct ksmbd_work *work);
---- a/fs/ksmbd/smb_common.h
-+++ b/fs/ksmbd/smb_common.h
-@@ -412,6 +412,7 @@ struct smb_version_values {
- 	__u32		max_read_size;
- 	__u32		max_write_size;
- 	__u32		max_trans_size;
-+	__u32		max_credits;
- 	__u32		large_lock_type;
- 	__u32		exclusive_lock_type;
- 	__u32		shared_lock_type;
---- a/fs/ksmbd/transport_ipc.c
-+++ b/fs/ksmbd/transport_ipc.c
-@@ -301,6 +301,8 @@ static int ipc_server_config_on_startup(
- 		init_smb2_max_write_size(req->smb2_max_write);
- 	if (req->smb2_max_trans)
- 		init_smb2_max_trans_size(req->smb2_max_trans);
-+	if (req->smb2_max_credits)
-+		init_smb2_max_credits(req->smb2_max_credits);
- 
- 	ret = ksmbd_set_netbios_name(req->netbios_name);
- 	ret |= ksmbd_set_server_string(req->server_string);
+--- a/tools/testing/selftests/vm/hmm-tests.c
++++ b/tools/testing/selftests/vm/hmm-tests.c
+@@ -1245,6 +1245,48 @@ TEST_F(hmm, anon_teardown)
+ /*
+  * Test memory snapshot without faulting in pages accessed by the device.
+  */
++TEST_F(hmm, mixedmap)
++{
++	struct hmm_buffer *buffer;
++	unsigned long npages;
++	unsigned long size;
++	unsigned char *m;
++	int ret;
++
++	npages = 1;
++	size = npages << self->page_shift;
++
++	buffer = malloc(sizeof(*buffer));
++	ASSERT_NE(buffer, NULL);
++
++	buffer->fd = -1;
++	buffer->size = size;
++	buffer->mirror = malloc(npages);
++	ASSERT_NE(buffer->mirror, NULL);
++
++
++	/* Reserve a range of addresses. */
++	buffer->ptr = mmap(NULL, size,
++			   PROT_READ | PROT_WRITE,
++			   MAP_PRIVATE,
++			   self->fd, 0);
++	ASSERT_NE(buffer->ptr, MAP_FAILED);
++
++	/* Simulate a device snapshotting CPU pagetables. */
++	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
++	ASSERT_EQ(ret, 0);
++	ASSERT_EQ(buffer->cpages, npages);
++
++	/* Check what the device saw. */
++	m = buffer->mirror;
++	ASSERT_EQ(m[0], HMM_DMIRROR_PROT_READ);
++
++	hmm_buffer_free(buffer);
++}
++
++/*
++ * Test memory snapshot without faulting in pages accessed by the device.
++ */
+ TEST_F(hmm2, snapshot)
+ {
+ 	struct hmm_buffer *buffer;
 
 
