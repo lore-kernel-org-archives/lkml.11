@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A07CC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA19C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354460AbiAXTgi (ORCPT
+        id S1354499AbiAXTgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54704 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346842AbiAXTbe (ORCPT
+        Mon, 24 Jan 2022 14:36:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58788 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347311AbiAXTbi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:34 -0500
+        Mon, 24 Jan 2022 14:31:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A954EB81238;
-        Mon, 24 Jan 2022 19:31:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B69B3C340E5;
-        Mon, 24 Jan 2022 19:31:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B54A6135E;
+        Mon, 24 Jan 2022 19:31:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B6F0C340E5;
+        Mon, 24 Jan 2022 19:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052691;
-        bh=lgH1VX/FI0RfMOFGqDesrhhJ97fFgKQgywT4ZWVBbQg=;
+        s=korg; t=1643052697;
+        bh=TGICEL1JlDSz94eSHY5GVl52jJkWdxOLFeLR5apU6e0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xiJAencRBWafkOmuC3zcgRBgAF1A7wyK9FJVKSm1+dlDlhV064BggQYHXadot+xFY
-         FlML7Whd7jkpv39yn+A+wzFmCaGf+2+KXnL15O581iLKze6IFaOZxSfFpiT9BNJ21s
-         +RgioLCkrbvChoGfC21MiRjtDgcsr34/fonfhLKw=
+        b=t6U/uDtz5uE99KUdLS76zZ+lC7quTTOSYqIMsvfWb0sOq0Dkczp/4PJ4/dBfh1FKj
+         rRumuJGDDPAzCkbkXYxIg+gbpJleh08ddu9cn+xeT4aeG576+d7cvf25sdXJMS1Uib
+         7LLcN5e5KDg2wQ7CG/JgCYbCbj7GB6ILdrQMwifE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 144/320] phy: uniphier-usb3ss: fix unintended writing zeros to PHY register
-Date:   Mon, 24 Jan 2022 19:42:08 +0100
-Message-Id: <20220124183958.536281351@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 146/320] ASoC: samsung: idma: Check of ioremap return value
+Date:   Mon, 24 Jan 2022 19:42:10 +0100
+Message-Id: <20220124183958.606307191@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,59 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 898c7a9ec81620125f2463714a0f4dea18ad6e54 ]
+[ Upstream commit 3ecb46755eb85456b459a1a9f952c52986bce8ec ]
 
-Similar to commit 4a90bbb478db ("phy: uniphier-pcie: Fix updating phy
-parameters"), in function uniphier_u3ssphy_set_param(), unintentionally
-write zeros to other fields when writing PHY registers.
+Because of the potential failure of the ioremap(), the buf->area could
+be NULL.
+Therefore, we need to check it and return -ENOMEM in order to transfer
+the error.
 
-Fixes: 5ab43d0f8697 ("phy: socionext: add USB3 PHY driver for UniPhier SoC")
-Signed-off-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Link: https://lore.kernel.org/r/1640150369-4134-1-git-send-email-hayashi.kunihiko@socionext.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: f09aecd50f39 ("ASoC: SAMSUNG: Add I2S0 internal dma driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20211228034026.1659385-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/socionext/phy-uniphier-usb3ss.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ sound/soc/samsung/idma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/phy/socionext/phy-uniphier-usb3ss.c b/drivers/phy/socionext/phy-uniphier-usb3ss.c
-index a7577e316baf5..e63648b5c7547 100644
---- a/drivers/phy/socionext/phy-uniphier-usb3ss.c
-+++ b/drivers/phy/socionext/phy-uniphier-usb3ss.c
-@@ -22,11 +22,13 @@
- #include <linux/reset.h>
+diff --git a/sound/soc/samsung/idma.c b/sound/soc/samsung/idma.c
+index 65497cd477a50..47f6f5d70853d 100644
+--- a/sound/soc/samsung/idma.c
++++ b/sound/soc/samsung/idma.c
+@@ -363,6 +363,8 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
+ 	buf->addr = idma.lp_tx_addr;
+ 	buf->bytes = idma_hardware.buffer_bytes_max;
+ 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
++	if (!buf->area)
++		return -ENOMEM;
  
- #define SSPHY_TESTI		0x0
--#define SSPHY_TESTO		0x4
- #define TESTI_DAT_MASK		GENMASK(13, 6)
- #define TESTI_ADR_MASK		GENMASK(5, 1)
- #define TESTI_WR_EN		BIT(0)
- 
-+#define SSPHY_TESTO		0x4
-+#define TESTO_DAT_MASK		GENMASK(7, 0)
-+
- #define PHY_F(regno, msb, lsb) { (regno), (msb), (lsb) }
- 
- #define CDR_CPD_TRIM	PHY_F(7, 3, 0)	/* RxPLL charge pump current */
-@@ -84,12 +86,12 @@ static void uniphier_u3ssphy_set_param(struct uniphier_u3ssphy_priv *priv,
- 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
- 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
- 	uniphier_u3ssphy_testio_write(priv, val);
--	val = readl(priv->base + SSPHY_TESTO);
-+	val = readl(priv->base + SSPHY_TESTO) & TESTO_DAT_MASK;
- 
- 	/* update value */
--	val &= ~FIELD_PREP(TESTI_DAT_MASK, field_mask);
-+	val &= ~field_mask;
- 	data = field_mask & (p->value << p->field.lsb);
--	val  = FIELD_PREP(TESTI_DAT_MASK, data);
-+	val  = FIELD_PREP(TESTI_DAT_MASK, data | val);
- 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
- 	uniphier_u3ssphy_testio_write(priv, val);
- 	uniphier_u3ssphy_testio_write(priv, val | TESTI_WR_EN);
+ 	return 0;
+ }
 -- 
 2.34.1
 
