@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94BE4C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17902C46467
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2371075AbiAYAGz (ORCPT
+        id S2371111AbiAYAHA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:06:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50596 "EHLO
+        Mon, 24 Jan 2022 19:07:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847036AbiAXXSV (ORCPT
+        with ESMTP id S1847016AbiAXXSP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:18:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71479C06F8D8;
-        Mon, 24 Jan 2022 13:26:45 -0800 (PST)
+        Mon, 24 Jan 2022 18:18:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07035C0604EB;
+        Mon, 24 Jan 2022 13:25:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F89161028;
-        Mon, 24 Jan 2022 21:26:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E102FC340E4;
-        Mon, 24 Jan 2022 21:26:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2B10B81218;
+        Mon, 24 Jan 2022 21:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F12A0C340E4;
+        Mon, 24 Jan 2022 21:25:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059604;
-        bh=zzwXETvO8DRgU0B6/KjTgVdtgOFdMCxyOYkTNdKrc3I=;
+        s=korg; t=1643059542;
+        bh=yqSwJVXMzPmSYPIZURiBbJ026IA9VE5I3L1uFRkpvjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UVpETQ7TOlpTy252P0a3olzbOPfHP5z9r1eAhd2U9qf3TxGTUQVpG6DNjzpBBifW9
-         vh+8NI+2+wk2eovqUHOcUCRseHSeQg0hH4lU/U+LXEpcX8O7WCoPeDe7CEuEFyAdhb
-         GWo5ChxIWnYQwtCTJ2i9Y8s8CLDxHdRLOlwXEcmQ=
+        b=NMJjnUd1tyn+EP3QLsF7pVs97o2cexlQt3C85OLh4KNb2ObbRpIw6L7RMbK+oqbGC
+         4AeGa72zy4eNlXJSGcNFepc3ssBLpMmX4hpQNL4XvMImDbNcrTDcjQ0AIlmnctjTLp
+         TvBk7uVNZI6YXYRVPyXbA8yi/Ev1IgVtgIAK1drw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Isabella Basso <isabbasso@riseup.net>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0654/1039] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:40:43 +0100
-Message-Id: <20220124184147.347255773@linuxfoundation.org>
+Subject: [PATCH 5.16 0649/1039] drm/amdgpu: fix amdgpu_ras_mca_query_error_status scope
+Date:   Mon, 24 Jan 2022 19:40:38 +0100
+Message-Id: <20220124184147.173655735@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,71 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Isabella Basso <isabbasso@riseup.net>
 
-[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
+[ Upstream commit 929bb8e200412da36aca4b61209ec26283f9c184 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of saa7146_register_device(). There is a dereference of
-dev->vv_data in saa7146_vv_release(), which could lead to a NULL
-pointer dereference on failure of saa7146_vv_init().
+This commit fixes the compile-time warning below:
 
-Fix this bug by adding a check of saa7146_vv_init().
+ warning: no previous prototype for ‘amdgpu_ras_mca_query_error_status’
+ [-Wmissing-prototypes]
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+Changes since v1:
+- As suggested by Alexander Deucher:
+  1. Make function static instead of adding prototype.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Isabella Basso <isabbasso@riseup.net>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/saa7146/saa7146_fops.c | 2 +-
- drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
-index baf5772c52a96..be32159777142 100644
---- a/drivers/media/common/saa7146/saa7146_fops.c
-+++ b/drivers/media/common/saa7146/saa7146_fops.c
-@@ -521,7 +521,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
- 		ERR("out of memory. aborting.\n");
- 		kfree(vv);
- 		v4l2_ctrl_handler_free(hdl);
--		return -1;
-+		return -ENOMEM;
- 	}
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+index 08133de21fdd6..26b7a4a0b44b7 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+@@ -867,9 +867,9 @@ static int amdgpu_ras_enable_all_features(struct amdgpu_device *adev,
+ /* feature ctl end */
  
- 	saa7146_video_uops.init(dev,vv);
-diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
-index 2214c74bbbf15..3947701cd6c7e 100644
---- a/drivers/media/pci/saa7146/hexium_gemini.c
-+++ b/drivers/media/pci/saa7146/hexium_gemini.c
-@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
- 	hexium_set_input(hexium, 0);
- 	hexium->cur_input = 0;
  
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		i2c_del_adapter(&hexium->i2c_adapter);
-+		kfree(hexium);
-+		return ret;
-+	}
- 
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
+-void amdgpu_ras_mca_query_error_status(struct amdgpu_device *adev,
+-				       struct ras_common_if *ras_block,
+-				       struct ras_err_data  *err_data)
++static void amdgpu_ras_mca_query_error_status(struct amdgpu_device *adev,
++					      struct ras_common_if *ras_block,
++					      struct ras_err_data  *err_data)
+ {
+ 	switch (ras_block->sub_block_index) {
+ 	case AMDGPU_RAS_MCA_BLOCK__MP0:
 -- 
 2.34.1
 
