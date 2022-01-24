@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49444C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF01C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365742AbiAXXvj (ORCPT
+        id S2365773AbiAXXvl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47712 "EHLO
+        Mon, 24 Jan 2022 18:51:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843492AbiAXXED (ORCPT
+        with ESMTP id S1843485AbiAXXED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:04:03 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E073C06C5B8;
-        Mon, 24 Jan 2022 13:16:03 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D90C06C5B5;
+        Mon, 24 Jan 2022 13:15:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14CDAB80CCF;
-        Mon, 24 Jan 2022 21:16:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B99C340E4;
-        Mon, 24 Jan 2022 21:16:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF778B80CCF;
+        Mon, 24 Jan 2022 21:15:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A11C3C340E4;
+        Mon, 24 Jan 2022 21:15:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058960;
-        bh=+FIhuV+QFoMc3kFprresSPzAW2LFZqusS4F4IERQ6gw=;
+        s=korg; t=1643058945;
+        bh=ZTrTILL+jVZqYLfi1HTYLKwvvvtqq9rneJNTbYsC+Cc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yqjFp+OdE9pcMwpzpoZub27eyFdXsQSeVAlr7s5LL/yK+n+JPgrW5pEQpNV7O/goE
-         BDAf1t25i0ZPxTsZKHieUU/GpxApXhFos8S5MTqV+U0RsO8iAAebbn3I3mdZOwG4Nq
-         P92s2UeonxeQBP9oONhbD2bvAXQ1rAnb/yKG7tvU=
+        b=aKh1gYRSsDwVu7Yl+znqypXGnHKHALv6GMGDso0G9bRSJGaIdIm9n+8WN4d5Oqge3
+         fVcLL6s1uB5QccBOAnU8Yht1wEzIomrWjZVMsNoo2YheqLMYP72P4qslCaygE1nrAx
+         yxd3LVlcwNuqF6iM+vmVq09ACP6y8IyXTZNwRDFs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Subject: [PATCH 5.16 0441/1039] net: mcs7830: handle usb read errors properly
-Date:   Mon, 24 Jan 2022 19:37:10 +0100
-Message-Id: <20220124184140.120501193@linuxfoundation.org>
+        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Abel Vesa <abel.vesa@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0454/1039] clk: imx8mn: Fix imx8mn_clko1_sels
+Date:   Mon, 24 Jan 2022 19:37:23 +0100
+Message-Id: <20220124184140.560309215@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,54 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Adam Ford <aford173@gmail.com>
 
-[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
+[ Upstream commit 570727e9acfac1c2330a01dd5e1272e9c3acec08 ]
 
-Syzbot reported uninit value in mcs7830_bind(). The problem was in
-missing validation check for bytes read via usbnet_read_cmd().
+When attempting to use sys_pll1_80m as the parent for clko1, the
+system hangs.  This is due to the fact that the source select
+for sys_pll1_80m was incorrectly pointing to m7_alt_pll_clk, which
+doesn't yet exist.
 
-usbnet_read_cmd() internally calls usb_control_msg(), that returns
-number of bytes read. Code should validate that requested number of bytes
-was actually read.
+According to Rev 3 of the TRM, The imx8mn_clko1_sels also incorrectly
+references an osc_27m which does not exist, nor does an entry for
+source select bits 010b.  Fix both by inserting a dummy clock into
+the missing space in the table and renaming the incorrectly name clock
+with dummy.
 
-So, this patch adds missing size validation check inside
-mcs7830_get_reg() to prevent uninit value bugs
-
-Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 96d6392b54db ("clk: imx: Add support for i.MX8MN clock driver")
+Signed-off-by: Adam Ford <aford173@gmail.com>
+Reviewed-by: Fabio Estevam <festevam@gmail.com>
+Link: https://lore.kernel.org/r/20211117133202.775633-1-aford173@gmail.com
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/mcs7830.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/clk/imx/clk-imx8mn.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
-index 326cc4e749d80..fdda0616704ea 100644
---- a/drivers/net/usb/mcs7830.c
-+++ b/drivers/net/usb/mcs7830.c
-@@ -108,8 +108,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
+diff --git a/drivers/clk/imx/clk-imx8mn.c b/drivers/clk/imx/clk-imx8mn.c
+index c55577604e16a..021355a247081 100644
+--- a/drivers/clk/imx/clk-imx8mn.c
++++ b/drivers/clk/imx/clk-imx8mn.c
+@@ -277,9 +277,9 @@ static const char * const imx8mn_pdm_sels[] = {"osc_24m", "sys_pll2_100m", "audi
  
- static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
- {
--	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
--				0x0000, index, data, size);
-+	int ret;
-+
-+	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
-+			      0x0000, index, data, size);
-+	if (ret < 0)
-+		return ret;
-+	else if (ret < size)
-+		return -ENODATA;
-+
-+	return ret;
- }
+ static const char * const imx8mn_dram_core_sels[] = {"dram_pll_out", "dram_alt_root", };
  
- static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
+-static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "osc_27m",
+-						 "sys_pll1_200m", "audio_pll2_out", "vpu_pll",
+-						 "sys_pll1_80m", };
++static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "dummy",
++						 "sys_pll1_200m", "audio_pll2_out", "sys_pll2_500m",
++						 "dummy", "sys_pll1_80m", };
+ static const char * const imx8mn_clko2_sels[] = {"osc_24m", "sys_pll2_200m", "sys_pll1_400m",
+ 						 "sys_pll2_166m", "sys_pll3_out", "audio_pll1_out",
+ 						 "video_pll1_out", "osc_32k", };
 -- 
 2.34.1
 
