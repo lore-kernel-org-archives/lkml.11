@@ -2,159 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0A4C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:16:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81782C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:16:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1320612AbiAYDNc (ORCPT
+        id S3415259AbiAYDOi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 22:13:32 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:55213 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1317576AbiAYDCZ (ORCPT
+        Mon, 24 Jan 2022 22:14:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46030 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1318161AbiAYDEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:02:25 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjWqL1B89z4yCK;
-        Tue, 25 Jan 2022 14:02:22 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643079743;
-        bh=TvDJrkrqUKutpB4iDmLWYqvoeUHMikzPzXuaP881VMM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BQXNgbl3V8MHe/t7kUpggFKVC1K56HQMdvb4uOvYomfBBIZ8hCHn8oshvVkdpKddu
-         3ThCOsmvhkWPBvdkqtoMZdCN9l3FKDJY9R9lawxMMDrSy5SF0F0qdRsznvHPfC+p/+
-         dlfgL6qRIcIObUxxG3FrS38YsRKV+RuGe4AZp7VaFxokRq6zdERcGe1XqqRpeCervG
-         z2FvIgTbuYCEYIsrWL/ycQ1ci9WyxH1Hbnc0Asp+3FWZgXVQK9YNI58B6a6mOeE0Uz
-         02hH01pl+BGDZ85nPM2lhxZ8264/elWKItJJQ8ZiUxSiSpPmSfgy1SEZwIeqz+px4x
-         ef1ZZAulYjquA==
-Date:   Tue, 25 Jan 2022 14:02:21 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Edmund Dea <edmund.j.dea@intel.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Anitha Chrisanthus <anitha.chrisanthus@intel.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: Re: linux-next: build failure after merge of the kspp tree
-Message-ID: <20220125140221.5c1f4640@canb.auug.org.au>
-In-Reply-To: <20220125135546.1a2e1d6b@canb.auug.org.au>
-References: <20220125135546.1a2e1d6b@canb.auug.org.au>
+        Mon, 24 Jan 2022 22:04:43 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AED6C0E5331
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:41 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id o30-20020a05600c511e00b0034f4c3186f4so352652wms.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:44:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=philpotter-co-uk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=97GwBkpfkEyDXPs9Xg2PMr7/QxnDaM9vXKCUdcNdzlQ=;
+        b=ch536Dq2+p5qGm7SDqd/7tTHbZh0/MFxbamVvJp4UwtA8hIEuzLVOkqNwojOiyNNvW
+         l9lQ6Tt+02/My+3APjDxUWFMzpPRaRoQ3OFVuSD77hPQHfD66rGni0uTd0IlIX3k5tCx
+         1alAT07eHhMe3THyARDSrF+cgxXvTeqQ4n4N/ivzVT7gU5nChQMBz7r3IOstkTyjO8oS
+         6mpHk1SUFCDZ3mwfOVygBRiP/8DVdZHjArCgoaPOe/CS6q7RXs9fYXL5kr4OEesPmD5x
+         jJKoSRgU5gVCOIc1SGwf07HiRfCMK4XlpuBmd+lGVoBx5KY4Zq3EymfcKQ0uHTgD9yDG
+         Lx/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=97GwBkpfkEyDXPs9Xg2PMr7/QxnDaM9vXKCUdcNdzlQ=;
+        b=qp+qgGnl1iKUYqIpjU38VZTlNMj9CbdNCC/TNaueDfpPCScqnkstQM1mctLWysAfyo
+         OoWcU3R6+4eo0xYOZgMocgt8ZLAv+3A604ngeAoNWCqH4ytMwz+NZqUsCDjG5qL6dqLq
+         4/6916HfcUsy8Q9q4it1Rtuukekl/TUgtohY7F7Mfi//+2spdaGFpLOgyVaJg1WbWgQ8
+         b1Eh49a0ec1XtbS/W2/xQLXu2jw7hDgSJ5Fs8NvO/eLS3eOpN6A2g3jvZUN27pjVetyY
+         ujc7WmmapxSoQqnfAce7Q7euvbqeg+6nbwcX2rpC8mpGpB5ZxGpAP/GD+DqWJliFhXr8
+         YbJA==
+X-Gm-Message-State: AOAM5306p5SJicPrulLkaXmpk0OyoHbrDVi7oOReouzvVzGjGWHLXcCS
+        gX4GtnNbm4Jz5j7uWGe8lBs5Uw==
+X-Google-Smtp-Source: ABdhPJw1Pbz998Z2T97NBh6nX+rD2V4rXuGJTJn2mIfdxD5zRNSecpEGAL3kl6eKVmrz6OOv3S2pZg==
+X-Received: by 2002:a1c:7303:: with SMTP id d3mr381891wmb.154.1643064280218;
+        Mon, 24 Jan 2022 14:44:40 -0800 (PST)
+Received: from localhost.localdomain (d.f.5.e.6.6.b.1.e.6.2.7.e.5.c.8.0.a.1.e.e.d.f.d.0.b.8.0.1.0.0.2.ip6.arpa. [2001:8b0:dfde:e1a0:8c5e:726e:1b66:e5fd])
+        by smtp.gmail.com with ESMTPSA id i3sm15010613wru.33.2022.01.24.14.44.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 14:44:39 -0800 (PST)
+From:   Phillip Potter <phil@philpotter.co.uk>
+To:     gregkh@linuxfoundation.org
+Cc:     dan.carpenter@oracle.com, Larry.Finger@lwfinger.net,
+        straube.linux@gmail.com, martin@kaiser.cx,
+        linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
+        paskripkin@gmail.com
+Subject: [PATCH 10/10] staging: r8188eu: remove GlobalDebugLevel flag
+Date:   Mon, 24 Jan 2022 22:44:15 +0000
+Message-Id: <20220124224415.831-11-phil@philpotter.co.uk>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124224415.831-1-phil@philpotter.co.uk>
+References: <20220124224415.831-1-phil@philpotter.co.uk>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/cnjjE1VOxX+DM8Z37u7_5St";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/cnjjE1VOxX+DM8Z37u7_5St
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Remove hal/odm_debug.c, to get rid of the GlobalDebugLevel flag,
+and remove the two other lines that reference GlobalDebugLevel, as
+the last remaining user (DBG_88E) is now gone. Also modify Makefile
+to no longer build hal/odm_debug.c.
 
-Hi all,
-
-On Tue, 25 Jan 2022 13:55:46 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> After merging the kspp tree, today's linux-next build (powerpc
-> allyesconfig) failed like this:
->=20
-> drivers/gpu/drm/kmb/kmb_plane.c: In function 'kmb_plane_atomic_disable':
-> drivers/gpu/drm/kmb/kmb_plane.c:165:34: error: array subscript 3 is above=
- array bounds of 'struct layer_status[2]' [-Werror=3Darray-bounds]
->   165 |                 kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL2=
-_ENABLE;
->       |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-> In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-> drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_statu=
-s'
->    61 |         struct layer_status             plane_status[KMB_MAX_PLAN=
-ES];
->       |                                         ^~~~~~~~~~~~
-> drivers/gpu/drm/kmb/kmb_plane.c:162:34: error: array subscript 2 is above=
- array bounds of 'struct layer_status[2]' [-Werror=3Darray-bounds]
->   162 |                 kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL1=
-_ENABLE;
->       |                 ~~~~~~~~~~~~~~~~~^~~~~~~~~~
-> In file included from drivers/gpu/drm/kmb/kmb_plane.c:17:
-> drivers/gpu/drm/kmb/kmb_drv.h:61:41: note: while referencing 'plane_statu=
-s'
->    61 |         struct layer_status             plane_status[KMB_MAX_PLAN=
-ES];
->       |                                         ^~~~~~~~~~~~
->=20
-> Exposed by commit
->=20
->   4ba545781e20 ("Makefile: Enable -Warray-bounds")
->=20
-> Originally introduced by commmit
->=20
->   7f7b96a8a0a1 ("drm/kmb: Add support for KeemBay Display")
->=20
-> Maybe should have been fixed by
->=20
->   c026565fe9be ("drm/kmb: Enable alpha blended second plane")
->=20
-> I have applied the following hack for now.
-
-Actually, this one:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 13:45:26 +1100
-Subject: [PATCH] hack for building with -Warray-bounds
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Phillip Potter <phil@philpotter.co.uk>
 ---
- drivers/gpu/drm/kmb/kmb_plane.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/staging/r8188eu/Makefile            | 1 -
+ drivers/staging/r8188eu/hal/odm_debug.c     | 6 ------
+ drivers/staging/r8188eu/include/rtw_debug.h | 2 --
+ drivers/staging/r8188eu/os_dep/os_intfs.c   | 1 -
+ 4 files changed, 10 deletions(-)
+ delete mode 100644 drivers/staging/r8188eu/hal/odm_debug.c
 
-diff --git a/drivers/gpu/drm/kmb/kmb_plane.c b/drivers/gpu/drm/kmb/kmb_plan=
-e.c
-index 00404ba4126d..b54197920712 100644
---- a/drivers/gpu/drm/kmb/kmb_plane.c
-+++ b/drivers/gpu/drm/kmb/kmb_plane.c
-@@ -158,12 +158,14 @@ static void kmb_plane_atomic_disable(struct drm_plane=
- *plane,
- 	case LAYER_1:
- 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_VL2_ENABLE;
- 		break;
-+#if 0
- 	case LAYER_2:
- 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL1_ENABLE;
- 		break;
- 	case LAYER_3:
- 		kmb->plane_status[plane_id].ctrl =3D LCD_CTRL_GL2_ENABLE;
- 		break;
-+#endif
- 	}
-=20
- 	kmb->plane_status[plane_id].disable =3D true;
---=20
+diff --git a/drivers/staging/r8188eu/Makefile b/drivers/staging/r8188eu/Makefile
+index a7a486cc16dd..ecd6fe5bd94c 100644
+--- a/drivers/staging/r8188eu/Makefile
++++ b/drivers/staging/r8188eu/Makefile
+@@ -10,7 +10,6 @@ r8188eu-y = \
+ 		hal/hal_intf.o \
+ 		hal/hal_com.o \
+ 		hal/odm.o \
+-		hal/odm_debug.o \
+ 		hal/odm_HWConfig.o \
+ 		hal/odm_RegConfig8188E.o \
+ 		hal/odm_RTL8188E.o \
+diff --git a/drivers/staging/r8188eu/hal/odm_debug.c b/drivers/staging/r8188eu/hal/odm_debug.c
+deleted file mode 100644
+index 7a134229fe39..000000000000
+--- a/drivers/staging/r8188eu/hal/odm_debug.c
++++ /dev/null
+@@ -1,6 +0,0 @@
+-// SPDX-License-Identifier: GPL-2.0
+-/* Copyright(c) 2007 - 2011 Realtek Corporation. */
+-
+-#include "../include/rtw_debug.h"
+-
+-u32 GlobalDebugLevel;
+diff --git a/drivers/staging/r8188eu/include/rtw_debug.h b/drivers/staging/r8188eu/include/rtw_debug.h
+index 959fb6bd25ca..01a7d987d6cc 100644
+--- a/drivers/staging/r8188eu/include/rtw_debug.h
++++ b/drivers/staging/r8188eu/include/rtw_debug.h
+@@ -52,6 +52,4 @@
+ 
+ #define DRIVER_PREFIX	"R8188EU: "
+ 
+-extern u32 GlobalDebugLevel;
+-
+ #endif	/* __RTW_DEBUG_H__ */
+diff --git a/drivers/staging/r8188eu/os_dep/os_intfs.c b/drivers/staging/r8188eu/os_dep/os_intfs.c
+index 17249b4fb7ad..8589de487289 100644
+--- a/drivers/staging/r8188eu/os_dep/os_intfs.c
++++ b/drivers/staging/r8188eu/os_dep/os_intfs.c
+@@ -155,7 +155,6 @@ static uint loadparam(struct adapter *padapter)
+ {
+ 	struct registry_priv  *registry_par = &padapter->registrypriv;
+ 
+-	GlobalDebugLevel = rtw_debug;
+ 	registry_par->chip_version = (u8)rtw_chip_version;
+ 	registry_par->rfintfs = (u8)rtw_rfintfs;
+ 	registry_par->lbkmode = (u8)rtw_lbkmode;
+-- 
 2.34.1
 
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/cnjjE1VOxX+DM8Z37u7_5St
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvaD0ACgkQAVBC80lX
-0GzIlwf/YbfmBUupjdnZLXT6He7H2h+ikh6AHDDlE5lgPdRvOoZUPh0rYidLl5gG
-taH43NaDTc1z8mth7cQafT3S/r8K0+499FC1lKFmI4AeGj61DJg9hiyBRZvjuKvA
-IYb9TV1Ba/3SMFG4PE1w8uMlW3VPvUXXhp/AkX4u6/S+vgPr6DzyC63uv1dD5F9a
-XVAO9c72Xua/Z0wMVadKsjd7jsXgxl+XyQqZLPumAi1fOixvXb8Z3y03Xp0qjvHx
-AH89s9PVfD9NAdwnTt755ankalaqeT+YDWg5ytK6xX3X3P8GPy/6tgFRN+hWBai5
-TZ8d+WOMJ8DTYUQqkMOA/5MBmeAMWQ==
-=KboG
------END PGP SIGNATURE-----
-
---Sig_/cnjjE1VOxX+DM8Z37u7_5St--
