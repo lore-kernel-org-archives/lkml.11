@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01F80C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42673C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388959AbiAXUkS (ORCPT
+        id S1388991AbiAXUkU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:40:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348246AbiAXUTP (ORCPT
+        Mon, 24 Jan 2022 15:40:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45764 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349449AbiAXUT0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:19:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 545D5C07595F;
-        Mon, 24 Jan 2022 11:38:38 -0800 (PST)
+        Mon, 24 Jan 2022 15:19:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F692B8122F;
-        Mon, 24 Jan 2022 19:38:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36B99C340E7;
-        Mon, 24 Jan 2022 19:38:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8F5E6090A;
+        Mon, 24 Jan 2022 20:19:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAF93C340E5;
+        Mon, 24 Jan 2022 20:19:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053115;
-        bh=M9oIfxmAlJKoa8Khik9yGYB1gk0CI7pD+tdr8Mbg2A0=;
+        s=korg; t=1643055564;
+        bh=sA+BEVr6OULshePCRU0w3P86Bh2Lvm1VuKxYNtkjmeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NJ2AIF4oq4sPy+F0jD+7+roKg4PlcJPmUPPhMhvzvHRxx0bMrjrlr8g/pmTMwp2t7
-         GRkaZ4ytHH6/3QF0AOioUSapQ9RUsvM8R5kHs/sn2OgASz5beQeXErJtJtfirGDqAL
-         xL6yZUc9mrhTRcBoSl1O9EyqFcxjfRtujP3YnR2g=
+        b=OQRsak5cuRYJXbju/xLXVIfDYBGy4dQ8d0f7xyjmfyIXmp1gxsXfAXUGjuTnAZXnF
+         +CNbTlLIxdIgPRBcWvCtgYMj3d27cmTiYfSheSVgmTWIDw6LMGnzfMHooGO4ZtRakQ
+         OPcp137c4HmioUwrtnC/b8KfaOzXWnIhcSBT5vYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yixing Liu <liuyixing1@huawei.com>,
-        Wenpeng Liang <liangwenpeng@huawei.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.4 282/320] RDMA/hns: Modify the mapping attribute of doorbell to device
-Date:   Mon, 24 Jan 2022 19:44:26 +0100
-Message-Id: <20220124184003.567963329@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 193/846] mtd: core: provide unique name for nvmem device
+Date:   Mon, 24 Jan 2022 19:35:10 +0100
+Message-Id: <20220124184107.613387816@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,33 +47,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yixing Liu <liuyixing1@huawei.com>
+From: Michael Walle <michael@walle.cc>
 
-commit 39d5534b1302189c809e90641ffae8cbdc42a8fc upstream.
+[ Upstream commit c048b60d39e109c201d31ed5ad3a4f939064d6c4 ]
 
-It is more general for ARM device drivers to use the device attribute to
-map PCI BAR spaces.
+If there is more than one mtd device which supports OTP, there will
+be a kernel warning about duplicated sysfs entries and the probing will
+fail. This is because the nvmem device name is not unique. Make it
+unique by prepending the name of the mtd. E.g. before the name was
+"user-otp", now it will be "mtd0-user-otp".
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211206133652.27476-1-liangwenpeng@huawei.com
-Signed-off-by: Yixing Liu <liuyixing1@huawei.com>
-Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+For reference the kernel splash is:
+[    4.665531] sysfs: cannot create duplicate filename '/bus/nvmem/devices/user-otp'
+[    4.673056] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.0-next-20211101+ #1296
+[    4.680565] Hardware name: Kontron SMARC-sAL28 (Single PHY) on SMARC Eval 2.0 carrier (DT)
+[    4.688856] Call trace:
+[    4.691303]  dump_backtrace+0x0/0x1bc
+[    4.694984]  show_stack+0x24/0x30
+[    4.698306]  dump_stack_lvl+0x68/0x84
+[    4.701980]  dump_stack+0x18/0x34
+[    4.705302]  sysfs_warn_dup+0x70/0x90
+[    4.708973]  sysfs_do_create_link_sd+0x144/0x150
+[    4.713603]  sysfs_create_link+0x2c/0x50
+[    4.717535]  bus_add_device+0x74/0x120
+[    4.721293]  device_add+0x330/0x890
+[    4.724791]  device_register+0x2c/0x40
+[    4.728550]  nvmem_register+0x240/0x9f0
+[    4.732398]  mtd_otp_nvmem_register+0xb0/0x10c
+[    4.736854]  mtd_device_parse_register+0x28c/0x2b4
+[    4.741659]  spi_nor_probe+0x20c/0x2e0
+[    4.745418]  spi_mem_probe+0x78/0xbc
+[    4.749001]  spi_probe+0x90/0xf0
+[    4.752237]  really_probe.part.0+0xa4/0x320
+..
+[    4.873936] mtd mtd1: Failed to register OTP NVMEM device
+[    4.894468] spi-nor: probe of spi0.0 failed with error -17
+
+Fixes: 4b361cfa8624 ("mtd: core: add OTP nvmem provider support")
+Signed-off-by: Michael Walle <michael@walle.cc>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211104134843.2642800-1-michael@walle.cc
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/mtdcore.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -362,7 +362,7 @@ static int hns_roce_mmap(struct ib_ucont
- 		return rdma_user_mmap_io(context, vma,
- 					 to_hr_ucontext(context)->uar.pfn,
- 					 PAGE_SIZE,
--					 pgprot_noncached(vma->vm_page_prot));
-+					 pgprot_device(vma->vm_page_prot));
+diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
+index 1532291989471..54df9cfd588ea 100644
+--- a/drivers/mtd/mtdcore.c
++++ b/drivers/mtd/mtdcore.c
+@@ -825,8 +825,7 @@ static struct nvmem_device *mtd_otp_nvmem_register(struct mtd_info *mtd,
  
- 	/* vm_pgoff: 1 -- TPTR */
- 	case 1:
+ 	/* OTP nvmem will be registered on the physical device */
+ 	config.dev = mtd->dev.parent;
+-	/* just reuse the compatible as name */
+-	config.name = compatible;
++	config.name = kasprintf(GFP_KERNEL, "%s-%s", dev_name(&mtd->dev), compatible);
+ 	config.id = NVMEM_DEVID_NONE;
+ 	config.owner = THIS_MODULE;
+ 	config.type = NVMEM_TYPE_OTP;
+@@ -842,6 +841,7 @@ static struct nvmem_device *mtd_otp_nvmem_register(struct mtd_info *mtd,
+ 		nvmem = NULL;
+ 
+ 	of_node_put(np);
++	kfree(config.name);
+ 
+ 	return nvmem;
+ }
+-- 
+2.34.1
+
 
 
