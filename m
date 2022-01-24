@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6B6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26204C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347754AbiAXTWh (ORCPT
+        id S1345781AbiAXTWm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:22:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39968 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344966AbiAXTOY (ORCPT
+        Mon, 24 Jan 2022 14:22:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43854 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346734AbiAXTO3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:14:24 -0500
+        Mon, 24 Jan 2022 14:14:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BEC00B8122C;
-        Mon, 24 Jan 2022 19:14:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2BC4C340E8;
-        Mon, 24 Jan 2022 19:14:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4631D60909;
+        Mon, 24 Jan 2022 19:14:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 125A4C340E5;
+        Mon, 24 Jan 2022 19:14:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051661;
-        bh=itRsrbdPtq5naXO7FpQgj9HMS4CyX4drNFJAl/zuj1c=;
+        s=korg; t=1643051667;
+        bh=d23pXWXux0b/sd/FDTFAvhlEPzSEJl7kdCJKVQtmT4w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x2n7nx5WlBayHqkcheHhrqHzPfIgkU5EaL3TIWUe3M8WHF0rnbLL8cOMh73eg+khJ
-         B1oGtqZz1Hj4gppkrHp7+F0S0XARj8mCubRm76EM0H3N7fNZW9op6+aE+ZeBP26foS
-         dKzjpUl+besAqA4BizykvspdtMhjAoNvek+PERUE=
+        b=bupGS98cprj20EDkHsJ9BIk7u05Cgi0EyP+V24EXQZLOZFGd5CeaTUMdj+EnYSo3f
+         ++YtFKttyEMMrU3xfcB8AYAAx3KyWrSZ/hlLd3R7mqUbFuRomUVxc167fhzoBqrb6C
+         c0zvrg+zVn6DLvbhgOcDJEKUNUrOnp46CG3UoZ74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 047/239] clk: bcm-2835: Remove rounding up the dividers
-Date:   Mon, 24 Jan 2022 19:41:25 +0100
-Message-Id: <20220124183944.634413447@linuxfoundation.org>
+Subject: [PATCH 4.19 049/239] wcn36xx: Release DMA channel descriptor allocations
+Date:   Mon, 24 Jan 2022 19:41:27 +0100
+Message-Id: <20220124183944.697627697@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -49,80 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-[ Upstream commit 8ca011ef4af48a7af7b15afd8a4a44039dd04cea ]
+[ Upstream commit 3652096e5263ad67604b0323f71d133485f410e5 ]
 
-The driver, once it found a divider, tries to round it up by increasing
-the least significant bit of the fractional part by one when the
-round_up argument is set and there's a remainder.
+When unloading the driver we are not releasing the DMA descriptors which we
+previously allocated.
 
-However, since it increases the divider it will actually reduce the
-clock rate below what we were asking for, leading to issues with
-clk_set_min_rate() that will complain that our rounded clock rate is
-below the minimum of the rate.
-
-Since the dividers are fairly precise already, let's remove that part so
-that we can have clk_set_min_rate() working.
-
-This is effectively a revert of 9c95b32ca093 ("clk: bcm2835: add a round
-up ability to the clock divisor").
-
-Fixes: 9c95b32ca093 ("clk: bcm2835: add a round up ability to the clock divisor")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-3-maxime@cerno.tech
+Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211105122152.1580542-3-bryan.odonoghue@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/bcm/clk-bcm2835.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/dxe.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index b14aa9ddd9456..fd78dd5356ed7 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -915,8 +915,7 @@ static int bcm2835_clock_is_on(struct clk_hw *hw)
+diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
+index 657525988d1ee..38eef1579db2d 100644
+--- a/drivers/net/wireless/ath/wcn36xx/dxe.c
++++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
+@@ -954,4 +954,9 @@ void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
  
- static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
- 				    unsigned long rate,
--				    unsigned long parent_rate,
--				    bool round_up)
-+				    unsigned long parent_rate)
- {
- 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
- 	const struct bcm2835_clock_data *data = clock->data;
-@@ -928,10 +927,6 @@ static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
- 
- 	rem = do_div(temp, rate);
- 	div = temp;
--
--	/* Round up and mask off the unused bits */
--	if (round_up && ((div & unused_frac_mask) != 0 || rem != 0))
--		div += unused_frac_mask + 1;
- 	div &= ~unused_frac_mask;
- 
- 	/* different clamping limits apply for a mash clock */
-@@ -1062,7 +1057,7 @@ static int bcm2835_clock_set_rate(struct clk_hw *hw,
- 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
- 	struct bcm2835_cprman *cprman = clock->cprman;
- 	const struct bcm2835_clock_data *data = clock->data;
--	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate, false);
-+	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate);
- 	u32 ctl;
- 
- 	spin_lock(&cprman->regs_lock);
-@@ -1113,7 +1108,7 @@ static unsigned long bcm2835_clock_choose_div_and_prate(struct clk_hw *hw,
- 
- 	if (!(BIT(parent_idx) & data->set_rate_parent)) {
- 		*prate = clk_hw_get_rate(parent);
--		*div = bcm2835_clock_choose_div(hw, rate, *prate, true);
-+		*div = bcm2835_clock_choose_div(hw, rate, *prate);
- 
- 		*avgrate = bcm2835_clock_rate_from_divisor(clock, *prate, *div);
- 
+ 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_l_ch);
+ 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_h_ch);
++
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_l_ch);
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_h_ch);
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_l_ch);
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_h_ch);
+ }
 -- 
 2.34.1
 
