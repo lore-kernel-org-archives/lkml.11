@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88499C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE7CC35268
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354565AbiAXTgq (ORCPT
+        id S1353604AbiAXTfC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57134 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242058AbiAXTbv (ORCPT
+        Mon, 24 Jan 2022 14:35:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49556 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344211AbiAXT03 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:51 -0500
+        Mon, 24 Jan 2022 14:26:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9840614F0;
-        Mon, 24 Jan 2022 19:31:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95700C340E5;
-        Mon, 24 Jan 2022 19:31:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6ACDEB8121C;
+        Mon, 24 Jan 2022 19:26:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 972DFC340E5;
+        Mon, 24 Jan 2022 19:26:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052710;
-        bh=rD5AOzkXpRUJUGlmyD4mjgmBS/IZeXJBNqa5eZZZftQ=;
+        s=korg; t=1643052386;
+        bh=66NPtosod8Ok5mYiep4rLe3S9UA9BN0GARK4K96mHsY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SiFyuThU5MbVToAAB0c6JJLKtr4Aycv/P6T1gx1xFongMIedCGxgFByAcF1Kf5CCa
-         Peg7cPzshqGZTI4+Paj9nl+BpCgIcobKF3OeDN5c+PML9/YjQWrB3V4U3Wb7h80ap+
-         95B/W2vgVbYg0s+TNP+v2Dola/9v4nmUOUDPHIEM=
+        b=lUdz36eQJpaXpLwP6XDhLOCzBux5uTlixxai62XjPd0WJvj8ZA34eItYI5/wW5CY1
+         fWO5piRWzGdMbUapeEOs7ukRqC//JMBZRnXtjgps4Kik1hRXomcvc8ugIUWGgwb1Ld
+         4b5xr7WaEWATKJyk52wBbvhende++zsuMGpJK3Bw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Todd Kjos <tkjos@google.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 132/320] binder: fix handling of error during copy
-Date:   Mon, 24 Jan 2022 19:41:56 +0100
-Message-Id: <20220124183958.155863213@linuxfoundation.org>
+        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 042/320] media: videobuf2: Fix the size printk format
+Date:   Mon, 24 Jan 2022 19:40:26 +0100
+Message-Id: <20220124183955.184939952@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,43 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Todd Kjos <tkjos@google.com>
+From: Dillon Min <dillon.minfei@gmail.com>
 
-[ Upstream commit fe6b1869243f23a485a106c214bcfdc7aa0ed593 ]
+[ Upstream commit c9ee220d76775e42f35d634479c978d9350077d3 ]
 
-If a memory copy function fails to copy the whole buffer,
-a positive integar with the remaining bytes is returned.
-In binder_translate_fd_array() this can result in an fd being
-skipped due to the failed copy, but the loop continues
-processing fds since the early return condition expects a
-negative integer on error.
+Since the type of parameter size is unsigned long,
+it should printk by %lu, instead of %ld, fix it.
 
-Fix by returning "ret > 0 ? -EINVAL : ret" to handle this case.
-
-Fixes: bb4a2e48d510 ("binder: return errors from buffer copy functions")
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Todd Kjos <tkjos@google.com>
-Link: https://lore.kernel.org/r/20211130185152.437403-2-tkjos@google.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 7952be9b6ece ("media: drivers/media/common/videobuf2: rename from videobuf")
+Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/android/binder.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/common/videobuf2/videobuf2-dma-contig.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index 0512af0f04646..b9fb2a9269443 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -2660,8 +2660,8 @@ static int binder_translate_fd_array(struct binder_fd_array_object *fda,
- 		if (!ret)
- 			ret = binder_translate_fd(fd, offset, t, thread,
- 						  in_reply_to);
--		if (ret < 0)
--			return ret;
-+		if (ret)
-+			return ret > 0 ? -EINVAL : ret;
+diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+index 44cd0e530bbd3..093ebe6f279f7 100644
+--- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
++++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
+@@ -154,7 +154,7 @@ static void *vb2_dc_alloc(struct device *dev, unsigned long attrs,
+ 	buf->cookie = dma_alloc_attrs(dev, size, &buf->dma_addr,
+ 					GFP_KERNEL | gfp_flags, buf->attrs);
+ 	if (!buf->cookie) {
+-		dev_err(dev, "dma_alloc_coherent of size %ld failed\n", size);
++		dev_err(dev, "dma_alloc_coherent of size %lu failed\n", size);
+ 		kfree(buf);
+ 		return ERR_PTR(-ENOMEM);
  	}
+@@ -200,9 +200,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
+ 
+ 	vma->vm_ops->open(vma);
+ 
+-	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %ld\n",
+-		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
+-		buf->size);
++	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %lu\n",
++		 __func__, (unsigned long)buf->dma_addr, vma->vm_start,
++		 buf->size);
+ 
  	return 0;
  }
 -- 
