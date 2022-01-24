@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1DFC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FBEC35273
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578875AbiAXWDz (ORCPT
+        id S1578915AbiAXWEF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:03:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51532 "EHLO
+        Mon, 24 Jan 2022 17:04:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450849AbiAXVVf (ORCPT
+        with ESMTP id S1450845AbiAXVVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:21:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5B3FC0617AA;
-        Mon, 24 Jan 2022 12:16:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31D17C028C2F;
+        Mon, 24 Jan 2022 12:16:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A35D1B8122A;
-        Mon, 24 Jan 2022 20:16:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC720C340E5;
-        Mon, 24 Jan 2022 20:16:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B714B8122F;
+        Mon, 24 Jan 2022 20:16:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2F39C340E5;
+        Mon, 24 Jan 2022 20:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055374;
-        bh=WZ3y8zEoAZCa0dRNCAuVij8BF5EdE9FA38K3vuCAJqE=;
+        s=korg; t=1643055362;
+        bh=OoSssbfB0G+eaEjRAZifozZHpb7w4wG5r3DAky/TyYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ISL+wimExMxRsQgONtqYfPK3aN2wi05YQteVJM0+fUGE/SEdCobAAZrXG15w+8FZS
-         cSAHp9t/5tZP08OdO2DBgjTS3TDsLZQLapiydW4rnC8t/BZ374DiWjwA8fiksLKArQ
-         Sg3CMmTY4IiEW19RF67XbQS4VfBA4IS4mJzvnA+Y=
+        b=rHB8bXMLPBVOudXgrHZqIlnKN1AGFra5TJphBhBUQbwxIPsM3P7S5TbbUX1qnbCH8
+         xmltSBrbTdgPd69LLdXUcXbv5GquufIVHO47hrQvR+xefhfKdSlg2E8ft1vKqFEMmD
+         jpX6f3NQWW7AOIj2iPR7qngWTjKEY4LqJ/fRmrSY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, oujiefeng <oujiefeng@huawei.com>,
-        Jay Fang <f.fangjian@huawei.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 130/846] spi: hisi-kunpeng: Fix the debugfs directory name incorrect
-Date:   Mon, 24 Jan 2022 19:34:07 +0100
-Message-Id: <20220124184105.477739229@linuxfoundation.org>
+Subject: [PATCH 5.15 127/846] ath11k: Fix ETSI regd with weather radar overlap
+Date:   Mon, 24 Jan 2022 19:34:04 +0100
+Message-Id: <20220124184105.367194548@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,82 +50,238 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: oujiefeng <oujiefeng@huawei.com>
+From: Sven Eckelmann <sven@narfation.org>
 
-[ Upstream commit 40fafc8eca3f0d41b9dade5c10afb2dad723aad7 ]
+[ Upstream commit 086c921a354089f209318501038d43c98d3f409f ]
 
-Change the debugfs directory name from hisi_spi65535 to hisi_spi0.
+Some ETSI countries have a small overlap in the wireless-regdb with an ETSI
+channel (5590-5650). A good example is Australia:
 
-Fixes: 2b2142f247eb ("spi: hisi-kunpeng: Add debugfs support")
-Signed-off-by: oujiefeng <oujiefeng@huawei.com>
-Signed-off-by: Jay Fang <f.fangjian@huawei.com>
-Link: https://lore.kernel.org/r/20211117012119.55558-1-f.fangjian@huawei.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+  country AU: DFS-ETSI
+  	(2400 - 2483.5 @ 40), (36)
+  	(5150 - 5250 @ 80), (23), NO-OUTDOOR, AUTO-BW
+  	(5250 - 5350 @ 80), (20), NO-OUTDOOR, AUTO-BW, DFS
+  	(5470 - 5600 @ 80), (27), DFS
+  	(5650 - 5730 @ 80), (27), DFS
+  	(5730 - 5850 @ 80), (36)
+  	(57000 - 66000 @ 2160), (43), NO-OUTDOOR
+
+If the firmware (or the BDF) is shipped with these rules then there is only
+a 10 MHz overlap with the weather radar:
+
+* below: 5470 - 5590
+* weather radar: 5590 - 5600
+* above: (none for the rule "5470 - 5600 @ 80")
+
+There are several wrong assumption in the ath11k code:
+
+* there is always a valid range below the weather radar
+  (actually: there could be no range below the weather radar range OR range
+   could be smaller than 20 MHz)
+* intersected range in the weather radar range is valid
+  (actually: the range could be smaller than 20 MHz)
+* range above weather radar is either empty or valid
+  (actually: the range could be smaller than 20 MHz)
+
+These wrong assumption will lead in this example to a rule
+
+  (5590 - 5600 @ 20), (N/A, 27), (600000 ms), DFS, AUTO-BW
+
+which is invalid according to is_valid_reg_rule() because the freq_diff is
+only 10 MHz but the max_bandwidth is set to 20 MHz. Which results in a
+rejection like:
+
+  WARNING: at backports-20210222_001-4.4.60-b157d2276/net/wireless/reg.c:3984
+  [...]
+  Call trace:
+  [<ffffffbffc3d2e50>] reg_get_max_bandwidth+0x300/0x3a8 [cfg80211]
+  [<ffffffbffc3d3d0c>] regulatory_set_wiphy_regd_sync+0x3c/0x98 [cfg80211]
+  [<ffffffbffc651598>] ath11k_regd_update+0x1a8/0x210 [ath11k]
+  [<ffffffbffc652108>] ath11k_regd_update_work+0x18/0x20 [ath11k]
+  [<ffffffc0000a93e0>] process_one_work+0x1f8/0x340
+  [<ffffffc0000a9784>] worker_thread+0x25c/0x448
+  [<ffffffc0000aedc8>] kthread+0xd0/0xd8
+  [<ffffffc000085550>] ret_from_fork+0x10/0x40
+  ath11k c000000.wifi: failed to perform regd update : -22
+  Invalid regulatory domain detected
+
+To avoid this, the algorithm has to be changed slightly. Instead of
+splitting a rule which overlaps with the weather radar range into 3 pieces
+and accepting the first two parts blindly, it must actually be checked for
+each piece whether it is a valid range. And only if it is valid, add it to
+the output array.
+
+When these checks are in place, the processed rules for AU would end up as
+
+  country AU: DFS-ETSI
+          (2400 - 2483 @ 40), (N/A, 36), (N/A)
+          (5150 - 5250 @ 80), (6, 23), (N/A), NO-OUTDOOR, AUTO-BW
+          (5250 - 5350 @ 80), (6, 20), (0 ms), NO-OUTDOOR, DFS, AUTO-BW
+          (5470 - 5590 @ 80), (6, 27), (0 ms), DFS, AUTO-BW
+          (5650 - 5730 @ 80), (6, 27), (0 ms), DFS, AUTO-BW
+          (5730 - 5850 @ 80), (6, 36), (N/A), AUTO-BW
+
+and will be accepted by the wireless regulatory code.
+
+Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211112153116.1214421-1-sven@narfation.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-hisi-kunpeng.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/wireless/ath/ath11k/reg.c | 103 ++++++++++++++------------
+ 1 file changed, 56 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/spi/spi-hisi-kunpeng.c b/drivers/spi/spi-hisi-kunpeng.c
-index 58b823a16fc4d..525cc0143a305 100644
---- a/drivers/spi/spi-hisi-kunpeng.c
-+++ b/drivers/spi/spi-hisi-kunpeng.c
-@@ -127,7 +127,6 @@ struct hisi_spi {
- 	void __iomem		*regs;
- 	int			irq;
- 	u32			fifo_len; /* depth of the FIFO buffer */
--	u16			bus_num;
- 
- 	/* Current message transfer state info */
- 	const void		*tx;
-@@ -165,7 +164,10 @@ static int hisi_spi_debugfs_init(struct hisi_spi *hs)
+diff --git a/drivers/net/wireless/ath/ath11k/reg.c b/drivers/net/wireless/ath/ath11k/reg.c
+index 92c59009a8ac2..f793324ad0b73 100644
+--- a/drivers/net/wireless/ath/ath11k/reg.c
++++ b/drivers/net/wireless/ath/ath11k/reg.c
+@@ -459,6 +459,9 @@ ath11k_reg_adjust_bw(u16 start_freq, u16 end_freq, u16 max_bw)
  {
- 	char name[32];
+ 	u16 bw;
  
--	snprintf(name, 32, "hisi_spi%d", hs->bus_num);
-+	struct spi_controller *master;
++	if (end_freq <= start_freq)
++		return 0;
 +
-+	master = container_of(hs->dev, struct spi_controller, dev);
-+	snprintf(name, 32, "hisi_spi%d", master->bus_num);
- 	hs->debugfs = debugfs_create_dir(name, NULL);
- 	if (!hs->debugfs)
- 		return -ENOMEM;
-@@ -467,7 +469,6 @@ static int hisi_spi_probe(struct platform_device *pdev)
- 	hs = spi_controller_get_devdata(master);
- 	hs->dev = dev;
- 	hs->irq = irq;
--	hs->bus_num = pdev->id;
+ 	bw = end_freq - start_freq;
+ 	bw = min_t(u16, bw, max_bw);
  
- 	hs->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(hs->regs))
-@@ -490,7 +491,7 @@ static int hisi_spi_probe(struct platform_device *pdev)
- 	master->use_gpio_descriptors = true;
- 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LOOP;
- 	master->bits_per_word_mask = SPI_BPW_RANGE_MASK(4, 32);
--	master->bus_num = hs->bus_num;
-+	master->bus_num = pdev->id;
- 	master->setup = hisi_spi_setup;
- 	master->cleanup = hisi_spi_cleanup;
- 	master->transfer_one = hisi_spi_transfer_one;
-@@ -506,15 +507,15 @@ static int hisi_spi_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+@@ -466,8 +469,10 @@ ath11k_reg_adjust_bw(u16 start_freq, u16 end_freq, u16 max_bw)
+ 		bw = 80;
+ 	else if (bw >= 40 && bw < 80)
+ 		bw = 40;
+-	else if (bw < 40)
++	else if (bw >= 20 && bw < 40)
+ 		bw = 20;
++	else
++		bw = 0;
  
--	if (hisi_spi_debugfs_init(hs))
--		dev_info(dev, "failed to create debugfs dir\n");
+ 	return bw;
+ }
+@@ -491,73 +496,77 @@ ath11k_reg_update_weather_radar_band(struct ath11k_base *ab,
+ 				     struct cur_reg_rule *reg_rule,
+ 				     u8 *rule_idx, u32 flags, u16 max_bw)
+ {
++	u32 start_freq;
+ 	u32 end_freq;
+ 	u16 bw;
+ 	u8 i;
+ 
+ 	i = *rule_idx;
+ 
++	/* there might be situations when even the input rule must be dropped */
++	i--;
++
++	/* frequencies below weather radar */
+ 	bw = ath11k_reg_adjust_bw(reg_rule->start_freq,
+ 				  ETSI_WEATHER_RADAR_BAND_LOW, max_bw);
++	if (bw > 0) {
++		i++;
+ 
+-	ath11k_reg_update_rule(regd->reg_rules + i, reg_rule->start_freq,
+-			       ETSI_WEATHER_RADAR_BAND_LOW, bw,
+-			       reg_rule->ant_gain, reg_rule->reg_power,
+-			       flags);
++		ath11k_reg_update_rule(regd->reg_rules + i,
++				       reg_rule->start_freq,
++				       ETSI_WEATHER_RADAR_BAND_LOW, bw,
++				       reg_rule->ant_gain, reg_rule->reg_power,
++				       flags);
+ 
+-	ath11k_dbg(ab, ATH11K_DBG_REG,
+-		   "\t%d. (%d - %d @ %d) (%d, %d) (%d ms) (FLAGS %d)\n",
+-		   i + 1, reg_rule->start_freq, ETSI_WEATHER_RADAR_BAND_LOW,
+-		   bw, reg_rule->ant_gain, reg_rule->reg_power,
+-		   regd->reg_rules[i].dfs_cac_ms,
+-		   flags);
 -
- 	ret = spi_register_controller(master);
- 	if (ret) {
- 		dev_err(dev, "failed to register spi master, ret=%d\n", ret);
- 		return ret;
+-	if (reg_rule->end_freq > ETSI_WEATHER_RADAR_BAND_HIGH)
+-		end_freq = ETSI_WEATHER_RADAR_BAND_HIGH;
+-	else
+-		end_freq = reg_rule->end_freq;
++		ath11k_dbg(ab, ATH11K_DBG_REG,
++			   "\t%d. (%d - %d @ %d) (%d, %d) (%d ms) (FLAGS %d)\n",
++			   i + 1, reg_rule->start_freq,
++			   ETSI_WEATHER_RADAR_BAND_LOW, bw, reg_rule->ant_gain,
++			   reg_rule->reg_power, regd->reg_rules[i].dfs_cac_ms,
++			   flags);
++	}
+ 
+-	bw = ath11k_reg_adjust_bw(ETSI_WEATHER_RADAR_BAND_LOW, end_freq,
+-				  max_bw);
++	/* weather radar frequencies */
++	start_freq = max_t(u32, reg_rule->start_freq,
++			   ETSI_WEATHER_RADAR_BAND_LOW);
++	end_freq = min_t(u32, reg_rule->end_freq, ETSI_WEATHER_RADAR_BAND_HIGH);
+ 
+-	i++;
++	bw = ath11k_reg_adjust_bw(start_freq, end_freq, max_bw);
++	if (bw > 0) {
++		i++;
+ 
+-	ath11k_reg_update_rule(regd->reg_rules + i,
+-			       ETSI_WEATHER_RADAR_BAND_LOW, end_freq, bw,
+-			       reg_rule->ant_gain, reg_rule->reg_power,
+-			       flags);
++		ath11k_reg_update_rule(regd->reg_rules + i, start_freq,
++				       end_freq, bw, reg_rule->ant_gain,
++				       reg_rule->reg_power, flags);
+ 
+-	regd->reg_rules[i].dfs_cac_ms = ETSI_WEATHER_RADAR_BAND_CAC_TIMEOUT;
++		regd->reg_rules[i].dfs_cac_ms = ETSI_WEATHER_RADAR_BAND_CAC_TIMEOUT;
+ 
+-	ath11k_dbg(ab, ATH11K_DBG_REG,
+-		   "\t%d. (%d - %d @ %d) (%d, %d) (%d ms) (FLAGS %d)\n",
+-		   i + 1, ETSI_WEATHER_RADAR_BAND_LOW, end_freq,
+-		   bw, reg_rule->ant_gain, reg_rule->reg_power,
+-		   regd->reg_rules[i].dfs_cac_ms,
+-		   flags);
+-
+-	if (end_freq == reg_rule->end_freq) {
+-		regd->n_reg_rules--;
+-		*rule_idx = i;
+-		return;
++		ath11k_dbg(ab, ATH11K_DBG_REG,
++			   "\t%d. (%d - %d @ %d) (%d, %d) (%d ms) (FLAGS %d)\n",
++			   i + 1, start_freq, end_freq, bw,
++			   reg_rule->ant_gain, reg_rule->reg_power,
++			   regd->reg_rules[i].dfs_cac_ms, flags);
  	}
  
-+	if (hisi_spi_debugfs_init(hs))
-+		dev_info(dev, "failed to create debugfs dir\n");
-+
- 	dev_info(dev, "hw version:0x%x max-freq:%u kHz\n",
- 		readl(hs->regs + HISI_SPI_VERSION),
- 		master->max_speed_hz / 1000);
++	/* frequencies above weather radar */
+ 	bw = ath11k_reg_adjust_bw(ETSI_WEATHER_RADAR_BAND_HIGH,
+ 				  reg_rule->end_freq, max_bw);
++	if (bw > 0) {
++		i++;
+ 
+-	i++;
+-
+-	ath11k_reg_update_rule(regd->reg_rules + i, ETSI_WEATHER_RADAR_BAND_HIGH,
+-			       reg_rule->end_freq, bw,
+-			       reg_rule->ant_gain, reg_rule->reg_power,
+-			       flags);
++		ath11k_reg_update_rule(regd->reg_rules + i,
++				       ETSI_WEATHER_RADAR_BAND_HIGH,
++				       reg_rule->end_freq, bw,
++				       reg_rule->ant_gain, reg_rule->reg_power,
++				       flags);
+ 
+-	ath11k_dbg(ab, ATH11K_DBG_REG,
+-		   "\t%d. (%d - %d @ %d) (%d, %d) (%d ms) (FLAGS %d)\n",
+-		   i + 1, ETSI_WEATHER_RADAR_BAND_HIGH, reg_rule->end_freq,
+-		   bw, reg_rule->ant_gain, reg_rule->reg_power,
+-		   regd->reg_rules[i].dfs_cac_ms,
+-		   flags);
++		ath11k_dbg(ab, ATH11K_DBG_REG,
++			   "\t%d. (%d - %d @ %d) (%d, %d) (%d ms) (FLAGS %d)\n",
++			   i + 1, ETSI_WEATHER_RADAR_BAND_HIGH,
++			   reg_rule->end_freq, bw, reg_rule->ant_gain,
++			   reg_rule->reg_power, regd->reg_rules[i].dfs_cac_ms,
++			   flags);
++	}
+ 
+ 	*rule_idx = i;
+ }
 -- 
 2.34.1
 
