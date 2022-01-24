@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF495C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C866C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373983AbiAYAPs (ORCPT
+        id S2374277AbiAYAQk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:15:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53416 "EHLO
+        Mon, 24 Jan 2022 19:16:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449269AbiAXX2P (ORCPT
+        with ESMTP id S1383050AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7986FC01D7FA;
-        Mon, 24 Jan 2022 13:31:53 -0800 (PST)
+        Mon, 24 Jan 2022 18:28:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B0DC01D7EC;
+        Mon, 24 Jan 2022 13:31:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 183DD614E1;
-        Mon, 24 Jan 2022 21:31:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9F64C340E4;
-        Mon, 24 Jan 2022 21:31:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AD71B8122A;
+        Mon, 24 Jan 2022 21:31:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A88C340E4;
+        Mon, 24 Jan 2022 21:30:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059912;
-        bh=JGviIA0qFo66pV1MrdQu8TN/MHhkm1Foo3NvPRqNvQM=;
+        s=korg; t=1643059860;
+        bh=9aUcXT3IAkm0wq9zoAJHhvROrGWTCBthzqq60iNgH8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQ0KFCC9wxpwK8A4hfh/6TwuJkzoN4YvMH5sx8a/yamBNAt3k4CHHYJRmJaRl2CQf
-         +EbqezRtoxt+WGNaMMXaupUfd+sR2Jq69lgnD785HnQzPgpoxkBuoMcTflUdZVcTvx
-         nngA84ms4Oc50zjbiNE0fuMC0lNR/VLSRDGx9aqw=
+        b=CeQyGaISh2khsOeIiZXuAz4/KnypXx++/PLwgmGMlommWrLPTIx4Lcv4vMCD/7vnJ
+         urLBio6qi9tajkZ9g5IHsUCYJtbNbTOG4y8MNNcFsdUvFq/NfZIQGAdg3hnG+EtlLF
+         N6AKNazmOKq83djYHnmsAqAKOHuAqdso0aahNdw4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dani Liberman <dliberman@habana.ai>,
-        Oded Gabbay <ogabbay@kernel.org>,
+        stable@vger.kernel.org,
+        Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0777/1039] habanalabs: change wait for interrupt timeout to 64 bit
-Date:   Mon, 24 Jan 2022 19:42:46 +0100
-Message-Id: <20220124184151.409534616@linuxfoundation.org>
+Subject: [PATCH 5.16 0757/1039] MIPS: Loongson64: Use three arguments for slti
+Date:   Mon, 24 Jan 2022 19:42:26 +0100
+Message-Id: <20220124184150.779947895@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,94 +52,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dani Liberman <dliberman@habana.ai>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 48f31169830f589e4c7ac475ccc7414951ded3f0 ]
+[ Upstream commit f2c6c22fa83ab2577619009057b3ebcb5305bb03 ]
 
-In order to increase maximum wait-for-interrupt timeout, change it
-to 64 bit variable. This wait is used only by newer ASICs, so no
-problem in changing this interface at this time.
+LLVM's integrated assembler does not support 'slti <reg>, <imm>':
 
-Signed-off-by: Dani Liberman <dliberman@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
-Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
+<instantiation>:16:12: error: invalid operand for instruction
+ slti $12, (0x6300 | 0x0008)
+           ^
+arch/mips/kernel/head.S:86:2: note: while in macro instantiation
+ kernel_entry_setup # cpu specific setup
+ ^
+<instantiation>:16:12: error: invalid operand for instruction
+ slti $12, (0x6300 | 0x0008)
+           ^
+arch/mips/kernel/head.S:150:2: note: while in macro instantiation
+ smp_slave_setup
+ ^
+
+To increase compatibility with LLVM's integrated assembler, use the full
+form of 'slti <reg>, <reg>, <imm>', which matches the rest of
+arch/mips/. This does not result in any change for GNU as.
+
+Link: https://github.com/ClangBuiltLinux/linux/issues/1526
+Reported-by: Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../habanalabs/common/command_submission.c    | 22 ++++++++++++++-----
- include/uapi/misc/habanalabs.h                | 18 +++++++++------
- 2 files changed, 28 insertions(+), 12 deletions(-)
+ arch/mips/include/asm/mach-loongson64/kernel-entry-init.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/command_submission.c b/drivers/misc/habanalabs/common/command_submission.c
-index 4c8000fd246cd..9451e4bae05df 100644
---- a/drivers/misc/habanalabs/common/command_submission.c
-+++ b/drivers/misc/habanalabs/common/command_submission.c
-@@ -2765,8 +2765,23 @@ static int hl_cs_wait_ioctl(struct hl_fpriv *hpriv, void *data)
- 	return 0;
- }
- 
-+static inline unsigned long hl_usecs64_to_jiffies(const u64 usecs)
-+{
-+	if (usecs <= U32_MAX)
-+		return usecs_to_jiffies(usecs);
-+
-+	/*
-+	 * If the value in nanoseconds is larger than 64 bit, use the largest
-+	 * 64 bit value.
-+	 */
-+	if (usecs >= ((u64)(U64_MAX / NSEC_PER_USEC)))
-+		return nsecs_to_jiffies(U64_MAX);
-+
-+	return nsecs_to_jiffies(usecs * NSEC_PER_USEC);
-+}
-+
- static int _hl_interrupt_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
--				u32 timeout_us, u64 user_address,
-+				u64 timeout_us, u64 user_address,
- 				u64 target_value, u16 interrupt_offset,
- 				enum hl_cs_wait_status *status,
- 				u64 *timestamp)
-@@ -2778,10 +2793,7 @@ static int _hl_interrupt_wait_ioctl(struct hl_device *hdev, struct hl_ctx *ctx,
- 	long completion_rc;
- 	int rc = 0;
- 
--	if (timeout_us == U32_MAX)
--		timeout = timeout_us;
--	else
--		timeout = usecs_to_jiffies(timeout_us);
-+	timeout = hl_usecs64_to_jiffies(timeout_us);
- 
- 	hl_ctx_get(hdev, ctx);
- 
-diff --git a/include/uapi/misc/habanalabs.h b/include/uapi/misc/habanalabs.h
-index 00b3095904995..c5760acebdd1d 100644
---- a/include/uapi/misc/habanalabs.h
-+++ b/include/uapi/misc/habanalabs.h
-@@ -911,14 +911,18 @@ struct hl_wait_cs_in {
- 	 */
- 	__u32 flags;
- 
--	/* Multi CS API info- valid entries in multi-CS array */
--	__u8 seq_arr_len;
--	__u8 pad[3];
-+	union {
-+		struct {
-+			/* Multi CS API info- valid entries in multi-CS array */
-+			__u8 seq_arr_len;
-+			__u8 pad[7];
-+		};
- 
--	/* Absolute timeout to wait for an interrupt in microseconds.
--	 * Relevant only when HL_WAIT_CS_FLAGS_INTERRUPT is set
--	 */
--	__u32 interrupt_timeout_us;
-+		/* Absolute timeout to wait for an interrupt in microseconds.
-+		 * Relevant only when HL_WAIT_CS_FLAGS_INTERRUPT is set
-+		 */
-+		__u64 interrupt_timeout_us;
-+	};
- };
- 
- #define HL_WAIT_CS_STATUS_COMPLETED	0
+diff --git a/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h b/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
+index 13373c5144f89..efb41b3519747 100644
+--- a/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
++++ b/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
+@@ -32,7 +32,7 @@
+ 	nop
+ 	/* Loongson-3A R2/R3 */
+ 	andi	t0, (PRID_IMP_MASK | PRID_REV_MASK)
+-	slti	t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
++	slti	t0, t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
+ 	bnez	t0, 2f
+ 	nop
+ 1:
+@@ -63,7 +63,7 @@
+ 	nop
+ 	/* Loongson-3A R2/R3 */
+ 	andi	t0, (PRID_IMP_MASK | PRID_REV_MASK)
+-	slti	t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
++	slti	t0, t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
+ 	bnez	t0, 2f
+ 	nop
+ 1:
 -- 
 2.34.1
 
