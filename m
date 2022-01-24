@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F5BC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AF48C35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448196AbiAXVMK (ORCPT
+        id S1448298AbiAXVMY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43838 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358462AbiAXUmM (ORCPT
+        Mon, 24 Jan 2022 16:12:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35578 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389324AbiAXUkq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:12 -0500
+        Mon, 24 Jan 2022 15:40:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF2A4B81255;
-        Mon, 24 Jan 2022 20:42:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFCA7C340E5;
-        Mon, 24 Jan 2022 20:42:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 935E161540;
+        Mon, 24 Jan 2022 20:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B84C340E5;
+        Mon, 24 Jan 2022 20:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056929;
-        bh=AOczSnWdWced6oq1iyNUhjT2AeFnG/1hKhyVL7vUbzw=;
+        s=korg; t=1643056846;
+        bh=csDPm90U76rsS2TRvT3VQSdssrRCu4Q7DK66RQylqBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YmzXhUVIT7lXd5e5CiHaM6Kqx08PGuklBchNcnlZz84sQU1HfZ6AUsGghRPJGR2Mu
-         sYzT/Ur6zlvZA5SjgFkN4s6uz8sM4G8SKjkRDabo5J1EwPBlx0xz/qwjQGs7Zk6ez+
-         7a1+T1+IlvlIbYosdgQrEpixecOTBS3sErA/wSsk=
+        b=CIEHJk981PBCBpIws47uqtg9NSrHGqSmF/zs0x/ncKyHmog50AZehd0P3mDB1MWpC
+         udYNFRm/PT53og06CLi7i7V+hO82eMM0fb0dTOy520vwzzm4i1ANu+r7aqB0v91ycP
+         ByriBWE6PsqHLEnGvRpPJe1rzaU0C39yj0LQu87M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 613/846] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 24 Jan 2022 19:42:10 +0100
-Message-Id: <20220124184122.182959517@linuxfoundation.org>
+Subject: [PATCH 5.15 620/846] can: flexcan: rename RX modes
+Date:   Mon, 24 Jan 2022 19:42:17 +0100
+Message-Id: <20220124184122.429125143@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,51 +46,198 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+[ Upstream commit 34ea4e1c99f1f177f87e4ae7896caef238dd741a ]
 
-struct uart_port contains a cached copy of the Modem Control signals.
-It is used to skip register writes in uart_update_mctrl() if the new
-signal state equals the old signal state.  It also avoids a register
-read to obtain the current state of output signals.
+Most flexcan IP cores support 2 RX modes:
+- FIFO
+- mailbox
 
-When a uart_port is registered, uart_configure_port() changes signal
-state but neglects to keep the cached copy in sync.  That may cause
-a subsequent register write to be incorrectly skipped.  Fix it before
-it trips somebody up.
+The names for these modes were chosen to reflect the name of the
+rx-offload mode they are using.
 
-This behavior has been present ever since the serial core was introduced
-in 2002:
-https://git.kernel.org/history/history/c/33c0d1b0c3eb
+The name of the RX modes should better reflect their difference with
+regards the flexcan IP core. So this patch renames the various
+occurrences of OFF_FIFO to RX_FIFO and OFF_TIMESTAMP to RX_MAILBOX:
 
-So far it was never an issue because the cached copy is initialized to 0
-by kzalloc() and when uart_configure_port() is executed, at most DTR has
-been set by uart_set_options() or sunsu_console_setup().  Therefore,
-a stable designation seems unnecessary.
+| FLEXCAN_TX_MB_RESERVED_OFF_FIFO -> FLEXCAN_TX_MB_RESERVED_RX_FIFO
+| FLEXCAN_TX_MB_RESERVED_OFF_TIMESTAMP -> FLEXCAN_TX_MB_RESERVED_RX_MAILBOX
+| FLEXCAN_QUIRK_USE_OFF_TIMESTAMP -> FLEXCAN_QUIRK_USE_RX_MAILBOX
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/all/20220107193105.1699523-4-mkl@pengutronix.de
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/can/flexcan.c | 48 +++++++++++++++++++--------------------
+ 1 file changed, 24 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 61e3dd0222af1..9e7e624a6c9db 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2393,7 +2393,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+		port->mctrl &= TIOCM_DTR;
-+		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index 3178557e40208..02299befe2852 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -173,9 +173,9 @@
  
- 		/*
+ /* FLEXCAN interrupt flag register (IFLAG) bits */
+ /* Errata ERR005829 step7: Reserve first valid MB */
+-#define FLEXCAN_TX_MB_RESERVED_OFF_FIFO		8
+-#define FLEXCAN_TX_MB_RESERVED_OFF_TIMESTAMP	0
+-#define FLEXCAN_RX_MB_OFF_TIMESTAMP_FIRST	(FLEXCAN_TX_MB_RESERVED_OFF_TIMESTAMP + 1)
++#define FLEXCAN_TX_MB_RESERVED_RX_FIFO	8
++#define FLEXCAN_TX_MB_RESERVED_RX_MAILBOX	0
++#define FLEXCAN_RX_MB_RX_MAILBOX_FIRST	(FLEXCAN_TX_MB_RESERVED_RX_MAILBOX + 1)
+ #define FLEXCAN_IFLAG_MB(x)		BIT_ULL(x)
+ #define FLEXCAN_IFLAG_RX_FIFO_OVERFLOW	BIT(7)
+ #define FLEXCAN_IFLAG_RX_FIFO_WARN	BIT(6)
+@@ -234,8 +234,8 @@
+ #define FLEXCAN_QUIRK_ENABLE_EACEN_RRS  BIT(3)
+ /* Disable non-correctable errors interrupt and freeze mode */
+ #define FLEXCAN_QUIRK_DISABLE_MECR BIT(4)
+-/* Use timestamp based offloading */
+-#define FLEXCAN_QUIRK_USE_OFF_TIMESTAMP BIT(5)
++/* Use mailboxes (not FIFO) for RX path */
++#define FLEXCAN_QUIRK_USE_RX_MAILBOX BIT(5)
+ /* No interrupt for error passive */
+ #define FLEXCAN_QUIRK_BROKEN_PERR_STATE BIT(6)
+ /* default to BE register access */
+@@ -402,38 +402,38 @@ static const struct flexcan_devtype_data fsl_imx28_devtype_data = {
+ 
+ static const struct flexcan_devtype_data fsl_imx6q_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+-		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
++		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+ 		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_imx8qm_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+-		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
++		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+ 		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW,
+ };
+ 
+ static struct flexcan_devtype_data fsl_imx8mp_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+-		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_OFF_TIMESTAMP |
++		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
+ 		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
+ 		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_vf610_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+-		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_OFF_TIMESTAMP |
++		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
+ 		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_ls1021a_r2_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+-		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_OFF_TIMESTAMP,
++		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_lx2160a_r1_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+-		FLEXCAN_QUIRK_USE_OFF_TIMESTAMP | FLEXCAN_QUIRK_SUPPORT_FD |
++		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_SUPPORT_FD |
+ 		FLEXCAN_QUIRK_SUPPORT_ECC,
+ };
+ 
+@@ -1018,7 +1018,7 @@ static struct sk_buff *flexcan_mailbox_read(struct can_rx_offload *offload,
+ 
+ 	mb = flexcan_get_mb(priv, n);
+ 
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX) {
+ 		u32 code;
+ 
+ 		do {
+@@ -1083,7 +1083,7 @@ static struct sk_buff *flexcan_mailbox_read(struct can_rx_offload *offload,
+ 	}
+ 
+  mark_as_read:
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)
+ 		flexcan_write64(priv, FLEXCAN_IFLAG_MB(n), &regs->iflag1);
+ 	else
+ 		priv->write(FLEXCAN_IFLAG_RX_FIFO_AVAILABLE, &regs->iflag1);
+@@ -1109,7 +1109,7 @@ static irqreturn_t flexcan_irq(int irq, void *dev_id)
+ 	enum can_state last_state = priv->can.state;
+ 
+ 	/* reception interrupt */
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX) {
+ 		u64 reg_iflag_rx;
+ 		int ret;
+ 
+@@ -1429,20 +1429,20 @@ static int flexcan_rx_offload_setup(struct net_device *dev)
+ 		priv->mb_count = (sizeof(priv->regs->mb[0]) / priv->mb_size) +
+ 				 (sizeof(priv->regs->mb[1]) / priv->mb_size);
+ 
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)
+ 		priv->tx_mb_reserved =
+-			flexcan_get_mb(priv, FLEXCAN_TX_MB_RESERVED_OFF_TIMESTAMP);
++			flexcan_get_mb(priv, FLEXCAN_TX_MB_RESERVED_RX_MAILBOX);
+ 	else
+ 		priv->tx_mb_reserved =
+-			flexcan_get_mb(priv, FLEXCAN_TX_MB_RESERVED_OFF_FIFO);
++			flexcan_get_mb(priv, FLEXCAN_TX_MB_RESERVED_RX_FIFO);
+ 	priv->tx_mb_idx = priv->mb_count - 1;
+ 	priv->tx_mb = flexcan_get_mb(priv, priv->tx_mb_idx);
+ 	priv->tx_mask = FLEXCAN_IFLAG_MB(priv->tx_mb_idx);
+ 
+ 	priv->offload.mailbox_read = flexcan_mailbox_read;
+ 
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
+-		priv->offload.mb_first = FLEXCAN_RX_MB_OFF_TIMESTAMP_FIRST;
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX) {
++		priv->offload.mb_first = FLEXCAN_RX_MB_RX_MAILBOX_FIRST;
+ 		priv->offload.mb_last = priv->mb_count - 2;
+ 
+ 		priv->rx_mask = GENMASK_ULL(priv->offload.mb_last,
+@@ -1532,10 +1532,10 @@ static int flexcan_chip_start(struct net_device *dev)
+ 	/* MCR
+ 	 *
+ 	 * FIFO:
+-	 * - disable for timestamp mode
++	 * - disable for mailbox mode
+ 	 * - enable for FIFO mode
+ 	 */
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)
+ 		reg_mcr &= ~FLEXCAN_MCR_FEN;
+ 	else
+ 		reg_mcr |= FLEXCAN_MCR_FEN;
+@@ -1631,7 +1631,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 		priv->write(reg_fdctrl, &regs->fdctrl);
+ 	}
+ 
+-	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP) {
++	if (priv->devtype_data.quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX) {
+ 		for (i = priv->offload.mb_first; i <= priv->offload.mb_last; i++) {
+ 			mb = flexcan_get_mb(priv, i);
+ 			priv->write(FLEXCAN_MB_CODE_RX_EMPTY,
+@@ -1639,7 +1639,7 @@ static int flexcan_chip_start(struct net_device *dev)
+ 		}
+ 	} else {
+ 		/* clear and invalidate unused mailboxes first */
+-		for (i = FLEXCAN_TX_MB_RESERVED_OFF_FIFO; i < priv->mb_count; i++) {
++		for (i = FLEXCAN_TX_MB_RESERVED_RX_FIFO; i < priv->mb_count; i++) {
+ 			mb = flexcan_get_mb(priv, i);
+ 			priv->write(FLEXCAN_MB_CODE_RX_INACTIVE,
+ 				    &mb->can_ctrl);
+@@ -2164,7 +2164,7 @@ static int flexcan_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	if ((devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_FD) &&
+-	    !(devtype_data->quirks & FLEXCAN_QUIRK_USE_OFF_TIMESTAMP)) {
++	    !(devtype_data->quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)) {
+ 		dev_err(&pdev->dev, "CAN-FD mode doesn't work with FIFO mode!\n");
+ 		return -EINVAL;
+ 	}
 -- 
 2.34.1
 
