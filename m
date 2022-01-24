@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A818C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4E9C35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358648AbiAXTze (ORCPT
+        id S1358531AbiAXTzY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
+        Mon, 24 Jan 2022 14:55:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349088AbiAXTlA (ORCPT
+        with ESMTP id S1354104AbiAXTlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4DDC07A96E;
-        Mon, 24 Jan 2022 11:20:20 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4B50C061744;
+        Mon, 24 Jan 2022 11:20:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B27060010;
-        Mon, 24 Jan 2022 19:20:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F165BC340E8;
-        Mon, 24 Jan 2022 19:20:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80064B811F9;
+        Mon, 24 Jan 2022 19:20:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADFE2C340E5;
+        Mon, 24 Jan 2022 19:20:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052019;
-        bh=7z0emsLHzxyyyK8JWHHyYkGDcaTiOkQ8xx+Sr2z/9nk=;
+        s=korg; t=1643052046;
+        bh=Up/mfvhONYj+Dx9dzEmZmji4FSEdxlZp4ge0yxhkITo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ufSMoEWayBjVU7LYzvDVhxIOdo/qMLbNEqCLP7fo+cWLBEyDe9SePQMcqM7vgvUFs
-         XDlwxbatxuK6iDdJSKVNZiTmnUPRvynKIznBAEC/ms81syrw/vXygVBjpJZs3+g4wb
-         c3x36aJPq9V7bsje+qr/Ba9Zgt0gk7L0EUPyW6sQ=
+        b=VlIFFoP6TC+0d/VNDowc/Gitn5lT6Ggb08ub/tzCLHoeCBQ3Nx2sJKArtjZuFp0jI
+         9xMTtbEJCnWmuejV8m3RMWnLxFz/g8WF/uLeBWeQutXHcrgYqccL8uzAKv/UqTvtPL
+         bq9SepZYsarGKfr+AYV3M2Lo49mODTw4MMnsY1Bs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mark Asselstine <mark.asselstine@windriver.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bob Moore <robert.moore@intel.com>,
+        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 161/239] ACPICA: Utilities: Avoid deleting the same object twice in a row
-Date:   Mon, 24 Jan 2022 19:43:19 +0100
-Message-Id: <20220124183948.217644407@linuxfoundation.org>
+Subject: [PATCH 4.19 170/239] dm btree: add a defensive bounds check to insert_at()
+Date:   Mon, 24 Jan 2022 19:43:28 +0100
+Message-Id: <20220124183948.506574080@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -52,46 +50,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Joe Thornber <ejt@redhat.com>
 
-[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
+[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
 
-ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
+Corrupt metadata could trigger an out of bounds write.
 
-If original_count is 0 in acpi_ut_update_ref_count (),
-acpi_ut_delete_internal_obj () is invoked for the target object, which is
-incorrect, because that object has been deleted once already and the
-memory allocated to store it may have been reclaimed and allocated
-for a different purpose by the host OS.  Moreover, a confusing debug
-message following the "Reference Count is already zero, cannot
-decrement" warning is printed in that case.
-
-To fix this issue, make acpi_ut_update_ref_count () return after finding
-that original_count is 0 and printing the above warning.
-
-Link: https://github.com/acpica/acpica/commit/c11af67d
-Link: https://github.com/acpica/acpica/pull/652
-Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Joe Thornber <ejt@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/utdelete.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/md/persistent-data/dm-btree.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
-index 0dc8dea815823..db79a826e6b8d 100644
---- a/drivers/acpi/acpica/utdelete.c
-+++ b/drivers/acpi/acpica/utdelete.c
-@@ -410,6 +410,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
- 			ACPI_WARNING((AE_INFO,
- 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
- 				      object));
-+			return;
- 		}
+diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
+index 8aae0624a2971..6383afb88f319 100644
+--- a/drivers/md/persistent-data/dm-btree.c
++++ b/drivers/md/persistent-data/dm-btree.c
+@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
+ }
  
- 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_ALLOCATIONS,
+ static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
+-		      uint64_t key, void *value)
+-		      __dm_written_to_disk(value)
++		     uint64_t key, void *value)
++	__dm_written_to_disk(value)
+ {
+ 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
++	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
+ 	__le64 key_le = cpu_to_le64(key);
+ 
+ 	if (index > nr_entries ||
+-	    index >= le32_to_cpu(node->header.max_entries)) {
++	    index >= max_entries ||
++	    nr_entries >= max_entries) {
+ 		DMERR("too many entries in btree node for insert");
+ 		__dm_unbless_for_disk(value);
+ 		return -ENOMEM;
 -- 
 2.34.1
 
