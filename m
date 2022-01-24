@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76EA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 106A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376443AbiAXUBq (ORCPT
+        id S1358387AbiAXUBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:01:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34880 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352064AbiAXThW (ORCPT
+        Mon, 24 Jan 2022 15:01:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58588 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348432AbiAXThT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:37:22 -0500
+        Mon, 24 Jan 2022 14:37:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB9D6153C;
-        Mon, 24 Jan 2022 19:37:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C913C34106;
-        Mon, 24 Jan 2022 19:37:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B246B810BD;
+        Mon, 24 Jan 2022 19:37:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AC02C340E8;
+        Mon, 24 Jan 2022 19:37:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053039;
-        bh=DgL0M9pJ+5hLvwUAh76NXDtoQtsqUyxfMwlZsYc7D1A=;
+        s=korg; t=1643053033;
+        bh=1CNTcvK4OXKHW3vcSevueM9ut4cbVVfCf3c2zi3LRCY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p92n6uhRTGDEcdnRZ8ekt0nGqU3vh7Rj8VqKRxTtrpuoX/ycpjifppOUGS3vQxOim
-         Y6rmS444GAZPFFMNYZoTbHtBsj8TuqyjjiNeXwbCmIvfUdqxymAGKc1VI8tL9klv9P
-         FVf59je3EEjbgxLL8wCJ3QGn1X9cHrNn/IjiMgsw=
+        b=JSYN3KN+u0Xq6blxPFdIrlh0uxSk8tShbmLpLbrH9JZ/CUPQI3DXVAO+h5CQewPMp
+         rukKNGC7FpJ6fw5Kjl7PwJCErdhSZmSb67sJXiDT8ZcFW8xY7q+Kw6DM4foRtfNhT2
+         a8LvGZuS+pl5h8QHQdrsXh5k1Lt4tPzbHWaqXHz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Ye Guojin <ye.guojin@zte.com.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 239/320] MIPS: OCTEON: add put_device() after of_find_device_by_node()
-Date:   Mon, 24 Jan 2022 19:43:43 +0100
-Message-Id: <20220124184002.119676205@linuxfoundation.org>
+        stable@vger.kernel.org, Vlastimil Babka <vbabka@suse.com>,
+        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>
+Subject: [PATCH 5.4 255/320] s390/mm: fix 2KB pgtable release race
+Date:   Mon, 24 Jan 2022 19:43:59 +0100
+Message-Id: <20220124184002.666556675@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,67 +48,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+From: Alexander Gordeev <agordeev@linux.ibm.com>
 
-[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
+commit c2c224932fd0ee6854d6ebfc8d059c2bcad86606 upstream.
 
-This was found by coccicheck:
-./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 324, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 387, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
+There is a race on concurrent 2KB-pgtables release paths when
+both upper and lower halves of the containing parent page are
+freed, one via page_table_free_rcu() + __tlb_remove_table(),
+and the other via page_table_free(). The race might lead to a
+corruption as result of remove of list item in page_table_free()
+concurrently with __free_page() in __tlb_remove_table().
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Let's assume first the lower and next the upper 2KB-pgtables are
+freed from a page. Since both halves of the page are allocated
+the tracking byte (bits 24-31 of the page _refcount) has value
+of 0x03 initially:
+
+CPU0				CPU1
+----				----
+
+page_table_free_rcu() // lower half
+{
+	// _refcount[31..24] == 0x03
+	...
+	atomic_xor_bits(&page->_refcount,
+			0x11U << (0 + 24));
+	// _refcount[31..24] <= 0x12
+	...
+	table = table | (1U << 0);
+	tlb_remove_table(tlb, table);
+}
+...
+__tlb_remove_table()
+{
+	// _refcount[31..24] == 0x12
+	mask = _table & 3;
+	// mask <= 0x01
+	...
+
+				page_table_free() // upper half
+				{
+					// _refcount[31..24] == 0x12
+					...
+					atomic_xor_bits(
+						&page->_refcount,
+						1U << (1 + 24));
+					// _refcount[31..24] <= 0x10
+					// mask <= 0x10
+					...
+	atomic_xor_bits(&page->_refcount,
+			mask << (4 + 24));
+	// _refcount[31..24] <= 0x00
+	// mask <= 0x00
+	...
+	if (mask != 0) // == false
+		break;
+	fallthrough;
+	...
+					if (mask & 3) // == false
+						...
+					else
+	__free_page(page);			list_del(&page->lru);
+	^^^^^^^^^^^^^^^^^^	RACE!		^^^^^^^^^^^^^^^^^^^^^
+}					...
+				}
+
+The problem is page_table_free() releases the page as result of
+lower nibble unset and __tlb_remove_table() observing zero too
+early. With this update page_table_free() will use the similar
+logic as page_table_free_rcu() + __tlb_remove_table(), and mark
+the fragment as pending for removal in the upper nibble until
+after the list_del().
+
+In other words, the parent page is considered as unreferenced and
+safe to release only when the lower nibble is cleared already and
+unsetting a bit in upper nibble results in that nibble turned zero.
+
+Cc: stable@vger.kernel.org
+Suggested-by: Vlastimil Babka <vbabka@suse.com>
+Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
+Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/cavium-octeon/octeon-platform.c | 2 ++
- arch/mips/cavium-octeon/octeon-usb.c      | 1 +
- 2 files changed, 3 insertions(+)
+ arch/s390/mm/pgalloc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
-index 51685f893eab0..c214fe4e678bb 100644
---- a/arch/mips/cavium-octeon/octeon-platform.c
-+++ b/arch/mips/cavium-octeon/octeon-platform.c
-@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
- 
- 	pd->dev.platform_data = &octeon_ehci_pdata;
- 	octeon_ehci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
- 	return ret;
- }
-@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
- 
- 	pd->dev.platform_data = &octeon_ohci_pdata;
- 	octeon_ohci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
- 	return ret;
- }
-diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
-index 4017398519cf9..e092d86e63581 100644
---- a/arch/mips/cavium-octeon/octeon-usb.c
-+++ b/arch/mips/cavium-octeon/octeon-usb.c
-@@ -544,6 +544,7 @@ static int __init dwc3_octeon_device_init(void)
- 			devm_iounmap(&pdev->dev, base);
- 			devm_release_mem_region(&pdev->dev, res->start,
- 						resource_size(res));
-+			put_device(&pdev->dev);
- 		}
- 	} while (node != NULL);
- 
--- 
-2.34.1
-
+--- a/arch/s390/mm/pgalloc.c
++++ b/arch/s390/mm/pgalloc.c
+@@ -255,13 +255,15 @@ void page_table_free(struct mm_struct *m
+ 		/* Free 2K page table fragment of a 4K page */
+ 		bit = (__pa(table) & ~PAGE_MASK)/(PTRS_PER_PTE*sizeof(pte_t));
+ 		spin_lock_bh(&mm->context.lock);
+-		mask = atomic_xor_bits(&page->_refcount, 1U << (bit + 24));
++		mask = atomic_xor_bits(&page->_refcount, 0x11U << (bit + 24));
+ 		mask >>= 24;
+ 		if (mask & 3)
+ 			list_add(&page->lru, &mm->context.pgtable_list);
+ 		else
+ 			list_del(&page->lru);
+ 		spin_unlock_bh(&mm->context.lock);
++		mask = atomic_xor_bits(&page->_refcount, 0x10U << (bit + 24));
++		mask >>= 24;
+ 		if (mask != 0)
+ 			return;
+ 	} else {
 
 
