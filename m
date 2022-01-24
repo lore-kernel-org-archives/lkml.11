@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09792C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E4CEC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443451AbiAXU46 (ORCPT
+        id S1443461AbiAXU5B (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39772 "EHLO
+        Mon, 24 Jan 2022 15:57:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385529AbiAXUdd (ORCPT
+        with ESMTP id S1385532AbiAXUdd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:33:33 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C33EC07E2A6;
-        Mon, 24 Jan 2022 11:46:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E855C07E2A8;
+        Mon, 24 Jan 2022 11:46:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B92276154E;
-        Mon, 24 Jan 2022 19:46:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1E8FC340E5;
-        Mon, 24 Jan 2022 19:46:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F272A61482;
+        Mon, 24 Jan 2022 19:46:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E01C340E5;
+        Mon, 24 Jan 2022 19:46:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053579;
-        bh=lLAkhTF9mn3pG3+LBJokmhIVH1QLXwMkT+mZu/HSBUg=;
+        s=korg; t=1643053596;
+        bh=/2RqlihE1x2dCaNhiMm97oLev/9P+gs0JBMsdtsmUIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SLdDwTeSNGiydRxGenViheksmLFiwnQw7dUiN1At38EIwYf93XPS2GgXre9s8pCx+
-         XtVXFajazqVNzLCnwzoZb1MazbmblrDz/rZtfwLA5/VsPGUe2y62IZxY67uKsOy/Rl
-         pB4acwaS0HH61HemsFCRgLPYEiJi19g/7rl6U38w=
+        b=J5M67QxNf2wCRsEemlc7dCMAc3ly0VncIF6enz2gHYV3wpYhxUjd87CNKWXJ85gn7
+         yrtOV5cXjSjm6HrmTNOB6Rex7GOWmEMd8bEvauGS9yI84CIq13rcFSBgWazw1PjUwm
+         niGGHGfn0L5yyxDyNiotOCY5OXND7AeE9FTdNADs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 104/563] tty: serial: atmel: Check return code of dmaengine_submit()
-Date:   Mon, 24 Jan 2022 19:37:49 +0100
-Message-Id: <20220124184027.996894655@linuxfoundation.org>
+Subject: [PATCH 5.10 116/563] media: venus: core: Fix a resource leak in the error handling path of venus_probe()
+Date:   Mon, 24 Jan 2022 19:38:01 +0100
+Message-Id: <20220124184028.432876496@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,57 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
+[ Upstream commit 8cc7a1b2aca067397a016cdb971a5e6ad9b640c7 ]
 
-The tx_submit() method of struct dma_async_tx_descriptor is entitled
-to do sanity checks and return errors if encountered. It's not the
-case for the DMA controller drivers that this client is using
-(at_h/xdmac), because they currently don't do sanity checks and always
-return a positive cookie at tx_submit() method. In case the controller
-drivers will implement sanity checks and return errors, print a message
-so that the client will be informed that something went wrong at
-tx_submit() level.
+A successful 'of_platform_populate()' call should be balanced by a
+corresponding 'of_platform_depopulate()' call in the error handling path
+of the probe, as already done in the remove function.
 
-Fixes: 08f738be88bb ("serial: at91: add tx dma support")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+A successful 'venus_firmware_init()' call should be balanced by a
+corresponding 'venus_firmware_deinit()' call in the error handling path
+of the probe, as already done in the remove function.
+
+Update the error handling path accordingly.
+
+Fixes: f9799fcce4bb ("media: venus: firmware: register separate platform_device for firmware loader")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/atmel_serial.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/media/platform/qcom/venus/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index a24e5c2b30bc9..396fe8c51f93b 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1004,6 +1004,11 @@ static void atmel_tx_dma(struct uart_port *port)
- 		desc->callback = atmel_complete_tx_dma;
- 		desc->callback_param = atmel_port;
- 		atmel_port->cookie_tx = dmaengine_submit(desc);
-+		if (dma_submit_error(atmel_port->cookie_tx)) {
-+			dev_err(port->dev, "dma_submit_error %d\n",
-+				atmel_port->cookie_tx);
-+			return;
-+		}
- 	}
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index 791ed1b1bbbd3..1d621f7769035 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -294,11 +294,11 @@ static int venus_probe(struct platform_device *pdev)
  
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-@@ -1264,6 +1269,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	desc->callback_param = port;
- 	atmel_port->desc_rx = desc;
- 	atmel_port->cookie_rx = dmaengine_submit(desc);
-+	if (dma_submit_error(atmel_port->cookie_rx)) {
-+		dev_err(port->dev, "dma_submit_error %d\n",
-+			atmel_port->cookie_rx);
-+		goto chan_err;
-+	}
+ 	ret = venus_firmware_init(core);
+ 	if (ret)
+-		goto err_runtime_disable;
++		goto err_of_depopulate;
  
- 	return 0;
+ 	ret = venus_boot(core);
+ 	if (ret)
+-		goto err_runtime_disable;
++		goto err_firmware_deinit;
  
+ 	ret = hfi_core_resume(core, true);
+ 	if (ret)
+@@ -330,6 +330,10 @@ err_dev_unregister:
+ 	v4l2_device_unregister(&core->v4l2_dev);
+ err_venus_shutdown:
+ 	venus_shutdown(core);
++err_firmware_deinit:
++	venus_firmware_deinit(core);
++err_of_depopulate:
++	of_platform_depopulate(dev);
+ err_runtime_disable:
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_set_suspended(dev);
 -- 
 2.34.1
 
