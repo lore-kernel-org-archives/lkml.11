@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F1A1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2E7C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365614AbiAXXvW (ORCPT
+        id S2365649AbiAXXv0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48254 "EHLO
+        Mon, 24 Jan 2022 18:51:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843795AbiAXXGY (ORCPT
+        with ESMTP id S1383930AbiAXXGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:06:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EAE7C06E035;
-        Mon, 24 Jan 2022 13:17:14 -0800 (PST)
+        Mon, 24 Jan 2022 18:06:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0BDC061A7F;
+        Mon, 24 Jan 2022 13:17:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C217B61320;
-        Mon, 24 Jan 2022 21:17:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9853CC340E5;
-        Mon, 24 Jan 2022 21:17:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39E61B81233;
+        Mon, 24 Jan 2022 21:16:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C29CC36AEB;
+        Mon, 24 Jan 2022 21:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059033;
-        bh=jD2m76gJr8SX4WVu10homi6mG4H+RudfTZtcaIyUIs8=;
+        s=korg; t=1643059018;
+        bh=fLy9g1Dn9MLU9x6rBqmMs6F2pQoFUyKdCOxJNNtpLe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAUuAApCIfiVP6w82P88Yd0DVqeC5pguIGejrWRW+b6KV0FBHMMkl0AV94GRnmGmz
-         I7qZLDHDQokZhg4V7QazB2E506/ki3sARU5pSTNG1ljuGOuVgO+i7ZRzGNg79Ty0QL
-         39+nS8lnjRR3O0YBkAT5G8NQBeV1D7ihOztCz8Ug=
+        b=064UNFFXX07h4wih0LBtYG0dkbBkG56HW8i8jgCQVkXExmrhpFzpMKP90zyRf3Nis
+         k6UvIcFW4NNn65nk8jfNdb5ftXddsWah52b49iD8SaOF+i/xMdsyfFyc9hWFY/DU68
+         /DGAYXvUo3qMH2qGB9ZNS7FOY7kaZreDh+efmZN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ashish Mhetre <amhetre@nvidia.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0475/1039] iommu: Extend mutex lock scope in iommu_probe_device()
-Date:   Mon, 24 Jan 2022 19:37:44 +0100
-Message-Id: <20220124184141.239324386@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0445/1039] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:37:14 +0100
+Message-Id: <20220124184140.255356036@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,48 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lu Baolu <baolu.lu@linux.intel.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 556f99ac886635e8da15528995f06d1d7028cfca ]
+[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
 
-Extend the scope of holding group->mutex so that it can cover the default
-domain check/attachment and direct mappings of reserved regions.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-Cc: Ashish Mhetre <amhetre@nvidia.com>
-Fixes: 211ff31b3d33b ("iommu: Fix race condition during default domain allocation")
-Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
-Link: https://lore.kernel.org/r/20211108061349.1985579-1-baolu.lu@linux.intel.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
+Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iommu.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/core/jack.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-index dd7863e453a5f..8b86406b71627 100644
---- a/drivers/iommu/iommu.c
-+++ b/drivers/iommu/iommu.c
-@@ -288,11 +288,11 @@ int iommu_probe_device(struct device *dev)
- 	 */
- 	mutex_lock(&group->mutex);
- 	iommu_alloc_default_domain(group, dev);
--	mutex_unlock(&group->mutex);
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index 537df1e98f8ac..d1e3055f2b6a5 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -62,10 +62,13 @@ static int snd_jack_dev_free(struct snd_device *device)
+ 	struct snd_card *card = device->card;
+ 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
  
- 	if (group->default_domain) {
- 		ret = __iommu_attach_device(group->default_domain, dev);
- 		if (ret) {
-+			mutex_unlock(&group->mutex);
- 			iommu_group_put(group);
- 			goto err_release;
- 		}
-@@ -300,6 +300,7 @@ int iommu_probe_device(struct device *dev)
++	down_write(&card->controls_rwsem);
+ 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
+ 		list_del_init(&jack_kctl->list);
+ 		snd_ctl_remove(card, jack_kctl->kctl);
+ 	}
++	up_write(&card->controls_rwsem);
++
+ 	if (jack->private_free)
+ 		jack->private_free(jack);
  
- 	iommu_create_device_direct_mappings(group, dev);
- 
-+	mutex_unlock(&group->mutex);
- 	iommu_group_put(group);
- 
- 	if (ops->probe_finalize)
 -- 
 2.34.1
 
