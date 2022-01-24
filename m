@@ -2,99 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0749BC3527C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D70AC35276
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409856AbiAYA1i (ORCPT
+        id S3409665AbiAYA1K (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:27:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48184 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389762AbiAXVgg (ORCPT
+        Mon, 24 Jan 2022 19:27:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573402AbiAXVoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:36:36 -0500
+        Mon, 24 Jan 2022 16:44:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FAF7C08B4C2;
+        Mon, 24 Jan 2022 12:32:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9AF0B8121C;
-        Mon, 24 Jan 2022 21:36:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC4D0C340E4;
-        Mon, 24 Jan 2022 21:36:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060193;
-        bh=llqmotql0dU1BNpAsfO0Bt9goMpDGsF/FGV07efugkg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i9qnq/lDhbb59LbB5CmK6zDdxBbqt7rFN3ifeTA35257P33Cs6RpA8voh8gg7WoSv
-         abaGI6EY5gZxOCmV8qobdSmy7SEY8OKNuozcM76veOqGo1pMK5MZC+kra2HaszvlLi
-         LQ0sWk6wH40nC/HC5xa8YarfwttrNErDZ6I0lNew=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Meng Li <Meng.Li@windriver.com>,
-        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.16 0838/1039] crypto: caam - replace this_cpu_ptr with raw_cpu_ptr
-Date:   Mon, 24 Jan 2022 19:43:47 +0100
-Message-Id: <20220124184153.461557090@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B0A6C61581;
+        Mon, 24 Jan 2022 20:32:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20F28C340ED;
+        Mon, 24 Jan 2022 20:32:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643056329;
+        bh=EcSc5NGWQWYVTuB7MnoRf3rQ2LAOnZ2MYQlWCYRDxV0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Mi6gIXyr/tKOn8rTTMqwC2IFZMFu3q7Jf2dhA+dYuOZmtpv9SY4EsrPVBiimrJ2ml
+         QtUY6gVvWqrsPU6CyiX27p9eK7YhbmPtlFJyCxYOIsN5cobstj32OJhBjeA42lmTX4
+         EeW5FqUXvc/sK1GWdiJiD/hgwxto2EPNLyhXUD1kMJRvCrOeXSK2m9IDxlQ/IIJFtK
+         XqmnpliOD3ZCsoHNywC2pEqyY2TioUwNlG4w0zlFTu0LrT5Jr6A8f/LyQ1AMGQSba9
+         /AdrRN1RrsWfDEVGITTMcJiFH6Kk0cSBzyg/2u8Pbvlofo6kt+B5qph/vNx/cQ3yv7
+         WVuYV9qk85D+A==
+Received: by mail-qt1-f170.google.com with SMTP id y17so21094304qtx.9;
+        Mon, 24 Jan 2022 12:32:09 -0800 (PST)
+X-Gm-Message-State: AOAM531RCuT+heygqZ5zXroH0QeRR+H0H/ySqRCn1LIZkbHoofbEAT4u
+        T9E7cbGTwtf75MAcOebgI+8wBqcvhB1cweqIng==
+X-Google-Smtp-Source: ABdhPJxhfE3hNbKeQnW9wjko8Ek4KGnAVOUwl4hpmRLOwvce8D+R+2d0iKBHLgo1PXB3c+kB2arYv9PAoJ1m15VdEl8=
+X-Received: by 2002:ac8:580b:: with SMTP id g11mr14053696qtg.478.1643056328171;
+ Mon, 24 Jan 2022 12:32:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220119015038.2433585-1-robh@kernel.org> <CA+Eumj4HjM8SPoOUo7_eLBOHFYXTPPPgmx_YDYdEXDyaT67Rrg@mail.gmail.com>
+In-Reply-To: <CA+Eumj4HjM8SPoOUo7_eLBOHFYXTPPPgmx_YDYdEXDyaT67Rrg@mail.gmail.com>
+From:   Rob Herring <robh@kernel.org>
+Date:   Mon, 24 Jan 2022 14:31:56 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+jg=2svsVsNY_kd8vQ+b9mM77t8ua8omCRT5rHRFcrUw@mail.gmail.com>
+Message-ID: <CAL_Jsq+jg=2svsVsNY_kd8vQ+b9mM77t8ua8omCRT5rHRFcrUw@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: Improve phandle-array schemas
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Meng Li <Meng.Li@windriver.com>
+On Mon, Jan 24, 2022 at 10:55 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> On Wed, 19 Jan 2022 at 02:50, Rob Herring <robh@kernel.org> wrote:
+> >
+> > The 'phandle-array' type is a bit ambiguous. It can be either just an
+> > array of phandles or an array of phandles plus args. Many schemas for
+> > phandle-array properties aren't clear in the schema which case applies
+> > though the description usually describes it.
+> >
+>
+> Hi Rob,
+>
+> I have few questions below.
+>
+> (...)
+>
+> > diff --git a/Documentation/devicetree/bindings/sound/samsung,midas-audio.yaml b/Documentation/devicetree/bindings/sound/samsung,midas-audio.yaml
+> > index 095775c598fa..3a4df2ce1728 100644
+> > --- a/Documentation/devicetree/bindings/sound/samsung,midas-audio.yaml
+> > +++ b/Documentation/devicetree/bindings/sound/samsung,midas-audio.yaml
+> > @@ -21,8 +21,7 @@ properties:
+> >      type: object
+> >      properties:
+> >        sound-dai:
+> > -        $ref: /schemas/types.yaml#/definitions/phandle-array
+> > -        maxItems: 1
+> > +        $ref: /schemas/types.yaml#/definitions/phandle
+> >          description: phandle to the I2S controller
+> >      required:
+> >        - sound-dai
+>
+> This passes the example only because the example was simplified to
+> hide dtschema errors.
+>
+> The cpu dai node is like:
+> cpu {
+>     sound-dai = <&i2s0 0>;
+> };
+>
+> and this fails with errors missing phandle tag in 0.
+>
+> I am converting rest of Samsung audio bindings to dtschema and have
+> trouble expressing this. How schema should express such cpu node?
 
-commit efd21e10fc3bf4c6da122470a5ae89ec4ed8d180 upstream.
-
-When enable the kernel debug config, there is below calltrace detected:
-BUG: using smp_processor_id() in preemptible [00000000] code: cryptomgr_test/339
-caller is debug_smp_processor_id+0x20/0x30
-CPU: 9 PID: 339 Comm: cryptomgr_test Not tainted 5.10.63-yocto-standard #1
-Hardware name: NXP Layerscape LX2160ARDB (DT)
-Call trace:
- dump_backtrace+0x0/0x1a0
- show_stack+0x24/0x30
- dump_stack+0xf0/0x13c
- check_preemption_disabled+0x100/0x110
- debug_smp_processor_id+0x20/0x30
- dpaa2_caam_enqueue+0x10c/0x25c
- ......
- cryptomgr_test+0x38/0x60
- kthread+0x158/0x164
- ret_from_fork+0x10/0x38
-According to the comment in commit ac5d15b4519f("crypto: caam/qi2
- - use affine DPIOs "), because preemption is no longer disabled
-while trying to enqueue an FQID, it might be possible to run the
-enqueue on a different CPU(due to migration, when in process context),
-however this wouldn't be a functionality issue. But there will be
-above calltrace when enable kernel debug config. So, replace this_cpu_ptr
-with raw_cpu_ptr to avoid above call trace.
-
-Fixes: ac5d15b4519f ("crypto: caam/qi2 - use affine DPIOs")
-Cc: stable@vger.kernel.org
-Signed-off-by: Meng Li <Meng.Li@windriver.com>
-Reviewed-by: Horia Geantă <horia.geanta@nxp.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/crypto/caam/caamalg_qi2.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/crypto/caam/caamalg_qi2.c
-+++ b/drivers/crypto/caam/caamalg_qi2.c
-@@ -5470,7 +5470,7 @@ int dpaa2_caam_enqueue(struct device *de
- 	dpaa2_fd_set_len(&fd, dpaa2_fl_get_len(&req->fd_flt[1]));
- 	dpaa2_fd_set_flc(&fd, req->flc_dma);
- 
--	ppriv = this_cpu_ptr(priv->ppriv);
-+	ppriv = raw_cpu_ptr(priv->ppriv);
- 	for (i = 0; i < (priv->dpseci_attr.num_tx_queues << 1); i++) {
- 		err = dpaa2_io_service_enqueue_fq(ppriv->dpio, ppriv->req_fqid,
- 						  &fd);
+The above hunk should be reverted. I'll drop that hunk.
 
 
+Rob
