@@ -2,133 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0429EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 246DBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1316139AbiAYCzP (ORCPT
+        id S1316201AbiAYCz0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:55:15 -0500
-Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:42205 "EHLO
-        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S3410771AbiAYAa2 (ORCPT
+        Mon, 24 Jan 2022 21:55:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3412585AbiAYAhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:30:28 -0500
-HMM_SOURCE_IP: 172.18.0.48:50016.1962489051
-HMM_ATTACHE_NUM: 0000
-HMM_SOURCE_TYPE: SMTP
-Received: from clientip-202.80.192.38 (unknown [172.18.0.48])
-        by chinatelecom.cn (HERMES) with SMTP id DA46C280029;
-        Tue, 25 Jan 2022 08:30:13 +0800 (CST)
-X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
-Received: from  ([172.18.0.48])
-        by app0024 with ESMTP id ff90be4f69a445f5b32540480a51d8bc for j.vosburgh@gmail.com;
-        Tue, 25 Jan 2022 08:30:16 CST
-X-Transaction-ID: ff90be4f69a445f5b32540480a51d8bc
-X-Real-From: sunshouxin@chinatelecom.cn
-X-Receive-IP: 172.18.0.48
-X-MEDUSA-Status: 0
-Sender: sunshouxin@chinatelecom.cn
-From:   Sun Shouxin <sunshouxin@chinatelecom.cn>
-To:     j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jay.vosburgh@canonical.com, nikolay@nvidia.com,
-        huyd12@chinatelecom.cn
-Subject: [PATCH v8] net: bonding: Add support for IPV6 ns/na to balance-alb/balance-tlb mode
-Date:   Mon, 24 Jan 2022 19:29:54 -0500
-Message-Id: <20220125002954.94405-1-sunshouxin@chinatelecom.cn>
-X-Mailer: git-send-email 2.27.0
+        Mon, 24 Jan 2022 19:37:16 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A48C04A2EB
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:20:00 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id z22so58939962edd.12
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:19:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ffwll.ch; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eEy59pkxkuOQH3FeW+pSfh3uQlALKWQv5HMjnvMU5rg=;
+        b=DQwAVK1iR3fLgmXYXEfL7+7cLKX03sBRjER8fTgucQYkrJNUWacuLJM2YnsodGggbU
+         e21TjvZqBRoT9nS5oWjuI8nC5b0SGohIAKgtlU6LYkBfEqrrL0UYlIscsJh+fv1aMMod
+         AiiwUTWTxp3o67D2YG91nlfEAi6w57aHkyTfs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to;
+        bh=eEy59pkxkuOQH3FeW+pSfh3uQlALKWQv5HMjnvMU5rg=;
+        b=iVCrkG+oYTxuobhNjjIeP3UUatzwNnvZw3MjDXoLC9QRCxqRVBGoIO0QMRB8yUKv8g
+         8HLVpAukyMK8sgDcYeIE5hnByIHOIzaNsqgdxd5cSqyVJlHSLQN4I+eLXmE9G+P+ANj0
+         u1NpK/3vHWZ8oic+gr3xNSLVtXi4iNLQonPWdHWqUgRBS2H8hr9wMCTbtpiZvxuAJl1k
+         QT278wHbQVomtSEfKxkBA43wcBUaNGM4vc2YO/PJVJZbDaTXwENXigTd4kk4mpeOaaXy
+         43C5NkBaOHH+OeoYbAP2kMvp1fEcq3HrfUVodSfDygm6ypLRtUKggh3lUWaSKNuX59oJ
+         spxA==
+X-Gm-Message-State: AOAM533lVTbY1Gl42Jn/AOEw90K4Qm8wFZ4/GM2MDIrX05D+hbTMpf1Q
+        BOR+r7y1qL0IRLS1wxXFe9VSbg==
+X-Google-Smtp-Source: ABdhPJyTlhbl2apt+k2wVRRqmfZTzbLvqudlvHMLRnIH7f9F66oC+tM4Wg6VWcmjXE8/cwmhAEcyxw==
+X-Received: by 2002:aa7:d55a:: with SMTP id u26mr17368585edr.265.1643062798593;
+        Mon, 24 Jan 2022 14:19:58 -0800 (PST)
+Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
+        by smtp.gmail.com with ESMTPSA id w22sm5362604ejj.64.2022.01.24.14.19.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 14:19:58 -0800 (PST)
+Date:   Mon, 24 Jan 2022 23:19:56 +0100
+From:   Daniel Vetter <daniel@ffwll.ch>
+To:     Helge Deller <deller@gmx.de>
+Cc:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Schnelle <svens@stackframe.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Claudio Suarez <cssk@net-c.es>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v2 0/2] Fix regression introduced by disabling
+ accelerated scrolling in fbcon
+Message-ID: <Ye8mDFcWSiXoRJbD@phenom.ffwll.local>
+Mail-Followup-To: Helge Deller <deller@gmx.de>,
+        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Schnelle <svens@stackframe.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Claudio Suarez <cssk@net-c.es>, Gerd Hoffmann <kraxel@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220124210319.325512-1-deller@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124210319.325512-1-deller@gmx.de>
+X-Operating-System: Linux phenom 5.10.0-8-amd64 
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since ipv6 neighbor solicitation and advertisement messages
-isn't handled gracefully in bond6 driver, we can see packet
-drop due to inconsistency between mac address in the option
-message and source MAC .
+On Mon, Jan 24, 2022 at 10:03:17PM +0100, Helge Deller wrote:
+> This series reverts two patches which disabled scrolling acceleration in
+> fbcon/fbdev. Those patches introduced a regression for fbdev-supported graphic
+> cards because of the performance penalty by doing screen scrolling by software
+> instead of using existing 2D hardware acceleration.
+> 
+> This series has been discussed on linux-fbdev, dri-devel and linux-kernel
+> mailing lists. The consensus is that they will be reverted, but in addition
+> it's being worked on to find a solution which allows to disable parts of the
+> classic fbdev hardware acceleration code which isn't needed in DRM-only
+> configurations.
 
-Another examples is ipv6 neighbor solicitation and advertisement
-messages from VM via tap attached to host bridge, the src mac
-might be changed through balance-alb mode, but it is not synced
-with Link-layer address in the option message.
+That's not my take at least.
 
-The patch implements bond6's tx handle for ipv6 neighbor
-solicitation and advertisement messages.
+> The patchset is planned to be kept in fbdev's for-next git branch and later
+> pushed into kernel v5.18 if no issues are found until then.
 
-Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
-Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
----
- drivers/net/bonding/bond_alb.c | 37 +++++++++++++++++++++++++++++++++-
- 1 file changed, 36 insertions(+), 1 deletion(-)
+Neither this. I don't think we've resovled maintainership of fbdev core
+code and fbcon yet. That is the part that drm folks very much still
+maintained, as a quick git shortlog will show.
 
-diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
-index 533e476988f2..d4d8670643e9 100644
---- a/drivers/net/bonding/bond_alb.c
-+++ b/drivers/net/bonding/bond_alb.c
-@@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
- 	return res;
- }
- 
-+/* determine if the packet is NA or NS */
-+static bool __alb_determine_nd(struct icmp6hdr *hdr)
-+{
-+	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
-+	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-+		return true;
-+	}
-+
-+	return false;
-+}
-+
-+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
-+{
-+	struct ipv6hdr *ip6hdr;
-+	struct icmp6hdr *hdr;
-+
-+	ip6hdr = ipv6_hdr(skb);
-+	if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
-+		if (!pskb_may_pull(skb, sizeof(struct ipv6hdr) + sizeof(struct icmp6hdr)))
-+			return true;
-+
-+		hdr = icmp6_hdr(skb);
-+		return __alb_determine_nd(hdr);
-+	}
-+
-+	return false;
-+}
-+
- /************************ exported alb functions ************************/
- 
- int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
-@@ -1348,8 +1376,10 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
- 	/* Do not TX balance any multicast or broadcast */
- 	if (!is_multicast_ether_addr(eth_data->h_dest)) {
- 		switch (skb->protocol) {
--		case htons(ETH_P_IP):
- 		case htons(ETH_P_IPV6):
-+			if (alb_determine_nd(skb, bond))
-+				break;
-+		case htons(ETH_P_IP):
- 			hash_index = bond_xmit_hash(bond, skb);
- 			if (bond->params.tlb_dynamic_lb) {
- 				tx_slave = tlb_choose_channel(bond,
-@@ -1446,6 +1476,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
- 			break;
- 		}
- 
-+		if (alb_determine_nd(skb, bond)) {
-+			do_tx_balance = false;
-+			break;
-+		}
-+
- 		hash_start = (char *)&ip6hdr->daddr;
- 		hash_size = sizeof(ip6hdr->daddr);
- 		break;
+Maintaining these parts outside of drm trees just doesn't make sense,
+since none of the other graphics relevant development happens outside of
+drm.
+-Daniel
 
-base-commit: dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
+> 
+> Helge
+> 
+> ---
+> Changes in v2 compared to v1:
+> - adjusted the stable tags (one v5.10+, the other v5.16+)
+> - moved the analysis and reasoning why those should be reverted into
+>   the commit message. That simplifies to analyze later why they were
+>   reverted.
+> - resorted the To an Cc mail recipient lists
+> 
+> Helge Deller (2):
+>   Revert "fbdev: Garbage collect fbdev scrolling acceleration, part 1
+>     (from TODO list)"
+>   Revert "fbcon: Disable accelerated scrolling"
+> 
+>  Documentation/gpu/todo.rst              |  24 --
+>  drivers/video/fbdev/core/bitblit.c      |  16 +
+>  drivers/video/fbdev/core/fbcon.c        | 540 +++++++++++++++++++++++-
+>  drivers/video/fbdev/core/fbcon.h        |  59 +++
+>  drivers/video/fbdev/core/fbcon_ccw.c    |  28 +-
+>  drivers/video/fbdev/core/fbcon_cw.c     |  28 +-
+>  drivers/video/fbdev/core/fbcon_rotate.h |   9 +
+>  drivers/video/fbdev/core/fbcon_ud.c     |  37 +-
+>  drivers/video/fbdev/core/tileblit.c     |  16 +
+>  drivers/video/fbdev/skeletonfb.c        |  12 +-
+>  include/linux/fb.h                      |   2 +-
+>  11 files changed, 703 insertions(+), 68 deletions(-)
+> 
+> -- 
+> 2.31.1
+> 
+
 -- 
-2.27.0
-
+Daniel Vetter
+Software Engineer, Intel Corporation
+http://blog.ffwll.ch
