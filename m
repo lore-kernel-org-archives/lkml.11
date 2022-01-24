@@ -2,37 +2,37 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C102C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE58DC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 01:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240838AbiAXByc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 20:54:32 -0500
-Received: from mga06.intel.com ([134.134.136.31]:20505 "EHLO mga06.intel.com"
+        id S240855AbiAXByd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 20:54:33 -0500
+Received: from mga06.intel.com ([134.134.136.31]:20509 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240744AbiAXByO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 20:54:14 -0500
+        id S240748AbiAXByQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 23 Jan 2022 20:54:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642989254; x=1674525254;
+  t=1642989256; x=1674525256;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=KXyxgwUM4bkXvDM+XyNRIjGv+8i1m09MysFfC7KN7A8=;
-  b=Z5Pco8GtxyNqDKHUduC4Y5R1leAPoQimDF9hc5zhPoj+FVuA0vh1wmDh
-   pZ+VoB9cvt5zLgNojaVNON8cnUhXY9liwJ8RvZzYHeUjDxHzKIV1gVd8H
-   Bxgx43wjXXq22Vt1ReBrG/PxC844XN5EWBK+dJNs46gCLP4LBB8WV1AKT
-   TjFX2etnIjedsIIoCYdzKAXVTMOcAwIMCSzFjziVpzHxsnDRrFXCQc7UK
-   6y55KOKzsWN3D4Z8TvB0PnuuLfSJWqhnq6PI0qHF0Sj4/4x8xZ8y06XM9
-   uLyjCXDfA2nyCPowq2Za0HrUuqrSCbHgS4c2vko9KHOHzL6UeXq2E7mpK
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="306658415"
+  bh=BBygKGffoL5d5GTpz8jASmHam5hJkymlp1BmAKuyaH0=;
+  b=PD4oMlRRxBya31CJ67nZZoXbbELU3HVJQjWbceQvGLHUaFyLNA5lHoLo
+   tK4Hh9B7pCs4dGRaVVmN+i3QsbfN4F1rMe+bVqsJQDrxJcN8rLj5p2/X1
+   4iYnPYLv/zhZXGFJ7fhf6OzpaSgvKGwe8A/t1MVt9l+fr3D+AtA3A6hMj
+   tfFjpWpxWfAc9rc5100fSjdwnGX65fbB+dO3zTZ6dsbPnlJxbSCSw5b0Z
+   coR9aE+6m8k0RVOPvJxHYOZnvZrLRAi+sOBhPR32k0XFAtoMuQ79TuABF
+   W6kovrFCD39/5EKHxVbmiAXD+MrsdVR64pQuAmW/WQFj5DBx4hvKCX0U3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="306658425"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="306658415"
+   d="scan'208";a="306658425"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:14 -0800
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:15 -0800
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627320397"
+   d="scan'208";a="627320411"
 Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:14 -0800
+  by orsmga004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2022 17:54:15 -0800
 From:   ira.weiny@intel.com
 To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
         Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
@@ -40,9 +40,9 @@ To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
 Cc:     Ira Weiny <ira.weiny@intel.com>, amd-gfx@lists.freedesktop.org,
         dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
         intel-gfx@lists.freedesktop.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH V2 4/7] drm/radeon: Replace kmap() with kmap_local_page()
-Date:   Sun, 23 Jan 2022 17:54:06 -0800
-Message-Id: <20220124015409.807587-5-ira.weiny@intel.com>
+Subject: [PATCH V2 7/7] drm/radeon: Ensure kunmap is called on error
+Date:   Sun, 23 Jan 2022 17:54:09 -0800
+Message-Id: <20220124015409.807587-8-ira.weiny@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220124015409.807587-1-ira.weiny@intel.com>
 References: <20220124015409.807587-1-ira.weiny@intel.com>
@@ -54,32 +54,31 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Ira Weiny <ira.weiny@intel.com>
 
-kmap() is being deprecated and this usage is local to the thread.  Use
-kmap_local_page() instead.
+The default case leaves the buffer object mapped in error.
+
+Add radeon_bo_kunmap() to that case to ensure the mapping is cleaned up.
 
 Signed-off-by: Ira Weiny <ira.weiny@intel.com>
----
- drivers/gpu/drm/radeon/radeon_ttm.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_ttm.c b/drivers/gpu/drm/radeon/radeon_ttm.c
-index 11b21d605584..76d7906e1785 100644
---- a/drivers/gpu/drm/radeon/radeon_ttm.c
-+++ b/drivers/gpu/drm/radeon/radeon_ttm.c
-@@ -907,11 +907,11 @@ static ssize_t radeon_ttm_gtt_read(struct file *f, char __user *buf,
+---
+NOTE: It seems like this function could use a fair bit of refactoring
+but this is the easiest way to fix the actual bug.
+---
+ drivers/gpu/drm/radeon/radeon_uvd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/radeon/radeon_uvd.c b/drivers/gpu/drm/radeon/radeon_uvd.c
+index 377f9cdb5b53..7cca283f6202 100644
+--- a/drivers/gpu/drm/radeon/radeon_uvd.c
++++ b/drivers/gpu/drm/radeon/radeon_uvd.c
+@@ -560,6 +560,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
  
- 		page = rdev->gart.pages[p];
- 		if (page) {
--			ptr = kmap(page);
-+			ptr = kmap_local_page(page);
- 			ptr += off;
+ 	default:
  
- 			r = copy_to_user(buf, ptr, cur_size);
--			kunmap(rdev->gart.pages[p]);
-+			kunmap_local(ptr);
- 		} else
- 			r = clear_user(buf, cur_size);
- 
++		radeon_bo_kunmap(bo);
+ 		DRM_ERROR("Illegal UVD message type (%d)!\n", msg_type);
+ 		return -EINVAL;
+ 	}
 -- 
 2.31.1
 
