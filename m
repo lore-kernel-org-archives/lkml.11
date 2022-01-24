@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51B4BC4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF44FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387177AbiAXUge (ORCPT
+        id S1387219AbiAXUgk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:36:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54010 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379805AbiAXUMl (ORCPT
+        Mon, 24 Jan 2022 15:36:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39684 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347369AbiAXUMk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:41 -0500
+        Mon, 24 Jan 2022 15:12:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90BFFB8122D;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C44261446;
+        Mon, 24 Jan 2022 20:12:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF9AC340EC;
         Mon, 24 Jan 2022 20:12:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41152C340EF;
-        Mon, 24 Jan 2022 20:12:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643055158;
-        bh=KnKaDKP2ZmunzG4S4wREZKGTAqqogy6WlIrJ0BuxmmM=;
+        s=k20201202; t=1643055159;
+        bh=YaKveBwpxFwRietemPz69WhA3Q6XcSoMygr0LTUe+c4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dd+4KutZ2rMWteOoVnL+hn4rMU3MN1zhYmpoIZTsqB2KslfGyV/f3jOzgCse/psBF
-         CLm9IoNlrykTNUZHDOkSYl21RUwXi6RlTRXJHtkkStT4q+zO/2C5bfIza8pBXWsRUs
-         IgSY3CSoWdKaAjdQ+BlMKDuDCXZqdj/BpTNwN4qHgl4fpF+R5mYiuI1lU3NLW+TMvM
-         Ji7s1SPGEJ/rpEbU+UHH0btr9MkiWHBCBGzSlAp9/WtcSYQ4TndRDZqtWnIqnUacxI
-         0kjLfzyLS+CD0zPdTBqtsnCkVo/Y8e/zFnHFuz/hbPp6wMg5VPLZOpNkmLhFFstwwQ
-         Yif6vB3NIQvWw==
+        b=dzdSp0Q/0bEw3FZcskjmxWxEv4BUzUpUo927d5k7SvXXcPEyMGltnVzcvfNiEjqFr
+         yuVUkoOvuZKkm4rk50GKgf7+ncr9dn/XFDy7huf7kNMC77demCKwDc23kn+N6moIDe
+         ix6y3tsXqiDFDuPxyKg+eHyHEbuyp29CtpygcpNqu9soLQYt77DY/ZcZdo+mC5CJ+H
+         bnl4/ckal2VijVyUs/wyJplYBlARw5w960SEPbmzBtsWxqOh5wjyS9UmFmdLRPmZWu
+         ZfnnJmqp5tKpz89g05zaXlhT7KbeLH1CDbJ9RwtYrx4tTI2bYVWpOUhlrUfuxZTYpq
+         3ysRYa5uA/XDQ==
 Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
         by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <maz@kernel.org>)
-        id 1nC5hc-002Y3f-9x; Mon, 24 Jan 2022 20:12:36 +0000
+        id 1nC5hd-002Y3f-Nx; Mon, 24 Jan 2022 20:12:37 +0000
 From:   Marc Zyngier <maz@kernel.org>
 To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -44,64 +44,54 @@ Cc:     Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
         Alyssa Rosenzweig <alyssa@rosenzweig.io>,
         Rob Herring <robh+dt@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Dougall <dougallj@gmail.com>, kernel-team@android.com,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 02/10] dt-bindings: apple,aic: Add CPU PMU per-cpu pseudo-interrupts
-Date:   Mon, 24 Jan 2022 20:12:23 +0000
-Message-Id: <20220124201231.298961-3-maz@kernel.org>
+        Dougall <dougallj@gmail.com>, kernel-team@android.com
+Subject: [PATCH v4 07/10] arm64: dts: apple: Add t8303 PMU nodes
+Date:   Mon, 24 Jan 2022 20:12:28 +0000
+Message-Id: <20220124201231.298961-8-maz@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220124201231.298961-1-maz@kernel.org>
 References: <20220124201231.298961-1-maz@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, will@kernel.org, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, robh+dt@kernel.org, tglx@linutronix.de, dougallj@gmail.com, kernel-team@android.com, robh@kernel.org
+X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, will@kernel.org, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, robh+dt@kernel.org, tglx@linutronix.de, dougallj@gmail.com, kernel-team@android.com
 X-SA-Exim-Mail-From: maz@kernel.org
 X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Advertise the two pseudo-interrupts that tied to the two PMU
-flavours present in the Apple M1 SoC.
+Advertise the two PMU nodes for the t8103 SoC.
 
-We choose the expose two different pseudo-interrupts to the OS
-as the e-core PMU is obviously different from the p-core one,
-effectively presenting two different devices.
-
-Acked-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Hector Martin <marcan@marcan.st>
 Signed-off-by: Marc Zyngier <maz@kernel.org>
 ---
- .../devicetree/bindings/interrupt-controller/apple,aic.yaml     | 2 ++
- include/dt-bindings/interrupt-controller/apple-aic.h            | 2 ++
- 2 files changed, 4 insertions(+)
+ arch/arm64/boot/dts/apple/t8103.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml b/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-index 97359024709a..c7577d401786 100644
---- a/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-+++ b/Documentation/devicetree/bindings/interrupt-controller/apple,aic.yaml
-@@ -56,6 +56,8 @@ properties:
-           - 1: virtual HV timer
-           - 2: physical guest timer
-           - 3: virtual guest timer
-+          - 4: 'efficient' CPU PMU
-+          - 5: 'performance' CPU PMU
+diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
+index ca856f9955d8..aa0768ecb800 100644
+--- a/arch/arm64/boot/dts/apple/t8103.dtsi
++++ b/arch/arm64/boot/dts/apple/t8103.dtsi
+@@ -97,6 +97,18 @@ timer {
+ 			     <AIC_FIQ AIC_TMR_HV_VIRT IRQ_TYPE_LEVEL_HIGH>;
+ 	};
  
-       The 3rd cell contains the interrupt flags. This is normally
-       IRQ_TYPE_LEVEL_HIGH (4).
-diff --git a/include/dt-bindings/interrupt-controller/apple-aic.h b/include/dt-bindings/interrupt-controller/apple-aic.h
-index 604f2bb30ac0..bf3aac0e5491 100644
---- a/include/dt-bindings/interrupt-controller/apple-aic.h
-+++ b/include/dt-bindings/interrupt-controller/apple-aic.h
-@@ -11,5 +11,7 @@
- #define AIC_TMR_HV_VIRT		1
- #define AIC_TMR_GUEST_PHYS	2
- #define AIC_TMR_GUEST_VIRT	3
-+#define AIC_CPU_PMU_E		4
-+#define AIC_CPU_PMU_P		5
- 
- #endif
++	pmu-e {
++		compatible = "apple,icestorm-pmu";
++		interrupt-parent = <&aic>;
++		interrupts = <AIC_FIQ AIC_CPU_PMU_E IRQ_TYPE_LEVEL_HIGH>;
++	};
++
++	pmu-p {
++		compatible = "apple,firestorm-pmu";
++		interrupt-parent = <&aic>;
++		interrupts = <AIC_FIQ AIC_CPU_PMU_P IRQ_TYPE_LEVEL_HIGH>;
++	};
++
+ 	clkref: clock-ref {
+ 		compatible = "fixed-clock";
+ 		#clock-cells = <0>;
 -- 
 2.30.2
 
