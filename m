@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 238CEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09BF0C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586620AbiAXW1D (ORCPT
+        id S1586815AbiAXW1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53836 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453945AbiAXVbS (ORCPT
+        Mon, 24 Jan 2022 17:27:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45714 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454060AbiAXVbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:31:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D8ADC07594A;
-        Mon, 24 Jan 2022 12:20:38 -0800 (PST)
+        Mon, 24 Jan 2022 16:31:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CEEBAB8122C;
-        Mon, 24 Jan 2022 20:20:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3E9AC340E5;
-        Mon, 24 Jan 2022 20:20:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 767F1B81142;
+        Mon, 24 Jan 2022 21:31:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0981C340E4;
+        Mon, 24 Jan 2022 21:31:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055635;
-        bh=KUa3WcNIZgYdOfgeuGU3RnXVTi6qpCEYqF5dWKRmVxw=;
+        s=korg; t=1643059895;
+        bh=hiKltHgWQoklyviP7j9xJYA49jfJQ7EKWXU3uv1sDos=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IektO1ttiDbLTNXiLQFWMmsmhkFlPkb1KhrW4X8FbC0zgvUAPexayQ064ug7/XQcQ
-         BaRY+VFdgxvjJIoj2wpTZAAskfGybCbUYuqSGLsWIPon0444hw57wjel/cH7dvIMwr
-         jA6QC4on5Alst8+Pyl7Vzt39l6m/wxS+9UfxhGBM=
+        b=KBUWlY4/7Jk6gq2+RLWMyPiMoP33/lvSUAMAL+JeXELANNO7sJNJyIOjYB1U7hz4s
+         9UT2LRN8Idaz+5HVHvrJdOLTfsGhvhjJUnhX3PUI4p3dn/gAm61e74efrvp9xEiVcG
+         u6H0CeW2HAJ1i0n0iqW/T7CZd+39h7nlEj89cmcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Li Hua <hucool.lihua@huawei.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 214/846] sched/rt: Try to restart rt period timer when rt runtime exceeded
-Date:   Mon, 24 Jan 2022 19:35:31 +0100
-Message-Id: <20220124184108.309081102@linuxfoundation.org>
+Subject: [PATCH 5.16 0771/1039] scsi: sr: Dont use GFP_DMA
+Date:   Mon, 24 Jan 2022 19:42:40 +0100
+Message-Id: <20220124184151.223382877@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,97 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Hua <hucool.lihua@huawei.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 9b58e976b3b391c0cf02e038d53dd0478ed3013c ]
+[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
 
-When rt_runtime is modified from -1 to a valid control value, it may
-cause the task to be throttled all the time. Operations like the following
-will trigger the bug. E.g:
+The allocated buffers are used as a command payload, for which the block
+layer and/or DMA API do the proper bounce buffering if needed.
 
-  1. echo -1 > /proc/sys/kernel/sched_rt_runtime_us
-  2. Run a FIFO task named A that executes while(1)
-  3. echo 950000 > /proc/sys/kernel/sched_rt_runtime_us
-
-When rt_runtime is -1, The rt period timer will not be activated when task
-A enqueued. And then the task will be throttled after setting rt_runtime to
-950,000. The task will always be throttled because the rt period timer is
-not activated.
-
-Fixes: d0b27fa77854 ("sched: rt-group: synchonised bandwidth period")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Li Hua <hucool.lihua@huawei.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211203033618.11895-1-hucool.lihua@huawei.com
+Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
+Reported-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/rt.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ drivers/scsi/sr.c        | 2 +-
+ drivers/scsi/sr_vendor.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index bfef3f39b5552..54f9bb3f15605 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -52,11 +52,8 @@ void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime)
- 	rt_b->rt_period_timer.function = sched_rt_period_timer;
- }
+diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
+index 8e4af111c0787..f5a2eed543452 100644
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -856,7 +856,7 @@ static void get_capabilities(struct scsi_cd *cd)
  
--static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
-+static inline void do_start_rt_bandwidth(struct rt_bandwidth *rt_b)
- {
--	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
--		return;
--
- 	raw_spin_lock(&rt_b->rt_runtime_lock);
- 	if (!rt_b->rt_period_active) {
- 		rt_b->rt_period_active = 1;
-@@ -75,6 +72,14 @@ static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
- 	raw_spin_unlock(&rt_b->rt_runtime_lock);
- }
  
-+static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
-+{
-+	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
-+		return;
-+
-+	do_start_rt_bandwidth(rt_b);
-+}
-+
- void init_rt_rq(struct rt_rq *rt_rq)
- {
- 	struct rt_prio_array *array;
-@@ -1029,13 +1034,17 @@ static void update_curr_rt(struct rq *rq)
+ 	/* allocate transfer buffer */
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer) {
+ 		sr_printk(KERN_ERR, cd, "out of memory.\n");
+ 		return;
+diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
+index 1f988a1b9166f..a61635326ae0a 100644
+--- a/drivers/scsi/sr_vendor.c
++++ b/drivers/scsi/sr_vendor.c
+@@ -131,7 +131,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
+ 	if (cd->vendor == VENDOR_TOSHIBA)
+ 		density = (blocklength > 2048) ? 0x81 : 0x83;
  
- 	for_each_sched_rt_entity(rt_se) {
- 		struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
-+		int exceeded;
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
  
- 		if (sched_rt_runtime(rt_rq) != RUNTIME_INF) {
- 			raw_spin_lock(&rt_rq->rt_runtime_lock);
- 			rt_rq->rt_time += delta_exec;
--			if (sched_rt_runtime_exceeded(rt_rq))
-+			exceeded = sched_rt_runtime_exceeded(rt_rq);
-+			if (exceeded)
- 				resched_curr(rq);
- 			raw_spin_unlock(&rt_rq->rt_runtime_lock);
-+			if (exceeded)
-+				do_start_rt_bandwidth(sched_rt_bandwidth(rt_rq));
- 		}
- 	}
- }
-@@ -2785,8 +2794,12 @@ static int sched_rt_global_validate(void)
+@@ -179,7 +179,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
+ 	if (cd->cdi.mask & CDC_MULTI_SESSION)
+ 		return 0;
  
- static void sched_rt_do_global(void)
- {
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&def_rt_bandwidth.rt_runtime_lock, flags);
- 	def_rt_bandwidth.rt_runtime = global_rt_runtime();
- 	def_rt_bandwidth.rt_period = ns_to_ktime(global_rt_period());
-+	raw_spin_unlock_irqrestore(&def_rt_bandwidth.rt_runtime_lock, flags);
- }
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
  
- int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
 -- 
 2.34.1
 
