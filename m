@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 040AFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:33:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FCC3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588507AbiAXWdD (ORCPT
+        id S1588634AbiAXWdb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:33:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58036 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444637AbiAXVjb (ORCPT
+        Mon, 24 Jan 2022 17:33:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456542AbiAXVjb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:39:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AB83C0417C5;
+        Mon, 24 Jan 2022 12:24:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64EAD612E5;
-        Mon, 24 Jan 2022 21:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D26AC340E4;
-        Mon, 24 Jan 2022 21:39:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2AF1061233;
+        Mon, 24 Jan 2022 20:24:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09E3CC340E5;
+        Mon, 24 Jan 2022 20:24:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060366;
-        bh=MwVDU5KHXsZMAwuTBPhjmF0Tyu+ExRo7B82mYWrX2lQ=;
+        s=korg; t=1643055880;
+        bh=EQEDabkSpaRuhi0tQo1Cce0GjX27thOY8EKOCMv4/6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=icgJoUL/oGhuK3ZuQgraHVw/m+NO10p/fitA4OFn5NH3J/9IKJT5t4AtBTSRscZDb
-         sZj62ylWqGyl8DiP2ssluTBrM534u8s18p1L+1IMA1lyPpdNAXCVVXUnbBsZqwzbpm
-         nmpinDyeKaDd/iZdCQyEsnfy/+ORNYAY0yOLyXYs=
+        b=ThBcvM8h6q8GTN5d7Uc0DNksCje5an8OYX1iHkyTlI3dQ6JMV42P56DecvMw6vlyL
+         4rZF/JxnqwgdqhjBj0pA6vWhvIMWgOD84L6ays7zoIEPWV0SCZ9ILLKrOex3zQO6W3
+         NPzdM3mdHutkFh62CD7ib0iGz4HhD6T4m2pG29Sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Van <lucas.van@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.16 0924/1039] dmaengine: idxd: fix wq settings post wq disable
-Date:   Mon, 24 Jan 2022 19:45:13 +0100
-Message-Id: <20220124184156.355071904@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 253/846] drm/msm/dpu: fix safe status debugfs file
+Date:   Mon, 24 Jan 2022 19:36:10 +0100
+Message-Id: <20220124184109.674260363@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,62 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-commit 0f225705cf6536826318180831e18a74595efc8d upstream.
+[ Upstream commit f31b0e24d31e18b4503eeaf0032baeacc0beaff6 ]
 
-By the spec, wq size and group association is not changeable unless device
-is disabled. Exclude clearing the shadow copy on wq disable/reset. This
-allows wq type to be changed after disable to be re-enabled.
+Make safe_status debugfs fs file actually return safe status rather than
+danger status data.
 
-Move the size and group association to its own cleanup and only call it
-during device disable.
-
-Fixes: 0dcfe41e9a4c ("dmanegine: idxd: cleanup all device related bits after disabling device")
-Reported-by: Lucas Van <lucas.van@intel.com>
-Tested-by: Lucas Van <lucas.van@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/163951291732.2987775.13576571320501115257.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20211201222633.2476780-3-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/idxd/device.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -382,8 +382,6 @@ static void idxd_wq_disable_cleanup(stru
- 	lockdep_assert_held(&wq->wq_lock);
- 	memset(wq->wqcfg, 0, idxd->wqcfg_size);
- 	wq->type = IDXD_WQT_NONE;
--	wq->size = 0;
--	wq->group = NULL;
- 	wq->threshold = 0;
- 	wq->priority = 0;
- 	wq->ats_dis = 0;
-@@ -392,6 +390,15 @@ static void idxd_wq_disable_cleanup(stru
- 	memset(wq->name, 0, WQ_NAME_SIZE);
- }
- 
-+static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
-+{
-+	lockdep_assert_held(&wq->wq_lock);
-+
-+	idxd_wq_disable_cleanup(wq);
-+	wq->size = 0;
-+	wq->group = NULL;
-+}
-+
- static void idxd_wq_ref_release(struct percpu_ref *ref)
- {
- 	struct idxd_wq *wq = container_of(ref, struct idxd_wq, wq_active);
-@@ -699,6 +706,7 @@ static void idxd_device_wqs_clear_state(
- 
- 		if (wq->state == IDXD_WQ_ENABLED) {
- 			idxd_wq_disable_cleanup(wq);
-+			idxd_wq_device_reset_cleanup(wq);
- 			wq->state = IDXD_WQ_DISABLED;
- 		}
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index ad247c06e198f..93d916858d5ad 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -73,8 +73,8 @@ static int _dpu_danger_signal_status(struct seq_file *s,
+ 					&status);
+ 	} else {
+ 		seq_puts(s, "\nSafe signal status:\n");
+-		if (kms->hw_mdp->ops.get_danger_status)
+-			kms->hw_mdp->ops.get_danger_status(kms->hw_mdp,
++		if (kms->hw_mdp->ops.get_safe_status)
++			kms->hw_mdp->ops.get_safe_status(kms->hw_mdp,
+ 					&status);
  	}
+ 	pm_runtime_put_sync(&kms->pdev->dev);
+-- 
+2.34.1
+
 
 
