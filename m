@@ -2,87 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9DFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A71A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346797AbiAXTdv (ORCPT
+        id S1347536AbiAXTd7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:33:51 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53432 "EHLO
+        Mon, 24 Jan 2022 14:33:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53600 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350901AbiAXTZc (ORCPT
+        with ESMTP id S1351017AbiAXTZq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:25:32 -0500
+        Mon, 24 Jan 2022 14:25:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA5A96129A;
-        Mon, 24 Jan 2022 19:25:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D0A2C340E5;
-        Mon, 24 Jan 2022 19:25:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052331;
-        bh=237rbF9pS7DmapYAq12bvUaL8GTC3vSFTf2z40fMX3E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UhOsn9d+K0dHGio5CuuRniwFy3Su7KpAj/eNl2iwQ8G/aZINzbAbTJyZK8PapQFqL
-         lbyc7vltM8J5dr9+bpvwXjnmctGwtQSjlgwB45V+ClVcatsYVX1UXM/rEdMLnbsRrs
-         +Pr4uL7Be6mzj7PZDS1186fYfbN58IWVTPDe2FhI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 023/320] media: stk1160: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:40:07 +0100
-Message-Id: <20220124183954.546983378@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 262EB61483
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 814B1C340E5;
+        Mon, 24 Jan 2022 19:25:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643052345;
+        bh=cGzIZ1MKIizkECbK+Lu6MG2AB+TsAwI9HGRrv3av30U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XBIgUtI+EvImF0ZnkknOIa1odOeHkZxvWOe9sjHFCoHERQmLMXF/wGmAWuDjID+ss
+         Br5A1DegoEO2p5tr1Pg0srwkXqnN7ZSQmHI/tl12j0Gwelrj+qcAHfw7A3i61XQesw
+         RvBj2vThha7fuNGTOWz2XB6/L7MM8OXPyQk3P4CiXrX+BM9WG8HfRxs4NvGJA8qWxP
+         6l2pzQBnavjC+BDfIVLFeracw1J7y2+aEnL9shzPuaNVXmCYAtAIGVPTr10L9yWeLq
+         wzDK7/K4K+1YhHOmojtBEuWaCCApSU2rVq8hmeL9ZzjOhAhCH1G38Qnh5bEtHwI9F/
+         ArMjIYa1c0ULg==
+Date:   Mon, 24 Jan 2022 19:25:44 +0000
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Harry Austen <harryausten@hotmail.co.uk>
+Cc:     linux-f2fs-devel@lists.sourceforge.net, jaegeuk@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [f2fs-dev] [PATCH] f2fs: fix fileattr_set unsupported attribute
+ handling
+Message-ID: <Ye79OLCFLR3H+GnY@gmail.com>
+References: <AM6PR10MB2838873D61CE1C0DB91EEDB9FA5C9@AM6PR10MB2838.EURPRD10.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <AM6PR10MB2838873D61CE1C0DB91EEDB9FA5C9@AM6PR10MB2838.EURPRD10.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+On Sat, Jan 22, 2022 at 12:59:03PM +0000, Harry Austen wrote:
+> FS_IOC_SETFLAGS ioctl should return EOPNOTSUPP if the file attribute
+> (e.g. FS_NOCOW_FL) is not supported, rather than silently ignoring it
+> and returning success.
+> 
+> Fixes: 9b1bb01c8ae7 (f2fs: convert to fileattr)
+> Signed-off-by: Harry Austen <harryausten@hotmail.co.uk>
+> ---
+>  fs/f2fs/file.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
+> index 92ec2699bc85..061bf35c2582 100644
+> --- a/fs/f2fs/file.c
+> +++ b/fs/f2fs/file.c
+> @@ -3085,9 +3085,8 @@ int f2fs_fileattr_set(struct user_namespace *mnt_userns,
+>  		return -EIO;
+>  	if (!f2fs_is_checkpoint_ready(F2FS_I_SB(inode)))
+>  		return -ENOSPC;
+> -	if (fsflags & ~F2FS_GETTABLE_FS_FL)
+> +	if (fsflags & ~F2FS_SETTABLE_FS_FL)
+>  		return -EOPNOTSUPP;
+> -	fsflags &= F2FS_SETTABLE_FS_FL;
+>  	if (!fa->flags_valid)
+>  		mask &= FS_COMMON_FL;
 
-commit 6aa6e70cdb5b863a57bad61310bf89b6617a5d2d upstream.
+This is intentional, and matches what ext4 does; see the comment in the ext4
+implementation of this:
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+        /*
+         * chattr(1) grabs flags via GETFLAGS, modifies the result and
+         * passes that to SETFLAGS. So we cannot easily make SETFLAGS
+         * more restrictive than just silently masking off visible but
+         * not settable flags as we always did.
+         */
 
-Fixes: 9cb2173e6ea8 ("[media] media: Add stk1160 new driver (easycap replacement)")
-Cc: stable@vger.kernel.org      # 3.7
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/media/usb/stk1160/stk1160-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Also, even if this patch was correct, the Fixes tag is wrong.
 
---- a/drivers/media/usb/stk1160/stk1160-core.c
-+++ b/drivers/media/usb/stk1160/stk1160-core.c
-@@ -65,7 +65,7 @@ int stk1160_read_reg(struct stk1160 *dev
- 		return -ENOMEM;
- 	ret = usb_control_msg(dev->udev, pipe, 0x00,
- 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			0x00, reg, buf, sizeof(u8), HZ);
-+			0x00, reg, buf, sizeof(u8), 1000);
- 	if (ret < 0) {
- 		stk1160_err("read failed on reg 0x%x (%d)\n",
- 			reg, ret);
-@@ -85,7 +85,7 @@ int stk1160_write_reg(struct stk1160 *de
- 
- 	ret =  usb_control_msg(dev->udev, pipe, 0x01,
- 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			value, reg, NULL, 0, HZ);
-+			value, reg, NULL, 0, 1000);
- 	if (ret < 0) {
- 		stk1160_err("write failed on reg 0x%x (%d)\n",
- 			reg, ret);
-
-
+- Eric
