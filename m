@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 226AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443803AbiAXVGc (ORCPT
+        id S1446119AbiAXVGr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:06:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389821AbiAXUo3 (ORCPT
+        Mon, 24 Jan 2022 16:06:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40144 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351903AbiAXUoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:44:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED38C019B3B;
-        Mon, 24 Jan 2022 11:54:00 -0800 (PST)
+        Mon, 24 Jan 2022 15:44:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0B80BB811F3;
-        Mon, 24 Jan 2022 19:53:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A07FC340E5;
-        Mon, 24 Jan 2022 19:53:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CE0D60B0B;
+        Mon, 24 Jan 2022 20:44:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E3E7C340E5;
+        Mon, 24 Jan 2022 20:44:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054037;
-        bh=0KD1eiKFQZ+15lvlwGjcpA2CZ9608oocxiXbhgHw+rM=;
+        s=korg; t=1643057072;
+        bh=xI5hEJ3lhDIHA1QI9owRidjMV8Rm3Aur9/+X8usPUKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tSEiW+xc5XXiw6IDYHjSjbiap39Q6jkCZe6hRFdOGgd2BmRjC6tmyeJJ9ZHHssVwz
-         dnMNZWZoiEj5VmhDSqVPvd6i0njJfBXtKVgkprM3FW8TaHRsahSwZpdRXdIKX1v0aO
-         IqeoV+7d61GaQtnH6MRR58gaW5dVUcWQbQVOHtQU=
+        b=fBI9oJzXdsIXDh561HNCaOpqcQ+uhLx++H4fuSwtnDdX8cXr0OR2/E7S+KMMaucAC
+         NLl4DuesPRYkxbNwUUp8h8nGOtDfw93C0rE0DTAMPwbPV5DuBZmfVXn1IdB4dLhuTj
+         +IHAtqkjAEnuRru4cNHi0RnN6uA1EoOx8FJZXya4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 259/563] char/mwave: Adjust io port register size
-Date:   Mon, 24 Jan 2022 19:40:24 +0100
-Message-Id: <20220124184033.382939940@linuxfoundation.org>
+        stable@vger.kernel.org, "Nathan E. Egge" <unlord@xiph.org>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.15 693/846] drm/nouveau/kms/nv04: use vzalloc for nv04_display
+Date:   Mon, 24 Jan 2022 19:43:30 +0100
+Message-Id: <20220124184124.950008539@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Ilia Mirkin <imirkin@alum.mit.edu>
 
-[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
+commit bd6e07e72f37f34535bec7eebc807e5fcfe37b43 upstream.
 
-Using MKWORD() on a byte-sized variable results in OOB read. Expand the
-size of the reserved area so both MKWORD and MKBYTE continue to work
-without overflow. Silences this warning on a -Warray-bounds build:
+The struct is giant, and triggers an order-7 allocation (512K). There is
+no reason for this to be kmalloc-type memory, so switch to vmalloc. This
+should help loading nouveau on low-memory and/or long-running systems.
 
-drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
-  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
-      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
-  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
-      |                                        ^~~~~
-drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
-  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
-      |                                         ^~~~~~
-drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
-  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
-      |                               ^~~~~~~~~~~~~
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
+Reported-by: Nathan E. Egge <unlord@xiph.org>
+Signed-off-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/mwave/3780i.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/nouveau/dispnv04/disp.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
-index 9ccb6b270b071..95164246afd1a 100644
---- a/drivers/char/mwave/3780i.h
-+++ b/drivers/char/mwave/3780i.h
-@@ -68,7 +68,7 @@ typedef struct {
- 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
- 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
- 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
--	unsigned char Reserved:5;	/* 0: Reserved */
-+	unsigned short Reserved:13;	/* 0: Reserved */
- } DSP_ISA_SLAVE_CONTROL;
+--- a/drivers/gpu/drm/nouveau/dispnv04/disp.c
++++ b/drivers/gpu/drm/nouveau/dispnv04/disp.c
+@@ -205,7 +205,7 @@ nv04_display_destroy(struct drm_device *
+ 	nvif_notify_dtor(&disp->flip);
  
+ 	nouveau_display(dev)->priv = NULL;
+-	kfree(disp);
++	vfree(disp);
  
--- 
-2.34.1
-
+ 	nvif_object_unmap(&drm->client.device.object);
+ }
+@@ -223,7 +223,7 @@ nv04_display_create(struct drm_device *d
+ 	struct nv04_display *disp;
+ 	int i, ret;
+ 
+-	disp = kzalloc(sizeof(*disp), GFP_KERNEL);
++	disp = vzalloc(sizeof(*disp));
+ 	if (!disp)
+ 		return -ENOMEM;
+ 
 
 
