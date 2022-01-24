@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E55C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FBCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583562AbiAXWTL (ORCPT
+        id S1583736AbiAXWT2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:19:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33262 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447576AbiAXVLB (ORCPT
+        Mon, 24 Jan 2022 17:19:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1447555AbiAXVK6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:01 -0500
+        Mon, 24 Jan 2022 16:10:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FE8FC09D335;
+        Mon, 24 Jan 2022 12:09:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB6DB80CCF;
-        Mon, 24 Jan 2022 21:10:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96285C340E5;
-        Mon, 24 Jan 2022 21:10:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D95A4B8122C;
+        Mon, 24 Jan 2022 20:09:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B730C340E5;
+        Mon, 24 Jan 2022 20:09:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058658;
-        bh=wAh/haiJ/v7tO3dGBFHipa7wk5ZBATtCVmv/QRDmjlo=;
+        s=korg; t=1643054947;
+        bh=A61Mjq671YKWOXyCgRwXP22r5uuFJFRpViFWZVpV9aU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZHBm5h7DyYvZtj1ubjO+D64krLdqm1y28c4KqGf8L3FHfFcIdaST4FM8BawavJF6/
-         G5Bnmj28niCIGBbDmUik/v6hKB2UXjWnthYWtwSeBKWmFNRadMXTOXh35Tv1D+DBwr
-         5kUt/4mlQVn6tZTDZQl6AQZlBQ2evnrfUW2UoWng=
+        b=x4c4X+hwcDKJKpFB4RJtkTEIGBFS4CQLN5plJyRa6J6Nfp5KAya3lKUzhcgQPaKRd
+         CdLEdIm/Lhh9LtnTibJKC+vfiWmO+FmAK8/JOQXpmdHjRgEUF2EkCO0bK6GB7aezt5
+         m2If3MseQqWhpGhJrpaPx737SeA2RPuTmvtrqiPk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0360/1039] io_uring: remove double poll on poll update
-Date:   Mon, 24 Jan 2022 19:35:49 +0100
-Message-Id: <20220124184137.379491661@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@mailbox.org>,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH 5.10 555/563] dt-bindings: display: meson-dw-hdmi: add missing sound-name-prefix property
+Date:   Mon, 24 Jan 2022 19:45:20 +0100
+Message-Id: <20220124184043.630517916@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,36 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Begunkov <asml.silence@gmail.com>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-[ Upstream commit e840b4baf3cfb37e2ead4f649a45bb78178677ff ]
+commit 22bf4047d26980807611b7e2030803db375afd87 upstream.
 
-Before updating a poll request we should remove it from poll queues,
-including the double poll entry.
+This is used in meson-gx and meson-g12. Add the property to the binding.
+This fixes the dtschema warning:
+hdmi-tx@c883a000: 'sound-name-prefix' does not match any of the
+regexes: 'pinctrl-[0-9]+'
 
-Fixes: b69de288e913 ("io_uring: allow events and user_data update of running poll requests")
-Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
-Link: https://lore.kernel.org/r/ac39e7f80152613603b8a6cc29a2b6063ac2434f.1639605189.git.asml.silence@gmail.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Fixes: 376bf52deef5 ("dt-bindings: display: amlogic, meson-dw-hdmi: convert to yaml")
+Acked-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211223122434.39378-2-alexander.stein@mailbox.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/display/amlogic,meson-dw-hdmi.yaml |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index fb2a0cb4aaf83..72496f424c155 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -5928,6 +5928,7 @@ static int io_poll_update(struct io_kiocb *req, unsigned int issue_flags)
- 	 * update those. For multishot, if we're racing with completion, just
- 	 * let completion re-add it.
- 	 */
-+	io_poll_remove_double(preq);
- 	completing = !__io_poll_remove_one(preq, &preq->poll, false);
- 	if (completing && (preq->poll.events & EPOLLONESHOT)) {
- 		ret = -EALREADY;
--- 
-2.34.1
-
+--- a/Documentation/devicetree/bindings/display/amlogic,meson-dw-hdmi.yaml
++++ b/Documentation/devicetree/bindings/display/amlogic,meson-dw-hdmi.yaml
+@@ -10,6 +10,9 @@ title: Amlogic specific extensions to th
+ maintainers:
+   - Neil Armstrong <narmstrong@baylibre.com>
+ 
++allOf:
++  - $ref: /schemas/sound/name-prefix.yaml#
++
+ description: |
+   The Amlogic Meson Synopsys Designware Integration is composed of
+   - A Synopsys DesignWare HDMI Controller IP
+@@ -99,6 +102,8 @@ properties:
+   "#sound-dai-cells":
+     const: 0
+ 
++  sound-name-prefix: true
++
+ required:
+   - compatible
+   - reg
 
 
