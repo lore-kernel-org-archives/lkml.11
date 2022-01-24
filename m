@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6197CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60635C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587382AbiAXW2N (ORCPT
+        id S1587796AbiAXW3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53508 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352232AbiAXVeT (ORCPT
+        Mon, 24 Jan 2022 17:29:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378443AbiAXVha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:34:19 -0500
+        Mon, 24 Jan 2022 16:37:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C58C05A1AD;
+        Mon, 24 Jan 2022 12:23:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 193CF614DE;
-        Mon, 24 Jan 2022 21:34:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE9C1C340EF;
-        Mon, 24 Jan 2022 21:34:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 42605B81229;
+        Mon, 24 Jan 2022 20:23:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75DF1C340E5;
+        Mon, 24 Jan 2022 20:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060056;
-        bh=MFtwOZJoi2PSl+FnzFMrWI/ufCULKuJqp+VQy1Dt5CY=;
+        s=korg; t=1643055820;
+        bh=wfcsLF7GIouIju6cw/S1WOUfuc/YG6E3MeAJ34xQqVk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lf4D3wqpHO8qD53Ow7K1utZ3OZhA1ZjjW4CTKHgRMj4hhp16kV2UDF5TVmBDqHsgP
-         FgMke566ierCfOemFRPEkfgXxNQAAik0mmfxOcYNQ1tc0R0xzZtETbLsdvCsmLkQf+
-         lnbw4MErIP3qCmMtyEq8pIl1j3KYU4WqXotb3pPc=
+        b=jsSmn6vQnSZrTBpIllBXkq0Ib4cv3EEMINfpjAk1eRxfWOwKLsHDLBoW4qf4fECMU
+         0tWpKsk2+rT6UXcacfLy3qUPwLVr4XUAMOOTlouXzUmp0LoC4MbozFa5pNCZQzTHM+
+         Xi24UyV1nVgY8qgq3kSBQl9h0ZE2TXgo9qxSIdt4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yanteng Si <siyanteng@loongson.cn>,
-        Sergio Paracuellos <sergio.paracuellos@gmail.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        stable@vger.kernel.org,
+        syzbot <syzbot+28a66a9fbc621c939000@syzkaller.appspotmail.com>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0824/1039] PCI: mt7621: Add missing MODULE_LICENSE()
-Date:   Mon, 24 Jan 2022 19:43:33 +0100
-Message-Id: <20220124184152.990526795@linuxfoundation.org>
+Subject: [PATCH 5.15 276/846] block: fix error unwinding in device_add_disk
+Date:   Mon, 24 Jan 2022 19:36:33 +0100
+Message-Id: <20220124184110.463545039@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,38 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergio Paracuellos <sergio.paracuellos@gmail.com>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit e4b1cd02dc8d7967a79edccd510724831e5cdee8 ]
+[ Upstream commit 99d8690aae4b2f0d1d90075de355ac087f820a66 ]
 
-The MT7621 PCIe host controller driver can be built as a module, but it
-lacks a MODULE_LICENSE(), which causes a build error:
+One device_add is called disk->ev will be freed by disk_release, so we
+should free it twice.  Fix this by allocating disk->ev after device_add
+so that the extra local unwinding can be removed entirely.
 
-  ERROR: modpost: missing MODULE_LICENSE() in drivers/pci/controller/pcie-mt7621.o
+Based on an earlier patch from Tetsuo Handa.
 
-Add MODULE_LICENSE() to the driver.
-
-Fixes: 2bdd5238e756 ("PCI: mt7621: Add MediaTek MT7621 PCIe host controller driver")
-Link: https://lore.kernel.org/r/20211207104924.21327-5-sergio.paracuellos@gmail.com
-Signed-off-by: Yanteng Si <siyanteng@loongson.cn>
-Signed-off-by: Sergio Paracuellos <sergio.paracuellos@gmail.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
+Reported-by: syzbot <syzbot+28a66a9fbc621c939000@syzkaller.appspotmail.com>
+Tested-by: syzbot <syzbot+28a66a9fbc621c939000@syzkaller.appspotmail.com>
+Fixes: 83cbce9574462c6b ("block: add error handling for device_add_disk / add_disk")
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/20211221161851.788424-1-hch@lst.de
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-mt7621.c | 2 ++
- 1 file changed, 2 insertions(+)
+ block/genhd.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/pci/controller/pcie-mt7621.c b/drivers/pci/controller/pcie-mt7621.c
-index b60dfb45ef7bd..73b91315c1656 100644
---- a/drivers/pci/controller/pcie-mt7621.c
-+++ b/drivers/pci/controller/pcie-mt7621.c
-@@ -598,3 +598,5 @@ static struct platform_driver mt7621_pci_driver = {
- 	},
- };
- builtin_platform_driver(mt7621_pci_driver);
+diff --git a/block/genhd.c b/block/genhd.c
+index f091a60dcf1ea..22f899615801c 100644
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -432,10 +432,6 @@ int device_add_disk(struct device *parent, struct gendisk *disk,
+ 		disk->flags |= GENHD_FL_EXT_DEVT;
+ 	}
+ 
+-	ret = disk_alloc_events(disk);
+-	if (ret)
+-		goto out_free_ext_minor;
+-
+ 	/* delay uevents, until we scanned partition table */
+ 	dev_set_uevent_suppress(ddev, 1);
+ 
+@@ -446,7 +442,12 @@ int device_add_disk(struct device *parent, struct gendisk *disk,
+ 		ddev->devt = MKDEV(disk->major, disk->first_minor);
+ 	ret = device_add(ddev);
+ 	if (ret)
+-		goto out_disk_release_events;
++		goto out_free_ext_minor;
 +
-+MODULE_LICENSE("GPL v2");
++	ret = disk_alloc_events(disk);
++	if (ret)
++		goto out_device_del;
++
+ 	if (!sysfs_deprecated) {
+ 		ret = sysfs_create_link(block_depr, &ddev->kobj,
+ 					kobject_name(&ddev->kobj));
+@@ -534,8 +535,6 @@ out_del_block_link:
+ 		sysfs_remove_link(block_depr, dev_name(ddev));
+ out_device_del:
+ 	device_del(ddev);
+-out_disk_release_events:
+-	disk_release_events(disk);
+ out_free_ext_minor:
+ 	if (disk->major == BLOCK_EXT_MAJOR)
+ 		blk_free_ext_minor(disk->first_minor);
 -- 
 2.34.1
 
