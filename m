@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9F5C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C362EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444923AbiAXVBo (ORCPT
+        id S1444942AbiAXVBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40916 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350736AbiAXUi3 (ORCPT
+        Mon, 24 Jan 2022 16:01:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59758 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351042AbiAXUid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:38:29 -0500
+        Mon, 24 Jan 2022 15:38:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 342EEB8121C;
-        Mon, 24 Jan 2022 20:38:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6741BC340E5;
-        Mon, 24 Jan 2022 20:38:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E03E61540;
+        Mon, 24 Jan 2022 20:38:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FB84C340E5;
+        Mon, 24 Jan 2022 20:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056706;
-        bh=sr+Q2oFR8CNiUVEfQQFtfRQdkcamxTQq3ai2GqUz1MU=;
+        s=korg; t=1643056711;
+        bh=XzhNkZxyer8awJv+RVsKsH09udznovulrHjfciVCME4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KA3iYrfD0R4MA/miYrHmdgiH7Y9brudjEjFtTtjcGHjRRvJx56o56A3HmPTMc9H38
-         T1fj6f3HGckoXlLo8uRu6vF/si6eIytUC251gpVVNBVG0qpBTXexwf7MYq9YNtGpQE
-         h4cVSv1BYm+pOVYpJ9lt9LFp/UOl/cq2ye4p3Ns4=
+        b=dwer9x51lsvtfX1cNjU4B3ksRevVvyI6lUH32Fu1j39sKD8FlW1g3WYR0NOrILUBL
+         GcRVHa+TECmq/oFekO0qVnhb/Z1Lb99ls0Wy4qk1aAMMfs62XgInnrhav5/yxKAPdz
+         vrkxh5R/xujx5fmdR2PxpY9FWT+QuoWvqF1nEBSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 572/846] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
-Date:   Mon, 24 Jan 2022 19:41:29 +0100
-Message-Id: <20220124184120.775904541@linuxfoundation.org>
+Subject: [PATCH 5.15 542/846] x86/mce: Allow instrumentation during task work queueing
+Date:   Mon, 24 Jan 2022 19:40:59 +0100
+Message-Id: <20220124184119.719790464@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,88 +46,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
+[ Upstream commit 4fbce464db81a42f9a57ee242d6150ec7f996415 ]
 
-Large pkt_len can lead to out-out-bound memcpy. Current
-ath9k_hif_usb_rx_stream allows combining the content of two urb
-inputs to one pkt. The first input can indicate the size of the
-pkt. Any remaining size is saved in hif_dev->rx_remain_len.
-While processing the next input, memcpy is used with rx_remain_len.
+Fixes
 
-4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
-maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
-pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+  vmlinux.o: warning: objtool: do_machine_check()+0xdb1: call to queue_task_work() leaves .noinstr.text section
 
-BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
-Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
-
-CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
-Workqueue: events request_firmware_work_func
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- __kasan_report.cold+0x37/0x7c
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- kasan_report+0xe/0x20
- check_memory_region+0x15a/0x1d0
- memcpy+0x20/0x50
- ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __usb_unanchor_urb+0x12f/0x210
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
-
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
-
-After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
-emulation, I found the KASAN report. The bug is triggerable whenever
-pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
-to test the driver works when applying the patch.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-6-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/kernel/cpu/mce/core.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 860da13bfb6ac..f06eec99de688 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -590,6 +590,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 			return;
- 		}
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 193204aee8801..c8d121085c8f7 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1454,6 +1454,14 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 	if (worst != MCE_AR_SEVERITY && !kill_current_task)
+ 		goto out;
  
-+		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
-+			dev_err(&hif_dev->udev->dev,
-+				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
-+			RX_STAT_INC(skb_dropped);
-+			return;
-+		}
++	/*
++	 * Enable instrumentation around the external facilities like
++	 * task_work_add() (via queue_task_work()), fixup_exception() etc.
++	 * For now, that is. Fixing this properly would need a lot more involved
++	 * reorganization.
++	 */
++	instrumentation_begin();
 +
- 		pad_len = 4 - (pkt_len & 0x3);
- 		if (pad_len == 4)
- 			pad_len = 0;
+ 	/* Fault was in user mode and we need to take some action */
+ 	if ((m.cs & 3) == 3) {
+ 		/* If this triggers there is no way to recover. Die hard. */
+@@ -1479,6 +1487,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 		if (m.kflags & MCE_IN_KERNEL_COPYIN)
+ 			queue_task_work(&m, msg, kill_current_task);
+ 	}
++
++	instrumentation_end();
++
+ out:
+ 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
+ }
 -- 
 2.34.1
 
