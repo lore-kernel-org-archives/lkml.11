@@ -2,114 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12743C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9194C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237984AbiAXPuf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:50:35 -0500
-Received: from mail-ua1-f54.google.com ([209.85.222.54]:37482 "EHLO
-        mail-ua1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231140AbiAXPud (ORCPT
+        id S240744AbiAXPup (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:50:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38748 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234527AbiAXPun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:50:33 -0500
-Received: by mail-ua1-f54.google.com with SMTP id b16so31784939uaq.4;
-        Mon, 24 Jan 2022 07:50:33 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qn8yuU/dY9yzYdXTyBmgzczJZCif2R504KsT3GAaWuA=;
-        b=EH/azo2n+xVnDTrSK+A4gHMd3HAcVFRhi2rB0XqKFePER29TQHaB5+Im9JWmRpcmtm
-         56oCJLF1eM2V4nLGK3gBGslHm1XRCjctEg/Vpjz1To+gxO/yo6XKceNo+uU4l5f0utdf
-         76nlIllAzZ4ZYiOkWTmJXGNkL1vks85UqmchxFbZi4Mbfhz4ZOvFTVEMVKhL9TZP2CPN
-         O7J9xd0vt6M7AlRujnODdTzmxncosUE4ah2qGLeAh0yu6oUtZOTG4u84fx/Oe6ovIjCO
-         pUgUOgauu1ch8oRMfVLNturACMV1306wR3nPqqazvfFGdaj9mG/NNZ78AZXz49ev6hHS
-         JQKQ==
-X-Gm-Message-State: AOAM533BaNM/EBbqV4w4rTwhP/vr7ZzqO46/q6Y3GPkN0C9KXSmkVhjs
-        NuoAd0Venx3264koVUeF+KFrUMeo3IhSag==
-X-Google-Smtp-Source: ABdhPJwRww2LRfHpBthtBVTM6QfehR063xCOsjJGa08Kmiojk9Hr6nhICQHyTXTowFCPafe7NQs3kQ==
-X-Received: by 2002:a05:6102:5087:: with SMTP id bl7mr2439728vsb.22.1643039432296;
-        Mon, 24 Jan 2022 07:50:32 -0800 (PST)
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
-        by smtp.gmail.com with ESMTPSA id y18sm2852168ual.15.2022.01.24.07.50.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 07:50:31 -0800 (PST)
-Received: by mail-ua1-f43.google.com with SMTP id b16so31784769uaq.4;
-        Mon, 24 Jan 2022 07:50:31 -0800 (PST)
-X-Received: by 2002:a67:b009:: with SMTP id z9mr2526092vse.57.1643039430885;
- Mon, 24 Jan 2022 07:50:30 -0800 (PST)
+        Mon, 24 Jan 2022 10:50:43 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 61386614BC;
+        Mon, 24 Jan 2022 15:50:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B3E7C340E5;
+        Mon, 24 Jan 2022 15:50:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643039442;
+        bh=xdicGSG8aAW2ZswCJq/+VGwWSCIusYuBWyFM6SSX2JI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lGk7pW9VcjDDgx4thOFf/pGjF1dRnSrScl/EyBCm/6YCmBggEqdb+89hSNT24cpPU
+         gMGtC66UYUjhY5rIxz2MHLUBqUTwe7E7lmTY0wtskvNvgEsmdOySvqkr9SKZcrtp3w
+         PYiMnfzmp9ZNPq1ljHO/wD0dVwAm98s/YM4bZPSnb0YIDoWitvKFNp7ZAr8fjQLkeK
+         HHnXI7PGf/hWsgaNUEt8EWi4Wr2EuhT9ikucRupTlZZVFDZ9DGDDtZy6RGYuj8fPV4
+         YvXsSPt/Ca6TDgYjVi93OPrrI6Fx2+E/7+YyJlvowkPQn4SPWoBdXhkUAa0x03b8TD
+         rYrH0ywEfCTYg==
+Date:   Mon, 24 Jan 2022 07:50:41 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Ignat Korchagin <ignat@cloudflare.com>,
+        Amir Razmjou <arazmjou@cloudflare.com>,
+        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.10 3/9] sit: allow encapsulated IPv6 traffic
+ to be delivered locally
+Message-ID: <20220124075041.13c015a6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220123001258.2460594-3-sashal@kernel.org>
+References: <20220123001258.2460594-1-sashal@kernel.org>
+        <20220123001258.2460594-3-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220119110839.33187-1-deller@gmx.de> <20220119110839.33187-3-deller@gmx.de>
- <YelyGDNDTn1Aq/hm@phenom.ffwll.local> <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
- <20220121072006.ylw2hdl7jbkbwnre@sirius.home.kraxel.org> <64fd46cb-9746-3fd0-ec92-c64dba76875a@gmx.de>
- <d23800b4-503c-a6e2-2c51-2c07a736dffc@suse.de> <2fc200bb-4b40-7833-31c9-90a78512b601@redhat.com>
- <de6e06e1-f293-1c98-7898-b5d52c400b59@gmx.de>
-In-Reply-To: <de6e06e1-f293-1c98-7898-b5d52c400b59@gmx.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 24 Jan 2022 16:50:19 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdW-txqH1fnpkvyOSYUVkG8PTJKWkWFq_X8k-4VcdKR79Q@mail.gmail.com>
-Message-ID: <CAMuHMdW-txqH1fnpkvyOSYUVkG8PTJKWkWFq_X8k-4VcdKR79Q@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-To:     Helge Deller <deller@gmx.de>
-Cc:     Javier Martinez Canillas <javierm@redhat.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Claudio Suarez <cssk@net-c.es>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Helge,
+On Sat, 22 Jan 2022 19:12:52 -0500 Sasha Levin wrote:
+> From: Ignat Korchagin <ignat@cloudflare.com>
+> 
+> [ Upstream commit ed6ae5ca437d9d238117d90e95f7f2cc27da1b31 ]
+> 
+> While experimenting with FOU encapsulation Amir noticed that encapsulated IPv6
+> traffic fails to be delivered, if the peer IP address is configured locally.
 
-On Mon, Jan 24, 2022 at 4:30 PM Helge Deller <deller@gmx.de> wrote:
-> On 1/24/22 12:50, Javier Martinez Canillas wrote:
-> > On 1/24/22 12:33, Thomas Zimmermann wrote:
-> >
-> > [snip]
-> >
-> >>> Thoughts?
-> >>
-> >> I can't say I approve keeping fbdev alive, but...
-> >>
-> >> With fbdev emulation, every DRM driver is an fbdev driver too. So
-> >> CONFIG_FB_DRIVER is somewhat misleading. Better add an option like
-> >> CONFIG_FBCON_HW_SCROLLING and have it selected by the fbdev drivers that
-> >> absolutely need HW acceleration. That option would then protect the rsp
-> >> code.
->
-> I'm not a fan of something like CONFIG_FBCON_HW_SCROLLING, but I'm not
-> against it either.
-> For me it sounds that this is not the real direction you want to go,
-> which is to prevent that any other drivers take the framebuffer before
-> you take it with simpledrm or similiar.
-> CONFIG_FBCON_HW_SCROLLING IMHO just disables the (from your POV) neglectable accleration part.
-> With an option like CONFIG_FB_DRIVER (maybe better: CONFIG_FB_LEGACY_DRIVERS)
-> it's an easy option for distros to disable all of the legacy drivers
-> from being built & shipped.
->
-> Instead of CONFIG_FBCON_HW_SCROLLING we could also choose
-> CONFIG_FBCON_LEGACY_ACCELERATION, because it includes fillrect() as well...
-
-As this is about resurrecting features indicated by the various
-FBINFO_HWACCEL_* flags, what about CONFIG_FB_HWACCEL?
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Unless Ignat and Amir need it I'd vote for not backporting this to LTS.
+This patch is firmly in the "this configuration was never supported"
+category. 5.15 and 5.16 are probably fine.
