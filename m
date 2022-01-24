@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 295F1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D7E6C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443643AbiAXU5z (ORCPT
+        id S1357838AbiAXU6F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        Mon, 24 Jan 2022 15:58:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385447AbiAXUdZ (ORCPT
+        with ESMTP id S1385446AbiAXUdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:33:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58718C07E295;
-        Mon, 24 Jan 2022 11:45:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593A9C07E296;
+        Mon, 24 Jan 2022 11:45:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E811B811F9;
-        Mon, 24 Jan 2022 19:45:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A8B1C340E5;
-        Mon, 24 Jan 2022 19:45:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15C62B81188;
+        Mon, 24 Jan 2022 19:45:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DE49C340E5;
+        Mon, 24 Jan 2022 19:45:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053515;
-        bh=gcY9DkbISMBEQVO3JWGLuPtvD2jNfR5mUs7pmMfGqp4=;
+        s=korg; t=1643053518;
+        bh=7X518gYPa/yoX6heLriG4edfkEp/un6Wnm5Rw2reZr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XQq/i58M3cRtCSrXbkHYImmDkdBrv1QJxoiTsHiFF1sLePUyH3FBsgzA5o+knmRYz
-         52QCbxoJkPeHcV4C97s5jdzMEIbmdvRuAzXPbUmdoQeAz/3Nas6AWCFc3BZ/R2asDt
-         BRujlyTUHPlD91okkbehwe0+yYUjLCuZW+65knR0=
+        b=pz/sUKi7kgIpgWuPsYXsV8nCcCcs6CeJNBrGJo3wWn0a0alescDULptnE05ABuYZd
+         aqfvaRl5XZ6tcxqC0cJGo3/c8v/xWzyj8XC+JcTJACPDV8IQBtHF5oaticY9uRONIE
+         F7Y47iZKWt5Q3AxYQUpWjunFb2XKupSpdgib9xQc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 090/563] fs: dlm: fix build with CONFIG_IPV6 disabled
-Date:   Mon, 24 Jan 2022 19:37:35 +0100
-Message-Id: <20220124184027.507660188@linuxfoundation.org>
+Subject: [PATCH 5.10 091/563] drm/vboxvideo: fix a NULL vs IS_ERR() check
+Date:   Mon, 24 Jan 2022 19:37:36 +0100
+Message-Id: <20220124184027.538833367@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,47 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 1b9beda83e27a0c2cd75d1cb743c297c7b36c844 ]
+[ Upstream commit cebbb5c46d0cb0615fd0c62dea9b44273d0a9780 ]
 
-This patch will surround the AF_INET6 case in sk_error_report() of dlm
-with a #if IS_ENABLED(CONFIG_IPV6). The field sk->sk_v6_daddr is not
-defined when CONFIG_IPV6 is disabled. If CONFIG_IPV6 is disabled, the
-socket creation with AF_INET6 should already fail because a runtime
-check if AF_INET6 is registered. However if there is the possibility
-that AF_INET6 is set as sk_family the sk_error_report() callback will
-print then an invalid family type error.
+The devm_gen_pool_create() function never returns NULL, it returns
+error pointers.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 4c3d90570bcc ("fs: dlm: don't call kernel_getpeername() in error_report()")
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Fixes: 4cc9b565454b ("drm/vboxvideo: Use devm_gen_pool_create")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211118111233.GA1147@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lowcomms.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/vboxvideo/vbox_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-index 904855fa20655..68b765369c928 100644
---- a/fs/dlm/lowcomms.c
-+++ b/fs/dlm/lowcomms.c
-@@ -491,6 +491,7 @@ static void lowcomms_error_report(struct sock *sk)
- 				   ntohs(inet->inet_dport), sk->sk_err,
- 				   sk->sk_err_soft);
- 		break;
-+#if IS_ENABLED(CONFIG_IPV6)
- 	case AF_INET6:
- 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
- 				   "sending to node %d at %pI6c, "
-@@ -499,6 +500,7 @@ static void lowcomms_error_report(struct sock *sk)
- 				   ntohs(inet->inet_dport), sk->sk_err,
- 				   sk->sk_err_soft);
- 		break;
-+#endif
- 	default:
- 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
- 				   "invalid socket family %d set, "
+diff --git a/drivers/gpu/drm/vboxvideo/vbox_main.c b/drivers/gpu/drm/vboxvideo/vbox_main.c
+index d68d9bad76747..c5ea880d17b29 100644
+--- a/drivers/gpu/drm/vboxvideo/vbox_main.c
++++ b/drivers/gpu/drm/vboxvideo/vbox_main.c
+@@ -123,8 +123,8 @@ int vbox_hw_init(struct vbox_private *vbox)
+ 	/* Create guest-heap mem-pool use 2^4 = 16 byte chunks */
+ 	vbox->guest_pool = devm_gen_pool_create(vbox->ddev.dev, 4, -1,
+ 						"vboxvideo-accel");
+-	if (!vbox->guest_pool)
+-		return -ENOMEM;
++	if (IS_ERR(vbox->guest_pool))
++		return PTR_ERR(vbox->guest_pool);
+ 
+ 	ret = gen_pool_add_virt(vbox->guest_pool,
+ 				(unsigned long)vbox->guest_heap,
 -- 
 2.34.1
 
