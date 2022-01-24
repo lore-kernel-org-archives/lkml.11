@@ -2,133 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:38:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C683C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:38:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386284AbiAXXi3 (ORCPT
+        id S2360898AbiAXXil (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:38:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46260 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841795AbiAXXAC (ORCPT
+        Mon, 24 Jan 2022 18:38:41 -0500
+Received: from mail-lf1-f54.google.com ([209.85.167.54]:44659 "EHLO
+        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1842011AbiAXXAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:00:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 688DAC09D313;
-        Mon, 24 Jan 2022 13:13:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 05D8E61513;
-        Mon, 24 Jan 2022 21:13:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD993C340E5;
-        Mon, 24 Jan 2022 21:13:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058816;
-        bh=g5jYcDdJTtAaQIzC6WDSvOuOlk9FXh7FUac05QGiE4c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0opCvy+WAXd8BVVnovJKlIXyhX4GKDxcLBZ2g8joOodK1Vch/OebnQKWh2Qxg6Jr1
-         STm1mz2GD0HLBmnvlRFpi9flihbe6AjW8y90PzuEv66KJBAYn5CCHLFD1CLtY0XV1A
-         CFUkIRt/ARf74Hc3yNwltyhp/rTno3vpPFEnP6z8=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0368/1039] net/xfrm: IPsec tunnel mode fix inner_ipproto setting in sec_path
-Date:   Mon, 24 Jan 2022 19:35:57 +0100
-Message-Id: <20220124184137.667754585@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:00:38 -0500
+Received: by mail-lf1-f54.google.com with SMTP id u14so22099497lfo.11;
+        Mon, 24 Jan 2022 15:00:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TonNysDZMx9C4Dgz002yU+hZtY7UFn20FRBn7HwXRao=;
+        b=zJeZXL4lEtXd51yhNP4Dt8NLrpOgKtwtkuVhFgMcSeY3lJUm/fx6E5JHiyV0IGv5Bh
+         6JZ1PiIh06FdTyZ1LD8xsguOBmpG7eVO+VNBWGPR0wQZ7/8nvrulNgKd9EH6NypN016B
+         k49qrM7qWUsvn4fDiGduiMdmg4ED37TNTErJljOjdwxsi6DVhhigpDHLe0xhrNvLFzzU
+         s+8YHebAxzDyw0RuRGz3dTeX5bg+6ETw0sDXXU6kJyhbIzaQkIUvSClOhzitqa+x/hI0
+         tlcvnpY38RPzZQviZy8rDWekcfQ96DuF2BM/bf6yfxon95iGdlxCuKSskC5qKoZmmYr5
+         H9Kw==
+X-Gm-Message-State: AOAM533JDGhIvNv7AG2xKTnwbPGy/uUEqAp9TolZi7e3ELRz44tjdTdu
+        eIoEyGsmCFTQ4zTqAIvXec8BBHH1+XwCJIDgRoX7g+kjEf3wfQ==
+X-Google-Smtp-Source: ABdhPJwUnhDVJOnLtC1IiX8E70tZTGNmcoWs3IFq1spDSkVkBLWmAMy/FESSLlhmgEkEjLfuy96nEV5Lp6wBMpR5v3o=
+X-Received: by 2002:a05:6512:6c1:: with SMTP id u1mr14221835lff.9.1643065235474;
+ Mon, 24 Jan 2022 15:00:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <CABXGCsNb22JCJ4AyR1sYqFtF4QUnvM3B2zQcc1svcm2mquWxoA@mail.gmail.com>
+ <YeUvvIaVJnJrrpYe@kuha.fi.intel.com> <CABXGCsO5PYBuZ11YR16NLLa0H07Jom1JQhWHFuETfotfBfzkMw@mail.gmail.com>
+ <YeVQsRp7aDMcQKs7@kuha.fi.intel.com> <CABXGCsMWXFFQY3L8ixK9K-gYX41_gTjqHRBXNp6gDpUgdnvFfg@mail.gmail.com>
+ <YeVfYOhxGTgg8VpZ@kuha.fi.intel.com> <CABXGCsOwsP7NJ67oyK3HPs2EarSJKLB9EVW7oEh+8bAFihSa8g@mail.gmail.com>
+ <Yea8p1b/sZYKNGaB@kuha.fi.intel.com> <YebBq/WDeYCIvwYw@kuha.fi.intel.com> <CANcMJZDrs418aUoVS4CijQFqgAW3pCbfm_NUCmx+T7HNoiMVnQ@mail.gmail.com>
+In-Reply-To: <CANcMJZDrs418aUoVS4CijQFqgAW3pCbfm_NUCmx+T7HNoiMVnQ@mail.gmail.com>
+From:   Len Brown <lenb@kernel.org>
+Date:   Mon, 24 Jan 2022 18:00:24 -0500
+Message-ID: <CAJvTdKnMKdQ6KJe63phZ87kJz2SjeQoNTHqajSfv4RJo6+Y6jw@mail.gmail.com>
+Subject: Re: [Bug][5.17-rc0] Between commits daadb3bd0e8d and 455e73a07f6e,
+ the kernel stops loading on my devices.
+To:     John Stultz <john.stultz@linaro.org>
+Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
+        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        rafael.j.wysocki@intel.com, linux-usb@vger.kernel.org,
+        YongQin Liu <yongqin.liu@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Raed Salem <raeds@nvidia.com>
+Tested-by: Len Brown <len.brown@intelcom>
 
-[ Upstream commit 45a98ef4922def8c679ca7c454403d1957fe70e7 ]
+The typec_link_ports crash goes away w/ the 2nd patch.
 
-The inner_ipproto saves the inner IP protocol of the plain
-text packet. This allows vendor's IPsec feature making offload
-decision at skb's features_check and configuring hardware at
-ndo_start_xmit, current code implenetation did not handle the
-case where IPsec is used in tunnel mode.
+https://bugzilla.kernel.org/show_bug.cgi?id=215529
 
-Fix by handling the case when IPsec is used in tunnel mode by
-reading the protocol of the plain text packet IP protocol.
+On Fri, Jan 21, 2022 at 4:33 PM John Stultz <john.stultz@linaro.org> wrote:
+>
+> On Thu, Jan 20, 2022 at 3:27 AM Heikki Krogerus
+> <heikki.krogerus@linux.intel.com> wrote:
+> > On Tue, Jan 18, 2022 at 03:12:10PM +0200, Heikki Krogerus wrote:
+> > > I can reproduce this one by simply not creating the component list in
+> > > the code. That function - component_master_add_with_match() - can't
+> > > handle situation where the list is empty. I'll prepare the fix.
+> >
+> > I'm again attaching the proposed fix, just to see if it also gets
+> > corrupted. Can you test does it fix this issue?
+> > You need to apply it on top of the previous one.
+>
+> We've been hitting the null pointer crash from
+> component_master_add_with_match() regression as well on the hikey960
+> board.
+>
+> The patch you attached resolves the issue. It would be great to see it
+> merged upstream soon!
+>
+> Tested-by: John Stultz <john.stultz@linaro.org>
+>
+> thanks
+> -john
 
-Fixes: fa4535238fb5 ("net/xfrm: Add inner_ipproto into sec_path")
-Signed-off-by: Raed Salem <raeds@nvidia.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/xfrm/xfrm_output.c | 30 +++++++++++++++++++++++++-----
- 1 file changed, 25 insertions(+), 5 deletions(-)
 
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index 229544bc70c21..4dc4a7bbe51cf 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -647,10 +647,12 @@ static int xfrm_output_gso(struct net *net, struct sock *sk, struct sk_buff *skb
-  * This requires hardware to know the inner packet type to calculate
-  * the inner header checksum. Save inner ip protocol here to avoid
-  * traversing the packet in the vendor's xmit code.
-- * If the encap type is IPIP, just save skb->inner_ipproto. Otherwise,
-- * get the ip protocol from the IP header.
-+ * For IPsec tunnel mode save the ip protocol from the IP header of the
-+ * plain text packet. Otherwise If the encap type is IPIP, just save
-+ * skb->inner_ipproto in any other case get the ip protocol from the IP
-+ * header.
-  */
--static void xfrm_get_inner_ipproto(struct sk_buff *skb)
-+static void xfrm_get_inner_ipproto(struct sk_buff *skb, struct xfrm_state *x)
- {
- 	struct xfrm_offload *xo = xfrm_offload(skb);
- 	const struct ethhdr *eth;
-@@ -658,6 +660,25 @@ static void xfrm_get_inner_ipproto(struct sk_buff *skb)
- 	if (!xo)
- 		return;
- 
-+	if (x->outer_mode.encap == XFRM_MODE_TUNNEL) {
-+		switch (x->outer_mode.family) {
-+		case AF_INET:
-+			xo->inner_ipproto = ip_hdr(skb)->protocol;
-+			break;
-+		case AF_INET6:
-+			xo->inner_ipproto = ipv6_hdr(skb)->nexthdr;
-+			break;
-+		default:
-+			break;
-+		}
-+
-+		return;
-+	}
-+
-+	/* non-Tunnel Mode */
-+	if (!skb->encapsulation)
-+		return;
-+
- 	if (skb->inner_protocol_type == ENCAP_TYPE_IPPROTO) {
- 		xo->inner_ipproto = skb->inner_ipproto;
- 		return;
-@@ -712,8 +733,7 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
- 		sp->xvec[sp->len++] = x;
- 		xfrm_state_hold(x);
- 
--		if (skb->encapsulation)
--			xfrm_get_inner_ipproto(skb);
-+		xfrm_get_inner_ipproto(skb, x);
- 		skb->encapsulation = 1;
- 
- 		if (skb_is_gso(skb)) {
+
 -- 
-2.34.1
-
-
-
+Len Brown, Intel Open Source Technology Center
