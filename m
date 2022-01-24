@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D225FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F183C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410462AbiAYA3Q (ORCPT
+        id S3410500AbiAYA3V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59486 "EHLO
+        Mon, 24 Jan 2022 19:29:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449591AbiAXVyz (ORCPT
+        with ESMTP id S1449430AbiAXVyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:54:55 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F355C08B4FF;
-        Mon, 24 Jan 2022 12:34:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 225E8C08B4FE;
+        Mon, 24 Jan 2022 12:34:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C122614FF;
-        Mon, 24 Jan 2022 20:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DD83C340E5;
-        Mon, 24 Jan 2022 20:34:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6B0D614FF;
+        Mon, 24 Jan 2022 20:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0E2AC340E5;
+        Mon, 24 Jan 2022 20:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056492;
-        bh=6ftHw2PhpvyqVOJfiLYzxPb74sRaD6npgzQ7/f5plLI=;
+        s=korg; t=1643056489;
+        bh=kvtpMf09zNVnWWbXCIVl9s/7VjcLSSErZYuDPGmkE3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QGysfniDGMikMrzsFM6AJnliQc1GrSgz2kEoXdvPNbX/V4gZq84bQUOsFoYPoYoHh
-         2aRdJANfeqEM0t5bn67bbA71DqXT4jkpDTWMOSQWpmigXkFRpzc+6WB3wxoGrn/bOU
-         CqYSiG80qUexAj7uJUI7AtaIypdWljwTs6Sy8hQw=
+        b=ENRsXtafjEu++/ViKDqoO+I/NV2dNjYINFeQ7pl7v4CX1LpMTOLJmvMo72mRWDOyW
+         U0uT3Cn4EaZc4jEcMisrsKFtDM+U7pt31AIdN4915MyPhyH7YRTvY9rFgqYJWmRZTE
+         pHsa9epCaYOwaUR0Kau8t+WsfjAPsSCn/FTjBjvA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fugang Duan <fugang.duan@nxp.com>,
-        Sherry Sun <sherry.sun@nxp.com>,
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 501/846] tty: serial: imx: disable UCR4_OREN in .stop_rx() instead of .shutdown()
-Date:   Mon, 24 Jan 2022 19:40:18 +0100
-Message-Id: <20220124184118.317323671@linuxfoundation.org>
+Subject: [PATCH 5.15 500/846] mxser: keep only !tty test in ISR
+Date:   Mon, 24 Jan 2022 19:40:17 +0100
+Message-Id: <20220124184118.277897472@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,67 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-[ Upstream commit 028e083832b06fdeeb290e1e57dc1f6702c4c215 ]
+[ Upstream commit 274ab58dc2b460cc474ffc7ccfcede4b2be1a3f5 ]
 
-The UCR4_OREN should be disabled before disabling the uart receiver in
-.stop_rx() instead of in the .shutdown().
+The others are superfluous with tty refcounting in place now. And they
+are racy in fact:
+* tty_port_initialized() reports false for a small moment after
+  interrupts are enabled.
+* closing is 1 while the port is still alive.
 
-Otherwise, if we have the overrun error during the receiver disable
-process, the overrun interrupt will keep trigging until we disable the
-OREN interrupt in the .shutdown(), because the ORE status can only be
-cleared when read the rx FIFO or reset the controller.  Although the
-called time between the receiver disable and OREN disable in .shutdown()
-is very short, there is still the risk of endless interrupt during this
-short period of time. So here change to disable OREN before the receiver
-been disabled in .stop_rx().
+The queues are flushed later during close anyway. So there is no need
+for this special handling. Actually, the ISR should not flush the
+queues. It should behave as every other driver, just queue the chars
+into tty buffer and go on. But this will be changed later. There is
+still a lot code depending on having tty in ISR (and not only tty_port).
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Link: https://lore.kernel.org/r/20211125020349.4980-1-sherry.sun@nxp.com
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20211118073125.12283-4-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/imx.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/tty/mxser.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 51a9f9423b1a6..7820049aba5af 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -486,18 +486,21 @@ static void imx_uart_stop_tx(struct uart_port *port)
- static void imx_uart_stop_rx(struct uart_port *port)
- {
- 	struct imx_port *sport = (struct imx_port *)port;
--	u32 ucr1, ucr2;
-+	u32 ucr1, ucr2, ucr4;
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 1216f3985e18e..da375851af4e6 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -261,7 +261,6 @@ struct mxser_port {
+ 	unsigned int xmit_head;
+ 	unsigned int xmit_tail;
+ 	unsigned int xmit_cnt;
+-	int closing;
  
- 	ucr1 = imx_uart_readl(sport, UCR1);
- 	ucr2 = imx_uart_readl(sport, UCR2);
-+	ucr4 = imx_uart_readl(sport, UCR4);
+ 	spinlock_t slock;
+ };
+@@ -923,7 +922,6 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
+ 		return;
+ 	if (tty_port_close_start(port, tty, filp) == 0)
+ 		return;
+-	info->closing = 1;
+ 	mutex_lock(&port->mutex);
+ 	mxser_close_port(port);
+ 	mxser_flush_buffer(tty);
+@@ -932,7 +930,6 @@ static void mxser_close(struct tty_struct *tty, struct file *filp)
+ 	mxser_shutdown_port(port);
+ 	tty_port_set_initialized(port, 0);
+ 	mutex_unlock(&port->mutex);
+-	info->closing = 0;
+ 	/* Right now the tty_port set is done outside of the close_end helper
+ 	   as we don't yet have everyone using refcounts */	
+ 	tty_port_close_end(port, tty);
+@@ -1693,7 +1690,7 @@ static bool mxser_port_isr(struct mxser_port *port)
  
- 	if (sport->dma_is_enabled) {
- 		ucr1 &= ~(UCR1_RXDMAEN | UCR1_ATDMAEN);
- 	} else {
- 		ucr1 &= ~UCR1_RRDYEN;
- 		ucr2 &= ~UCR2_ATEN;
-+		ucr4 &= ~UCR4_OREN;
- 	}
- 	imx_uart_writel(sport, ucr1, UCR1);
-+	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	ucr2 &= ~UCR2_RXEN;
- 	imx_uart_writel(sport, ucr2, UCR2);
-@@ -1544,7 +1547,7 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	imx_uart_writel(sport, ucr1, UCR1);
- 
- 	ucr4 = imx_uart_readl(sport, UCR4);
--	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
-+	ucr4 &= ~UCR4_TCEN;
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 	iir &= MOXA_MUST_IIR_MASK;
+ 	tty = tty_port_tty_get(&port->port);
+-	if (!tty || port->closing || !tty_port_initialized(&port->port)) {
++	if (!tty) {
+ 		status = inb(port->ioaddr + UART_LSR);
+ 		outb(MOXA_MUST_FCR_GDA_MODE_ENABLE | UART_FCR_ENABLE_FIFO |
+ 				UART_FCR_CLEAR_RCVR | UART_FCR_CLEAR_XMIT,
 -- 
 2.34.1
 
