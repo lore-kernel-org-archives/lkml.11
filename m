@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D45C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CC34C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382465AbiAXUZr (ORCPT
+        id S1383186AbiAXU0z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:25:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376677AbiAXUDd (ORCPT
+        Mon, 24 Jan 2022 15:26:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54838 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347509AbiAXT6b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:03:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BC58C03463F;
-        Mon, 24 Jan 2022 11:29:39 -0800 (PST)
+        Mon, 24 Jan 2022 14:58:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DDDA60917;
-        Mon, 24 Jan 2022 19:29:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1209EC340E5;
-        Mon, 24 Jan 2022 19:29:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D086660B02;
+        Mon, 24 Jan 2022 19:58:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA024C340E5;
+        Mon, 24 Jan 2022 19:58:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052578;
-        bh=rntYQlCVPisB/5zHJxmM6EaBvY6oz+EzaTcSMqEAHt0=;
+        s=korg; t=1643054305;
+        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Euo8RtWl8H13dS/S1naGHRv2+aM6/h3sn3gV6LDojOSHkiFvt5cfSGK6ZsocWo+of
-         rzm43TPG3NO8TXMZDaRtOA4bOZNuC8rhfFkooxRFfCDRLI5ReLGDTYQJdkKD7gIHqn
-         oRqJ2ik/ZMvk/Yr3WJdpzBPmsDtVAA+dhJlxvHRc=
+        b=QuN7KRleVxvKtb7ekSR5PDdUAomPSZdo42sXLDwVXaLHqz9UnLfGECrrvhNX+PglG
+         +I9EIGTRC3QbanLPz7HQhvTKTinlpZZONvvtGkw6RP7eNseoxte+2Lv3zIvFD5Y5eh
+         f1g/qEnAdfQ3HQqXOweuH4DoT7b1R+HLqsc9rCO8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, rkardell@mida.se,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 106/320] fsl/fman: Check for null pointer after calling devm_ioremap
-Date:   Mon, 24 Jan 2022 19:41:30 +0100
-Message-Id: <20220124183957.330849637@linuxfoundation.org>
+Subject: [PATCH 5.10 345/563] media: m920x: dont use stack on USB reads
+Date:   Mon, 24 Jan 2022 19:41:50 +0100
+Message-Id: <20220124184036.351610038@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,94 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit d5a73ec96cc57cf67e51b12820fc2354e7ca46f8 ]
+[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
 
-As the possible failure of the allocation, the devm_ioremap() may return
-NULL pointer.
-Take tgec_initialization() as an example.
-If allocation fails, the params->base_addr will be NULL pointer and will
-be assigned to tgec->regs in tgec_config().
-Then it will cause the dereference of NULL pointer in set_mac_address(),
-which is called by tgec_init().
-Therefore, it should be better to add the sanity check after the calling
-of the devm_ioremap().
+Using stack-allocated pointers for USB message data don't work.
+This driver is almost OK with that, except for the I2C read
+logic.
 
-Fixes: 3933961682a3 ("fsl/fman: Add FMan MAC driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fix it by using a temporary read buffer, just like on all other
+calls to m920x_read().
+
+Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
+Reported-by: rkardell@mida.se
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/fman/mac.c | 21 ++++++++++++++++-----
- 1 file changed, 16 insertions(+), 5 deletions(-)
+ drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
-index 7ab8095db1928..147126e79986c 100644
---- a/drivers/net/ethernet/freescale/fman/mac.c
-+++ b/drivers/net/ethernet/freescale/fman/mac.c
-@@ -94,14 +94,17 @@ static void mac_exception(void *handle, enum fman_mac_exceptions ex)
- 		__func__, ex);
- }
- 
--static void set_fman_mac_params(struct mac_device *mac_dev,
--				struct fman_mac_params *params)
-+static int set_fman_mac_params(struct mac_device *mac_dev,
-+			       struct fman_mac_params *params)
- {
- 	struct mac_priv_s *priv = mac_dev->priv;
- 
- 	params->base_addr = (typeof(params->base_addr))
- 		devm_ioremap(priv->dev, mac_dev->res->start,
- 			     resource_size(mac_dev->res));
-+	if (!params->base_addr)
-+		return -ENOMEM;
+diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
+index 4bb5b82599a79..691e05833db19 100644
+--- a/drivers/media/usb/dvb-usb/m920x.c
++++ b/drivers/media/usb/dvb-usb/m920x.c
+@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 			/* Should check for ack here, if we knew how. */
+ 		}
+ 		if (msg[i].flags & I2C_M_RD) {
++			char *read = kmalloc(1, GFP_KERNEL);
++			if (!read) {
++				ret = -ENOMEM;
++				kfree(read);
++				goto unlock;
++			}
 +
- 	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
- 	params->max_speed	= priv->max_speed;
- 	params->phy_if		= mac_dev->phy_if;
-@@ -112,6 +115,8 @@ static void set_fman_mac_params(struct mac_device *mac_dev,
- 	params->event_cb	= mac_exception;
- 	params->dev_id		= mac_dev;
- 	params->internal_phy_node = priv->internal_phy_node;
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction?
+ 				 * Send STOP, otherwise send ACK. */
+@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 
+ 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
+ 						      0x20 | stop,
+-						      &msg[i].buf[j], 1)) != 0)
++						      read, 1)) != 0)
+ 					goto unlock;
++				msg[i].buf[j] = read[0];
+ 			}
 +
-+	return 0;
- }
- 
- static int tgec_initialization(struct mac_device *mac_dev)
-@@ -123,7 +128,9 @@ static int tgec_initialization(struct mac_device *mac_dev)
- 
- 	priv = mac_dev->priv;
- 
--	set_fman_mac_params(mac_dev, &params);
-+	err = set_fman_mac_params(mac_dev, &params);
-+	if (err)
-+		goto _return;
- 
- 	mac_dev->fman_mac = tgec_config(&params);
- 	if (!mac_dev->fman_mac) {
-@@ -169,7 +176,9 @@ static int dtsec_initialization(struct mac_device *mac_dev)
- 
- 	priv = mac_dev->priv;
- 
--	set_fman_mac_params(mac_dev, &params);
-+	err = set_fman_mac_params(mac_dev, &params);
-+	if (err)
-+		goto _return;
- 
- 	mac_dev->fman_mac = dtsec_config(&params);
- 	if (!mac_dev->fman_mac) {
-@@ -218,7 +227,9 @@ static int memac_initialization(struct mac_device *mac_dev)
- 
- 	priv = mac_dev->priv;
- 
--	set_fman_mac_params(mac_dev, &params);
-+	err = set_fman_mac_params(mac_dev, &params);
-+	if (err)
-+		goto _return;
- 
- 	if (priv->max_speed == SPEED_10000)
- 		params.phy_if = PHY_INTERFACE_MODE_XGMII;
++			kfree(read);
+ 		} else {
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction? Then send STOP. */
 -- 
 2.34.1
 
