@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECB8FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 883B7C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840444AbiAXWx3 (ORCPT
+        id S1840272AbiAXWxD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:53:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57086 "EHLO
+        Mon, 24 Jan 2022 17:53:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573983AbiAXVrD (ORCPT
+        with ESMTP id S1574350AbiAXVs7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:47:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF0CFC081184;
-        Mon, 24 Jan 2022 12:32:48 -0800 (PST)
+        Mon, 24 Jan 2022 16:48:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F879C0811BF;
+        Mon, 24 Jan 2022 12:33:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B62FBB815A6;
-        Mon, 24 Jan 2022 20:32:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDE03C340E5;
-        Mon, 24 Jan 2022 20:32:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1AA6614EC;
+        Mon, 24 Jan 2022 20:33:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1CB4C340E5;
+        Mon, 24 Jan 2022 20:33:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056366;
-        bh=KgD6qxy+fP2fvSM/3e8PrWESYFntT/ISgWQqCE2FJS0=;
+        s=korg; t=1643056396;
+        bh=gHfSCmYBYByuJZQy+bCo3KStS81UFeM1yUwFWwaOcNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EXpw256DssrdG8k1A80cNhpForiHdvH5hC73+omf0cmqw+fkxpzJId9QGKWKxWJi8
-         6LSO44n/hCQHzBe5GbUUxPSpQGdembr6I37BgeFC4WhB3C8PZQhKR85hGrFHpYZrvy
-         3sNEAHpY0ptGlqTiJSY2A6mfJfED33SyZgN77R2Y=
+        b=vI2KHRCS4B5iDl6vWsmCossVN9a/xg953okdT8f5N9qZ7jNtvwfegQW9t8ol+6mUB
+         mfC7wCT8kVuE9h4QBdBTyXcuJ+gUSP9FslVbdHWjWrbiog1DOmgC6cgWaepjbl6IhY
+         RHD5/KuDMCx/TjSC7jeezgUzuX+gR5IrU6Nl/Luo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Trevor Wu <trevor.wu@mediatek.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 460/846] Bluetooth: Fix memory leak of hci device
-Date:   Mon, 24 Jan 2022 19:39:37 +0100
-Message-Id: <20220124184116.850102578@linuxfoundation.org>
+Subject: [PATCH 5.15 437/846] ASoC: mediatek: mt8195: correct pcmif BE dai control flow
+Date:   Mon, 24 Jan 2022 19:39:14 +0100
+Message-Id: <20220124184116.054750113@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,64 +50,164 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Trevor Wu <trevor.wu@mediatek.com>
 
-[ Upstream commit 75d9b8559ac36e059238ee4f8e33cd86086586ba ]
+[ Upstream commit 2355028c0c54c03afb66c589347f1dc9f6fe2e38 ]
 
-Fault injection test reported memory leak of hci device as follows:
+Originally, the conditions for preventing reentry are not correct.
+dai->component->active is not the state specifically for pcmif dai, so it
+is not a correct condition to indicate the status of pcmif dai.
+On the other hand, snd_soc_dai_stream_actvie() in prepare ops for both
+playback and capture possibly return true at the first entry when these
+two streams are opened at the same time.
 
-unreferenced object 0xffff88800b858000 (size 8192):
-  comm "kworker/0:2", pid 167, jiffies 4294955747 (age 557.148s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
-  backtrace:
-    [<0000000070eb1059>] kmem_cache_alloc_trace mm/slub.c:3208
-    [<00000000015eb521>] hci_alloc_dev_priv include/linux/slab.h:591
-    [<00000000dcfc1e21>] bpa10x_probe include/net/bluetooth/hci_core.h:1240
-    [<000000005d3028c7>] usb_probe_interface drivers/usb/core/driver.c:397
-    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
-    [<0000000024cab3f0>] __driver_probe_device drivers/base/dd.c:751
-    [<00000000202135cb>] driver_probe_device drivers/base/dd.c:782
-    [<000000000761f2bc>] __device_attach_driver drivers/base/dd.c:899
-    [<00000000f7d63134>] bus_for_each_drv drivers/base/bus.c:427
-    [<00000000c9551f0b>] __device_attach drivers/base/dd.c:971
-    [<000000007f79bd16>] bus_probe_device drivers/base/bus.c:487
-    [<000000007bb8b95a>] device_add drivers/base/core.c:3364
-    [<000000009564d9ea>] usb_set_configuration drivers/usb/core/message.c:2171
-    [<00000000e4657087>] usb_generic_driver_probe drivers/usb/core/generic.c:239
-    [<0000000071ede518>] usb_probe_device drivers/usb/core/driver.c:294
-    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
+In the patch, I refer to the implementation in mt8192-dai-pcm.c.
+Clock and enabling bit for PCMIF are managed by DAPM, and the condition
+for prepare ops is replaced by the status of dai widget.
 
-hci_alloc_dev() do not init the device's flag. And hci_free_dev()
-using put_device() to free the memory allocated for this device,
-but it calls just put_device(dev) only in case of HCI_UNREGISTER
-flag is set, So any error handing before hci_register_dev() success
-will cause memory leak.
-
-To avoid this behaviour we can using kfree() to release dev before
-hci_register_dev() success.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 1f95c019115c ("ASoC: mediatek: mt8195: support pcm in platform driver")
+Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
+Link: https://lore.kernel.org/r/20211230084731.31372-2-trevor.wu@mediatek.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sysfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/mediatek/mt8195/mt8195-dai-pcm.c | 73 +++++++---------------
+ sound/soc/mediatek/mt8195/mt8195-reg.h     |  1 +
+ 2 files changed, 22 insertions(+), 52 deletions(-)
 
-diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
-index 7827639ecf5c3..4e3e0451b08c1 100644
---- a/net/bluetooth/hci_sysfs.c
-+++ b/net/bluetooth/hci_sysfs.c
-@@ -86,6 +86,8 @@ static void bt_host_release(struct device *dev)
+diff --git a/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c b/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
+index 5d10d2c4c991c..151914c873acd 100644
+--- a/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
++++ b/sound/soc/mediatek/mt8195/mt8195-dai-pcm.c
+@@ -80,8 +80,15 @@ static const struct snd_soc_dapm_widget mtk_dai_pcm_widgets[] = {
+ 			   mtk_dai_pcm_o001_mix,
+ 			   ARRAY_SIZE(mtk_dai_pcm_o001_mix)),
  
- 	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
- 		hci_release_dev(hdev);
-+	else
-+		kfree(hdev);
- 	module_put(THIS_MODULE);
++	SND_SOC_DAPM_SUPPLY("PCM_EN", PCM_INTF_CON1,
++			    PCM_INTF_CON1_PCM_EN_SHIFT, 0, NULL, 0),
++
+ 	SND_SOC_DAPM_INPUT("PCM1_INPUT"),
+ 	SND_SOC_DAPM_OUTPUT("PCM1_OUTPUT"),
++
++	SND_SOC_DAPM_CLOCK_SUPPLY("aud_asrc11"),
++	SND_SOC_DAPM_CLOCK_SUPPLY("aud_asrc12"),
++	SND_SOC_DAPM_CLOCK_SUPPLY("aud_pcmif"),
+ };
+ 
+ static const struct snd_soc_dapm_route mtk_dai_pcm_routes[] = {
+@@ -97,22 +104,18 @@ static const struct snd_soc_dapm_route mtk_dai_pcm_routes[] = {
+ 	{"PCM1 Playback", NULL, "O000"},
+ 	{"PCM1 Playback", NULL, "O001"},
+ 
++	{"PCM1 Playback", NULL, "PCM_EN"},
++	{"PCM1 Playback", NULL, "aud_asrc12"},
++	{"PCM1 Playback", NULL, "aud_pcmif"},
++
++	{"PCM1 Capture", NULL, "PCM_EN"},
++	{"PCM1 Capture", NULL, "aud_asrc11"},
++	{"PCM1 Capture", NULL, "aud_pcmif"},
++
+ 	{"PCM1_OUTPUT", NULL, "PCM1 Playback"},
+ 	{"PCM1 Capture", NULL, "PCM1_INPUT"},
+ };
+ 
+-static void mtk_dai_pcm_enable(struct mtk_base_afe *afe)
+-{
+-	regmap_update_bits(afe->regmap, PCM_INTF_CON1,
+-			   PCM_INTF_CON1_PCM_EN, PCM_INTF_CON1_PCM_EN);
+-}
+-
+-static void mtk_dai_pcm_disable(struct mtk_base_afe *afe)
+-{
+-	regmap_update_bits(afe->regmap, PCM_INTF_CON1,
+-			   PCM_INTF_CON1_PCM_EN, 0x0);
+-}
+-
+ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
+ 				 struct snd_soc_dai *dai)
+ {
+@@ -207,54 +210,22 @@ static int mtk_dai_pcm_configure(struct snd_pcm_substream *substream,
  }
  
+ /* dai ops */
+-static int mtk_dai_pcm_startup(struct snd_pcm_substream *substream,
+-			       struct snd_soc_dai *dai)
+-{
+-	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
+-	struct mt8195_afe_private *afe_priv = afe->platform_priv;
+-
+-	if (dai->component->active)
+-		return 0;
+-
+-	mt8195_afe_enable_clk(afe, afe_priv->clk[MT8195_CLK_AUD_ASRC11]);
+-	mt8195_afe_enable_clk(afe, afe_priv->clk[MT8195_CLK_AUD_ASRC12]);
+-	mt8195_afe_enable_clk(afe, afe_priv->clk[MT8195_CLK_AUD_PCMIF]);
+-
+-	return 0;
+-}
+-
+-static void mtk_dai_pcm_shutdown(struct snd_pcm_substream *substream,
+-				 struct snd_soc_dai *dai)
+-{
+-	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
+-	struct mt8195_afe_private *afe_priv = afe->platform_priv;
+-
+-	if (dai->component->active)
+-		return;
+-
+-	mtk_dai_pcm_disable(afe);
+-
+-	mt8195_afe_disable_clk(afe, afe_priv->clk[MT8195_CLK_AUD_PCMIF]);
+-	mt8195_afe_disable_clk(afe, afe_priv->clk[MT8195_CLK_AUD_ASRC12]);
+-	mt8195_afe_disable_clk(afe, afe_priv->clk[MT8195_CLK_AUD_ASRC11]);
+-}
+-
+ static int mtk_dai_pcm_prepare(struct snd_pcm_substream *substream,
+ 			       struct snd_soc_dai *dai)
+ {
+-	struct mtk_base_afe *afe = snd_soc_dai_get_drvdata(dai);
+-	int ret = 0;
++	int ret;
+ 
+-	if (snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_PLAYBACK) &&
+-	    snd_soc_dai_stream_active(dai, SNDRV_PCM_STREAM_CAPTURE))
++	dev_dbg(dai->dev, "%s(), id %d, stream %d, widget active p %d, c %d\n",
++		__func__, dai->id, substream->stream,
++		dai->playback_widget->active, dai->capture_widget->active);
++
++	if (dai->playback_widget->active || dai->capture_widget->active)
+ 		return 0;
+ 
+ 	ret = mtk_dai_pcm_configure(substream, dai);
+ 	if (ret)
+ 		return ret;
+ 
+-	mtk_dai_pcm_enable(afe);
+-
+ 	return 0;
+ }
+ 
+@@ -316,8 +287,6 @@ static int mtk_dai_pcm_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
+ }
+ 
+ static const struct snd_soc_dai_ops mtk_dai_pcm_ops = {
+-	.startup	= mtk_dai_pcm_startup,
+-	.shutdown	= mtk_dai_pcm_shutdown,
+ 	.prepare	= mtk_dai_pcm_prepare,
+ 	.set_fmt	= mtk_dai_pcm_set_fmt,
+ };
+diff --git a/sound/soc/mediatek/mt8195/mt8195-reg.h b/sound/soc/mediatek/mt8195/mt8195-reg.h
+index d06f9cf85a4ec..d3871353db415 100644
+--- a/sound/soc/mediatek/mt8195/mt8195-reg.h
++++ b/sound/soc/mediatek/mt8195/mt8195-reg.h
+@@ -2550,6 +2550,7 @@
+ #define PCM_INTF_CON1_PCM_FMT(x)       (((x) & 0x3) << 1)
+ #define PCM_INTF_CON1_PCM_FMT_MASK     (0x3 << 1)
+ #define PCM_INTF_CON1_PCM_EN           BIT(0)
++#define PCM_INTF_CON1_PCM_EN_SHIFT     0
+ 
+ /* PCM_INTF_CON2 */
+ #define PCM_INTF_CON2_CLK_DOMAIN_SEL(x)   (((x) & 0x3) << 23)
 -- 
 2.34.1
 
