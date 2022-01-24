@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA3AC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A73CC35276
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842126AbiAXXA6 (ORCPT
+        id S1842155AbiAXXBH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:00:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60964 "EHLO
+        Mon, 24 Jan 2022 18:01:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577796AbiAXWBF (ORCPT
+        with ESMTP id S1577817AbiAXWBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:01:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6F06C02B8FD;
-        Mon, 24 Jan 2022 12:40:26 -0800 (PST)
+        Mon, 24 Jan 2022 17:01:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F50C02B846;
+        Mon, 24 Jan 2022 12:40:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8218BB81057;
-        Mon, 24 Jan 2022 20:40:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACAC8C340E5;
-        Mon, 24 Jan 2022 20:40:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4068A61540;
+        Mon, 24 Jan 2022 20:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A9DC340E5;
+        Mon, 24 Jan 2022 20:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056824;
-        bh=xsfclcnth22emOhXnExQDbZEHeQPjA9k8JwPqBUjW/I=;
+        s=korg; t=1643056839;
+        bh=qyBu0B7dRXJctmKgZrrvfp0L9hSwBmhZ/BtctYh2YSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AYa8Gz0vDEf9qjpi4XHtSAn6O5tGog8CC5G2kbITzLF6Vn122b/KYdEsND65ddJ6Q
-         DM5O6fuYcGsd2WgdDpuZmEujwf0dkXjjcUnlqhFR8liBplnM7APqAu0kBcG7Vm5ARA
-         SstBSRXxgT+iwjTQSKShiVMvxJWhmDI2NtvgbFII=
+        b=F/BtmguBtaRm3tzOyKCtX68oeOPLEyGsrDMXlaVjecNgjfrMaDu+8PpqDkv6ulnj3
+         IZGKw4fIsFyLdYEU0DYPVBxG68wuAQyQ0ktW5zrjUYTiftUyKf+GsJllfZhOQYAJ0v
+         5ASrow/81BzbIeiMoqQQNWCPdf013usWr3Q4ncuM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Hector Martin <marcan@marcan.st>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 580/846] mmc: sdhci-pci-gli: GL9755: Support for CD/WP inversion on OF platforms
-Date:   Mon, 24 Jan 2022 19:41:37 +0100
-Message-Id: <20220124184121.056138082@linuxfoundation.org>
+Subject: [PATCH 5.15 610/846] regulator: qcom_smd: Align probe function with rpmh-regulator
+Date:   Mon, 24 Jan 2022 19:42:07 +0100
+Message-Id: <20220124184122.080401466@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,61 +51,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 189f1d9bc3a5ea3e442e119e4a5deda63da8c462 ]
+[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
 
-This is required on some Apple ARM64 laptops using this controller.
-As is typical on DT platforms, pull these quirks from the device tree
-using the standard mmc bindings.
+The RPMh regulator driver is much newer and gets more attention, which in
+consequence makes it do a few things better. Update qcom_smd-regulator's
+probe function to mimic what rpmh-regulator does to address a couple of
+issues:
 
-See Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+- Probe defer now works correctly, before it used to, well,
+  kinda just die.. This fixes reliable probing on (at least) PM8994,
+  because Linux apparently cannot deal with supply map dependencies yet..
 
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211215161045.38843-2-marcan@marcan.st
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+- Regulator data is now matched more sanely: regulator data is matched
+  against each individual regulator node name and throwing an -EINVAL if
+  data is missing, instead of just assuming everything is fine and
+  iterating over all subsequent array members.
+
+- status = "disabled" will now work for disabling individual regulators in
+  DT. Previously it didn't seem to do much if anything at all.
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-pci-gli.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
+ 1 file changed, 70 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-index 4fd99c1e82ba3..ad50f16658fe2 100644
---- a/drivers/mmc/host/sdhci-pci-gli.c
-+++ b/drivers/mmc/host/sdhci-pci-gli.c
-@@ -12,6 +12,7 @@
- #include <linux/pci.h>
- #include <linux/mmc/mmc.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
- #include "sdhci.h"
- #include "sdhci-pci.h"
- #include "cqhci.h"
-@@ -116,6 +117,8 @@
- #define PCI_GLI_9755_PECONF   0x44
- #define   PCI_GLI_9755_LFCLK    GENMASK(14, 12)
- #define   PCI_GLI_9755_DMACLK   BIT(29)
-+#define   PCI_GLI_9755_INVERT_CD  BIT(30)
-+#define   PCI_GLI_9755_INVERT_WP  BIT(31)
+diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
+index 198fcc6551f6d..8e077792bddd9 100644
+--- a/drivers/regulator/qcom_smd-regulator.c
++++ b/drivers/regulator/qcom_smd-regulator.c
+@@ -9,6 +9,7 @@
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/regulator/driver.h>
++#include <linux/regulator/of_regulator.h>
+ #include <linux/soc/qcom/smd-rpm.h>
  
- #define PCI_GLI_9755_CFG2          0x48
- #define   PCI_GLI_9755_CFG2_L1DLY    GENMASK(28, 24)
-@@ -570,6 +573,14 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
- 	gl9755_wt_on(pdev);
+ struct qcom_rpm_reg {
+@@ -1190,52 +1191,91 @@ static const struct of_device_id rpm_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, rpm_of_match);
  
- 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
-+	/*
-+	 * Apple ARM64 platforms using these chips may have
-+	 * inverted CD/WP detection.
-+	 */
-+	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
-+		value |= PCI_GLI_9755_INVERT_CD;
-+	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
-+		value |= PCI_GLI_9755_INVERT_WP;
- 	value &= ~PCI_GLI_9755_LFCLK;
- 	value &= ~PCI_GLI_9755_DMACLK;
- 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
+-static int rpm_reg_probe(struct platform_device *pdev)
++/**
++ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
++ * @vreg:		Pointer to the individual qcom_smd-regulator resource
++ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
++ * @node:		Pointer to the individual qcom_smd-regulator resource
++ *			device node
++ * @rpm:		Pointer to the rpm bus node
++ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
++ *			resources defined for the top level PMIC device
++ *
++ * Return: 0 on success, errno on failure
++ */
++static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
++				   struct device_node *node, struct qcom_smd_rpm *rpm,
++				   const struct rpm_regulator_data *pmic_rpm_data)
+ {
+-	const struct rpm_regulator_data *reg;
+-	const struct of_device_id *match;
+-	struct regulator_config config = { };
++	struct regulator_config config = {};
++	const struct rpm_regulator_data *rpm_data;
+ 	struct regulator_dev *rdev;
++	int ret;
++
++	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
++		if (of_node_name_eq(node, rpm_data->name))
++			break;
++
++	if (!rpm_data->name) {
++		dev_err(dev, "Unknown regulator %pOFn\n", node);
++		return -EINVAL;
++	}
++
++	vreg->dev	= dev;
++	vreg->rpm	= rpm;
++	vreg->type	= rpm_data->type;
++	vreg->id	= rpm_data->id;
++
++	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
++	vreg->desc.name = rpm_data->name;
++	vreg->desc.supply_name = rpm_data->supply;
++	vreg->desc.owner = THIS_MODULE;
++	vreg->desc.type = REGULATOR_VOLTAGE;
++	vreg->desc.of_match = rpm_data->name;
++
++	config.dev		= dev;
++	config.of_node		= node;
++	config.driver_data	= vreg;
++
++	rdev = devm_regulator_register(dev, &vreg->desc, &config);
++	if (IS_ERR(rdev)) {
++		ret = PTR_ERR(rdev);
++		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int rpm_reg_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	const struct rpm_regulator_data *vreg_data;
++	struct device_node *node;
+ 	struct qcom_rpm_reg *vreg;
+ 	struct qcom_smd_rpm *rpm;
++	int ret;
+ 
+ 	rpm = dev_get_drvdata(pdev->dev.parent);
+ 	if (!rpm) {
+-		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
++		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	match = of_match_device(rpm_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "failed to match device\n");
++	vreg_data = of_device_get_match_data(dev);
++	if (!vreg_data)
+ 		return -ENODEV;
+-	}
+ 
+-	for (reg = match->data; reg->name; reg++) {
++	for_each_available_child_of_node(dev->of_node, node) {
+ 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
+ 		if (!vreg)
+ 			return -ENOMEM;
+ 
+-		vreg->dev = &pdev->dev;
+-		vreg->type = reg->type;
+-		vreg->id = reg->id;
+-		vreg->rpm = rpm;
+-
+-		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
+-
+-		vreg->desc.id = -1;
+-		vreg->desc.owner = THIS_MODULE;
+-		vreg->desc.type = REGULATOR_VOLTAGE;
+-		vreg->desc.name = reg->name;
+-		vreg->desc.supply_name = reg->supply;
+-		vreg->desc.of_match = reg->name;
+-
+-		config.dev = &pdev->dev;
+-		config.driver_data = vreg;
+-		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
+-		if (IS_ERR(rdev)) {
+-			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
+-			return PTR_ERR(rdev);
++		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
++
++		if (ret < 0) {
++			of_node_put(node);
++			return ret;
+ 		}
+ 	}
+ 
 -- 
 2.34.1
 
