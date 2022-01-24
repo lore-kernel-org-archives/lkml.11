@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B53AC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71101C3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354795AbiAXVyF (ORCPT
+        id S1574921AbiAXVuo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:54:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37420 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446189AbiAXVRz (ORCPT
+        Mon, 24 Jan 2022 16:50:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49882 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449108AbiAXVOy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:17:55 -0500
+        Mon, 24 Jan 2022 16:14:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13B28C09F498;
+        Mon, 24 Jan 2022 12:11:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7BCCB812A4;
-        Mon, 24 Jan 2022 21:17:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED44AC340E4;
-        Mon, 24 Jan 2022 21:17:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7C7C61416;
+        Mon, 24 Jan 2022 20:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C81CC340E5;
+        Mon, 24 Jan 2022 20:11:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059069;
-        bh=nGSKyNwHqxYnvZTzIEn47sHUm0MNCLWPaVZ1C6/ULmk=;
+        s=korg; t=1643055074;
+        bh=MFXndqI8cxiHslc/dNlSaB1r9JTjhtiZBSwFf6F0MWk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gPN70eBBQAoIg1orgSrU44tYdApWzduoPNyBVRhUowUTagEaw/nYlQKuTed+Ftg0Q
-         SLE3ZuScGAc/txBMBWo5KKDJGZu6nErdQ3pCS/0joFqZGG0i8C2WsEqE4cd0wu1bfM
-         eGCgMltzUEOc5DDsckiOo7ds9YiUYQO7LCkLr+/Y=
+        b=TMW4MvKojikzLmh8wnnIvCspanRyTW8crQxvKmXm1OhIZRG4QG+49kL8DeD7kZzps
+         5WxUfqf6XyljOxAcRzwyhlyrCx6uP27p4e+z3J35y+cXS56C4nzsCIUIhOvxjl6otA
+         5U7NR6Bq9M/1U6W1qxVV9TVoFCdhocarstvngyRQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0494/1039] iommu/amd: X2apic mode: re-enable after resume
-Date:   Mon, 24 Jan 2022 19:38:03 +0100
-Message-Id: <20220124184141.859316718@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
+        Nobuhiro Iwamatsu <iwamatsu@nigauri.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 5.15 032/846] rtc: cmos: take rtc_lock while reading from CMOS
+Date:   Mon, 24 Jan 2022 19:32:29 +0100
+Message-Id: <20220124184102.037242793@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,47 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxim Levitsky <mlevitsk@redhat.com>
+From: Mateusz Jończyk <mat.jonczyk@o2.pl>
 
-[ Upstream commit 01b297a48a26bcb96769505ac948db4603b72bd1 ]
+commit 454f47ff464325223129b9b5b8d0b61946ec704d upstream.
 
-Otherwise it is guaranteed to not work after the resume...
+Reading from the CMOS involves writing to the index register and then
+reading from the data register. Therefore access to the CMOS has to be
+serialized with rtc_lock. This invocation of CMOS_READ was not
+serialized, which could cause trouble when other code is accessing CMOS
+at the same time.
 
-Fixes: 66929812955bb ("iommu/amd: Add support for X2APIC IOMMU interrupts")
+Use spin_lock_irq() like the rest of the function.
 
-Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
-Link: https://lore.kernel.org/r/20211123161038.48009-3-mlevitsk@redhat.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Nothing in kernel modifies the RTC_DM_BINARY bit, so there could be a
+separate pair of spin_lock_irq() / spin_unlock_irq() before doing the
+math.
+
+Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
+Reviewed-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
+Cc: Alessandro Zummo <a.zummo@towertech.it>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20211210200131.153887-2-mat.jonczyk@o2.pl
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/amd/init.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/rtc/rtc-cmos.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
-index 8dae85fcfc2eb..b905604f434e1 100644
---- a/drivers/iommu/amd/init.c
-+++ b/drivers/iommu/amd/init.c
-@@ -2172,7 +2172,6 @@ static int iommu_setup_intcapxt(struct amd_iommu *iommu)
- 		return ret;
- 	}
+--- a/drivers/rtc/rtc-cmos.c
++++ b/drivers/rtc/rtc-cmos.c
+@@ -457,7 +457,10 @@ static int cmos_set_alarm(struct device
+ 	min = t->time.tm_min;
+ 	sec = t->time.tm_sec;
  
--	iommu_feature_enable(iommu, CONTROL_INTCAPXT_EN);
- 	return 0;
- }
- 
-@@ -2195,6 +2194,10 @@ static int iommu_init_irq(struct amd_iommu *iommu)
- 
- 	iommu->int_enabled = true;
- enable_faults:
++	spin_lock_irq(&rtc_lock);
+ 	rtc_control = CMOS_READ(RTC_CONTROL);
++	spin_unlock_irq(&rtc_lock);
 +
-+	if (amd_iommu_xt_mode == IRQ_REMAP_X2APIC_MODE)
-+		iommu_feature_enable(iommu, CONTROL_INTCAPXT_EN);
-+
- 	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
- 
- 	if (iommu->ppr_log != NULL)
--- 
-2.34.1
-
+ 	if (!(rtc_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
+ 		/* Writing 0xff means "don't care" or "match all".  */
+ 		mon = (mon <= 12) ? bin2bcd(mon) : 0xff;
 
 
