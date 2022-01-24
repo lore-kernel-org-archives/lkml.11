@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9987C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF2AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349274AbiAXUWZ (ORCPT
+        id S1381412AbiAXUWe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:22:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60202 "EHLO
+        Mon, 24 Jan 2022 15:22:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55976 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347024AbiAXUDq (ORCPT
+        with ESMTP id S1376418AbiAXUBp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:03:46 -0500
+        Mon, 24 Jan 2022 15:01:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2917B6132F;
-        Mon, 24 Jan 2022 20:03:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 011F9C340E5;
-        Mon, 24 Jan 2022 20:03:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D428B60B02;
+        Mon, 24 Jan 2022 20:01:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F48C340E5;
+        Mon, 24 Jan 2022 20:01:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054625;
-        bh=QaemAATjchbPUysn33dPWc1b6QtCHkameZcT4eNz62Q=;
+        s=korg; t=1643054503;
+        bh=KUsfQVHU2x96z/Fe4VrNN/7LI2bKQv8NRmV2m8PqQuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YQ2QXWbLVwr5rGoQlktUwy+Rz/7dZeGoaV60VVH53ZWi02PgZ4uHogrUuiH9mD13j
-         KYOYXls8hLOsQriXgR27YtSnc0b+HkCgUXgC+15xB84O6DhLx7KpEopt4qKZ+cfFyf
-         xD525ErRjqLoiTPd9ReTWGQlU7JPWM9+IuWipoww=
+        b=oHEai0rpA7pett1FSC9hPjUEYlNQ/BOR00pWng9gLjXe+rY+w7sGwfN3y5M5FqlX2
+         X8u57kcoajv0ockHnXEjmQ1hkkNOSZQIek6Nsi9rUweYIXVyuXOldpxSiJbgGC3WlI
+         BePyvDH4/g76Tfk0YlO8baXEubIyHleGOJoGWRps=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Ryabinin <arbn@yandex-team.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.10 450/563] cputime, cpuacct: Include guest time in user time in cpuacct.stat
-Date:   Mon, 24 Jan 2022 19:43:35 +0100
-Message-Id: <20220124184040.016661631@linuxfoundation.org>
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 410/563] powerpc/powernv: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:42:55 +0100
+Message-Id: <20220124184038.625401716@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,44 +47,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Ryabinin <arbn@yandex-team.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-commit 9731698ecb9c851f353ce2496292ff9fcea39dff upstream.
+[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
 
-cpuacct.stat in no-root cgroups shows user time without guest time
-included int it. This doesn't match with user time shown in root
-cpuacct.stat and /proc/<pid>/stat. This also affects cgroup2's cpu.stat
-in the same way.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-Make account_guest_time() to add user time to cgroup's cpustat to
-fix this.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-Fixes: ef12fefabf94 ("cpuacct: add per-cgroup utime/stime statistics")
-Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20211115164607.23784-1-arbn@yandex-team.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/sched/cputime.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+// <smpl>
+@@
+local idexpression n;
+expression e;
+@@
 
---- a/kernel/sched/cputime.c
-+++ b/kernel/sched/cputime.c
-@@ -147,10 +147,10 @@ void account_guest_time(struct task_stru
- 
- 	/* Add guest time to cpustat. */
- 	if (task_nice(p) > 0) {
--		cpustat[CPUTIME_NICE] += cputime;
-+		task_group_account_field(p, CPUTIME_NICE, cputime);
- 		cpustat[CPUTIME_GUEST_NICE] += cputime;
- 	} else {
--		cpustat[CPUTIME_USER] += cputime;
-+		task_group_account_field(p, CPUTIME_USER, cputime);
- 		cpustat[CPUTIME_GUEST] += cputime;
- 	}
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
  }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
+index 608569082ba0b..123a0e799b7bd 100644
+--- a/arch/powerpc/platforms/powernv/opal-lpc.c
++++ b/arch/powerpc/platforms/powernv/opal-lpc.c
+@@ -396,6 +396,7 @@ void __init opal_lpc_init(void)
+ 		if (!of_get_property(np, "primary", NULL))
+ 			continue;
+ 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
++		of_node_put(np);
+ 		break;
+ 	}
+ 	if (opal_lpc_chip_id < 0)
+-- 
+2.34.1
+
 
 
