@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF07DC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35589C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580748AbiAXWKi (ORCPT
+        id S1581260AbiAXWLa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:10:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46066 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376793AbiAXVZA (ORCPT
+        Mon, 24 Jan 2022 17:11:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41240 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452346AbiAXVZR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:00 -0500
+        Mon, 24 Jan 2022 16:25:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6613961469;
-        Mon, 24 Jan 2022 21:24:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 335E1C340E4;
-        Mon, 24 Jan 2022 21:24:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 459ABB811FB;
+        Mon, 24 Jan 2022 21:25:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7276BC340E4;
+        Mon, 24 Jan 2022 21:25:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059497;
-        bh=NsNmxlzJcp4bHdt1JVI79chzoIVKauwC5RQte6uzHu4=;
+        s=korg; t=1643059513;
+        bh=DcWAn2JPOmd7HM4LptMNGkIDWokyu5A3HOzLpIINlwI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YfETxqB4EkckEr6KgubzH4oOV2JDEYGuSE1mDs4hDozpoJHiNLomr+NQdTXaUN9hz
-         YM5H3WAwwXR29AT2juotLcwA004u0bQHBsLDaPZEpHmWDM3Fzd6wHASuBZ3iyMdAOj
-         +Zx1DPnauuScXjLHPJGOeU0HmwqI3hYVTMTbWRNM=
+        b=igMRjpDy0dDrG7eYEl2vIOL4kqSnB0PL7LsnLpwUuL6Y4c68Ji2OXuO4toShG2ATN
+         kMyJnbauFhhVkHDWF6Entks63tpoxhWMYAlGNhSG5PNEhjza8mpSvl2gORz3yyf0zI
+         4Jy9XfgHTiU/Q01wMV/HQI0DYXAx1gcMuWner80c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0636/1039] selftests/ftrace: make kprobe profile testcase description unique
-Date:   Mon, 24 Jan 2022 19:40:25 +0100
-Message-Id: <20220124184146.724019608@linuxfoundation.org>
+Subject: [PATCH 5.16 0640/1039] x86/mce: Allow instrumentation during task work queueing
+Date:   Mon, 24 Jan 2022 19:40:29 +0100
+Message-Id: <20220124184146.865221335@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,39 +46,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit e5992f373c6eed6d09e5858e9623df1259b3ce30 ]
+[ Upstream commit 4fbce464db81a42f9a57ee242d6150ec7f996415 ]
 
-Commit 32f6e5da83c7 ("selftests/ftrace: Add kprobe profile testcase")
-added a new kprobes testcase, but has a description which does not
-describe what the test case is doing and is duplicating the description
-of another test case.
+Fixes
 
-Therefore change the test case description, so it is unique and then
-allows easily to tell which test case actually passed or failed.
+  vmlinux.o: warning: objtool: do_machine_check()+0xdb1: call to queue_task_work() leaves .noinstr.text section
 
-Reported-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-6-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/ftrace/test.d/kprobe/profile.tc | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/x86/kernel/cpu/mce/core.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-index 98166fa3eb91c..34fb89b0c61fa 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-@@ -1,6 +1,6 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
--# description: Kprobe dynamic event - adding and removing
-+# description: Kprobe profile
- # requires: kprobe_events
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 6ed365337a3b1..70ec5685906b2 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1454,6 +1454,14 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 	if (worst != MCE_AR_SEVERITY && !kill_current_task)
+ 		goto out;
  
- ! grep -q 'myevent' kprobe_profile
++	/*
++	 * Enable instrumentation around the external facilities like
++	 * task_work_add() (via queue_task_work()), fixup_exception() etc.
++	 * For now, that is. Fixing this properly would need a lot more involved
++	 * reorganization.
++	 */
++	instrumentation_begin();
++
+ 	/* Fault was in user mode and we need to take some action */
+ 	if ((m.cs & 3) == 3) {
+ 		/* If this triggers there is no way to recover. Die hard. */
+@@ -1482,6 +1490,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
+ 		if (m.kflags & MCE_IN_KERNEL_COPYIN)
+ 			queue_task_work(&m, msg, kill_me_never);
+ 	}
++
++	instrumentation_end();
++
+ out:
+ 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
+ }
 -- 
 2.34.1
 
