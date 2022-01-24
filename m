@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB5AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50622C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450284AbiAXVUK (ORCPT
+        id S1450388AbiAXVUZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:20:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44792 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392503AbiAXUvX (ORCPT
+        Mon, 24 Jan 2022 16:20:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1441805AbiAXUvl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:23 -0500
+        Mon, 24 Jan 2022 15:51:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB46DC054330;
+        Mon, 24 Jan 2022 11:58:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 26A6060C3E;
-        Mon, 24 Jan 2022 20:51:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECE84C340E5;
-        Mon, 24 Jan 2022 20:51:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89869B810AF;
+        Mon, 24 Jan 2022 19:58:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B58C340E5;
+        Mon, 24 Jan 2022 19:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057482;
-        bh=DKaIZ44jXhAHBBxgsqnKrT5Vc0etjfMDYpjpcuu0RIM=;
+        s=korg; t=1643054311;
+        bh=hhcJmuN2kWlMk96NPFUrqTDWUoSgBnttal2l50VDvZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0ORQzSfptMvryCu3iVN7w22Ghkbc3rn2OY8GEbhL37ogeo4OGBB+rU2mHjJcgg/78
-         uYRQccBCJ6cQ9HADckGwt8NTBEj4iBZOd5SGhX0WonkpxOWzUoQnYNN7pA6x1UqzXG
-         9xWIqpdEhCwWQdSuTDaMHhJwvYJ1mB0m8P2pObVU=
+        b=vq0TaAaNCBawkhTbvvp8KsOyLd+Y4m1fZcklpGGBp8/2xJr6V1nXscs5YIXmbcugn
+         rnfdNuoswE4d3J1r63BvZQjcqFcwAE7ak88qJFPXBD70jl7J70G/36Bf5ssy2n/vEK
+         8IgYmZh+yfGW7xyjn1HpuhxYHx69tm4NDc1vWZGc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 794/846] net: axienet: add missing memory barriers
-Date:   Mon, 24 Jan 2022 19:45:11 +0100
-Message-Id: <20220124184128.347262824@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Maximilian Ernestus <maximilian@ernestus.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 347/563] iwlwifi: mvm: synchronize with FW after multicast commands
+Date:   Mon, 24 Jan 2022 19:41:52 +0100
+Message-Id: <20220124184036.411665606@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,67 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 95978df6fa328df619c15312e65ece469c2be2d2 upstream.
+[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
 
-This driver was missing some required memory barriers:
+If userspace installs a lot of multicast groups very quickly, then
+we may run out of command queue space as we send the updates in an
+asynchronous fashion (due to locking concerns), and the CPU can
+create them faster than the firmware can process them. This is true
+even when mac80211 has a work struct that gets scheduled.
 
-Use dma_rmb to ensure we see all updates to the descriptor after we see
-that an entry has been completed.
+Fix this by synchronizing with the firmware after sending all those
+commands - outside of the iteration we can send a synchronous echo
+command that just has the effect of the CPU waiting for the prior
+asynchronous commands to finish. This also will cause fewer of the
+commands to be sent to the firmware overall, because the work will
+only run once when rescheduled multiple times while it's running.
 
-Use wmb and rmb to avoid stale descriptor status between the TX path and
-TX complete IRQ path.
-
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
+Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -632,6 +632,8 @@ static int axienet_free_tx_chain(struct
- 		if (nr_bds == -1 && !(status & XAXIDMA_BD_STS_COMPLETE_MASK))
- 			break;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 81cc85a97eb20..922a7ea0cd24e 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -1739,6 +1739,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	struct iwl_mvm_mc_iter_data iter_data = {
+ 		.mvm = mvm,
+ 	};
++	int ret;
  
-+		/* Ensure we see complete descriptor update */
-+		dma_rmb();
- 		phys = desc_get_phys_addr(lp, cur_p);
- 		dma_unmap_single(ndev->dev.parent, phys,
- 				 (cur_p->cntrl & XAXIDMA_BD_CTRL_LENGTH_MASK),
-@@ -645,8 +647,10 @@ static int axienet_free_tx_chain(struct
- 		cur_p->app1 = 0;
- 		cur_p->app2 = 0;
- 		cur_p->app4 = 0;
--		cur_p->status = 0;
- 		cur_p->skb = NULL;
-+		/* ensure our transmit path and device don't prematurely see status cleared */
-+		wmb();
-+		cur_p->status = 0;
+ 	lockdep_assert_held(&mvm->mutex);
  
- 		if (sizep)
- 			*sizep += status & XAXIDMA_BD_STS_ACTUAL_LEN_MASK;
-@@ -704,6 +708,9 @@ static inline int axienet_check_tx_bd_sp
- 					    int num_frag)
- {
- 	struct axidma_bd *cur_p;
+@@ -1748,6 +1749,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	ieee80211_iterate_active_interfaces_atomic(
+ 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
+ 		iwl_mvm_mc_iface_iterator, &iter_data);
 +
-+	/* Ensure we see all descriptor updates from device or TX IRQ path */
-+	rmb();
- 	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
- 	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
- 		return NETDEV_TX_BUSY;
-@@ -843,6 +850,8 @@ static void axienet_recv(struct net_devi
++	/*
++	 * Send a (synchronous) ech command so that we wait for the
++	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
++	 * the interface iterator. Otherwise, we might get here over
++	 * and over again (by userspace just sending a lot of these)
++	 * and the CPU can send them faster than the firmware can
++	 * process them.
++	 * Note that the CPU is still faster - but with this we'll
++	 * actually send fewer commands overall because the CPU will
++	 * not schedule the work in mac80211 as frequently if it's
++	 * still running when rescheduled (possibly multiple times).
++	 */
++	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
++	if (ret)
++		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
+ }
  
- 		tail_p = lp->rx_bd_p + sizeof(*lp->rx_bd_v) * lp->rx_bd_ci;
- 
-+		/* Ensure we see complete descriptor update */
-+		dma_rmb();
- 		phys = desc_get_phys_addr(lp, cur_p);
- 		dma_unmap_single(ndev->dev.parent, phys, lp->max_frm_size,
- 				 DMA_FROM_DEVICE);
+ static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+-- 
+2.34.1
+
 
 
