@@ -2,149 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9DFBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A9C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242031AbiAXIHH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:07:07 -0500
-Received: from mga06.intel.com ([134.134.136.31]:57796 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242042AbiAXIHC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:07:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643011622; x=1674547622;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=aGhr0XEO9VPwRxOpRqA9HczBGMg1NP/T3MGP3BCkwAo=;
-  b=gVb9dLun5Qn3FVanTFMrj99CP0+x8BuhI2KVEoa58iHmfrBk9x082zZD
-   BzGAtTuiBdQHSfe7CUiRhEWNze4+cRpxT+JTihZY7r8qTrV3WeJkq/Lxe
-   LCeZBKfEg5gxa2pdIpKbUXorVuIYD2Tci+1gK2u4PPacA5oUlV8dPdMsS
-   LLql2+GJajNi1gdDzBcNWNvfq/u+Z428DDlDWhy67IOdVZ6ekCS1pk/Ir
-   1AQqERTQv4heEIbQl4y5gGVGVgmD1FLomB4L+YDcfZn29+WWAk8rwzkkQ
-   f4LZvFawmBBvBeU5L7Jqc85UEzdSOfnDysNBEbnxEryFjh7x4t2BDudXF
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="306707287"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="306707287"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:07:02 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="478981232"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 00:06:58 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>, linux-kernel@vger.kernel.org,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        H Peter Anvin <hpa@zytor.com>
-Subject: [PATCH 2/2] perf/x86/intel/pt: Add a capability and config bit for disabling TNTs
-Date:   Mon, 24 Jan 2022 10:06:51 +0200
-Message-Id: <20220124080651.2699107-3-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124080651.2699107-1-adrian.hunter@intel.com>
-References: <20220124080651.2699107-1-adrian.hunter@intel.com>
+        id S242058AbiAXIHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:07:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60512 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242037AbiAXIHE (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:07:04 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A56C061744
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 00:07:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=wV3SNZJt019Z8eknUHkpxEDgSZUD0nuuRc3+d39hdr0=; b=Q6PD5OPjKjQCu4KgAV3mY8DoM2
+        8JmtpdNX5ydY2gti/ah6ib99vAF8oQgWSbUO/ZWln2rM54eQMIcxRxdDeFJtAXL+3xfu8sA5E2yA4
+        /7iWBZ799RSa2r1gDs3w1Z0PdjqTtgAVCWUiGRGk+t7cX412VWnhPP5tl5hXjjsFCs1H/ZRLcwGJh
+        mAfhkEIkALZ14KK7XnVFmu4ROB2jluLNiTBYPrvoFCUtOw75FyHHReBnrmDQtN3NSXjDSmi/zMR2q
+        JyoytrPtPghvw1lAIYVueNsDyfuxseF6MtODoC2R0gjQgRJt4m0HP3H4j4d2QhfiDR0o45LbqtdzZ
+        nou8xg9Q==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nBuN6-000JI7-E5; Mon, 24 Jan 2022 08:06:41 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 4177598624A; Mon, 24 Jan 2022 09:06:39 +0100 (CET)
+Date:   Mon, 24 Jan 2022 09:06:39 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>
+Subject: Re: [PATCH 48/54] kernel/time: replace cpumask_weight with
+ cpumask_weight_eq where appropriate
+Message-ID: <20220124080639.GK20638@worktop.programming.kicks-ass.net>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-49-yury.norov@gmail.com>
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123183925.1052919-49-yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+On Sun, Jan 23, 2022 at 10:39:19AM -0800, Yury Norov wrote:
+> tick_cleanup_dead_cpu() calls cpumask_weight() to compare the weight
+> of cpumask with a given number. We can do it more efficiently with
+> cpumask_weight_eq() because conditional cpumask_weight may stop
+> traversing the cpumask earlier, as soon as condition is met.
 
-As of Intel SDM (https://www.intel.com/sdm) version 076, there is a new
-Intel PT feature called TNT-Disable which is enabled config bit 55.
+But again, nobody gives a crap about performance here..
 
-TNT-Disable disables TNT packets to reduce the tracing overhead, but with
-the result that exact control flow information is lost.
-
-Add a capability and config bit for TNT-Disable.
-
-Signed-off-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Reviewed-by: Adrian Hunter <adrian.hunter@intel.com>
----
- arch/x86/events/intel/pt.c       | 8 ++++++++
- arch/x86/include/asm/intel_pt.h  | 1 +
- arch/x86/include/asm/msr-index.h | 1 +
- 3 files changed, 10 insertions(+)
-
-diff --git a/arch/x86/events/intel/pt.c b/arch/x86/events/intel/pt.c
-index 02727b9b3c8a..ae396fdfabab 100644
---- a/arch/x86/events/intel/pt.c
-+++ b/arch/x86/events/intel/pt.c
-@@ -58,6 +58,7 @@ static struct pt_cap_desc {
- 	PT_CAP(ptwrite,			0, CPUID_EBX, BIT(4)),
- 	PT_CAP(power_event_trace,	0, CPUID_EBX, BIT(5)),
- 	PT_CAP(event_trace,		0, CPUID_EBX, BIT(7)),
-+	PT_CAP(tnt_disable,		0, CPUID_EBX, BIT(8)),
- 	PT_CAP(topa_output,		0, CPUID_ECX, BIT(0)),
- 	PT_CAP(topa_multiple_entries,	0, CPUID_ECX, BIT(1)),
- 	PT_CAP(single_range_output,	0, CPUID_ECX, BIT(2)),
-@@ -110,6 +111,7 @@ PMU_FORMAT_ATTR(noretcomp,	"config:11"	);
- PMU_FORMAT_ATTR(ptw,		"config:12"	);
- PMU_FORMAT_ATTR(branch,		"config:13"	);
- PMU_FORMAT_ATTR(event,		"config:31"	);
-+PMU_FORMAT_ATTR(notnt,		"config:55"	);
- PMU_FORMAT_ATTR(mtc_period,	"config:14-17"	);
- PMU_FORMAT_ATTR(cyc_thresh,	"config:19-22"	);
- PMU_FORMAT_ATTR(psb_period,	"config:24-27"	);
-@@ -119,6 +121,7 @@ static struct attribute *pt_formats_attr[] = {
- 	&format_attr_cyc.attr,
- 	&format_attr_pwr_evt.attr,
- 	&format_attr_event.attr,
-+	&format_attr_notnt.attr,
- 	&format_attr_fup_on_ptw.attr,
- 	&format_attr_mtc.attr,
- 	&format_attr_tsc.attr,
-@@ -300,6 +303,7 @@ static int __init pt_pmu_hw_init(void)
- 			RTIT_CTL_MTC		| \
- 			RTIT_CTL_PWR_EVT_EN	| \
- 			RTIT_CTL_EVENT_EN	| \
-+			RTIT_CTL_NOTNT		| \
- 			RTIT_CTL_FUP_ON_PTW	| \
- 			RTIT_CTL_PTW_EN)
- 
-@@ -358,6 +362,10 @@ static bool pt_event_valid(struct perf_event *event)
- 	    !intel_pt_validate_hw_cap(PT_CAP_event_trace))
- 		return false;
- 
-+	if (config & RTIT_CTL_NOTNT &&
-+	    !intel_pt_validate_hw_cap(PT_CAP_tnt_disable))
-+		return false;
-+
- 	if (config & RTIT_CTL_PTW) {
- 		if (!intel_pt_validate_hw_cap(PT_CAP_ptwrite))
- 			return false;
-diff --git a/arch/x86/include/asm/intel_pt.h b/arch/x86/include/asm/intel_pt.h
-index d1ef9cb58847..c796e9bc98b6 100644
---- a/arch/x86/include/asm/intel_pt.h
-+++ b/arch/x86/include/asm/intel_pt.h
-@@ -14,6 +14,7 @@ enum pt_capabilities {
- 	PT_CAP_ptwrite,
- 	PT_CAP_power_event_trace,
- 	PT_CAP_event_trace,
-+	PT_CAP_tnt_disable,
- 	PT_CAP_topa_output,
- 	PT_CAP_topa_multiple_entries,
- 	PT_CAP_single_range_output,
-diff --git a/arch/x86/include/asm/msr-index.h b/arch/x86/include/asm/msr-index.h
-index 79b392d893e3..efd34cfa1720 100644
---- a/arch/x86/include/asm/msr-index.h
-+++ b/arch/x86/include/asm/msr-index.h
-@@ -206,6 +206,7 @@
- #define RTIT_CTL_PTW_EN			BIT(12)
- #define RTIT_CTL_BRANCH_EN		BIT(13)
- #define RTIT_CTL_EVENT_EN		BIT(31)
-+#define RTIT_CTL_NOTNT			BIT_ULL(55)
- #define RTIT_CTL_MTC_RANGE_OFFSET	14
- #define RTIT_CTL_MTC_RANGE		(0x0full << RTIT_CTL_MTC_RANGE_OFFSET)
- #define RTIT_CTL_CYC_THRESH_OFFSET	19
--- 
-2.25.1
-
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  kernel/time/clockevents.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/kernel/time/clockevents.c b/kernel/time/clockevents.c
+> index 003ccf338d20..32d6629a55b2 100644
+> --- a/kernel/time/clockevents.c
+> +++ b/kernel/time/clockevents.c
+> @@ -648,7 +648,7 @@ void tick_cleanup_dead_cpu(int cpu)
+>  	 */
+>  	list_for_each_entry_safe(dev, tmp, &clockevent_devices, list) {
+>  		if (cpumask_test_cpu(cpu, dev->cpumask) &&
+> -		    cpumask_weight(dev->cpumask) == 1 &&
+> +		    cpumask_weight_eq(dev->cpumask, 1) &&
+>  		    !tick_is_broadcast_device(dev)) {
+>  			BUG_ON(!clockevent_state_detached(dev));
+>  			list_del(&dev->list);
+> -- 
+> 2.30.2
+> 
