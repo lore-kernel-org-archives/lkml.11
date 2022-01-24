@@ -2,149 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D1C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:52:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FDC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234918AbiAXNwp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:52:45 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:53384 "EHLO
+        id S234984AbiAXNxY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:53:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36894 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234703AbiAXNwo (ORCPT
+        by vger.kernel.org with ESMTP id S234971AbiAXNxV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:52:44 -0500
+        Mon, 24 Jan 2022 08:53:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643032364;
+        s=mimecast20190719; t=1643032400;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Tiaow26F+F5ual2KbXEabh3xwK+NZHCtAM5fGyqg6I8=;
-        b=Zrq786a+CI4dQS9PN76LJXS7eJB2Z/wD3gQLC1V9wv9+Ke/hOUsVBZYTwNYIr+GFNQLtFB
-        A9IDmbu6qeaMkb1KtYfrzx3nqxORGSRkLbePUAp+9vw99Y/kWxhW++JryKnzdqTDw7Xlps
-        WTMeAtG7evCpgULXJD2fZWdHbQjtEX0=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=80PN3FZqYIDiwCGKibet4P3dRAAuNtvhNVGs0KCYiwg=;
+        b=hZf6spWgo4SSkgVdRAzL1QODdK0EyqnWPz+12btZ4QPu3xx4x5D6GNAAQKz1XLZtrDKfqs
+        bOVLtsSRaoH+AJjQWfonFQ0kPQYhgQSm3GhmQg4wrzx/onPKymkPKuCjAL7zDyb+xVnch1
+        GyQpeHaXEO/SfrPz/I2P1wCU2SjcOFs=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-436-o4YkxVe6Ph6TbTjBLGT12A-1; Mon, 24 Jan 2022 08:52:42 -0500
-X-MC-Unique: o4YkxVe6Ph6TbTjBLGT12A-1
-Received: by mail-ej1-f69.google.com with SMTP id m21-20020a1709061ed500b006b3003ec50dso2097952ejj.17
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:52:42 -0800 (PST)
+ us-mta-304-P2EHtevDNAq8G7DMMb1hvg-1; Mon, 24 Jan 2022 08:53:19 -0500
+X-MC-Unique: P2EHtevDNAq8G7DMMb1hvg-1
+Received: by mail-ej1-f70.google.com with SMTP id q19-20020a1709064c9300b006b39291ff3eso2092832eju.5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:53:19 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=Tiaow26F+F5ual2KbXEabh3xwK+NZHCtAM5fGyqg6I8=;
-        b=aCdm5EWy+g+ScIY7E6iYED3Jfdw4cp2Ri4sfn26SQK2VUDAFziArGPZ9fWd9QFfLmu
-         gx6FEb8+kh2YpKYGGIR2nlPM9tSTunC+agRW3PlDitIvfJWm5zgGGEJ8cTLqcL/r4X1d
-         U+pwzO73SWg/a/ZIgDhgCImkJEu7h5iihcxD2zLvBN4A+vzoy4ZDuV+ABmQnDxsZMgcY
-         2ioGB6pTGjbdoK43ApO6RsrKrnHnQC7ktAhqQbUGQTU2j4wEG7iTN8V6PEjDrzspKw9v
-         s7ieHAO6ur5LIp7Zb6AQm4UOzpHnYW34C9aa6QTiZ4x6va5sL7Jp7WaRSPfv0swK4W4k
-         sMDQ==
-X-Gm-Message-State: AOAM533Er79ioZl7Caba5Zu/ZRoZ+GBOccrYu7gGuGTHcyXPw/JivGlp
-        YyG01LUQm+NHEwrCN7T/D+G0OyNI97Dyssw4UKwIlomMygMbSAG0x8mFg3Oa/LpFp1qcuw8xWPJ
-        43syhb+sKjywifUtT4x3Ekkl4
-X-Received: by 2002:a17:907:86a7:: with SMTP id qa39mr4287767ejc.548.1643032361275;
-        Mon, 24 Jan 2022 05:52:41 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyAKoeAZKm9pcZ1Nm/za1q0/l7p2Z/+gJiD7bun/Cf5RfB64by8iQLjFuyTxt1ppKEcH8+LYg==
-X-Received: by 2002:a17:907:86a7:: with SMTP id qa39mr4287757ejc.548.1643032360998;
-        Mon, 24 Jan 2022 05:52:40 -0800 (PST)
+        bh=80PN3FZqYIDiwCGKibet4P3dRAAuNtvhNVGs0KCYiwg=;
+        b=RssA1t0ZIyNtaIOJexOqCbzSTaXX5ctYi58Mi5cG2DH8TQ2OsNT4GCiYEnV3uKvBe/
+         TS7h+bLjBJKZ7mTkzK4zFu1ZIv6B2+IJ2hW/K7bU+I9mGMywJsu40uzRIuZ/3FK93Ugj
+         mIPGjT7iwqYkScWkdu7iItwcXSJDSeAf3EYp4TnQ1N2UzQZqAOvQan8kAC04mcILVRSs
+         uBpW52zspcw7XYVYnHgQZXKradjE3WL2MTknPENtOWCIB1WUn7cjmq4yYZtd4GXSKXd4
+         jP9DNiOKrLb5qrpSkIe0vQ6vM8upYrtcsVjkuoU7VTevhCFAiFOpqRCksPUOvJ9nh6gv
+         BKbA==
+X-Gm-Message-State: AOAM533Qb027OS0YLCCCGc9zhmfxcHqWY7+YrNOqjMudy41Cglcw7cfC
+        20VSRbp1R2atPq+AhHHUt0p8Wj6atY17ZiM7t4PWvxrt9114YNfrXnxMPOijgfZuY1xBjelUVBN
+        LH2xQpYbgCcEfWIusB3SPGOHi
+X-Received: by 2002:a17:906:5042:: with SMTP id e2mr13045584ejk.647.1643032398068;
+        Mon, 24 Jan 2022 05:53:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzMFEJnPeFJQe9fJt/4yoYnF/i8vdSWkjc2hPGS4KJtr8s+OJbRB+dfmh8aN/jrrBItbZANNg==
+X-Received: by 2002:a17:906:5042:: with SMTP id e2mr13045568ejk.647.1643032397884;
+        Mon, 24 Jan 2022 05:53:17 -0800 (PST)
 Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id a23sm6642796eda.94.2022.01.24.05.52.39
+        by smtp.googlemail.com with ESMTPSA id g27sm6679685edj.79.2022.01.24.05.53.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 05:52:40 -0800 (PST)
-Message-ID: <059e27fa-71a9-2991-2bfd-6df9d0e285b2@redhat.com>
-Date:   Mon, 24 Jan 2022 14:52:39 +0100
+        Mon, 24 Jan 2022 05:53:16 -0800 (PST)
+Message-ID: <ca66ba8d-63dd-7087-7d5b-b42ccf8debd7@redhat.com>
+Date:   Mon, 24 Jan 2022 14:53:13 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.4.0
-Subject: Re: [PATCH] KVM: VMX: Zero host's SYSENTER_ESP iff SYSENTER is NOT
- used
+Subject: Re: [PATCH] x86,kvm/xen: Remove superfluous .fixup usage
 Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lai Jiangshan <laijs@linux.alibaba.com>
-References: <20220122015211.1468758-1-seanjc@google.com>
+To:     Peter Zijlstra <peterz@infradead.org>, x86@kernel.org
+Cc:     dwmw@amazon.co.uk, linux-kernel@vger.kernel.org
+References: <20220123124219.GH20638@worktop.programming.kicks-ass.net>
 From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220122015211.1468758-1-seanjc@google.com>
+In-Reply-To: <20220123124219.GH20638@worktop.programming.kicks-ass.net>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/22/22 02:52, Sean Christopherson wrote:
-> Zero vmcs.HOST_IA32_SYSENTER_ESP when initializing *constant* host state
-> if and only if SYSENTER cannot be used, i.e. the kernel is a 64-bit
-> kernel and is not emulating 32-bit syscalls.  As the name suggests,
-> vmx_set_constant_host_state() is intended for state that is *constant*.
-> When SYSENTER is used, SYSENTER_ESP isn't constant because stacks are
-> per-CPU, and the VMCS must be updated whenever the vCPU is migrated to a
-> new CPU.  The logic in vmx_vcpu_load_vmcs() doesn't differentiate between
-> "never loaded" and "loaded on a different CPU", i.e. setting SYSENTER_ESP
-> on VMCS load also handles setting correct host state when the VMCS is
-> first loaded.
+On 1/23/22 13:42, Peter Zijlstra wrote:
 > 
-> Because a VMCS must be loaded before it is initialized during vCPU RESET,
-> zeroing the field in vmx_set_constant_host_state() obliterates the value
-> that was written when the VMCS was loaded.  If the vCPU is run before it
-> is migrated, the subsequent VM-Exit will zero out MSR_IA32_SYSENTER_ESP,
-> leading to a #DF on the next 32-bit syscall.
+> Commit 14243b387137 ("KVM: x86/xen: Add KVM_IRQ_ROUTING_XEN_EVTCHN and
+> event channel delivery") adds superfluous .fixup usage after the whole
+> .fixup section was removed in commit e5eefda5aa51 ("x86: Remove .fixup
+> section").
 > 
->    double fault: 0000 [#1] SMP
->    CPU: 0 PID: 990 Comm: stable Not tainted 5.16.0+ #97
->    Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 0.0.0 02/06/2015
->    EIP: entry_SYSENTER_32+0x0/0xe7
->    Code: <9c> 50 eb 17 0f 20 d8 a9 00 10 00 00 74 0d 25 ff ef ff ff 0f 22 d8
->    EAX: 000000a2 EBX: a8d1300c ECX: a8d13014 EDX: 00000000
->    ESI: a8f87000 EDI: a8d13014 EBP: a8d12fc0 ESP: 00000000
->    DS: 007b ES: 007b FS: 0000 GS: 0000 SS: 0068 EFLAGS: 00210093
->    CR0: 80050033 CR2: fffffffc CR3: 02c3b000 CR4: 00152e90
-> 
-> Fixes: 6ab8a4053f71 ("KVM: VMX: Avoid to rdmsrl(MSR_IA32_SYSENTER_ESP)")
-> Cc: Lai Jiangshan <laijs@linux.alibaba.com>
-> Signed-off-by: Sean Christopherson <seanjc@google.com>
+> Fixes: 14243b387137 ("KVM: x86/xen: Add KVM_IRQ_ROUTING_XEN_EVTCHN and event channel delivery")
+> Reported-by: Borislav Petkov <bp@alien8.de>
+> Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 > ---
->   arch/x86/kvm/vmx/vmx.c | 9 ++++++---
->   1 file changed, 6 insertions(+), 3 deletions(-)
+>   arch/x86/kvm/xen.c | 10 ++--------
+>   1 file changed, 2 insertions(+), 8 deletions(-)
 > 
-> diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-> index a02a28ce7cc3..ce2aae12fcc5 100644
-> --- a/arch/x86/kvm/vmx/vmx.c
-> +++ b/arch/x86/kvm/vmx/vmx.c
-> @@ -4094,10 +4094,13 @@ void vmx_set_constant_host_state(struct vcpu_vmx *vmx)
->   	vmcs_write32(HOST_IA32_SYSENTER_CS, low32);
->   
->   	/*
-> -	 * If 32-bit syscall is enabled, vmx_vcpu_load_vcms rewrites
-> -	 * HOST_IA32_SYSENTER_ESP.
-> +	 * SYSENTER is used only for (emulating) 32-bit kernels, zero out
-> +	 * SYSENTER.ESP if it is NOT used.  When SYSENTER is used, the per-CPU
-> +	 * stack is set when the VMCS is loaded (and may already be set!).
-
-Slightly clearer:
-
-	/*
-	 * SYSENTER is used for 32-bit system calls on either 32-bit or
-	 * 64-bit kernels.  It is always zero if neither is allowed, otherwise
-	 * vmx_vcpu_load_vmcs loads it with the per-CPU entry stack (and may
-	 * have already done so!).
-	 */
-
->   	 */
-> -	vmcs_writel(HOST_IA32_SYSENTER_ESP, 0);
-> +	if (!IS_ENABLED(CONFIG_IA32_EMULATION) && !IS_ENABLED(CONFIG_X86_32))
-> +		vmcs_writel(HOST_IA32_SYSENTER_ESP, 0);
-> +
->   	rdmsrl(MSR_IA32_SYSENTER_EIP, tmpl);
->   	vmcs_writel(HOST_IA32_SYSENTER_EIP, tmpl);   /* 22.2.3 */
->   
+> diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
+> index 0e3f7d6e9fd7..bad57535fad0 100644
+> --- a/arch/x86/kvm/xen.c
+> +++ b/arch/x86/kvm/xen.c
+> @@ -316,10 +316,7 @@ int __kvm_xen_has_interrupt(struct kvm_vcpu *v)
+>   				     "\tnotq %0\n"
+>   				     "\t" LOCK_PREFIX "andq %0, %2\n"
+>   				     "2:\n"
+> -				     "\t.section .fixup,\"ax\"\n"
+> -				     "3:\tjmp\t2b\n"
+> -				     "\t.previous\n"
+> -				     _ASM_EXTABLE_UA(1b, 3b)
+> +				     _ASM_EXTABLE_UA(1b, 2b)
+>   				     : "=r" (evtchn_pending_sel),
+>   				       "+m" (vi->evtchn_pending_sel),
+>   				       "+m" (v->arch.xen.evtchn_pending_sel)
+> @@ -335,10 +332,7 @@ int __kvm_xen_has_interrupt(struct kvm_vcpu *v)
+>   				     "\tnotl %0\n"
+>   				     "\t" LOCK_PREFIX "andl %0, %2\n"
+>   				     "2:\n"
+> -				     "\t.section .fixup,\"ax\"\n"
+> -				     "3:\tjmp\t2b\n"
+> -				     "\t.previous\n"
+> -				     _ASM_EXTABLE_UA(1b, 3b)
+> +				     _ASM_EXTABLE_UA(1b, 2b)
+>   				     : "=r" (evtchn_pending_sel32),
+>   				       "+m" (vi->evtchn_pending_sel),
+>   				       "+m" (v->arch.xen.evtchn_pending_sel)
 > 
-> base-commit: e2e83a73d7ce66f62c7830a85619542ef59c90e4
 
 Queued, thanks.
 
