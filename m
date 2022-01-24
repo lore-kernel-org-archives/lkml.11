@@ -2,30 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9935C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:03:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9322C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244928AbiAXSDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:03:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241599AbiAXSDk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:03:40 -0500
-Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C88C061401
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:03:40 -0800 (PST)
+        id S244915AbiAXSEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:04:08 -0500
+Received: from out2.migadu.com ([188.165.223.204]:13103 "EHLO out2.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235769AbiAXSEF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:04:05 -0500
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643047412;
+        t=1643047444;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=bVjXHubzfURs5BxSD6VmUXrd7L08/2QwTbUc3U13ubk=;
-        b=SU6d7Bv0jM8rdpvS3ByZodPHSqJwNhhIh1C5GGE+qIK54FHXGgfEEuFAWlWZWbpM56lPIa
-        3V5ngkYGoZkQ0KGTFSgK9gU2Ny7WVkm0hyeyUb6R2lxPbTfW9ylzwegLBVHl/mBkcS+Exr
-        jlcGSX6VPjRBE0wJIMSKqS/8ph5A0O0=
+        bh=yIiooJ7Br0briWEQqZ6uPYrewTQt0yFaU3FLKd4NjuQ=;
+        b=eV2kpwR8xJFcM9Sl9WgGTW1GyXnj5qihypWFh4otrwjMzPW6EgMyoLvbRozNqNB3B591up
+        y6lIiFHxnDXiOOaMJmL1wPHK4IrO3UXm0c5KMD2FNNNVtYlOxCIaZDtllz6bDRB1eeO8nD
+        l/OGODSVkzQZX5g+F1Cv9ilY4I4R5eo=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -43,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Evgenii Stepanov <eugenis@google.com>,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v6 11/39] kasan, page_alloc: combine tag_clear_highpage calls in post_alloc_hook
-Date:   Mon, 24 Jan 2022 19:02:19 +0100
-Message-Id: <587e3fc36358b88049320a89cc8dc6deaecb0cda.1643047180.git.andreyknvl@google.com>
+Subject: [PATCH v6 13/39] kasan, page_alloc: move kernel_init_free_pages in post_alloc_hook
+Date:   Mon, 24 Jan 2022 19:02:21 +0100
+Message-Id: <a7a76456501eb37ddf9fca6529cee9555e59cdb1.1643047180.git.andreyknvl@google.com>
 In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
 References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -58,73 +54,45 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Move tag_clear_highpage() loops out of the kasan_has_integrated_init()
-clause as a code simplification.
+Pull the kernel_init_free_pages() call in post_alloc_hook() out of the
+big if clause for better code readability. This also allows for more
+simplifications in the following patch.
 
 This patch does no functional changes.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 Reviewed-by: Alexander Potapenko <glider@google.com>
-
 ---
-
-Changes v2->v3:
-- Update patch description.
----
- mm/page_alloc.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+ mm/page_alloc.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index abed862d889d..b3959327e06c 100644
+index c51d637cdab3..2784bd478942 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -2419,30 +2419,30 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
- 	 * KASAN unpoisoning and memory initializion code must be
- 	 * kept together to avoid discrepancies in behavior.
- 	 */
-+
-+	/*
-+	 * If memory tags should be zeroed (which happens only when memory
-+	 * should be initialized as well).
-+	 */
-+	if (init_tags) {
-+		int i;
-+
-+		/* Initialize both memory and tags. */
-+		for (i = 0; i != 1 << order; ++i)
-+			tag_clear_highpage(page + i);
-+
-+		/* Note that memory is already initialized by the loop above. */
-+		init = false;
-+	}
+@@ -2435,14 +2435,18 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 		init = false;
+ 	}
  	if (kasan_has_integrated_init()) {
- 		if (gfp_flags & __GFP_SKIP_KASAN_POISON)
- 			SetPageSkipKASanPoison(page);
- 
--		if (init_tags) {
--			int i;
--
--			for (i = 0; i != 1 << order; ++i)
--				tag_clear_highpage(page + i);
--		} else {
-+		if (!init_tags)
+-		if (!init_tags)
++		if (!init_tags) {
  			kasan_unpoison_pages(page, order, init);
--		}
++
++			/* Note that memory is already initialized by KASAN. */
++			init = false;
++		}
  	} else {
  		kasan_unpoison_pages(page, order, init);
- 
--		if (init_tags) {
--			int i;
 -
--			for (i = 0; i < 1 << order; i++)
--				tag_clear_highpage(page + i);
--
--			init = false;
--		}
--
- 		if (init)
- 			kernel_init_free_pages(page, 1 << order);
+-		if (init)
+-			kernel_init_free_pages(page, 1 << order);
  	}
++	/* If memory is still not initialized, do it now. */
++	if (init)
++		kernel_init_free_pages(page, 1 << order);
+ 	/* Propagate __GFP_SKIP_KASAN_POISON to page flags. */
+ 	if (kasan_hw_tags_enabled() && (gfp_flags & __GFP_SKIP_KASAN_POISON))
+ 		SetPageSkipKASanPoison(page);
 -- 
 2.25.1
 
