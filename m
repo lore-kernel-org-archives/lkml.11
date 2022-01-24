@@ -2,93 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A0FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB69DC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358952AbiAXT4E (ORCPT
+        id S1359099AbiAXT4U (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:04 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:58142 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348231AbiAXTol (ORCPT
+        Mon, 24 Jan 2022 14:56:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42288 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355616AbiAXTot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:41 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5F1992113A;
-        Mon, 24 Jan 2022 19:44:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643053479;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PALzt4viqppnbCTEd5JnoddSy6Y386bU+yI0jFXb2Xs=;
-        b=IcseyuDiG7EozSQCnSlNaIu0C8m1RyI7OuFmUHsOAWJWLqp41pauanI+rysneFWcm5CLBR
-        n7LPQF4ilqHydWcwaG6eVa1Qy64FHY/FhoTpzfBHzyn1QaqN5MDgMHpI4cGzjbyXkxCyDH
-        9MrEYU4J3b/joldDU/jitBydSALwLZo=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643053479;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=PALzt4viqppnbCTEd5JnoddSy6Y386bU+yI0jFXb2Xs=;
-        b=fzuSFXyQjPmOXWqT/rGkeCcHwkWfuZUI8J6+pgGu3olwRTUa2sshOKH52RYgaMjfPNFRXV
-        3/b0X7L9No9PlVCA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 51D7EA3B81;
-        Mon, 24 Jan 2022 19:44:39 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 54796DA7A3; Mon, 24 Jan 2022 20:43:59 +0100 (CET)
-Date:   Mon, 24 Jan 2022 20:43:59 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH] btrfs: scrub: Remove redundant initialization of
- increment
-Message-ID: <20220124194359.GE14046@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20220121114224.92247-1-jiapeng.chong@linux.alibaba.com>
+        Mon, 24 Jan 2022 14:44:49 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D281F6131E;
+        Mon, 24 Jan 2022 19:44:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42F0C340E5;
+        Mon, 24 Jan 2022 19:44:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053488;
+        bh=NnJCk13Goff3H48BL/psmetMcVRnOhKs9tjpoNimvyg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Llk8SmJq92rKeW6AZaHFsfJdltP6EGS6M6H3VK+b5avkxSssInGvzbXeaRF7zxPzO
+         zStG3xtS4YUsuif39s8fVIRDW9rFFoiQurU4AV4PRsu9fXHlinzcPhug7vJNwObaVe
+         Nw5z2swwxhPtNLBCTttXnE1zvKWiuaOVr/AVLOmU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 082/563] fs: dlm: use sk->sk_socket instead of con->sock
+Date:   Mon, 24 Jan 2022 19:37:27 +0100
+Message-Id: <20220124184027.228849912@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121114224.92247-1-jiapeng.chong@linux.alibaba.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 07:42:24PM +0800, Jiapeng Chong wrote:
-> increment is being initialized to map->stripe_len but this is never
-> read as increment is overwritten later on. Remove the redundant
-> initialization.
+From: Alexander Aring <aahringo@redhat.com>
 
-> 
-> Cleans up the following clang-analyzer warning:
-> 
-> fs/btrfs/scrub.c:3193:6: warning: Value stored to 'increment' during its
-> initialization is never read [clang-analyzer-deadcode.DeadStores].
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-> ---
->  fs/btrfs/scrub.c | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
-> index 2e9a322773f2..38f5666eff14 100644
-> --- a/fs/btrfs/scrub.c
-> +++ b/fs/btrfs/scrub.c
-> @@ -3209,7 +3209,6 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
->  	offset = 0;
->  	nstripes = div64_u64(dev_extent_len, map->stripe_len);
->  	mirror_num = 1;
-> -	increment = map->stripe_len;
+[ Upstream commit feb704bd17786c8ff52a49d7759b8ee4f3a5aaac ]
 
-I'd rather remove the initialization at the declarataion, the other
-values are initialized here so it's all in one place. As is's a minor
-change I'll do that at commit time, no need to resend. Thanks.
+Instead of dereference "con->sock" we can get the socket structure over
+"sk->sk_socket" as well. This patch will switch to this behaviour.
+
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ fs/dlm/lowcomms.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
+index 0c78fdfb1f6fa..0a8645ed4b2d6 100644
+--- a/fs/dlm/lowcomms.c
++++ b/fs/dlm/lowcomms.c
+@@ -480,8 +480,7 @@ static void lowcomms_error_report(struct sock *sk)
+ 		goto out;
+ 
+ 	orig_report = listen_sock.sk_error_report;
+-	if (con->sock == NULL ||
+-	    kernel_getpeername(con->sock, (struct sockaddr *)&saddr) < 0) {
++	if (kernel_getpeername(sk->sk_socket, (struct sockaddr *)&saddr) < 0) {
+ 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
+ 				   "sending to node %d, port %d, "
+ 				   "sk_err=%d/%d\n", dlm_our_nodeid(),
+-- 
+2.34.1
+
+
+
