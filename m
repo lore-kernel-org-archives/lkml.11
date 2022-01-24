@@ -2,241 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C561C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF8BC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1325710AbiAYEoB (ORCPT
+        id S1326009AbiAYEog (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:44:01 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:36520 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1324739AbiAYDdr (ORCPT
+        Mon, 24 Jan 2022 23:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1324828AbiAYDeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:33:47 -0500
-X-UUID: 27967c8e90634ea090afe0d3355cd65b-20220125
-X-UUID: 27967c8e90634ea090afe0d3355cd65b-20220125
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
-        (envelope-from <chaotian.jing@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 938173205; Tue, 25 Jan 2022 11:33:37 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Tue, 25 Jan 2022 11:33:35 +0800
-Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 25 Jan 2022 11:33:35 +0800
-Message-ID: <f66964a5afd960fee6a2fecaf74fa902bb76a8d9.camel@mediatek.com>
-Subject: Re: [PATCH] mmc: mediatek: Add cmd polling mode
-From:   Chaotian Jing <chaotian.jing@mediatek.com>
-To:     Derong Liu <derong.liu@mediatek.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <linux-mmc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <wsp_upstream@mediatek.com>,
-        Peng Zhou <peng.zhou@mediatek.com>
-Date:   Tue, 25 Jan 2022 11:33:35 +0800
-In-Reply-To: <20220124121814.17452-1-derong.liu@mediatek.com>
-References: <20220124121814.17452-1-derong.liu@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Mon, 24 Jan 2022 22:34:09 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 660AAC06E03F;
+        Mon, 24 Jan 2022 15:10:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DF71960AF3;
+        Mon, 24 Jan 2022 23:10:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F5FDC340E4;
+        Mon, 24 Jan 2022 23:10:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643065804;
+        bh=Lp6rBZeoWYvUHuCD14f8+11LQt9Mi2Dm69IzD6JEQwY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qtSnnOhfsoXPMxEJjZG7HGc6V+LawAvTVXbLHtmGw2He8RRaBlm7GvLST2N1SIRAz
+         ZGUbrG2gw+cQqnxVUvqvmC3J9cAgZnTwWTki1Mi1uhqYJ6nu/SEIdFSprNwxokuvAP
+         bAsqBG110QGX08TnQ1gNARwRPApJWWd1JuFVXVguoBFe47T7W16iSRbbOhmjM4Ye1N
+         IVipSpAqAz3bahs7SQ5+nj2KHRmBwLMKgQcTNDTMxZDQW89fivr9wM0nI39Lu8xfS8
+         beWcsbplzHpWed31o1KGbE+4TOLDUkeVr7D+W12zN10XakzIHrnIkfDiSK1hzMb9a4
+         zxjHu+ZELkrAA==
+Date:   Mon, 24 Jan 2022 16:09:59 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Masahiro Yamada <masahiroy@kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: Re: [PATCH 2/2] MIPS: Loongson64: Wrap -mno-branch-likely with
+ cc-option
+Message-ID: <Ye8xx5/44wQCt+dS@dev-arch.archlinux-ax161>
+References: <20220120214001.1879469-1-nathan@kernel.org>
+ <20220120214001.1879469-2-nathan@kernel.org>
+ <CAKwvOdmTBUcre5+=kopcyAv3q=55=Z5O65QHmvy3Ra2JqgLNHw@mail.gmail.com>
+ <Ye8qOloosgFyY8v8@archlinux-ax161>
+ <CAKwvOdmri9H_yCkN=Rr26UqZgFoXoGPM+41gBS15X1=zGSg_3A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdmri9H_yCkN=Rr26UqZgFoXoGPM+41gBS15X1=zGSg_3A@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-01-24 at 20:18 +0800, Derong Liu wrote:
-> We found sdcard can gain more read/write performance
-> when using cmd polling mode instead of interrupt mode, in the
-> meantime,
-> there are much more devices have equipped with high frequency cpu,
-> so it is necessary to support cmd polling mode.
+On Mon, Jan 24, 2022 at 02:49:29PM -0800, Nick Desaulniers wrote:
+> On Mon, Jan 24, 2022 at 2:37 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> >
+> > On Mon, Jan 24, 2022 at 12:40:58PM -0800, Nick Desaulniers wrote:
+> > > On Thu, Jan 20, 2022 at 1:40 PM Nathan Chancellor <nathan@kernel.org> wrote:
+> > > >
+> > > > This flag is not supported by clang, which results in a warning:
+> > > >
+> > > >   clang-14: warning: argument unused during compilation: '-mno-branch-likely' [-Wunused-command-line-argument]
+> > > >
+> > > > This breaks cc-option, which adds -Werror to make this warning fatal and
+> > > > catch flags that are not supported. Wrap the flag in cc-option so that
+> > > > it does not cause cc-option to fail, which can cause randconfigs to be
+> > > > really noisy.
+> > > >
+> > > > Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+> > >
+> > > We should convert more of these tests to Kconfig checks that run once
+> > > per configuration, rather than multiple times for a build. IIRC Linus
+> > > mentioned this somewhere...yeah, the -Wimplicit-fallthrough patches.
+> > > See
+> > > dee2b702bcf06 ("kconfig: Add support for -Wimplicit-fallthrough")
+> > >
+> > > I wonder if we can check ARCH or SUBARCH in Kconfig to limit invoking
+> > > the tool under test for certain arch specific command line flags?
+> > >
+> > > I'll take this patch over such a larger change, but I think towards
+> > > the goal of speeding up already configured builds, we eventually want
+> > > to be migrating cc-option and ld-option checks to Kconfig.
+> > >
+> > > Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> >
+> > Something like this appears to work, if that is more preferrable?
+> >
+> > diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+> > index 058446f01487..a27a3ade810e 100644
+> > --- a/arch/mips/Kconfig
+> > +++ b/arch/mips/Kconfig
+> > @@ -3232,3 +3232,9 @@ endmenu
+> >  source "arch/mips/kvm/Kconfig"
+> >
+> >  source "arch/mips/vdso/Kconfig"
+> > +
+> > +config CC_MNO_BRANCH_LIKELY
+> > +       string
+> > +       default "-mno-branch-likely"
+> > +       depends on MACH_LOONGSON64 || MACH_LOONGSON2EF
+> > +       depends on $(cc-option,-mno-branch-likely)
+> > diff --git a/arch/mips/loongson2ef/Platform b/arch/mips/loongson2ef/Platform
+> > index 50e659aca543..66ed09581417 100644
+> > --- a/arch/mips/loongson2ef/Platform
+> > +++ b/arch/mips/loongson2ef/Platform
+> > @@ -41,6 +41,6 @@ cflags-y += $(call cc-option,-mno-loongson-mmi)
+> >  # Loongson Machines' Support
+> >  #
+> >
+> > -cflags-$(CONFIG_MACH_LOONGSON2EF) += -I$(srctree)/arch/mips/include/asm/mach-loongson2ef -mno-branch-likely
+> > +cflags-$(CONFIG_MACH_LOONGSON2EF) += -I$(srctree)/arch/mips/include/asm/mach-loongson2ef $(CONFIG_CC_MNO_BRANCH_LIKELY)
 > 
-Hi, I think you have not found the root cause of performace drop. if
-the sdcard read/write performance is 100MB/s, which means that it can
-complete 512KB of data xfer within 5ms, and if performance drop is 5%,
-then means that your interrupt mode will take more than 250us.
-Is it possible to clarify if the interrupt mode really takes 250us?
+> Does that allow someone to modify the value for CC_MNO_BRANCH_LIKELY
+> in menuconfig?
 
-And, if you find that the polling mode is readlly fast then interrupt
-mode and has no side effect(ie. cpu loading issue), then, We will drop
-the interrupt mode of waiting response.
-> Signed-off-by: Derong Liu <derong.liu@mediatek.com>
-> ---
->  drivers/mmc/host/mtk-sd.c | 92 +++++++++++++++++++++++++++++++++++
-> ----
->  1 file changed, 83 insertions(+), 9 deletions(-)
+No because it is a hidden symbol; in other words:
+
+config ...
+    string
+
+rather than
+
+config ...
+    string "..."
+
+> If so, I'd rather the Makefiles have:
 > 
-> diff --git a/drivers/mmc/host/mtk-sd.c b/drivers/mmc/host/mtk-sd.c
-> index 65037e1d7723..612f5115ca4b 100644
-> --- a/drivers/mmc/host/mtk-sd.c
-> +++ b/drivers/mmc/host/mtk-sd.c
-> @@ -465,6 +465,7 @@ struct msdc_host {
->  	bool hs400_tuning;	/* hs400 mode online tuning */
->  	bool internal_cd;	/* Use internal card-detect logic */
->  	bool cqhci;		/* support eMMC hw cmdq */
-> +	bool cmd_polling_mode;	/* support cmd polling mode */
->  	struct msdc_save_para save_para; /* used when gate HCLK */
->  	struct msdc_tune_para def_tune_para; /* default tune setting */
->  	struct msdc_tune_para saved_tune_para; /* tune result of
-> CMD21/CMD19 */
-> @@ -1250,6 +1251,63 @@ static inline bool msdc_cmd_is_ready(struct
-> msdc_host *host,
->  	return true;
->  }
->  
-> +static inline int use_cmd_polling_mode(struct msdc_host *host,
-> +	struct mmc_command *cmd)
-> +{
-> +	/* R1B use interrupt mode */
-> +	return (host->cmd_polling_mode &&
-> +			((mmc_from_priv(host))->caps2 &
-> MMC_CAP2_NO_SDIO) &&
-> +			(mmc_resp_type(cmd) != MMC_RSP_R1B));
-> +}
-> +
-> +static bool msdc_command_resp_polling(struct msdc_host *host,
-> +	struct mmc_request *mrq, struct mmc_command *cmd,
-> +	unsigned long timeout)
-> +{
-> +	bool ret = false;
-> +	unsigned long tmo;
-> +	int events;
-> +	unsigned long flags;
-> +
-> +	if (!use_cmd_polling_mode(host, cmd))
-> +		goto exit;
-> +
-> +retry:
-> +	tmo = jiffies + timeout;
-> +	while (1) {
-> +		spin_lock_irqsave(&host->lock, flags);
-why need spin lock ? if there are no SDIO device irq, then there is no
-race conditon of access MSDC register.
-> +		events = readl(host->base + MSDC_INT);
-> +		if (events & cmd_ints_mask) {
-> +			/* clear all int flag */
-> +			events &= cmd_ints_mask;
-> +			writel(events, host->base + MSDC_INT);
-> +			spin_unlock_irqrestore(&host->lock, flags);
-> +			break;
-> +		}
-> +		spin_unlock_irqrestore(&host->lock, flags);
-> +
-> +		if (time_after(jiffies, tmo) &&
-> +			((events & cmd_ints_mask) == 0)) {
-> +			dev_info(host->dev, "[%s]: CMD<%d>
-> polling_for_completion timeout ARG<0x%.8x>\n",
-> +				__func__, cmd->opcode, cmd->arg);
-> +			ret = msdc_cmd_done(host, MSDC_INT_CMDTMO, mrq,
-> cmd);
-> +			goto exit;
-> +		}
-> +	}
-> +
-> +	if (cmd) {
-> +		ret = msdc_cmd_done(host, events, mrq, cmd);
-> +		/* if only autocmd23 done,
-> +		 * it needs to polling the continue read/write cmd
-> directly.
-> +		 */
-> +		if (!ret)
-> +			goto retry;
-> +	}
-> +
-> +exit:
-> +	return ret;
-> +}
-> +
->  static void msdc_start_command(struct msdc_host *host,
->  		struct mmc_request *mrq, struct mmc_command *cmd)
->  {
-> @@ -1273,7 +1331,10 @@ static void msdc_start_command(struct
-> msdc_host *host,
->  	rawcmd = msdc_cmd_prepare_raw_cmd(host, mrq, cmd);
->  
->  	spin_lock_irqsave(&host->lock, flags);
-> -	sdr_set_bits(host->base + MSDC_INTEN, cmd_ints_mask);
-> +	if (use_cmd_polling_mode(host, cmd))
-> +		sdr_clr_bits(host->base + MSDC_INTEN, cmd_ints_mask);
-> +	else
-> +		sdr_set_bits(host->base + MSDC_INTEN, cmd_ints_mask);
->  	spin_unlock_irqrestore(&host->lock, flags);
->  
->  	writel(cmd->arg, host->base + SDC_ARG);
-> @@ -1290,9 +1351,11 @@ static void msdc_cmd_next(struct msdc_host
-> *host,
->  	       host->hs400_tuning))) ||
->  	    (mrq->sbc && mrq->sbc->error))
->  		msdc_request_done(host, mrq);
-> -	else if (cmd == mrq->sbc)
-> +	else if (cmd == mrq->sbc) {
->  		msdc_start_command(host, mrq, mrq->cmd);
-> -	else if (!cmd->data)
-> +		msdc_command_resp_polling(host, mrq,
-> +				mrq->cmd, CMD_TIMEOUT);
-> +	} else if (!cmd->data)
->  		msdc_request_done(host, mrq);
->  	else
->  		msdc_start_data(host, cmd, cmd->data);
-> @@ -1314,10 +1377,15 @@ static void msdc_ops_request(struct mmc_host
-> *mmc, struct mmc_request *mrq)
->  	 * use HW option,  otherwise use SW option
->  	 */
->  	if (mrq->sbc && (!mmc_card_mmc(mmc->card) ||
-> -	    (mrq->sbc->arg & 0xFFFF0000)))
-> +	    (mrq->sbc->arg & 0xFFFF0000))) {
->  		msdc_start_command(host, mrq, mrq->sbc);
-> -	else
-> +		msdc_command_resp_polling(host, mrq,
-> +				mrq->sbc, CMD_TIMEOUT);
-> +	} else {
->  		msdc_start_command(host, mrq, mrq->cmd);
-> +		msdc_command_resp_polling(host, mrq,
-> +				mrq->cmd, CMD_TIMEOUT);
-> +	}
->  }
->  
->  static void msdc_pre_req(struct mmc_host *mmc, struct mmc_request
-> *mrq)
-> @@ -1350,9 +1418,11 @@ static void msdc_post_req(struct mmc_host
-> *mmc, struct mmc_request *mrq,
->  static void msdc_data_xfer_next(struct msdc_host *host, struct
-> mmc_request *mrq)
->  {
->  	if (mmc_op_multi(mrq->cmd->opcode) && mrq->stop && !mrq->stop-
-> >error &&
-> -	    !mrq->sbc)
-> +	    !mrq->sbc) {
->  		msdc_start_command(host, mrq, mrq->stop);
-> -	else
-> +		msdc_command_resp_polling(host, mrq,
-> +				mrq->stop, CMD_TIMEOUT);
-> +	} else
->  		msdc_request_done(host, mrq);
->  }
->  
-> @@ -2492,11 +2562,15 @@ static void msdc_of_property_parse(struct
-> platform_device *pdev,
->  	else
->  		host->hs400_cmd_resp_sel_rising = false;
->  
-> -	if (of_property_read_bool(pdev->dev.of_node,
-> -				  "supports-cqe"))
-> +	if (of_property_read_bool(pdev->dev.of_node, "supports-cqe"))
->  		host->cqhci = true;
->  	else
->  		host->cqhci = false;
-> +
-> +	if (of_property_read_bool(pdev->dev.of_node, "mediatek,cmd-
-> polling-mode"))
-> +		host->cmd_polling_mode = true;
-> +	else
-> +		host->cmd_polling_mode = false;
->  }
->  
->  static int msdc_of_clock_parse(struct platform_device *pdev,
+> cflags-$(CONFIG_CC_MNO_BRANCH_LIKELY) += -mno-branch-likely
+> 
+> and CONFIG_CC_MNO_BRANCH_LIKELY be a bool rather than an editable
+> string.  I think that makes the Makefile more readable; you don't have
+> to see what CONFIG_CC_MNO_BRANCH_LIKELY expands to in a different
+> file.
+> 
+> See also CC_HAS_ASM_GOTO and CC_HAS_ASM_GOTO_OUTPUT in init/Kconfig.
 
+Regardless, your suggestion is simpler. I can send that as v2 if this is
+preferrable.
+
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 058446f01487..4f83fb5610cb 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -3232,3 +3232,7 @@ endmenu
+ source "arch/mips/kvm/Kconfig"
+ 
+ source "arch/mips/vdso/Kconfig"
++
++config CC_HAS_MNO_BRANCH_LIKELY
++	def_bool y
++	depends on $(cc-option,-mno-branch-likely)
+diff --git a/arch/mips/loongson2ef/Platform b/arch/mips/loongson2ef/Platform
+index 50e659aca543..eebabf9df6ac 100644
+--- a/arch/mips/loongson2ef/Platform
++++ b/arch/mips/loongson2ef/Platform
+@@ -41,6 +41,7 @@ cflags-y += $(call cc-option,-mno-loongson-mmi)
+ # Loongson Machines' Support
+ #
+ 
+-cflags-$(CONFIG_MACH_LOONGSON2EF) += -I$(srctree)/arch/mips/include/asm/mach-loongson2ef -mno-branch-likely
++cflags-$(CONFIG_MACH_LOONGSON2EF) += -I$(srctree)/arch/mips/include/asm/mach-loongson2ef
++cflags-$(CONFIG_CC_HAS_MNO_BRANCH_LIKELY) += -mno-branch-likely
+ load-$(CONFIG_LEMOTE_FULOONG2E) += 0xffffffff80100000
+ load-$(CONFIG_LEMOTE_MACH2F) += 0xffffffff80200000
+diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Platform
+index 3e660d6d3c2b..2fd9dc218a68 100644
+--- a/arch/mips/loongson64/Platform
++++ b/arch/mips/loongson64/Platform
+@@ -33,5 +33,6 @@ cflags-y += $(call cc-option,-mno-loongson-mmi)
+ # Loongson Machines' Support
+ #
+ 
+-cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64 -mno-branch-likely
++cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64
++cflags-$(CONFIG_CC_HAS_MNO_BRANCH_LIKELY) += -mno-branch-likely
+ load-$(CONFIG_CPU_LOONGSON64) += 0xffffffff80200000
+
+> >  load-$(CONFIG_LEMOTE_FULOONG2E) += 0xffffffff80100000
+> >  load-$(CONFIG_LEMOTE_MACH2F) += 0xffffffff80200000
+> > diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Platform
+> > index 3e660d6d3c2b..88fbdfe9ffcc 100644
+> > --- a/arch/mips/loongson64/Platform
+> > +++ b/arch/mips/loongson64/Platform
+> > @@ -33,5 +33,5 @@ cflags-y += $(call cc-option,-mno-loongson-mmi)
+> >  # Loongson Machines' Support
+> >  #
+> >
+> > -cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64 -mno-branch-likely
+> > +cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64 $(CONFIG_CC_MNO_BRANCH_LIKELY)
+> >  load-$(CONFIG_CPU_LOONGSON64) += 0xffffffff80200000
+> >
+> > > > ---
+> > > >  arch/mips/loongson64/Platform | 3 ++-
+> > > >  1 file changed, 2 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Platform
+> > > > index 981d3abc150e..acf9edc9b15d 100644
+> > > > --- a/arch/mips/loongson64/Platform
+> > > > +++ b/arch/mips/loongson64/Platform
+> > > > @@ -26,5 +26,6 @@ cflags-y += $(call cc-option,-mno-loongson-mmi)
+> > > >  # Loongson Machines' Support
+> > > >  #
+> > > >
+> > > > -cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64 -mno-branch-likely
+> > > > +cflags-$(CONFIG_MACH_LOONGSON64) += -I$(srctree)/arch/mips/include/asm/mach-loongson64
+> > > > +cflags-$(CONFIG_MACH_LOONGSON64) += $(call cc-option,-mno-branch-likely)
+> > > >  load-$(CONFIG_CPU_LOONGSON64) += 0xffffffff80200000
+> > > > --
+> > > > 2.34.1
+> > > >
+> > > >
+> > >
+> > >
+> > > --
+> > > Thanks,
+> > > ~Nick Desaulniers
+> >
+> 
+> 
+> -- 
+> Thanks,
+> ~Nick Desaulniers
