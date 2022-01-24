@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93DD2C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E9FBC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457639AbiAXVmA (ORCPT
+        id S1457264AbiAXVlS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53558 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445759AbiAXVEz (ORCPT
+        Mon, 24 Jan 2022 16:41:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353701AbiAXVDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:04:55 -0500
+        Mon, 24 Jan 2022 16:03:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93E82C06B5B6;
+        Mon, 24 Jan 2022 12:04:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DA666131F;
-        Mon, 24 Jan 2022 21:04:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51288C340E5;
-        Mon, 24 Jan 2022 21:04:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5A56AB8121A;
+        Mon, 24 Jan 2022 20:04:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8307CC340E5;
+        Mon, 24 Jan 2022 20:04:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058293;
-        bh=MONWWN5Pw6rnKPiBEgg31qpoflv/TBpsiZxOuGbiM5U=;
+        s=korg; t=1643054647;
+        bh=xI5hEJ3lhDIHA1QI9owRidjMV8Rm3Aur9/+X8usPUKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qdWULLho5spHXQocU6/tTGN3Cbp2Giwa4H5GNCDEvv0xdLr5t/YWHNcPQhVBYIxLH
-         IU7txAEktGkSa2oBxEWou4Km4fEk8zJevHeJQAOyO1b2R/eE3qN3Kzo46IiCjD04UO
-         nvXr1XhaMzSEQAJwV9h9kFczxWBgg98+v7+1n840=
+        b=g5YGj11OlZPVEXz1Ot6A/Y3kIG4iFyF17MkLH805xVUWuZ50OCawkmQf0IGpolNLr
+         nE/pMO6ZLOPz4SSP9s8z+nerFVk8mGlgig1z2nIjBXWgBKLdveRZ6NdSMhddV8YMJR
+         d36QUs3OPHhwp404bqh+FKcQVY6VfdJf1t0K9O60=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0243/1039] samples: bpf: Fix unknown warning group build warning on Clang
-Date:   Mon, 24 Jan 2022 19:33:52 +0100
-Message-Id: <20220124184133.493287897@linuxfoundation.org>
+        stable@vger.kernel.org, "Nathan E. Egge" <unlord@xiph.org>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.10 456/563] drm/nouveau/kms/nv04: use vzalloc for nv04_display
+Date:   Mon, 24 Jan 2022 19:43:41 +0100
+Message-Id: <20220124184040.216794823@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,49 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Ilia Mirkin <imirkin@alum.mit.edu>
 
-[ Upstream commit 6f670d06e47c774bc065aaa84a527a4838f34bd8 ]
+commit bd6e07e72f37f34535bec7eebc807e5fcfe37b43 upstream.
 
-Clang doesn't have 'stringop-truncation' group like GCC does, and
-complains about it when building samples which use xdp_sample_user
-infra:
+The struct is giant, and triggers an order-7 allocation (512K). There is
+no reason for this to be kmalloc-type memory, so switch to vmalloc. This
+should help loading nouveau on low-memory and/or long-running systems.
 
- samples/bpf/xdp_sample_user.h:48:32: warning: unknown warning group '-Wstringop-truncation', ignored [-Wunknown-warning-option]
- #pragma GCC diagnostic ignored "-Wstringop-truncation"
-                                ^
-[ repeat ]
-
-Those are harmless, but avoidable when guarding it with ifdef.
-I could guard push/pop as well, but this would require one more
-ifdef cruft around a single line which I don't think is reasonable.
-
-Fixes: 156f886cf697 ("samples: bpf: Add basic infrastructure for XDP samples")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/bpf/20211203195004.5803-3-alexandr.lobakin@intel.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Nathan E. Egge <unlord@xiph.org>
+Signed-off-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- samples/bpf/xdp_sample_user.h | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/gpu/drm/nouveau/dispnv04/disp.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/samples/bpf/xdp_sample_user.h b/samples/bpf/xdp_sample_user.h
-index d97465ff8c62c..5f44b877ecf5f 100644
---- a/samples/bpf/xdp_sample_user.h
-+++ b/samples/bpf/xdp_sample_user.h
-@@ -45,7 +45,9 @@ const char *get_driver_name(int ifindex);
- int get_mac_addr(int ifindex, void *mac_addr);
+--- a/drivers/gpu/drm/nouveau/dispnv04/disp.c
++++ b/drivers/gpu/drm/nouveau/dispnv04/disp.c
+@@ -205,7 +205,7 @@ nv04_display_destroy(struct drm_device *
+ 	nvif_notify_dtor(&disp->flip);
  
- #pragma GCC diagnostic push
-+#ifndef __clang__
- #pragma GCC diagnostic ignored "-Wstringop-truncation"
-+#endif
- __attribute__((unused))
- static inline char *safe_strncpy(char *dst, const char *src, size_t size)
- {
--- 
-2.34.1
-
+ 	nouveau_display(dev)->priv = NULL;
+-	kfree(disp);
++	vfree(disp);
+ 
+ 	nvif_object_unmap(&drm->client.device.object);
+ }
+@@ -223,7 +223,7 @@ nv04_display_create(struct drm_device *d
+ 	struct nv04_display *disp;
+ 	int i, ret;
+ 
+-	disp = kzalloc(sizeof(*disp), GFP_KERNEL);
++	disp = vzalloc(sizeof(*disp));
+ 	if (!disp)
+ 		return -ENOMEM;
+ 
 
 
