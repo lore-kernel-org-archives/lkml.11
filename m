@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09D18C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF64C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449429AbiAXVPd (ORCPT
+        id S1449458AbiAXVPf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:15:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47750 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391504AbiAXUsC (ORCPT
+        Mon, 24 Jan 2022 16:15:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42206 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391637AbiAXUsQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:48:02 -0500
+        Mon, 24 Jan 2022 15:48:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2F3EB81233;
-        Mon, 24 Jan 2022 20:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 331E2C340E5;
-        Mon, 24 Jan 2022 20:47:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7824D60C39;
+        Mon, 24 Jan 2022 20:48:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D846FC340E5;
+        Mon, 24 Jan 2022 20:48:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057279;
-        bh=j8QhFAcoP5YnbewakrrigomulAjYONylTaD5Y1/NRwM=;
+        s=korg; t=1643057294;
+        bh=alN1nGi9d01VTi67hSzdh6Vdn9Sl4cPFqezMOL+KxcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Eba9sTTyukCyzJbaU2YLo2CaDDZgZsTvPENi0+9hPxHL6YuCUIFmrQn1tQtyC2eyl
-         jRpyzsa4pt6CkOPxbbJmdlL/Pje+q+orHpllS1mJC0VqyInRGJEHIjZa4goHZv4XES
-         E0lxe+ywNPSC0I27hHzLdi47B9MYKeQoVwYgfsS8=
+        b=NCd0Y4mOqUU5kYq9kf6aDvlrqp9c3KBtLXrrzQASSXguZtOeYu/QnnyxY614SVAoP
+         UO9E/pyyuPoTut4HRTLzavBJvVRJwtP8TE5NLp7R5oxi4olun11przFxzMWdr4dRwQ
+         od/W1CNBZQwf1bFoA8Le7DG3JpJ/3UC3F+YXgd4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 753/846] dmaengine: stm32-mdma: fix STM32_MDMA_CTBR_TSEL_MASK
-Date:   Mon, 24 Jan 2022 19:44:30 +0100
-Message-Id: <20220124184126.948305234@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David Howells <dhowells@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 5.15 766/846] bpf: Fix mount source show for bpffs
+Date:   Mon, 24 Jan 2022 19:44:43 +0100
+Message-Id: <20220124184127.381781059@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,31 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Yafang Shao <laoar.shao@gmail.com>
 
-commit e7f110889a87307fb0fed408a5dee1707796ca04 upstream.
+commit 1e9d74660d4df625b0889e77018f9e94727ceacd upstream.
 
-This patch fixes STM32_MDMA_CTBR_TSEL_MASK, which is [5:0], not [7:0].
+We noticed our tc ebpf tools can't start after we upgrade our in-house kernel
+version from 4.19 to 5.10. That is because of the behaviour change in bpffs
+caused by commit d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211220165827.1238097-1-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+In our tc ebpf tools, we do strict environment check. If the environment is
+not matched, we won't allow to start the ebpf progs. One of the check is whether
+bpffs is properly mounted. The mount information of bpffs in kernel-4.19 and
+kernel-5.10 are as follows:
+
+- kernel 4.19
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+bpffs on /sys/fs/bpf type bpf (rw,relatime)
+
+- kernel 5.10
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+none on /sys/fs/bpf type bpf (rw,relatime)
+
+The device name in kernel-5.10 is displayed as none instead of bpffs, then our
+environment check fails. Currently we modify the tools to adopt to the kernel
+behaviour change, but I think we'd better change the kernel code to keep the
+behavior consistent.
+
+After this change, the mount information will be displayed the same with the
+behavior in kernel-4.19, for example:
+
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+bpffs on /sys/fs/bpf type bpf (rw,relatime)
+
+Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
+Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Link: https://lore.kernel.org/bpf/20220108134623.32467-1-laoar.shao@gmail.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/stm32-mdma.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ kernel/bpf/inode.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -184,7 +184,7 @@
- #define STM32_MDMA_CTBR(x)		(0x68 + 0x40 * (x))
- #define STM32_MDMA_CTBR_DBUS		BIT(17)
- #define STM32_MDMA_CTBR_SBUS		BIT(16)
--#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(7, 0)
-+#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(5, 0)
- #define STM32_MDMA_CTBR_TSEL(n)		STM32_MDMA_SET(n, \
- 						      STM32_MDMA_CTBR_TSEL_MASK)
+--- a/kernel/bpf/inode.c
++++ b/kernel/bpf/inode.c
+@@ -648,12 +648,22 @@ static int bpf_parse_param(struct fs_con
+ 	int opt;
  
+ 	opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+-	if (opt < 0)
++	if (opt < 0) {
+ 		/* We might like to report bad mount options here, but
+ 		 * traditionally we've ignored all mount options, so we'd
+ 		 * better continue to ignore non-existing options for bpf.
+ 		 */
+-		return opt == -ENOPARAM ? 0 : opt;
++		if (opt == -ENOPARAM) {
++			opt = vfs_parse_fs_param_source(fc, param);
++			if (opt != -ENOPARAM)
++				return opt;
++
++			return 0;
++		}
++
++		if (opt < 0)
++			return opt;
++	}
+ 
+ 	switch (opt) {
+ 	case OPT_MODE:
 
 
