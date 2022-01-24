@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BAD1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0009FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346627AbiAXTRo (ORCPT
+        id S1346791AbiAXTRt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:17:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34358 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345654AbiAXTGY (ORCPT
+        Mon, 24 Jan 2022 14:17:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37950 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345360AbiAXTIE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:06:24 -0500
+        Mon, 24 Jan 2022 14:08:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E94EAB81239;
-        Mon, 24 Jan 2022 19:06:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC80C340E5;
-        Mon, 24 Jan 2022 19:06:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1B7361031;
+        Mon, 24 Jan 2022 19:08:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A15CCC340E5;
+        Mon, 24 Jan 2022 19:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051178;
-        bh=RtIo5JOYlq8YpCO9arDpjnQVZP64mqVCmyYXczOJcOs=;
+        s=korg; t=1643051283;
+        bh=Lr10pP5IZnhR4wLPcD7RIYgNtHoHvI/Vq/wfV3TZfso=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=laAhjQCyDu7VdK3of0ECehIzhzjoN2P9sXRZaZBS8PTowl7q4NKKBSVdxNWWyF0mf
-         cWH6H9YbVJTxMoCwgA+q95H1SVlO6tKkKVwZPmDpePcgWSEvvYGriZtrZzwLHWjPYT
-         4IFvrQgGw+7UUGJ/KjSKk0SkQI3wQDWwGt/LHY6c=
+        b=TdEBOFmfur7sKHhv5ZHIxomfD2hvLRbrVE3vzvDMMEd7A+wtuyZNrOjM7JAniQI6I
+         weSb0NJPTPI6PLhtuLQwJxADDcFJewzMOpzuDMxG7DcIJW5LQe+7bR08ycz9vEEiEf
+         8dBuwfDLeF+Om902QWzcbpCKHZZks9JjgjYT5L/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
-        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 080/186] iommu/iova: Fix race between FQ timeout and teardown
-Date:   Mon, 24 Jan 2022 19:42:35 +0100
-Message-Id: <20220124183939.695751989@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 079/186] dmaengine: pxa/mmp: stop referencing config->slave_id
+Date:   Mon, 24 Jan 2022 19:42:34 +0100
+Message-Id: <20220124183939.666063767@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,51 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit d7061627d701c90e1cac1e1e60c45292f64f3470 ]
+[ Upstream commit 134c37fa250a87a7e77c80a7c59ae16c462e46e0 ]
 
-It turns out to be possible for hotplugging out a device to reach the
-stage of tearing down the device's group and default domain before the
-domain's flush queue has drained naturally. At this point, it is then
-possible for the timeout to expire just before the del_timer() call
-in free_iova_flush_queue(), such that we then proceed to free the FQ
-resources while fq_flush_timeout() is still accessing them on another
-CPU. Crashes due to this have been observed in the wild while removing
-NVMe devices.
+The last driver referencing the slave_id on Marvell PXA and MMP platforms
+was the SPI driver, but this stopped doing so a long time ago, so the
+TODO from the earlier patch can no be removed.
 
-Close the race window by using del_timer_sync() to safely wait for any
-active timeout handler to finish before we start to free things. We
-already avoid any locking in free_iova_flush_queue() since the FQ is
-supposed to be inactive anyway, so the potential deadlock scenario does
-not apply.
-
-Fixes: 9a005a800ae8 ("iommu/iova: Add flush timer")
-Reviewed-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
-[ rm: rewrite commit message ]
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/0a365e5b07f14b7344677ad6a9a734966a8422ce.1639753638.git.robin.murphy@arm.com
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Fixes: b729bf34535e ("spi/pxa2xx: Don't use slave_id of dma_slave_config")
+Fixes: 13b3006b8ebd ("dma: mmp_pdma: add filter function")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20211122222203.4103644-7-arnd@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/iova.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/dma/mmp_pdma.c | 6 ------
+ drivers/dma/pxa_dma.c  | 7 -------
+ 2 files changed, 13 deletions(-)
 
-diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
-index 2c97d2552c5bd..ebee9e191b3ee 100644
---- a/drivers/iommu/iova.c
-+++ b/drivers/iommu/iova.c
-@@ -68,8 +68,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
- 	if (!has_iova_flush_queue(iovad))
- 		return;
+diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
+index eb3a1f42ab065..e8b2d3e31de80 100644
+--- a/drivers/dma/mmp_pdma.c
++++ b/drivers/dma/mmp_pdma.c
+@@ -722,12 +722,6 @@ static int mmp_pdma_config(struct dma_chan *dchan,
  
--	if (timer_pending(&iovad->fq_timer))
--		del_timer(&iovad->fq_timer);
-+	del_timer_sync(&iovad->fq_timer);
+ 	chan->dir = cfg->direction;
+ 	chan->dev_addr = addr;
+-	/* FIXME: drivers should be ported over to use the filter
+-	 * function. Once that's done, the following two lines can
+-	 * be removed.
+-	 */
+-	if (cfg->slave_id)
+-		chan->drcmr = cfg->slave_id;
  
- 	fq_destroy_all_entries(iovad);
+ 	return 0;
+ }
+diff --git a/drivers/dma/pxa_dma.c b/drivers/dma/pxa_dma.c
+index b53fb618bbf6b..99a8ff130ad51 100644
+--- a/drivers/dma/pxa_dma.c
++++ b/drivers/dma/pxa_dma.c
+@@ -956,13 +956,6 @@ static void pxad_get_config(struct pxad_chan *chan,
+ 		*dcmd |= PXA_DCMD_BURST16;
+ 	else if (maxburst == 32)
+ 		*dcmd |= PXA_DCMD_BURST32;
+-
+-	/* FIXME: drivers should be ported over to use the filter
+-	 * function. Once that's done, the following two lines can
+-	 * be removed.
+-	 */
+-	if (chan->cfg.slave_id)
+-		chan->drcmr = chan->cfg.slave_id;
+ }
  
+ static struct dma_async_tx_descriptor *
 -- 
 2.34.1
 
