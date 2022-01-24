@@ -2,99 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09382C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 11:50:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE87C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 11:51:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237931AbiAXLuJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 06:50:09 -0500
-Received: from mout.gmx.net ([212.227.17.22]:40095 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237927AbiAXLuH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 06:50:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643024983;
-        bh=yNy7EZg3mbp0lvINimyGvIkMJmw3Um6hIqmwnMmXJTk=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QHm2H2YsZcUks7oOV0TMT2ZiHWwjOhEF0Cx2YXeJXzb6rjrPVhn6AifVGEwZmAyGY
-         m6OMPiD8s78NnV8yHIrOO+2FQR2dTNt2yThoHEmzQDEW+qneAttwpgkcuT1SGyVRWj
-         qCtxPYoO6xyCXNgdyu4oyFQ06pD1kSr3BjUGwAzQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [80.245.79.70] ([80.245.79.70]) by web-mail.gmx.net
- (3c-app-gmx-bs10.server.lan [172.19.170.61]) (via HTTP); Mon, 24 Jan 2022
- 12:49:43 +0100
+        id S238020AbiAXLvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 06:51:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58879 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232727AbiAXLu0 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 06:50:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643025025;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SnozPUrejpB8IY9KHbWAe0uFCpl2C3OVRF4UKq2Q7OA=;
+        b=JVTEjfW/LMZ7ET7+DToX28Y9KUrB0pHMR2Si9QwtKiOtVZXKU8dQ4/Tu1SU3qwnaK568rf
+        2cjMT1E1bxNKwxaoTyqLhdI5dbYh+qTntTW912HUVojVZvnd0e3pc7IXRWpUTm+ZUpt/2v
+        Fn0bty+/AahGfeTKUHr+RUlnYsVFNZ0=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-394-x7h2y1_WMWuJmnQqXXIWPw-1; Mon, 24 Jan 2022 06:50:24 -0500
+X-MC-Unique: x7h2y1_WMWuJmnQqXXIWPw-1
+Received: by mail-wr1-f70.google.com with SMTP id a6-20020adfbc46000000b001d7370ace6eso1770367wrh.9
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 03:50:23 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SnozPUrejpB8IY9KHbWAe0uFCpl2C3OVRF4UKq2Q7OA=;
+        b=jHi6VadODXiQgeEp+UrnQpsseLDOAqNfKB02ppPht1oYOu7ew2N8gue4kO+A/KEhzu
+         uJhGphkd8WRYfP5OYW0Pz9hYxu/xVDU0y/9CojyZ2ekJCSF4SkQbDGldRgsGfc4sAczP
+         zGMu+h5NEpOqflZbXBEMk9Mh9K5EOxmdbguhe/nzjLWQitJpgxLCgGzifLnBJLVatgjS
+         dqSYy3R+QzbhPpe95Mfu4u+vmddQUkUvltnH3QONy+FZ0+xcyYQTsm33yg3UTmMn1okb
+         Bnq/zMTVOVFsFRc3mC55k5zmoo08erWgG82K8x7rDZqLZyb4DpmLXfammgd6ACMerom1
+         dmWg==
+X-Gm-Message-State: AOAM530OhUwJBv3kjbZ6h6C59XghrggUsrb7JYl+f7GJyTgeuFBL9BiG
+        E6Knbb23IHDtZP3U3vOcqyIZYDhxdtY5nZb1BZZ7t5VJ9UEw/2iXXD5OU9zUjzQ440e8w37Crna
+        xULhG3knNzChrORm6PEtry57o
+X-Received: by 2002:a5d:588d:: with SMTP id n13mr14154334wrf.153.1643025022929;
+        Mon, 24 Jan 2022 03:50:22 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwc+T8f2EA0pQatiSUAYWsweg14f3Fap55QqOPYFQTgJZjANOOALIERHOvplEdlRysuwhZ5oQ==
+X-Received: by 2002:a5d:588d:: with SMTP id n13mr14154313wrf.153.1643025022753;
+        Mon, 24 Jan 2022 03:50:22 -0800 (PST)
+Received: from [192.168.1.102] ([92.176.231.205])
+        by smtp.gmail.com with ESMTPSA id o12sm6904445wry.115.2022.01.24.03.50.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 03:50:22 -0800 (PST)
+Message-ID: <2fc200bb-4b40-7833-31c9-90a78512b601@redhat.com>
+Date:   Mon, 24 Jan 2022 12:50:20 +0100
 MIME-Version: 1.0
-Message-ID: <trinity-263c703e-80d0-4663-9a42-21b9b7cb57e5-1643024983188@3c-app-gmx-bs10>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Sascha Hauer <sha@pengutronix.de>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Peter Geis <pgwipeout@gmail.com>,
-        Johan Jonker <jbx6244@gmail.com>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Aw: Re: Re: [PATCH v2 2/2] arm64: dts: rockchip: Add Bananapi R2
- Pro
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Helge Deller <deller@gmx.de>, Gerd Hoffmann <kraxel@redhat.com>
+Cc:     linux-fbdev@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Schnelle <svens@stackframe.org>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        Claudio Suarez <cssk@net-c.es>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220119110839.33187-1-deller@gmx.de>
+ <20220119110839.33187-3-deller@gmx.de> <YelyGDNDTn1Aq/hm@phenom.ffwll.local>
+ <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
+ <20220121072006.ylw2hdl7jbkbwnre@sirius.home.kraxel.org>
+ <64fd46cb-9746-3fd0-ec92-c64dba76875a@gmx.de>
+ <d23800b4-503c-a6e2-2c51-2c07a736dffc@suse.de>
+From:   Javier Martinez Canillas <javierm@redhat.com>
+In-Reply-To: <d23800b4-503c-a6e2-2c51-2c07a736dffc@suse.de>
 Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 24 Jan 2022 12:49:43 +0100
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20220124110331.GZ23490@pengutronix.de>
-References: <20220123135116.136846-1-linux@fw-web.de>
- <20220123135116.136846-3-linux@fw-web.de>
- <20220124083102.GW23490@pengutronix.de>
- <trinity-2e9cf5db-4c9b-4ad7-b684-74541e639edf-1643014505272@3c-app-gmx-bs10>
- <20220124110331.GZ23490@pengutronix.de>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:bZK1BGXbDbNyasi2iQqJob1z02lSju4CxKtjw7F5Pqt/vKLSqdxkWfw8Wlb8qbvqP+iCr
- U0CDRI3/s5wZS44yl7TWrzWA3MTf6aIgYmaMW00qXDCiXMKDvh7zuwPKxgmMEUi9z3raLRrNR+I9
- UjOwtGNFu+X0/GnMi6HowGf/0Qgj2lwbgXlblMPoEjKmoPa3DiMvxf3l9k/VcgWM9Fx1ncaghdOp
- O7R853vPEwzF1Fmn8Zfmc8OG/L6bkGK6pWkdD9bPci+/a0fPRWtAJgVt34sjiSdZKcjsfbhpFovY
- nQ=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:kzCDCNdY4G0=:oyarcQiy9PUsJKUUVdcr3N
- i9VkGktYX1cF/ZRqOfx3MQKwkFg3TfiUGld43GnNR2l3V83F3SC2nR+QoVfHZr/uPqV+94MMD
- 1rZKfAZMCmqLzvM5uMbf+XN69DDN0uGzLlyORKZJFTmLuy3O1VTr9FvwyLqsYXl6BmhVGUrsQ
- ZlqlTXoZLSjF1gU218I4QkzZt9ooq4fgXge1rDnzj+ZgXjT4BJgnYTvKIuMmrq4UUzvI9DHi7
- woBEmFTOmfDBnjfsOV2W6iiyQ5QIyFSKIKoDq4KU8nrRf9T6CUxijpWmklPPEmCdwFoIBlw4f
- H1VCg7BEsHSCVhAx7MLErX1+IEMsk4vH+E754/PFF5dyF463lzJFT7hw1CwYhyPJHPLbhZnIM
- BirTdJUoNwKfFEyeIMUyQ2eTKmySoD7oVge1RBOlD+KOv1AGHmwzqT24OzHAu6BjCgJm9+ReR
- EzwJkq8MSVu39/CQ4LmTTd4a2Uf/VqGUoZB8r8kg8ZGUgVpjmBPMnz9G7QUS1bTuVVI6uegk3
- T8gEJVy9ZLD1gfjagwuJcmYZqO/IP/vt7K/CFntUDYdNiwrYmYNF1IlADlTg3MPS7hIbkKiHT
- XKxDOQzeG1M6Zm4y7HngmIxkevHi/v04uAY8fduOFzw/gXJv2vOH6xpbkgxdU/bVLrNgnvFFr
- 6B/cL2t0BQ3hCrp2MXysIU0pPhDJ3tmD6R8eYmS2f5XqA+ZPD/4F87/hwf/duKgbhN3k8O/q7
- lLhhzx1OGy2YtYwEs7UJ/paMgrmCyUtDUWruRBp3xS57QX/5g8kxdYPy4qlEXlrXhlk/li76H
- 1IJJmLz
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> Gesendet: Montag, 24. Januar 2022 um 12:03 Uhr
-> Von: "Sascha Hauer" <sha@pengutronix.de>
+On 1/24/22 12:33, Thomas Zimmermann wrote:
 
-> On Mon, Jan 24, 2022 at 09:55:05AM +0100, Frank Wunderlich wrote:
+[snip]
 
-> > took this from the 3568-EVB (like the most parts, as the board is
-> > mostly the same), and in linux it's the same and working. The switch
-> > have also phy-id 0 on mdio bus #1, are you sure this is invalid?
+>> Thoughts?
+> 
+> I can't say I approve keeping fbdev alive, but...
+> 
+> With fbdev emulation, every DRM driver is an fbdev driver too. So 
+> CONFIG_FB_DRIVER is somewhat misleading. Better add an option like 
+> CONFIG_FBCON_HW_SCROLLING and have it selected by the fbdev drivers that 
+> absolutely need HW acceleration. That option would then protect the rsp 
+> code.
+>
 
-just to clarify: in linux dts only the basics were taken from evb and chan=
-ged if
-needed (like iodomain, regulators).
-mixed this with the barebox submsission where i mainly used the evb dts.
+Agreed that this option would be better and allow distros
+to disable the code that was reverted.
+ 
+Best regards,
+-- 
+Javier Martinez Canillas
+Linux Engineering
+Red Hat
 
-should i add a note in head that some parts are taken from EVB and vendors=
- dts?
-As this is my first new DTS, i want to be sure the legal notice is correct=
-.
-
-> It's not invalid, it's just the broadcast address to which other phys
-> might answer as well. Anyway, as long as there's only a single phy on
-> the bus it's probably okay.
-
-ok, on mdio0 there is the rtl8211 phy and on mdio1 there is the rtl8367rb =
-switch,
-so only 1 device per bus. I was not aware that 0 is broadcast.
-
-regards Frank
