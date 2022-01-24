@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6BDC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:37:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A0CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352868AbiAYCgr (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:36:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54132 "EHLO
+        id S242374AbiAYChM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:37:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56570 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385205AbiAXUbo (ORCPT
+        with ESMTP id S1356389AbiAXUbs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:31:44 -0500
+        Mon, 24 Jan 2022 15:31:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EA1861382;
-        Mon, 24 Jan 2022 20:31:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA8B6C340E5;
-        Mon, 24 Jan 2022 20:31:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C734F61507;
+        Mon, 24 Jan 2022 20:31:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A88B7C340E7;
+        Mon, 24 Jan 2022 20:31:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056300;
-        bh=jYIRWSiUZSWF2+JFSFBxoVE0otIiJf+SdqOpEdwYg0E=;
+        s=korg; t=1643056306;
+        bh=jSECrfroaRL6gnqItNOsQdsp2IFqaB2YwhTsNYAREpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=apku6Q1OctwavvNQ5sjJsMGZlqVWYYk9401xdpKnp3wqe6xu2UEIPYQ0pMvB2GD0X
-         ZzmSjXnbaA/ycgIChNrHcKw7lfXev7A3lNRGn/962kSxdNDUMCFo5YwxDdBRRFAxFZ
-         9NrXzYlmjV4MsiI1hFLw3M8ClandQp/KdwlNiK1M=
+        b=qbkL7rZcAadjGGXiERffxLUBraxnHOt+gS5W3FLHh8bW2GzSm0cQiDXQguUIZFGCF
+         ZAUs0937BkD1Uvx+bbpiLg6CqyoMT3QiZeP53zbVroQp6Q84nqkjwCYac3fRQEY0Lf
+         CHYNCQr46COSyH0EzURxWBRq36DGvP/0/ISTaoCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 396/846] misc: at25: Make driver OF independent again
-Date:   Mon, 24 Jan 2022 19:38:33 +0100
-Message-Id: <20220124184114.618403515@linuxfoundation.org>
+Subject: [PATCH 5.15 441/846] powerpc/xive: Add missing null check after calling kmalloc
+Date:   Mon, 24 Jan 2022 19:39:18 +0100
+Message-Id: <20220124184116.179143525@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,61 +47,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+From: Ammar Faizi <ammarfaizi2@gmail.com>
 
-[ Upstream commit 5b557298d7d09cce04e0565a535fbca63661724a ]
+[ Upstream commit 18dbfcdedc802f9500b2c29794f22a31d27639c0 ]
 
-The commit f60e7074902a ("misc: at25: Make use of device property API")
-made a good job by enabling the driver for non-OF platforms, but the
-recent commit 604288bc6196 ("nvmem: eeprom: at25: fix type compiler warnings")
-brought that back.
+Commit 930914b7d528fc ("powerpc/xive: Add a debugfs file to dump
+internal XIVE state") forgot to add a null check.
 
-Restore greatness of the driver once again.
+Add it.
 
-Fixes: eab61fb1cc2e ("nvmem: eeprom: at25: fram discovery simplification")
-Fixes: fd307a4ad332 ("nvmem: prepare basics for FRAM support")
-Acked-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Link: https://lore.kernel.org/r/20211125212729.86585-2-andriy.shevchenko@linux.intel.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 930914b7d528fc6b0249bffc00564100bcf6ef75 ("powerpc/xive: Add a debugfs file to dump internal XIVE state")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211226135314.251221-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/eeprom/at25.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ arch/powerpc/sysdev/xive/spapr.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/misc/eeprom/at25.c b/drivers/misc/eeprom/at25.c
-index b38978a3b3ffa..9193b812bc07e 100644
---- a/drivers/misc/eeprom/at25.c
-+++ b/drivers/misc/eeprom/at25.c
-@@ -17,8 +17,6 @@
- #include <linux/spi/spi.h>
- #include <linux/spi/eeprom.h>
- #include <linux/property.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
- #include <linux/math.h>
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index f143b6f111ac0..1179632560b8d 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -653,6 +653,9 @@ static int xive_spapr_debug_show(struct seq_file *m, void *private)
+ 	struct xive_irq_bitmap *xibm;
+ 	char *buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
  
- /*
-@@ -380,13 +378,14 @@ static int at25_probe(struct spi_device *spi)
- 	int			sr;
- 	u8 id[FM25_ID_LEN];
- 	u8 sernum[FM25_SN_LEN];
-+	bool is_fram;
- 	int i;
--	const struct of_device_id *match;
--	bool is_fram = 0;
- 
--	match = of_match_device(of_match_ptr(at25_of_match), &spi->dev);
--	if (match && !strcmp(match->compatible, "cypress,fm25"))
--		is_fram = 1;
-+	err = device_property_match_string(&spi->dev, "compatible", "cypress,fm25");
-+	if (err >= 0)
-+		is_fram = true;
-+	else
-+		is_fram = false;
- 
- 	at25 = devm_kzalloc(&spi->dev, sizeof(struct at25_data), GFP_KERNEL);
- 	if (!at25)
++	if (!buf)
++		return -ENOMEM;
++
+ 	list_for_each_entry(xibm, &xive_irq_bitmaps, list) {
+ 		memset(buf, 0, PAGE_SIZE);
+ 		bitmap_print_to_pagebuf(true, buf, xibm->bitmap, xibm->count);
 -- 
 2.34.1
 
