@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51124C35294
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9324DC352A1
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:05:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842228AbiAXXBX (ORCPT
+        id S1842275AbiAXXB2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:01:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
+        Mon, 24 Jan 2022 18:01:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573020AbiAXVzI (ORCPT
+        with ESMTP id S1577829AbiAXWBK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:08 -0500
+        Mon, 24 Jan 2022 17:01:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B284CC07E2AF;
-        Mon, 24 Jan 2022 12:37:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20AAC02B848;
+        Mon, 24 Jan 2022 12:41:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6EF23B81063;
-        Mon, 24 Jan 2022 20:37:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4D9C340E5;
-        Mon, 24 Jan 2022 20:37:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D97CB81061;
+        Mon, 24 Jan 2022 20:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0029C340E5;
+        Mon, 24 Jan 2022 20:40:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056664;
-        bh=vNMezxssj6VcvR7r/jjQIM53BOA5+j+5fVwfrXZIJ98=;
+        s=korg; t=1643056859;
+        bh=rfnii2i5sU04+NW982sp8A0gGiDGgjs8gxUSp7gBgk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xQIaWVpxutPsC6GegXirRFVNxvAInucOp9zRZ7fWvZBtYIl2qFnakw9SfT6fmmQ+x
-         e4W3moSeLmRzT4LPhOJ1h27iq56fxze3Wy8Nc4kkwVeYH0o92/rVD9c1QYWd3PSCQl
-         KszC4l8ktf+N/gyFmRL/NZjAjzv9zF87dQezbiJM=
+        b=f75i9pCOYfDibsa7EEOUK5mgHht+cl2z6+rt0sj1T5Fm5nLjgNcWYrFWbVzVCY5lQ
+         9vF+hqaio1rhTAWedMM40K99RQeGXyydx8YyQbsyk8503TIbVw/fgkWNi64Oh6zKlH
+         xsh54Px0+cGKttA6LUUaN722OSTnRCknNzMKyPow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 559/846] audit: ensure userspace is penalized the same as the kernel when under pressure
-Date:   Mon, 24 Jan 2022 19:41:16 +0100
-Message-Id: <20220124184120.310761403@linuxfoundation.org>
+Subject: [PATCH 5.15 624/846] powerpc/powernv: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:42:21 +0100
+Message-Id: <20220124184122.568589864@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,68 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 8f110f530635af44fff1f4ee100ecef0bac62510 ]
+[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
 
-Due to the audit control mutex necessary for serializing audit
-userspace messages we haven't been able to block/penalize userspace
-processes that attempt to send audit records while the system is
-under audit pressure.  The result is that privileged userspace
-applications have a priority boost with respect to audit as they are
-not bound by the same audit queue throttling as the other tasks on
-the system.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-This patch attempts to restore some balance to the system when under
-audit pressure by blocking these privileged userspace tasks after
-they have finished their audit processing, and dropped the audit
-control mutex, but before they return to userspace.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+// <smpl>
+@@
+local idexpression n;
+expression e;
+@@
+
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 4cebadb5f30db..eab7282668ab9 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -1540,6 +1540,20 @@ static void audit_receive(struct sk_buff  *skb)
- 		nlh = nlmsg_next(nlh, &len);
+diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
+index 1e5d51db40f84..5390c888db162 100644
+--- a/arch/powerpc/platforms/powernv/opal-lpc.c
++++ b/arch/powerpc/platforms/powernv/opal-lpc.c
+@@ -396,6 +396,7 @@ void __init opal_lpc_init(void)
+ 		if (!of_get_property(np, "primary", NULL))
+ 			continue;
+ 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
++		of_node_put(np);
+ 		break;
  	}
- 	audit_ctl_unlock();
-+
-+	/* can't block with the ctrl lock, so penalize the sender now */
-+	if (audit_backlog_limit &&
-+	    (skb_queue_len(&audit_queue) > audit_backlog_limit)) {
-+		DECLARE_WAITQUEUE(wait, current);
-+
-+		/* wake kauditd to try and flush the queue */
-+		wake_up_interruptible(&kauditd_wait);
-+
-+		add_wait_queue_exclusive(&audit_backlog_wait, &wait);
-+		set_current_state(TASK_UNINTERRUPTIBLE);
-+		schedule_timeout(audit_backlog_wait_time);
-+		remove_wait_queue(&audit_backlog_wait, &wait);
-+	}
- }
- 
- /* Log information about who is connecting to the audit multicast socket */
-@@ -1824,7 +1838,9 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
- 	 *    task_tgid_vnr() since auditd_pid is set in audit_receive_msg()
- 	 *    using a PID anchored in the caller's namespace
- 	 * 2. generator holding the audit_cmd_mutex - we don't want to block
--	 *    while holding the mutex */
-+	 *    while holding the mutex, although we do penalize the sender
-+	 *    later in audit_receive() when it is safe to block
-+	 */
- 	if (!(auditd_test_task(current) || audit_ctl_owner_current())) {
- 		long stime = audit_backlog_wait_time;
- 
+ 	if (opal_lpc_chip_id < 0)
 -- 
 2.34.1
 
