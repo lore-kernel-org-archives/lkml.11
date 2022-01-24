@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7306C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0880DC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383328AbiAXU1I (ORCPT
+        id S1383679AbiAXU1f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:27:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59400 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377101AbiAXUE5 (ORCPT
+        Mon, 24 Jan 2022 15:27:35 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48538 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377178AbiAXUFF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:04:57 -0500
+        Mon, 24 Jan 2022 15:05:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A2976090A;
-        Mon, 24 Jan 2022 20:04:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59FA9C340E5;
-        Mon, 24 Jan 2022 20:04:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66A97B810BD;
+        Mon, 24 Jan 2022 20:05:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DDA5C340E5;
+        Mon, 24 Jan 2022 20:05:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054695;
-        bh=VvVGQHoLmST+7gv7HSxEUy+S9twM5XbFmDZKI+/vz+g=;
+        s=korg; t=1643054702;
+        bh=bB4C5zhKszU8JAgQjhLPFX1ZWh9xWPpfbk5EACEQjd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d9Mj8ZXLF4faLsVOoL65qnjYvdsYOPW8vBrSeBA0xDiXtOnakEnyQAPNLC5cw9Nc5
-         LJo/LERedMfPGPjT35CC/y3N5JzV+otCZea22FXGELGbt3whyLpNOZN9yf+vT9XoAw
-         vwN5P49Lqc9VKjR8CEWDannU0QvmlZr8Asq5C1IQ=
+        b=Td7NoFtV9mUQzrqDkwdiuRZ+i6GKTg76H7l0XAZczjOsHgTgJwNO58PoGq1ZoPq4W
+         qs4Kldh0GmuAEoPD7+qo/UbjrGNU+/6XO8wKE74JvWp9QxF8/cbHyspJ/SRsqXT84b
+         XM3teUO7k9D3jw9DsDpRgwJ0FVaYZA0v0AUMf58Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chunguang Xu <brookxu@tencent.com>,
-        kernel test robot <lkp@intel.com>, Jan Kara <jack@suse.cz>,
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
         Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.10 474/563] ext4: fix a possible ABBA deadlock due to busy PA
-Date:   Mon, 24 Jan 2022 19:43:59 +0100
-Message-Id: <20220124184040.862792782@linuxfoundation.org>
+Subject: [PATCH 5.10 476/563] ext4: fix fast commit may miss tracking range for FALLOC_FL_ZERO_RANGE
+Date:   Mon, 24 Jan 2022 19:44:01 +0100
+Message-Id: <20220124184040.931288157@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,154 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunguang Xu <brookxu@tencent.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit 8c80fb312d7abf8bcd66cca1d843a80318a2c522 upstream.
+commit 5e4d0eba1ccaf19f93222abdeda5a368be141785 upstream.
 
-We found on older kernel (3.10) that in the scenario of insufficient
-disk space, system may trigger an ABBA deadlock problem, it seems that
-this problem still exists in latest kernel, try to fix it here. The
-main process triggered by this problem is that task A occupies the PA
-and waits for the jbd2 transaction finish, the jbd2 transaction waits
-for the completion of task B's IO (plug_list), but task B waits for
-the release of PA by task A to finish discard, which indirectly forms
-an ABBA deadlock. The related calltrace is as follows:
+when call falloc with FALLOC_FL_ZERO_RANGE, to set an range to unwritten,
+which has been already initialized. If the range is align to blocksize,
+fast commit will not track range for this change.
 
-    Task A
-    vfs_write
-    ext4_mb_new_blocks()
-    ext4_mb_mark_diskspace_used()       JBD2
-    jbd2_journal_get_write_access()  -> jbd2_journal_commit_transaction()
-  ->schedule()                          filemap_fdatawait()
- |                                              |
- | Task B                                       |
- | do_unlinkat()                                |
- | ext4_evict_inode()                           |
- | jbd2_journal_begin_ordered_truncate()        |
- | filemap_fdatawrite_range()                   |
- | ext4_mb_new_blocks()                         |
-  -ext4_mb_discard_group_preallocations() <-----
+Also track range for unwritten range in ext4_map_blocks().
 
-Here, try to cancel ext4_mb_discard_group_preallocations() internal
-retry due to PA busy, and do a limited number of retries inside
-ext4_mb_discard_preallocations(), which can circumvent the above
-problems, but also has some advantages:
-
-1. Since the PA is in a busy state, if other groups have free PAs,
-   keeping the current PA may help to reduce fragmentation.
-2. Continue to traverse forward instead of waiting for the current
-   group PA to be released. In most scenarios, the PA discard time
-   can be reduced.
-
-However, in the case of smaller free space, if only a few groups have
-space, then due to multiple traversals of the group, it may increase
-CPU overhead. But in contrast, I feel that the overall benefit is
-better than the cost.
-
-Signed-off-by: Chunguang Xu <brookxu@tencent.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/1637630277-23496-1-git-send-email-brookxu.cn@gmail.com
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20211221022839.374606-1-yinxin.x@bytedance.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/mballoc.c |   40 ++++++++++++++++++----------------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
+ fs/ext4/extents.c |    2 --
+ fs/ext4/inode.c   |    7 ++++---
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -4234,7 +4234,7 @@ ext4_mb_release_group_pa(struct ext4_bud
-  */
- static noinline_for_stack int
- ext4_mb_discard_group_preallocations(struct super_block *sb,
--					ext4_group_t group, int needed)
-+				     ext4_group_t group, int *busy)
- {
- 	struct ext4_group_info *grp = ext4_get_group_info(sb, group);
- 	struct buffer_head *bitmap_bh = NULL;
-@@ -4242,8 +4242,7 @@ ext4_mb_discard_group_preallocations(str
- 	struct list_head list;
- 	struct ext4_buddy e4b;
- 	int err;
--	int busy = 0;
--	int free, free_total = 0;
-+	int free = 0;
- 
- 	mb_debug(sb, "discard preallocation for group %u\n", group);
- 	if (list_empty(&grp->bb_prealloc_list))
-@@ -4266,19 +4265,14 @@ ext4_mb_discard_group_preallocations(str
- 		goto out_dbg;
- 	}
- 
--	if (needed == 0)
--		needed = EXT4_CLUSTERS_PER_GROUP(sb) + 1;
--
- 	INIT_LIST_HEAD(&list);
--repeat:
--	free = 0;
- 	ext4_lock_group(sb, group);
- 	list_for_each_entry_safe(pa, tmp,
- 				&grp->bb_prealloc_list, pa_group_list) {
- 		spin_lock(&pa->pa_lock);
- 		if (atomic_read(&pa->pa_count)) {
- 			spin_unlock(&pa->pa_lock);
--			busy = 1;
-+			*busy = 1;
- 			continue;
+--- a/fs/ext4/extents.c
++++ b/fs/ext4/extents.c
+@@ -4638,8 +4638,6 @@ static long ext4_zero_range(struct file
+ 	ret = ext4_mark_inode_dirty(handle, inode);
+ 	if (unlikely(ret))
+ 		goto out_handle;
+-	ext4_fc_track_range(handle, inode, offset >> inode->i_sb->s_blocksize_bits,
+-			(offset + len - 1) >> inode->i_sb->s_blocksize_bits);
+ 	/* Zero out partial block at the edges of the range */
+ 	ret = ext4_zero_partial_blocks(handle, inode, offset, len);
+ 	if (ret >= 0)
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -741,10 +741,11 @@ out_sem:
+ 			if (ret)
+ 				return ret;
  		}
- 		if (pa->pa_deleted) {
-@@ -4318,22 +4312,13 @@ repeat:
- 		call_rcu(&(pa)->u.pa_rcu, ext4_mb_pa_callback);
+-		ext4_fc_track_range(handle, inode, map->m_lblk,
+-			    map->m_lblk + map->m_len - 1);
  	}
- 
--	free_total += free;
 -
--	/* if we still need more blocks and some PAs were used, try again */
--	if (free_total < needed && busy) {
--		ext4_unlock_group(sb, group);
--		cond_resched();
--		busy = 0;
--		goto repeat;
--	}
- 	ext4_unlock_group(sb, group);
- 	ext4_mb_unload_buddy(&e4b);
- 	put_bh(bitmap_bh);
- out_dbg:
- 	mb_debug(sb, "discarded (%d) blocks preallocated for group %u bb_free (%d)\n",
--		 free_total, group, grp->bb_free);
--	return free_total;
-+		 free, group, grp->bb_free);
-+	return free;
- }
- 
- /*
-@@ -4875,13 +4860,24 @@ static int ext4_mb_discard_preallocation
- {
- 	ext4_group_t i, ngroups = ext4_get_groups_count(sb);
- 	int ret;
--	int freed = 0;
-+	int freed = 0, busy = 0;
-+	int retry = 0;
- 
- 	trace_ext4_mb_discard_preallocations(sb, needed);
-+
-+	if (needed == 0)
-+		needed = EXT4_CLUSTERS_PER_GROUP(sb) + 1;
-+ repeat:
- 	for (i = 0; i < ngroups && needed > 0; i++) {
--		ret = ext4_mb_discard_group_preallocations(sb, i, needed);
-+		ret = ext4_mb_discard_group_preallocations(sb, i, &busy);
- 		freed += ret;
- 		needed -= ret;
-+		cond_resched();
-+	}
-+
-+	if (needed > 0 && busy && ++retry < 3) {
-+		busy = 0;
-+		goto repeat;
- 	}
- 
- 	return freed;
++	if (retval > 0 && (map->m_flags & EXT4_MAP_UNWRITTEN ||
++				map->m_flags & EXT4_MAP_MAPPED))
++		ext4_fc_track_range(handle, inode, map->m_lblk,
++					map->m_lblk + map->m_len - 1);
+ 	if (retval < 0)
+ 		ext_debug(inode, "failed with err %d\n", retval);
+ 	return retval;
 
 
