@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEE5C3527E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6503C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447284AbiAXVKX (ORCPT
+        id S1447740AbiAXVLY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46738 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390742AbiAXUqJ (ORCPT
+        Mon, 24 Jan 2022 16:11:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37962 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1386588AbiAXUml (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:09 -0500
+        Mon, 24 Jan 2022 15:42:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DF19B8122A;
-        Mon, 24 Jan 2022 20:46:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7354AC340E5;
-        Mon, 24 Jan 2022 20:46:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DBF61575;
+        Mon, 24 Jan 2022 20:42:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A1A3C340E5;
+        Mon, 24 Jan 2022 20:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057167;
-        bh=iVX2nFnEFRhokD0VjO3Y941ZpUA2yRw+aa5PKgYWm4I=;
+        s=korg; t=1643056957;
+        bh=YXBDOB0oCSKS1lj5s5dvau3YvJ0D92OK3LAuRsBUZ8A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U1fyC7UXzzdo+9zWhVBOTyQS5hkZ6dyAbS9vWj7GDXseRwX1ueThJ8ED1nb+DxWhQ
-         pt2zxpV7Mp0fjmtyQSI43+d62vq9207ZAiaP7VEGkZKBUDf025GVGUB8Ga2FUalAhm
-         9PmSV37+PwK/2lVopZ2zMGPSBIwh3dRDDZyuT9DI=
+        b=eTqU1CCCvlSDogeOr8xDuNinC5ucvYg/MIYd4Vj+kcRgVt+UY1pn8NnahMykt+dIF
+         xP2RlxHIBlHzsz6Piwu9SbY4rRnf4THMaQ+vkEGLiMYAr8zgnoB97x0nxLwoIJrWIf
+         BvNKVpJn+rH1n6JxtpR4KSTu+EQtk1/7j6qnU384=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
-        Miklos Szeredi <mszeredi@redhat.com>
-Subject: [PATCH 5.15 680/846] fuse: Pass correct lend value to filemap_write_and_wait_range()
-Date:   Mon, 24 Jan 2022 19:43:17 +0100
-Message-Id: <20220124184124.534235330@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 656/846] scsi: mpi3mr: Fixes around reply request queues
+Date:   Mon, 24 Jan 2022 19:42:53 +0100
+Message-Id: <20220124184123.673026064@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,35 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xie Yongji <xieyongji@bytedance.com>
+From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
 
-commit e388164ea385f04666c4633f5dc4f951fca71890 upstream.
+[ Upstream commit 243bcc8efdb1f44b1a1d415e6821a246714c68ce ]
 
-The acceptable maximum value of lend parameter in
-filemap_write_and_wait_range() is LLONG_MAX rather than -1. And there is
-also some logic depending on LLONG_MAX check in write_cache_pages(). So
-let's pass LLONG_MAX to filemap_write_and_wait_range() in
-fuse_writeback_range() instead.
+Set reply queue depth of 1K for B0 and 4K for A0.
 
-Fixes: 59bda8ecee2f ("fuse: flush extending writes")
-Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-Cc: <stable@vger.kernel.org> # v5.15
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+While freeing the segmented request queues use the actual queue depth that
+is used while creating them.
+
+Link: https://lore.kernel.org/r/20211220141159.16117-25-sreekanth.reddy@broadcom.com
+Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/file.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/mpi3mr/mpi3mr.h    | 3 ++-
+ drivers/scsi/mpi3mr/mpi3mr_fw.c | 4 +++-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
 
---- a/fs/fuse/file.c
-+++ b/fs/fuse/file.c
-@@ -2913,7 +2913,7 @@ fuse_direct_IO(struct kiocb *iocb, struc
+diff --git a/drivers/scsi/mpi3mr/mpi3mr.h b/drivers/scsi/mpi3mr/mpi3mr.h
+index 9787b53a2b598..2cc42432bd0c0 100644
+--- a/drivers/scsi/mpi3mr/mpi3mr.h
++++ b/drivers/scsi/mpi3mr/mpi3mr.h
+@@ -79,7 +79,8 @@ extern int prot_mask;
  
- static int fuse_writeback_range(struct inode *inode, loff_t start, loff_t end)
- {
--	int err = filemap_write_and_wait_range(inode->i_mapping, start, -1);
-+	int err = filemap_write_and_wait_range(inode->i_mapping, start, LLONG_MAX);
+ /* Operational queue management definitions */
+ #define MPI3MR_OP_REQ_Q_QD		512
+-#define MPI3MR_OP_REP_Q_QD		4096
++#define MPI3MR_OP_REP_Q_QD		1024
++#define MPI3MR_OP_REP_Q_QD4K		4096
+ #define MPI3MR_OP_REQ_Q_SEG_SIZE	4096
+ #define MPI3MR_OP_REP_Q_SEG_SIZE	4096
+ #define MPI3MR_MAX_SEG_LIST_SIZE	4096
+diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
+index 4a8316c6bd41a..5af36c54cb596 100644
+--- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
++++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
+@@ -1278,7 +1278,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
+ 			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
+ 		}
+ 	} else
+-		size = mrioc->req_qinfo[q_idx].num_requests *
++		size = mrioc->req_qinfo[q_idx].segment_qd *
+ 		    mrioc->facts.op_req_sz;
  
- 	if (!err)
- 		fuse_sync_writes(inode);
+ 	for (j = 0; j < mrioc->req_qinfo[q_idx].num_segments; j++) {
+@@ -1565,6 +1565,8 @@ static int mpi3mr_create_op_reply_q(struct mpi3mr_ioc *mrioc, u16 qidx)
+ 
+ 	reply_qid = qidx + 1;
+ 	op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD;
++	if (!mrioc->pdev->revision)
++		op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD4K;
+ 	op_reply_q->ci = 0;
+ 	op_reply_q->ephase = 1;
+ 	atomic_set(&op_reply_q->pend_ios, 0);
+-- 
+2.34.1
+
 
 
