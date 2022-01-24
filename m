@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 306D3C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41330C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:39:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1589062AbiAXWey (ORCPT
+        id S1589090AbiAXWe6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:34:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55350 "EHLO
+        Mon, 24 Jan 2022 17:34:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456644AbiAXVjo (ORCPT
+        with ESMTP id S1456650AbiAXVjo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:39:44 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 876ADC0613A8;
-        Mon, 24 Jan 2022 12:25:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 296A1C0419C1;
+        Mon, 24 Jan 2022 12:25:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 243D1613FB;
-        Mon, 24 Jan 2022 20:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBE16C340E5;
-        Mon, 24 Jan 2022 20:25:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAB0F61506;
+        Mon, 24 Jan 2022 20:25:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2045C340E5;
+        Mon, 24 Jan 2022 20:25:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055921;
-        bh=sCXJc83fAaA7xRblOL9umQGC5ac3+hMGSd03XpSDmbA=;
+        s=korg; t=1643055945;
+        bh=Q3ypDHHx3RUbuMxMVkYb3TNXwem+cB96Bf8NslW8Bak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ctj/WmOH+2gSD2okAyyS0RJRAZXwiFrWGmkLa3Qh6cGT2EReW9kiMxn+TRhXN0JjW
-         U8Td28SYKsvDKeZ+k+GEcHJharUVcsy5i54tP3Z4Qrw8uYeYtv/HY7qbN36kmkocOD
-         zqx83qvABy4qZPlnbG8eRgae9kClF6k0bOolstZc=
+        b=NuY1FS2Sq8YEtRCP2/hIxoQ7mlHrf/koqdbwAKKFSIyszhvv2btwdIvg/2bY3UTRZ
+         n4BO9bcnvTPD5A0qlXT8h/jmTWQWGSgHvYZEJgPuDlA1FBcvgbbUgjr0oSg8J+oz6J
+         Pe4sZBeuxNnhiTsCGzqq8TU40uaFiOQAogMeXcyI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+bb73e71cf4b8fd376a4f@syzkaller.appspotmail.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 310/846] bpf, sockmap: Fix double bpf_prog_put on error case in map_link
-Date:   Mon, 24 Jan 2022 19:37:07 +0100
-Message-Id: <20220124184111.611762702@linuxfoundation.org>
+Subject: [PATCH 5.15 318/846] rocker: fix a sleeping in atomic bug
+Date:   Mon, 24 Jan 2022 19:37:15 +0100
+Message-Id: <20220124184111.873437874@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,118 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Fastabend <john.fastabend@gmail.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 218d747a4142f281a256687bb513a135c905867b ]
+[ Upstream commit 43d012123122cc69feacab55b71369f386c19566 ]
 
-sock_map_link() is called to update a sockmap entry with a sk. But, if the
-sock_map_init_proto() call fails then we return an error to the map_update
-op against the sockmap. In the error path though we need to cleanup psock
-and dec the refcnt on any programs associated with the map, because we
-refcnt them early in the update process to ensure they are pinned for the
-psock. (This avoids a race where user deletes programs while also updating
-the map with new socks.)
+This code is holding the &ofdpa->flow_tbl_lock spinlock so it is not
+allowed to sleep.  That means we have to pass the OFDPA_OP_FLAG_NOWAIT
+flag to ofdpa_flow_tbl_del().
 
-In current code we do the prog refcnt dec explicitely by calling
-bpf_prog_put() when the program was found in the map. But, after commit
-'38207a5e81230' in this error path we've already done the prog to psock
-assignment so the programs have a reference from the psock as well. This
-then causes the psock tear down logic, invoked by sk_psock_put() in the
-error path, to similarly call bpf_prog_put on the programs there.
-
-To be explicit this logic does the prog->psock assignment:
-
-  if (msg_*)
-    psock_set_prog(...)
-
-Then the error path under the out_progs label does a similar check and
-dec with:
-
-  if (msg_*)
-     bpf_prog_put(...)
-
-And the teardown logic sk_psock_put() does ...
-
-  psock_set_prog(msg_*, NULL)
-
-... triggering another bpf_prog_put(...). Then KASAN gives us this splat,
-found by syzbot because we've created an inbalance between bpf_prog_inc and
-bpf_prog_put calling put twice on the program.
-
-  BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put kernel/bpf/syscall.c:1812 [inline]
-  BUG: KASAN: vmalloc-out-of-bounds in __bpf_prog_put kernel/bpf/syscall.c:1812 [inline] kernel/bpf/syscall.c:1829
-  BUG: KASAN: vmalloc-out-of-bounds in bpf_prog_put+0x8c/0x4f0 kernel/bpf/syscall.c:1829 kernel/bpf/syscall.c:1829
-  Read of size 8 at addr ffffc90000e76038 by task syz-executor020/3641
-
-To fix clean up error path so it doesn't try to do the bpf_prog_put in the
-error path once progs are assigned then it relies on the normal psock
-tear down logic to do complete cleanup.
-
-For completness we also cover the case whereh sk_psock_init_strp() fails,
-but this is not expected because it indicates an incorrect socket type
-and should be caught earlier.
-
-Fixes: 38207a5e8123 ("bpf, sockmap: Attach map progs to psock early for feature probes")
-Reported-by: syzbot+bb73e71cf4b8fd376a4f@syzkaller.appspotmail.com
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220104214645.290900-1-john.fastabend@gmail.com
+Fixes: 936bd486564a ("rocker: use FIB notifications instead of switchdev calls")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/sock_map.c | 21 +++++++++++++--------
- 1 file changed, 13 insertions(+), 8 deletions(-)
+ drivers/net/ethernet/rocker/rocker_ofdpa.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index c89f527411e84..8288b5382f08d 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -292,15 +292,23 @@ static int sock_map_link(struct bpf_map *map, struct sock *sk)
- 	if (skb_verdict)
- 		psock_set_prog(&psock->progs.skb_verdict, skb_verdict);
- 
-+	/* msg_* and stream_* programs references tracked in psock after this
-+	 * point. Reference dec and cleanup will occur through psock destructor
-+	 */
- 	ret = sock_map_init_proto(sk, psock);
--	if (ret < 0)
--		goto out_drop;
-+	if (ret < 0) {
-+		sk_psock_put(sk, psock);
-+		goto out;
-+	}
- 
- 	write_lock_bh(&sk->sk_callback_lock);
- 	if (stream_parser && stream_verdict && !psock->saved_data_ready) {
- 		ret = sk_psock_init_strp(sk, psock);
--		if (ret)
--			goto out_unlock_drop;
-+		if (ret) {
-+			write_unlock_bh(&sk->sk_callback_lock);
-+			sk_psock_put(sk, psock);
-+			goto out;
-+		}
- 		sk_psock_start_strp(sk, psock);
- 	} else if (!stream_parser && stream_verdict && !psock->saved_data_ready) {
- 		sk_psock_start_verdict(sk,psock);
-@@ -309,10 +317,6 @@ static int sock_map_link(struct bpf_map *map, struct sock *sk)
+diff --git a/drivers/net/ethernet/rocker/rocker_ofdpa.c b/drivers/net/ethernet/rocker/rocker_ofdpa.c
+index 3e1ca7a8d0295..bc70c6abd6a5b 100644
+--- a/drivers/net/ethernet/rocker/rocker_ofdpa.c
++++ b/drivers/net/ethernet/rocker/rocker_ofdpa.c
+@@ -2783,7 +2783,8 @@ static void ofdpa_fib4_abort(struct rocker *rocker)
+ 		if (!ofdpa_port)
+ 			continue;
+ 		nh->fib_nh_flags &= ~RTNH_F_OFFLOAD;
+-		ofdpa_flow_tbl_del(ofdpa_port, OFDPA_OP_FLAG_REMOVE,
++		ofdpa_flow_tbl_del(ofdpa_port,
++				   OFDPA_OP_FLAG_REMOVE | OFDPA_OP_FLAG_NOWAIT,
+ 				   flow_entry);
  	}
- 	write_unlock_bh(&sk->sk_callback_lock);
- 	return 0;
--out_unlock_drop:
--	write_unlock_bh(&sk->sk_callback_lock);
--out_drop:
--	sk_psock_put(sk, psock);
- out_progs:
- 	if (skb_verdict)
- 		bpf_prog_put(skb_verdict);
-@@ -325,6 +329,7 @@ out_put_stream_parser:
- out_put_stream_verdict:
- 	if (stream_verdict)
- 		bpf_prog_put(stream_verdict);
-+out:
- 	return ret;
- }
- 
+ 	spin_unlock_irqrestore(&ofdpa->flow_tbl_lock, flags);
 -- 
 2.34.1
 
