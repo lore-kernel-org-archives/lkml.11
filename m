@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A1BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 754ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837837AbiAXWpZ (ORCPT
+        id S1837953AbiAXWpk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54650 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456098AbiAXVht (ORCPT
+        Mon, 24 Jan 2022 17:45:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48590 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377411AbiAXVh3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:49 -0500
+        Mon, 24 Jan 2022 16:37:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8872861510;
-        Mon, 24 Jan 2022 21:37:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BFCEC340E4;
-        Mon, 24 Jan 2022 21:37:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27F16B81249;
+        Mon, 24 Jan 2022 21:37:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50BDAC340E7;
+        Mon, 24 Jan 2022 21:37:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060265;
-        bh=OLpI67k/l5+6Nfl6y5XUeykp7wBmqWj5duco+nik+zA=;
+        s=korg; t=1643060243;
+        bh=EGoeGKQZGN4rz6badnfdmxmFtuNPyW71vKWzKsfoxtw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=doSjkcahvqQOPe8RDHA0Mb7Is1CQ49RP5R16Ywj+ATl9MECvluCiQxxH4M8rplJIy
-         vf72SBpkrw4zPA7+Oy/V1c3WhQqqRdSI22oBBVKK+pVVw1VfcCDRDBp1fE0TO5PsNF
-         cpQHucQhKNeiDzDXAh9ccBBa/0dIMUC8IekdC/yg=
+        b=OppixS0rpSNcq4UJuvM7PceDP7D+1db425qJU8vErx4cwRnN17wmjbHWAJP3yJEHQ
+         46rIxmXFaeemUQ+hp6t3h+t3isbGohsVwuTvztIARO9HZTQGk+mjiA/9S+jw7dDSve
+         L9LbRmvGoVq8SuqF6RBys8eXopcRvl9/i453Bu8U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.16 0892/1039] ext4: initialize err_blk before calling __ext4_get_inode_loc
-Date:   Mon, 24 Jan 2022 19:44:41 +0100
-Message-Id: <20220124184155.269572866@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Fink <lukas.fink1@gmail.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 0868/1039] drm/amdgpu: Fix rejecting Tahiti GPUs
+Date:   Mon, 24 Jan 2022 19:44:17 +0100
+Message-Id: <20220124184154.481629804@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,43 +46,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+From: Lukas Fink <lukas.fink1@gmail.com>
 
-commit c27c29c6af4f3f4ce925a2111c256733c5a5b430 upstream.
+commit 3993a799fc971bc9b918bd969aa55864447b5dde upstream.
 
-It is not guaranteed that __ext4_get_inode_loc will definitely set
-err_blk pointer when it returns EIO. To avoid using uninitialized
-variables, let's first set err_blk to 0.
+eb4fd29afd4a ("drm/amdgpu: bind to any 0x1002 PCI diplay class device") added
+generic bindings to amdgpu so that that it binds to all display class devices
+with VID 0x1002 and then rejects those in amdgpu_pci_probe.
 
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/20211201163421.2631661-1-harshads@google.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Unfortunately it reuses a driver_data value of 0 to detect those new bindings,
+which is already used to denote CHIP_TAHITI ASICs.
+
+The driver_data value given to those new bindings was changed in
+dd0761fd24ea1 ("drm/amdgpu: set CHIP_IP_DISCOVERY as the asic type by default")
+to CHIP_IP_DISCOVERY (=36), but it seems that the check in amdgpu_pci_probe
+was forgotten to be changed. Therefore, it still rejects Tahiti GPUs.
+
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1860
+Fixes: eb4fd29afd4a ("drm/amdgpu: bind to any 0x1002 PCI diplay class device")
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Lukas Fink <lukas.fink1@gmail.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/inode.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/inode.c
-+++ b/fs/ext4/inode.c
-@@ -4523,7 +4523,7 @@ has_buffer:
- static int __ext4_get_inode_loc_noinmem(struct inode *inode,
- 					struct ext4_iloc *iloc)
- {
--	ext4_fsblk_t err_blk;
-+	ext4_fsblk_t err_blk = 0;
- 	int ret;
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
+@@ -1928,7 +1928,7 @@ static int amdgpu_pci_probe(struct pci_d
+ 			return -ENODEV;
+ 	}
  
- 	ret = __ext4_get_inode_loc(inode->i_sb, inode->i_ino, NULL, iloc,
-@@ -4538,7 +4538,7 @@ static int __ext4_get_inode_loc_noinmem(
- 
- int ext4_get_inode_loc(struct inode *inode, struct ext4_iloc *iloc)
- {
--	ext4_fsblk_t err_blk;
-+	ext4_fsblk_t err_blk = 0;
- 	int ret;
- 
- 	ret = __ext4_get_inode_loc(inode->i_sb, inode->i_ino, inode, iloc,
+-	if (flags == 0) {
++	if (flags == CHIP_IP_DISCOVERY) {
+ 		DRM_INFO("Unsupported asic.  Remove me when IP discovery init is in place.\n");
+ 		return -ENODEV;
+ 	}
 
 
