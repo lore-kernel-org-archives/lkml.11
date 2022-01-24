@@ -2,137 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF169C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E060BC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848308AbiAXXWN (ORCPT
+        id S1848261AbiAXXWE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:22:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:60993 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1454132AbiAXWX2 (ORCPT
+        Mon, 24 Jan 2022 18:22:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1585400AbiAXWXb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:23:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643063006;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=067mQ/rXiwBk6yJpI9gB9PMeq9lk0HWia8mGv4MMwCI=;
-        b=i+dJ9cepItwOGjKQrhGY/3NiPfEt/ZP3gwZCGAsqV7T5SSNI+A/h6GJg1Ul3xL3IcTuWPx
-        maWgm+8q0G7e7q7okqxa6u/LidAXexlomHC9FgvG8l/GlEemREm7L29d+r4k4uvfMT93Tn
-        Q+aesxsHuWBQYdwER3XYD2/VlgbIdUU=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-460-6tDms27aNdy1omFb1A0fRw-1; Mon, 24 Jan 2022 17:23:24 -0500
-X-MC-Unique: 6tDms27aNdy1omFb1A0fRw-1
-Received: by mail-ed1-f71.google.com with SMTP id i22-20020a0564020f1600b00407b56326a2so3747377eda.18
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:23:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=067mQ/rXiwBk6yJpI9gB9PMeq9lk0HWia8mGv4MMwCI=;
-        b=1hM8+f897pY8WjTW1QL/zdeyv0x+JQ80Kr7Pg2QGhqkmHWCJz/o3aYv5Vnu4uPN8BS
-         Fcq+KDTRCzbqfjVGdFmw6v40/JeDJo26khK8QTBdF2DgL8G1mYiAw4OsRjiBxO1kEBCb
-         t1calhfsW4msSu45Hp1QGu+qIIJvpphAsR6VFrXQyk5TYaxyflGLYfkCz5/+UDgICof+
-         qIkPKDGCpwzQyn91KIAaLukH9s/joOxsJuPeQYhUyiwQhRwkF+u6GdjI8LFC3Kpvil4c
-         5uYNCKCoEBTWAOGzCtisW2oOMkm5Bp6Fz2SWbvTHCuQmw+xby2bdvF1C7qfnHcgpk/C5
-         rhsg==
-X-Gm-Message-State: AOAM5312NrqEDGx2I54PAwgvkLLv0wVCJXibXHWbyz7r6O1uSX3ZyVXu
-        9UbrG+HjfqSn8+I44kRCICPQKCRmfVadtwVXIMp1m8VpHz5ne+z5b3SomQvBoDZz34Ns7YimM3S
-        ptj/1BGG5HFsHuWR8rQ7EHJCA
-X-Received: by 2002:a17:906:6a1a:: with SMTP id qw26mr5794945ejc.454.1643063003258;
-        Mon, 24 Jan 2022 14:23:23 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw/8716fksKjT7h1gtcfWcvIT83G/teXeHSfZuelcx9XPN1OZLtilO1FMN72ciP7y3cZa5/tA==
-X-Received: by 2002:a17:906:6a1a:: with SMTP id qw26mr5794923ejc.454.1643063002990;
-        Mon, 24 Jan 2022 14:23:22 -0800 (PST)
-Received: from krava ([83.240.63.12])
-        by smtp.gmail.com with ESMTPSA id l2sm7162047eds.28.2022.01.24.14.23.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 14:23:22 -0800 (PST)
-Date:   Mon, 24 Jan 2022 23:23:20 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit
- probe
-Message-ID: <Ye8m2CpVI8VOiMTH@krava>
-References: <164260419349.657731.13913104835063027148.stgit@devnote2>
- <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
- <20220121135510.7cfa6540e31824aa39b1c1b8@kernel.org>
- <CAEf4Bza0eTft2kjcm9HhKpAm=AuXnGwZfZ+sYpVVBvj93PBreQ@mail.gmail.com>
- <Ye3ptcW0eAFRYm58@krava>
- <20220124092405.665e9e0fc3ce14b16a1a9fcf@kernel.org>
- <Ye6ZyeHQtPfUoSvX@krava>
- <CAEf4BzbrVBXDJA4qbCgudiiLGtHNyUQAOuE=AUwfxzMrF=Wr=w@mail.gmail.com>
+        Mon, 24 Jan 2022 17:23:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 024DEC054327;
+        Mon, 24 Jan 2022 12:53:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 943BF612A5;
+        Mon, 24 Jan 2022 20:53:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76ED4C340E7;
+        Mon, 24 Jan 2022 20:53:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057614;
+        bh=zp/NYWIKoE3tOdV+Shax2CsA4xFUZ7F/J0Kgo/s5+RE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QwEjs399aMahFGomivA6kCJH/ZAhZDcSDJeJ4L5OHkg3s4cgGmEa/piTRZhKMgoiH
+         EUbjnErx4uGLTkfGErUvcwg93RrqQkfcXYTgaqgbo8Cc4zDT7dbB23PCo/Ov3CkFRW
+         MTZSUMAHaV2eo/BpJJzJ5Q8zCOiNlcB90pC/04x4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
+        Conor Dooley <Conor.Dooley@microchip.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 0023/1039] riscv: Get rid of MAXPHYSMEM configs
+Date:   Mon, 24 Jan 2022 19:30:12 +0100
+Message-Id: <20220124184125.914468792@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzbrVBXDJA4qbCgudiiLGtHNyUQAOuE=AUwfxzMrF=Wr=w@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 12:22:10PM -0800, Andrii Nakryiko wrote:
+From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
 
-SNIP
+commit db1503d355a79d1d4255a9996f20e72848b74a56 upstream.
 
-> > > > > > > > (This testing patch is just for confirming the rethook is correctly
-> > > > > > > >  implemented.)
-> > > > > > > >
-> > > > > > > > BTW, on the x86, ftrace (with fentry) location address is same as
-> > > > > > > > symbol address. But on other archs, it will be different (e.g. arm64
-> > > > > > > > will need 2 instructions to save link-register and call ftrace, the
-> > > > > > > > 2nd instruction will be the ftrace location.)
-> > > > > > > > Does libbpf correctly handle it?
-> > > >
-> > > > hm, I'm probably missing something, but should this be handled by arm
-> > > > specific kernel code? user passes whatever is found in kallsyms, right?
-> > >
-> > > In x86, fentry nop is always placed at the first instruction of the function,
-> > > but the other arches couldn't do that if they use LR (link register) for
-> > > storing return address instead of stack. E.g. arm64 saves lr and call the
-> > > ftrace. Then ftrace location address of a function is not the symbol address.
-> > >
-> > > Anyway, I updated fprobe to handle those cases. I also found some issues
-> > > on rethook, so let me update the series again.
-> >
-> > great, I reworked the bpf fprobe link change and need to add the
-> > symbols attachment support, so you don't need to include it in
-> > new version.. I'll rebase it and send on top of your patchset
-> 
-> Using just addresses (IPs) for retsnoop and bpftrace is fine because
-> such generic tools are already parsing kallsyms and probably building
-> some lookup table. But in general, having IP-based attachment is a
-> regression from current perf_event_open-based kprobe, where user is
-> expected to pass symbolic function name. Using IPs has an advantage of
-> being unambiguous (e.g., when same static function name in kernel
-> belongs to multiple actual functions), so there is that. But I was
-> also wondering wouldn't kernel need to do symbol to IP resolution
-> anyways just to check that we are attaching to function entry?
+CONFIG_MAXPHYSMEM_* are actually never used, even the nommu defconfigs
+selecting the MAXPHYSMEM_2GB had no effects on PAGE_OFFSET since it was
+preempted by !MMU case right before.
 
-ftrace does its own check for address to attach, it keeps record
-for every attachable address.. so less work for us ;-)
+In addition, the move of the kernel mapping at the end of the address
+space broke the use of MAXPHYSMEM_2G with MMU since it defines PAGE_OFFSET
+at the same address as the kernel mapping.
 
-> 
-> I'll wait for your patch set to see how did you go about it in a new revision.
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Fixes: 2bfc6cd81bd1 ("riscv: Move kernel mapping outside of linear mapping")
+Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+Tested-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Tested-by: Conor Dooley <Conor.Dooley@microchip.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/riscv/Kconfig                             |   23 ++---------------------
+ arch/riscv/configs/nommu_k210_defconfig        |    2 --
+ arch/riscv/configs/nommu_k210_sdcard_defconfig |    2 --
+ arch/riscv/configs/nommu_virt_defconfig        |    1 -
+ 4 files changed, 2 insertions(+), 26 deletions(-)
 
-I agree we should have the support to use symbols as well, I'll add it
+--- a/arch/riscv/Kconfig
++++ b/arch/riscv/Kconfig
+@@ -158,10 +158,9 @@ config PA_BITS
+ 
+ config PAGE_OFFSET
+ 	hex
+-	default 0xC0000000 if 32BIT && MAXPHYSMEM_1GB
++	default 0xC0000000 if 32BIT
+ 	default 0x80000000 if 64BIT && !MMU
+-	default 0xffffffff80000000 if 64BIT && MAXPHYSMEM_2GB
+-	default 0xffffffe000000000 if 64BIT && MAXPHYSMEM_128GB
++	default 0xffffffe000000000 if 64BIT
+ 
+ config KASAN_SHADOW_OFFSET
+ 	hex
+@@ -270,24 +269,6 @@ config MODULE_SECTIONS
+ 	bool
+ 	select HAVE_MOD_ARCH_SPECIFIC
+ 
+-choice
+-	prompt "Maximum Physical Memory"
+-	default MAXPHYSMEM_1GB if 32BIT
+-	default MAXPHYSMEM_2GB if 64BIT && CMODEL_MEDLOW
+-	default MAXPHYSMEM_128GB if 64BIT && CMODEL_MEDANY
+-
+-	config MAXPHYSMEM_1GB
+-		depends on 32BIT
+-		bool "1GiB"
+-	config MAXPHYSMEM_2GB
+-		depends on 64BIT && CMODEL_MEDLOW
+-		bool "2GiB"
+-	config MAXPHYSMEM_128GB
+-		depends on 64BIT && CMODEL_MEDANY
+-		bool "128GiB"
+-endchoice
+-
+-
+ config SMP
+ 	bool "Symmetric Multi-Processing"
+ 	help
+--- a/arch/riscv/configs/nommu_k210_defconfig
++++ b/arch/riscv/configs/nommu_k210_defconfig
+@@ -29,8 +29,6 @@ CONFIG_EMBEDDED=y
+ CONFIG_SLOB=y
+ # CONFIG_MMU is not set
+ CONFIG_SOC_CANAAN=y
+-CONFIG_SOC_CANAAN_K210_DTB_SOURCE="k210_generic"
+-CONFIG_MAXPHYSMEM_2GB=y
+ CONFIG_SMP=y
+ CONFIG_NR_CPUS=2
+ CONFIG_CMDLINE="earlycon console=ttySIF0"
+--- a/arch/riscv/configs/nommu_k210_sdcard_defconfig
++++ b/arch/riscv/configs/nommu_k210_sdcard_defconfig
+@@ -21,8 +21,6 @@ CONFIG_EMBEDDED=y
+ CONFIG_SLOB=y
+ # CONFIG_MMU is not set
+ CONFIG_SOC_CANAAN=y
+-CONFIG_SOC_CANAAN_K210_DTB_SOURCE="k210_generic"
+-CONFIG_MAXPHYSMEM_2GB=y
+ CONFIG_SMP=y
+ CONFIG_NR_CPUS=2
+ CONFIG_CMDLINE="earlycon console=ttySIF0 rootdelay=2 root=/dev/mmcblk0p1 ro"
+--- a/arch/riscv/configs/nommu_virt_defconfig
++++ b/arch/riscv/configs/nommu_virt_defconfig
+@@ -27,7 +27,6 @@ CONFIG_SLOB=y
+ # CONFIG_SLAB_MERGE_DEFAULT is not set
+ # CONFIG_MMU is not set
+ CONFIG_SOC_VIRT=y
+-CONFIG_MAXPHYSMEM_2GB=y
+ CONFIG_SMP=y
+ CONFIG_CMDLINE="root=/dev/vda rw earlycon=uart8250,mmio,0x10000000,115200n8 console=ttyS0"
+ CONFIG_CMDLINE_FORCE=y
 
-jirka
 
