@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD8B8C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E776C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366899AbiAXXxp (ORCPT
+        id S2366776AbiAXXxd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49182 "EHLO
+        Mon, 24 Jan 2022 18:53:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846007AbiAXXOO (ORCPT
+        with ESMTP id S1846019AbiAXXOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:14:14 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7752CC061A80;
-        Mon, 24 Jan 2022 13:21:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1843EC061759;
+        Mon, 24 Jan 2022 13:21:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3E0A1B8123A;
-        Mon, 24 Jan 2022 21:21:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D85AC340E4;
-        Mon, 24 Jan 2022 21:21:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4F1BB811FB;
+        Mon, 24 Jan 2022 21:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E599CC340E4;
+        Mon, 24 Jan 2022 21:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059272;
-        bh=bep6sJR3PXgQxcO9jA0MP5nJ6KAIdBpiWgtPVOcKKEU=;
+        s=korg; t=1643059301;
+        bh=0mE4HMQmvBOAF1RsNUNu4EhUlU0J1p1amXqdxPdIfWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3FvMFbfw7dj8EVAXAZdxTxeWKLxGSIJtXlQjtr0KyDug1cTCTLkWffKKQwv9mB6U
-         15RHwf4WVgFksZ5RKkXCwjYrdEBluS96K8hPltXYHvDyUOZte+Ms3jJylw567MofC8
-         OtDOPql2NDchDRjXJ53C1x8BwRP189uYzt9vVuZs=
+        b=NRPGAL1nZl119s2rG6dQpBYL42hSCYjA6ww63VFhyIggKUWGRpmqfpaTM6pIB7bJW
+         AWSQ+G6lmqkSsf4/3uyKkMtvR9LRaiJQFJfrPNaEQVaHmwOeM8hdMWRX6dJ4/d4mRx
+         L/irQ+D4sNMW7gtoJpr3cdwFQXmgjYFkDAct8MQY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wen Gong <wgong@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Simon Ser <contact@emersion.fr>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0561/1039] ath11k: enable IEEE80211_VHT_EXT_NSS_BW_CAPABLE if NSS ratio enabled
-Date:   Mon, 24 Jan 2022 19:39:10 +0100
-Message-Id: <20220124184144.170113354@linuxfoundation.org>
+Subject: [PATCH 5.16 0570/1039] drm: panel-orientation-quirks: Add quirk for the Lenovo Yoga Book X91F/L
+Date:   Mon, 24 Jan 2022 19:39:19 +0100
+Message-Id: <20220124184144.495199759@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,52 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <wgong@codeaurora.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 78406044bdd0cc8987bc082b76867c63ab1c6af8 ]
+[ Upstream commit bc30c3b0c8a1904d83d5f0d60fb8650a334b207b ]
 
-When NSS ratio enabled reported by firmware, SUPPORTS_VHT_EXT_NSS_BW
-is set in ath11k, meanwhile IEEE80211_VHT_EXT_NSS_BW_CAPABLE also
-need to be set, otherwise it is invalid because spec in IEEE Std
-802.11™‐2020 as below.
+The Lenovo Yoga Book X91F/L uses a panel which has been mounted
+90 degrees rotated. Add a quirk for this.
 
-Table 9-273-Supported VHT-MCS and NSS Set subfields, it has subfield
-VHT Extended NSS BW Capable, its definition is:
-Indicates whether the STA is capable of interpreting the Extended NSS
-BW Support subfield of the VHT Capabilities Information field.
-
-dmesg have a message without this patch:
-
-ieee80211 phy0: copying sband (band 1) due to VHT EXT NSS BW flag
-
-It means mac80211 will set IEEE80211_VHT_EXT_NSS_BW_CAPABLE if ath11k not
-set it in ieee80211_register_hw(). So it is better to set it in ath11k.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
-Signed-off-by: Wen Gong <wgong@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211013073704.15888-1-wgong@codeaurora.org
+Cc: Yauhen Kharuzhy <jekhor@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Simon Ser <contact@emersion.fr>
+Tested-by: Yauhen Kharuzhy <jekhor@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211106130227.11927-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 5d49a7ea51fae..cb41c3e5708cb 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -4566,6 +4566,10 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
- 	vht_cap.vht_supported = 1;
- 	vht_cap.cap = ar->pdev->cap.vht_cap;
- 
-+	if (ar->pdev->cap.nss_ratio_enabled)
-+		vht_cap.vht_mcs.tx_highest |=
-+			cpu_to_le16(IEEE80211_VHT_EXT_NSS_BW_CAPABLE);
-+
- 	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
- 
- 	rxmcs_map = 0;
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index a9359878f4ed6..042bb80383c93 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -262,6 +262,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad D330-10IGM"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_rightside_up,
++	}, {	/* Lenovo Yoga Book X90F / X91F / X91L */
++		.matches = {
++		  /* Non exact match to match all versions */
++		  DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
++		},
++		.driver_data = (void *)&lcd1200x1920_rightside_up,
+ 	}, {	/* OneGX1 Pro */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SYSTEM_MANUFACTURER"),
 -- 
 2.34.1
 
