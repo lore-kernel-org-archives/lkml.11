@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 911BDC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C800C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353811AbiAXTfZ (ORCPT
+        id S1353634AbiAXTfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52248 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351810AbiAXT2r (ORCPT
+        Mon, 24 Jan 2022 14:35:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54470 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351341AbiAXT0s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:28:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B36AC061A78;
-        Mon, 24 Jan 2022 11:13:02 -0800 (PST)
+        Mon, 24 Jan 2022 14:26:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58E26B811F9;
-        Mon, 24 Jan 2022 19:13:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56CDCC340E5;
-        Mon, 24 Jan 2022 19:12:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 315C261490;
+        Mon, 24 Jan 2022 19:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15805C340E7;
+        Mon, 24 Jan 2022 19:26:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051580;
-        bh=9pdLfRAIC3i+Ov8lz3nUmCShg09W06WgYN964DB+O1w=;
+        s=korg; t=1643052407;
+        bh=GPFW5CjYuPUZgOYdRtErkjhYGlNzp0ODw02p11efQ5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mfagK2C1lnL3h/tal9WreCw5fOfgpCoo3m58Pj15wW9Vsk0lbedVaQgazSess+iWg
-         QkeoYYkPCUHho13G4Xef13J0Zn6A4WlTtiIEjcEoq/lu1dP5o5evNDQcQ0zaLJ1ZRW
-         RFBcHWNAF/irHTZHM9uaJI5vCqkrCK9cdQsSJzk4=
+        b=afObzakXOuB4FKwkq54W/aLfEOSaVLiQ71vR5y3IGr55CRPX0o1V4VkryhJRJfrV8
+         ka4EVGyrgXPDQS/i9RDXmdlGUvEPAPZuIb5rNiRJxAfycvMLrP05IqWvaQFZsQPkOA
+         RIFQqnBP+txhzUbO+rxlb2blEpK86kLJDHvWSjE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
-        Johan Hovold <johan@kernel.org>
-Subject: [PATCH 4.19 020/239] firmware: qemu_fw_cfg: fix kobject leak in probe error path
-Date:   Mon, 24 Jan 2022 19:40:58 +0100
-Message-Id: <20220124183943.764526428@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 048/320] Bluetooth: stop proccessing malicious adv data
+Date:   Mon, 24 Jan 2022 19:40:32 +0100
+Message-Id: <20220124183955.376929250@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,67 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit 47a1db8e797da01a1309bf42e0c0d771d4e4d4f3 upstream.
+[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
 
-An initialised kobject must be freed using kobject_put() to avoid
-leaking associated resources (e.g. the object name).
+Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
+problem was in missing validaion check.
 
-Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
-the leak in the first error path of the file registration helper but
-left the second one unchanged. This "fix" would however result in a NULL
-pointer dereference due to the release function also removing the never
-added entry from the fw_cfg_entry_cache list. This has now been
-addressed.
+We should check if data is not malicious and we can read next data block.
+If we won't check ptr validness, code can read a way beyond skb->end and
+it can cause problems, of course.
 
-Fix the remaining kobject leak by restoring the common error path and
-adding the missing kobject_put().
-
-Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
-Cc: stable@vger.kernel.org      # 4.6
-Cc: Gabriel Somlo <somlo@cmu.edu>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-3-johan@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
+Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/qemu_fw_cfg.c |   13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ net/bluetooth/hci_event.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -600,15 +600,13 @@ static int fw_cfg_register_file(const st
- 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
- 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
- 				   fw_cfg_sel_ko, "%d", entry->select);
--	if (err) {
--		kobject_put(&entry->kobj);
--		return err;
--	}
-+	if (err)
-+		goto err_put_entry;
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 31469ff084cd3..40f1593651e84 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5506,7 +5506,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
- 	/* add raw binary content access */
- 	err = sysfs_create_bin_file(&entry->kobj, &fw_cfg_sysfs_attr_raw);
- 	if (err)
--		goto err_add_raw;
-+		goto err_del_entry;
+-		if (ev->length <= HCI_MAX_AD_LENGTH) {
++		if (ev->length <= HCI_MAX_AD_LENGTH &&
++		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+ 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+ 					   ev->bdaddr_type, NULL, 0, rssi,
+@@ -5516,6 +5517,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		}
  
- 	/* try adding "/sys/firmware/qemu_fw_cfg/by_name/" symlink */
- 	fw_cfg_build_symlink(fw_cfg_fname_kset, &entry->kobj, entry->name);
-@@ -617,9 +615,10 @@ static int fw_cfg_register_file(const st
- 	fw_cfg_sysfs_cache_enlist(entry);
- 	return 0;
+ 		ptr += sizeof(*ev) + ev->length + 1;
++
++		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
++			break;
++		}
+ 	}
  
--err_add_raw:
-+err_del_entry:
- 	kobject_del(&entry->kobj);
--	kfree(entry);
-+err_put_entry:
-+	kobject_put(&entry->kobj);
- 	return err;
- }
- 
+ 	hci_dev_unlock(hdev);
+-- 
+2.34.1
+
 
 
