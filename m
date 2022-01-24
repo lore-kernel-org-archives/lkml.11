@@ -2,116 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C05C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAC4EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343971AbiAXSwx (ORCPT
+        id S1343713AbiAXSw7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:52:53 -0500
-Received: from mail-qk1-f174.google.com ([209.85.222.174]:46697 "EHLO
-        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343542AbiAXSux (ORCPT
+        Mon, 24 Jan 2022 13:52:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50446 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343541AbiAXSux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:50:53 -0500
-Received: by mail-qk1-f174.google.com with SMTP id 13so7050414qkd.13;
-        Mon, 24 Jan 2022 10:50:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZXczVih0FPrq5RMJMFbQoznMPhMuyGl4ivag5w/6yQo=;
-        b=qjEje+L9jxsTceVKPDo2TxHNl6tCrbp9WYTwAtiyqeMoL+1G2zzTzc7yF0JGn/PpSo
-         1lLFR/XXbWyerydGnFCpJ+JWgnjsWHJQrDm6kfTmFI/qVeSJo+5iTsEuySfej7mp4nuI
-         +U9caO2T0cD7H6uCwmIImAtFf14KjL6tbV9+rJW3GEgCLQK7ZTh3Awh2DFC91w8NR0Xz
-         SQJX4tbdpBkumHH9tUuMoIK3gkpAj+xnR/pTyh18aDCBgaoICHinOBfZdFroeCLcCkt9
-         grHO1PlrN03o4kLNd3VVjywA38oKaUlCKeOtFlBJ2xF9LH41sZ7MhZT2VoxZ4pcI55UJ
-         klBA==
-X-Gm-Message-State: AOAM530021Ph7bI9Mj6obfunjWxP5mpnjQOc5ZLESr2SUfxGM9o7Wzdb
-        pYJHKRyE4JDtJ/yVG/SbvfRLHjeCZ5GcRlAF+uI=
-X-Google-Smtp-Source: ABdhPJyvSheg1mf3030MstMWntKE0XdVdAcgmjD2HcaBTrQQzYxi/X9z158mcrejkOhrhki798xK1d2hjlGKYPLD3f4=
-X-Received: by 2002:ae9:f445:: with SMTP id z5mr2102446qkl.8.1643050252793;
- Mon, 24 Jan 2022 10:50:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5BEAB8122D;
+        Mon, 24 Jan 2022 18:50:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFBF7C36AEC;
+        Mon, 24 Jan 2022 18:50:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643050251;
+        bh=c/VsU68PR/sAcuUNBYexTDgEwJxQ72KXGmsmTdrHLqg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=h7uX4RX6UmZYBlwxO4NhXXzjhRYKoQxWqDJTqxlui1LQCs/RJs6QtaUBfiVRxS6HA
+         EF+uztE6fmlPfSM4U/AXOatFnSGauM8xcbptMHEcLXwff9bAcKqsKJFiusCxRpQr98
+         Vz3OXwREAuLOltUwb77iy7nntzBciF1QmUNd9KlY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 059/114] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
+Date:   Mon, 24 Jan 2022 19:42:34 +0100
+Message-Id: <20220124183928.927893679@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
+References: <20220124183927.095545464@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <1642851166-27096-1-git-send-email-akhilrajeev@nvidia.com> <CAHp75Ve-zYz27baJ9SV3wcyKS5iMnxFO61gGE2LXQPU_hTt+qw@mail.gmail.com>
-In-Reply-To: <CAHp75Ve-zYz27baJ9SV3wcyKS5iMnxFO61gGE2LXQPU_hTt+qw@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 24 Jan 2022 19:50:37 +0100
-Message-ID: <CAJZ5v0guL4nk21gvvs2K9Ak6sjhDSzMvDQZJvmnq6Frsj3+7yA@mail.gmail.com>
-Subject: Re: [PATCH v4 0/3] Enable named interrupt smbus-alert for ACPI
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Akhil R <akhilrajeev@nvidia.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Christian Koenig <christian.koenig@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 22, 2022 at 1:06 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Sat, Jan 22, 2022 at 1:33 PM Akhil R <akhilrajeev@nvidia.com> wrote:
-> >
-> > I2C - SMBus core drivers use named interrupts to support smbus_alert.
-> > As named interrupts are not available for ACPI based systems, it was
-> > required to change the i2c bus controller driver if to use smbus alert.
-> > These patches provide option for named interrupts in ACPI and  make the
-> > implementation similar to DT. This will enable use of interrupt named
-> > 'smbus-alert' in ACPI as well which will be taken during i2c adapter
-> > register.
->
-> I'm fine with the series,
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Maintainers can ask something else, though.
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-It looks good to me.
+[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
 
-If no one else has concerns regarding it, I'll queue it up for 5.18.
+Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
+when ar->tx_cmd->odata is NULL. The patch adds a null check to
+prevent such case.
 
-> > v3->v4:
-> >   * Removed device_irq_get_byname()
-> >   * Updates in comments and document.
-> > v2->v3:
-> >   * Grammar/spelling corrections.
-> >   * Added description in function comments.
-> >   * Removed 'unlikely' from NULL check on 'name'
-> > v1->v2:
-> >   * Added firmware guide documentation for ACPI named interrupts
-> >   * Updates in function description comments
-> >
-> > Akhil R (3):
-> >   device property: Add fwnode_irq_get_byname
-> >   docs: firmware-guide: ACPI: Add named interrupt doc
-> >   i2c: smbus: Use device_*() functions instead of of_*()
-> >
-> >  Documentation/firmware-guide/acpi/enumeration.rst | 39 +++++++++++++++++++++++
-> >  drivers/base/property.c                           | 29 +++++++++++++++++
-> >  drivers/i2c/i2c-core-base.c                       |  2 +-
-> >  drivers/i2c/i2c-core-smbus.c                      | 10 +++---
-> >  drivers/i2c/i2c-smbus.c                           |  3 +-
-> >  include/linux/i2c-smbus.h                         |  6 ++--
-> >  include/linux/property.h                          |  1 +
-> >  7 files changed, 80 insertions(+), 10 deletions(-)
-> >
-> > --
-> > 2.7.4
-> >
->
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+ ar5523_cmd+0x46a/0x581 [ar5523]
+ ar5523_probe.cold+0x1b7/0x18da [ar5523]
+ ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
+ ? __pm_runtime_set_status+0x54a/0x8f0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? pm_runtime_barrier+0x220/0x220
+ ? __pm_runtime_resume+0xb1/0xf0
+ usb_probe_interface+0x25b/0x710
+ really_probe+0x209/0x5d0
+ driver_probe_device+0xc6/0x1b0
+ device_driver_attach+0xe2/0x120
+
+I found the bug using a custome USBFuzz port. It's a research work
+to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
+providing hand-crafted usb descriptors to QEMU.
+
+After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
+I got the null-ptr-deref bug. I believe the bug is triggerable whenever
+cmd->odata is NULL. After patching, I tested with the same input and no
+longer see the KASAN report.
+
+This was NOT tested on a real device.
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index bc6330b437958..67c20cb92f138 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
+ 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
+ 			return;
+ 		}
++		if (!cmd->odata) {
++			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
++			return;
++		}
+ 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
+ 		cmd->olen = sizeof(u32);
+ 		cmd->res = 0;
+-- 
+2.34.1
+
+
+
