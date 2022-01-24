@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA336C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6A0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573794AbiAXVpy (ORCPT
+        id S1573811AbiAXVp5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60402 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447202AbiAXVKK (ORCPT
+        Mon, 24 Jan 2022 16:45:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33760 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448020AbiAXVLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:10:10 -0500
+        Mon, 24 Jan 2022 16:11:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C9986146B;
-        Mon, 24 Jan 2022 21:10:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BF2AC340E5;
-        Mon, 24 Jan 2022 21:10:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F31D6B8121C;
+        Mon, 24 Jan 2022 21:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D495C340E5;
+        Mon, 24 Jan 2022 21:11:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058609;
-        bh=+mc7XH6ZHrcnhKZMatKve+G3YzRkXog/jm9bBkgtgnU=;
+        s=korg; t=1643058711;
+        bh=AqUHJMQ2oY0NsP6WS7PPXKuOprmnYcXcK6FdrOhbVas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iuRsi1I9gFJPcqLIuMfe0eoFFsAFLnhaF0bqvzidUqBOZOJx5GCgFR741JtsLXL92
-         MLvBj6/KUgAtctvVF2Nf/lEEz4EQtpY3BeDTe7c7AM2oG3wg4Ojm0fmd3gnZrp4CDL
-         toBhxpFK8TaEwW6wbs+mbPMhVIp4JJPhvrbnv20w=
+        b=PewUrMZpCqOV30LoK6McSnp1HXenZbUZpU/EZH9Z2Dz80cGj9sTsSnXSgwXz9lyNT
+         AACOs+vrgGvxmPXSeK48F/n4hXp9zgYzAP+4hQySTrER080KcxJ2w9WZBHTOCyAvnE
+         0puTROgrWaK9FwqwdC7GVaahhdeQWp2TTpo/08sI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        Qiang Wang <wangqiang.wq.frank@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0345/1039] backlight: qcom-wled: Pass number of elements to read to read_u32_array
-Date:   Mon, 24 Jan 2022 19:35:34 +0100
-Message-Id: <20220124184136.891415467@linuxfoundation.org>
+Subject: [PATCH 5.16 0378/1039] libbpf: Use probe_name for legacy kprobe
+Date:   Mon, 24 Jan 2022 19:36:07 +0100
+Message-Id: <20220124184138.019901056@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,53 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Qiang Wang <wangqiang.wq.frank@bytedance.com>
 
-[ Upstream commit e29e24bdabfeddbf8b1a4ecac1af439a85150438 ]
+[ Upstream commit 71cff670baff5cc6a6eeb0181e2cc55579c5e1e0 ]
 
-of_property_read_u32_array takes the number of elements to read as last
-argument. This does not always need to be 4 (sizeof(u32)) but should
-instead be the size of the array in DT as read just above with
-of_property_count_elems_of_size.
+Fix a bug in commit 46ed5fc33db9, which wrongly used the
+func_name instead of probe_name to register legacy kprobe.
 
-To not make such an error go unnoticed again the driver now bails
-accordingly when of_property_read_u32_array returns an error.
-Surprisingly the indentation of newlined arguments is lining up again
-after prepending `rc = `.
-
-Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211115203459.1634079-3-marijn.suijten@somainline.org
+Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
+Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
+Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Tested-by: Hengqi Chen <hengqi.chen@gmail.com>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211227130713.66933-1-wangqiang.wq.frank@bytedance.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/backlight/qcom-wled.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ tools/lib/bpf/libbpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
-index 8a42ed89c59c9..d413b913fef32 100644
---- a/drivers/video/backlight/qcom-wled.c
-+++ b/drivers/video/backlight/qcom-wled.c
-@@ -1535,10 +1535,15 @@ static int wled_configure(struct wled *wled)
- 			return -EINVAL;
- 		}
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index fd25e30e70cc2..2696f0b7f0acc 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -9769,7 +9769,7 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
+ 		gen_kprobe_legacy_event_name(probe_name, sizeof(probe_name),
+ 					     func_name, offset);
  
--		of_property_read_u32_array(dev->of_node,
-+		rc = of_property_read_u32_array(dev->of_node,
- 						"qcom,enabled-strings",
- 						wled->cfg.enabled_strings,
--						sizeof(u32));
-+						string_len);
-+		if (rc) {
-+			dev_err(dev, "Failed to read %d elements from qcom,enabled-strings: %d\n",
-+				string_len, rc);
-+			return rc;
-+		}
+-		legacy_probe = strdup(func_name);
++		legacy_probe = strdup(probe_name);
+ 		if (!legacy_probe)
+ 			return libbpf_err_ptr(-ENOMEM);
  
- 		for (i = 0; i < string_len; ++i) {
- 			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
 -- 
 2.34.1
 
