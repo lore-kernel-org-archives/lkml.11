@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA75EC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 820D6C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390739AbiAXUqI (ORCPT
+        id S1390624AbiAXUp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:46:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
+        Mon, 24 Jan 2022 15:45:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356303AbiAXUXP (ORCPT
+        with ESMTP id S1356472AbiAXUXW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1C1C06124E;
-        Mon, 24 Jan 2022 11:10:42 -0800 (PST)
+        Mon, 24 Jan 2022 15:23:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30006C0417D3;
+        Mon, 24 Jan 2022 11:40:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 22D3EB81233;
-        Mon, 24 Jan 2022 19:10:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC8AC340E5;
-        Mon, 24 Jan 2022 19:10:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2CB2612E9;
+        Mon, 24 Jan 2022 19:40:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AB5AC340E5;
+        Mon, 24 Jan 2022 19:40:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051439;
-        bh=7MnhLEjkv5OmPQOjR5kPlUEAsHS1KKAq0CkG2/QiCQc=;
+        s=korg; t=1643053236;
+        bh=3rPbOFr2/UomEnoslEhyoCs0jFZin3Hj41+6n7tDrps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XoIkdLYyPb+SxKCiITAghlWKNu0HVb/jQBmfH0vKOi3QiJVbT7h97qUOqWTVv4doh
-         ZRzl7WUQfGxdTUlZzIWVcRnd4JTajzoLdJBpvm69a2PhRbUi1KU81mrVYm1zd1rtc0
-         YvlkspSDvTSGYRwSMmjM+V+B8JgBlgazIF5J+BSI=
+        b=fLgOmd11AQQpRpVeuy2Zh8MjqcZE86BdWOeKzmCw9I/3YAug1FUApGx06Zi/8OsjU
+         FE/dBYsD/VdQ63jjr1yEl4AiELeZkYGQX3TV+8ik2q560fAEmN1ThAyJYldScCFY+c
+         gLWsLqZCUAWQh24Qj8IZ2/yE5jgAAcMdTmRqayyE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.14 162/186] RDMA/rxe: Fix a typo in opcode name
-Date:   Mon, 24 Jan 2022 19:43:57 +0100
-Message-Id: <20220124183942.308437768@linuxfoundation.org>
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.4 310/320] arm64: dts: qcom: msm8996: drop not documented adreno properties
+Date:   Mon, 24 Jan 2022 19:44:54 +0100
+Message-Id: <20220124184004.481167881@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,34 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: David Heidelberg <david@ixit.cz>
 
-commit 8d1cfb884e881efd69a3be4ef10772c71cb22216 upstream.
+commit c41910f257a22dc406c60d8826b4a3b5398003a3 upstream.
 
-There is a redundant ']' in the name of opcode IB_OPCODE_RC_SEND_MIDDLE,
-so just fix it.
+These properties aren't documented nor implemented in the driver.
+Drop them.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20211218112320.3558770-1-cgxu519@mykernel.net
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes warnings as:
+$ make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/display/msm/gpu.yaml
+...
+arch/arm64/boot/dts/qcom/msm8996-mtp.dt.yaml: gpu@b00000: 'qcom,gpu-quirk-fault-detect-mask', 'qcom,gpu-quirk-two-pass-use-wfi' do not match any of the regexes: 'pinctrl-[0-9]+'
+	From schema: Documentation/devicetree/bindings/display/msm/gpu.yaml
+...
+
+Fixes: 69cc3114ab0f ("arm64: dts: Add Adreno GPU definitions")
+Signed-off-by: David Heidelberg <david@ixit.cz>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211030100413.28370-1-david@ixit.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/sw/rxe/rxe_opcode.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/qcom/msm8996.dtsi |    3 ---
+ 1 file changed, 3 deletions(-)
 
---- a/drivers/infiniband/sw/rxe/rxe_opcode.c
-+++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
-@@ -137,7 +137,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NU
- 		}
- 	},
- 	[IB_OPCODE_RC_SEND_MIDDLE]		= {
--		.name	= "IB_OPCODE_RC_SEND_MIDDLE]",
-+		.name	= "IB_OPCODE_RC_SEND_MIDDLE",
- 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_SEND_MASK
- 				| RXE_MIDDLE_MASK,
- 		.length = RXE_BTH_BYTES,
+--- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
++++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
+@@ -2098,9 +2098,6 @@
+ 			nvmem-cells = <&gpu_speed_bin>;
+ 			nvmem-cell-names = "speed_bin";
+ 
+-			qcom,gpu-quirk-two-pass-use-wfi;
+-			qcom,gpu-quirk-fault-detect-mask;
+-
+ 			operating-points-v2 = <&gpu_opp_table>;
+ 
+ 			gpu_opp_table: opp-table {
 
 
