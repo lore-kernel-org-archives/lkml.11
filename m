@@ -2,100 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15369C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 493B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838349AbiAXW40 (ORCPT
+        id S1839007AbiAXW4j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:56:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
+        Mon, 24 Jan 2022 17:56:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457425AbiAXVzF (ORCPT
+        with ESMTP id S1458030AbiAXVzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEBBC07E297;
-        Mon, 24 Jan 2022 12:36:10 -0800 (PST)
+        Mon, 24 Jan 2022 16:55:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF27C07E2A1;
+        Mon, 24 Jan 2022 12:36:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A2A614FF;
-        Mon, 24 Jan 2022 20:36:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15638C340E7;
-        Mon, 24 Jan 2022 20:36:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643056569;
-        bh=N6HkrGlOPhp/lfQrBU6OuWeAmsz4cFxje4P56uyHS08=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=tMvS0u9vqPHiJmamtWo2hxIfeAM+s7Ecv0ZmZJ0nQZ3D9W1YwYkePQzqZdW43jJC/
-         pfn1HewwRr0fGJ+xwd5Szt17yDi6vy2vdgPuuIuDHKlaCZuIULmPqLbZn9cVnX2nzn
-         AtH4RV7t+kJEaz7frVA2Aebsq/f/78dU+4jAly/NqVY6WvAUtuMyruYuYh2yF/EwF4
-         nhXr1MwoYKa6iexDzDGY+fGXeEWHH1cVD03wqebpbpxEwrgzZAcxu4mUZBDTrdMb4K
-         albBIx6R0f/tPjsk7yittG9m7wqN75cGDYd3L2DxSO/JotyKF7DmJsKKXj/81iMtvq
-         fD0RpJx+KWiuQ==
-Date:   Mon, 24 Jan 2022 14:42:53 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     Viresh Kumar <vireshk@kernel.org>, Johan Hovold <johan@kernel.org>,
-        Alex Elder <elder@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] staging: greybus: i2c: Use struct_size() helper in
- gb_i2c_operation_create()
-Message-ID: <20220124204253.GA11735@embeddedor>
-References: <20220121222250.GA73021@embeddedor>
- <202201241213.82E7D9F598@keescook>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4048FB8121A;
+        Mon, 24 Jan 2022 20:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E370C340E5;
+        Mon, 24 Jan 2022 20:36:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056580;
+        bh=c7/XBWzsaYmWU+H2uCUZADGkTpa6wfvO5HYwbEXPfCU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=lKKDyrGbG/6rAXWwEProfEBcWSqwbMLW7zzAOwlRo7YNh8RqORu92RTU9I9KxXh+d
+         6m4t6Rq8S+6rbN4S+YTZw/v5K/ElzTJuD4ncNjIsKqiSL4GfqMTsjessE3BuoCiWxj
+         36byYMG2C19s2KaXWAueMgLmyJNTJDtiYx92uutY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Shaul Triebitz <shaul.triebitz@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 531/846] iwlwifi: mvm: avoid clearing a just saved session protection id
+Date:   Mon, 24 Jan 2022 19:40:48 +0100
+Message-Id: <20220124184119.319040568@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202201241213.82E7D9F598@keescook>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 12:19:03PM -0800, Kees Cook wrote:
-> On Fri, Jan 21, 2022 at 04:22:50PM -0600, Gustavo A. R. Silva wrote:
-> > Make use of the struct_size() helper instead of an open-coded version,
-> > in order to avoid any potential type mistakes or integer overflows that,
-> > in the worst scenario, could lead to heap overflows.
-> > 
-> > Also, address the following sparse warnings:
-> > drivers/staging/greybus/i2c.c:111:24: warning: using sizeof on a flexible structure
-> > 
-> > Link: https://github.com/KSPP/linux/issues/174
-> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-> > ---
-> >  drivers/staging/greybus/i2c.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/staging/greybus/i2c.c b/drivers/staging/greybus/i2c.c
-> > index de2f6516da09..9dfc6791c20e 100644
-> > --- a/drivers/staging/greybus/i2c.c
-> > +++ b/drivers/staging/greybus/i2c.c
-> > @@ -108,9 +108,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
-> >  		else
-> >  			data_out_size += (u32)msg->len;
-> >  
-> > -	request_size = sizeof(*request);
-> > -	request_size += msg_count * sizeof(*op);
-> > -	request_size += data_out_size;
-> > +	request_size = struct_size(request, ops, msg_count) + data_out_size;
-> 
-> This could still overflow if struct_size() returns SIZE_MAX. Perhaps:
+From: Shaul Triebitz <shaul.triebitz@intel.com>
 
-uggh... I got too excited with all the new cases reported. 
-> 
-> 	if (check_add_overflow(struct_size(request, ops, msg_count),
-> 			       data_out_size, &request_size))
-> 		request_size = SIZE_MAX;
+[ Upstream commit 8e967c137df3b236d2075f9538cb888129425d1a ]
 
-Yep; I'll respin and include this change, thanks!
-> 
-> I should brush off the saturating arithmetic helpers series:
-> https://lore.kernel.org/all/20210920180853.1825195-1-keescook@chromium.org/
+When scheduling a session protection the id is saved but
+then it may be cleared when calling iwl_mvm_te_clear_data
+(if a previous session protection is currently active).
+Fix it by saving the id after calling iwl_mvm_te_clear_data.
 
-Yeah; those helpers are very much needed in many places we need to audit...
+Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204130722.b0743a588d14.I098fef6677d0dab3ef1b6183ed206a10bab01eb2@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
---
-Gustavo
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index f93f15357a3f8..b8c645b9880fc 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -1167,15 +1167,10 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
+ 							mvmvif->color)),
+ 		.action = cpu_to_le32(FW_CTXT_ACTION_ADD),
++		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
+ 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
+ 	};
+ 
+-	/* The time_event_data.id field is reused to save session
+-	 * protection's configuration.
+-	 */
+-	mvmvif->time_event_data.id = SESSION_PROTECT_CONF_ASSOC;
+-	cmd.conf_id = cpu_to_le32(mvmvif->time_event_data.id);
+-
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+ 	spin_lock_bh(&mvm->time_event_lock);
+@@ -1189,6 +1184,11 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 	}
+ 
+ 	iwl_mvm_te_clear_data(mvm, te_data);
++	/*
++	 * The time_event_data.id field is reused to save session
++	 * protection's configuration.
++	 */
++	te_data->id = le32_to_cpu(cmd.conf_id);
+ 	te_data->duration = le32_to_cpu(cmd.duration_tu);
+ 	te_data->vif = vif;
+ 	spin_unlock_bh(&mvm->time_event_lock);
+-- 
+2.34.1
+
+
+
