@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3431C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1477C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356841AbiAXUcl (ORCPT
+        id S1356870AbiAXUco (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:32:41 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53466 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354946AbiAXULy (ORCPT
+        Mon, 24 Jan 2022 15:32:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39140 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379642AbiAXUME (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:54 -0500
+        Mon, 24 Jan 2022 15:12:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DD6AAB81257;
-        Mon, 24 Jan 2022 20:11:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB71C340E5;
-        Mon, 24 Jan 2022 20:11:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E1AF612FC;
+        Mon, 24 Jan 2022 20:12:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C182C340E5;
+        Mon, 24 Jan 2022 20:12:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055110;
-        bh=DJ/cYkr8MzqT7hAfv92BLVMqYFrXoXo4x8FHMhWFLhY=;
+        s=korg; t=1643055123;
+        bh=4gyB6Qv06tdS2Y/R6K7VxixzmD3znTGhfuyIXYLQd0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I+jvyW6/bWexe5YdhhFq4oMajWt4gfUGTWdCUHqThjQR1WjxAx+7UE5sPplLGdjfx
-         QB3g27fqBW4ofpY1nCpphH53ceGcY1kjTZMhSScl/Ar+NcgW1YsWl0YgOBNvQqWNaE
-         Y7FR1WqcBcwbqc/tqncbgNZG4dXfxk6gyjLX8qhg=
+        b=dnt5lx2S/RlRJKK3GiTjg3HVH4eAfyibdKwNiQv81HDyDNGtCaHzvWMIzDYpfx25+
+         BjANEtcJdmBaqf2xdgiO+GX4+491gmS4pLSVe93AS7MaJOJRBMs9+lXUwxPLX+KwQ1
+         gqESEgK8J6NSjysGRaxD5RWF+2kmk4/H8ZL4piks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 012/846] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
-Date:   Mon, 24 Jan 2022 19:32:09 +0100
-Message-Id: <20220124184101.335159944@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.15 049/846] media: redrat3: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:32:46 +0100
+Message-Id: <20220124184102.642987989@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,102 +47,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
+commit 2adc965c8bfa224e11ecccf9c92fd458c4236428 upstream.
 
-Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
-(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
-a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-KASAN report:
-
-  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
-  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
-
-  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x59
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   __kasan_report.cold+0x117/0x11c
-   ? mark_lock+0x480/0x4f0
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   kasan_report+0x38/0x50
-   nfc_alloc_send_skb+0x2d/0xc0
-   nfc_llcp_send_ui_frame+0x18c/0x2a0
-   ? nfc_llcp_send_i_frame+0x230/0x230
-   ? __local_bh_enable_ip+0x86/0xe0
-   ? llcp_sock_connect+0x470/0x470
-   ? llcp_sock_connect+0x470/0x470
-   sock_sendmsg+0x8e/0xa0
-   ____sys_sendmsg+0x253/0x3f0
-   ...
-
-The issue was visible only with multiple simultaneous calls to bind() and
-sendmsg(), which resulted in most of the bind() calls to fail.  The
-bind() was failing on checking if there is available WKS/SDP/SAP
-(respective bit in 'struct nfc_llcp_local' fields).  When there was no
-available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
-socket was able to trigger mentioned NULL pointer dereference of
-nfc_llcp_sock->dev.
-
-The code looks simply racy and currently it protects several paths
-against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
-in error paths of bind().  The llcp_sock_sendmsg() did not have such
-check but called function nfc_llcp_send_ui_frame() had, although not
-protected with lock_sock().
-
-Therefore the race could look like (same socket is used all the time):
-  CPU0                                     CPU1
-  ====                                     ====
-  llcp_sock_bind()
-  - lock_sock()
-    - success
-  - release_sock()
-  - return 0
-                                           llcp_sock_sendmsg()
-                                           - lock_sock()
-                                           - release_sock()
-  llcp_sock_bind(), same socket
-  - lock_sock()
-    - error
-                                           - nfc_llcp_send_ui_frame()
-                                             - if (!llcp_sock->local)
-    - llcp_sock->local = NULL
-    - nfc_put_device(dev)
-                                             - dereference llcp_sock->dev
-  - release_sock()
-  - return -ERRNO
-
-The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
-lock, which is racy and ineffective check.  Instead, its caller
-llcp_sock_sendmsg(), should perform the check inside lock_sock().
-
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/nfc/llcp_sock.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/media/rc/redrat3.c |   22 +++++++++++-----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -789,6 +789,11 @@ static int llcp_sock_sendmsg(struct sock
+--- a/drivers/media/rc/redrat3.c
++++ b/drivers/media/rc/redrat3.c
+@@ -404,7 +404,7 @@ static int redrat3_send_cmd(int cmd, str
+ 	udev = rr3->udev;
+ 	res = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0), cmd,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      0x0000, 0x0000, data, sizeof(u8), HZ * 10);
++			      0x0000, 0x0000, data, sizeof(u8), 10000);
  
- 	lock_sock(sk);
+ 	if (res < 0) {
+ 		dev_err(rr3->dev, "%s: Error sending rr3 cmd res %d, data %d",
+@@ -480,7 +480,7 @@ static u32 redrat3_get_timeout(struct re
+ 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
+ 	ret = usb_control_msg(rr3->udev, pipe, RR3_GET_IR_PARAM,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, HZ * 5);
++			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, 5000);
+ 	if (ret != len)
+ 		dev_warn(rr3->dev, "Failed to read timeout from hardware\n");
+ 	else {
+@@ -510,7 +510,7 @@ static int redrat3_set_timeout(struct rc
+ 	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), RR3_SET_IR_PARAM,
+ 		     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+ 		     RR3_IR_IO_SIG_TIMEOUT, 0, timeout, sizeof(*timeout),
+-		     HZ * 25);
++		     25000);
+ 	dev_dbg(dev, "set ir parm timeout %d ret 0x%02x\n",
+ 						be32_to_cpu(*timeout), ret);
  
-+	if (!llcp_sock->local) {
-+		release_sock(sk);
-+		return -ENODEV;
-+	}
-+
- 	if (sk->sk_type == SOCK_DGRAM) {
- 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
- 				 msg->msg_name);
+@@ -542,32 +542,32 @@ static void redrat3_reset(struct redrat3
+ 	*val = 0x01;
+ 	rc = usb_control_msg(udev, rxpipe, RR3_RESET,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			     RR3_CPUCS_REG_ADDR, 0, val, len, HZ * 25);
++			     RR3_CPUCS_REG_ADDR, 0, val, len, 25000);
+ 	dev_dbg(dev, "reset returned 0x%02x\n", rc);
+ 
+ 	*val = length_fuzz;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, HZ * 25);
++			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm len fuzz %d rc 0x%02x\n", *val, rc);
+ 
+ 	*val = (65536 - (minimum_pause * 2000)) / 256;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_MIN_PAUSE, 0, val, len, HZ * 25);
++			     RR3_IR_IO_MIN_PAUSE, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm min pause %d rc 0x%02x\n", *val, rc);
+ 
+ 	*val = periods_measure_carrier;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_PERIODS_MF, 0, val, len, HZ * 25);
++			     RR3_IR_IO_PERIODS_MF, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm periods measure carrier %d rc 0x%02x", *val,
+ 									rc);
+ 
+ 	*val = RR3_DRIVER_MAXLENS;
+ 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
+-			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, HZ * 25);
++			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, 25000);
+ 	dev_dbg(dev, "set ir parm max lens %d rc 0x%02x\n", *val, rc);
+ 
+ 	kfree(val);
+@@ -585,7 +585,7 @@ static void redrat3_get_firmware_rev(str
+ 	rc = usb_control_msg(rr3->udev, usb_rcvctrlpipe(rr3->udev, 0),
+ 			     RR3_FW_VERSION,
+ 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			     0, 0, buffer, RR3_FW_VERSION_LEN, HZ * 5);
++			     0, 0, buffer, RR3_FW_VERSION_LEN, 5000);
+ 
+ 	if (rc >= 0)
+ 		dev_info(rr3->dev, "Firmware rev: %s", buffer);
+@@ -825,14 +825,14 @@ static int redrat3_transmit_ir(struct rc
+ 
+ 	pipe = usb_sndbulkpipe(rr3->udev, rr3->ep_out->bEndpointAddress);
+ 	ret = usb_bulk_msg(rr3->udev, pipe, irdata,
+-			    sendbuf_len, &ret_len, 10 * HZ);
++			    sendbuf_len, &ret_len, 10000);
+ 	dev_dbg(dev, "sent %d bytes, (ret %d)\n", ret_len, ret);
+ 
+ 	/* now tell the hardware to transmit what we sent it */
+ 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
+ 	ret = usb_control_msg(rr3->udev, pipe, RR3_TX_SEND_SIGNAL,
+ 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
+-			      0, 0, irdata, 2, HZ * 10);
++			      0, 0, irdata, 2, 10000);
+ 
+ 	if (ret < 0)
+ 		dev_err(dev, "Error: control msg send failed, rc %d\n", ret);
 
 
