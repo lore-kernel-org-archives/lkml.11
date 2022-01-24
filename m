@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B7DC3526D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09083C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355299AbiAXTkY (ORCPT
+        id S1355185AbiAXTkJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:40:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57292 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353497AbiAXTev (ORCPT
+        Mon, 24 Jan 2022 14:40:09 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59736 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347352AbiAXTeY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:34:51 -0500
+        Mon, 24 Jan 2022 14:34:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDD87B8119D;
-        Mon, 24 Jan 2022 19:34:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2148DC340E5;
-        Mon, 24 Jan 2022 19:34:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54F3060917;
+        Mon, 24 Jan 2022 19:34:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A362C340E5;
+        Mon, 24 Jan 2022 19:34:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052888;
-        bh=5PIb9zgLfIDlpJXXCYVlibu41uMeDiCYR7yxgWThjCc=;
+        s=korg; t=1643052863;
+        bh=6+NvI3D2ofS6tpLj8IEjhMlFMf0PyRxXKA/Z7sc6oR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Av9RTKR/rnsN12Uy7OMC0gJ+lU3upMlemyAIb9Z0iPCojQLH+SJz/xoybcAUchPog
-         6SIavfXqd4TjiCKGXMXx4nelGkjvGiqKrMn1vC98zGvAX+w53vpwkvbNz3vfbk5brf
-         wq9jKnD6btAa9VDEE+S3WA/uasUz1oSYppCfjcrM=
+        b=wW09XfjEhMqBl+MMMmVeKHbGzWyCoGrFSVMnI7OszdpdPNnptXKo/wFVzuiUoqiqL
+         Rs4v3ST175j1GQ4XyHRXZMRAMEzknggpmF0zmh702jan9Vm41MWZjVoESIzkWUlGb6
+         1tS7MBcuVDZVN89gakeFQUKZR+cTydsPki4xwBxo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
-        Xiongwei Song <sxwjean@gmail.com>,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 174/320] floppy: Add max size check for user space request
-Date:   Mon, 24 Jan 2022 19:42:38 +0100
-Message-Id: <20220124183959.580700948@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 197/320] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
+Date:   Mon, 24 Jan 2022 19:43:01 +0100
+Message-Id: <20220124184000.335031832@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,80 +47,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
+[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
 
-We need to check the max request size that is from user space before
-allocating pages. If the request size exceeds the limit, return -EINVAL.
-This check can avoid the warning below from page allocator.
+When a new USB device gets plugged to nested hubs, the affected hub,
+which connects to usb 2-1.4-port2, doesn't report there's any change,
+hence the nested hubs go back to runtime suspend like nothing happened:
+[  281.032951] usb usb2: usb wakeup-resume
+[  281.032959] usb usb2: usb auto-resume
+[  281.032974] hub 2-0:1.0: hub_resume
+[  281.033011] usb usb2-port1: status 0263 change 0000
+[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.049797] usb 2-1: usb wakeup-resume
+[  281.069800] usb 2-1: Waited 0ms for CONNECT
+[  281.069810] usb 2-1: finish resume
+[  281.070026] hub 2-1:1.0: hub_resume
+[  281.070250] usb 2-1-port4: status 0203 change 0000
+[  281.070272] usb usb2-port1: resume, status 0
+[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
+[  281.089813] usb 2-1.4: usb wakeup-resume
+[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
+[  281.109801] usb 2-1.4: finish resume
+[  281.109991] hub 2-1.4:1.0: hub_resume
+[  281.110147] usb 2-1.4-port2: status 0263 change 0000
+[  281.110234] usb 2-1-port4: resume, status 0
+[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
+[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.110426] hub 2-1.4:1.0: hub_suspend
+[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
+[  281.130998] hub 2-1:1.0: hub_suspend
+[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
+[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.177828] usb 2-1: usb wakeup-resume
+[  281.197839] usb 2-1: Waited 0ms for CONNECT
+[  281.197850] usb 2-1: finish resume
+[  281.197984] hub 2-1:1.0: hub_resume
+[  281.198203] usb 2-1-port4: status 0203 change 0000
+[  281.198228] usb usb2-port1: resume, status 0
+[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
+[  281.217835] usb 2-1.4: usb wakeup-resume
+[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
+[  281.237845] usb 2-1.4: finish resume
+[  281.237990] hub 2-1.4:1.0: hub_resume
+[  281.238067] usb 2-1.4-port2: status 0263 change 0000
+[  281.238148] usb 2-1-port4: resume, status 0
+[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
+[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.238385] hub 2-1.4:1.0: hub_suspend
+[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
+[  281.258076] hub 2-1:1.0: hub_suspend
+[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
+[  281.285976] hub 2-0:1.0: hub_suspend
+[  281.285988] usb usb2: bus auto-suspend, wakeup 1
 
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
-Modules linked in:
-CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
-Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
-RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
-R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
-FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
- __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
- raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
- raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
- fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
- fd_ioctl drivers/block/floppy.c:3555 [inline]
- fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
- compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
- __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
+the link is in a non-U0 state, then the device must transition the link
+to U0 prior to sending the remote wake message", but the hub only
+transits the link to U0 after signaling remote wakeup.
 
-Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+So be more forgiving and use a 20ms delay to let the link transit to U0
+for remote wakeup.
+
+Suggested-by: Alan Stern <stern@rowland.harvard.edu>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/core/hub.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 212a1e1ce0d9e..02af4f109e59f 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -3112,6 +3112,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
- 	}
- }
- 
-+#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 69dd48f9507e5..4cf0dc7f330dd 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -1108,7 +1108,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
+ 		} else {
+ 			hub_power_on(hub, true);
+ 		}
+-	}
++	/* Give some time on remote wakeup to let links to transit to U0 */
++	} else if (hub_is_superspeed(hub->hdev))
++		msleep(20);
 +
- static int raw_cmd_copyin(int cmd, void __user *param,
- 				 struct floppy_raw_cmd **rcmd)
- {
-@@ -3149,7 +3151,7 @@ loop:
- 	ptr->resultcode = 0;
+  init2:
  
- 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
--		if (ptr->length <= 0)
-+		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
- 			return -EINVAL;
- 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
- 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
+ 	/*
 -- 
 2.34.1
 
