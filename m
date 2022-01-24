@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A77A7C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E9BC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344965AbiAXS7l (ORCPT
+        id S1345169AbiAXS7y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        Mon, 24 Jan 2022 13:59:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343815AbiAXS46 (ORCPT
+        with ESMTP id S1344085AbiAXS5P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:56:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE71C061753;
-        Mon, 24 Jan 2022 10:55:01 -0800 (PST)
+        Mon, 24 Jan 2022 13:57:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4260DC061765;
+        Mon, 24 Jan 2022 10:55:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0A63B8121A;
-        Mon, 24 Jan 2022 18:54:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F0CC340EA;
-        Mon, 24 Jan 2022 18:54:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7B4E614DF;
+        Mon, 24 Jan 2022 18:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B50D4C340E5;
+        Mon, 24 Jan 2022 18:55:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050498;
-        bh=qJAm7nxkvWLXikpp65EDpvm73EhmGBm8p+/E1dgdSS0=;
+        s=korg; t=1643050527;
+        bh=LkWRsFK9aS7oNkjHvVcPCtvA/eUHuU3Kl8vHPnMu2YU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A8tuTd34f10vxkcqfyyi2ZAAE120up6vp5uHkxRKar3KI/636c/AZqU5U6lN2JvvM
-         ViCytgWTSXu+1VMORszkKJmm/S2mFQqboJGR3b0VJ11SzxGa6ziEGUbGHMtREhmBMm
-         9iIdyYUczqV9ve9IHocxYp3NKXKnF8+QgS89eaDc=
+        b=Wq0MkcAGhkbKN6ndCfWB+FtEzHOdd4qLQfxBJXtUtsnRrOUYjtcspAOGVqD/4SJIF
+         +baAg1fmuh3PRwaiiIGadMs12Wo7kncJSnHK/2vhz3FTXwuAB5vfOiLktBWqXpDIMN
+         tQUNoHA93/EdmUKcXwHhRXEh+GtmHyF7u2XEsFPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.9 022/157] media: dib0700: fix undefined behavior in tuner shutdown
-Date:   Mon, 24 Jan 2022 19:41:52 +0100
-Message-Id: <20220124183933.500112255@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 030/157] wcn36xx: Indicate beacon not connection loss on MISSED_BEACON_IND
+Date:   Mon, 24 Jan 2022 19:42:00 +0100
+Message-Id: <20220124183933.759384695@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,51 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kuron <michael.kuron@gmail.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
+[ Upstream commit 588b45c88ae130fe373a8c50edaf54735c3f4fe3 ]
 
-This fixes a problem where closing the tuner would leave it in a state
-where it would not tune to any channel when reopened. This problem was
-discovered as part of https://github.com/hselasky/webcamd/issues/16.
+Firmware can trigger a missed beacon indication, this is not the same as a
+lost signal.
 
-Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
-behavior. The driver still worked in practice as the overflow would in
-most environments result in 0, which rendered the line a no-op. When
-running the driver as part of webcamd however, the overflow could lead
-to 0xff due to optimizations by the compiler, which would, in the end,
-improperly shut down the tuner.
+Flag to Linux the missed beacon and let the WiFi stack decide for itself if
+the link is up or down by sending its own probe to determine this.
 
-The bug is a regression introduced in the commit referenced below. The
-present patch causes identical behavior to before that commit for
-adap->id equal to 0 or 1. The driver does not contain support for
-dib0700 devices with more adapters, assuming such even exist.
+We should only be signalling the link is lost when the firmware indicates
 
-Tests have been performed with the Xbox One Digital TV Tuner on amd64.
-Not all dib0700 devices are expected to be affected by the regression;
-this code path is only taken by those with incorrect endpoint numbers.
-
-Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
-
-Cc: stable@vger.kernel.org
-Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
-Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211027232529.657764-1-bryan.odonoghue@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/smd.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/media/usb/dvb-usb/dib0700_core.c
-+++ b/drivers/media/usb/dvb-usb/dib0700_core.c
-@@ -610,8 +610,6 @@ int dib0700_streaming_ctrl(struct dvb_us
- 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
- 		if (onoff)
- 			st->channel_state |=	1 << (adap->id);
--		else
--			st->channel_state |=	1 << ~(adap->id);
- 	} else {
- 		if (onoff)
- 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
+diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
+index 914c210c9e605..da2f442cab271 100644
+--- a/drivers/net/wireless/ath/wcn36xx/smd.c
++++ b/drivers/net/wireless/ath/wcn36xx/smd.c
+@@ -2052,7 +2052,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
+ 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
+ 				    tmp->bss_index);
+ 			vif = wcn36xx_priv_to_vif(tmp);
+-			ieee80211_connection_loss(vif);
++			ieee80211_beacon_loss(vif);
+ 		}
+ 		return 0;
+ 	}
+@@ -2067,7 +2067,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
+ 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
+ 				    rsp->bss_index);
+ 			vif = wcn36xx_priv_to_vif(tmp);
+-			ieee80211_connection_loss(vif);
++			ieee80211_beacon_loss(vif);
+ 			return 0;
+ 		}
+ 	}
+-- 
+2.34.1
+
 
 
