@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 351ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7049CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343968AbiAXS5o (ORCPT
+        id S1344500AbiAXS5t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:57:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344628AbiAXSyz (ORCPT
+        Mon, 24 Jan 2022 13:57:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53492 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343516AbiAXSzj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:54:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EF8C061365;
-        Mon, 24 Jan 2022 10:53:45 -0800 (PST)
+        Mon, 24 Jan 2022 13:55:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4805161507;
-        Mon, 24 Jan 2022 18:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C909C340E8;
-        Mon, 24 Jan 2022 18:53:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12DF9B8121D;
+        Mon, 24 Jan 2022 18:55:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 413B9C340E5;
+        Mon, 24 Jan 2022 18:55:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050424;
-        bh=XyB6tBQRGSlyvJTRw3bhsJ6pQSHWxE71MEwmOka4C64=;
+        s=korg; t=1643050536;
+        bh=2oJQ6ThJe2gdSrrrORMLu8Meow0HMdp7Eylv6Q47zng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ztXXCONDJxHbAz0xjaZNkOICZr16176JPpD3IFaTvSPMSxR0Ckd26+D5n8R4YBWC4
-         myjeTNnfrHqtt0mixhgrsFaC423AHurWiGEhQFnhqLm90N/1nVAa/2xA8vHUBAhiBi
-         5ph3ev9WCgYxa2tm8Gdo9um2VWsvpfiTKN/Oa0d8=
+        b=Mhy68iMT+KScqpT4i10dlQGFmXC5VJWY0/AUvUJPbuCIn0OfxjYHhqgb4mGBKWoUd
+         /elaSl8j5ur4NhkkMSR2hnm4Oc9S6GaH+aI2buTjeN1PEkky1iDOU1d8E2hFtWhFLa
+         PmlZXOg+faWAvRhDlyq77kwJW2xrdjSllantxoSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.4 113/114] bcmgenet: add WOL IRQ check
-Date:   Mon, 24 Jan 2022 19:43:28 +0100
-Message-Id: <20220124183930.591414342@linuxfoundation.org>
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 033/157] crypto: qce - fix uaf on qce_ahash_register_one
+Date:   Mon, 24 Jan 2022 19:42:03 +0100
+Message-Id: <20220124183933.852827950@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-commit 9deb48b53e7f4056c2eaa2dc2ee3338df619e4f6 upstream.
+[ Upstream commit b4cb4d31631912842eb7dce02b4350cbb7562d5e ]
 
-The driver neglects to check the result of platform_get_irq_optional()'s
-call and blithely passes the negative error codes to devm_request_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL.
-Stop calling devm_request_irq() with the invalid IRQ #s.
+Pointer base points to sub field of tmpl, it
+is dereferenced after tmpl is freed. Fix
+this by accessing base before free tmpl.
 
-Fixes: 8562056f267d ("net: bcmgenet: request Wake-on-LAN interrupt")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/crypto/qce/sha.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -3443,10 +3443,12 @@ static int bcmgenet_probe(struct platfor
+diff --git a/drivers/crypto/qce/sha.c b/drivers/crypto/qce/sha.c
+index 47e114ac09d01..ff1e788f92767 100644
+--- a/drivers/crypto/qce/sha.c
++++ b/drivers/crypto/qce/sha.c
+@@ -544,8 +544,8 @@ static int qce_ahash_register_one(const struct qce_ahash_def *def,
  
- 	/* Request the WOL interrupt and advertise suspend if available */
- 	priv->wol_irq_disabled = true;
--	err = devm_request_irq(&pdev->dev, priv->wol_irq, bcmgenet_wol_isr, 0,
--			       dev->name, priv);
--	if (!err)
--		device_set_wakeup_capable(&pdev->dev, 1);
-+	if (priv->wol_irq > 0) {
-+		err = devm_request_irq(&pdev->dev, priv->wol_irq,
-+				       bcmgenet_wol_isr, 0, dev->name, priv);
-+		if (!err)
-+			device_set_wakeup_capable(&pdev->dev, 1);
-+	}
+ 	ret = crypto_register_ahash(alg);
+ 	if (ret) {
+-		kfree(tmpl);
+ 		dev_err(qce->dev, "%s registration failed\n", base->cra_name);
++		kfree(tmpl);
+ 		return ret;
+ 	}
  
- 	/* Set the needed headroom to account for any possible
- 	 * features enabling/disabling at runtime
+-- 
+2.34.1
+
 
 
