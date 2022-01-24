@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3156BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B716C3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848087AbiAXXVo (ORCPT
+        id S1848149AbiAXXVv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:21:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38596 "EHLO
+        Mon, 24 Jan 2022 18:21:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586949AbiAXW1e (ORCPT
+        with ESMTP id S1585937AbiAXWZX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:27:34 -0500
+        Mon, 24 Jan 2022 17:25:23 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FDD0C019B31;
-        Mon, 24 Jan 2022 12:54:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C380C0418AD;
+        Mon, 24 Jan 2022 12:53:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47061B81243;
-        Mon, 24 Jan 2022 20:54:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ACDDC36AE3;
-        Mon, 24 Jan 2022 20:54:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4A96EB81057;
+        Mon, 24 Jan 2022 20:53:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60986C36AE3;
+        Mon, 24 Jan 2022 20:53:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057681;
-        bh=1xQpMaORlAjMY+OYmQAFt/yWySqQIyzA1KWUNh4bLgk=;
+        s=korg; t=1643057635;
+        bh=coNUTtreSapjjg9ezr4KWHjBcWf3lunj23LcLPSUqUg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a7WZuRCYlGRc0nlJhD3pyQzQ/NBzJocS6N/LuaMaNKu/n3fTg4b3wQw7H4Zwv3xqV
-         9rpOzSNmTuDK4TY8ZvOYeEfXE6PmOkQK9pYyUB2mmaWbLJha71FhFofp2soEkXoAtV
-         MGgg7huAHYwn3mTbfiv5/CxWdOh9CM40NWCsymZQ=
+        b=t9svWaAy5agR16Wyk0hmAwGgZLOlIgZCETP1K5pMJxhPu/4Aufjyean0UhOGOfVrC
+         23x++kzL/OiBCbm9aoOdC/lyR6zziuc1Pf+TBAx1BUmO+IQb0mIA6E4UZ2fFIH+K0a
+         hul3rOajVXsbPfNnNQD9zmf7fr/5VAJimjIUoY38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.16 0043/1039] media: ov8865: Disable only enabled regulators on error path
-Date:   Mon, 24 Jan 2022 19:30:32 +0100
-Message-Id: <20220124184126.587770188@linuxfoundation.org>
+        stable@vger.kernel.org, Bedirhan KURT <windowz414@gnuweeb.org>,
+        Louvian Lyndal <louvianlyndal@gmail.com>,
+        Peter Cordes <peter@cordes.ca>,
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.16 0030/1039] tools/nolibc: x86-64: Fix startup code bug
+Date:   Mon, 24 Jan 2022 19:30:19 +0100
+Message-Id: <20220124184126.148559174@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,77 +53,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
 
-commit cbe0b3af73bf72fad197756f026084404e2bcdc7 upstream.
+commit 937ed91c712273131de6d2a02caafd3ee84e0c72 upstream.
 
-If powering on the sensor failed, the entire power-off sequence was run
-independently of how far the power-on sequence proceeded before the error.
-This lead to disabling regulators and/or clock that was not enabled.
+Before this patch, the `_start` function looks like this:
+```
+0000000000001170 <_start>:
+    1170:	pop    %rdi
+    1171:	mov    %rsp,%rsi
+    1174:	lea    0x8(%rsi,%rdi,8),%rdx
+    1179:	and    $0xfffffffffffffff0,%rsp
+    117d:	sub    $0x8,%rsp
+    1181:	call   1000 <main>
+    1186:	movzbq %al,%rdi
+    118a:	mov    $0x3c,%rax
+    1191:	syscall
+    1193:	hlt
+    1194:	data16 cs nopw 0x0(%rax,%rax,1)
+    119f:	nop
+```
+Note the "and" to %rsp with $-16, it makes the %rsp be 16-byte aligned,
+but then there is a "sub" with $0x8 which makes the %rsp no longer
+16-byte aligned, then it calls main. That's the bug!
 
-Fix this by disabling only clocks and regulators that were enabled
-previously.
+What actually the x86-64 System V ABI mandates is that right before the
+"call", the %rsp must be 16-byte aligned, not after the "call". So the
+"sub" with $0x8 here breaks the alignment. Remove it.
 
-Fixes: 11c0d8fdccc5 ("media: i2c: Add support for the OV8865 image sensor")
+An example where this rule matters is when the callee needs to align
+its stack at 16-byte for aligned move instruction, like `movdqa` and
+`movaps`. If the callee can't align its stack properly, it will result
+in segmentation fault.
+
+x86-64 System V ABI also mandates the deepest stack frame should be
+zero. Just to be safe, let's zero the %rbp on startup as the content
+of %rbp may be unspecified when the program starts. Now it looks like
+this:
+```
+0000000000001170 <_start>:
+    1170:	pop    %rdi
+    1171:	mov    %rsp,%rsi
+    1174:	lea    0x8(%rsi,%rdi,8),%rdx
+    1179:	xor    %ebp,%ebp                # zero the %rbp
+    117b:	and    $0xfffffffffffffff0,%rsp # align the %rsp
+    117f:	call   1000 <main>
+    1184:	movzbq %al,%rdi
+    1188:	mov    $0x3c,%rax
+    118f:	syscall
+    1191:	hlt
+    1192:	data16 cs nopw 0x0(%rax,%rax,1)
+    119d:	nopl   (%rax)
+```
+
+Cc: Bedirhan KURT <windowz414@gnuweeb.org>
+Cc: Louvian Lyndal <louvianlyndal@gmail.com>
+Reported-by: Peter Cordes <peter@cordes.ca>
+Signed-off-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+[wt: I did this on purpose due to a misunderstanding of the spec, other
+     archs will thus have to be rechecked, particularly i386]
 Cc: stable@vger.kernel.org
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/i2c/ov8865.c |   12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ tools/include/nolibc/nolibc.h |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/media/i2c/ov8865.c
-+++ b/drivers/media/i2c/ov8865.c
-@@ -2330,27 +2330,27 @@ static int ov8865_sensor_power(struct ov
- 		if (ret) {
- 			dev_err(sensor->dev,
- 				"failed to enable DOVDD regulator\n");
--			goto disable;
-+			return ret;
- 		}
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -399,14 +399,20 @@ struct stat {
+ })
  
- 		ret = regulator_enable(sensor->avdd);
- 		if (ret) {
- 			dev_err(sensor->dev,
- 				"failed to enable AVDD regulator\n");
--			goto disable;
-+			goto disable_dovdd;
- 		}
- 
- 		ret = regulator_enable(sensor->dvdd);
- 		if (ret) {
- 			dev_err(sensor->dev,
- 				"failed to enable DVDD regulator\n");
--			goto disable;
-+			goto disable_avdd;
- 		}
- 
- 		ret = clk_prepare_enable(sensor->extclk);
- 		if (ret) {
- 			dev_err(sensor->dev, "failed to enable EXTCLK clock\n");
--			goto disable;
-+			goto disable_dvdd;
- 		}
- 
- 		gpiod_set_value_cansleep(sensor->reset, 0);
-@@ -2359,14 +2359,16 @@ static int ov8865_sensor_power(struct ov
- 		/* Time to enter streaming mode according to power timings. */
- 		usleep_range(10000, 12000);
- 	} else {
--disable:
- 		gpiod_set_value_cansleep(sensor->powerdown, 1);
- 		gpiod_set_value_cansleep(sensor->reset, 1);
- 
- 		clk_disable_unprepare(sensor->extclk);
- 
-+disable_dvdd:
- 		regulator_disable(sensor->dvdd);
-+disable_avdd:
- 		regulator_disable(sensor->avdd);
-+disable_dovdd:
- 		regulator_disable(sensor->dovdd);
- 	}
- 
+ /* startup code */
++/*
++ * x86-64 System V ABI mandates:
++ * 1) %rsp must be 16-byte aligned right before the function call.
++ * 2) The deepest stack frame should be zero (the %rbp).
++ *
++ */
+ asm(".section .text\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %rdi\n"                // argc   (first arg, %rdi)
+     "mov %rsp, %rsi\n"          // argv[] (second arg, %rsi)
+     "lea 8(%rsi,%rdi,8),%rdx\n" // then a NULL then envp (third arg, %rdx)
+-    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned when
+-    "sub $8, %rsp\n"            // entering the callee
++    "xor %ebp, %ebp\n"          // zero the stack frame
++    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
+     "call main\n"               // main() returns the status code, we'll exit with it.
+     "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
+     "mov $60, %rax\n"           // NR_exit == 60
 
 
