@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 294C6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6104C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343858AbiAXSzy (ORCPT
+        id S1344137AbiAXSz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:55:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53088 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344194AbiAXSxz (ORCPT
+        Mon, 24 Jan 2022 13:55:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42914 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344191AbiAXSxz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:53:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2406EC06176A;
+        Mon, 24 Jan 2022 10:53:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EA6386153A;
-        Mon, 24 Jan 2022 18:53:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCBC3C340E5;
-        Mon, 24 Jan 2022 18:53:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC3D4B8121F;
+        Mon, 24 Jan 2022 18:53:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC749C340E8;
+        Mon, 24 Jan 2022 18:53:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050434;
-        bh=iyFxWuN2vu/dulDTqndeNcafmcjOaQG2EV3AgqR2eKc=;
+        s=korg; t=1643050386;
+        bh=FIqYHvH6IqcIa7qor3u4vpchq2nShExahI2dprWf424=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KRBski63ZkOSJvnqTb/ggAG7pWt5RErOIVV6RZy9SOEUYwB5a3NRB0wLofVVsTcR7
-         nzQJbsk3sJsB6W3HaNXZV2WlH5eRSxba8po6drOO40ucofKph/qz8G0MmMoZ3rHbI8
-         1AEaTlRh6+lc2JZAoQBaxJBSS0P+uS5f7P/FZ7NQ=
+        b=eKrsa0gEhQEMYAuxOPM2+zhjDzPRpCoszb6SBUORiwAvEaawA+6UvQSVRAp1nfqGi
+         pcYAghX617Ng3b5poJGpdbZtomydyrRVGSJxTolgxO3enm89ZWAuP7aePI99hxXzBN
+         5DhlrHPoE5ebCTGi09J5a5dycZhzFmU/urlAXDE0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 088/114] i2c: i801: Dont silently correct invalid transfer size
-Date:   Mon, 24 Jan 2022 19:43:03 +0100
-Message-Id: <20220124183929.828492465@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.4 102/114] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
+Date:   Mon, 24 Jan 2022 19:43:17 +0100
+Message-Id: <20220124183930.260689505@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -47,63 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-[ Upstream commit effa453168a7eeb8a562ff4edc1dbf9067360a61 ]
+commit 3f7c239c7844d2044ed399399d97a5f1c6008e1b upstream.
 
-If an invalid block size is provided, reject it instead of silently
-changing it to a supported value. Especially critical I see the case of
-a write transfer with block length 0. In this case we have no guarantee
-that the byte we would write is valid. When silently reducing a read to
-32 bytes then we don't return an error and the caller may falsely
-assume that we returned the full requested data.
+As reported by sparse: In the remove path, the driver would attempt to
+unmap its own priv pointer - instead of the io memory that it mapped
+in probe.
 
-If this change should break any (broken) caller, then I think we should
-fix the caller.
-
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-i801.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/freescale/xgmac_mdio.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index 4399016a6caba..73026c00220c2 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -669,6 +669,11 @@ static int i801_block_transaction(struct i801_priv *priv,
- 	int result = 0;
- 	unsigned char hostc;
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -304,9 +304,10 @@ err_ioremap:
+ static int xgmac_mdio_remove(struct platform_device *pdev)
+ {
+ 	struct mii_bus *bus = platform_get_drvdata(pdev);
++	struct mdio_fsl_priv *priv = bus->priv;
  
-+	if (read_write == I2C_SMBUS_READ && command == I2C_SMBUS_BLOCK_DATA)
-+		data->block[0] = I2C_SMBUS_BLOCK_MAX;
-+	else if (data->block[0] < 1 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
-+		return -EPROTO;
-+
- 	if (command == I2C_SMBUS_I2C_BLOCK_DATA) {
- 		if (read_write == I2C_SMBUS_WRITE) {
- 			/* set I2C_EN bit in configuration register */
-@@ -682,16 +687,6 @@ static int i801_block_transaction(struct i801_priv *priv,
- 		}
- 	}
+ 	mdiobus_unregister(bus);
+-	iounmap(bus->priv);
++	iounmap(priv->mdio_base);
+ 	mdiobus_free(bus);
  
--	if (read_write == I2C_SMBUS_WRITE
--	 || command == I2C_SMBUS_I2C_BLOCK_DATA) {
--		if (data->block[0] < 1)
--			data->block[0] = 1;
--		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
--			data->block[0] = I2C_SMBUS_BLOCK_MAX;
--	} else {
--		data->block[0] = 32;	/* max for SMBus block reads */
--	}
--
- 	/* Experience has shown that the block buffer can only be used for
- 	   SMBus (not I2C) block transactions, even though the datasheet
- 	   doesn't mention this limitation. */
--- 
-2.34.1
-
+ 	return 0;
 
 
