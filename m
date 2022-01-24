@@ -2,183 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0312C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 03:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB1AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 03:50:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241123AbiAXDuM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 22:50:12 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:46824 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235150AbiAXDuK (ORCPT
+        id S241131AbiAXDuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 22:50:16 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31180 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241124AbiAXDuP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 22:50:10 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id F14711F380;
-        Mon, 24 Jan 2022 03:50:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1642996208; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FYLGS1PTqJRpqgka1auwglvUY+5X6emkkkTz1OsVE0s=;
-        b=KHTxxWejAOBFxzA1CNlxQjTN2iX4o/sZFfa45ydqZ1JLfwFms/xzzcwDI6ofU6ju565acI
-        QmhYpAZDMf7BA/Jmmc5tBtfmnGHOzpuDDinasbHiltflGlTXTCHECADMzAD5F4PV0uI/Yg
-        vXTItN9q+NI2VtvK8HhIGE9UtG5xMt4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1642996208;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=FYLGS1PTqJRpqgka1auwglvUY+5X6emkkkTz1OsVE0s=;
-        b=HpOa16A1q2wb+IIVCXcmuChBJ4c4JP/us0FYuOnsqYwbvjxutS2fcW6oJTQqdGIyWzU96j
-        NydOaVCJg/bZKRBQ==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id F119E1331A;
-        Mon, 24 Jan 2022 03:50:05 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id AyZIKu0h7mGKRAAAMHmgww
-        (envelope-from <neilb@suse.de>); Mon, 24 Jan 2022 03:50:05 +0000
-Subject: [PATCH 00/23 V3] Repair SWAP-over_NFS
-From:   NeilBrown <neilb@suse.de>
-To:     Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     linux-nfs@vger.kernel.org, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 24 Jan 2022 14:48:32 +1100
-Message-ID: <164299573337.26253.7538614611220034049.stgit@noble.brown>
-User-Agent: StGit/0.23
+        Sun, 23 Jan 2022 22:50:15 -0500
+Received: from kwepemi100015.china.huawei.com (unknown [172.30.72.57])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jhwsd6LJhz8wTC;
+        Mon, 24 Jan 2022 11:47:17 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi100015.china.huawei.com (7.221.188.125) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 24 Jan 2022 11:50:12 +0800
+Received: from [10.174.176.73] (10.174.176.73) by
+ kwepemm600009.china.huawei.com (7.193.23.164) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 24 Jan 2022 11:50:11 +0800
+Subject: Re: [PATCH v6 2/2] block: cancel all throttled bios in del_gendisk()
+To:     Ming Lei <ming.lei@redhat.com>
+CC:     <mkoutny@suse.com>, <paulmck@kernel.org>, <tj@kernel.org>,
+        <axboe@kernel.dk>, <cgroups@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yi.zhang@huawei.com>
+References: <20220110134758.2233758-1-yukuai3@huawei.com>
+ <20220110134758.2233758-3-yukuai3@huawei.com> <Yd5FkuhYX9YcgQkZ@T590>
+From:   "yukuai (C)" <yukuai3@huawei.com>
+Message-ID: <b416e6a6-f2c9-caf3-dacd-f937746207da@huawei.com>
+Date:   Mon, 24 Jan 2022 11:50:11 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <Yd5FkuhYX9YcgQkZ@T590>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.73]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This version of the series addresses the review comments received,
-particularly from Christof.
-Thanks to all for review and testing.
+ÔÚ 2022/01/12 11:05, Ming Lei Ð´µÀ:
+> Hello Yu Kuai,
+> 
+> On Mon, Jan 10, 2022 at 09:47:58PM +0800, Yu Kuai wrote:
+>> Throttled bios can't be issued after del_gendisk() is done, thus
+>> it's better to cancel them immediately rather than waiting for
+>> throttle is done.
+>>
+>> For example, if user thread is throttled with low bps while it's
+>> issuing large io, and the device is deleted. The user thread will
+>> wait for a long time for io to return.
+>>
+>> Noted this patch is mainly from revertion of commit 32e3374304c7
+>> ("blk-throttle: remove tg_drain_bios") and commit b77412372b68
+>> ("blk-throttle: remove blk_throtl_drain").
+>>
+>> Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+>> ---
+>>   block/blk-throttle.c | 77 ++++++++++++++++++++++++++++++++++++++++++++
+>>   block/blk-throttle.h |  2 ++
+>>   block/genhd.c        |  2 ++
+>>   3 files changed, 81 insertions(+)
+> 
+> Just wondering why not take the built-in way in throtl_upgrade_state() for
+> canceling throttled bios? Something like the following, then we can avoid
+> to re-invent the wheel.
 
-The patch adding mm/swap.h got a minor conflict when I rebaesd on
-5.17-rc1, suggestion that it could easily get more conflicts in the
-future.  It might be good if it could land before 5.17 comes out, to
-avoid (some of) those conflicts.
+Hi, Tejun
 
-I think (Though haven't checked) that all the NFS patch patches
-except
-      NFS: rename nfs_direct_IO and use as ->swap_rw
-      NFS: swap IO handling is slightly different for O_DIRECT IO
-can land independently of the MM patches, and can be moved to the
-end of the series.  Maybe they could be held until after 5.18-rc1 if we
-agree to proceed with these in the next merge window.
+Both ways can fix the problem, which way do you prefer?
 
-Intro from previous series is below.
 Thanks,
-NeilBrown
-
-swap-over-NFS currently has a variety of problems.
-
-swap writes call generic_write_checks(), which always fails on a swap
-file, so it completely fails.
-Even without this, various deadlocks are possible - largely due to
-improvements in NFS memory allocation (using NOFS instead of ATOMIC)
-which weren't tested against swap-out.
-
-NFS is the only filesystem that has supported fs-based swap IO, and it
-hasn't worked for several releases, so now is a convenient time to clean
-up the swap-via-filesystem interfaces - we cannot break anything !
-
-So the first few patches here clean up and improve various parts of the
-swap-via-filesystem code.  ->activate_swap() is given a cleaner
-interface, a new ->swap_rw is introduced instead of burdening
-->direct_IO, etc.
-
-Current swap-to-filesystem code only ever submits single-page reads and
-writes.  These patches change that to allow multi-page IO when adjacent
-requests are submitted.  Writes are also changed to be async rather than
-sync.  This substantially speeds up write throughput for swap-over-NFS.
-
-Some of the NFS patches can land independently of the MM patches.  A few
-require the MM patches to land first.
-
----
-
-NeilBrown (23):
-      MM: create new mm/swap.h header file.
-      MM: extend block-plugging to cover all swap reads with read-ahead
-      MM: drop swap_set_page_dirty
-      MM: move responsibility for setting SWP_FS_OPS to ->swap_activate
-      MM: reclaim mustn't enter FS for SWP_FS_OPS swap-space
-      MM: introduce ->swap_rw and use it for reads from SWP_FS_OPS swap-space
-      MM: perform async writes to SWP_FS_OPS swap-space using ->swap_rw
-      DOC: update documentation for swap_activate and swap_rw
-      MM: submit multipage reads for SWP_FS_OPS swap-space
-      MM: submit multipage write for SWP_FS_OPS swap-space
-      VFS: Add FMODE_CAN_ODIRECT file flag
-      NFS: remove IS_SWAPFILE hack
-      NFS: rename nfs_direct_IO and use as ->swap_rw
-      NFS: swap IO handling is slightly different for O_DIRECT IO
-      SUNRPC/call_alloc: async tasks mustn't block waiting for memory
-      SUNRPC/auth: async tasks mustn't block waiting for memory
-      SUNRPC/xprt: async tasks mustn't block waiting for memory
-      SUNRPC: remove scheduling boost for "SWAPPER" tasks.
-      NFS: discard NFS_RPC_SWAPFLAGS and RPC_TASK_ROOTCREDS
-      SUNRPC: improve 'swap' handling: scheduling and PF_MEMALLOC
-      NFSv4: keep state manager thread active if swap is enabled
-      NFS: swap-out must always use STABLE writes.
-      SUNRPC: lock against ->sock changing during sysfs read
-
-
- Documentation/filesystems/locking.rst |  18 ++-
- Documentation/filesystems/vfs.rst     |  17 ++-
- drivers/block/loop.c                  |   4 +-
- fs/cifs/file.c                        |   7 +-
- fs/fcntl.c                            |   9 +-
- fs/nfs/direct.c                       |  56 ++++---
- fs/nfs/file.c                         |  39 +++--
- fs/nfs/nfs4_fs.h                      |   1 +
- fs/nfs/nfs4proc.c                     |  20 +++
- fs/nfs/nfs4state.c                    |  39 ++++-
- fs/nfs/read.c                         |   4 -
- fs/nfs/write.c                        |   2 +
- fs/open.c                             |   9 +-
- fs/overlayfs/file.c                   |  13 +-
- include/linux/fs.h                    |   4 +
- include/linux/nfs_fs.h                |  11 +-
- include/linux/nfs_xdr.h               |   2 +
- include/linux/sunrpc/auth.h           |   1 +
- include/linux/sunrpc/sched.h          |   1 -
- include/linux/swap.h                  |   7 +-
- include/linux/writeback.h             |   7 +
- include/trace/events/sunrpc.h         |   1 -
- mm/madvise.c                          |   8 +-
- mm/memory.c                           |   2 +-
- mm/page_io.c                          | 210 ++++++++++++++++++++------
- mm/swap.h                             |  26 +++-
- mm/swap_state.c                       |  33 ++--
- mm/swapfile.c                         |  13 +-
- mm/vmscan.c                           |  38 +++--
- net/sunrpc/auth.c                     |   8 +-
- net/sunrpc/auth_gss/auth_gss.c        |   6 +-
- net/sunrpc/auth_unix.c                |  10 +-
- net/sunrpc/clnt.c                     |   7 +-
- net/sunrpc/sched.c                    |  29 ++--
- net/sunrpc/sysfs.c                    |   5 +-
- net/sunrpc/xprt.c                     |  19 +--
- net/sunrpc/xprtrdma/transport.c       |  10 +-
- net/sunrpc/xprtsock.c                 |  15 +-
- 38 files changed, 505 insertions(+), 206 deletions(-)
-
---
-Signature
-
+Kuai
