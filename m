@@ -2,46 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839DDC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE7FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380642AbiAXUQj (ORCPT
+        id S1380421AbiAXUQR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:39 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42774 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245216AbiAXT6W (ORCPT
+        Mon, 24 Jan 2022 15:16:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347390AbiAXT4p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:58:22 -0500
+        Mon, 24 Jan 2022 14:56:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E14DC02B865;
+        Mon, 24 Jan 2022 11:27:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1CF86B811F9;
-        Mon, 24 Jan 2022 19:58:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F10AC36AEB;
-        Mon, 24 Jan 2022 19:58:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A067F60917;
+        Mon, 24 Jan 2022 19:27:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88966C340E5;
+        Mon, 24 Jan 2022 19:27:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054298;
-        bh=qDhR74ah9joXahceyFh9WO/6szkMtojGpRt+7xDLEdM=;
+        s=korg; t=1643052449;
+        bh=LzOJr1Lqq1Nnk+HbsxiGbGTjhccq7HG785DI4oHNG5k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P0/EHm9o5X2igDsYwgKZ/QNcG5/pVIn2Farmc7d2o+QjSkHnwhNk+rSGtgA+Aw+WG
-         5z00aryneVgdqTGzN7FnglUlOPhXihJ18ed0Rq/rIncQgwcypjXnLxcwbtBtgBY+vh
-         zFplSCtfaYLWKy51kglZMB29BSKSJW+QKxMF1t/4=
+        b=KZqy3sSK2ptgYZ9Hd3gixHVfz4r6yOi2lwOZf9d8gSaPQ97PH7n0jpBJ5c/vr0KMl
+         399exZce/aEVzqifNx9NPUIb9ucT6y0WRmkcXVHQi2g6lIAu47O8R5SA2SftZ5/34Q
+         Uc5BeduLpb5u+tRC+0RRaCHT1AYpq5mE0bNn6/Nk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 343/563] media: rcar-vin: Update format alignment constraints
-Date:   Mon, 24 Jan 2022 19:41:48 +0100
-Message-Id: <20220124184036.289671836@linuxfoundation.org>
+        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Borislav Petkov <bp@alien8.de>, Christoph Hellwig <hch@lst.de>,
+        David Hildenbrand <david@redhat.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.4 030/320] mm/page_alloc.c: do not warn allocation failure on zone DMA if no managed pages
+Date:   Mon, 24 Jan 2022 19:40:14 +0100
+Message-Id: <20220124183954.783058722@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,66 +62,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+From: Baoquan He <bhe@redhat.com>
 
-[ Upstream commit da6911f330d40cfe115a37249e47643eff555e82 ]
+commit c4dc63f0032c77464fbd4e7a6afc22fa6913c4a7 upstream.
 
-This change fixes two issues with the size constraints for buffers.
+In kdump kernel of x86_64, page allocation failure is observed:
 
-- There is no width alignment constraint for RGB formats. Prior to this
-  change they were treated as YUV and as a result were more restricted
-  than needed. Add a new check to differentiate between the two.
+ kworker/u2:2: page allocation failure: order:0, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
+ CPU: 0 PID: 55 Comm: kworker/u2:2 Not tainted 5.16.0-rc4+ #5
+ Hardware name: AMD Dinar/Dinar, BIOS RDN1505B 06/05/2013
+ Workqueue: events_unbound async_run_entry_fn
+ Call Trace:
+  <TASK>
+  dump_stack_lvl+0x48/0x5e
+  warn_alloc.cold+0x72/0xd6
+  __alloc_pages_slowpath.constprop.0+0xc69/0xcd0
+  __alloc_pages+0x1df/0x210
+  new_slab+0x389/0x4d0
+  ___slab_alloc+0x58f/0x770
+  __slab_alloc.constprop.0+0x4a/0x80
+  kmem_cache_alloc_trace+0x24b/0x2c0
+  sr_probe+0x1db/0x620
+  ......
+  device_add+0x405/0x920
+  ......
+  __scsi_add_device+0xe5/0x100
+  ata_scsi_scan_host+0x97/0x1d0
+  async_run_entry_fn+0x30/0x130
+  process_one_work+0x1e8/0x3c0
+  worker_thread+0x50/0x3b0
+  ? rescuer_thread+0x350/0x350
+  kthread+0x16b/0x190
+  ? set_kthread_struct+0x40/0x40
+  ret_from_fork+0x22/0x30
+  </TASK>
+ Mem-Info:
+ ......
 
-- The minimum width and height supported is 5x2, not 2x4, this is an
-  artifact from the driver's soc-camera days. Fix this incorrect
-  assumption.
+The above failure happened when calling kmalloc() to allocate buffer with
+GFP_DMA.  It requests to allocate slab page from DMA zone while no managed
+pages at all in there.
 
-Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+ sr_probe()
+ --> get_capabilities()
+     --> buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
+
+Because in the current kernel, dma-kmalloc will be created as long as
+CONFIG_ZONE_DMA is enabled.  However, kdump kernel of x86_64 doesn't have
+managed pages on DMA zone since commit 6f599d84231f ("x86/kdump: Always
+reserve the low 1M when the crashkernel option is specified").  The
+failure can be always reproduced.
+
+For now, let's mute the warning of allocation failure if requesting pages
+from DMA zone while no managed pages.
+
+[akpm@linux-foundation.org: fix warning]
+
+Link: https://lkml.kernel.org/r/20211223094435.248523-4-bhe@redhat.com
+Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
+Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc: Christoph Lameter <cl@linux.com>
+Cc: Pekka Enberg <penberg@kernel.org>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Christoph Hellwig <hch@lst.de>
+Cc: David Hildenbrand <david@redhat.com>
+Cc: David Laight <David.Laight@ACULAB.COM>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/rcar-vin/rcar-v4l2.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ mm/page_alloc.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/rcar-vin/rcar-v4l2.c b/drivers/media/platform/rcar-vin/rcar-v4l2.c
-index 3e7a3ae2a6b97..0bbe6f9f92062 100644
---- a/drivers/media/platform/rcar-vin/rcar-v4l2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-v4l2.c
-@@ -175,20 +175,27 @@ static void rvin_format_align(struct rvin_dev *vin, struct v4l2_pix_format *pix)
- 		break;
- 	}
+--- a/mm/page_alloc.c
++++ b/mm/page_alloc.c
+@@ -3767,7 +3767,9 @@ void warn_alloc(gfp_t gfp_mask, nodemask
+ 	va_list args;
+ 	static DEFINE_RATELIMIT_STATE(nopage_rs, 10*HZ, 1);
  
--	/* HW limit width to a multiple of 32 (2^5) for NV12/16 else 2 (2^1) */
-+	/* Hardware limits width alignment based on format. */
- 	switch (pix->pixelformat) {
-+	/* Multiple of 32 (2^5) for NV12/16. */
- 	case V4L2_PIX_FMT_NV12:
- 	case V4L2_PIX_FMT_NV16:
- 		walign = 5;
- 		break;
--	default:
-+	/* Multiple of 2 (2^1) for YUV. */
-+	case V4L2_PIX_FMT_YUYV:
-+	case V4L2_PIX_FMT_UYVY:
- 		walign = 1;
- 		break;
-+	/* No multiple for RGB. */
-+	default:
-+		walign = 0;
-+		break;
- 	}
+-	if ((gfp_mask & __GFP_NOWARN) || !__ratelimit(&nopage_rs))
++	if ((gfp_mask & __GFP_NOWARN) ||
++	     !__ratelimit(&nopage_rs) ||
++	     ((gfp_mask & __GFP_DMA) && !has_managed_dma()))
+ 		return;
  
- 	/* Limit to VIN capabilities */
--	v4l_bound_align_image(&pix->width, 2, vin->info->max_width, walign,
--			      &pix->height, 4, vin->info->max_height, 2, 0);
-+	v4l_bound_align_image(&pix->width, 5, vin->info->max_width, walign,
-+			      &pix->height, 2, vin->info->max_height, 0, 0);
- 
- 	pix->bytesperline = rvin_format_bytesperline(vin, pix);
- 	pix->sizeimage = rvin_format_sizeimage(pix);
--- 
-2.34.1
-
+ 	va_start(args, fmt);
 
 
