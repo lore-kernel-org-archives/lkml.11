@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EAEC46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF193C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838122AbiAXWpy (ORCPT
+        id S1838506AbiAXWqn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58872 "EHLO
+        Mon, 24 Jan 2022 17:46:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59074 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457043AbiAXVkr (ORCPT
+        with ESMTP id S1457174AbiAXVlH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:40:47 -0500
+        Mon, 24 Jan 2022 16:41:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE6836150C;
-        Mon, 24 Jan 2022 21:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8340EC340E5;
-        Mon, 24 Jan 2022 21:40:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29D006151E;
+        Mon, 24 Jan 2022 21:41:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3879EC340E4;
+        Mon, 24 Jan 2022 21:41:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060446;
-        bh=waB+9LUVqnckRupSe5o4AhePh0a/nlEjGKrVjtO3D4Y=;
+        s=korg; t=1643060466;
+        bh=gZXY/vjiqQc7fhVYSbfkUerxw0714FNVQzxq8TQcFeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sr4q5+2MEXM8YEePp/OcKga3dmCWG0JSBPVtHZoDznXVfq+nRYz8yH/Gfo5xqUjID
-         TEeqE3CdoODsUK8bcOqKsq6WxzfBoA49wdR6iJN2LPUB5s4JtNWfXEWkOKofz0oscU
-         e/AgqlJZYnfVOcOAeFIxW3lpVBKZFs05MXC8jKMQ=
+        b=SpXQwbTL9v9pUkMYn52xWdtoYiyIgeYRBIRSIQ2xkur5+hp38X6HlYsEfWy/sTJNy
+         NkNicLwdrTHV1l48mPTYVTqIrEwgRLyfoMmAiPl4GoTHddzgB1TF6dX0RmkDSZ5TST
+         IpKmdQAHnRA66zW7gvY60c1uKsVh+sJCikmPtoEM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 0951/1039] riscv: dts: microchip: mpfs: Drop empty chosen node
-Date:   Mon, 24 Jan 2022 19:45:40 +0100
-Message-Id: <20220124184157.255161107@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 0940/1039] xdp: check prog type before updating BPF link
+Date:   Mon, 24 Jan 2022 19:45:29 +0100
+Message-Id: <20220124184156.881999296@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,36 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Geert Uytterhoeven <geert@linux-m68k.org>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-commit 53ef07326ad0d6ae7fefded22bc53b427d542761 upstream.
+commit 382778edc8262b7535f00523e9eb22edba1b9816 upstream.
 
-It does not make sense to have an (empty) chosen node in an SoC-specific
-.dtsi, as chosen is meant for system-specific configuration.
-It is already provided in microchip-mpfs-icicle-kit.dts anyway.
+The bpf_xdp_link_update() function didn't check the program type before
+updating the program, which made it possible to install any program type as
+an XDP program, which is obviously not good. Syzbot managed to trigger this
+by swapping in an LWT program on the XDP hook which would crash in a helper
+call.
 
-Fixes: 0fa6107eca4186ad ("RISC-V: Initial DTS for Microchip ICICLE board")
-Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-Tested-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Fix this by adding a check and bailing out if the types don't match.
+
+Fixes: 026a4c28e1db ("bpf, xdp: Implement LINK_UPDATE for BPF XDP link")
+Reported-by: syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/r/20220107221115.326171-1-toke@redhat.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi |    3 ---
- 1 file changed, 3 deletions(-)
+ net/core/dev.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-+++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
-@@ -9,9 +9,6 @@
- 	model = "Microchip PolarFire SoC";
- 	compatible = "microchip,mpfs";
- 
--	chosen {
--	};
--
- 	cpus {
- 		#address-cells = <1>;
- 		#size-cells = <0>;
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9656,6 +9656,12 @@ static int bpf_xdp_link_update(struct bp
+ 		goto out_unlock;
+ 	}
+ 	old_prog = link->prog;
++	if (old_prog->type != new_prog->type ||
++	    old_prog->expected_attach_type != new_prog->expected_attach_type) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	if (old_prog == new_prog) {
+ 		/* no-op, don't disturb drivers */
+ 		bpf_prog_put(new_prog);
 
 
