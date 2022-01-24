@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66ACAC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87A2BC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1584411AbiAXWVF (ORCPT
+        id S1584443AbiAXWVM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:21:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50630 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450178AbiAXV3i (ORCPT
+        Mon, 24 Jan 2022 17:21:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44990 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453413AbiAXVaI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:29:38 -0500
+        Mon, 24 Jan 2022 16:30:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EFFE61469;
-        Mon, 24 Jan 2022 21:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10D0FC340E4;
-        Mon, 24 Jan 2022 21:29:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5006BB8105C;
+        Mon, 24 Jan 2022 21:30:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67E96C340E4;
+        Mon, 24 Jan 2022 21:30:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059777;
-        bh=xZVrHsD0rPsj3VwK4y+uOU/PgOon9I3CUjgItIi+HoA=;
+        s=korg; t=1643059804;
+        bh=P8uN7Qcdlnrf6K1w94rRAe6b7mk1wt3YZB943ppmnEc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jaCJCUV6apRBmvC/WRkmSRMmHPurcFQQun3IBROqSxFBfYDPhPhj8YyhHh/4lYuCd
-         3xzL3g22ARsRt2SERhR7sHCrORIqe/l1zOKxepIB+vqNS/RUPfRt7iV5iWYpdy2RKd
-         x5GZZmIEHqx6Rhgc17U3tjHSO+wp+h1ALv+65ezc=
+        b=ee+6EdznbQGMeWMA3cysw69uuVJf6laigvy0HCqQKth3m2LJcuMrAYH1/mFG93oTc
+         jRehgTDjv3C0SZ5FYyW1/3ayiuoExzgsIPl8WOKCMsGWKXUJYF+zyNhBmwx25N5YBP
+         Te784DT9sNrpIWUx1FLBI9+exJ7Pv5d66p0m7mls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mark Asselstine <mark.asselstine@windriver.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bob Moore <robert.moore@intel.com>,
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0697/1039] ACPICA: Utilities: Avoid deleting the same object twice in a row
-Date:   Mon, 24 Jan 2022 19:41:26 +0100
-Message-Id: <20220124184148.772245819@linuxfoundation.org>
+Subject: [PATCH 5.16 0740/1039] i2c: i801: Dont silently correct invalid transfer size
+Date:   Mon, 24 Jan 2022 19:42:09 +0100
+Message-Id: <20220124184150.202022295@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,46 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
+[ Upstream commit effa453168a7eeb8a562ff4edc1dbf9067360a61 ]
 
-ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
+If an invalid block size is provided, reject it instead of silently
+changing it to a supported value. Especially critical I see the case of
+a write transfer with block length 0. In this case we have no guarantee
+that the byte we would write is valid. When silently reducing a read to
+32 bytes then we don't return an error and the caller may falsely
+assume that we returned the full requested data.
 
-If original_count is 0 in acpi_ut_update_ref_count (),
-acpi_ut_delete_internal_obj () is invoked for the target object, which is
-incorrect, because that object has been deleted once already and the
-memory allocated to store it may have been reclaimed and allocated
-for a different purpose by the host OS.  Moreover, a confusing debug
-message following the "Reference Count is already zero, cannot
-decrement" warning is printed in that case.
+If this change should break any (broken) caller, then I think we should
+fix the caller.
 
-To fix this issue, make acpi_ut_update_ref_count () return after finding
-that original_count is 0 and printing the above warning.
-
-Link: https://github.com/acpica/acpica/commit/c11af67d
-Link: https://github.com/acpica/acpica/pull/652
-Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Reviewed-by: Jean Delvare <jdelvare@suse.de>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/utdelete.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-i801.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
-index e5ba9795ec696..8d7736d2d2699 100644
---- a/drivers/acpi/acpica/utdelete.c
-+++ b/drivers/acpi/acpica/utdelete.c
-@@ -422,6 +422,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
- 			ACPI_WARNING((AE_INFO,
- 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
- 				      object));
-+			return;
- 		}
+diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
+index 41446f9cc52da..c87ea470eba98 100644
+--- a/drivers/i2c/busses/i2c-i801.c
++++ b/drivers/i2c/busses/i2c-i801.c
+@@ -775,6 +775,11 @@ static int i801_block_transaction(struct i801_priv *priv, union i2c_smbus_data *
+ 	int result = 0;
+ 	unsigned char hostc;
  
- 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_ALLOCATIONS,
++	if (read_write == I2C_SMBUS_READ && command == I2C_SMBUS_BLOCK_DATA)
++		data->block[0] = I2C_SMBUS_BLOCK_MAX;
++	else if (data->block[0] < 1 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
++		return -EPROTO;
++
+ 	if (command == I2C_SMBUS_I2C_BLOCK_DATA) {
+ 		if (read_write == I2C_SMBUS_WRITE) {
+ 			/* set I2C_EN bit in configuration register */
+@@ -788,16 +793,6 @@ static int i801_block_transaction(struct i801_priv *priv, union i2c_smbus_data *
+ 		}
+ 	}
+ 
+-	if (read_write == I2C_SMBUS_WRITE
+-	 || command == I2C_SMBUS_I2C_BLOCK_DATA) {
+-		if (data->block[0] < 1)
+-			data->block[0] = 1;
+-		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
+-			data->block[0] = I2C_SMBUS_BLOCK_MAX;
+-	} else {
+-		data->block[0] = 32;	/* max for SMBus block reads */
+-	}
+-
+ 	/* Experience has shown that the block buffer can only be used for
+ 	   SMBus (not I2C) block transactions, even though the datasheet
+ 	   doesn't mention this limitation. */
 -- 
 2.34.1
 
