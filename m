@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498E6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A36BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238443AbiAXTHw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:07:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344602AbiAXTBn (ORCPT
+        id S234902AbiAXTHz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:07:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60472 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344657AbiAXTBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:01:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C7CC0604E0;
-        Mon, 24 Jan 2022 10:58:30 -0800 (PST)
+        Mon, 24 Jan 2022 14:01:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C8B9B8121D;
-        Mon, 24 Jan 2022 18:58:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 653D0C340E5;
-        Mon, 24 Jan 2022 18:58:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07CED60B86;
+        Mon, 24 Jan 2022 19:01:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEEBDC340E5;
+        Mon, 24 Jan 2022 19:01:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050708;
-        bh=tlhxMPv9xAdFHyHVPSocNKb4ygBkd3GToRMLuTLcu/s=;
+        s=korg; t=1643050908;
+        bh=76HVBb0t5v3c1y4QZ4tIBcCqirxUjeVEVr/1bZHAtoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KnsGcz//pomxc8AqcI/omO69Y6PFkbrQ1si37LH5tHJmlEqCFGqQ4t6XZ6XbDR0uw
-         l2jmO4TvrXizLeZvzfFHIL1vZLKX3XHpNXkAR8mpCtmUGxq0K+W8/5a8L3wthhg9nZ
-         f6p0RY6zcWufvI8Sqi5v58blW3zmNi1VsLGqURP0=
+        b=wI3WAnSupWwhKIgq9KjADJsPpCe+rm/9qQf7RoqQlwFn96/ngoaC7LonTivoB+TBS
+         IgP6Fyf2XsZjI6+JzyqiNmjq8kQHh7XskRXSZQBv5RnNKnm2JEJzemJz6dVh6yHnfJ
+         OW/SXcQxqHJYYbFaH92n6El4WvF+vPmfwPkKK6R8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Kumar <suresh2514@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 088/157] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-Date:   Mon, 24 Jan 2022 19:42:58 +0100
-Message-Id: <20220124183935.577925109@linuxfoundation.org>
+Subject: [PATCH 4.9 118/157] power: bq25890: Enable continuous conversion for ADC at charging
+Date:   Mon, 24 Jan 2022 19:43:28 +0100
+Message-Id: <20220124183936.522999069@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,66 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Kumar <surkumar@redhat.com>
+From: Yauhen Kharuzhy <jekhor@gmail.com>
 
-[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
+[ Upstream commit 80211be1b9dec04cc2805d3d81e2091ecac289a1 ]
 
-Currently "bond_should_notify_peers: slave ..." messages are printed whenever
-"bond_should_notify_peers" function is called.
+Instead of one shot run of ADC at beginning of charging, run continuous
+conversion to ensure that all charging-related values are monitored
+properly (input voltage, input current, themperature etc.).
 
-+++
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-...
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-+++
-
-This is confusing and can also clutter up debug logs.
-Print logs only when the peer notification happens.
-
-Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Yauhen Kharuzhy <jekhor@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/power/supply/bq25890_charger.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 2b721ed392adb..0d9226bdf6614 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -782,14 +782,14 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	slave = rcu_dereference(bond->curr_active_slave);
- 	rcu_read_unlock();
+diff --git a/drivers/power/supply/bq25890_charger.c b/drivers/power/supply/bq25890_charger.c
+index f993a55cde20f..faf2a62435674 100644
+--- a/drivers/power/supply/bq25890_charger.c
++++ b/drivers/power/supply/bq25890_charger.c
+@@ -521,12 +521,12 @@ static void bq25890_handle_state_change(struct bq25890_device *bq,
  
--	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
--		   slave ? slave->dev->name : "NULL");
--
- 	if (!slave || !bond->send_peer_notif ||
- 	    !netif_carrier_ok(bond->dev) ||
- 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
- 		return false;
- 
-+	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
-+		   slave ? slave->dev->name : "NULL");
-+
- 	return true;
- }
- 
+ 	if (!new_state->online) {			     /* power removed */
+ 		/* disable ADC */
+-		ret = bq25890_field_write(bq, F_CONV_START, 0);
++		ret = bq25890_field_write(bq, F_CONV_RATE, 0);
+ 		if (ret < 0)
+ 			goto error;
+ 	} else if (!old_state.online) {			    /* power inserted */
+ 		/* enable ADC, to have control of charge current/voltage */
+-		ret = bq25890_field_write(bq, F_CONV_START, 1);
++		ret = bq25890_field_write(bq, F_CONV_RATE, 1);
+ 		if (ret < 0)
+ 			goto error;
+ 	}
 -- 
 2.34.1
 
