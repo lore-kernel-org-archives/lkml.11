@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1161CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846782AbiAXXRC (ORCPT
+        id S1846837AbiAXXRM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:17:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
+        Mon, 24 Jan 2022 18:17:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583203AbiAXWRZ (ORCPT
+        with ESMTP id S1583204AbiAXWRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:17:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67BDC0617BC;
-        Mon, 24 Jan 2022 12:47:45 -0800 (PST)
+        Mon, 24 Jan 2022 17:17:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B544C0617A3;
+        Mon, 24 Jan 2022 12:47:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6697360B03;
-        Mon, 24 Jan 2022 20:47:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40D98C340E5;
-        Mon, 24 Jan 2022 20:47:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D72DAB812A5;
+        Mon, 24 Jan 2022 20:47:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9055DC340E5;
+        Mon, 24 Jan 2022 20:47:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057264;
-        bh=TMbXjT5+B1cWmLofbo7JwsrRhqm3bB63X6J8V0Sco6g=;
+        s=korg; t=1643057222;
+        bh=vwRGDU4N4TbEApmcUFKQ4hpx5acenT08Vv9AbCWceh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B9E9V+e5HDBh2QhwzY25BxahosHh0VixLlDhwvtvIa7at5HZoIfFetJTF7ZQaoL3G
-         24ChqIT7Ik1lHs0XXfylkUXVQY6aG1sGGn0L3ozvHRVsJ0Ja60DAd97pfz3oitcCS0
-         QuqGIR9eQFIOVN9X+1oKDM1Pq3/QFqeSkxPqZaHE=
+        b=Yv7ejumzkHOwDtuEmgZ8fPZ66hWE73KJSOd9UB+uwP09VxvEn7j2Locv7F6A75cRn
+         ydamcN4LbR5Srlu70AOxhCapt5oo13j88HwRvj8bnIBhnIsu2M4KHt6P284cVFiG8w
+         DmJ/drUzD8xP3QsgVxX/Po236jzs5YdEPMcfPU7c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Lukas Czerner <lczerner@redhat.com>,
-        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.15 722/846] ext4: destroy ext4_fc_dentry_cachep kmemcache on module removal
-Date:   Mon, 24 Jan 2022 19:43:59 +0100
-Message-Id: <20220124184125.918380838@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.15 741/846] Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
+Date:   Mon, 24 Jan 2022 19:44:18 +0100
+Message-Id: <20220124184126.556593878@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,69 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit ab047d516dea72f011c15c04a929851e4d053109 upstream.
+commit 82ca67321f55a8d1da6ac3ed611da3c32818bb37 upstream.
 
-The kmemcache for ext4_fc_dentry_cachep remains registered after module
-removal.
+The config RANDOMIZE_SLAB does not exist, the authors probably intended to
+refer to the config RANDOMIZE_BASE, which provides kernel address-space
+randomization. They probably just confused SLAB with BASE (these two
+four-letter words coincidentally share three common letters), as they also
+point out the config SLAB_FREELIST_RANDOM as further randomization within
+the same sentence.
 
-Destroy ext4_fc_dentry_cachep kmemcache on module removal.
+Fix the reference of the config for kernel address-space randomization to
+the config that provides that.
 
-Fixes: aa75f4d3daaeb ("ext4: main fast-commit commit path")
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Reviewed-by: Lukas Czerner <lczerner@redhat.com>
-Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
-Link: https://lore.kernel.org/r/20211110134640.lyku5vklvdndw6uk@linutronix.de
-Link: https://lore.kernel.org/r/YbiK3JetFFl08bd7@linutronix.de
-Link: https://lore.kernel.org/r/20211223164436.2628390-1-bigeasy@linutronix.de
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
+Fixes: 6e88559470f5 ("Documentation: Add section about CPU vulnerabilities for Spectre")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/r/20211230171940.27558-1-lukas.bulwahn@gmail.com
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/ext4.h        |    1 +
- fs/ext4/fast_commit.c |    5 +++++
- fs/ext4/super.c       |    2 ++
- 3 files changed, 8 insertions(+)
+ Documentation/admin-guide/hw-vuln/spectre.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/ext4.h
-+++ b/fs/ext4/ext4.h
-@@ -2934,6 +2934,7 @@ bool ext4_fc_replay_check_excluded(struc
- void ext4_fc_replay_cleanup(struct super_block *sb);
- int ext4_fc_commit(journal_t *journal, tid_t commit_tid);
- int __init ext4_fc_init_dentry_cache(void);
-+void ext4_fc_destroy_dentry_cache(void);
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -468,7 +468,7 @@ Spectre variant 2
+    before invoking any firmware code to prevent Spectre variant 2 exploits
+    using the firmware.
  
- /* mballoc.c */
- extern const struct seq_operations ext4_mb_seq_groups_ops;
---- a/fs/ext4/fast_commit.c
-+++ b/fs/ext4/fast_commit.c
-@@ -2188,3 +2188,8 @@ int __init ext4_fc_init_dentry_cache(voi
+-   Using kernel address space randomization (CONFIG_RANDOMIZE_SLAB=y
++   Using kernel address space randomization (CONFIG_RANDOMIZE_BASE=y
+    and CONFIG_SLAB_FREELIST_RANDOM=y in the kernel configuration) makes
+    attacks on the kernel generally more difficult.
  
- 	return 0;
- }
-+
-+void ext4_fc_destroy_dentry_cache(void)
-+{
-+	kmem_cache_destroy(ext4_fc_dentry_cachep);
-+}
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -6653,6 +6653,7 @@ static int __init ext4_init_fs(void)
- out:
- 	unregister_as_ext2();
- 	unregister_as_ext3();
-+	ext4_fc_destroy_dentry_cache();
- out05:
- 	destroy_inodecache();
- out1:
-@@ -6679,6 +6680,7 @@ static void __exit ext4_exit_fs(void)
- 	unregister_as_ext2();
- 	unregister_as_ext3();
- 	unregister_filesystem(&ext4_fs_type);
-+	ext4_fc_destroy_dentry_cache();
- 	destroy_inodecache();
- 	ext4_exit_mballoc();
- 	ext4_exit_sysfs();
 
 
