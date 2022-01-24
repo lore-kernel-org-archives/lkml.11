@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 064FDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C573C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378921AbiAXUKE (ORCPT
+        id S1379232AbiAXUKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56968 "EHLO
+        Mon, 24 Jan 2022 15:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351619AbiAXTwN (ORCPT
+        with ESMTP id S1352597AbiAXTw7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:13 -0500
+        Mon, 24 Jan 2022 14:52:59 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9378AC0617A4;
-        Mon, 24 Jan 2022 11:25:04 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B39C061397;
+        Mon, 24 Jan 2022 11:26:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32F4561317;
-        Mon, 24 Jan 2022 19:25:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFBDC340E5;
-        Mon, 24 Jan 2022 19:25:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA55C61490;
+        Mon, 24 Jan 2022 19:26:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADDACC340E5;
+        Mon, 24 Jan 2022 19:26:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052303;
-        bh=NK+mLdWP7UGRRHa1nOQH/HEHr/3rropPGAQJvjrO/bs=;
+        s=korg; t=1643052392;
+        bh=Jz8l2tb5cXNmDSk3HR4LSQ6/l4bmgntUbC1cSU0TCuI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0RKhU/D0JG6p1U04dqz3xEOnZWSLqfsgz0hqqNT7cxu+r3ltiMUQimv+eJYAbdzIi
-         a+4UsmLjNE0DH5yVVlZ5rm/gClDK4pghmKP2SUt3cdoZlF1yWibadAhUSYfbYfnC/x
-         xr2zWOoJC+sHGr5/pi/GtqhmLLz65ji8uZrZejQc=
+        b=F7+yRoJzMJEmK4n4vmK7TRRqQIhwTC/SWUgnsf5Jn4ulssXU6reuOfa9sK+bkkhbr
+         BTB3QHSQWjUNmroqODQRZseqwLU0bnA7TwvUggNFR18KwJ9SqB3/VKXC7kFBUViMxp
+         EkBB4Es+v08cCJ2ormbE7swVrkdYEoUetJciw7jc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 015/320] media: flexcop-usb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:39:59 +0100
-Message-Id: <20220124183954.272091221@linuxfoundation.org>
+        stable@vger.kernel.org, Yunfei Wang <yf.wang@mediatek.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Will Deacon <will@kernel.org>
+Subject: [PATCH 5.4 026/320] iommu/io-pgtable-arm-v7s: Add error handle for page table allocation failure
+Date:   Mon, 24 Jan 2022 19:40:10 +0100
+Message-Id: <20220124183954.649197168@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,95 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Yunfei Wang <yf.wang@mediatek.com>
 
-commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
+commit a556cfe4cabc6d79cbb7733f118bbb420b376fe6 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+In __arm_v7s_alloc_table function:
+iommu call kmem_cache_alloc to allocate page table, this function
+allocate memory may fail, when kmem_cache_alloc fails to allocate
+table, call virt_to_phys will be abnomal and return unexpected phys
+and goto out_free, then call kmem_cache_free to release table will
+trigger KE, __get_free_pages and free_pages have similar problem,
+so add error handle for page table allocation failure.
 
-Note that the driver was multiplying some of the timeout values with HZ
-twice resulting in 3000-second timeouts with HZ=1000.
-
-Also note that two of the timeout defines are currently unused.
-
-Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
-Cc: stable@vger.kernel.org      # 3.0
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 29859aeb8a6e ("iommu/io-pgtable-arm-v7s: Abort allocation when table address overflows the PTE")
+Signed-off-by: Yunfei Wang <yf.wang@mediatek.com>
+Cc: <stable@vger.kernel.org> # 5.10.*
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20211207113315.29109-1-yf.wang@mediatek.com
+Signed-off-by: Will Deacon <will@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
- drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/iommu/io-pgtable-arm-v7s.c |    6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/media/usb/b2c2/flexcop-usb.c
-+++ b/drivers/media/usb/b2c2/flexcop-usb.c
-@@ -87,7 +87,7 @@ static int flexcop_usb_readwrite_dw(stru
- 			0,
- 			fc_usb->data,
- 			sizeof(u32),
--			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
-+			B2C2_WAIT_FOR_OPERATION_RDW);
- 
- 	if (ret != sizeof(u32)) {
- 		err("error while %s dword from %d (%d).", read ? "reading" :
-@@ -155,7 +155,7 @@ static int flexcop_usb_v8_memory_req(str
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 	if (ret != buflen)
- 		ret = -EIO;
- 
-@@ -249,13 +249,13 @@ static int flexcop_usb_i2c_req(struct fl
- 		/* DKT 020208 - add this to support special case of DiSEqC */
- 	case USB_FUNC_I2C_CHECKWRITE:
- 		pipe = B2C2_USB_CTRL_PIPE_OUT;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_OUT;
- 		break;
- 	case USB_FUNC_I2C_READ:
- 	case USB_FUNC_I2C_REPEATREAD:
- 		pipe = B2C2_USB_CTRL_PIPE_IN;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_IN;
- 		break;
- 	default:
-@@ -282,7 +282,7 @@ static int flexcop_usb_i2c_req(struct fl
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 
- 	if (ret != buflen)
- 		ret = -EIO;
---- a/drivers/media/usb/b2c2/flexcop-usb.h
-+++ b/drivers/media/usb/b2c2/flexcop-usb.h
-@@ -91,13 +91,13 @@ typedef enum {
- 	UTILITY_SRAM_TESTVERIFY     = 0x16,
- } flexcop_usb_utility_function_t;
- 
--#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
--#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_RW 1000
-+#define B2C2_WAIT_FOR_OPERATION_RDW 3000
-+#define B2C2_WAIT_FOR_OPERATION_WDW 1000
- 
--#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
- 
- typedef enum {
- 	V8_MEMORY_PAGE_DVB_CI = 0x20,
+--- a/drivers/iommu/io-pgtable-arm-v7s.c
++++ b/drivers/iommu/io-pgtable-arm-v7s.c
+@@ -244,13 +244,17 @@ static void *__arm_v7s_alloc_table(int l
+ 			__GFP_ZERO | ARM_V7S_TABLE_GFP_DMA, get_order(size));
+ 	else if (lvl == 2)
+ 		table = kmem_cache_zalloc(data->l2_tables, gfp);
++
++	if (!table)
++		return NULL;
++
+ 	phys = virt_to_phys(table);
+ 	if (phys != (arm_v7s_iopte)phys) {
+ 		/* Doesn't fit in PTE */
+ 		dev_err(dev, "Page table does not fit in PTE: %pa", &phys);
+ 		goto out_free;
+ 	}
+-	if (table && !cfg->coherent_walk) {
++	if (!cfg->coherent_walk) {
+ 		dma = dma_map_single(dev, table, size, DMA_TO_DEVICE);
+ 		if (dma_mapping_error(dev, dma))
+ 			goto out_free;
 
 
