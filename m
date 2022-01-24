@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E72C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C19AC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354320AbiAXTg3 (ORCPT
+        id S1354421AbiAXTgg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352698AbiAXTa5 (ORCPT
+        Mon, 24 Jan 2022 14:36:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54226 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352872AbiAXTbN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:30:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20EE6C028C15;
-        Mon, 24 Jan 2022 11:14:00 -0800 (PST)
+        Mon, 24 Jan 2022 14:31:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B2CB36124E;
-        Mon, 24 Jan 2022 19:13:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E809C340E5;
-        Mon, 24 Jan 2022 19:13:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C205DB810AF;
+        Mon, 24 Jan 2022 19:31:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D93D3C340E5;
+        Mon, 24 Jan 2022 19:31:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051639;
-        bh=6tmTeqTNP3KBX1hcRrZiqO7BaY+kpbpNKJCvnuGuh6c=;
+        s=korg; t=1643052670;
+        bh=Sk9A/4JkAGKM92L/GmL40lQafKcgq0e2rnxGxsxYeoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GrNhsCSFPrj8msPQ3tFhOQs89F3Es9XQu4kPkU9Dz+SnyZpLOxvDynXDOQ4Adq3ng
-         klH0QriPDdY9Qz8vKbbgYCCURKN3a3QB8bI3a3sm5EPq62zbcCAHVXS22PfuUc3DwP
-         GrIRB+q52kyfS2wktdJUq71RCUIgwZ5AeqCQLzww=
+        b=agDew632/Z7VCT2478pPbK5rDfcvW4nMuHOs6dKPO+0rLlOGX7gyiB/gWJej8SSo1
+         VMQTdiyA7QITZvL/CX48pTCsqW528zzDlNxZ/gWNBhfE2E4OakVU//JrVMOkWCInDS
+         MSYEAquqaEybzUc0Ms8QFuIi3D8wNaCGr1Ml98ng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.19 007/239] can: gs_usb: fix use of uninitialized variable, detach device on reception of invalid USB data
-Date:   Mon, 24 Jan 2022 19:40:45 +0100
-Message-Id: <20220124183943.347749020@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
+        syzbot <syzkaller@googlegroups.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 103/320] ppp: ensure minimum packet size in ppp_write()
+Date:   Mon, 24 Jan 2022 19:41:27 +0100
+Message-Id: <20220124183957.223371972@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,51 +50,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Eric Dumazet <edumazet@google.com>
 
-commit 4a8737ff068724f509d583fef404d349adba80d6 upstream.
+[ Upstream commit 44073187990d5629804ce0627525f6ea5cfef171 ]
 
-The received data contains the channel the received data is associated
-with. If the channel number is bigger than the actual number of
-channels assume broken or malicious USB device and shut it down.
+It seems pretty clear ppp layer assumed user space
+would always be kind to provide enough data
+in their write() to a ppp device.
 
-This fixes the error found by clang:
+This patch makes sure user provides at least
+2 bytes.
 
-| drivers/net/can/usb/gs_usb.c:386:6: error: variable 'dev' is used
-|                                     uninitialized whenever 'if' condition is true
-|         if (hf->channel >= GS_MAX_INTF)
-|             ^~~~~~~~~~~~~~~~~~~~~~~~~~
-| drivers/net/can/usb/gs_usb.c:474:10: note: uninitialized use occurs here
-|                           hf, dev->gs_hf_size, gs_usb_receive_bulk_callback,
-|                               ^~~
+It adds PPP_PROTO_LEN macro that could replace
+in net-next many occurrences of hard-coded 2 value.
 
-Link: https://lore.kernel.org/all/20211210091158.408326-1-mkl@pengutronix.de
-Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
-Cc: stable@vger.kernel.org
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+I replaced only one occurrence to ease backports
+to stable kernels.
+
+The bug manifests in the following report:
+
+BUG: KMSAN: uninit-value in ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
+ ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
+ __ppp_xmit_process+0x23e/0x4b0 drivers/net/ppp/ppp_generic.c:1640
+ ppp_xmit_process+0x1fe/0x480 drivers/net/ppp/ppp_generic.c:1661
+ ppp_write+0x5cb/0x5e0 drivers/net/ppp/ppp_generic.c:513
+ do_iter_write+0xb0c/0x1500 fs/read_write.c:853
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ ppp_write+0x11d/0x5e0 drivers/net/ppp/ppp_generic.c:501
+ do_iter_write+0xb0c/0x1500 fs/read_write.c:853
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linux-ppp@vger.kernel.org
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/usb/gs_usb.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ppp/ppp_generic.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/net/can/usb/gs_usb.c
-+++ b/drivers/net/can/usb/gs_usb.c
-@@ -328,7 +328,7 @@ static void gs_usb_receive_bulk_callback
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index c6c41a7836c93..a085213dc2eaa 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -69,6 +69,8 @@
+ #define MPHDRLEN	6	/* multilink protocol header length */
+ #define MPHDRLEN_SSN	4	/* ditto with short sequence numbers */
  
- 	/* device reports out of range channel id */
- 	if (hf->channel >= GS_MAX_INTF)
--		goto resubmit_urb;
-+		goto device_detach;
++#define PPP_PROTO_LEN	2
++
+ /*
+  * An instance of /dev/ppp can be associated with either a ppp
+  * interface unit or a ppp channel.  In both cases, file->private_data
+@@ -498,6 +500,9 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
  
- 	dev = usbcan->canch[hf->channel];
+ 	if (!pf)
+ 		return -ENXIO;
++	/* All PPP packets should start with the 2-byte protocol */
++	if (count < PPP_PROTO_LEN)
++		return -EINVAL;
+ 	ret = -ENOMEM;
+ 	skb = alloc_skb(count + pf->hdrlen, GFP_KERNEL);
+ 	if (!skb)
+@@ -1544,7 +1549,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
+ 	}
  
-@@ -413,6 +413,7 @@ static void gs_usb_receive_bulk_callback
+ 	++ppp->stats64.tx_packets;
+-	ppp->stats64.tx_bytes += skb->len - 2;
++	ppp->stats64.tx_bytes += skb->len - PPP_PROTO_LEN;
  
- 	/* USB failure take down all interfaces */
- 	if (rc == -ENODEV) {
-+ device_detach:
- 		for (rc = 0; rc < GS_MAX_INTF; rc++) {
- 			if (usbcan->canch[rc])
- 				netif_device_detach(usbcan->canch[rc]->netdev);
+ 	switch (proto) {
+ 	case PPP_IP:
+-- 
+2.34.1
+
 
 
