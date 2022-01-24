@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B68FC41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89C48C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378722AbiAXVqV (ORCPT
+        id S1353747AbiAXVqg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:46:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33960 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448321AbiAXVM1 (ORCPT
+        Mon, 24 Jan 2022 16:46:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35602 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448372AbiAXVMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:12:27 -0500
+        Mon, 24 Jan 2022 16:12:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A2CAB8123D;
-        Mon, 24 Jan 2022 21:12:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BEBC340E5;
-        Mon, 24 Jan 2022 21:12:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F56C6131F;
+        Mon, 24 Jan 2022 21:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30496C340E5;
+        Mon, 24 Jan 2022 21:12:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058744;
-        bh=cZlP7inydCpcNyjSPOxf7NCHLOzHE2ldB8dKrIBV8pU=;
+        s=korg; t=1643058750;
+        bh=IjNxPGEtSYkVvnCwbHUvJvg0zijHBM+PZ9Fgl4BzepI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BsJe1Io6TcIskWxCC+vmN/DsR5+3H+q/EBAeI37DQMpmh4mbcNm3lNo2gb2XqBRsc
-         0DX0Sli9O1mnkh3PekaSub3thsJHU8A14XfZ7WEpIgAXUBEfwCj9wDQuSMkDseCfyO
-         Iyzouan8N3yUTRrP4pSuG1krBMZJmviWfIi3jTBg=
+        b=fDgPvDMxi5maui4pDfdzJp3zWSTYQRPMXKfTIhEhp89li4R6Sf3T0whgFEGwV2iEk
+         X6IQ/0Ng50oCOvCkyaJNBFFvXly0Rh40Hwwg9Lu9koYigRbehOHvK0tHHLMcS4mWVz
+         q997VIK41FdjCIPpdfLUR72zQcRLeXMnMZgjcovc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Karsten Graul <kgraul@linux.ibm.com>,
-        Wen Gu <guwen@linux.alibaba.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0388/1039] net/smc: Reset conn->lgr when link group registration fails
-Date:   Mon, 24 Jan 2022 19:36:17 +0100
-Message-Id: <20220124184138.361043091@linuxfoundation.org>
+Subject: [PATCH 5.16 0390/1039] usb: dwc2: do not gate off the hardware if it does not support clock gating
+Date:   Mon, 24 Jan 2022 19:36:19 +0100
+Message-Id: <20220124184138.426988331@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,120 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gu <guwen@linux.alibaba.com>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit 36595d8ad46d9e4c41cc7c48c4405b7c3322deac ]
+[ Upstream commit 34146c68083f1aef6709196b3dc888c1ceffd357 ]
 
-SMC connections might fail to be registered in a link group due to
-unable to find a usable link during its creation. As a result,
-smc_conn_create() will return a failure and most resources related
-to the connection won't be applied or initialized, such as
-conn->abort_work or conn->lnk.
+We should not be clearing the HCD_FLAG_HW_ACCESSIBLE bit if the hardware
+does not support clock gating.
 
-If smc_conn_free() is invoked later, it will try to access the
-uninitialized resources related to the connection, thus causing
-a warning or crash.
-
-This patch tries to fix this by resetting conn->lgr to NULL if an
-abnormal exit occurs in smc_lgr_register_conn(), thus avoiding the
-access to uninitialized resources in smc_conn_free().
-
-Meanwhile, the new created link group should be terminated if smc
-connections can't be registered in it. So smc_lgr_cleanup_early() is
-modified to take care of link group only and invoked to terminate
-unusable link group by smc_conn_create(). The call to smc_conn_free()
-is moved out from smc_lgr_cleanup_early() to smc_conn_abort().
-
-Fixes: 56bc3b2094b4 ("net/smc: assign link to a new connection")
-Suggested-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 50fb0c128b6e ("usb: dwc2: Add clock gating entering flow by system suspend")
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220104135922.734776-1-dinguyen@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/smc/af_smc.c   |  8 +++++---
- net/smc/smc_core.c | 12 +++++++-----
- net/smc/smc_core.h |  2 +-
- 3 files changed, 13 insertions(+), 9 deletions(-)
+ drivers/usb/dwc2/hcd.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 1c9289f56dc47..211cd91b6c408 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -632,10 +632,12 @@ static int smc_connect_decline_fallback(struct smc_sock *smc, int reason_code,
+diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
+index 13c779a28e94f..f63a27d11fac8 100644
+--- a/drivers/usb/dwc2/hcd.c
++++ b/drivers/usb/dwc2/hcd.c
+@@ -4399,11 +4399,12 @@ static int _dwc2_hcd_suspend(struct usb_hcd *hcd)
+ 		 * If not hibernation nor partial power down are supported,
+ 		 * clock gating is used to save power.
+ 		 */
+-		if (!hsotg->params.no_clock_gating)
++		if (!hsotg->params.no_clock_gating) {
+ 			dwc2_host_enter_clock_gating(hsotg);
  
- static void smc_conn_abort(struct smc_sock *smc, int local_first)
- {
-+	struct smc_connection *conn = &smc->conn;
-+	struct smc_link_group *lgr = conn->lgr;
-+
-+	smc_conn_free(conn);
- 	if (local_first)
--		smc_lgr_cleanup_early(&smc->conn);
--	else
--		smc_conn_free(&smc->conn);
-+		smc_lgr_cleanup_early(lgr);
- }
- 
- /* check if there is a rdma device available for this connection. */
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index a6849362f4ddd..c9a8092c4ac96 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -171,8 +171,10 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
- 
- 	if (!conn->lgr->is_smcd) {
- 		rc = smcr_lgr_conn_assign_link(conn, first);
--		if (rc)
-+		if (rc) {
-+			conn->lgr = NULL;
- 			return rc;
+-		/* After entering suspend, hardware is not accessible */
+-		clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
++			/* After entering suspend, hardware is not accessible */
++			clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
 +		}
- 	}
- 	/* find a new alert_token_local value not yet used by some connection
- 	 * in this link group
-@@ -622,15 +624,13 @@ int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb)
- 	return skb->len;
- }
- 
--void smc_lgr_cleanup_early(struct smc_connection *conn)
-+void smc_lgr_cleanup_early(struct smc_link_group *lgr)
- {
--	struct smc_link_group *lgr = conn->lgr;
- 	spinlock_t *lgr_lock;
- 
- 	if (!lgr)
- 		return;
- 
--	smc_conn_free(conn);
- 	smc_lgr_list_head(lgr, &lgr_lock);
- 	spin_lock_bh(lgr_lock);
- 	/* do not use this link group for new connections */
-@@ -1832,8 +1832,10 @@ create:
- 		write_lock_bh(&lgr->conns_lock);
- 		rc = smc_lgr_register_conn(conn, true);
- 		write_unlock_bh(&lgr->conns_lock);
--		if (rc)
-+		if (rc) {
-+			smc_lgr_cleanup_early(lgr);
- 			goto out;
-+		}
- 	}
- 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
- 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index d63b08274197e..73d0c35d3eb77 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -468,7 +468,7 @@ static inline void smc_set_pci_values(struct pci_dev *pci_dev,
- struct smc_sock;
- struct smc_clc_msg_accept_confirm;
- 
--void smc_lgr_cleanup_early(struct smc_connection *conn);
-+void smc_lgr_cleanup_early(struct smc_link_group *lgr);
- void smc_lgr_terminate_sched(struct smc_link_group *lgr);
- void smcr_port_add(struct smc_ib_device *smcibdev, u8 ibport);
- void smcr_port_err(struct smc_ib_device *smcibdev, u8 ibport);
+ 		break;
+ 	default:
+ 		goto skip_power_saving;
 -- 
 2.34.1
 
