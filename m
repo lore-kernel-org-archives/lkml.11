@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EA8BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E922C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358968AbiAXT4F (ORCPT
+        id S1358892AbiAXTz7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59542 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348213AbiAXTi3 (ORCPT
+        Mon, 24 Jan 2022 14:55:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355862AbiAXToE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:38:29 -0500
+        Mon, 24 Jan 2022 14:44:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F2AC02B8C5;
+        Mon, 24 Jan 2022 11:22:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09E81B81247;
-        Mon, 24 Jan 2022 19:38:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2217EC33D63;
-        Mon, 24 Jan 2022 19:38:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9FFAC6131E;
+        Mon, 24 Jan 2022 19:22:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6482EC340E5;
+        Mon, 24 Jan 2022 19:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053106;
-        bh=or6XJy6yo9zuglFE+mcPkKgZhy2eM7wUlvB3E6iEwSs=;
+        s=korg; t=1643052142;
+        bh=TqIHgv56NEhzscdSjyNbYIuSq5WGNXRyGvRmEURN6lE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kLUJOLEB3I1xzNlOvRuI0Xc6DrkLZYIV9rlnbJcJi2CsYcOXRHEhFHJ9UDoBrvp0n
-         jhX5ZTugudQ0QPeJjjc1sYnD0qQA5yo3/Oe5Fazxln8dVCzAg/jl6CIgxVXb2ki5ig
-         NCYqeovUEhgiy8LcODl7oAONDUid4sqlWKDoNvCc=
+        b=fGT5tB+zFiIQZIzZptdoasTEjCFsQboTuvhS6z7LWzOdCFT0s0bhlAsIPE4RG+SoS
+         CAxLyglp4bE8yUzfu3NsZbK9qzrYZVLjwnK728I0zd94sxnr+xkbhHycowY1j1GPW9
+         5LPUjko8WlYe2WfPDOcjBZaMHJjmvJAfnsAwzKRc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.4 246/320] crypto: omap-aes - Fix broken pm_runtime_and_get() usage
-Date:   Mon, 24 Jan 2022 19:43:50 +0100
-Message-Id: <20220124184002.365104869@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
+        Theodore Tso <tytso@mit.edu>,
+        syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 202/239] ext4: make sure to reset inode lockdep class when quota enabling fails
+Date:   Mon, 24 Jan 2022 19:44:00 +0100
+Message-Id: <20220124183949.531077186@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,34 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Jan Kara <jack@suse.cz>
 
-commit c2aec59be093bd44627bc4f6bc67e4614a93a7b6 upstream.
+commit 4013d47a5307fdb5c13370b5392498b00fedd274 upstream.
 
-This fix is basically the same as 3d6b661330a7 ("crypto: stm32 -
-Revert broken pm_runtime_resume_and_get changes"), just for the omap
-driver. If the return value isn't used, then pm_runtime_get_sync()
-has to be used for ensuring that the usage count is balanced.
+When we succeed in enabling some quota type but fail to enable another
+one with quota feature, we correctly disable all enabled quota types.
+However we forget to reset i_data_sem lockdep class. When the inode gets
+freed and reused, it will inherit this lockdep class (i_data_sem is
+initialized only when a slab is created) and thus eventually lockdep
+barfs about possible deadlocks.
 
-Fixes: 1f34cc4a8da3 ("crypto: omap-aes - Fix PM reference leak on omap-aes.c")
-Cc: stable@vger.kernel.org
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reported-and-tested-by: syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
+Signed-off-by: Jan Kara <jack@suse.cz>
+Cc: stable@kernel.org
+Link: https://lore.kernel.org/r/20211007155336.12493-3-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/omap-aes.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/super.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/drivers/crypto/omap-aes.c
-+++ b/drivers/crypto/omap-aes.c
-@@ -1318,7 +1318,7 @@ static int omap_aes_suspend(struct devic
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -5883,8 +5883,19 @@ static int ext4_enable_quotas(struct sup
+ 					"Failed to enable quota tracking "
+ 					"(type=%d, err=%d). Please run "
+ 					"e2fsck to fix.", type, err);
+-				for (type--; type >= 0; type--)
++				for (type--; type >= 0; type--) {
++					struct inode *inode;
++
++					inode = sb_dqopt(sb)->files[type];
++					if (inode)
++						inode = igrab(inode);
+ 					dquot_quota_off(sb, type);
++					if (inode) {
++						lockdep_set_quota_inode(inode,
++							I_DATA_SEM_NORMAL);
++						iput(inode);
++					}
++				}
  
- static int omap_aes_resume(struct device *dev)
- {
--	pm_runtime_resume_and_get(dev);
-+	pm_runtime_get_sync(dev);
- 	return 0;
- }
- #endif
+ 				return err;
+ 			}
 
 
