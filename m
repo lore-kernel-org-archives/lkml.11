@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E6AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C93EC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354115AbiAXTgB (ORCPT
+        id S1354132AbiAXTgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57036 "EHLO
+        Mon, 24 Jan 2022 14:36:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57134 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352064AbiAXT3d (ORCPT
+        with ESMTP id S1352185AbiAXT3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:33 -0500
+        Mon, 24 Jan 2022 14:29:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3FF356135E;
-        Mon, 24 Jan 2022 19:29:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A3EDC340E5;
-        Mon, 24 Jan 2022 19:29:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96CEA6121F;
+        Mon, 24 Jan 2022 19:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC21C340E5;
+        Mon, 24 Jan 2022 19:29:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052572;
-        bh=ETqpcHCICc1tUB+WtR27CydYwT/UiM3pGK7XK2NBSNk=;
+        s=korg; t=1643052587;
+        bh=/VPIGVCi6Rg+PZ+mSK3jbNzMWjhnDYX74Ty8HuWxxy0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aFvpbW7wDgl/qFmbFcFK83tze/6thQYC5IyZ3jUj19NO7TcbpnxVXBx0dev5HjZ1P
-         5FhDzMbXJ6qcX87J4RoKH7c6nvGOHoPJmgubpeNLYnzaXQKZV9JMnYHkfOcKy2qeNq
-         DEa79Gyy9z/w+UW4dsDcFbGeaZaRm+RbTFziEWYw=
+        b=jY3AImKH2uiS5AriRHJkGLj7fpjOlpAipEUyvy3lg1ShZ088Bfs/oHqhB0gvXUtLj
+         iQwTZXPjmdghWPxRZWFiG7uJlXtZV+4OXu4YpNovgBniWqdcobesnCP6ZfpHbqUreG
+         0Vsv7gk9Bwf9NkHatGwV7MN8inru+7y8jDzTlYh8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 104/320] rocker: fix a sleeping in atomic bug
-Date:   Mon, 24 Jan 2022 19:41:28 +0100
-Message-Id: <20220124183957.261941057@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 109/320] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_get_str_desc
+Date:   Mon, 24 Jan 2022 19:41:33 +0100
+Message-Id: <20220124183957.423180733@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,36 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 43d012123122cc69feacab55b71369f386c19566 ]
+[ Upstream commit 0a94131d6920916ccb6a357037c535533af08819 ]
 
-This code is holding the &ofdpa->flow_tbl_lock spinlock so it is not
-allowed to sleep.  That means we have to pass the OFDPA_OP_FLAG_NOWAIT
-flag to ofdpa_flow_tbl_del().
+The function performs a check on the hdev input parameters, however, it
+is used before the check.
 
-Fixes: 936bd486564a ("rocker: use FIB notifications instead of switchdev calls")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Initialize the udev variable after the sanity check to avoid a
+possible NULL pointer dereference.
+
+Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
+Addresses-Coverity-ID: 1443827 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/rocker/rocker_ofdpa.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/hid/hid-uclogic-params.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/rocker/rocker_ofdpa.c b/drivers/net/ethernet/rocker/rocker_ofdpa.c
-index 7072b249c8bd6..8157666209798 100644
---- a/drivers/net/ethernet/rocker/rocker_ofdpa.c
-+++ b/drivers/net/ethernet/rocker/rocker_ofdpa.c
-@@ -2795,7 +2795,8 @@ static void ofdpa_fib4_abort(struct rocker *rocker)
- 		if (!ofdpa_port)
- 			continue;
- 		nh->fib_nh_flags &= ~RTNH_F_OFFLOAD;
--		ofdpa_flow_tbl_del(ofdpa_port, OFDPA_OP_FLAG_REMOVE,
-+		ofdpa_flow_tbl_del(ofdpa_port,
-+				   OFDPA_OP_FLAG_REMOVE | OFDPA_OP_FLAG_NOWAIT,
- 				   flow_entry);
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index 0afd368115891..1f3ea6c93ef44 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -65,7 +65,7 @@ static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
+ 					__u8 idx, size_t len)
+ {
+ 	int rc;
+-	struct usb_device *udev = hid_to_usb_dev(hdev);
++	struct usb_device *udev;
+ 	__u8 *buf = NULL;
+ 
+ 	/* Check arguments */
+@@ -74,6 +74,8 @@ static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
+ 		goto cleanup;
  	}
- 	spin_unlock_irqrestore(&ofdpa->flow_tbl_lock, flags);
+ 
++	udev = hid_to_usb_dev(hdev);
++
+ 	buf = kmalloc(len, GFP_KERNEL);
+ 	if (buf == NULL) {
+ 		rc = -ENOMEM;
 -- 
 2.34.1
 
