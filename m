@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E61FAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76EA7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376370AbiAXUBc (ORCPT
+        id S1376443AbiAXUBq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:01:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53354 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352416AbiAXThV (ORCPT
+        Mon, 24 Jan 2022 15:01:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34880 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352064AbiAXThW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:37:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECAA5C034012;
-        Mon, 24 Jan 2022 11:17:25 -0800 (PST)
+        Mon, 24 Jan 2022 14:37:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8BEE160909;
-        Mon, 24 Jan 2022 19:17:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68B11C340E5;
-        Mon, 24 Jan 2022 19:17:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DB9D6153C;
+        Mon, 24 Jan 2022 19:37:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C913C34106;
+        Mon, 24 Jan 2022 19:37:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051845;
-        bh=hoGmMt6X0klq0+u7iW/1fCYXghyAHMkMKI5zDTPe7y0=;
+        s=korg; t=1643053039;
+        bh=DgL0M9pJ+5hLvwUAh76NXDtoQtsqUyxfMwlZsYc7D1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AEU2wC2z9vKDnMngquQdHrei289fV7pZjb7am5zcmYlG3Hd03M9klKGrhup5urzxq
-         UORk8tMEx1YNxFjUtl50EWFQ7JI8gU9xgNaw2mzOKfzTJCcudXx4hTrhzUZk+Jfbwk
-         xwnpantNstUOqhsN+3nbl518qt1QEMquSlhU7Exo=
+        b=p92n6uhRTGDEcdnRZ8ekt0nGqU3vh7Rj8VqKRxTtrpuoX/ycpjifppOUGS3vQxOim
+         Y6rmS444GAZPFFMNYZoTbHtBsj8TuqyjjiNeXwbCmIvfUdqxymAGKc1VI8tL9klv9P
+         FVf59je3EEjbgxLL8wCJ3QGn1X9cHrNn/IjiMgsw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 104/239] ASoC: uniphier: drop selecting non-existing SND_SOC_UNIPHIER_AIO_DMA
-Date:   Mon, 24 Jan 2022 19:42:22 +0100
-Message-Id: <20220124183946.409590500@linuxfoundation.org>
+Subject: [PATCH 5.4 239/320] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 24 Jan 2022 19:43:43 +0100
+Message-Id: <20220124184002.119676205@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +48,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit 49f893253ab43566e34332a969324531fea463f6 ]
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-Commit f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common
-driver") adds configs SND_SOC_UNIPHIER_{LD11,PXS2}, which select the
-non-existing config SND_SOC_UNIPHIER_AIO_DMA.
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
 
-Hence, ./scripts/checkkconfigsymbols.py warns:
-
-  SND_SOC_UNIPHIER_AIO_DMA
-  Referencing files: sound/soc/uniphier/Kconfig
-
-Probably, there is actually no further config intended to be selected
-here. So, just drop selecting the non-existing config.
-
-Fixes: f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common driver")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Link: https://lore.kernel.org/r/20211125095158.8394-2-lukas.bulwahn@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/uniphier/Kconfig | 2 --
- 1 file changed, 2 deletions(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/sound/soc/uniphier/Kconfig b/sound/soc/uniphier/Kconfig
-index aa3592ee1358b..ddfa6424c656b 100644
---- a/sound/soc/uniphier/Kconfig
-+++ b/sound/soc/uniphier/Kconfig
-@@ -23,7 +23,6 @@ config SND_SOC_UNIPHIER_LD11
- 	tristate "UniPhier LD11/LD20 Device Driver"
- 	depends on SND_SOC_UNIPHIER
- 	select SND_SOC_UNIPHIER_AIO
--	select SND_SOC_UNIPHIER_AIO_DMA
- 	help
- 	  This adds ASoC driver for Socionext UniPhier LD11/LD20
- 	  input and output that can be used with other codecs.
-@@ -34,7 +33,6 @@ config SND_SOC_UNIPHIER_PXS2
- 	tristate "UniPhier PXs2 Device Driver"
- 	depends on SND_SOC_UNIPHIER
- 	select SND_SOC_UNIPHIER_AIO
--	select SND_SOC_UNIPHIER_AIO_DMA
- 	help
- 	  This adds ASoC driver for Socionext UniPhier PXs2
- 	  input and output that can be used with other codecs.
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index 51685f893eab0..c214fe4e678bb 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
+ 
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
+ 
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 4017398519cf9..e092d86e63581 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -544,6 +544,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
+ 
 -- 
 2.34.1
 
