@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C83D3C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3FCC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359149AbiAYAcr (ORCPT
+        id S3411305AbiAYAc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:32:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54946 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349082AbiAXVgX (ORCPT
+        Mon, 24 Jan 2022 19:32:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48032 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455782AbiAXVgQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:36:23 -0500
+        Mon, 24 Jan 2022 16:36:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48E0961028;
-        Mon, 24 Jan 2022 21:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30647C340E4;
-        Mon, 24 Jan 2022 21:36:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46D50B81233;
+        Mon, 24 Jan 2022 21:36:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63AD5C340E4;
+        Mon, 24 Jan 2022 21:36:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060181;
-        bh=qBV1D0GmAnp/RCoOC9JnVrd06ImVEIRibKoLoL3oR0I=;
+        s=korg; t=1643060173;
+        bh=xI5hEJ3lhDIHA1QI9owRidjMV8Rm3Aur9/+X8usPUKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V2buL2viMQZ9WW593S3rBrG30cDCUgIhC83ZVFaAsDYRgRhL9y8xudYy+AZM1n9Ot
-         VG+uIe4cRWH+NPsBxTLatmzdn+B3Tigbw9BsdSdlJqAVJtqRav0zOyohdKpyp6nMS5
-         Ft/5vF1V12NFDa6xn8y8Lu9NFXk0TjFdUju9rSOg=
+        b=c9gSHT6RFJqkagUTkO5V6rLHtk5AikfZPhghrWzP6PU/+q6zkiUpvw3Fl2YtFy2fK
+         Wi4BI50lf3tvgM3C53BkJeWkTdnv4+mJSbxgeA0m7+FGbbPzwZgOfcIhF/uyr/mA8S
+         Ly0FJeTmEDCFW+vz7lnjwSSWJHDnEMvpwg1sg+3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>
-Subject: [PATCH 5.16 0865/1039] powerpc/64s/radix: Fix huge vmap false positive
-Date:   Mon, 24 Jan 2022 19:44:14 +0100
-Message-Id: <20220124184154.370583784@linuxfoundation.org>
+        stable@vger.kernel.org, "Nathan E. Egge" <unlord@xiph.org>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>
+Subject: [PATCH 5.16 0862/1039] drm/nouveau/kms/nv04: use vzalloc for nv04_display
+Date:   Mon, 24 Jan 2022 19:44:11 +0100
+Message-Id: <20220124184154.268640046@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,95 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Ilia Mirkin <imirkin@alum.mit.edu>
 
-commit 467ba14e1660b52a2f9338b484704c461bd23019 upstream.
+commit bd6e07e72f37f34535bec7eebc807e5fcfe37b43 upstream.
 
-pmd_huge() is defined to false when HUGETLB_PAGE is not configured, but
-the vmap code still installs huge PMDs. This leads to false bad PMD
-errors when vunmapping because it is not seen as a huge PTE, and the bad
-PMD check catches it. The end result may not be much more serious than
-some bad pmd warning messages, because the pmd_none_or_clear_bad() does
-what we wanted and clears the huge PTE anyway.
+The struct is giant, and triggers an order-7 allocation (512K). There is
+no reason for this to be kmalloc-type memory, so switch to vmalloc. This
+should help loading nouveau on low-memory and/or long-running systems.
 
-Fix this by checking pmd_is_leaf(), which checks for a PTE regardless of
-config options. The whole huge/large/leaf stuff is a tangled mess but
-that's kernel-wide and not something we can improve much in arch/powerpc
-code.
-
-pmd_page(), pud_page(), etc., called by vmalloc_to_page() on huge vmaps
-can similarly trigger a false VM_BUG_ON when CONFIG_HUGETLB_PAGE=n, so
-those checks are adjusted. The checks were added by commit d6eacedd1f0e
-("powerpc/book3s: Use config independent helpers for page table walk"),
-while implementing a similar fix for other page table walking functions.
-
-Fixes: d909f9109c30 ("powerpc/64s/radix: Enable HAVE_ARCH_HUGE_VMAP")
-Cc: stable@vger.kernel.org # v5.3+
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211216103342.609192-1-npiggin@gmail.com
+Reported-by: Nathan E. Egge <unlord@xiph.org>
+Signed-off-by: Ilia Mirkin <imirkin@alum.mit.edu>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/mm/book3s64/radix_pgtable.c |    4 ++--
- arch/powerpc/mm/pgtable_64.c             |   14 +++++++++++---
- 2 files changed, 13 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/nouveau/dispnv04/disp.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/arch/powerpc/mm/book3s64/radix_pgtable.c
-+++ b/arch/powerpc/mm/book3s64/radix_pgtable.c
-@@ -1100,7 +1100,7 @@ int pud_set_huge(pud_t *pud, phys_addr_t
+--- a/drivers/gpu/drm/nouveau/dispnv04/disp.c
++++ b/drivers/gpu/drm/nouveau/dispnv04/disp.c
+@@ -205,7 +205,7 @@ nv04_display_destroy(struct drm_device *
+ 	nvif_notify_dtor(&disp->flip);
  
- int pud_clear_huge(pud_t *pud)
- {
--	if (pud_huge(*pud)) {
-+	if (pud_is_leaf(*pud)) {
- 		pud_clear(pud);
- 		return 1;
- 	}
-@@ -1147,7 +1147,7 @@ int pmd_set_huge(pmd_t *pmd, phys_addr_t
+ 	nouveau_display(dev)->priv = NULL;
+-	kfree(disp);
++	vfree(disp);
  
- int pmd_clear_huge(pmd_t *pmd)
- {
--	if (pmd_huge(*pmd)) {
-+	if (pmd_is_leaf(*pmd)) {
- 		pmd_clear(pmd);
- 		return 1;
- 	}
---- a/arch/powerpc/mm/pgtable_64.c
-+++ b/arch/powerpc/mm/pgtable_64.c
-@@ -102,7 +102,8 @@ EXPORT_SYMBOL(__pte_frag_size_shift);
- struct page *p4d_page(p4d_t p4d)
- {
- 	if (p4d_is_leaf(p4d)) {
--		VM_WARN_ON(!p4d_huge(p4d));
-+		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
-+			VM_WARN_ON(!p4d_huge(p4d));
- 		return pte_page(p4d_pte(p4d));
- 	}
- 	return virt_to_page(p4d_pgtable(p4d));
-@@ -112,7 +113,8 @@ struct page *p4d_page(p4d_t p4d)
- struct page *pud_page(pud_t pud)
- {
- 	if (pud_is_leaf(pud)) {
--		VM_WARN_ON(!pud_huge(pud));
-+		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
-+			VM_WARN_ON(!pud_huge(pud));
- 		return pte_page(pud_pte(pud));
- 	}
- 	return virt_to_page(pud_pgtable(pud));
-@@ -125,7 +127,13 @@ struct page *pud_page(pud_t pud)
- struct page *pmd_page(pmd_t pmd)
- {
- 	if (pmd_is_leaf(pmd)) {
--		VM_WARN_ON(!(pmd_large(pmd) || pmd_huge(pmd)));
-+		/*
-+		 * vmalloc_to_page may be called on any vmap address (not only
-+		 * vmalloc), and it uses pmd_page() etc., when huge vmap is
-+		 * enabled so these checks can't be used.
-+		 */
-+		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
-+			VM_WARN_ON(!(pmd_large(pmd) || pmd_huge(pmd)));
- 		return pte_page(pmd_pte(pmd));
- 	}
- 	return virt_to_page(pmd_page_vaddr(pmd));
+ 	nvif_object_unmap(&drm->client.device.object);
+ }
+@@ -223,7 +223,7 @@ nv04_display_create(struct drm_device *d
+ 	struct nv04_display *disp;
+ 	int i, ret;
+ 
+-	disp = kzalloc(sizeof(*disp), GFP_KERNEL);
++	disp = vzalloc(sizeof(*disp));
+ 	if (!disp)
+ 		return -ENOMEM;
+ 
 
 
