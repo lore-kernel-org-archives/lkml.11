@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7DF8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE748C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846886AbiAXXRY (ORCPT
+        id S1846930AbiAXXRa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:17:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35656 "EHLO
+        Mon, 24 Jan 2022 18:17:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581212AbiAXWRS (ORCPT
+        with ESMTP id S1453010AbiAXWRM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:17:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37BCCC04A2D2;
-        Mon, 24 Jan 2022 12:45:37 -0800 (PST)
+        Mon, 24 Jan 2022 17:17:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F273C04A2CA;
+        Mon, 24 Jan 2022 12:45:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C933060C17;
-        Mon, 24 Jan 2022 20:45:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B27C340E8;
-        Mon, 24 Jan 2022 20:45:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1DAFB81057;
+        Mon, 24 Jan 2022 20:45:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6025C340E5;
+        Mon, 24 Jan 2022 20:45:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057136;
-        bh=nmiMrpAAXAP5bidkMoGHx7ZEzwNtUKKPQpg/JF9EprQ=;
+        s=korg; t=1643057105;
+        bh=8kdnPAkKMFZeojypize7PQeSHKNwYqoEZAm1hMECNzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFyxJ+Z6jpTxPJF86HnfXEG7TbM/7v4PAyHw+6T3UeL7XyL9i03cWXoLolUj/i+ez
-         MWXSV72qYvaodmZHhUy05URspfACXySxGM85/B1GxINqqLLMKFPRw53yjLGq4zxVXS
-         KuQHZHvDb1h5qcvVbLcRRHp2Vcpwoukjs7tbdLts=
+        b=DauwrX1v2antImifZPxO7z7VIZaCa84pttaaanFulOhqkhjjjpzFTw2ZlZ5Q5Vn0w
+         rwBAAiVevKJb7n35b3PWVynnsNCEwHAHQDlqTbKakghqmikK8aSQHeFC5aDqmdhTnC
+         cJzxDBSkXrIoAoJkKI+9MKJh3szTt9TnRPYQpQnA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.15 712/846] btrfs: respect the max size in the header when activating swap file
-Date:   Mon, 24 Jan 2022 19:43:49 +0100
-Message-Id: <20220124184125.586556723@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 703/846] PCI: pci-bridge-emul: Make expansion ROM Base Address register read-only
+Date:   Mon, 24 Jan 2022 19:43:40 +0100
+Message-Id: <20220124184125.306761037@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,65 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit c2f822635df873c510bda6fb7fd1b10b7c31be2d upstream.
+commit 1c1a3b4d3e86b997a313ffb297c1129540882859 upstream.
 
-If we extended the size of a swapfile after its header was created (by the
-mkswap utility) and then try to activate it, we will map the entire file
-when activating the swap file, instead of limiting to the max size defined
-in the swap file's header.
+If expansion ROM is unsupported (which is the case of pci-bridge-emul.c
+driver) then ROM Base Address register must be implemented as read-only
+register that return 0 when read, same as for unused Base Address
+registers.
 
-Currently test case generic/643 from fstests fails because we do not
-respect that size limit defined in the swap file's header.
-
-So fix this by not mapping file ranges beyond the max size defined in the
-swap header.
-
-This is the same type of bug that iomap used to have, and was fixed in
-commit 36ca7943ac18ae ("mm/swap: consider max pages in
-iomap_swapfile_add_extent").
-
-Fixes: ed46ff3d423780 ("Btrfs: support swap files")
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-and-tested-by: Josef Bacik <josef@toxicpanda.com
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Link: https://lore.kernel.org/r/20211124155944.1290-2-pali@kernel.org
+Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: stable@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/inode.c |   11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/pci/pci-bridge-emul.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/fs/btrfs/inode.c
-+++ b/fs/btrfs/inode.c
-@@ -10586,9 +10586,19 @@ static int btrfs_add_swap_extent(struct
- 				 struct btrfs_swap_info *bsi)
- {
- 	unsigned long nr_pages;
-+	unsigned long max_pages;
- 	u64 first_ppage, first_ppage_reported, next_ppage;
- 	int ret;
+--- a/drivers/pci/pci-bridge-emul.c
++++ b/drivers/pci/pci-bridge-emul.c
+@@ -139,8 +139,13 @@ struct pci_bridge_reg_behavior pci_regs_
+ 		.ro = GENMASK(7, 0),
+ 	},
  
 +	/*
-+	 * Our swapfile may have had its size extended after the swap header was
-+	 * written. In that case activating the swapfile should not go beyond
-+	 * the max size set in the swap header.
++	 * If expansion ROM is unsupported then ROM Base Address register must
++	 * be implemented as read-only register that return 0 when read, same
++	 * as for unused Base Address registers.
 +	 */
-+	if (bsi->nr_pages >= sis->max)
-+		return 0;
-+
-+	max_pages = sis->max - bsi->nr_pages;
- 	first_ppage = ALIGN(bsi->block_start, PAGE_SIZE) >> PAGE_SHIFT;
- 	next_ppage = ALIGN_DOWN(bsi->block_start + bsi->block_len,
- 				PAGE_SIZE) >> PAGE_SHIFT;
-@@ -10596,6 +10606,7 @@ static int btrfs_add_swap_extent(struct
- 	if (first_ppage >= next_ppage)
- 		return 0;
- 	nr_pages = next_ppage - first_ppage;
-+	nr_pages = min(nr_pages, max_pages);
+ 	[PCI_ROM_ADDRESS1 / 4] = {
+-		.rw = GENMASK(31, 11) | BIT(0),
++		.ro = ~0,
+ 	},
  
- 	first_ppage_reported = first_ppage;
- 	if (bsi->start == 0)
+ 	/*
 
 
