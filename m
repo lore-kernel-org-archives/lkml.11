@@ -2,132 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3980BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49EB4C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422513AbiAYCbb (ORCPT
+        id S3423034AbiAYCct (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58004 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381083AbiAXUSy (ORCPT
+        Mon, 24 Jan 2022 21:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355504AbiAXUWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:18:54 -0500
+        Mon, 24 Jan 2022 15:22:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5B4DC0417D0;
+        Mon, 24 Jan 2022 11:40:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B870AB8119E;
-        Mon, 24 Jan 2022 20:18:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD8DAC340E5;
-        Mon, 24 Jan 2022 20:18:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055530;
-        bh=v6/FXpNGzXAE6TYf3fSLBuAkE9l9oQwNd47fnT/FRjA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=maZo45ouBSjT4Gpoq1HLVWP7l/fCr0nSJhh4Q81XveaD2SYwUolUWHDP/yxPbbsOg
-         P9jI4oE+MxjELk6rB0jDYof+tkImxnFDvFBPvJVtBTBVNTxFUyzLNFv9/AH8QTlYsf
-         SUCkM2kY/vWAlNc7+VcLxAyqfqOzAfAHyzMb+hWU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        William Kucharski <william.kucharski@oracle.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 180/846] cgroup: Trace event cgroup id fields should be u64
-Date:   Mon, 24 Jan 2022 19:34:57 +0100
-Message-Id: <20220124184107.194884445@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C95EB81239;
+        Mon, 24 Jan 2022 19:40:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44297C340E5;
+        Mon, 24 Jan 2022 19:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643053216;
+        bh=5d1KiOyv52f+/wbMD2uRsiNtmxj6WuPrFFJ1Ny+tHaI=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=tv1dOZ6nWTTYKVQE3WBOun88z3a7NKEHWdsILR7FQSWt/fS9wEKsPaZDmi/9/dp3E
+         emcPhSKCjrZ3WoAYJ+Kgu5Zw7/Rh0P0HzmDta0HNlJDbGxTQ4ZoGc3Ne+yJSxXrh4K
+         wNVWWnTCnYhoLqAP9Afw3lB3wduPyr5R64qurcdMgUMeHQzUeBTYoFNNrbZembJFFC
+         wtsD++vu/0rX/RDvkTJi8T+PC3p0KB9otRV+WG+y4xgoQqRc+HkTv2qp4eSQcykmhb
+         MdWJgMPtcyfNoIOpKiBBTVWD7qUkAa7kZHlqjrLD/bG+MF715pu+kTnTVV9nl/kB1W
+         SVoX62lyjRf4Q==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220124174805.31021-1-tdas@codeaurora.org>
+References: <20220124174805.31021-1-tdas@codeaurora.org>
+Subject: Re: [PATCH v1] clk qcom: clk-alpha-pll: Update to use determine rate ops for PLL
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Taniya Das <tdas@codeaurora.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Taniya Das <tdas@codeaurora.org>
+Date:   Mon, 24 Jan 2022 11:40:14 -0800
+User-Agent: alot/0.10
+Message-Id: <20220124194016.44297C340E5@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Kucharski <william.kucharski@oracle.com>
+Quoting Taniya Das (2022-01-24 09:48:05)
+> On 32 bit devices, where the PLL requires to support the frequency
+> beyond the range of the `long int` the round rate ops cannot support.
+> Thus update the clk_ops to use determine rate instead.
+>=20
+> While at it also fix the code in RCG.
 
-[ Upstream commit e14da77113bb890d7bf9e5d17031bdd476a7ce5e ]
-
-Various trace event fields that store cgroup IDs were declared as
-ints, but cgroup_id(() returns a u64 and the structures and associated
-TP_printk() calls were not updated to reflect this.
-
-Fixes: 743210386c03 ("cgroup: use cgrp->kn->id as the cgroup ID")
-Signed-off-by: William Kucharski <william.kucharski@oracle.com>
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/trace/events/cgroup.h | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
-
-diff --git a/include/trace/events/cgroup.h b/include/trace/events/cgroup.h
-index 7f42a3de59e6b..dd7d7c9efecdf 100644
---- a/include/trace/events/cgroup.h
-+++ b/include/trace/events/cgroup.h
-@@ -59,8 +59,8 @@ DECLARE_EVENT_CLASS(cgroup,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		root			)
--		__field(	int,		id			)
- 		__field(	int,		level			)
-+		__field(	u64,		id			)
- 		__string(	path,		path			)
- 	),
- 
-@@ -71,7 +71,7 @@ DECLARE_EVENT_CLASS(cgroup,
- 		__assign_str(path, path);
- 	),
- 
--	TP_printk("root=%d id=%d level=%d path=%s",
-+	TP_printk("root=%d id=%llu level=%d path=%s",
- 		  __entry->root, __entry->id, __entry->level, __get_str(path))
- );
- 
-@@ -126,8 +126,8 @@ DECLARE_EVENT_CLASS(cgroup_migrate,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		dst_root		)
--		__field(	int,		dst_id			)
- 		__field(	int,		dst_level		)
-+		__field(	u64,		dst_id			)
- 		__field(	int,		pid			)
- 		__string(	dst_path,	path			)
- 		__string(	comm,		task->comm		)
-@@ -142,7 +142,7 @@ DECLARE_EVENT_CLASS(cgroup_migrate,
- 		__assign_str(comm, task->comm);
- 	),
- 
--	TP_printk("dst_root=%d dst_id=%d dst_level=%d dst_path=%s pid=%d comm=%s",
-+	TP_printk("dst_root=%d dst_id=%llu dst_level=%d dst_path=%s pid=%d comm=%s",
- 		  __entry->dst_root, __entry->dst_id, __entry->dst_level,
- 		  __get_str(dst_path), __entry->pid, __get_str(comm))
- );
-@@ -171,8 +171,8 @@ DECLARE_EVENT_CLASS(cgroup_event,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		root			)
--		__field(	int,		id			)
- 		__field(	int,		level			)
-+		__field(	u64,		id			)
- 		__string(	path,		path			)
- 		__field(	int,		val			)
- 	),
-@@ -185,7 +185,7 @@ DECLARE_EVENT_CLASS(cgroup_event,
- 		__entry->val = val;
- 	),
- 
--	TP_printk("root=%d id=%d level=%d path=%s val=%d",
-+	TP_printk("root=%d id=%llu level=%d path=%s val=%d",
- 		  __entry->root, __entry->id, __entry->level, __get_str(path),
- 		  __entry->val)
- );
--- 
-2.34.1
-
-
-
+Please split this into two patches, and tag with Fixes
