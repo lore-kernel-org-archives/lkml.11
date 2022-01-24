@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD523C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B97A7C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845374AbiAXXMM (ORCPT
+        id S1845350AbiAXXMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:12:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
+        Mon, 24 Jan 2022 18:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584552AbiAXWVY (ORCPT
+        with ESMTP id S1584560AbiAXWVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5318EC0424D2;
-        Mon, 24 Jan 2022 12:50:23 -0800 (PST)
+        Mon, 24 Jan 2022 17:21:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FA84C0424DA;
+        Mon, 24 Jan 2022 12:50:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E511860B1A;
-        Mon, 24 Jan 2022 20:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0FBFC340E5;
-        Mon, 24 Jan 2022 20:50:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE258B81063;
+        Mon, 24 Jan 2022 20:50:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC093C340E5;
+        Mon, 24 Jan 2022 20:50:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057422;
-        bh=8gIy0nFAgB03VCQxnZfvFcSa3D+U6k63cyxwaTXRIKc=;
+        s=korg; t=1643057452;
+        bh=VsqcRsKeQsqwzqDqD0xbagbDVV5qUU0S+ZbEicARw10=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jXE9EuxRBn/hLT6RI7DSSQdwS6R1EwvDqlCsL5CIBsI12DbAOK//LsQbpH5Pm90Xc
-         KKVpv+ddgIh73JJWPVL2/wcjs7r17gwcW7fhh8u+RgxJRLOCJDBkd2bmN6okAAkYGV
-         SLw1kBx+2tFhTgZLV2DEGzYbV6f0qORFFiJnd5HA=
+        b=dRPU9U2cF+SAzpqNe5orUnSnqnCKqqLsrM1HoAZPlLVN8UL6EHvyYdcwQn1uAXB6q
+         1Xq/a/+VnHuis7/m9d0fIka/gW0vE88Fs6LGijZGfjoMK8XwzKVskWeonKI+4Jh6Ba
+         TV8fsj5IEW6qVLEgmqZR4e5HVBgEjeZUsHv/MldA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        stable@vger.kernel.org, Wen Gu <guwen@linux.alibaba.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 807/846] inet: frags: annotate races around fqdir->dead and fqdir->high_thresh
-Date:   Mon, 24 Jan 2022 19:45:24 +0100
-Message-Id: <20220124184128.771260860@linuxfoundation.org>
+Subject: [PATCH 5.15 790/846] net/smc: Fix hung_task when removing SMC-R devices
+Date:   Mon, 24 Jan 2022 19:45:07 +0100
+Message-Id: <20220124184128.213697931@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,94 +49,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Wen Gu <guwen@linux.alibaba.com>
 
-commit 91341fa0003befd097e190ec2a4bf63ad957c49a upstream.
+commit 56d99e81ecbc997a5f984684d0eeb583992b2072 upstream.
 
-Both fields can be read/written without synchronization,
-add proper accessors and documentation.
+A hung_task is observed when removing SMC-R devices. Suppose that
+a link group has two active links(lnk_A, lnk_B) associated with two
+different SMC-R devices(dev_A, dev_B). When dev_A is removed, the
+link group will be removed from smc_lgr_list and added into
+lgr_linkdown_list. lnk_A will be cleared and smcibdev(A)->lnk_cnt
+will reach to zero. However, when dev_B is removed then, the link
+group can't be found in smc_lgr_list and lnk_B won't be cleared,
+making smcibdev->lnk_cnt never reaches zero, which causes a hung_task.
 
-Fixes: d5dd88794a13 ("inet: fix various use-after-free in defrags units")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+This patch fixes this issue by restoring the implementation of
+smc_smcr_terminate_all() to what it was before commit 349d43127dac
+("net/smc: fix kernel panic caused by race of smc_sock"). The original
+implementation also satisfies the intention that make sure QP destroy
+earlier than CQ destroy because we will always wait for smcibdev->lnk_cnt
+reaches zero, which guarantees QP has been destroyed.
+
+Fixes: 349d43127dac ("net/smc: fix kernel panic caused by race of smc_sock")
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/inet_frag.h  |   11 +++++++++--
- include/net/ipv6_frag.h  |    3 ++-
- net/ipv4/inet_fragment.c |    8 +++++---
- net/ipv4/ip_fragment.c   |    3 ++-
- 4 files changed, 18 insertions(+), 7 deletions(-)
+ net/smc/smc_core.c |   17 +----------------
+ 1 file changed, 1 insertion(+), 16 deletions(-)
 
---- a/include/net/inet_frag.h
-+++ b/include/net/inet_frag.h
-@@ -117,8 +117,15 @@ int fqdir_init(struct fqdir **fqdirp, st
- 
- static inline void fqdir_pre_exit(struct fqdir *fqdir)
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1387,16 +1387,11 @@ void smc_smcd_terminate_all(struct smcd_
+ /* Called when an SMCR device is removed or the smc module is unloaded.
+  * If smcibdev is given, all SMCR link groups using this device are terminated.
+  * If smcibdev is NULL, all SMCR link groups are terminated.
+- *
+- * We must wait here for QPs been destroyed before we destroy the CQs,
+- * or we won't received any CQEs and cdc_pend_tx_wr cannot reach 0 thus
+- * smc_sock cannot be released.
+  */
+ void smc_smcr_terminate_all(struct smc_ib_device *smcibdev)
  {
--	fqdir->high_thresh = 0; /* prevent creation of new frags */
--	fqdir->dead = true;
-+	/* Prevent creation of new frags.
-+	 * Pairs with READ_ONCE() in inet_frag_find().
-+	 */
-+	WRITE_ONCE(fqdir->high_thresh, 0);
-+
-+	/* Pairs with READ_ONCE() in inet_frag_kill(), ip_expire()
-+	 * and ip6frag_expire_frag_queue().
-+	 */
-+	WRITE_ONCE(fqdir->dead, true);
- }
- void fqdir_exit(struct fqdir *fqdir);
+ 	struct smc_link_group *lgr, *lg;
+ 	LIST_HEAD(lgr_free_list);
+-	LIST_HEAD(lgr_linkdown_list);
+ 	int i;
  
---- a/include/net/ipv6_frag.h
-+++ b/include/net/ipv6_frag.h
-@@ -67,7 +67,8 @@ ip6frag_expire_frag_queue(struct net *ne
- 	struct sk_buff *head;
+ 	spin_lock_bh(&smc_lgr_list.lock);
+@@ -1408,7 +1403,7 @@ void smc_smcr_terminate_all(struct smc_i
+ 		list_for_each_entry_safe(lgr, lg, &smc_lgr_list.list, list) {
+ 			for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+ 				if (lgr->lnk[i].smcibdev == smcibdev)
+-					list_move_tail(&lgr->list, &lgr_linkdown_list);
++					smcr_link_down_cond_sched(&lgr->lnk[i]);
+ 			}
+ 		}
+ 	}
+@@ -1420,16 +1415,6 @@ void smc_smcr_terminate_all(struct smc_i
+ 		__smc_lgr_terminate(lgr, false);
+ 	}
  
- 	rcu_read_lock();
--	if (fq->q.fqdir->dead)
-+	/* Paired with the WRITE_ONCE() in fqdir_pre_exit(). */
-+	if (READ_ONCE(fq->q.fqdir->dead))
- 		goto out_rcu_unlock;
- 	spin_lock(&fq->q.lock);
- 
---- a/net/ipv4/inet_fragment.c
-+++ b/net/ipv4/inet_fragment.c
-@@ -235,9 +235,9 @@ void inet_frag_kill(struct inet_frag_que
- 		/* The RCU read lock provides a memory barrier
- 		 * guaranteeing that if fqdir->dead is false then
- 		 * the hash table destruction will not start until
--		 * after we unlock.  Paired with inet_frags_exit_net().
-+		 * after we unlock.  Paired with fqdir_pre_exit().
- 		 */
--		if (!fqdir->dead) {
-+		if (!READ_ONCE(fqdir->dead)) {
- 			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
- 					       fqdir->f->rhash_params);
- 			refcount_dec(&fq->refcnt);
-@@ -352,9 +352,11 @@ static struct inet_frag_queue *inet_frag
- /* TODO : call from rcu_read_lock() and no longer use refcount_inc_not_zero() */
- struct inet_frag_queue *inet_frag_find(struct fqdir *fqdir, void *key)
- {
-+	/* This pairs with WRITE_ONCE() in fqdir_pre_exit(). */
-+	long high_thresh = READ_ONCE(fqdir->high_thresh);
- 	struct inet_frag_queue *fq = NULL, *prev;
- 
--	if (!fqdir->high_thresh || frag_mem_limit(fqdir) > fqdir->high_thresh)
-+	if (!high_thresh || frag_mem_limit(fqdir) > high_thresh)
- 		return NULL;
- 
- 	rcu_read_lock();
---- a/net/ipv4/ip_fragment.c
-+++ b/net/ipv4/ip_fragment.c
-@@ -144,7 +144,8 @@ static void ip_expire(struct timer_list
- 
- 	rcu_read_lock();
- 
--	if (qp->q.fqdir->dead)
-+	/* Paired with WRITE_ONCE() in fqdir_pre_exit(). */
-+	if (READ_ONCE(qp->q.fqdir->dead))
- 		goto out_rcu_unlock;
- 
- 	spin_lock(&qp->q.lock);
+-	list_for_each_entry_safe(lgr, lg, &lgr_linkdown_list, list) {
+-		for (i = 0; i < SMC_LINKS_PER_LGR_MAX; i++) {
+-			if (lgr->lnk[i].smcibdev == smcibdev) {
+-				mutex_lock(&lgr->llc_conf_mutex);
+-				smcr_link_down_cond(&lgr->lnk[i]);
+-				mutex_unlock(&lgr->llc_conf_mutex);
+-			}
+-		}
+-	}
+-
+ 	if (smcibdev) {
+ 		if (atomic_read(&smcibdev->lnk_cnt))
+ 			wait_event(smcibdev->lnks_deleted,
 
 
