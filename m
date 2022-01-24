@@ -2,49 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F40F7C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB7CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450794AbiAXVVZ (ORCPT
+        id S1452332AbiAXVZL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:21:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359040AbiAXUxE (ORCPT
+        Mon, 24 Jan 2022 16:25:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52400 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443811AbiAXU7M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:53:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2536C02B862;
-        Mon, 24 Jan 2022 11:58:50 -0800 (PST)
+        Mon, 24 Jan 2022 15:59:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AFA9560FEA;
-        Mon, 24 Jan 2022 19:58:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B00EC340E8;
-        Mon, 24 Jan 2022 19:58:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50C8C61330;
+        Mon, 24 Jan 2022 20:59:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32DC2C340E5;
+        Mon, 24 Jan 2022 20:59:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054329;
-        bh=FXSw/S6ooWsN7m2aISlJ2oWew5BJRMgPDCbiE4oQ4RI=;
+        s=korg; t=1643057950;
+        bh=8rZU2mkEPnLSkCNjqQB28l5RSQofZ+GqJfjHJOjlecg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nz6yw2XRc0mGJLLS1kPZegysgogatvIoxwvTy6YG8DlCQtTuafxPJIJmUi5avvEbZ
-         iqdCFwJG01xQFlrxLDp8u1EQ2iX0opwhRSl4dYpmrtWgesC/ubNn/7DxjGguz0WU7a
-         LqjPQ1/7uTckJaRF8fiwWT2fxIUtoevI87M/2448=
+        b=fyVEkbPMUmMvoaV69PbFmObY+5MSjtRkA8pVPrNyTX8a1QmKrdOs0FzCm5/gHrjIf
+         FKiV0QzRYPCMbsS8JtBl2gDK8pc46oCYVbQq0Vmd9Kzz8jUFBYOPX/xMx5jCBcerD3
+         52avpGQy4bh4xA0IFOZ9weeJ0srYRT2ArLUwRzIs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
+        Alexander Stein <alexander.stein@mailbox.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 352/563] net: phy: prefer 1000baseT over 1000baseKX
-Date:   Mon, 24 Jan 2022 19:41:57 +0100
-Message-Id: <20220124184036.580028364@linuxfoundation.org>
+Subject: [PATCH 5.16 0133/1039] arm64: dts: amlogic: meson-g12: Fix GPU operating point table node name
+Date:   Mon, 24 Jan 2022 19:32:02 +0100
+Message-Id: <20220124184129.630000661@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,56 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-[ Upstream commit f20f94f7f52c4685c81754f489ffcc72186e8bdb ]
+[ Upstream commit bb98a6fd0b0e227cefb2ba91cea2b55455f203b7 ]
 
-The PHY settings table is supposed to be sorted by descending match
-priority - in other words, earlier entries are preferred over later
-entries.
+Starting with commit 94274f20f6bf ("dt-bindings: opp: Convert to DT
+schema") the opp node name has a mandatory pattern. This change
+fixes the dtbs_check warning:
+gpu-opp-table: $nodename:0: 'gpu-opp-table' does not match
+'^opp-table(-[a-z0-9]+)?$'
+Put the 'gpu' part at the end to match the pattern.
 
-The order of 1000baseKX/Full and 1000baseT/Full is such that we
-prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
-a lot rarer than 1000baseT/Full, and thus is much less likely to
-be preferred.
-
-This causes phylink problems - it means a fixed link specifying a
-speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
-rather than 1000baseT/Full as would be expected - and since we offer
-userspace a software emulation of a conventional copper PHY, we want
-to offer copper modes in preference to anything else. However, we do
-still want to allow the rarer modes as well.
-
-Hence, let's reorder these two modes to prefer copper.
-
-Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 916a0edc43f0 ("arm64: dts: amlogic: meson-g12: add the Mali OPP table and use DVFS")
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211026182813.900775-2-alexander.stein@mailbox.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy-core.c | 2 +-
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 8d333d3084ed3..cccb83dae673b 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -161,11 +161,11 @@ static const struct phy_setting settings[] = {
- 	PHY_SETTING(   2500, FULL,   2500baseT_Full		),
- 	PHY_SETTING(   2500, FULL,   2500baseX_Full		),
- 	/* 1G */
--	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
- 	PHY_SETTING(   1000, FULL,   1000baseT_Full		),
- 	PHY_SETTING(   1000, HALF,   1000baseT_Half		),
- 	PHY_SETTING(   1000, FULL,   1000baseT1_Full		),
- 	PHY_SETTING(   1000, FULL,   1000baseX_Full		),
-+	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
- 	/* 100M */
- 	PHY_SETTING(    100, FULL,    100baseT_Full		),
- 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 00c6f53290d43..428449d98c0ae 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -58,7 +58,7 @@
+ 		secure-monitor = <&sm>;
+ 	};
+ 
+-	gpu_opp_table: gpu-opp-table {
++	gpu_opp_table: opp-table-gpu {
+ 		compatible = "operating-points-v2";
+ 
+ 		opp-124999998 {
 -- 
 2.34.1
 
