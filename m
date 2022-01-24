@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16324C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA774C35271
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447329AbiAXVK2 (ORCPT
+        id S1447531AbiAXVK5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43114 "EHLO
+        Mon, 24 Jan 2022 16:10:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43164 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390792AbiAXUqW (ORCPT
+        with ESMTP id S1390867AbiAXUqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D035DC061346;
-        Mon, 24 Jan 2022 11:55:57 -0800 (PST)
+        Mon, 24 Jan 2022 15:46:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF0F5C061244;
+        Mon, 24 Jan 2022 11:56:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98044B8124C;
-        Mon, 24 Jan 2022 19:55:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA97EC340E5;
-        Mon, 24 Jan 2022 19:55:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E4EB60B43;
+        Mon, 24 Jan 2022 19:56:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66F35C340E5;
+        Mon, 24 Jan 2022 19:56:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054155;
-        bh=qVTsRmkfHHvtcYhP+AfBxHTCm0Hpp40vXIcFjCKm+lI=;
+        s=korg; t=1643054170;
+        bh=IRR7woKXRTUuwAj7dh3xDIZETJ6KdYf3GLSVPriOUYc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SMmKcXt28MLRHtGD2QXf5c+fH5AD5+wHR+HaI+ZzAkskq8leL6WOCUWsB+L/JGxmf
-         J6y8zsQai8AfiAlRE+XpN5ux92ed/fq+Ht/DD134KovDmFndMFGGDiODgInfM8ZJhw
-         xSYgp7bKHvKdlNTUUp3XZO1ERfWgpiHdKcpuo1HY=
+        b=fVZeWNshHySh1DNIoc05/y28TTllg9aMlUPyRE5x86vXyzucn7od5FEFfZoBmK/RG
+         hPsGsIuAdJWizJUoG5SHlKxI2luKox09MKeuvu1heWy9x+ahAmfPR0K/cUfH+xdSR7
+         pumckHYWnHF1QgNpuUpWoOVPb2IZUjc8K/Gcic38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Merlijn Wajer <merlijn@wizzup.org>,
-        "Sicelo A. Mhlongo" <absicsz@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 297/563] ARM: dts: omap3-n900: Fix lp5523 for multi color
-Date:   Mon, 24 Jan 2022 19:41:02 +0100
-Message-Id: <20220124184034.714475941@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 284/563] ASoC: samsung: idma: Check of ioremap return value
+Date:   Mon, 24 Jan 2022 19:40:49 +0100
+Message-Id: <20220124184034.264010475@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,139 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sicelo A. Mhlongo <absicsz@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit e9af026a3b24f59d7af4609f73e0ef60a4d6d516 ]
+[ Upstream commit 3ecb46755eb85456b459a1a9f952c52986bce8ec ]
 
-Since the LED multicolor framework support was added in commit
-92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
-LEDs on this platform stopped working.
+Because of the potential failure of the ioremap(), the buf->area could
+be NULL.
+Therefore, we need to check it and return -ENOMEM in order to transfer
+the error.
 
-Fixes: 92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
-Fixes: ac219bf3c9bd ("leds: lp55xx: Convert to use GPIO descriptors")
-Signed-off-by: Merlijn Wajer <merlijn@wizzup.org>
-Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
-Signed-off-by: Pavel Machek <pavel@ucw.cz>
+Fixes: f09aecd50f39 ("ASoC: SAMSUNG: Add I2S0 internal dma driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20211228034026.1659385-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-n900.dts | 50 +++++++++++++++++++++++++-------
- 1 file changed, 40 insertions(+), 10 deletions(-)
+ sound/soc/samsung/idma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/omap3-n900.dts b/arch/arm/boot/dts/omap3-n900.dts
-index 32335d4ce478b..d40c3d2c4914e 100644
---- a/arch/arm/boot/dts/omap3-n900.dts
-+++ b/arch/arm/boot/dts/omap3-n900.dts
-@@ -8,6 +8,7 @@
+diff --git a/sound/soc/samsung/idma.c b/sound/soc/samsung/idma.c
+index 66bcc2f97544b..c3f1b054e2389 100644
+--- a/sound/soc/samsung/idma.c
++++ b/sound/soc/samsung/idma.c
+@@ -360,6 +360,8 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
+ 	buf->addr = idma.lp_tx_addr;
+ 	buf->bytes = idma_hardware.buffer_bytes_max;
+ 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
++	if (!buf->area)
++		return -ENOMEM;
  
- #include "omap34xx.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- 
- /*
-  * Default secure signed bootloader (Nokia X-Loader) does not enable L3 firewall
-@@ -630,63 +631,92 @@
- 	};
- 
- 	lp5523: lp5523@32 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 		compatible = "national,lp5523";
- 		reg = <0x32>;
- 		clock-mode = /bits/ 8 <0>; /* LP55XX_CLOCK_AUTO */
--		enable-gpio = <&gpio2 9 GPIO_ACTIVE_HIGH>; /* 41 */
-+		enable-gpios = <&gpio2 9 GPIO_ACTIVE_HIGH>; /* 41 */
- 
--		chan0 {
-+		led@0 {
-+			reg = <0>;
- 			chan-name = "lp5523:kb1";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan1 {
-+		led@1 {
-+			reg = <1>;
- 			chan-name = "lp5523:kb2";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan2 {
-+		led@2 {
-+			reg = <2>;
- 			chan-name = "lp5523:kb3";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan3 {
-+		led@3 {
-+			reg = <3>;
- 			chan-name = "lp5523:kb4";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan4 {
-+		led@4 {
-+			reg = <4>;
- 			chan-name = "lp5523:b";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_BLUE>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan5 {
-+		led@5 {
-+			reg = <5>;
- 			chan-name = "lp5523:g";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan6 {
-+		led@6 {
-+			reg = <6>;
- 			chan-name = "lp5523:r";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan7 {
-+		led@7 {
-+			reg = <7>;
- 			chan-name = "lp5523:kb5";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan8 {
-+		led@8 {
-+			reg = <8>;
- 			chan-name = "lp5523:kb6";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 	};
- 
+ 	return 0;
+ }
 -- 
 2.34.1
 
