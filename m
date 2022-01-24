@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C3BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22446C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:42:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349979AbiAXTmo (ORCPT
+        id S1350661AbiAXTmt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:42:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33078 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348370AbiAXTeO (ORCPT
+        Mon, 24 Jan 2022 14:42:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346657AbiAXTb5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:34:14 -0500
+        Mon, 24 Jan 2022 14:31:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23859C0604D0;
+        Mon, 24 Jan 2022 11:15:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0245D614DA;
-        Mon, 24 Jan 2022 19:34:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132E2C340E5;
-        Mon, 24 Jan 2022 19:34:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B546F60010;
+        Mon, 24 Jan 2022 19:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0216C340E5;
+        Mon, 24 Jan 2022 19:15:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052853;
-        bh=LrpabL+wuM/+nyKF87fxZioZKj1x5/6s1eLkOzRY2fU=;
+        s=korg; t=1643051711;
+        bh=5gpMEpfmr3TqHNa/BGaMeGbq5ejMLPM/MNPnSfuyYV4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TI8YxfgyLtVTpnlopVBY9o34bsZzUNfE8xgjfm0RlcUnM9Zc/989kFdzGFc1zjAXo
-         0SIeF6MJE3DEBBhEUqo6QdlANhAMXSXQWJjBb53Jh1O0ktJiNPN8af8I1Ig0CtROcZ
-         cf/FIhkomdfl5mxHecRUW4CVSJSwdwaV+Puak+5Y=
+        b=1Rt6/596G5jbbGnSX/zR+nNC+lNJjGm+pjNSxVFVt62KwlVhBZlxDvhSytQe3WQTK
+         xc2aaJtnzAyjaaBUBdlNE6+y/mRFIogrx0p+s25+slB52aQl6FswMGXGfntU0keoaC
+         rNditeh8DoqvJZ7FzE8w/UpLgQpxJ7ggVRAUO+hg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 195/320] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-Date:   Mon, 24 Jan 2022 19:42:59 +0100
-Message-Id: <20220124184000.275002434@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, Amish Chana <amish@3g.co.za>
+Subject: [PATCH 4.19 062/239] netfilter: bridge: add support for pppoe filtering
+Date:   Mon, 24 Jan 2022 19:41:40 +0100
+Message-Id: <20220124183945.109568268@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,33 +50,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
+[ Upstream commit 28b78ecffea8078d81466b2e01bb5a154509f1ba ]
 
-The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
-MiB - 1. This was likely presumed to be the "limit" rather than length.
-Fix it up.
+This makes 'bridge-nf-filter-pppoe-tagged' sysctl work for
+bridged traffic.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Looking at the original commit it doesn't appear this ever worked:
+
+ static unsigned int br_nf_post_routing(unsigned int hook, struct sk_buff **pskb,
+[..]
+        if (skb->protocol == htons(ETH_P_8021Q)) {
+                skb_pull(skb, VLAN_HLEN);
+                skb->network_header += VLAN_HLEN;
++       } else if (skb->protocol == htons(ETH_P_PPP_SES)) {
++               skb_pull(skb, PPPOE_SES_HLEN);
++               skb->network_header += PPPOE_SES_HLEN;
+        }
+ [..]
+	NF_HOOK(... POST_ROUTING, ...)
+
+... but the adjusted offsets are never restored.
+
+The alternative would be to rip this code out for good,
+but otoh we'd have to keep this anyway for the vlan handling
+(which works because vlan tag info is in the skb, not the packet
+ payload).
+
+Reported-and-tested-by: Amish Chana <amish@3g.co.za>
+Fixes: 516299d2f5b6f97 ("[NETFILTER]: bridge-nf: filter bridged IPv4/IPv6 encapsulated in pppoe traffic")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bridge/br_netfilter_hooks.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index 9abf0cb1dd67f..4457262750734 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -709,7 +709,7 @@
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index c5380c6baf2e7..4b9d1d6bbf6f9 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -727,6 +727,9 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 	if (nf_bridge->frag_max_size && nf_bridge->frag_max_size < mtu)
+ 		mtu = nf_bridge->frag_max_size;
  
- 	ccplex@e000000 {
- 		compatible = "nvidia,tegra186-ccplex-cluster";
--		reg = <0x0 0x0e000000 0x0 0x3fffff>;
-+		reg = <0x0 0x0e000000 0x0 0x400000>;
++	nf_bridge_update_protocol(skb);
++	nf_bridge_push_encap_header(skb);
++
+ 	if (skb_is_gso(skb) || skb->len + mtu_reserved <= mtu) {
+ 		nf_bridge_info_free(skb);
+ 		return br_dev_queue_push_xmit(net, sk, skb);
+@@ -744,8 +747,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
  
- 		nvidia,bpmp = <&bpmp>;
- 	};
+ 		IPCB(skb)->frag_max_size = nf_bridge->frag_max_size;
+ 
+-		nf_bridge_update_protocol(skb);
+-
+ 		data = this_cpu_ptr(&brnf_frag_data_storage);
+ 
+ 		data->vlan_tci = skb->vlan_tci;
+@@ -768,8 +769,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 
+ 		IP6CB(skb)->frag_max_size = nf_bridge->frag_max_size;
+ 
+-		nf_bridge_update_protocol(skb);
+-
+ 		data = this_cpu_ptr(&brnf_frag_data_storage);
+ 		data->encap_size = nf_bridge_encap_header_len(skb);
+ 		data->size = ETH_HLEN + data->encap_size;
 -- 
 2.34.1
 
