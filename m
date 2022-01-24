@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61907C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB277C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581832AbiAXWMY (ORCPT
+        id S1581858AbiAXWMb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:12:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43504 "EHLO
+        Mon, 24 Jan 2022 17:12:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43790 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389446AbiAXV2g (ORCPT
+        with ESMTP id S1453176AbiAXV2p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:28:36 -0500
+        Mon, 24 Jan 2022 16:28:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E33E0B815F0;
-        Mon, 24 Jan 2022 21:28:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 134E1C340E4;
-        Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6A11B815A3;
+        Mon, 24 Jan 2022 21:28:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9504C33E61;
+        Mon, 24 Jan 2022 21:28:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059713;
-        bh=znjJmoVJnraVGpkGuprtqsLw4qdshBWPmmtBakZY010=;
+        s=korg; t=1643059722;
+        bh=rpK3+TbL9U4gIt72SS2rJL1owWGxYC3tz1KHKjGihMM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGtjB4CJcfIIqsFP+5alGYs7ELiRoit3CiGMSoZmjFY0ydlDEdEt9B2mHqvp0YPo+
-         LMDgysfJbIZdMiDlaBDb8EL53g6G4SiOLpeFFra9l6Rv/fr1Hu1CbPTL0NeKTI1csa
-         EoCsQqE072lLKUXpI5KnF7X+9bMz4nl6baorv0i8=
+        b=LUuhSjwaR30Iy4/Bpwi6jH1cNRQu2LIW3tc0hWzgVOta+Q6Rff9K8Bv3EhJvZFNtc
+         xndKoOnRoTQt0OZ2wrlZSBLgxrqMPOx6WtkpemX8pdl77HdCfmykHcrnnjK0UNySBf
+         7bWvhgkxyfs8Mr08fM4Xw9WYI+KzQV7MOHf4MBYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yevgeny Kliteynik <kliteyn@nvidia.com>,
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0708/1039] net/mlx5: DR, Fix error flow in creating matcher
-Date:   Mon, 24 Jan 2022 19:41:37 +0100
-Message-Id: <20220124184149.132953758@linuxfoundation.org>
+Subject: [PATCH 5.16 0711/1039] net: mdio: Demote probed message to debug print
+Date:   Mon, 24 Jan 2022 19:41:40 +0100
+Message-Id: <20220124184149.236630930@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,105 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 84dfac39c61fde04126e23723138128b50cd036f ]
+[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
 
-The error code of nic matcher init functions wasn't checked.
-This patch improves the matcher init function and fix error flow bug:
-the handling of match parameter is moved into a separate function
-and error flow is simplified.
+On systems with large numbers of MDIO bus/muxes the message indicating
+that a given MDIO bus has been successfully probed is repeated for as
+many buses we have, which can eat up substantial boot time for no
+reason, demote to a debug print.
 
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../mellanox/mlx5/core/steering/dr_matcher.c  | 53 +++++++++++--------
- 1 file changed, 32 insertions(+), 21 deletions(-)
+ drivers/net/phy/mdio_bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-index 793365242e852..3d0cdc36a91ab 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -872,13 +872,12 @@ uninit_nic_rx:
- 	return ret;
- }
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index c198722e4871d..3f7b93d5c76fe 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -594,7 +594,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
  
--static int dr_matcher_init(struct mlx5dr_matcher *matcher,
--			   struct mlx5dr_match_parameters *mask)
-+static int dr_matcher_copy_param(struct mlx5dr_matcher *matcher,
-+				 struct mlx5dr_match_parameters *mask)
- {
-+	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
- 	struct mlx5dr_match_parameters consumed_mask;
--	struct mlx5dr_table *tbl = matcher->tbl;
--	struct mlx5dr_domain *dmn = tbl->dmn;
--	int i, ret;
-+	int i, ret = 0;
+ 	bus->state = MDIOBUS_REGISTERED;
+-	pr_info("%s: probed\n", bus->name);
++	dev_dbg(&bus->dev, "probed\n");
+ 	return 0;
  
- 	if (matcher->match_criteria >= DR_MATCHER_CRITERIA_MAX) {
- 		mlx5dr_err(dmn, "Invalid match criteria attribute\n");
-@@ -898,10 +897,36 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 		consumed_mask.match_sz = mask->match_sz;
- 		memcpy(consumed_mask.match_buf, mask->match_buf, mask->match_sz);
- 		mlx5dr_ste_copy_param(matcher->match_criteria,
--				      &matcher->mask, &consumed_mask,
--				      true);
-+				      &matcher->mask, &consumed_mask, true);
-+
-+		/* Check that all mask data was consumed */
-+		for (i = 0; i < consumed_mask.match_sz; i++) {
-+			if (!((u8 *)consumed_mask.match_buf)[i])
-+				continue;
-+
-+			mlx5dr_dbg(dmn,
-+				   "Match param mask contains unsupported parameters\n");
-+			ret = -EOPNOTSUPP;
-+			break;
-+		}
-+
-+		kfree(consumed_mask.match_buf);
- 	}
- 
-+	return ret;
-+}
-+
-+static int dr_matcher_init(struct mlx5dr_matcher *matcher,
-+			   struct mlx5dr_match_parameters *mask)
-+{
-+	struct mlx5dr_table *tbl = matcher->tbl;
-+	struct mlx5dr_domain *dmn = tbl->dmn;
-+	int ret;
-+
-+	ret = dr_matcher_copy_param(matcher, mask);
-+	if (ret)
-+		return ret;
-+
- 	switch (dmn->type) {
- 	case MLX5DR_DOMAIN_TYPE_NIC_RX:
- 		matcher->rx.nic_tbl = &tbl->rx;
-@@ -919,22 +944,8 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 	default:
- 		WARN_ON(true);
- 		ret = -EINVAL;
--		goto free_consumed_mask;
--	}
--
--	/* Check that all mask data was consumed */
--	for (i = 0; i < consumed_mask.match_sz; i++) {
--		if (!((u8 *)consumed_mask.match_buf)[i])
--			continue;
--
--		mlx5dr_dbg(dmn, "Match param mask contains unsupported parameters\n");
--		ret = -EOPNOTSUPP;
--		goto free_consumed_mask;
- 	}
- 
--	ret =  0;
--free_consumed_mask:
--	kfree(consumed_mask.match_buf);
- 	return ret;
- }
- 
+ error:
 -- 
 2.34.1
 
