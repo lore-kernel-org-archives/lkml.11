@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14736C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB7D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845465AbiAXXMZ (ORCPT
+        id S1384470AbiAXXOq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:12:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
+        Mon, 24 Jan 2022 18:14:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584562AbiAXWVZ (ORCPT
+        with ESMTP id S1584585AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:25 -0500
+        Mon, 24 Jan 2022 17:21:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0ECEC0424D6;
-        Mon, 24 Jan 2022 12:50:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77E9AC0424DE;
+        Mon, 24 Jan 2022 12:51:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DFE0611CD;
-        Mon, 24 Jan 2022 20:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23F36C340E5;
-        Mon, 24 Jan 2022 20:50:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1986260C3E;
+        Mon, 24 Jan 2022 20:51:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F265AC340E5;
+        Mon, 24 Jan 2022 20:51:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057437;
-        bh=HMgHsusz66jvKUn2q1i3T3oRyyk+TIy9VI2jBQLzg/w=;
+        s=korg; t=1643057479;
+        bh=uKmrqgjSA/5eJeqZdMw9hagnqck9mskx6h1Fw7fRqhA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TjLPzmmOcU8LWFIsAfGYgwtIVYXMJHAcaYmw8/6jmyslejBmMTLKTEddM6Rycw+Iq
-         kpDUB7v7eyhHk6YkxLKpv1rMCyYA0JVK12NNwTyrnEYTEY9WSxND6VvTa5OBx62Waw
-         clkUw9Ks1BckixUVC4fvj7J1APO3nB8CBrQPvvXk=
+        b=cmm8p/94TW3mErVMalZBzvfpki0B0tN8nAgnOkw7i5RVjnhdFKe65qWG5QNqhI9u5
+         R3cDinLk/wfzkRPlXP9NdRYVUpq/4ji6tthKKpG473QpUpvFcKOa7RTisUiE1vOGGn
+         KXu9p5bx0GorJt5SZtDnUwWVOFKSKKqyesYR7Haw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 812/846] gre: Dont accidentally set RTO_ONLINK in gre_fill_metadata_dst()
-Date:   Mon, 24 Jan 2022 19:45:29 +0100
-Message-Id: <20220124184128.925515754@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 793/846] net: axienet: reset core on initialization prior to MDIO access
+Date:   Mon, 24 Jan 2022 19:45:10 +0100
+Message-Id: <20220124184128.306481427@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,38 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit f7716b318568b22fbf0e3be99279a979e217cf71 upstream.
+commit 04cc2da39698efd7eb2e30c112538922d26f848e upstream.
 
-Mask the ECN bits before initialising ->flowi4_tos. The tunnel key may
-have the last ECN bit set, which will interfere with the route lookup
-process as ip_route_output_key_hash() interpretes this bit specially
-(to restrict the route scope).
+In some cases where the Xilinx Ethernet core was used in 1000Base-X or
+SGMII modes, which use the internal PCS/PMA PHY, and the MGT
+transceiver clock source for the PCS was not running at the time the
+FPGA logic was loaded, the core would come up in a state where the
+PCS could not be found on the MDIO bus. To fix this, the Ethernet core
+(including the PCS) should be reset after enabling the clocks, prior to
+attempting to access the PCS using of_mdio_find_device.
 
-Found by code inspection, compile tested only.
-
-Fixes: 962924fa2b7a ("ip_gre: Refactor collect metatdata mode tunnel xmit to ip_md_tunnel_xmit")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 1a02556086fc (net: axienet: Properly handle PCS/PMA PHY for 1000BaseX mode)
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/ip_gre.c |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/net/ipv4/ip_gre.c
-+++ b/net/ipv4/ip_gre.c
-@@ -604,8 +604,9 @@ static int gre_fill_metadata_dst(struct
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -2091,6 +2091,11 @@ static int axienet_probe(struct platform
+ 	lp->coalesce_count_rx = XAXIDMA_DFT_RX_THRESHOLD;
+ 	lp->coalesce_count_tx = XAXIDMA_DFT_TX_THRESHOLD;
  
- 	key = &info->key;
- 	ip_tunnel_init_flow(&fl4, IPPROTO_GRE, key->u.ipv4.dst, key->u.ipv4.src,
--			    tunnel_id_to_key32(key->tun_id), key->tos, 0,
--			    skb->mark, skb_get_hash(skb));
-+			    tunnel_id_to_key32(key->tun_id),
-+			    key->tos & ~INET_ECN_MASK, 0, skb->mark,
-+			    skb_get_hash(skb));
- 	rt = ip_route_output_key(dev_net(dev), &fl4);
- 	if (IS_ERR(rt))
- 		return PTR_ERR(rt);
++	/* Reset core now that clocks are enabled, prior to accessing MDIO */
++	ret = __axienet_device_reset(lp);
++	if (ret)
++		goto cleanup_clk;
++
+ 	lp->phy_node = of_parse_phandle(pdev->dev.of_node, "phy-handle", 0);
+ 	if (lp->phy_node) {
+ 		ret = axienet_mdio_setup(lp);
 
 
