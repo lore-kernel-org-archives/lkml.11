@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15587C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 411E7C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449110AbiAXVOy (ORCPT
+        id S1346784AbiAXVQH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:14:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41754 "EHLO
+        Mon, 24 Jan 2022 16:16:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43674 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391341AbiAXUr2 (ORCPT
+        with ESMTP id S1391902AbiAXUt7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:47:28 -0500
+        Mon, 24 Jan 2022 15:49:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA42C60B11;
-        Mon, 24 Jan 2022 20:47:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84496C340E5;
-        Mon, 24 Jan 2022 20:47:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5BC160B11;
+        Mon, 24 Jan 2022 20:49:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EC08C340E5;
+        Mon, 24 Jan 2022 20:49:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057247;
-        bh=jV0MshI0Oglx5/JEM82uxpfw09EeJcTyjtUKUjYzzBQ=;
+        s=korg; t=1643057398;
+        bh=u/UP1OsSzDo7P7Ajc+9f8LDlJZ84k4hEdHMP1AEqTSg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oGRHszkwpX0nyq+OHqGtdRbxXVLLoprmH9eEoVLDqPRiBQ89jAVVigbR89jq5xXJ7
-         gva1jN26Qm605uPBIInmM0ZWhuzlXJXkhAHUwoi0wJjozLQn2ABtcRRgZgol8RNj38
-         UoRUc79hDKnkOLNNpgFYtbkuBJGPt/DdDzfsvQY4=
+        b=0GxuEEF9f55vWWvMtMQuLG44hec6zwsKYYStcU+qtL3dzdFGQ7Tdj+M8ILyLu4CIt
+         c1TH3Zuj2d8OUzod/bUuo8sErVHyG9nSmrYs0Wj0mCuvJtOQN9A/N4f1iwU/cM5EYS
+         8quYFKckKnb8cRpfXjzKARgSV5Wzsmoj58Zym5VQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?H=C3=A5kon=20Bugge?= <haakon.bugge@oracle.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.15 748/846] RDMA/cma: Remove open coding of overflow checking for private_data_len
-Date:   Mon, 24 Jan 2022 19:44:25 +0100
-Message-Id: <20220124184126.787599256@linuxfoundation.org>
+        stable@vger.kernel.org, Yury Norov <yury.norov@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>
+Subject: [PATCH 5.15 800/846] bitops: protect find_first_{,zero}_bit properly
+Date:   Mon, 24 Jan 2022 19:45:17 +0100
+Message-Id: <20220124184128.539745866@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,44 +47,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Håkon Bugge <haakon.bugge@oracle.com>
+From: Yury Norov <yury.norov@gmail.com>
 
-commit 8d0d2b0f41b1b2add8a30dbd816051a964efa497 upstream.
+commit b7ec62d7ee0f0b8af6ba190501dff7f9ee6545ca upstream.
 
-The existing tests are a little hard to comprehend. Use
-check_add_overflow() instead.
+find_first_bit() and find_first_zero_bit() are not protected with
+ifdefs as other functions in find.h. It causes build errors on some
+platforms if CONFIG_GENERIC_FIND_FIRST_BIT is enabled.
 
-Fixes: 04ded1672402 ("RDMA/cma: Verify private data length")
-Link: https://lore.kernel.org/r/1637661978-18770-1-git-send-email-haakon.bugge@oracle.com
-Signed-off-by: Håkon Bugge <haakon.bugge@oracle.com>
-Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Fixes: 2cc7b6a44ac2 ("lib: add fast path for find_first_*_bit() and find_last_bit()")
+Reported-by: kernel test robot <lkp@intel.com>
+Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/core/cma.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/asm-generic/bitops/find.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -4037,8 +4037,7 @@ static int cma_resolve_ib_udp(struct rdm
+diff --git a/include/asm-generic/bitops/find.h b/include/asm-generic/bitops/find.h
+index 0d132ee2a291..835f959a25f2 100644
+--- a/include/asm-generic/bitops/find.h
++++ b/include/asm-generic/bitops/find.h
+@@ -97,6 +97,7 @@ unsigned long find_next_zero_bit(const unsigned long *addr, unsigned long size,
  
- 	memset(&req, 0, sizeof req);
- 	offset = cma_user_data_offset(id_priv);
--	req.private_data_len = offset + conn_param->private_data_len;
--	if (req.private_data_len < conn_param->private_data_len)
-+	if (check_add_overflow(offset, conn_param->private_data_len, &req.private_data_len))
- 		return -EINVAL;
+ #ifdef CONFIG_GENERIC_FIND_FIRST_BIT
  
- 	if (req.private_data_len) {
-@@ -4097,8 +4096,7 @@ static int cma_connect_ib(struct rdma_id
++#ifndef find_first_bit
+ /**
+  * find_first_bit - find the first set bit in a memory region
+  * @addr: The address to start the search at
+@@ -116,7 +117,9 @@ unsigned long find_first_bit(const unsigned long *addr, unsigned long size)
  
- 	memset(&req, 0, sizeof req);
- 	offset = cma_user_data_offset(id_priv);
--	req.private_data_len = offset + conn_param->private_data_len;
--	if (req.private_data_len < conn_param->private_data_len)
-+	if (check_add_overflow(offset, conn_param->private_data_len, &req.private_data_len))
- 		return -EINVAL;
+ 	return _find_first_bit(addr, size);
+ }
++#endif
  
- 	if (req.private_data_len) {
++#ifndef find_first_zero_bit
+ /**
+  * find_first_zero_bit - find the first cleared bit in a memory region
+  * @addr: The address to start the search at
+@@ -136,6 +139,8 @@ unsigned long find_first_zero_bit(const unsigned long *addr, unsigned long size)
+ 
+ 	return _find_first_zero_bit(addr, size);
+ }
++#endif
++
+ #else /* CONFIG_GENERIC_FIND_FIRST_BIT */
+ 
+ #ifndef find_first_bit
+-- 
+2.34.1
+
 
 
