@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B0BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B868FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446044AbiAXVGO (ORCPT
+        id S1343755AbiAXVGY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:06:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39928 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351778AbiAXUoP (ORCPT
+        Mon, 24 Jan 2022 16:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1388453AbiAXUm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:44:15 -0500
+        Mon, 24 Jan 2022 15:42:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DFBAC04967E;
+        Mon, 24 Jan 2022 11:53:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8882060B1A;
-        Mon, 24 Jan 2022 20:44:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E4D7C340E5;
-        Mon, 24 Jan 2022 20:44:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1DB1C61007;
+        Mon, 24 Jan 2022 19:53:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDB22C340E7;
+        Mon, 24 Jan 2022 19:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057054;
-        bh=7Tyt6TC2ggJRw3fF++QSOCLW9HU6iOd4lCmrV9XE4Cw=;
+        s=korg; t=1643053984;
+        bh=OpXJQiAdVYaUhVv2ktwuoXqH6kxvKw1geUPxPGiPlk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FOSr+A2Y/SdyALOUlW4YN/6iqhTWgj6gpo8jCfGhpGBqyq60E7U/FdJjxrYkgKs9i
-         moik8nKV714gehX6r6loFkU3BRGRZAXQrvxS9tDVHr15pwh23hNH0ijlJtSJ7JmU8v
-         7sUYAy5Mx4ARLH0+VOYsYh1V1btSzckyJgkMXcFw=
+        b=wxaNlaeEiDNw04iJZwNmG+Z3iIGWw5iqNyEba6hi2VR7pr0pnFQ9dZmGCmBYZg65T
+         tRhOh8eYt8vj8w7P4D+uXc0Afcieeb9/xMKBocn5jggi3RJgM7cWqDPxGzLP9tY/6P
+         uWVlhuolv+u+Bs3+PWKZHE0I4k72gFpXeRqdkYkU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 654/846] MIPS: Octeon: Fix build errors using clang
-Date:   Mon, 24 Jan 2022 19:42:51 +0100
-Message-Id: <20220124184123.601030678@linuxfoundation.org>
+Subject: [PATCH 5.10 240/563] ALSA: PCM: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:40:05 +0100
+Message-Id: <20220124184032.733574692@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 95339b70677dc6f9a2d669c4716058e71b8dc1c7 ]
+[ Upstream commit 5471e9762e1af4b7df057a96bfd46cc250979b88 ]
 
-A large number of the following errors is reported when compiling
-with clang:
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-  cvmx-bootinfo.h:326:3: error: adding 'int' to a string does not append to the string [-Werror,-Wstring-plus-int]
-                  ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_NULL)
-                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
-          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
-                         ~~~^~~~
-  cvmx-bootinfo.h:326:3: note: use array indexing to silence this warning
-  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
-          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
-                          ^
-
-Follow the prompts to use the address operator '&' to fix this error.
-
-Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: a8ff48cb7083 ("ALSA: pcm: Free chmap at PCM free callback, too")
+Link: https://lore.kernel.org/r/20211116071314.15065-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/octeon/cvmx-bootinfo.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/core/pcm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/include/asm/octeon/cvmx-bootinfo.h b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
-index 0e6bf220db618..6c61e0a639249 100644
---- a/arch/mips/include/asm/octeon/cvmx-bootinfo.h
-+++ b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
-@@ -318,7 +318,7 @@ enum cvmx_chip_types_enum {
- 
- /* Functions to return string based on type */
- #define ENUM_BRD_TYPE_CASE(x) \
--	case x: return(#x + 16);	/* Skip CVMX_BOARD_TYPE_ */
-+	case x: return (&#x[16]);	/* Skip CVMX_BOARD_TYPE_ */
- static inline const char *cvmx_board_type_to_string(enum
- 						    cvmx_board_types_enum type)
+diff --git a/sound/core/pcm.c b/sound/core/pcm.c
+index 41cbdac5b1cfa..a8ae5928decda 100644
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -810,7 +810,11 @@ EXPORT_SYMBOL(snd_pcm_new_internal);
+ static void free_chmap(struct snd_pcm_str *pstr)
  {
-@@ -410,7 +410,7 @@ static inline const char *cvmx_board_type_to_string(enum
+ 	if (pstr->chmap_kctl) {
+-		snd_ctl_remove(pstr->pcm->card, pstr->chmap_kctl);
++		struct snd_card *card = pstr->pcm->card;
++
++		down_write(&card->controls_rwsem);
++		snd_ctl_remove(card, pstr->chmap_kctl);
++		up_write(&card->controls_rwsem);
+ 		pstr->chmap_kctl = NULL;
+ 	}
  }
- 
- #define ENUM_CHIP_TYPE_CASE(x) \
--	case x: return(#x + 15);	/* Skip CVMX_CHIP_TYPE */
-+	case x: return (&#x[15]);	/* Skip CVMX_CHIP_TYPE */
- static inline const char *cvmx_chip_type_to_string(enum
- 						   cvmx_chip_types_enum type)
- {
 -- 
 2.34.1
 
