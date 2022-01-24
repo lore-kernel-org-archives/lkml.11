@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3BB5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1FA5C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314722AbiAYCvg (ORCPT
+        id S1314737AbiAYCvi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47100 "EHLO
+        Mon, 24 Jan 2022 21:51:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354037AbiAXVFL (ORCPT
+        with ESMTP id S1353979AbiAXVFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:05:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1EC9C0619D1;
-        Mon, 24 Jan 2022 12:05:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52D34C068092;
+        Mon, 24 Jan 2022 12:04:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A9949B8122A;
-        Mon, 24 Jan 2022 20:05:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6A84C340E5;
-        Mon, 24 Jan 2022 20:05:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18F25B8119E;
+        Mon, 24 Jan 2022 20:04:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 45333C340E5;
+        Mon, 24 Jan 2022 20:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054714;
-        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
+        s=korg; t=1643054683;
+        bh=reE3UCFEJ7VrG77GGUJOYXy17lvnA1Oi9FlqzgLl1Bw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONb+Zn7PZ9/5w6HH76vpxhRBRaAi2sjUv4GZQPtLzoFCtQvOerTFAxjxjNZzHTUva
-         7VJSteBWF9+V3JCNccwi8zVjOYMDLuKKA0cU51KO1nnxHD8vjydLU6oGbEi7ld2WhZ
-         Ec1GOT9eF7zkRWrz6EGx58Qbb+nj59gx/eyBZo+U=
+        b=uG+o+3Ifbjd7f870GCdrKYGyNCHHNQb+fRIwwtCeS0O457BmqCbMqfM2G9K89uZ9X
+         ha1a7Y9bo3iAHYOCSEVNBMbPI292tz0IaEX9F3+HjLl/+Bt2oA/MQtPL+GFv50jpn0
+         ovyx5mcTo/TzRl6MlePFzDHAmHaSYxyoYX69x++Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>
-Subject: [PATCH 5.10 462/563] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
-Date:   Mon, 24 Jan 2022 19:43:47 +0100
-Message-Id: <20220124184040.438960844@linuxfoundation.org>
+        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
+        Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.10 470/563] btrfs: check the root node for uptodate before returning it
+Date:   Mon, 24 Jan 2022 19:43:55 +0100
+Message-Id: <20220124184040.722129554@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,76 +50,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Josef Bacik <josef@toxicpanda.com>
 
-commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
+commit 120de408e4b97504a2d9b5ca534b383de2c73d49 upstream.
 
-The Power Fault Detected bit in the Slot Status register differs from
-all other hotplug events in that it is sticky:  It can only be cleared
-after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
+Now that we clear the extent buffer uptodate if we fail to write it out
+we need to check to see if our root node is uptodate before we search
+down it.  Otherwise we could return stale data (or potentially corrupt
+data that was caught by the write verification step) and think that the
+path is OK to search down.
 
-  If a power controller detects a main power fault on the hot-plug slot,
-  it must automatically set its internal main power fault latch [...].
-  The main power fault latch is cleared when software turns off power to
-  the hot-plug slot.
-
-The stickiness used to cause interrupt storms and infinite loops which
-were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
-interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
-software notification on empty slots").
-
-Unfortunately in 2020 the infinite loop issue was inadvertently
-reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
-race"):  The hardirq handler pciehp_isr() clears the PFD bit until
-pciehp's power_fault_detected flag is set.  That happens in the IRQ
-thread pciehp_ist(), which never learns of the event because the hardirq
-handler is stuck in an infinite loop.  Fix by setting the
-power_fault_detected flag already in the hardirq handler.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
-Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
-Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
-Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
-Reported-by: Joseph Bao <joseph.bao@intel.com>
-Tested-by: Joseph Bao <joseph.bao@intel.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
+CC: stable@vger.kernel.org # 5.4+
+Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ fs/btrfs/ctree.c |   19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -642,6 +642,8 @@ read_status:
- 	 */
- 	if (ctrl->power_fault_detected)
- 		status &= ~PCI_EXP_SLTSTA_PFD;
-+	else if (status & PCI_EXP_SLTSTA_PFD)
-+		ctrl->power_fault_detected = true;
+--- a/fs/btrfs/ctree.c
++++ b/fs/btrfs/ctree.c
+@@ -2589,12 +2589,9 @@ static struct extent_buffer *btrfs_searc
+ {
+ 	struct btrfs_fs_info *fs_info = root->fs_info;
+ 	struct extent_buffer *b;
+-	int root_lock;
++	int root_lock = 0;
+ 	int level = 0;
  
- 	events |= status;
- 	if (!events) {
-@@ -651,7 +653,7 @@ read_status:
- 	}
- 
- 	if (status) {
--		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
-+		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
- 
+-	/* We try very hard to do read locks on the root */
+-	root_lock = BTRFS_READ_LOCK;
+-
+ 	if (p->search_commit_root) {
  		/*
- 		 * In MSI mode, all event bits must be zero before the port
-@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
+ 		 * The commit roots are read only so we always do read locks,
+@@ -2632,6 +2629,9 @@ static struct extent_buffer *btrfs_searc
+ 		goto out;
  	}
  
- 	/* Check Power Fault Detected */
--	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
--		ctrl->power_fault_detected = 1;
-+	if (events & PCI_EXP_SLTSTA_PFD) {
- 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
- 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
- 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
++	/* We try very hard to do read locks on the root */
++	root_lock = BTRFS_READ_LOCK;
++
+ 	/*
+ 	 * If the level is set to maximum, we can skip trying to get the read
+ 	 * lock.
+@@ -2658,6 +2658,17 @@ static struct extent_buffer *btrfs_searc
+ 	level = btrfs_header_level(b);
+ 
+ out:
++	/*
++	 * The root may have failed to write out at some point, and thus is no
++	 * longer valid, return an error in this case.
++	 */
++	if (!extent_buffer_uptodate(b)) {
++		if (root_lock)
++			btrfs_tree_unlock_rw(b, root_lock);
++		free_extent_buffer(b);
++		return ERR_PTR(-EIO);
++	}
++
+ 	p->nodes[level] = b;
+ 	if (!p->skip_locking)
+ 		p->locks[level] = root_lock;
 
 
