@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8EBC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD727C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377411AbiAXWrP (ORCPT
+        id S1449475AbiAXWrZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:47:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52408 "EHLO
+        Mon, 24 Jan 2022 17:47:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457859AbiAXVmY (ORCPT
+        with ESMTP id S1457082AbiAXVky (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:24 -0500
+        Mon, 24 Jan 2022 16:40:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAE16B811A9;
-        Mon, 24 Jan 2022 21:42:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A74C340E4;
-        Mon, 24 Jan 2022 21:42:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4723BB81142;
+        Mon, 24 Jan 2022 21:40:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C79AC340E4;
+        Mon, 24 Jan 2022 21:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060541;
-        bh=Gl0jy4PB5R5wa6o52whfL1Em2AKbbEFdXHfbPfhrtME=;
+        s=korg; t=1643060452;
+        bh=RCV48ZSlTzuCqmHvJn71DlSzI5sKqDQyg1UX/Fny5Jc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K49rSfobpH8tJuU7To1ke4zDHyldQjk99jmZ0hcpUfXMIw8Y4jA846+2ZvGjBHiRW
-         zKROg6rw1iklVmejWfugQpI9JE496I3SDOSkShj4oJIXBN/wRzLaJtyAE83vOhMXmc
-         GzTIzcZNyi+ua65jvuZgq1KmPNgQ3wmfx2U2+ylw=
+        b=cJ9Dv7h7XZRNywSIHsHCGsuakQYS1PrxWt4Xi1qncrhJhKIWspWpFQzrRY2iCM0aN
+         WPIgt4WLvhpNfYZ2onJcdq7LgPUcrMK4f88t4mLJsrudlgQavBYkWIM5oQX2nmmTmY
+         qCGwJL/XHWN51mNKeDCR1KllTjLHbL6XLO6qP/SU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.16 0983/1039] virtio_ring: mark ring unused on error
-Date:   Mon, 24 Jan 2022 19:46:12 +0100
-Message-Id: <20220124184158.318703837@linuxfoundation.org>
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>
+Subject: [PATCH 5.16 0953/1039] drm/vmwgfx: Remove unused compile options
+Date:   Mon, 24 Jan 2022 19:45:42 +0100
+Message-Id: <20220124184157.318282671@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,38 +47,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Zack Rusin <zackr@vmware.com>
 
-commit 1861ba626ae9b98136f3e504208cdef6b29cd3ec upstream.
+commit 50ca8cc7c0fdd9ab16b8b66ffb301fface101fac upstream.
 
-A recently added error path does not mark ring unused when exiting on
-OOM, which will lead to BUG on the next entry in debug builds.
+Before the driver had screen targets support we had to disable explicit
+bringup of its infrastructure because it was breaking screen objects
+support.
+Since the implementation of screen targets landed there hasn't been a
+reason to explicitly disable it and the options were never used.
+Remove of all that unused code.
 
-TODO: refactor code so we have START_USE and END_USE in the same function.
-
-Fixes: fc6d70f40b3d ("virtio_ring: check desc == NULL when using indirect with packed")
-Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Fixes: d80efd5cb3de ("drm/vmwgfx: Initial DX support")
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211215184147.3688785-3-zack@kde.org
+(cherry picked from commit 11343099d5ae6c7411da1425b6b162c89fb5bf10)
+Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_ring.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vmwgfx/vmwgfx_drv.h  |    3 ---
+ drivers/gpu/drm/vmwgfx/vmwgfx_mob.c  |   12 +++---------
+ drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c |    4 ++--
+ 3 files changed, 5 insertions(+), 14 deletions(-)
 
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -1197,8 +1197,10 @@ static inline int virtqueue_add_packed(s
- 	if (virtqueue_use_indirect(_vq, total_sg)) {
- 		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
- 						    in_sgs, data, gfp);
--		if (err != -ENOMEM)
-+		if (err != -ENOMEM) {
-+			END_USE(vq);
- 			return err;
-+		}
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
+@@ -59,11 +59,8 @@
+ #define VMWGFX_DRIVER_MINOR 19
+ #define VMWGFX_DRIVER_PATCHLEVEL 0
+ #define VMWGFX_FIFO_STATIC_SIZE (1024*1024)
+-#define VMWGFX_MAX_RELOCATIONS 2048
+-#define VMWGFX_MAX_VALIDATIONS 2048
+ #define VMWGFX_MAX_DISPLAYS 16
+ #define VMWGFX_CMD_BOUNCE_INIT_SIZE 32768
+-#define VMWGFX_ENABLE_SCREEN_TARGET_OTABLE 1
  
- 		/* fall back on direct */
- 	}
+ #define VMWGFX_PCI_ID_SVGA2              0x0405
+ #define VMWGFX_PCI_ID_SVGA3              0x0406
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_mob.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_mob.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0 OR MIT
+ /**************************************************************************
+  *
+- * Copyright 2012-2015 VMware, Inc., Palo Alto, CA., USA
++ * Copyright 2012-2021 VMware, Inc., Palo Alto, CA., USA
+  *
+  * Permission is hereby granted, free of charge, to any person obtaining a
+  * copy of this software and associated documentation files (the
+@@ -29,12 +29,6 @@
+ 
+ #include "vmwgfx_drv.h"
+ 
+-/*
+- * If we set up the screen target otable, screen objects stop working.
+- */
+-
+-#define VMW_OTABLE_SETUP_SUB ((VMWGFX_ENABLE_SCREEN_TARGET_OTABLE ? 0 : 1))
+-
+ #ifdef CONFIG_64BIT
+ #define VMW_PPN_SIZE 8
+ #define VMW_MOBFMT_PTDEPTH_0 SVGA3D_MOBFMT_PT64_0
+@@ -75,7 +69,7 @@ static const struct vmw_otable pre_dx_ta
+ 	{VMWGFX_NUM_GB_CONTEXT * sizeof(SVGAOTableContextEntry), NULL, true},
+ 	{VMWGFX_NUM_GB_SHADER * sizeof(SVGAOTableShaderEntry), NULL, true},
+ 	{VMWGFX_NUM_GB_SCREEN_TARGET * sizeof(SVGAOTableScreenTargetEntry),
+-	 NULL, VMWGFX_ENABLE_SCREEN_TARGET_OTABLE}
++	 NULL, true}
+ };
+ 
+ static const struct vmw_otable dx_tables[] = {
+@@ -84,7 +78,7 @@ static const struct vmw_otable dx_tables
+ 	{VMWGFX_NUM_GB_CONTEXT * sizeof(SVGAOTableContextEntry), NULL, true},
+ 	{VMWGFX_NUM_GB_SHADER * sizeof(SVGAOTableShaderEntry), NULL, true},
+ 	{VMWGFX_NUM_GB_SCREEN_TARGET * sizeof(SVGAOTableScreenTargetEntry),
+-	 NULL, VMWGFX_ENABLE_SCREEN_TARGET_OTABLE},
++	 NULL, true},
+ 	{VMWGFX_NUM_DXCONTEXT * sizeof(SVGAOTableDXContextEntry), NULL, true},
+ };
+ 
+--- a/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
++++ b/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
+@@ -1872,8 +1872,8 @@ int vmw_kms_stdu_init_display(struct vmw
+ 	int i, ret;
+ 
+ 
+-	/* Do nothing if Screen Target support is turned off */
+-	if (!VMWGFX_ENABLE_SCREEN_TARGET_OTABLE || !dev_priv->has_mob)
++	/* Do nothing if there's no support for MOBs */
++	if (!dev_priv->has_mob)
+ 		return -ENOSYS;
+ 
+ 	if (!(dev_priv->capabilities & SVGA_CAP_GBOBJECTS))
 
 
