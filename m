@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E17C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9BA8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358558AbiAXUv5 (ORCPT
+        id S1358600AbiAXUwC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:51:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35322 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384067AbiAXU2x (ORCPT
+        Mon, 24 Jan 2022 15:52:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53096 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351194AbiAXU2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:28:53 -0500
+        Mon, 24 Jan 2022 15:28:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33843B81239;
-        Mon, 24 Jan 2022 20:28:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4828CC340E5;
-        Mon, 24 Jan 2022 20:28:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1651161512;
+        Mon, 24 Jan 2022 20:28:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ECDB8C340E7;
+        Mon, 24 Jan 2022 20:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056128;
-        bh=g6pSpn2i0X05d9/e/pvWbJQ995pdOEPCyDaWB64n2Dw=;
+        s=korg; t=1643056093;
+        bh=kQOPCzJ23KjmzmDDzdiGqkriF7MkqANtBTl5JNAMDM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A0WFYp3stJ8v89n5nFk7/EgP4CM95DmOi7kw96WsxY5XSWNEZv3ENTZ4AXWnBL22v
-         k4dDuCfmRsiUYtbAqenyJOYjN1kuSzWK5JlAZMO0n+O2Xq/0qWtVH4MHgaM7LDrNzD
-         p7rm4kGjJsFlZEJB8ecCpNeiSzeyz9AmhB6MqPYs=
+        b=eL/8Y5Fphm4D+QQgGjjAjCtr+vILIZ0MBAFJOvG/3nawGgx0UHMXf08EC8y9tb/Yz
+         NjIamYr4dFCkQ8ooJWwGKvj26IwOW+eTaxFJPu6u0wVCcOh5MeTiqghVUYyr/AyICy
+         GYnlU2Crbwrau1YflyLvlU1otZDv8Xtrsaf8hvQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@ZenIV.linux.org.uk>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
+        stable@vger.kernel.org,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 363/846] pcmcia: fix setting of kthread task states
-Date:   Mon, 24 Jan 2022 19:38:00 +0100
-Message-Id: <20220124184113.452642141@linuxfoundation.org>
+Subject: [PATCH 5.15 325/846] usb: dwc2: do not gate off the hardware if it does not support clock gating
+Date:   Mon, 24 Jan 2022 19:37:22 +0100
+Message-Id: <20220124184112.112781068@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,53 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit fbb3485f1f931102d8ba606f1c28123f5b48afa3 ]
+[ Upstream commit 34146c68083f1aef6709196b3dc888c1ceffd357 ]
 
-We need to set TASK_INTERRUPTIBLE before calling kthread_should_stop().
-Otherwise, kthread_stop() might see that the pccardd thread is still
-in TASK_RUNNING state and fail to wake it up.
+We should not be clearing the HCD_FLAG_HW_ACCESSIBLE bit if the hardware
+does not support clock gating.
 
-Additionally, we only need to set the state back to TASK_RUNNING if
-kthread_should_stop() breaks the loop.
-
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reported-by: Al Viro <viro@ZenIV.linux.org.uk>
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Fixes: d3046ba809ce ("pcmcia: fix a boot time warning in pcmcia cs code")
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Fixes: 50fb0c128b6e ("usb: dwc2: Add clock gating entering flow by system suspend")
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Link: https://lore.kernel.org/r/20220104135922.734776-1-dinguyen@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pcmcia/cs.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/usb/dwc2/hcd.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/pcmcia/cs.c b/drivers/pcmcia/cs.c
-index e211e2619680c..f70197154a362 100644
---- a/drivers/pcmcia/cs.c
-+++ b/drivers/pcmcia/cs.c
-@@ -666,18 +666,16 @@ static int pccardd(void *__skt)
- 		if (events || sysfs_events)
- 			continue;
+diff --git a/drivers/usb/dwc2/hcd.c b/drivers/usb/dwc2/hcd.c
+index a215ec9e172e6..657dbd50faf11 100644
+--- a/drivers/usb/dwc2/hcd.c
++++ b/drivers/usb/dwc2/hcd.c
+@@ -4403,11 +4403,12 @@ static int _dwc2_hcd_suspend(struct usb_hcd *hcd)
+ 		 * If not hibernation nor partial power down are supported,
+ 		 * clock gating is used to save power.
+ 		 */
+-		if (!hsotg->params.no_clock_gating)
++		if (!hsotg->params.no_clock_gating) {
+ 			dwc2_host_enter_clock_gating(hsotg);
  
-+		set_current_state(TASK_INTERRUPTIBLE);
- 		if (kthread_should_stop())
- 			break;
- 
--		set_current_state(TASK_INTERRUPTIBLE);
--
- 		schedule();
- 
--		/* make sure we are running */
--		__set_current_state(TASK_RUNNING);
--
- 		try_to_freeze();
- 	}
-+	/* make sure we are running before we exit */
-+	__set_current_state(TASK_RUNNING);
- 
- 	/* shut down socket, if a device is still present */
- 	if (skt->state & SOCKET_PRESENT) {
+-		/* After entering suspend, hardware is not accessible */
+-		clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
++			/* After entering suspend, hardware is not accessible */
++			clear_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
++		}
+ 		break;
+ 	default:
+ 		goto skip_power_saving;
 -- 
 2.34.1
 
