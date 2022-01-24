@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D528FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D8DCC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3411886AbiAYAfF (ORCPT
+        id S3412095AbiAYAfo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:35:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46378 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454535AbiAXVdG (ORCPT
+        Mon, 24 Jan 2022 19:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2364068AbiAXXqo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:06 -0500
+        Mon, 24 Jan 2022 18:46:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D10C0613AB;
+        Mon, 24 Jan 2022 13:41:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A8912B81188;
-        Mon, 24 Jan 2022 21:33:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6736C340E4;
-        Mon, 24 Jan 2022 21:33:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1F7FB811A2;
+        Mon, 24 Jan 2022 21:41:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25606C340E4;
+        Mon, 24 Jan 2022 21:41:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059983;
-        bh=UAjvnhTZ2Yn5EHOvdWzEPrFzvMqBIFWTeR/luTOCF24=;
+        s=korg; t=1643060514;
+        bh=z/kUukaJylcFxGt8AABs3R9KeYEcCOvB/8aKXDK3HDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TlfP+4xjHb3Z7W5gchzDF72Lrf7xEZDa6et5uscVWw9uGDttsCQAyAIwjFiIv/smj
-         9r72BWXzHyKLhlNfPoOzBbZ5Iqib9ZEQKr+YEyb0vEeeYIgKHIjztm8MkDgnl5gl3C
-         7fxkYkjz2sPSqFnPlTBHn5ExRy2sC/TxpO6ng+m4=
+        b=ZBvJgj0Dmi3qHFTcbfbUFioC5B18frerxn/ta61Yxtwxw8Xm/OpwOxSh2AkcAc7SG
+         v8KWKOPC35e/6eoibY9C2gDx/X2VzNjeaAEadnk7MZCy4KkGjV7zvZuhD5MfifwvKT
+         aF+a+W3aFqynKljaZosbQLOnVIEtIbxQU+GNzHtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qi Liu <liuqi115@huawei.com>,
-        John Garry <john.garry@huawei.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0767/1039] scsi: hisi_sas: Prevent parallel FLR and controller reset
-Date:   Mon, 24 Jan 2022 19:42:36 +0100
-Message-Id: <20220124184151.096712073@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 0972/1039] net: axienet: Fix TX ring slot available check
+Date:   Mon, 24 Jan 2022 19:46:01 +0100
+Message-Id: <20220124184157.963023294@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,97 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qi Liu <liuqi115@huawei.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 16775db613c2bdea09705dcb876942c0641a1098 ]
+commit 996defd7f8b5dafc1d480b7585c7c62437f80c3c upstream.
 
-If we issue a controller reset command during executing a FLR a hung task
-may be found:
+The check for whether a TX ring slot was available was incorrect,
+since a slot which had been loaded with transmit data but the device had
+not started transmitting would be treated as available, potentially
+causing non-transmitted slots to be overwritten. The control field in
+the descriptor should be checked, rather than the status field (which may
+only be updated when the device completes the entry).
 
- Call trace:
-  __switch_to+0x158/0x1cc
-  __schedule+0x2e8/0x85c
-  schedule+0x7c/0x110
-  schedule_timeout+0x190/0x1cc
-  __down+0x7c/0xd4
-  down+0x5c/0x7c
-  hisi_sas_task_exec+0x510/0x680 [hisi_sas_main]
-  hisi_sas_queue_command+0x24/0x30 [hisi_sas_main]
-  smp_execute_task_sg+0xf4/0x23c [libsas]
-  sas_smp_phy_control+0x110/0x1e0 [libsas]
-  transport_sas_phy_reset+0xc8/0x190 [libsas]
-  phy_reset_work+0x2c/0x40 [libsas]
-  process_one_work+0x1dc/0x48c
-  worker_thread+0x15c/0x464
-  kthread+0x160/0x170
-  ret_from_fork+0x10/0x18
-
-This is a race condition which occurs when the FLR completes first.
-
-Here the host HISI_SAS_RESETTING_BIT flag out gets of sync as
-HISI_SAS_RESETTING_BIT is not always cleared with the hisi_hba.sem held, so
-now only set/unset HISI_SAS_RESETTING_BIT under hisi_hba.sem .
-
-Link: https://lore.kernel.org/r/1639579061-179473-7-git-send-email-john.garry@huawei.com
-Signed-off-by: Qi Liu <liuqi115@huawei.com>
-Signed-off-by: John Garry <john.garry@huawei.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/hisi_sas/hisi_sas_main.c  | 8 +++++---
- drivers/scsi/hisi_sas/hisi_sas_v3_hw.c | 1 +
- 2 files changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_main.c b/drivers/scsi/hisi_sas/hisi_sas_main.c
-index f206c433de325..8a13bc08d6575 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_main.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_main.c
-@@ -1581,7 +1581,6 @@ void hisi_sas_controller_reset_prepare(struct hisi_hba *hisi_hba)
- {
- 	struct Scsi_Host *shost = hisi_hba->shost;
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -643,7 +643,6 @@ static int axienet_free_tx_chain(struct
+ 		if (cur_p->skb && (status & XAXIDMA_BD_STS_COMPLETE_MASK))
+ 			dev_consume_skb_irq(cur_p->skb);
  
--	down(&hisi_hba->sem);
- 	hisi_hba->phy_state = hisi_hba->hw->get_phys_state(hisi_hba);
+-		cur_p->cntrl = 0;
+ 		cur_p->app0 = 0;
+ 		cur_p->app1 = 0;
+ 		cur_p->app2 = 0;
+@@ -651,6 +650,7 @@ static int axienet_free_tx_chain(struct
+ 		cur_p->skb = NULL;
+ 		/* ensure our transmit path and device don't prematurely see status cleared */
+ 		wmb();
++		cur_p->cntrl = 0;
+ 		cur_p->status = 0;
  
- 	scsi_block_requests(shost);
-@@ -1606,9 +1605,9 @@ void hisi_sas_controller_reset_done(struct hisi_hba *hisi_hba)
- 	if (hisi_hba->reject_stp_links_msk)
- 		hisi_sas_terminate_stp_reject(hisi_hba);
- 	hisi_sas_reset_init_all_devices(hisi_hba);
--	up(&hisi_hba->sem);
- 	scsi_unblock_requests(shost);
- 	clear_bit(HISI_SAS_RESETTING_BIT, &hisi_hba->flags);
-+	up(&hisi_hba->sem);
- 
- 	hisi_sas_rescan_topology(hisi_hba, hisi_hba->phy_state);
+ 		if (sizep)
+@@ -713,7 +713,7 @@ static inline int axienet_check_tx_bd_sp
+ 	/* Ensure we see all descriptor updates from device or TX IRQ path */
+ 	rmb();
+ 	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
+-	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
++	if (cur_p->cntrl)
+ 		return NETDEV_TX_BUSY;
+ 	return 0;
  }
-@@ -1619,8 +1618,11 @@ static int hisi_sas_controller_prereset(struct hisi_hba *hisi_hba)
- 	if (!hisi_hba->hw->soft_reset)
- 		return -1;
- 
--	if (test_and_set_bit(HISI_SAS_RESETTING_BIT, &hisi_hba->flags))
-+	down(&hisi_hba->sem);
-+	if (test_and_set_bit(HISI_SAS_RESETTING_BIT, &hisi_hba->flags)) {
-+		up(&hisi_hba->sem);
- 		return -1;
-+	}
- 
- 	if (hisi_sas_debugfs_enable && hisi_hba->debugfs_itct[0].itct)
- 		hisi_hba->hw->debugfs_snapshot_regs(hisi_hba);
-diff --git a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-index 0ef6c21bf0811..11a44d9dd9b2d 100644
---- a/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-+++ b/drivers/scsi/hisi_sas/hisi_sas_v3_hw.c
-@@ -4848,6 +4848,7 @@ static void hisi_sas_reset_prepare_v3_hw(struct pci_dev *pdev)
- 	int rc;
- 
- 	dev_info(dev, "FLR prepare\n");
-+	down(&hisi_hba->sem);
- 	set_bit(HISI_SAS_RESETTING_BIT, &hisi_hba->flags);
- 	hisi_sas_controller_reset_prepare(hisi_hba);
- 
--- 
-2.34.1
-
 
 
