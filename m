@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 579AEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD24C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413556AbiAYAjS (ORCPT
+        id S3413572AbiAYAjW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:39:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        Mon, 24 Jan 2022 19:39:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2363973AbiAXXq1 (ORCPT
+        with ESMTP id S2363962AbiAXXq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:46:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75AEAC05A1BD;
-        Mon, 24 Jan 2022 13:40:21 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F0FBC05A1B8;
+        Mon, 24 Jan 2022 13:39:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 341E9B811FC;
-        Mon, 24 Jan 2022 21:40:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E84DC340E4;
-        Mon, 24 Jan 2022 21:40:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DEB961491;
+        Mon, 24 Jan 2022 21:39:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22288C340E4;
+        Mon, 24 Jan 2022 21:39:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060419;
-        bh=qGKPlBKi4dvM3k6D9aqxyYUFmALZfLKHSo5w9/UB2ys=;
+        s=korg; t=1643060397;
+        bh=q7ihR5Snu2W1wGEKLmd6hmJZ58qgPjBl7VGdE/uxV+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qtCtCjlcvT0yNpTx5xw06rGH3Hd4i9Uy/fxpOkf9pKM5DGz164fHf9OI+5q54Xh6y
-         AusBuoCyrigJ2doGul4Z5DOgBh33BPB1dmsDzKLbYMhlwYokghAur4ZIlt8sO3omRQ
-         sOITUmPxddMwiuv9ZDFAPh48CjX0rXHuwrkDl7Pg=
+        b=v1C8hbOsZ2GcszqahXsaeLkNHyFOcn3ClA1PT7wS5k5JV/Lxtr6fzB9a1hDrhJ1tQ
+         DFqZzUGa7lF73adRGrd06EtMWVV3ceLYjNcLIXW+/2pxcEhz5FiBpHukCX5EWZ56xB
+         y1mJ1RlnNy1k7ZiJVxwz1OKGn0tN8m8ZvEooO6WQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        stable@vger.kernel.org, Daniel Vetter <daniel.vetter@ffwll.ch>,
         Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH 5.16 0908/1039] drm/vc4: hdmi: Make sure the device is powered with CEC
-Date:   Mon, 24 Jan 2022 19:44:57 +0100
-Message-Id: <20220124184155.818941043@linuxfoundation.org>
+Subject: [PATCH 5.16 0933/1039] drm/vc4: crtc: Drop feed_txp from state
+Date:   Mon, 24 Jan 2022 19:45:22 +0100
+Message-Id: <20220124184156.652900148@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,53 +51,146 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maxime Ripard <maxime@cerno.tech>
 
-commit 20b0dfa86bef0e80b41b0e5ac38b92f23b6f27f9 upstream.
+commit a16c66401fd831f70a02d33e9bcaac585637c29f upstream.
 
-Similarly to what we encountered with the detect hook with DRM, nothing
-actually prevents any of the CEC callback from being run while the HDMI
-output is disabled.
+Accessing the crtc->state pointer from outside the modesetting context
+is not allowed. We thus need to copy whatever we need from the KMS state
+to our structure in order to access it.
 
-However, this is an issue since any register access to the controller
-when it's powered down will result in a silent hang.
+In VC4, a number of users of that pointers have crept in over the years,
+the first one being whether or not the downstream controller of the
+pixelvalve is our writeback controller.
 
-Let's make sure we run the runtime_pm hooks when the CEC adapter is
-opened and closed by the userspace to avoid that issue.
+Fortunately for us, Since commit 39fcb2808376 ("drm/vc4: txp: Turn the
+TXP into a CRTC of its own") this is no longer something that can change
+from one commit to the other and is hardcoded.
 
-Fixes: 15b4511a4af6 ("drm/vc4: add HDMI CEC support")
-Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Let's set this flag in struct vc4_crtc if we happen to be the TXP, and
+drop the flag from our private state structure.
+
+Link: https://lore.kernel.org/all/YWgteNaNeaS9uWDe@phenom.ffwll.local/
+Link: https://lore.kernel.org/r/20211025141113.702757-2-maxime@cerno.tech
+Fixes: 008095e065a8 ("drm/vc4: Add support for the transposer block")
+Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
 Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210819135931.895976-6-maxime@cerno.tech
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_crtc.c |    3 +--
+ drivers/gpu/drm/vc4/vc4_drv.h  |    6 +++++-
+ drivers/gpu/drm/vc4/vc4_hvs.c  |    7 +++----
+ drivers/gpu/drm/vc4/vc4_kms.c  |    3 ++-
+ drivers/gpu/drm/vc4/vc4_txp.c  |    3 +--
+ 5 files changed, 12 insertions(+), 10 deletions(-)
 
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -1736,8 +1736,14 @@ static int vc4_hdmi_cec_adap_enable(stru
- 	struct vc4_hdmi *vc4_hdmi = cec_get_drvdata(adap);
- 	/* clock period in microseconds */
- 	const u32 usecs = 1000000 / CEC_CLOCK_FREQ;
--	u32 val = HDMI_READ(HDMI_CEC_CNTRL_5);
-+	u32 val;
-+	int ret;
+--- a/drivers/gpu/drm/vc4/vc4_crtc.c
++++ b/drivers/gpu/drm/vc4/vc4_crtc.c
+@@ -715,7 +715,7 @@ static void vc4_crtc_handle_page_flip(st
+ 	spin_lock_irqsave(&dev->event_lock, flags);
+ 	if (vc4_crtc->event &&
+ 	    (vc4_state->mm.start == HVS_READ(SCALER_DISPLACTX(chan)) ||
+-	     vc4_state->feed_txp)) {
++	     vc4_crtc->feeds_txp)) {
+ 		drm_crtc_send_vblank_event(crtc, vc4_crtc->event);
+ 		vc4_crtc->event = NULL;
+ 		drm_crtc_vblank_put(crtc);
+@@ -893,7 +893,6 @@ struct drm_crtc_state *vc4_crtc_duplicat
+ 		return NULL;
  
-+	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
-+	if (ret)
-+		return ret;
-+
-+	val = HDMI_READ(HDMI_CEC_CNTRL_5);
- 	val &= ~(VC4_HDMI_CEC_TX_SW_RESET | VC4_HDMI_CEC_RX_SW_RESET |
- 		 VC4_HDMI_CEC_CNT_TO_4700_US_MASK |
- 		 VC4_HDMI_CEC_CNT_TO_4500_US_MASK);
-@@ -1883,6 +1889,8 @@ static int vc4_hdmi_cec_init(struct vc4_
- 	if (ret < 0)
- 		goto err_remove_handlers;
+ 	old_vc4_state = to_vc4_crtc_state(crtc->state);
+-	vc4_state->feed_txp = old_vc4_state->feed_txp;
+ 	vc4_state->margins = old_vc4_state->margins;
+ 	vc4_state->assigned_channel = old_vc4_state->assigned_channel;
  
-+	pm_runtime_put(&vc4_hdmi->pdev->dev);
+--- a/drivers/gpu/drm/vc4/vc4_drv.h
++++ b/drivers/gpu/drm/vc4/vc4_drv.h
+@@ -495,6 +495,11 @@ struct vc4_crtc {
+ 	struct drm_pending_vblank_event *event;
+ 
+ 	struct debugfs_regset32 regset;
 +
++	/**
++	 * @feeds_txp: True if the CRTC feeds our writeback controller.
++	 */
++	bool feeds_txp;
+ };
+ 
+ static inline struct vc4_crtc *
+@@ -521,7 +526,6 @@ struct vc4_crtc_state {
+ 	struct drm_crtc_state base;
+ 	/* Dlist area for this CRTC configuration. */
+ 	struct drm_mm_node mm;
+-	bool feed_txp;
+ 	bool txp_armed;
+ 	unsigned int assigned_channel;
+ 
+--- a/drivers/gpu/drm/vc4/vc4_hvs.c
++++ b/drivers/gpu/drm/vc4/vc4_hvs.c
+@@ -375,7 +375,7 @@ static void vc4_hvs_update_dlist(struct
+ 
+ 		spin_lock_irqsave(&dev->event_lock, flags);
+ 
+-		if (!vc4_state->feed_txp || vc4_state->txp_armed) {
++		if (!vc4_crtc->feeds_txp || vc4_state->txp_armed) {
+ 			vc4_crtc->event = crtc->state->event;
+ 			crtc->state->event = NULL;
+ 		}
+@@ -395,10 +395,9 @@ void vc4_hvs_atomic_enable(struct drm_cr
+ {
+ 	struct drm_device *dev = crtc->dev;
+ 	struct vc4_dev *vc4 = to_vc4_dev(dev);
+-	struct drm_crtc_state *new_crtc_state = drm_atomic_get_new_crtc_state(state, crtc);
+-	struct vc4_crtc_state *vc4_state = to_vc4_crtc_state(new_crtc_state);
+ 	struct drm_display_mode *mode = &crtc->state->adjusted_mode;
+-	bool oneshot = vc4_state->feed_txp;
++	struct vc4_crtc *vc4_crtc = to_vc4_crtc(crtc);
++	bool oneshot = vc4_crtc->feeds_txp;
+ 
+ 	vc4_hvs_update_dlist(crtc);
+ 	vc4_hvs_init_channel(vc4, crtc, mode, oneshot);
+--- a/drivers/gpu/drm/vc4/vc4_kms.c
++++ b/drivers/gpu/drm/vc4/vc4_kms.c
+@@ -233,6 +233,7 @@ static void vc4_hvs_pv_muxing_commit(str
+ 	unsigned int i;
+ 
+ 	for_each_new_crtc_in_state(state, crtc, crtc_state, i) {
++		struct vc4_crtc *vc4_crtc = to_vc4_crtc(crtc);
+ 		struct vc4_crtc_state *vc4_state = to_vc4_crtc_state(crtc_state);
+ 		u32 dispctrl;
+ 		u32 dsp3_mux;
+@@ -253,7 +254,7 @@ static void vc4_hvs_pv_muxing_commit(str
+ 		 * TXP IP, and we need to disable the FIFO2 -> pixelvalve1
+ 		 * route.
+ 		 */
+-		if (vc4_state->feed_txp)
++		if (vc4_crtc->feeds_txp)
+ 			dsp3_mux = VC4_SET_FIELD(3, SCALER_DISPCTRL_DSP3_MUX);
+ 		else
+ 			dsp3_mux = VC4_SET_FIELD(2, SCALER_DISPCTRL_DSP3_MUX);
+--- a/drivers/gpu/drm/vc4/vc4_txp.c
++++ b/drivers/gpu/drm/vc4/vc4_txp.c
+@@ -391,7 +391,6 @@ static int vc4_txp_atomic_check(struct d
+ {
+ 	struct drm_crtc_state *crtc_state = drm_atomic_get_new_crtc_state(state,
+ 									  crtc);
+-	struct vc4_crtc_state *vc4_state = to_vc4_crtc_state(crtc_state);
+ 	int ret;
+ 
+ 	ret = vc4_hvs_atomic_check(crtc, state);
+@@ -399,7 +398,6 @@ static int vc4_txp_atomic_check(struct d
+ 		return ret;
+ 
+ 	crtc_state->no_vblank = true;
+-	vc4_state->feed_txp = true;
+ 
  	return 0;
+ }
+@@ -482,6 +480,7 @@ static int vc4_txp_bind(struct device *d
  
- err_remove_handlers:
+ 	vc4_crtc->pdev = pdev;
+ 	vc4_crtc->data = &vc4_txp_crtc_data;
++	vc4_crtc->feeds_txp = true;
+ 
+ 	txp->pdev = pdev;
+ 
 
 
