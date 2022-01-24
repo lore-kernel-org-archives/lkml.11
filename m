@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 630F5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67028C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455755AbiAXVgF (ORCPT
+        id S1345633AbiAXVgT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:36:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        Mon, 24 Jan 2022 16:36:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381767AbiAXUtE (ORCPT
+        with ESMTP id S1444320AbiAXVAi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:04 -0500
+        Mon, 24 Jan 2022 16:00:38 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDD9C0418B5;
-        Mon, 24 Jan 2022 11:58:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9DE5C04D63A;
+        Mon, 24 Jan 2022 12:01:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D1129B81218;
-        Mon, 24 Jan 2022 19:57:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 110D1C340E5;
-        Mon, 24 Jan 2022 19:57:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 70D4BB81239;
+        Mon, 24 Jan 2022 20:01:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4C0DC340EA;
+        Mon, 24 Jan 2022 20:01:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054277;
-        bh=zFvwzpFQWjdF+o/sqOiU7jfu+9OjkMg1F/9RRwCH8ws=;
+        s=korg; t=1643054509;
+        bh=noPkjLggVRzhHtJtUyyY8AiSqQGvqU0JZkwRb0GYV3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r6S4ZmOoZ2Skam62FMmMvq5Ve+SVDfpydQ9YNQ7kIWZ/AFOa4x1Lis53XANpwp/d9
-         pPUt8ZmZgbIkoai6Y6dFz4Uz3nkmj93uqholSRZSu8tpcO1dAzTSJ1GQVTo0hQUFTm
-         h8jXY4rTrqyxugOROtTrPce1ccEDZV1/1wb2OBo4=
+        b=tqZK/LYm8eZeDFp0CCfxYyT0j7jlRQE3Jyf+Rm0xTfGOf8HrbepC7W7vZI+obsnGC
+         hj2K9Ie+gBt42imdKjHEoOr7oOYE7Z9SRRKUDFmcROWpWbyd4Fy1Riaf5ZSdUxeGgI
+         pm3ZOwjQeWUbCZrPLfG0KEi1MHy/laQF/MbpUkZ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 337/563] arm64: dts: ti: j7200-main: Fix dtbs_check serdes_ln_ctrl node
-Date:   Mon, 24 Jan 2022 19:41:42 +0100
-Message-Id: <20220124184036.087679600@linuxfoundation.org>
+Subject: [PATCH 5.10 412/563] powerpc/btext: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:42:57 +0100
+Message-Id: <20220124184038.697652909@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,35 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 4d3984906397581dc0ccb6a02bf16b6ff82c9192 ]
+[ Upstream commit a1d2b210ffa52d60acabbf7b6af3ef7e1e69cda0 ]
 
-Fix 'dtbs_check' in serdes_ln_ctrl (serdes-ln-ctrl@4080) node by
-changing the node name to mux-controller@4080.
+for_each_node_by_type performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20211126084555.17797-2-kishon@ti.com
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
+
+// <smpl>
+@@
+local idexpression n;
+expression e;
+@@
+
+ for_each_node_by_type(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-6-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/ti/k3-j7200-main.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/btext.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-index 5832ad830ed14..1ab9f9604af6c 100644
---- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-@@ -25,7 +25,7 @@
- 		#size-cells = <1>;
- 		ranges = <0x00 0x00 0x00100000 0x1c000>;
- 
--		serdes_ln_ctrl: serdes-ln-ctrl@4080 {
-+		serdes_ln_ctrl: mux-controller@4080 {
- 			compatible = "mmio-mux";
- 			#mux-control-cells = <1>;
- 			mux-reg-masks = <0x4080 0x3>, <0x4084 0x3>, /* SERDES0 lane0/1 select */
+diff --git a/arch/powerpc/kernel/btext.c b/arch/powerpc/kernel/btext.c
+index 803c2a45b22ac..1cffb5e7c38d6 100644
+--- a/arch/powerpc/kernel/btext.c
++++ b/arch/powerpc/kernel/btext.c
+@@ -241,8 +241,10 @@ int __init btext_find_display(int allow_nonstdout)
+ 			rc = btext_initialize(np);
+ 			printk("result: %d\n", rc);
+ 		}
+-		if (rc == 0)
++		if (rc == 0) {
++			of_node_put(np);
+ 			break;
++		}
+ 	}
+ 	return rc;
+ }
 -- 
 2.34.1
 
