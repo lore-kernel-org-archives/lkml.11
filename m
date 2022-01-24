@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64035C47081
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C47C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366160AbiAXXwZ (ORCPT
+        id S2366630AbiAXXxM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        Mon, 24 Jan 2022 18:53:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356464AbiAXW4A (ORCPT
+        with ESMTP id S1846073AbiAXXOW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:56:00 -0500
+        Mon, 24 Jan 2022 18:14:22 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85186C0698C2;
-        Mon, 24 Jan 2022 13:10:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AF6C061748;
+        Mon, 24 Jan 2022 13:23:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 24FC66141C;
-        Mon, 24 Jan 2022 21:10:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08A66C340E5;
-        Mon, 24 Jan 2022 21:10:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC59A614B7;
+        Mon, 24 Jan 2022 21:23:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C66C340E4;
+        Mon, 24 Jan 2022 21:23:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058627;
-        bh=n/lcnXhgHSaRyo+ZtvUumelV6/WcgjJd3RAK8llaias=;
+        s=korg; t=1643059383;
+        bh=3qRhBNKvmScCvIXd2l25/NHmnMaxhw46rXHT+wEJ4FI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DVXo35GjGgC2CQSs58JZnfUH8y61eJeBOgrcop1bvXhoD9RRoFZrf+7dxyocSTUqC
-         t0htKPtPuIaiyPQITiSNn/sdAQwDLFVTAnV9EO03Qk3b0+wTOVY4NQV7TvJMaIUl79
-         lD3Ip8fSoqK3LtHSX9FOOaw7VghlSYHcmuWTi79g=
+        b=tqqjxlXRkJuzmdCP9zbhaJa3BMkgkAXPbl/kN/PEyJAATRu/m9ct8HvKlphw3CzYR
+         o3iBvtm/Cs15ruFyVJzHaw1aJpndpiO4Tzje1mQ+0br4Ee3aphdtTrSlUpiYHPtSV6
+         kG9G9KDdKwLWETv92LaqY7ill68w8kbiBR0qZimA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baochen Qiang <quic_bqiang@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0351/1039] ath11k: Fix unexpected return buffer manager error for QCA6390
-Date:   Mon, 24 Jan 2022 19:35:40 +0100
-Message-Id: <20220124184137.083494354@linuxfoundation.org>
+Subject: [PATCH 5.16 0598/1039] rsi: Fix use-after-free in rsi_rx_done_handler()
+Date:   Mon, 24 Jan 2022 19:39:47 +0100
+Message-Id: <20220124184145.439873933@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,67 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baochen Qiang <quic_bqiang@quicinc.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 71c748b5e01e3e28838a8e26a8966fb5adb03df7 ]
+[ Upstream commit b07e3c6ebc0c20c772c0f54042e430acec2945c3 ]
 
-We are seeing below error on QCA6390:
-...
-[70211.671189] ath11k_pci 0000:72:00.0: failed to parse rx error in wbm_rel ring desc -22
-[70212.696154] ath11k_pci 0000:72:00.0: failed to parse rx error in wbm_rel ring desc -22
-[70213.092941] ath11k_pci 0000:72:00.0: failed to parse rx error in wbm_rel ring desc -22
-...
+When freeing rx_cb->rx_skb, the pointer is not set to NULL,
+a later rsi_rx_done_handler call will try to read the freed
+address.
+This bug will very likley lead to double free, although
+detected early as use-after-free bug.
 
-The reason is that, with commit 734223d78428 ("ath11k: change return
-buffer manager for QCA6390"), ath11k expects the return buffer manager
-(RBM) field of descriptor configured as HAL_RX_BUF_RBM_SW1_BM when
-parsing error frames from WBM2SW3_RELEASE ring. This is a wrong change
-cause the RBM field is set as HAL_RX_BUF_RBM_SW3_BM.
+The bug is triggerable with a compromised/malfunctional usb
+device. After applying the patch, the same input no longer
+triggers the use-after-free.
 
-The same issue also applies to REO2TCL ring though we have not got any
-error reported.
+Attached is the kasan report from fuzzing.
 
-Fix it by changing RBM from HAL_RX_BUF_RBM_SW1_BM to HAL_RX_BUF_RBM_SW3_BM
-for these two rings.
+BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+Read of size 4 at addr ffff8880188e5930 by task modprobe/231
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __kasan_report.cold+0x37/0x7c
+ ? dma_direct_unmap_page+0x90/0x110
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ kasan_report+0xe/0x20
+ rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ ? apic_timer_interrupt+0xa/0x20
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ ? handle_irq_event+0xcd/0x157
+ ? handle_edge_irq+0x1eb/0x7b0
+ irq_exit+0x114/0x140
+ do_IRQ+0x91/0x1e0
+ common_interrupt+0xf/0xf
+ </IRQ>
 
-Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
-
-Fixes: 734223d78428 ("ath11k: change return buffer manager for QCA6390")
-Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211222013536.582527-1-quic_bqiang@quicinc.com
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/dp_rx.c  | 2 +-
- drivers/net/wireless/ath/ath11k/hal_rx.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_usb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
-index c5320847b80a7..22b6b6a470d4c 100644
---- a/drivers/net/wireless/ath/ath11k/dp_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
-@@ -3800,7 +3800,7 @@ int ath11k_dp_process_rx_err(struct ath11k_base *ab, struct napi_struct *napi,
- 		ath11k_hal_rx_msdu_link_info_get(link_desc_va, &num_msdus, msdu_cookies,
- 						 &rbm);
- 		if (rbm != HAL_RX_BUF_RBM_WBM_IDLE_DESC_LIST &&
--		    rbm != ab->hw_params.hal_params->rx_buf_rbm) {
-+		    rbm != HAL_RX_BUF_RBM_SW3_BM) {
- 			ab->soc_stats.invalid_rbm++;
- 			ath11k_warn(ab, "invalid return buffer manager %d\n", rbm);
- 			ath11k_dp_rx_link_desc_return(ab, desc,
-diff --git a/drivers/net/wireless/ath/ath11k/hal_rx.c b/drivers/net/wireless/ath/ath11k/hal_rx.c
-index 329c404cfa80d..922926246db7a 100644
---- a/drivers/net/wireless/ath/ath11k/hal_rx.c
-+++ b/drivers/net/wireless/ath/ath11k/hal_rx.c
-@@ -374,7 +374,7 @@ int ath11k_hal_wbm_desc_parse_err(struct ath11k_base *ab, void *desc,
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 6821ea9918956..3cca1823c458a 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -269,8 +269,12 @@ static void rsi_rx_done_handler(struct urb *urb)
+ 	struct rsi_91x_usbdev *dev = (struct rsi_91x_usbdev *)rx_cb->data;
+ 	int status = -EINVAL;
  
- 	ret_buf_mgr = FIELD_GET(BUFFER_ADDR_INFO1_RET_BUF_MGR,
- 				wbm_desc->buf_addr_info.info1);
--	if (ret_buf_mgr != ab->hw_params.hal_params->rx_buf_rbm) {
-+	if (ret_buf_mgr != HAL_RX_BUF_RBM_SW3_BM) {
- 		ab->soc_stats.invalid_rbm++;
- 		return -EINVAL;
++	if (!rx_cb->rx_skb)
++		return;
++
+ 	if (urb->status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
+ 		return;
  	}
+ 
+@@ -294,8 +298,10 @@ out:
+ 	if (rsi_rx_urb_submit(dev->priv, rx_cb->ep_num, GFP_ATOMIC))
+ 		rsi_dbg(ERR_ZONE, "%s: Failed in urb submission", __func__);
+ 
+-	if (status)
++	if (status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
++	}
+ }
+ 
+ static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 -- 
 2.34.1
 
