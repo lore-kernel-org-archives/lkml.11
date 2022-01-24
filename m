@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0496FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACD16C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377309AbiAXUFQ (ORCPT
+        id S1377381AbiAXUFY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44612 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356866AbiAXTr3 (ORCPT
+        Mon, 24 Jan 2022 15:05:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356828AbiAXTr0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:47:29 -0500
+        Mon, 24 Jan 2022 14:47:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11834C038AEB;
+        Mon, 24 Jan 2022 11:23:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E670361482;
-        Mon, 24 Jan 2022 19:47:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C74C8C340E5;
-        Mon, 24 Jan 2022 19:47:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BABFBB810BD;
+        Mon, 24 Jan 2022 19:23:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6331C340E5;
+        Mon, 24 Jan 2022 19:23:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053648;
-        bh=TVOUWNBzfDhAxoXUMjAv2R95FzmE2kWLWGzml5e+0xM=;
+        s=korg; t=1643052194;
+        bh=5Ymn2AW/zGqbjw3qp2nR15M/bmz7QlMmrneVUroSo4g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JbLA4cTt8OEPknGbSms3QHQP5pqakfNiDNzoADlSLFCkk53foMvDhNcnuh/xyeNRD
-         g60yiejIc3/XesE/NN1MPD4+2mv0c022H2yzSh8DALaGHqNHvnBdevdGqj5hNt8DH2
-         gLiyMk6lXaeaDiVGcHhoZCl6eaeXEpJ14RXSqfQ4=
+        b=vCWCgfat/DXx8mHeHIK5uMfDo57a1tGH2ypsclv3GOznEHRsFXV8safVxpJb30TVU
+         NGrBCrD/gleI45GwhSbjDUVBXfOdMQEbIsICjzno6ES7tSuEMwohT4S+XnL4ofs2tt
+         K8QvIvUYKBAgojFuYtBOxBhyf4oZJSRc3MWMX7uo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 132/563] staging: rtl8192e: rtllib_module: fix error handle case in alloc_rtllib()
-Date:   Mon, 24 Jan 2022 19:38:17 +0100
-Message-Id: <20220124184028.961332004@linuxfoundation.org>
+Subject: [PATCH 4.19 176/239] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 24 Jan 2022 19:43:34 +0100
+Message-Id: <20220124183948.698401680@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,69 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit e730cd57ac2dfe94bca0f14a3be8e1b21de41a9c ]
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-Some variables are leaked in the error handling in alloc_rtllib(), free
-the variables in the error path.
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-Fixes: 94a799425eee ("From: wlanfae <wlanfae@realtek.com>")
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20211202030704.2425621-3-yangyingliang@huawei.com
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
+
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
+
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib_module.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib_module.c b/drivers/staging/rtl8192e/rtllib_module.c
-index 64d9feee1f392..f00ac94b2639b 100644
---- a/drivers/staging/rtl8192e/rtllib_module.c
-+++ b/drivers/staging/rtl8192e/rtllib_module.c
-@@ -88,7 +88,7 @@ struct net_device *alloc_rtllib(int sizeof_priv)
- 	err = rtllib_networks_allocate(ieee);
- 	if (err) {
- 		pr_err("Unable to allocate beacon storage: %d\n", err);
--		goto failed;
-+		goto free_netdev;
- 	}
- 	rtllib_networks_initialize(ieee);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 63aefe7e91be1..ab4d0f6058c04 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2347,7 +2347,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
  
-@@ -121,11 +121,13 @@ struct net_device *alloc_rtllib(int sizeof_priv)
- 	ieee->hwsec_active = 0;
- 
- 	memset(ieee->swcamtable, 0, sizeof(struct sw_cam_table) * 32);
--	rtllib_softmac_init(ieee);
-+	err = rtllib_softmac_init(ieee);
-+	if (err)
-+		goto free_crypt_info;
- 
- 	ieee->pHTInfo = kzalloc(sizeof(struct rt_hi_throughput), GFP_KERNEL);
- 	if (!ieee->pHTInfo)
--		return NULL;
-+		goto free_softmac;
- 
- 	HTUpdateDefaultSetting(ieee);
- 	HTInitializeHTInfo(ieee);
-@@ -141,8 +143,14 @@ struct net_device *alloc_rtllib(int sizeof_priv)
- 
- 	return dev;
- 
-- failed:
-+free_softmac:
-+	rtllib_softmac_free(ieee);
-+free_crypt_info:
-+	lib80211_crypt_info_free(&ieee->crypt_info);
-+	rtllib_networks_free(ieee);
-+free_netdev:
- 	free_netdev(dev);
-+
- 	return NULL;
- }
- EXPORT_SYMBOL(alloc_rtllib);
+ 		/*
 -- 
 2.34.1
 
