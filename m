@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F73C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB836C3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443536AbiAXU5O (ORCPT
+        id S1443565AbiAXU5V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:57:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        Mon, 24 Jan 2022 15:57:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386440AbiAXUfa (ORCPT
+        with ESMTP id S1386453AbiAXUfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:35:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54643C02C308;
-        Mon, 24 Jan 2022 11:48:52 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FB05C02B8C0;
+        Mon, 24 Jan 2022 11:49:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 111B9B8122A;
-        Mon, 24 Jan 2022 19:48:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DCFAC340E7;
-        Mon, 24 Jan 2022 19:48:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DFBC60989;
+        Mon, 24 Jan 2022 19:49:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BE3CC340E5;
+        Mon, 24 Jan 2022 19:49:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053729;
-        bh=Yp1NnFfvlH+1ASCwb2Hc7AdUpcyrvhhExdH1MabsrVw=;
+        s=korg; t=1643053742;
+        bh=gpWjQ0VaBNniP4xA1fEF6HlyF6wN8PjRmBVxu/REmpg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Re8pzJ5qsdd6Si+w4sXiRmwzAOLqOLAhxtB4X99mO6WfcSizoPfrKgoHc4U9ztXO+
-         Ey5qkzr/OQLL47Z+RkdZKxVKiJesKO2JuCa5DpiaVUtkQa/+Z0osfZT3htz8Hrf5ys
-         oX6VSLBagNl/N5EhjXVhe1N8nJGntQnJjcPrNMYs=
+        b=BU5NIXXtueqWxk8+c8bj1b0mkh2llS3dMNt7cpWhmeqac845T4ln5PwD6AJqNKQuM
+         DJifHqM8FbzL7TX3psHqYYOOH5ZCROLILkPzyOBNEpxqoBqLqM4op3I6ODvpS40oXV
+         OlTkSWNA5Ltp5HvTeT1Ggx59abD8hnX1prDqE3cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 141/563] media: dib8000: Fix a memleak in dib8000_init()
-Date:   Mon, 24 Jan 2022 19:38:26 +0100
-Message-Id: <20220124184029.274901219@linuxfoundation.org>
+        stable@vger.kernel.org, Steven Maddox <s.maddox@lantizia.me.uk>,
+        Christian Lamparter <chunkeey@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 162/563] ARM: dts: gemini: NAS4220-B: fis-index-block with 128 KiB sectors
+Date:   Mon, 24 Jan 2022 19:38:47 +0100
+Message-Id: <20220124184030.001834241@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,52 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Christian Lamparter <chunkeey@gmail.com>
 
-[ Upstream commit 8dbdcc7269a83305ee9d677b75064d3530a48ee2 ]
+[ Upstream commit 4754eab7e5a78bdefe7a960c5c260c95ebbb5fa6 ]
 
-In dib8000_init(), the variable fe is not freed or passed out on the
-failure of dib8000_identify(&state->i2c), which could lead to a memleak.
+Steven Maddox reported in the OpenWrt bugzilla, that his
+RaidSonic IB-NAS4220-B was no longer booting with the new
+OpenWrt 21.02 (uses linux 5.10's device-tree). However, it was
+working with the previous OpenWrt 19.07 series (uses 4.14).
 
-Fix this bug by adding a kfree of fe in the error path.
+|[    5.548038] No RedBoot partition table detected in 30000000.flash
+|[    5.618553] Searching for RedBoot partition table in 30000000.flash at offset 0x0
+|[    5.739093] No RedBoot partition table detected in 30000000.flash
+|...
+|[    7.039504] Waiting for root device /dev/mtdblock3...
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+The provided bootlog shows that the RedBoot partition parser was
+looking for the partition table "at offset 0x0". Which is strange
+since the comment in the device-tree says it should be at 0xfe0000.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+Further digging on the internet led to a review site that took
+some useful PCB pictures of their review unit back in February 2009.
+Their picture shows a Spansion S29GL128N11TFI01 flash chip.
 
-Builds with CONFIG_DVB_DIB8000=m show no new warnings,
-and our static analyzer no longer warns about this code.
+>From Spansion's Datasheet:
+"S29GL128N: One hundred twenty-eight 64 Kword (128 Kbyte) sectors"
+Steven also provided a "cat /sys/class/mtd/mtd0/erasesize" from his
+unit: "131072".
 
-Fixes: 77e2c0f5d471 ("V4L/DVB (12900): DiB8000: added support for DiBcom ISDB-T/ISDB-Tsb demodulator DiB8000")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+With the 128 KiB Sector/Erasesize in mind. This patch changes the
+fis-index-block property to (0xfe0000 / 0x20000) = 0x7f.
+
+Fixes: b5a923f8c739 ("ARM: dts: gemini: Switch to redboot partition parsing")
+Reported-by: Steven Maddox <s.maddox@lantizia.me.uk>
+Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Tested-by: Steven Maddox <s.maddox@lantizia.me.uk>
+Link: https://lore.kernel.org/r/20211206004334.4169408-1-linus.walleij@linaro.org'
+Bugzilla: https://bugs.openwrt.org/index.php?do=details&task_id=4137
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/dvb-frontends/dib8000.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/gemini-nas4220b.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/dvb-frontends/dib8000.c b/drivers/media/dvb-frontends/dib8000.c
-index bb02354a48b81..d67f2dd997d06 100644
---- a/drivers/media/dvb-frontends/dib8000.c
-+++ b/drivers/media/dvb-frontends/dib8000.c
-@@ -4473,8 +4473,10 @@ static struct dvb_frontend *dib8000_init(struct i2c_adapter *i2c_adap, u8 i2c_ad
- 
- 	state->timf_default = cfg->pll->timf;
- 
--	if (dib8000_identify(&state->i2c) == 0)
-+	if (dib8000_identify(&state->i2c) == 0) {
-+		kfree(fe);
- 		goto error;
-+	}
- 
- 	dibx000_init_i2c_master(&state->i2c_master, DIB8000, state->i2c.adap, state->i2c.addr);
+diff --git a/arch/arm/boot/dts/gemini-nas4220b.dts b/arch/arm/boot/dts/gemini-nas4220b.dts
+index 13112a8a5dd88..6544c730340fa 100644
+--- a/arch/arm/boot/dts/gemini-nas4220b.dts
++++ b/arch/arm/boot/dts/gemini-nas4220b.dts
+@@ -84,7 +84,7 @@
+ 			partitions {
+ 				compatible = "redboot-fis";
+ 				/* Eraseblock at 0xfe0000 */
+-				fis-index-block = <0x1fc>;
++				fis-index-block = <0x7f>;
+ 			};
+ 		};
  
 -- 
 2.34.1
