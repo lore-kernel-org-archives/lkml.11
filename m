@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C87C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 394ADC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382289AbiAXUZZ (ORCPT
+        id S1351386AbiAXU2P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:25:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59122 "EHLO
+        Mon, 24 Jan 2022 15:28:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33542 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376550AbiAXUCk (ORCPT
+        with ESMTP id S1378136AbiAXUGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:02:40 -0500
+        Mon, 24 Jan 2022 15:06:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E0A612F0;
-        Mon, 24 Jan 2022 20:02:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7774AC340E5;
-        Mon, 24 Jan 2022 20:02:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECC616130A;
+        Mon, 24 Jan 2022 20:06:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C77AAC340E5;
+        Mon, 24 Jan 2022 20:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054556;
-        bh=FaYKt4gnTfuF6TjBBOx0FbqMFJY4EXOhStDyYJlL4e8=;
+        s=korg; t=1643054783;
+        bh=ww+BcVqET/zZZV6a5y5S+vmzcWajE9txv4bLkQMaiJA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iKB8KfNX4iAHe6TTPuDB3xahPBC9jaZ8q3WIJ7wQHQ3FYNL6wmJVe9WT5J79Zj8Po
-         9B6Lb+22nrnza0TAvDtOIgcFppGquIEMwN/5VXys7Il5wWhGkmOfqDh7TXr6SIFPKr
-         Qes09vYJbT2zdqI9pa7+jwHaSf76E5p9bQ7j4Vpc=
+        b=W4NtyY2ZWi76viPGKkf3ffNnPZLjUBCugJjpgyQV8FZ0A3N9lArEcgGU+D41fWXEk
+         RxYcg60ZHddXyoP8B/FwnM6ywJTx3WX7nngZjUpmfQaT1WfKjTWGo1fc0ggfBDla/N
+         SzG8Z0YBgaCD0xsd2e4iPJiFzTFTHS2l6qh7f/ac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 394/563] btrfs: remove BUG_ON(!eie) in find_parent_nodes
-Date:   Mon, 24 Jan 2022 19:42:39 +0100
-Message-Id: <20220124184038.060803830@linuxfoundation.org>
+        stable@vger.kernel.org, Ghalem Boudour <ghalem.boudour@6wind.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.10 468/563] xfrm: fix policy lookup for ipv6 gre packets
+Date:   Mon, 24 Jan 2022 19:43:53 +0100
+Message-Id: <20220124184040.647045636@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,54 +47,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Ghalem Boudour <ghalem.boudour@6wind.com>
 
-[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
+commit bcf141b2eb551b3477b24997ebc09c65f117a803 upstream.
 
-If we're looking for leafs that point to a data extent we want to record
-the extent items that point at our bytenr.  At this point we have the
-reference and we know for a fact that this leaf should have a reference
-to our bytenr.  However if there's some sort of corruption we may not
-find any references to our leaf, and thus could end up with eie == NULL.
-Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
-mortals.
+On egress side, xfrm lookup is called from __gre6_xmit() with the
+fl6_gre_key field not initialized leading to policies selectors check
+failure. Consequently, gre packets are sent without encryption.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+On ingress side, INET6_PROTO_NOPOLICY was set, thus packets were not
+checked against xfrm policies. Like for egress side, fl6_gre_key should be
+correctly set, this is now done in decode_session6().
+
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ghalem Boudour <ghalem.boudour@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/btrfs/backref.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ net/ipv6/ip6_gre.c     |    5 ++++-
+ net/xfrm/xfrm_policy.c |   21 +++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index 8b471579e26e1..baff31a147e7d 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1366,10 +1366,18 @@ again:
- 				goto out;
- 			if (!ret && extent_item_pos) {
- 				/*
--				 * we've recorded that parent, so we must extend
--				 * its inode list here
-+				 * We've recorded that parent, so we must extend
-+				 * its inode list here.
-+				 *
-+				 * However if there was corruption we may not
-+				 * have found an eie, return an error in this
-+				 * case.
- 				 */
--				BUG_ON(!eie);
-+				ASSERT(eie);
-+				if (!eie) {
-+					ret = -EUCLEAN;
-+					goto out;
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -755,6 +755,7 @@ static netdev_tx_t __gre6_xmit(struct sk
+ 		fl6->daddr = key->u.ipv6.dst;
+ 		fl6->flowlabel = key->label;
+ 		fl6->flowi6_uid = sock_net_uid(dev_net(dev), NULL);
++		fl6->fl6_gre_key = tunnel_id_to_key32(key->tun_id);
+ 
+ 		dsfield = key->tos;
+ 		flags = key->tun_flags &
+@@ -990,6 +991,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit
+ 		fl6.daddr = key->u.ipv6.dst;
+ 		fl6.flowlabel = key->label;
+ 		fl6.flowi6_uid = sock_net_uid(dev_net(dev), NULL);
++		fl6.fl6_gre_key = tunnel_id_to_key32(key->tun_id);
+ 
+ 		dsfield = key->tos;
+ 		if (!(tun_info->key.tun_flags & TUNNEL_ERSPAN_OPT))
+@@ -1098,6 +1100,7 @@ static void ip6gre_tnl_link_config_commo
+ 	fl6->flowi6_oif = p->link;
+ 	fl6->flowlabel = 0;
+ 	fl6->flowi6_proto = IPPROTO_GRE;
++	fl6->fl6_gre_key = t->parms.o_key;
+ 
+ 	if (!(p->flags&IP6_TNL_F_USE_ORIG_TCLASS))
+ 		fl6->flowlabel |= IPV6_TCLASS_MASK & p->flowinfo;
+@@ -1543,7 +1546,7 @@ static void ip6gre_fb_tunnel_init(struct
+ static struct inet6_protocol ip6gre_protocol __read_mostly = {
+ 	.handler     = gre_rcv,
+ 	.err_handler = ip6gre_err,
+-	.flags       = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
++	.flags       = INET6_PROTO_FINAL,
+ };
+ 
+ static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -33,6 +33,7 @@
+ #include <net/flow.h>
+ #include <net/xfrm.h>
+ #include <net/ip.h>
++#include <net/gre.h>
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+ #include <net/mip6.h>
+ #endif
+@@ -3455,6 +3456,26 @@ decode_session6(struct sk_buff *skb, str
+ 			}
+ 			fl6->flowi6_proto = nexthdr;
+ 			return;
++		case IPPROTO_GRE:
++			if (!onlyproto &&
++			    (nh + offset + 12 < skb->data ||
++			     pskb_may_pull(skb, nh + offset + 12 - skb->data))) {
++				struct gre_base_hdr *gre_hdr;
++				__be32 *gre_key;
++
++				nh = skb_network_header(skb);
++				gre_hdr = (struct gre_base_hdr *)(nh + offset);
++				gre_key = (__be32 *)(gre_hdr + 1);
++
++				if (gre_hdr->flags & GRE_KEY) {
++					if (gre_hdr->flags & GRE_CSUM)
++						gre_key++;
++					fl6->fl6_gre_key = *gre_key;
 +				}
- 				while (eie->next)
- 					eie = eie->next;
- 				eie->next = ref->inode_list;
--- 
-2.34.1
-
++			}
++			fl6->flowi6_proto = nexthdr;
++			return;
++
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+ 		case IPPROTO_MH:
+ 			offset += ipv6_optlen(exthdr);
 
 
