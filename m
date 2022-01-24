@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6384C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85956C47080
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:06:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2369188AbiAYABL (ORCPT
+        id S2369227AbiAYABQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:01:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50612 "EHLO
+        Mon, 24 Jan 2022 19:01:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847031AbiAXXSV (ORCPT
+        with ESMTP id S1847043AbiAXXSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:18:21 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40BAEC06F8D6;
-        Mon, 24 Jan 2022 13:26:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A4EC06F8DC;
+        Mon, 24 Jan 2022 13:26:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9215B81243;
-        Mon, 24 Jan 2022 21:26:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3513CC340E4;
-        Mon, 24 Jan 2022 21:26:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C30F1B81218;
+        Mon, 24 Jan 2022 21:26:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9932C340E4;
+        Mon, 24 Jan 2022 21:26:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059589;
-        bh=N5cFYl5qlbcsInQjVrE7IG8gddEZ3I2S9BMXo0GCtUU=;
+        s=korg; t=1643059607;
+        bh=Ln5pXCPiLRQod5l8K2X8n7F8SxbEbRRMQFlbWA/g4/U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BzEp380x6h16gR8g8EOhKZv+NWfjAHNeDq1I0pAqYh+09nKOHVy3He2ojtly21bAW
-         hbL5fy+rXRMRb4EEJI8s7PBIY2E+5Znc5Rpo8GMiuQcDR/0e/NEFQ8j++IcPUkRWmh
-         YZrqcbt4rXhcDhQHF9Zb1oM2dqndvCMZIS57dRRs=
+        b=NXHzSVZO/8C8HpyudxwZ2/Jixle9FKfEF4mBbYuA/L95TovHKS5hJFhESA7VUzj5o
+         Ot2QjOQArAQy4vIjb+lb9+OQYRe7mfDulWlfjSUt9xr4NiJy5hESdj3SR3L3zOTjxY
+         eWJe2mdg8LlaUpmBRBdX6fy1ftMHPLO8iqm3X4Vw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0667/1039] cpufreq: Fix initialization of min and max frequency QoS requests
-Date:   Mon, 24 Jan 2022 19:40:56 +0100
-Message-Id: <20220124184147.797717994@linuxfoundation.org>
+        stable@vger.kernel.org, Xing Song <xing.song@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0672/1039] mt76: do not pass the received frame with decryption error
+Date:   Mon, 24 Jan 2022 19:41:01 +0100
+Message-Id: <20220124184147.961149629@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,52 +49,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Xing Song <xing.song@mediatek.com>
 
-[ Upstream commit 521223d8b3ec078f670c7c35a1a04b1b2af07966 ]
+[ Upstream commit dd28dea52ad9376d2b243a8981726646e1f60b1a ]
 
-The min and max frequency QoS requests in the cpufreq core are
-initialized to whatever the current min and max frequency values are
-at the init time, but if any of these values change later (for
-example, cpuinfo.max_freq is updated by the driver), these initial
-request values will be limiting the CPU frequency unnecessarily
-unless they are changed by user space via sysfs.
+MAC80211 doesn't care any decryption error in 802.3 path, so received
+frame will be dropped if HW tell us that the cipher configuration is not
+matched as well as the header has been translated to 802.3. This case only
+appears when IEEE80211_FCTL_PROTECTED is 0 and cipher suit is not none in
+the corresponding HW entry.
 
-To address this, initialize min_freq_req and max_freq_req to
-FREQ_QOS_MIN_DEFAULT_VALUE and FREQ_QOS_MAX_DEFAULT_VALUE,
-respectively, so they don't really limit anything until user
-space updates them.
+The received frame is only reported to monitor interface if HW decryption
+block tell us there is ICV error or CCMP/BIP/WPI MIC error. Note in this
+case the reported frame is decrypted 802.11 frame and the payload may be
+malformed due to mismatched key.
 
-Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Tested-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Xing Song <xing.song@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7603/mac.c | 4 ++++
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 9 ++++++++-
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 9 ++++++++-
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 9 ++++++++-
+ 4 files changed, 28 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 096c3848fa415..76ffdaf8c8b5e 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1403,7 +1403,7 @@ static int cpufreq_online(unsigned int cpu)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
+index fe03e31989bb1..a9ac61b9f854a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
+@@ -525,6 +525,10 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_TKIP_MIC_ERR)
+ 		status->flag |= RX_FLAG_MMIC_ERROR;
  
- 		ret = freq_qos_add_request(&policy->constraints,
- 					   policy->min_freq_req, FREQ_QOS_MIN,
--					   policy->min);
-+					   FREQ_QOS_MIN_DEFAULT_VALUE);
- 		if (ret < 0) {
- 			/*
- 			 * So we don't call freq_qos_remove_request() for an
-@@ -1423,7 +1423,7 @@ static int cpufreq_online(unsigned int cpu)
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	if (FIELD_GET(MT_RXD2_NORMAL_SEC_MODE, rxd2) != 0 &&
+ 	    !(rxd2 & (MT_RXD2_NORMAL_CLM | MT_RXD2_NORMAL_CM))) {
+ 		status->flag |= RX_FLAG_DECRYPTED;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 423f69015e3ec..c79abce543f3b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -286,9 +286,16 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
+ 		return -EINVAL;
  
- 		ret = freq_qos_add_request(&policy->constraints,
- 					   policy->max_freq_req, FREQ_QOS_MAX,
--					   policy->max);
-+					   FREQ_QOS_MAX_DEFAULT_VALUE);
- 		if (ret < 0) {
- 			policy->max_freq_req = NULL;
- 			goto out_destroy_policy;
++	hdr_trans = rxd1 & MT_RXD1_NORMAL_HDR_TRANS;
++	if (hdr_trans && (rxd2 & MT_RXD2_NORMAL_CM))
++		return -EINVAL;
++
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	unicast = (rxd1 & MT_RXD1_NORMAL_ADDR_TYPE) == MT_RXD1_NORMAL_U2M;
+ 	idx = FIELD_GET(MT_RXD2_NORMAL_WLAN_IDX, rxd2);
+-	hdr_trans = rxd1 & MT_RXD1_NORMAL_HDR_TRANS;
+ 	status->wcid = mt7615_rx_get_wcid(dev, idx, unicast);
+ 
+ 	if (status->wcid) {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 809dc18e5083c..38d66411444a1 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -426,9 +426,16 @@ mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
+ 		return -EINVAL;
+ 
++	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
++	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
++		return -EINVAL;
++
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	unicast = FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, rxd3) == MT_RXD3_NORMAL_U2M;
+ 	idx = FIELD_GET(MT_RXD1_NORMAL_WLAN_IDX, rxd1);
+-	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
+ 	status->wcid = mt7915_rx_get_wcid(dev, idx, unicast);
+ 
+ 	if (status->wcid) {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+index 321d9f1d3f865..7228b34c66436 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+@@ -428,10 +428,17 @@ mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
+ 		return -EINVAL;
+ 
++	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
++	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
++		return -EINVAL;
++
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	chfreq = FIELD_GET(MT_RXD3_NORMAL_CH_FREQ, rxd3);
+ 	unicast = FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, rxd3) == MT_RXD3_NORMAL_U2M;
+ 	idx = FIELD_GET(MT_RXD1_NORMAL_WLAN_IDX, rxd1);
+-	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
+ 	status->wcid = mt7921_rx_get_wcid(dev, idx, unicast);
+ 
+ 	if (status->wcid) {
 -- 
 2.34.1
 
