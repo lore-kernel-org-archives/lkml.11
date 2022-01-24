@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA61C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F392C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314962AbiAYCwH (ORCPT
+        id S1314975AbiAYCwI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:52:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58382 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354126AbiAXVFp (ORCPT
+        Mon, 24 Jan 2022 21:52:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353004AbiAXVFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:45 -0500
+        Mon, 24 Jan 2022 16:05:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4C18C06177F;
+        Mon, 24 Jan 2022 12:06:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 61A3A6141C;
-        Mon, 24 Jan 2022 21:05:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3973CC340EC;
-        Mon, 24 Jan 2022 21:05:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8DCFEB8122F;
+        Mon, 24 Jan 2022 20:06:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5EA3C340E5;
+        Mon, 24 Jan 2022 20:06:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058342;
-        bh=jP+0gXL/VNQriQLXfi4a6uJjR2ZLUnqmaq2pjhalBUM=;
+        s=korg; t=1643054789;
+        bh=chR8q+WKD2uFEc4mwI/c7D3xEq11yM9yTEw/Rw4Sum0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=StSvJKeUtlFUGgsxEo68zVwQ5kFHqKJ6jSGXkhSNusqH8yPw4McARO7ENYtXYRiav
-         j4B3FNr5LVtgu+uSyrjWxHvHPXX1rULpcOM32jPLsHhGW1/PZCfX0RgvddqNmlh6Uh
-         wZiAPP93cJxbyeAYPZTHr7piQrYrzyrARd7PLtPw=
+        b=CB9lS/9TqAaMUT7pKMZ2q5ri4cQamdpV5U13tKEJTzgNDE/UIyMTpgSq0Eas4sbsR
+         6NfG4LqD7ixOpgTMtuNZAViadzNiXZxZKsGI4cjgDR/K13YUw1LQ06hfoXj+X+gAjp
+         L91XZPtpvjfgjVkw1P3Wxqqvqc6FCYurOOUEcP1c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        Mark Chen <mark-yw.chen@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0257/1039] Bluetooth: btusb: Handle download_firmware failure cases
-Date:   Mon, 24 Jan 2022 19:34:06 +0100
-Message-Id: <20220124184133.952496250@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
+        Rob Herring <robh@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
+Subject: [PATCH 5.10 460/563] PCI: xgene: Fix IB window setup
+Date:   Mon, 24 Jan 2022 19:43:45 +0100
+Message-Id: <20220124184040.370956063@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,41 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Chen <mark-yw.chen@mediatek.com>
+From: Rob Herring <robh@kernel.org>
 
-[ Upstream commit 00c0ee9850b7b0cb7c40b8daba806ae2245e59d4 ]
+commit c7a75d07827a1f33d566e18e6098379cc2a0c2b2 upstream.
 
-For Mediatek chipset, it can not enabled if there are something wrong
-in btmtk_setup_firmware_79xx(). Thus, the process must be terminated
-and returned error code.
+Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+broke PCI support on XGene. The cause is the IB resources are now sorted
+in address order instead of being in DT dma-ranges order. The result is
+which inbound registers are used for each region are swapped. I don't
+know the details about this h/w, but it appears that IB region 0
+registers can't handle a size greater than 4GB. In any case, limiting
+the size for region 0 is enough to get back to the original assignment
+of dma-ranges to regions.
 
-Fixes: fc342c4dc4087 ("Bluetooth: btusb: Add protocol support for MediaTek MT7921U USB devices")
-Co-developed-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Mark Chen <mark-yw.chen@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/all/CA+enf=v9rY_xnZML01oEgKLmvY1NGBUUhnSJaETmXtDtXfaczA@mail.gmail.com/
+Link: https://lore.kernel.org/r/20211129173637.303201-1-robh@kernel.org
+Fixes: 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
+Reported-by: Stéphane Graber <stgraber@ubuntu.com>
+Tested-by: Stéphane Graber <stgraber@ubuntu.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
+Cc: stable@vger.kernel.org # v5.5+
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/btusb.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/pci/controller/pci-xgene.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btusb.c b/drivers/bluetooth/btusb.c
-index c923c38658baa..a766660603634 100644
---- a/drivers/bluetooth/btusb.c
-+++ b/drivers/bluetooth/btusb.c
-@@ -2895,6 +2895,10 @@ static int btusb_mtk_setup(struct hci_dev *hdev)
- 			"mediatek/BT_RAM_CODE_MT%04x_1_%x_hdr.bin",
- 			 dev_id & 0xffff, (fw_version & 0xff) + 1);
- 		err = btusb_mtk_setup_firmware_79xx(hdev, fw_bin_name);
-+		if (err < 0) {
-+			bt_dev_err(hdev, "Failed to set up firmware (%d)", err);
-+			return err;
-+		}
+--- a/drivers/pci/controller/pci-xgene.c
++++ b/drivers/pci/controller/pci-xgene.c
+@@ -467,7 +467,7 @@ static int xgene_pcie_select_ib_reg(u8 *
+ 		return 1;
+ 	}
  
- 		/* It's Device EndPoint Reset Option Register */
- 		btusb_mtk_uhw_reg_write(data, MTK_EP_RST_OPT, MTK_EP_RST_IN_OUT_OPT);
--- 
-2.34.1
-
+-	if ((size > SZ_1K) && (size < SZ_1T) && !(*ib_reg_mask & (1 << 0))) {
++	if ((size > SZ_1K) && (size < SZ_4G) && !(*ib_reg_mask & (1 << 0))) {
+ 		*ib_reg_mask |= (1 << 0);
+ 		return 0;
+ 	}
 
 
