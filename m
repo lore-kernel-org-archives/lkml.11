@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B581C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:49:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6CBAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2364826AbiAXXtO (ORCPT
+        id S2364868AbiAXXtf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:49:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42872 "EHLO
+        Mon, 24 Jan 2022 18:49:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582435AbiAXWro (ORCPT
+        with ESMTP id S1844719AbiAXXKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:47:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D14C058C96;
-        Mon, 24 Jan 2022 13:06:49 -0800 (PST)
+        Mon, 24 Jan 2022 18:10:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE4A6C09F83C;
+        Mon, 24 Jan 2022 13:18:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1E7B61445;
-        Mon, 24 Jan 2022 21:06:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9180DC340E5;
-        Mon, 24 Jan 2022 21:06:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BE99B81057;
+        Mon, 24 Jan 2022 21:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF1F2C340E4;
+        Mon, 24 Jan 2022 21:18:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058408;
-        bh=WdeP14lQcT211iQn/z2o5VGDSh3Z+nRsba1nDaLWiWI=;
+        s=korg; t=1643059091;
+        bh=t17sdjoAhhTXB6mNYjmpfzPShpRY5qOINxI54UzVfxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkKVHWzOuYu7A9FcXK6Iklwvz6usuX2jvawyRnSzrxRwI0BnUCbZAUSJjSLzaPL/B
-         IM9oivmd8ZJadaqb7CNX4MPEJrg5TW4fr55ITcgV6FlXHh6GdBaZlvgcJM17M7n8c4
-         VrVr5VBf0e1gE/kOyfXasJOfANlFRPgwBFy1ydaA=
+        b=v8savHB4RRxlDPLgUIqZDBlXb6Y7JAUiIptlbguALrSbW3EZ6MYRJCSwYioKG/evQ
+         ZX4cnRT2Do1eLGCCTKN0+J2RGT815rgduZLJ1TwUBEBDWB+Y3g+gE+N1NDRwqtJj2q
+         tbkiBPHnaD+9/xOA9/Cz81ad9ZmjVdF6YtTwe3Pw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rameshkumar Sundaram <quic_ramess@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Syed Nayyar Waris <syednwaris@gmail.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0280/1039] ath11k: Fix deleting uninitialized kernel timer during fragment cache flush
-Date:   Mon, 24 Jan 2022 19:34:29 +0100
-Message-Id: <20220124184134.699382002@linuxfoundation.org>
+Subject: [PATCH 5.16 0501/1039] counter: 104-quad-8: Fix persistent enabled events bug
+Date:   Mon, 24 Jan 2022 19:38:10 +0100
+Message-Id: <20220124184142.105182450@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,95 +50,190 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rameshkumar Sundaram <quic_ramess@quicinc.com>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-[ Upstream commit ba53ee7f7f38cf0592b8be1dcdabaf8f7535f8c1 ]
+[ Upstream commit c95cc0d95702523f8f361b802c9b7d4eeae07f5d ]
 
-frag_timer will be created & initialized for stations when
-they associate and will be deleted during every key installation
-while flushing old fragments.
+A bug exists if the user executes a COUNTER_ADD_WATCH_IOCTL ioctl call,
+and then executes a COUNTER_DISABLE_EVENTS_IOCTL ioctl call. Disabling
+the events should disable the 104-QUAD-8 interrupts, but because of this
+bug the interrupts are not disabling.
 
-For AP interface self peer will be created and Group keys
-will be installed for this peer, but there will be no real
-Station entry & hence frag_timer won't be created and
-initialized, deleting such uninitialized kernel timers causes below
-warnings and backtraces printed with CONFIG_DEBUG_OBJECTS_TIMERS
-enabled.
+The reason this bug is occurring is because quad8_events_configure() is
+called when COUNTER_DISABLE_EVENTS_IOCTL is handled, but the
+next_irq_trigger[] array has not been cleared before it is checked in
+the loop.
 
-[ 177.828008] ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
-[ 177.836833] WARNING: CPU: 3 PID: 188 at lib/debugobjects.c:508 debug_print_object+0xb0/0xf0
-[ 177.845185] Modules linked in: ath11k_pci ath11k qmi_helpers qrtr_mhi qrtr ns mhi
-[ 177.852679] CPU: 3 PID: 188 Comm: hostapd Not tainted 5.14.0-rc3-32919-g4034139e1838-dirty #14
-[ 177.865805] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
-[ 177.871804] pc : debug_print_object+0xb0/0xf0
-[ 177.876155] lr : debug_print_object+0xb0/0xf0
-[ 177.880505] sp : ffffffc01169b5a0
-[ 177.883810] x29: ffffffc01169b5a0 x28: ffffff80081c2320 x27: ffffff80081c4078
-[ 177.890942] x26: ffffff8003fe8f28 x25: ffffff8003de9890 x24: ffffffc01134d738
-[ 177.898075] x23: ffffffc010948f20 x22: ffffffc010b2d2e0 x21: ffffffc01169b628
-[ 177.905206] x20: ffffffc01134d700 x19: ffffffc010c80d98 x18: 00000000000003f6
-[ 177.912339] x17: 203a657079742074 x16: 63656a626f202930 x15: 0000000000000152
-[ 177.919471] x14: 0000000000000152 x13: 00000000ffffffea x12: ffffffc010d732e0
-[ 177.926603] x11: 0000000000000003 x10: ffffffc010d432a0 x9 : ffffffc010d432f8
-[ 177.933735] x8 : 000000000002ffe8 x7 : c0000000ffffdfff x6 : 0000000000000001
-[ 177.940866] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 00000000ffffffff
-[ 177.947997] x2 : ffffffc010c93240 x1 : ffffff80023624c0 x0 : 0000000000000054
-[ 177.955130] Call trace:
-[ 177.957567] debug_print_object+0xb0/0xf0
-[ 177.961570] debug_object_assert_init+0x124/0x178
-[ 177.966269] try_to_del_timer_sync+0x1c/0x70
-[ 177.970536] del_timer_sync+0x30/0x50
-[ 177.974192] ath11k_peer_frags_flush+0x34/0x68 [ath11k]
-[ 177.979439] ath11k_mac_op_set_key+0x1e4/0x338 [ath11k]
-[ 177.984673] ieee80211_key_enable_hw_accel+0xc8/0x3d0
-[ 177.989722] ieee80211_key_replace+0x360/0x740
-[ 177.994160] ieee80211_key_link+0x16c/0x210
-[ 177.998337] ieee80211_add_key+0x138/0x338
-[ 178.002426] nl80211_new_key+0xfc/0x258
-[ 178.006257] genl_family_rcv_msg_doit.isra.17+0xd8/0x120
-[ 178.011565] genl_rcv_msg+0xd8/0x1c8
-[ 178.015134] netlink_rcv_skb+0x38/0xf8
-[ 178.018877] genl_rcv+0x34/0x48
-[ 178.022012] netlink_unicast+0x174/0x230
-[ 178.025928] netlink_sendmsg+0x188/0x388
-[ 178.029845] ____sys_sendmsg+0x218/0x250
-[ 178.033763] ___sys_sendmsg+0x68/0x90
-[ 178.037418] __sys_sendmsg+0x44/0x88
-[ 178.040988] __arm64_sys_sendmsg+0x20/0x28
-[ 178.045077] invoke_syscall.constprop.5+0x54/0xe0
-[ 178.049776] do_el0_svc+0x74/0xc0
-[ 178.053084] el0_svc+0x10/0x18
-[ 178.056133] el0t_64_sync_handler+0x88/0xb0
-[ 178.060310] el0t_64_sync+0x148/0x14c
-[ 178.063966] ---[ end trace 8a5cf0bf9d34a058 ]---
+This patch fixes the bug by removing the next_irq_trigger array and
+instead utilizing a different algorithm of walking the events_list list
+for the current requested events. When a COUNTER_DISABLE_EVENTS_IOCTL is
+handled, events_list will be empty and thus all device channels end up
+with interrupts disabled.
 
-Add changes to not to delete frag timer for peers during
-group key installation.
-
-Tested on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01092-QCAHKSWPL_SILICONZ-1
-
-Fixes: c3944a562102 ("ath11k: Clear the fragment cache during key install")
-Signed-off-by: Rameshkumar Sundaram <quic_ramess@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1639071421-25078-1-git-send-email-quic_ramess@quicinc.com
+Fixes: 7aa2ba0df651 ("counter: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8")
+Cc: Syed Nayyar Waris <syednwaris@gmail.com>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Link: https://lore.kernel.org/r/5fd5731cec1c251acee30eefb7c19160d03c9d39.1640072891.git.vilhelm.gray@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/counter/104-quad-8.c | 82 +++++++++++++++++-------------------
+ 1 file changed, 39 insertions(+), 43 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 821332cbeb5de..67be109eda910 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3452,7 +3452,7 @@ static int ath11k_mac_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
- 	/* flush the fragments cache during key (re)install to
- 	 * ensure all frags in the new frag list belong to the same key.
- 	 */
--	if (peer && cmd == SET_KEY)
-+	if (peer && sta && cmd == SET_KEY)
- 		ath11k_peer_frags_flush(ar, peer);
- 	spin_unlock_bh(&ab->base_lock);
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 1cbd60aaed697..a97027db0446d 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -14,6 +14,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/isa.h>
+ #include <linux/kernel.h>
++#include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
+ #include <linux/types.h>
+@@ -44,7 +45,6 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
+  * @ab_enable:		array of A and B inputs enable configurations
+  * @preset_enable:	array of set_to_preset_on_index attribute configurations
+  * @irq_trigger:	array of current IRQ trigger function configurations
+- * @next_irq_trigger:	array of next IRQ trigger function configurations
+  * @synchronous_mode:	array of index function synchronous mode configurations
+  * @index_polarity:	array of index function polarity configurations
+  * @cable_fault_enable:	differential encoder cable status enable configurations
+@@ -61,7 +61,6 @@ struct quad8 {
+ 	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
+ 	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
+ 	unsigned int irq_trigger[QUAD8_NUM_COUNTERS];
+-	unsigned int next_irq_trigger[QUAD8_NUM_COUNTERS];
+ 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
+ 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
+ 	unsigned int cable_fault_enable;
+@@ -390,7 +389,6 @@ static int quad8_action_read(struct counter_device *counter,
+ }
  
+ enum {
+-	QUAD8_EVENT_NONE = -1,
+ 	QUAD8_EVENT_CARRY = 0,
+ 	QUAD8_EVENT_COMPARE = 1,
+ 	QUAD8_EVENT_CARRY_BORROW = 2,
+@@ -402,34 +400,49 @@ static int quad8_events_configure(struct counter_device *counter)
+ 	struct quad8 *const priv = counter->priv;
+ 	unsigned long irq_enabled = 0;
+ 	unsigned long irqflags;
+-	size_t channel;
++	struct counter_event_node *event_node;
++	unsigned int next_irq_trigger;
+ 	unsigned long ior_cfg;
+ 	unsigned long base_offset;
+ 
+ 	spin_lock_irqsave(&priv->lock, irqflags);
+ 
+-	/* Enable interrupts for the requested channels, disable for the rest */
+-	for (channel = 0; channel < QUAD8_NUM_COUNTERS; channel++) {
+-		if (priv->next_irq_trigger[channel] == QUAD8_EVENT_NONE)
+-			continue;
++	list_for_each_entry(event_node, &counter->events_list, l) {
++		switch (event_node->event) {
++		case COUNTER_EVENT_OVERFLOW:
++			next_irq_trigger = QUAD8_EVENT_CARRY;
++			break;
++		case COUNTER_EVENT_THRESHOLD:
++			next_irq_trigger = QUAD8_EVENT_COMPARE;
++			break;
++		case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
++			next_irq_trigger = QUAD8_EVENT_CARRY_BORROW;
++			break;
++		case COUNTER_EVENT_INDEX:
++			next_irq_trigger = QUAD8_EVENT_INDEX;
++			break;
++		default:
++			/* should never reach this path */
++			spin_unlock_irqrestore(&priv->lock, irqflags);
++			return -EINVAL;
++		}
+ 
+-		if (priv->irq_trigger[channel] != priv->next_irq_trigger[channel]) {
+-			/* Save new IRQ function configuration */
+-			priv->irq_trigger[channel] = priv->next_irq_trigger[channel];
++		/* Skip configuration if it is the same as previously set */
++		if (priv->irq_trigger[event_node->channel] == next_irq_trigger)
++			continue;
+ 
+-			/* Load configuration to I/O Control Register */
+-			ior_cfg = priv->ab_enable[channel] |
+-				  priv->preset_enable[channel] << 1 |
+-				  priv->irq_trigger[channel] << 3;
+-			base_offset = priv->base + 2 * channel + 1;
+-			outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
+-		}
++		/* Save new IRQ function configuration */
++		priv->irq_trigger[event_node->channel] = next_irq_trigger;
+ 
+-		/* Reset next IRQ trigger function configuration */
+-		priv->next_irq_trigger[channel] = QUAD8_EVENT_NONE;
++		/* Load configuration to I/O Control Register */
++		ior_cfg = priv->ab_enable[event_node->channel] |
++			  priv->preset_enable[event_node->channel] << 1 |
++			  priv->irq_trigger[event_node->channel] << 3;
++		base_offset = priv->base + 2 * event_node->channel + 1;
++		outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
+ 
+ 		/* Enable IRQ line */
+-		irq_enabled |= BIT(channel);
++		irq_enabled |= BIT(event_node->channel);
+ 	}
+ 
+ 	outb(irq_enabled, priv->base + QUAD8_REG_INDEX_INTERRUPT);
+@@ -442,35 +455,20 @@ static int quad8_events_configure(struct counter_device *counter)
+ static int quad8_watch_validate(struct counter_device *counter,
+ 				const struct counter_watch *watch)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct counter_event_node *event_node;
+ 
+ 	if (watch->channel > QUAD8_NUM_COUNTERS - 1)
+ 		return -EINVAL;
+ 
+ 	switch (watch->event) {
+ 	case COUNTER_EVENT_OVERFLOW:
+-		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
+-			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_CARRY;
+-		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_CARRY)
+-			return -EINVAL;
+-		return 0;
+ 	case COUNTER_EVENT_THRESHOLD:
+-		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
+-			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_COMPARE;
+-		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_COMPARE)
+-			return -EINVAL;
+-		return 0;
+ 	case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
+-		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
+-			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_CARRY_BORROW;
+-		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_CARRY_BORROW)
+-			return -EINVAL;
+-		return 0;
+ 	case COUNTER_EVENT_INDEX:
+-		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
+-			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_INDEX;
+-		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_INDEX)
+-			return -EINVAL;
++		list_for_each_entry(event_node, &counter->next_events_list, l)
++			if (watch->channel == event_node->channel &&
++				watch->event != event_node->event)
++				return -EINVAL;
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
+@@ -1183,8 +1181,6 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 		outb(QUAD8_CTR_IOR, base_offset + 1);
+ 		/* Disable index function; negative index polarity */
+ 		outb(QUAD8_CTR_IDR, base_offset + 1);
+-		/* Initialize next IRQ trigger function configuration */
+-		priv->next_irq_trigger[i] = QUAD8_EVENT_NONE;
+ 	}
+ 	/* Disable Differential Encoder Cable Status for all channels */
+ 	outb(0xFF, base[id] + QUAD8_DIFF_ENCODER_CABLE_STATUS);
 -- 
 2.34.1
 
