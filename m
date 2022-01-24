@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD95C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E9CC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850131AbiAXX13 (ORCPT
+        id S1850045AbiAXX1T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:27:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
+        Mon, 24 Jan 2022 18:27:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588114AbiAXWbl (ORCPT
+        with ESMTP id S1588122AbiAXWbl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:31:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 802BDC047CD5;
-        Mon, 24 Jan 2022 12:56:00 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51F27C047CD6;
+        Mon, 24 Jan 2022 12:56:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 471E0B811FB;
-        Mon, 24 Jan 2022 20:55:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B56EC340E5;
-        Mon, 24 Jan 2022 20:55:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E512460916;
+        Mon, 24 Jan 2022 20:56:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C48F4C340E5;
+        Mon, 24 Jan 2022 20:56:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057758;
-        bh=JtuOwGjrs+4E0N1ONfB/JKaOLTOJtjSWdNVu1Zx8gZU=;
+        s=korg; t=1643057794;
+        bh=gsJaKnaWHi5ojQSmHlL+FWWaKCOaXVLvwTdLO9exnxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wwqv7bgQQXywz3tLgwsHYf5C6JZBWPVnHsmZGEEC3wlsGI8IZKZijUFd/9hstYG3C
-         W7vbhMbtdXqL5NoIQE8LK8ynnkZcUnhhRQj6XSDE7SoXLWr312zuB+lq9y4z6aJZeH
-         rPcTThsE3F/NHNKPE1k59ZJM1YE75TNACaFYA850=
+        b=MPrRoLgc4YAKyJrZuV3oTcil0THCTVE3izN5f8eDcnh0GD2B83+4uv7H+M232GDOd
+         iGQ2pTJXVWK6z+RUVIrXScQ/0X2Y4fNDw7Nm5R09KCMY+hG6PGIqXqKRBWam3Hg6Nb
+         BGBOo6YvfI3NQ9M64ZvBsxwvhVMkuRJ5LuYKX/sc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.16 0069/1039] gpu: host1x: Add back arm_iommu_detach_device()
-Date:   Mon, 24 Jan 2022 19:30:58 +0100
-Message-Id: <20220124184127.487355503@linuxfoundation.org>
+        stable@vger.kernel.org, aleksandr.o.makarov@gmail.com,
+        Brian Norris <briannorris@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.16 0080/1039] drm/rockchip: dsi: Hold pm-runtime across bind/unbind
+Date:   Mon, 24 Jan 2022 19:31:09 +0100
+Message-Id: <20220124184127.854702681@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,57 +52,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Brian Norris <briannorris@chromium.org>
 
-commit d5185965c3b59073c4520bad7dd2adf725b9abba upstream.
+commit 514db871922f103886ad4d221cf406b4fcc5e74a upstream.
 
-Host1x DMA buffer isn't mapped properly when CONFIG_ARM_DMA_USE_IOMMU=y.
-The memory management code of Host1x driver has a longstanding overhaul
-overdue and it's not obvious where the problem is in this case. Hence
-let's add back the old workaround which we already had sometime before.
-It explicitly detaches Host1x device from the offending implicit IOMMU
-domain. This fixes a completely broken Host1x DMA in case of ARM32
-multiplatform kernel config.
+In commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
+LCDC mux to bind()"), we moved most HW configuration to bind(), but we
+didn't move the runtime PM management. Therefore, depending on initial
+boot state, runtime-PM workqueue delays, and other timing factors, we
+may disable our power domain in between the hardware configuration
+(bind()) and when we enable the display. This can cause us to lose
+hardware state and fail to configure our display. For example:
 
-Cc: stable@vger.kernel.org
-Fixes: af1cbfb9bf0f ("gpu: host1x: Support DMA mapping of buffers")
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-innolux-p079zca ff960000.mipi.0: failed to write command 0
+
+or:
+
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
+
+We should match the runtime PM to the lifetime of the bind()/unbind()
+cycle.
+
+Tested on Acer Chrometab 10 (RK3399 Gru-Scarlet), with panel drivers
+built either as modules or built-in.
+
+Side notes: it seems one is more likely to see this problem when the
+panel driver is built into the kernel. I've also seen this problem
+bisect down to commits that simply changed Kconfig dependencies, because
+it changed the order in which driver init functions were compiled into
+the kernel, and therefore the ordering and timing of built-in device
+probe.
+
+Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
+Link: https://lore.kernel.org/linux-rockchip/9aedfb528600ecf871885f7293ca4207c84d16c1.camel@gmail.com/
+Reported-by: <aleksandr.o.makarov@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.1.Ic2904d37f30013a7f3d8476203ad3733c186827e@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/host1x/dev.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -18,6 +18,10 @@
- #include <trace/events/host1x.h>
- #undef CREATE_TRACE_POINTS
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -772,10 +772,6 @@ static void dw_mipi_dsi_encoder_enable(s
+ 	if (mux < 0)
+ 		return;
  
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+#include <asm/dma-iommu.h>
-+#endif
-+
- #include "bus.h"
- #include "channel.h"
- #include "debug.h"
-@@ -238,6 +242,17 @@ static struct iommu_domain *host1x_iommu
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(host->dev);
- 	int err;
- 
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+	if (host->dev->archdata.mapping) {
-+		struct dma_iommu_mapping *mapping =
-+				to_dma_iommu_mapping(host->dev);
-+		arm_iommu_detach_device(host->dev);
-+		arm_iommu_release_mapping(mapping);
-+
-+		domain = iommu_get_domain_for_dev(host->dev);
-+	}
-+#endif
-+
+-	pm_runtime_get_sync(dsi->dev);
+-	if (dsi->slave)
+-		pm_runtime_get_sync(dsi->slave->dev);
+-
  	/*
- 	 * We may not always want to enable IOMMU support (for example if the
- 	 * host1x firewall is already enabled and we don't support addressing
+ 	 * For the RK3399, the clk of grf must be enabled before writing grf
+ 	 * register. And for RK3288 or other soc, this grf_clk must be NULL,
+@@ -794,20 +790,10 @@ static void dw_mipi_dsi_encoder_enable(s
+ 	clk_disable_unprepare(dsi->grf_clk);
+ }
+ 
+-static void dw_mipi_dsi_encoder_disable(struct drm_encoder *encoder)
+-{
+-	struct dw_mipi_dsi_rockchip *dsi = to_dsi(encoder);
+-
+-	if (dsi->slave)
+-		pm_runtime_put(dsi->slave->dev);
+-	pm_runtime_put(dsi->dev);
+-}
+-
+ static const struct drm_encoder_helper_funcs
+ dw_mipi_dsi_encoder_helper_funcs = {
+ 	.atomic_check = dw_mipi_dsi_encoder_atomic_check,
+ 	.enable = dw_mipi_dsi_encoder_enable,
+-	.disable = dw_mipi_dsi_encoder_disable,
+ };
+ 
+ static int rockchip_dsi_drm_create_encoder(struct dw_mipi_dsi_rockchip *dsi,
+@@ -937,10 +923,14 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 		put_device(second);
+ 	}
+ 
++	pm_runtime_get_sync(dsi->dev);
++	if (dsi->slave)
++		pm_runtime_get_sync(dsi->slave->dev);
++
+ 	ret = clk_prepare_enable(dsi->pllref_clk);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to enable pllref_clk: %d\n", ret);
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	/*
+@@ -952,7 +942,7 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 	ret = clk_prepare_enable(dsi->grf_clk);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	dw_mipi_dsi_rockchip_config(dsi);
+@@ -964,16 +954,23 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 	ret = rockchip_dsi_drm_create_encoder(dsi, drm_dev);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to create drm encoder\n");
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	ret = dw_mipi_dsi_bind(dsi->dmd, &dsi->encoder);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to bind: %d\n", ret);
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	return 0;
++
++out_pm_runtime:
++	pm_runtime_put(dsi->dev);
++	if (dsi->slave)
++		pm_runtime_put(dsi->slave->dev);
++
++	return ret;
+ }
+ 
+ static void dw_mipi_dsi_rockchip_unbind(struct device *dev,
+@@ -988,6 +985,10 @@ static void dw_mipi_dsi_rockchip_unbind(
+ 	dw_mipi_dsi_unbind(dsi->dmd);
+ 
+ 	clk_disable_unprepare(dsi->pllref_clk);
++
++	pm_runtime_put(dsi->dev);
++	if (dsi->slave)
++		pm_runtime_put(dsi->slave->dev);
+ }
+ 
+ static const struct component_ops dw_mipi_dsi_rockchip_ops = {
 
 
