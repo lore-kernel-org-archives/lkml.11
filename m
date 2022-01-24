@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96C89C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423152AbiAYCdE (ORCPT
+        id S3423292AbiAYCdZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:33:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60264 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345165AbiAXUWn (ORCPT
+        Mon, 24 Jan 2022 21:33:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53238 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356792AbiAXU23 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:43 -0500
+        Mon, 24 Jan 2022 15:28:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A288AB810BD;
-        Mon, 24 Jan 2022 20:22:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2EEFC340E8;
-        Mon, 24 Jan 2022 20:22:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D34B614E2;
+        Mon, 24 Jan 2022 20:28:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 864A0C340E5;
+        Mon, 24 Jan 2022 20:28:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055752;
-        bh=GDdWL9il9DOHbSzgLE5q3dJC5+8l0Mvknrnk8n4buMg=;
+        s=korg; t=1643056108;
+        bh=fLy9g1Dn9MLU9x6rBqmMs6F2pQoFUyKdCOxJNNtpLe0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UwP7hphfAVYHNwCp1WwThbjPCIsqL/cXJcuOc9ajsyFCc6uCEi4/QJFE+ubXVnfHW
-         Yl7pZ3P75c/ZYnkbshqoLlm7fSR57bw+IYM9PAxLaRfzX07HWR/5lQNtPzC0K5JG0A
-         Hy5hh5I5sTMB0OYfmC/DeJlHVwPSADJS70vFjujU=
+        b=AfzrM02mln5qfxVmkBcjzuOJpV65ifPKR0lAJoCW3CO9sgc+WQsEvgN14QoOmtI6y
+         A9o3JgFKKrtZL2RY4xMcwSsFDhUIqKMjj4UcEfRWngF7gnWjY1Ks597DRKmfgprZ6U
+         ORaYqQHDuMLsoQ3pSE2pWMxvfENIkLm1G5ZUfbuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 221/846] drm/msm/gpu: Dont allow zero fence_id
-Date:   Mon, 24 Jan 2022 19:35:38 +0100
-Message-Id: <20220124184108.543206462@linuxfoundation.org>
+Subject: [PATCH 5.15 374/846] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:38:11 +0100
+Message-Id: <20220124184113.838254288@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,37 +46,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Clark <robdclark@chromium.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit ca3ffcbeb0c866d9b0cb38eaa2bd4416597b5966 ]
+[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
 
-Elsewhere we treat zero as "no fence" and __msm_gem_submit_destroy()
-skips removal from fence_idr.  We could alternately change this to use
-negative values for "no fence" but I think it is more clear to not allow
-zero as a valid fence_id.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Fixes: a61acbbe9cf8 ("drm/msm: Track "seqno" fences by idr")
-Link: https://lore.kernel.org/r/20211129182344.292609-1-robdclark@gmail.com
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
+Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/msm_gem_submit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/core/jack.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/msm/msm_gem_submit.c b/drivers/gpu/drm/msm/msm_gem_submit.c
-index d9aef97eb93ad..7fb7ff043bcd7 100644
---- a/drivers/gpu/drm/msm/msm_gem_submit.c
-+++ b/drivers/gpu/drm/msm/msm_gem_submit.c
-@@ -887,7 +887,7 @@ int msm_ioctl_gem_submit(struct drm_device *dev, void *data,
- 	 * to the underlying fence.
- 	 */
- 	submit->fence_id = idr_alloc_cyclic(&queue->fence_idr,
--			submit->user_fence, 0, INT_MAX, GFP_KERNEL);
-+			submit->user_fence, 1, INT_MAX, GFP_KERNEL);
- 	if (submit->fence_id < 0) {
- 		ret = submit->fence_id = 0;
- 		submit->fence_id = 0;
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index 537df1e98f8ac..d1e3055f2b6a5 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -62,10 +62,13 @@ static int snd_jack_dev_free(struct snd_device *device)
+ 	struct snd_card *card = device->card;
+ 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
+ 
++	down_write(&card->controls_rwsem);
+ 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
+ 		list_del_init(&jack_kctl->list);
+ 		snd_ctl_remove(card, jack_kctl->kctl);
+ 	}
++	up_write(&card->controls_rwsem);
++
+ 	if (jack->private_free)
+ 		jack->private_free(jack);
+ 
 -- 
 2.34.1
 
