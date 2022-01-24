@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED3D1C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF5EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849338AbiAXXZe (ORCPT
+        id S1849365AbiAXXZh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:25:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
+        Mon, 24 Jan 2022 18:25:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587703AbiAXW33 (ORCPT
+        with ESMTP id S1587648AbiAXW3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:29:29 -0500
+        Mon, 24 Jan 2022 17:29:23 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D3B4C047CC3;
-        Mon, 24 Jan 2022 12:55:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2354C0E5317;
+        Mon, 24 Jan 2022 12:54:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44C14B811FB;
-        Mon, 24 Jan 2022 20:55:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9503C340E5;
-        Mon, 24 Jan 2022 20:55:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CF6DB811FB;
+        Mon, 24 Jan 2022 20:54:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A467BC340E5;
+        Mon, 24 Jan 2022 20:54:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057702;
-        bh=iC3yFsiXLxji/n8wtnpCQ/0JmVUjZqt5fHAV9bJWQ+Y=;
+        s=korg; t=1643057693;
+        bh=lDnMZdm1qIoBNi8zGpb9L19ogrWHp8r6Rf4WFn0gvus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eCU78RdKvjiIRBxebQxGAVLHAkbv2982DFtSc8vRExjS7llT+4BLK3HuKCzQ0vYe9
-         A5RzkSo51bhX7VHgfJQTgv1Uhh9Xc6rz6prizUMOXICJXkob3KCSeocrJQm3nh1RRw
-         o96wYBntg9MPZZVFa+dYV1yWcx/MavocIaaBWBIM=
+        b=v5SwpL6HmfH6xkfGVtF/PGNvQc097KEA05BNCL506Z/GYYPl5gtRbvT7vMYtos0hH
+         GmmFfYEEhaPQR37H+IY5nb3p8+ND8hGYarF4k3qzZmiEfUS9UAFtJ3ug3NxbIKVrTR
+         bqXNDj4u2Ss5Y+OYVYqkm2hC1YNQ9KiArMS0WjvM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 0018/1039] mtd: rawnand: davinci: Dont calculate ECC when reading page
-Date:   Mon, 24 Jan 2022 19:30:07 +0100
-Message-Id: <20220124184125.754692636@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0047/1039] media: em28xx: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:30:36 +0100
+Message-Id: <20220124184126.723948858@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,42 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Johan Hovold <johan@kernel.org>
 
-commit 71e89591502d737c10db2bd4d8fcfaa352552afb upstream.
+commit d9b7e8df3aa9b8c10708aab60e72e79ac08237e4 upstream.
 
-The function nand_davinci_read_page_hwecc_oob_first() does read the ECC
-data from the OOB area. Therefore it does not need to calculate the ECC
-as it is already available.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Cc: <stable@vger.kernel.org> # v5.2
-Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-1-paul@crapouillou.net
+Fixes: a6c2ba283565 ("[PATCH] v4l: 716: support for em28xx board family")
+Cc: stable@vger.kernel.org      # 2.6.16
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/davinci_nand.c |    3 ---
- 1 file changed, 3 deletions(-)
+ drivers/media/usb/em28xx/em28xx-core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/nand/raw/davinci_nand.c
-+++ b/drivers/mtd/nand/raw/davinci_nand.c
-@@ -394,7 +394,6 @@ static int nand_davinci_read_page_hwecc_
- 	int eccsteps = chip->ecc.steps;
- 	uint8_t *p = buf;
- 	uint8_t *ecc_code = chip->ecc.code_buf;
--	uint8_t *ecc_calc = chip->ecc.calc_buf;
- 	unsigned int max_bitflips = 0;
+--- a/drivers/media/usb/em28xx/em28xx-core.c
++++ b/drivers/media/usb/em28xx/em28xx-core.c
+@@ -89,7 +89,7 @@ int em28xx_read_reg_req_len(struct em28x
+ 	mutex_lock(&dev->ctrl_urb_lock);
+ 	ret = usb_control_msg(udev, pipe, req,
+ 			      USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			      0x0000, reg, dev->urb_buf, len, HZ);
++			      0x0000, reg, dev->urb_buf, len, 1000);
+ 	if (ret < 0) {
+ 		em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
+ 			      pipe,
+@@ -158,7 +158,7 @@ int em28xx_write_regs_req(struct em28xx
+ 	memcpy(dev->urb_buf, buf, len);
+ 	ret = usb_control_msg(udev, pipe, req,
+ 			      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			      0x0000, reg, dev->urb_buf, len, HZ);
++			      0x0000, reg, dev->urb_buf, len, 1000);
+ 	mutex_unlock(&dev->ctrl_urb_lock);
  
- 	/* Read the OOB area first */
-@@ -420,8 +419,6 @@ static int nand_davinci_read_page_hwecc_
- 		if (ret)
- 			return ret;
- 
--		chip->ecc.calculate(chip, p, &ecc_calc[i]);
--
- 		stat = chip->ecc.correct(chip, p, &ecc_code[i], NULL);
- 		if (stat == -EBADMSG &&
- 		    (chip->ecc.options & NAND_ECC_GENERIC_ERASED_CHECK)) {
+ 	if (ret < 0) {
 
 
