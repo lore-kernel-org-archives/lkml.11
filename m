@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F02FC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B781CC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349027AbiAXTUE (ORCPT
+        id S1349086AbiAXTUN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41294 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345985AbiAXTLr (ORCPT
+        Mon, 24 Jan 2022 14:20:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47476 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347772AbiAXTLI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:47 -0500
+        Mon, 24 Jan 2022 14:11:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5569AC08E877;
+        Mon, 24 Jan 2022 11:02:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5FB0660917;
-        Mon, 24 Jan 2022 19:11:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26F05C340E7;
-        Mon, 24 Jan 2022 19:11:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE363B8119D;
+        Mon, 24 Jan 2022 19:02:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A227C340E5;
+        Mon, 24 Jan 2022 19:02:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051504;
-        bh=k21YH/uuN8XFtF3EbvXNG34739hKfvE7WtQ6riUioMw=;
+        s=korg; t=1643050957;
+        bh=CBPENbkco7iWTiGBptNuAshMijpXyfLZVEct9/ZpMIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=agBFyL9rMi0VT7+Hr01ACFCZture83+kE1usEUdCzGOpTtHc0EC7YhF/2HP7thZS+
-         OgxEsMz05FHfiWDjEdx0ebKKiWtRtkabYXfzy2qbJFtOaBjzZYB1+Ch9ZG4uGJ2Ovs
-         2iLzro+bCqm+vBzJrR31VpYOmKv9YVm+vQsNgdU4=
+        b=Z+qlmu2OIvbUmYBk9+ewZdVqnUV/bpbkWt1M4BODtxeJCSifctJJpZs6mbA0CoLRh
+         3WEGTJcblWkrxdMXyYBv4X4+QK676wyySMVRSygJHQfMI+RnAwbHE/R3hvEJ5ro2QC
+         70YutqK/d28dIcs9JAMexXIJMTvdBXQbins818Ws=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: [PATCH 4.14 151/186] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
-Date:   Mon, 24 Jan 2022 19:43:46 +0100
-Message-Id: <20220124183941.961355122@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Subject: [PATCH 4.14 001/186] Bluetooth: bfusb: fix division by zero in send path
+Date:   Mon, 24 Jan 2022 19:41:16 +0100
+Message-Id: <20220124183937.153147463@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -46,40 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
+commit b5e6fa7a12572c82f1e7f2f51fbb02a322291291 upstream.
 
-With the introduction of 6GHz channels the scan guard timeout should
-be adjusted to account for the following extreme case:
+Add the missing bulk-out endpoint sanity check to probe() to avoid
+division by zero in bfusb_send_frame() in case a malicious device has
+broken descriptors (or when doing descriptor fuzz testing).
 
-- All 6GHz channels are scanned passively: 58 channels.
-- The scan is fragmented with the following parameters: 3 fragments,
-  95 TUs suspend time, 44 TUs maximal out of channel time.
-
-The above would result with scan time of more than 24 seconds. Thus,
-set the timeout to 30 seconds.
+Note that USB core will reject URBs submitted for endpoints with zero
+wMaxPacketSize but that drivers doing packet-size calculations still
+need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
+endpoint descriptors with maxpacket=0")).
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bluetooth/bfusb.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1364,7 +1364,7 @@ static int iwl_mvm_check_running_scans(s
- 	return -EIO;
- }
+--- a/drivers/bluetooth/bfusb.c
++++ b/drivers/bluetooth/bfusb.c
+@@ -644,6 +644,9 @@ static int bfusb_probe(struct usb_interf
+ 	data->bulk_out_ep   = bulk_out_ep->desc.bEndpointAddress;
+ 	data->bulk_pkt_size = le16_to_cpu(bulk_out_ep->desc.wMaxPacketSize);
  
--#define SCAN_TIMEOUT 20000
-+#define SCAN_TIMEOUT 30000
++	if (!data->bulk_pkt_size)
++		goto done;
++
+ 	rwlock_init(&data->lock);
  
- void iwl_mvm_scan_timeout_wk(struct work_struct *work)
- {
+ 	data->reassembly = NULL;
 
 
