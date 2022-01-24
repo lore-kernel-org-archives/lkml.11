@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 332C8C35271
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3FFAC4707E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360191AbiAXXgL (ORCPT
+        id S2359963AbiAXXfa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:36:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43448 "EHLO
+        Mon, 24 Jan 2022 18:35:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838742AbiAXWsA (ORCPT
+        with ESMTP id S1838031AbiAXWps (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:48:00 -0500
+        Mon, 24 Jan 2022 17:45:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D136AC068097;
-        Mon, 24 Jan 2022 13:07:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02417C0550E7;
+        Mon, 24 Jan 2022 13:06:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 625FB60E8D;
-        Mon, 24 Jan 2022 21:07:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B827C340E5;
-        Mon, 24 Jan 2022 21:07:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9582561320;
+        Mon, 24 Jan 2022 21:06:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 717B8C340E7;
+        Mon, 24 Jan 2022 21:06:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058441;
-        bh=8e00U0sygiDjy9t1dLdGDBMdtS4FVv8xGfSfW3y8oLQ=;
+        s=korg; t=1643058377;
+        bh=sN1MrGINuCa0tfGr5vuPfsGYIsd6lo6Uw1MmiQI9n8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bDuvcUxnPJZygDdKezPWYDV3ArJen/JVrnIuhmEW/YV30t2phHKBd7gOuZYLkQTvO
-         E/ic5ymnrotZqjvgadaYE7MK6W8L6InHQaZUrrCCmIn8ubA02YdhItQvQAWJzdpa2i
-         wBYPUukIVSTxm8W4l/iJauatxM2KfJpmZWRVpYMk=
+        b=zbLhdQmf2voHYFudctaja4CgnvAKC2uGO1x1/01ueEFpuxlbIKZFMXoByHbnp5dZL
+         YXh9kA6Ui7ijtCudQNJojXo6dXv5EW2dP7qKENXx4O9Ekhfr/AcLBcZXMJEVEn7HQB
+         nbl1j5yNJHGSE87cLKaOEH4+lcqo4zyAL0iYjkMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0290/1039] net: dsa: hellcreek: Add STP forwarding rule
-Date:   Mon, 24 Jan 2022 19:34:39 +0100
-Message-Id: <20220124184135.028681639@linuxfoundation.org>
+Subject: [PATCH 5.16 0262/1039] rcu/exp: Mark current CPU as exp-QS in IPI loop second pass
+Date:   Mon, 24 Jan 2022 19:34:11 +0100
+Message-Id: <20220124184134.113150459@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,55 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+From: Frederic Weisbecker <frederic@kernel.org>
 
-[ Upstream commit b7ade35eb53a2455f737a623c24e4b24455b2271 ]
+[ Upstream commit 81f6d49cce2d2fe507e3fddcc4a6db021d9c2e7b ]
 
-Treat STP as management traffic. STP traffic is designated for the CPU port
-only. In addition, STP traffic has to pass blocked ports.
+Expedited RCU grace periods invoke sync_rcu_exp_select_node_cpus(), which
+takes two passes over the leaf rcu_node structure's CPUs.  The first
+pass gathers up the current CPU and CPUs that are in dynticks idle mode.
+The workqueue will report a quiescent state on their behalf later.
+The second pass sends IPIs to the rest of the CPUs, but excludes the
+current CPU, incorrectly assuming it has been included in the first
+pass's list of CPUs.
 
-Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Unfortunately the current CPU may have changed between the first and
+second pass, due to the fact that the various rcu_node structures'
+->lock fields have been dropped, thus momentarily enabling preemption.
+This means that if the second pass's CPU was not on the first pass's
+list, it will be ignored completely.  There will be no IPI sent to
+it, and there will be no reporting of quiescent states on its behalf.
+Unfortunately, the expedited grace period will nevertheless be waiting
+for that CPU to report a quiescent state, but with that CPU having no
+reason to believe that such a report is needed.
+
+The result will be an expedited grace period stall.
+
+Fix this by no longer excluding the current CPU from consideration during
+the second pass.
+
+Fixes: b9ad4d6ed18e ("rcu: Avoid self-IPI in sync_rcu_exp_select_node_cpus()")
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Uladzislau Rezki <urezki@gmail.com>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/hirschmann/hellcreek.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ kernel/rcu/tree_exp.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index bb1a24c8078be..b488990b5b06e 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -1074,6 +1074,17 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
- 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
- 		.reprio_en    = 1,
- 	};
-+	static struct hellcreek_fdb_entry stp = {
-+		/* MAC: 01-80-C2-00-00-00 */
-+		.mac	      = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 },
-+		.portmask     = 0x03,	/* Management ports */
-+		.age	      = 0,
-+		.is_obt	      = 0,
-+		.pass_blocked = 1,
-+		.is_static    = 1,
-+		.reprio_tc    = 6,
-+		.reprio_en    = 1,
-+	};
- 	int ret;
- 
- 	mutex_lock(&hellcreek->reg_lock);
-@@ -1081,6 +1092,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
- 	if (ret)
- 		goto out;
- 	ret = __hellcreek_fdb_add(hellcreek, &p2p);
-+	if (ret)
-+		goto out;
-+	ret = __hellcreek_fdb_add(hellcreek, &stp);
- out:
- 	mutex_unlock(&hellcreek->reg_lock);
- 
+diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+index f3947c49eee71..9e58e77b992ed 100644
+--- a/kernel/rcu/tree_exp.h
++++ b/kernel/rcu/tree_exp.h
+@@ -387,6 +387,7 @@ retry_ipi:
+ 			continue;
+ 		}
+ 		if (get_cpu() == cpu) {
++			mask_ofl_test |= mask;
+ 			put_cpu();
+ 			continue;
+ 		}
 -- 
 2.34.1
 
