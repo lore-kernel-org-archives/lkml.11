@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58913C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A24DC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449280AbiAXVPL (ORCPT
+        id S1449370AbiAXVP3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:15:11 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41998 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391475AbiAXUry (ORCPT
+        Mon, 24 Jan 2022 16:15:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47716 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391493AbiAXUr7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:47:54 -0500
+        Mon, 24 Jan 2022 15:47:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A96C60C2A;
-        Mon, 24 Jan 2022 20:47:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A4BAC340E5;
-        Mon, 24 Jan 2022 20:47:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1630CB8105C;
+        Mon, 24 Jan 2022 20:47:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C90EC340E5;
+        Mon, 24 Jan 2022 20:47:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057273;
-        bh=TZn8Yh7VlVGc1UIog89OIJSotNjIoF9dA/3e+R3TaEg=;
+        s=korg; t=1643057276;
+        bh=IlfeoWM02awDHdswG5X2TjIBFG9nfZxCQnnGwfgarTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u2N1H8IOiziJLDEqQoSI1F2C+//K4WLkz3nZca2/IXhanPn15Tvg0PZQ6iA5fIELL
-         Fd7rK8tdSpepoY8Ro/Opp58MB+J+KOUS88GtMt5lIiL5JnsiNA8Zb2CIbJ13vRkrBl
-         S3Vj1BeTWgKc7KUelKDcl88lQ144fY3UT6vOAFvQ=
+        b=iUP206pD5fEKBB89YfmgIU65VfHAOO+bekWj+wtyBa52YBy1pwy5vPKqawKGhMB+H
+         oR+NegdlyM8Eov8pPGWWgJYGholz2//yDePgMEOUSKz5781XWH2bxlllXLfnOwe45R
+         XN6Z8alcZoo3YcfqsT4fhjRIboW1tRVT0srgIc+Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Lukas Czerner <lczerner@redhat.com>, stable@kernel.org
-Subject: [PATCH 5.15 725/846] ext4: dont use the orphan list when migrating an inode
-Date:   Mon, 24 Jan 2022 19:44:02 +0100
-Message-Id: <20220124184126.012473312@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.15 716/846] ext4: initialize err_blk before calling __ext4_get_inode_loc
+Date:   Mon, 24 Jan 2022 19:43:53 +0100
+Message-Id: <20220124184125.722082359@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,83 +47,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
 
-commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055 upstream.
+commit c27c29c6af4f3f4ce925a2111c256733c5a5b430 upstream.
 
-We probably want to remove the indirect block to extents migration
-feature after a deprecation window, but until then, let's fix a
-potential data loss problem caused by the fact that we put the
-tmp_inode on the orphan list.  In the unlikely case where we crash and
-do a journal recovery, the data blocks belonging to the inode being
-migrated are also represented in the tmp_inode on the orphan list ---
-and so its data blocks will get marked unallocated, and available for
-reuse.
+It is not guaranteed that __ext4_get_inode_loc will definitely set
+err_blk pointer when it returns EIO. To avoid using uninitialized
+variables, let's first set err_blk to 0.
 
-Instead, stop putting the tmp_inode on the oprhan list.  So in the
-case where we crash while migrating the inode, we'll leak an inode,
-which is not a disaster.  It will be easily fixed the next time we run
-fsck, and it's better than potentially having blocks getting claimed
-by two different files, and losing data as a result.
-
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20211201163421.2631661-1-harshads@google.com
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Lukas Czerner <lczerner@redhat.com>
 Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/migrate.c |   19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ fs/ext4/inode.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -437,12 +437,12 @@ int ext4_ext_migrate(struct inode *inode
- 	percpu_down_write(&sbi->s_writepages_rwsem);
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -4371,7 +4371,7 @@ has_buffer:
+ static int __ext4_get_inode_loc_noinmem(struct inode *inode,
+ 					struct ext4_iloc *iloc)
+ {
+-	ext4_fsblk_t err_blk;
++	ext4_fsblk_t err_blk = 0;
+ 	int ret;
  
- 	/*
--	 * Worst case we can touch the allocation bitmaps, a bgd
--	 * block, and a block to link in the orphan list.  We do need
--	 * need to worry about credits for modifying the quota inode.
-+	 * Worst case we can touch the allocation bitmaps and a block
-+	 * group descriptor block.  We do need need to worry about
-+	 * credits for modifying the quota inode.
- 	 */
- 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE,
--		4 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
-+		3 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
+ 	ret = __ext4_get_inode_loc(inode->i_sb, inode->i_ino, iloc, 0,
+@@ -4386,7 +4386,7 @@ static int __ext4_get_inode_loc_noinmem(
  
- 	if (IS_ERR(handle)) {
- 		retval = PTR_ERR(handle);
-@@ -463,10 +463,6 @@ int ext4_ext_migrate(struct inode *inode
- 	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
- 	 * is so that the metadata blocks will have the correct checksum after
- 	 * the migration.
--	 *
--	 * Note however that, if a crash occurs during the migration process,
--	 * the recovery process is broken because the tmp_inode checksums will
--	 * be wrong and the orphans cleanup will fail.
- 	 */
- 	ei = EXT4_I(inode);
- 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
-@@ -478,7 +474,6 @@ int ext4_ext_migrate(struct inode *inode
- 	clear_nlink(tmp_inode);
+ int ext4_get_inode_loc(struct inode *inode, struct ext4_iloc *iloc)
+ {
+-	ext4_fsblk_t err_blk;
++	ext4_fsblk_t err_blk = 0;
+ 	int ret;
  
- 	ext4_ext_tree_init(handle, tmp_inode);
--	ext4_orphan_add(handle, tmp_inode);
- 	ext4_journal_stop(handle);
- 
- 	/*
-@@ -503,12 +498,6 @@ int ext4_ext_migrate(struct inode *inode
- 
- 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
- 	if (IS_ERR(handle)) {
--		/*
--		 * It is impossible to update on-disk structures without
--		 * a handle, so just rollback in-core changes and live other
--		 * work to orphan_list_cleanup()
--		 */
--		ext4_orphan_del(NULL, tmp_inode);
- 		retval = PTR_ERR(handle);
- 		goto out_tmp_inode;
- 	}
+ 	/* We have all inode data except xattrs in memory here. */
 
 
