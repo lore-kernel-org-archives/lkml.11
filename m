@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 392D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38368C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2371294AbiAYAH1 (ORCPT
+        id S2371336AbiAYAHh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:07:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
+        Mon, 24 Jan 2022 19:07:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384835AbiAXXR5 (ORCPT
+        with ESMTP id S1848230AbiAXXWB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:17:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD13AC07E29D;
-        Mon, 24 Jan 2022 11:45:38 -0800 (PST)
+        Mon, 24 Jan 2022 18:22:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E59DC0258C0;
+        Mon, 24 Jan 2022 13:28:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 532CFB811F9;
-        Mon, 24 Jan 2022 19:45:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96353C340E7;
-        Mon, 24 Jan 2022 19:45:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3F9061320;
+        Mon, 24 Jan 2022 21:28:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A91D1C33E61;
+        Mon, 24 Jan 2022 21:28:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053537;
-        bh=zLZtC7ypmlhH1omlZOAIcSh+uqnfUwqd1cdnR2k5tXY=;
+        s=korg; t=1643059725;
+        bh=6Rc/Jh0n96J2clf1qa2snYTGrhhbmofQBPfgvlR57fg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XAwG/kpC3nqnV8BAj6RaC34rh20c/qVQ0Iu00D5xToecRFIG7nbSwojILj3zrLuBa
-         Jp3yankdjIq/QPgB6lnWo6mzr1u1ncwP1gG7yYsOI/BNU4J5zXytQaoiNYCTQOp373
-         2hqfJG0ByNgYTtuQHBpNFNtnQypypcKbUwdi8uJI=
+        b=l0vlyvlYIhJux9Z5pUqJbMbnrnavlbFuXjeZvUyu2/z/Ji16zdk3c4qn/aLGmKpbz
+         I4gCzp6ddGnK2THf7bkKXJphdHp5zIcMw4nwQ7EzFCrp/Y1wlauonlDyuT/4/SUKjR
+         OCO9lIlAEMH7SeTW8yAJvugz9Rn5m6EQNvDdHkPA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        stable@vger.kernel.org, Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 097/563] ARM: dts: stm32: fix dtbs_check warning on ili9341 dts binding on stm32f429 disco
-Date:   Mon, 24 Jan 2022 19:37:42 +0100
-Message-Id: <20220124184027.754939919@linuxfoundation.org>
+Subject: [PATCH 5.16 0712/1039] mac80211: allow non-standard VHT MCS-10/11
+Date:   Mon, 24 Jan 2022 19:41:41 +0100
+Message-Id: <20220124184149.270631865@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,41 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit b046049e59dca5e5830dc75ed16acf7657a95161 ]
+[ Upstream commit 04be6d337d37400ad5b3d5f27ca87645ee5a18a3 ]
 
-Since the compatible string defined from ilitek,ili9341.yaml is
-"st,sf-tc240t-9370-t", "ilitek,ili9341"
+Some AP can possibly try non-standard VHT rate and mac80211 warns and drops
+packets, and leads low TCP throughput.
 
-so, append "ilitek,ili9341" to avoid the below dtbs_check warning.
+    Rate marked as a VHT rate but data is invalid: MCS: 10, NSS: 2
+    WARNING: CPU: 1 PID: 7817 at net/mac80211/rx.c:4856 ieee80211_rx_list+0x223/0x2f0 [mac8021
 
-arch/arm/boot/dts/stm32f429-disco.dt.yaml: display@1: compatible:
-['st,sf-tc240t-9370-t'] is too short
+Since commit c27aa56a72b8 ("cfg80211: add VHT rate entries for MCS-10 and MCS-11")
+has added, mac80211 adds this support as well.
 
-Fixes: a726e2f000ec ("ARM: dts: stm32: enable ltdc binding with ili9341, gyro l3gd20 on stm32429-disco board")
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
+After this patch, throughput is good and iw can get the bitrate:
+    rx bitrate:	975.1 MBit/s VHT-MCS 10 80MHz short GI VHT-NSS 2
+or
+    rx bitrate:	1083.3 MBit/s VHT-MCS 11 80MHz short GI VHT-NSS 2
+
+Buglink: https://bugzilla.suse.com/show_bug.cgi?id=1192891
+Reported-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://lore.kernel.org/r/20220103013623.17052-1-pkshih@realtek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/stm32f429-disco.dts | 2 +-
+ net/mac80211/rx.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/stm32f429-disco.dts b/arch/arm/boot/dts/stm32f429-disco.dts
-index 075ac57d0bf4a..6435e099c6326 100644
---- a/arch/arm/boot/dts/stm32f429-disco.dts
-+++ b/arch/arm/boot/dts/stm32f429-disco.dts
-@@ -192,7 +192,7 @@
- 
- 	display: display@1{
- 		/* Connect panel-ilitek-9341 to ltdc */
--		compatible = "st,sf-tc240t-9370-t";
-+		compatible = "st,sf-tc240t-9370-t", "ilitek,ili9341";
- 		reg = <1>;
- 		spi-3wire;
- 		spi-max-frequency = <10000000>;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 0544563ede522..d2e8b84ed2836 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4924,7 +4924,7 @@ void ieee80211_rx_list(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+ 				goto drop;
+ 			break;
+ 		case RX_ENC_VHT:
+-			if (WARN_ONCE(status->rate_idx > 9 ||
++			if (WARN_ONCE(status->rate_idx > 11 ||
+ 				      !status->nss ||
+ 				      status->nss > 8,
+ 				      "Rate marked as a VHT rate but data is invalid: MCS: %d, NSS: %d\n",
 -- 
 2.34.1
 
