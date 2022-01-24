@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 730C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835225AbiAXWfu (ORCPT
+        id S1835248AbiAXWfw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:35:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47836 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456141AbiAXVhy (ORCPT
+        Mon, 24 Jan 2022 17:35:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456718AbiAXVjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:54 -0500
+        Mon, 24 Jan 2022 16:39:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B17C0419CB;
+        Mon, 24 Jan 2022 12:26:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6F1F6B81057;
-        Mon, 24 Jan 2022 21:37:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D14AC340E4;
-        Mon, 24 Jan 2022 21:37:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC4B76150D;
+        Mon, 24 Jan 2022 20:26:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D08C340E5;
+        Mon, 24 Jan 2022 20:26:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060271;
-        bh=PBfU0sjDKHjPEXXIWzNxqIfWzz3fkDv5Yi5PMouzK2E=;
+        s=korg; t=1643055999;
+        bh=Ps18ta2PSjn+ctkFGbm3u5EjvOxYZsiEunta9c6c+Vk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oIjF/J5mId3BnWPHmy6wSoJ8S7tr0LInJNen2iOvYe8bSEEGm8nVOXPMZiWort9wQ
-         HzxK+ekBFsAHxT7MBkN4v3Mcv6dQoHMWyJqiqKcF9Vipt/uz0dyoJ9UJJmafKf+Z1F
-         LeztVQFN+HNH5l8ZQ0eewuYa9XMb9BmsIPeRQa4g=
+        b=shexEMPQcSnN0tzktB/Sg2EAvjMIG9P8Dv2p0uPqxmdXQqqbXIKcSji3l2IYblsWq
+         HJgV68nq7Kq0HwDPei6MKJX9ORj+OuJ0FoVJ4+k8NlWzzUwKkf+7VgOzETuo/NF/7q
+         32spHKY1np3m/5FKZ5lrNuFE4xguf3eFyB3MpdCA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 5.16 0894/1039] ext4: set csum seed in tmp inode while migrating to extents
-Date:   Mon, 24 Jan 2022 19:44:43 +0100
-Message-Id: <20220124184155.332890868@linuxfoundation.org>
+        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 337/846] net/mlx5e: Fix page DMA map/unmap attributes
+Date:   Mon, 24 Jan 2022 19:37:34 +0100
+Message-Id: <20220124184112.545502437@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +51,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luís Henriques <lhenriques@suse.de>
+From: Aya Levin <ayal@nvidia.com>
 
-commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
+[ Upstream commit 0b7cfa4082fbf550595bc0e40f05614bd83bf0cd ]
 
-When migrating to extents, the temporary inode will have it's own checksum
-seed.  This means that, when swapping the inodes data, the inode checksums
-will be incorrect.
+Driver initiates DMA sync, hence it may skip CPU sync. Add
+DMA_ATTR_SKIP_CPU_SYNC as input attribute both to dma_map_page and
+dma_unmap_page to avoid redundant sync with the CPU.
+When forcing the device to work with SWIOTLB, the extra sync might cause
+data corruption. The driver unmaps the whole page while the hardware
+used just a part of the bounce buffer. So syncing overrides the entire
+page with bounce buffer that only partially contains real data.
 
-This can be fixed by recalculating the extents checksums again.  Or simply
-by copying the seed into the temporary inode.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
-Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
-Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bc77b240b3c5 ("net/mlx5e: Add fragmented memory support for RX multi packet WQE")
+Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/migrate.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c       | 7 ++++---
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -459,6 +459,17 @@ int ext4_ext_migrate(struct inode *inode
- 		ext4_journal_stop(handle);
- 		goto out_unlock;
- 	}
-+	/*
-+	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
-+	 * is so that the metadata blocks will have the correct checksum after
-+	 * the migration.
-+	 *
-+	 * Note however that, if a crash occurs during the migration process,
-+	 * the recovery process is broken because the tmp_inode checksums will
-+	 * be wrong and the orphans cleanup will fail.
-+	 */
-+	ei = EXT4_I(inode);
-+	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
- 	i_size_write(tmp_inode, i_size_read(inode));
- 	/*
- 	 * Set the i_nlink to zero so it will be deleted later
-@@ -502,7 +513,6 @@ int ext4_ext_migrate(struct inode *inode
- 		goto out_tmp_inode;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+index 7b562d2c8a196..279cd8f4e79f7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+@@ -11,13 +11,13 @@ static int mlx5e_xsk_map_pool(struct mlx5e_priv *priv,
+ {
+ 	struct device *dev = mlx5_core_dma_dev(priv->mdev);
  
--	ei = EXT4_I(inode);
- 	i_data = ei->i_data;
- 	memset(&lb, 0, sizeof(lb));
+-	return xsk_pool_dma_map(pool, dev, 0);
++	return xsk_pool_dma_map(pool, dev, DMA_ATTR_SKIP_CPU_SYNC);
+ }
  
+ static void mlx5e_xsk_unmap_pool(struct mlx5e_priv *priv,
+ 				 struct xsk_buff_pool *pool)
+ {
+-	return xsk_pool_dma_unmap(pool, 0);
++	return xsk_pool_dma_unmap(pool, DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ 
+ static int mlx5e_xsk_get_pools(struct mlx5e_xsk *xsk)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 29a6586ef28dc..0015545d5235b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -271,8 +271,8 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq,
+ 	if (unlikely(!dma_info->page))
+ 		return -ENOMEM;
+ 
+-	dma_info->addr = dma_map_page(rq->pdev, dma_info->page, 0,
+-				      PAGE_SIZE, rq->buff.map_dir);
++	dma_info->addr = dma_map_page_attrs(rq->pdev, dma_info->page, 0, PAGE_SIZE,
++					    rq->buff.map_dir, DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (unlikely(dma_mapping_error(rq->pdev, dma_info->addr))) {
+ 		page_pool_recycle_direct(rq->page_pool, dma_info->page);
+ 		dma_info->page = NULL;
+@@ -293,7 +293,8 @@ static inline int mlx5e_page_alloc(struct mlx5e_rq *rq,
+ 
+ void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct mlx5e_dma_info *dma_info)
+ {
+-	dma_unmap_page(rq->pdev, dma_info->addr, PAGE_SIZE, rq->buff.map_dir);
++	dma_unmap_page_attrs(rq->pdev, dma_info->addr, PAGE_SIZE, rq->buff.map_dir,
++			     DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ 
+ void mlx5e_page_release_dynamic(struct mlx5e_rq *rq,
+-- 
+2.34.1
+
 
 
