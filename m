@@ -2,111 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA16C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D36E2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849677AbiAXX00 (ORCPT
+        id S1849751AbiAXX0f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:26:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40994 "EHLO
+        Mon, 24 Jan 2022 18:26:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835949AbiAXWhu (ORCPT
+        with ESMTP id S1835942AbiAXWhu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:37:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EF2C0E9BB8;
-        Mon, 24 Jan 2022 13:00:28 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAC5861320;
-        Mon, 24 Jan 2022 21:00:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AAABC340E5;
-        Mon, 24 Jan 2022 21:00:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058027;
-        bh=5CefI8kLlzwKiG7jZGtST77aCSVR1qeHJlatpgTEvLk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mguJWQtVLjqWfMZ0C3r+TLCcSe7RHMUbwljXjjQGcbcPUSrRjuah+hCa6rrpCeqBP
-         pO59L/3p/sLQCPYH9WoWqN0dlOOZGteRFrcLrYaSh0Sy3i7pH75gYKHA+VvFOMIMTQ
-         nnyepxo9RP3o2Umx9n6zDU/ccs0AEFKNEDF87NDk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0124/1039] media: atomisp: do not use err var when checking port validity for ISP2400
-Date:   Mon, 24 Jan 2022 19:31:53 +0100
-Message-Id: <20220124184129.313744301@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 027F8C0D9433
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:59:58 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id o30-20020a05600c511e00b0034f4c3186f4so203691wms.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:59:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=LelPLFVyiMTpw5yA1vIPFMWw4VOWdiJSPS8F5u+bLEc=;
+        b=qRZb3pM+5b2VNWc/AzABp2OqhydpmI2RSTdUgZsB+pKt3vGNMqDrBgXP/MKGbxYyHg
+         wWnY5BfxqqcbIUq6wPMF9Wrl3cFRKva373rvxCvgG/CE3dvo9GQkBwHGCDK8CsN8vWpD
+         7ThNJfRa6Vr+Tbjs2BXWAheDIeoqp5RiCRk8u1cD2qULgAiilowza9Apg/0qECxnejBa
+         Fad6dKu/8fVBAYJjbuNnYB1rOP9vDJdi1naj3nqGx/sHOem74ASUXGbfnLBjY2QkTYNc
+         WTA2kK8IEaUhDo+ifHdp9FaYSgg8bYW1d5pV0BY6wa5HAyUByZbm4iPldXhv8wz416yY
+         ASyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=LelPLFVyiMTpw5yA1vIPFMWw4VOWdiJSPS8F5u+bLEc=;
+        b=s8pnbCkmJTmIDl10x6S11XwTzn07EJDDch4+1tYbmJR0CEmd5qImFB+4r+j4A1Hfny
+         xZvRrm+Fc+ADC4jsYzi63M+bZ68hspWIHcc8JAz1KGz1uagXRNmrBXcRd/Y6Ke0GRGsE
+         f2nYi1mVDS/FHxnvhRsw47dXHE/waFGn6My+keDBcoJ+ZlLn4+lSpmXekipOHiN8qyuo
+         HhEyh2nz4HBBMkLlz7vNkl0XdE3mUR59fLtBnX0ZjUfmbm4vJpv8x8yqAtL3cDK4gTo7
+         yxorD5NbA//x39L/EI/oU3x6atRrffXVSSRvM1Ii/vnhxaXc58t7vBeZsFsm/iqAHBXk
+         h1jg==
+X-Gm-Message-State: AOAM532ODqQmmkSHMNg9/CQbGSimrQ/iYJClIFF/zP3WarywNUNp0pCU
+        AZ63nbwXh0VWUhQbDxd0CuuBj0krwnRw9BzPftQ0lA==
+X-Google-Smtp-Source: ABdhPJzQ2EdezBI/cadxJvyRuRdpwrqFMtyGwYYsP71DbnBy25EekbaOkxmdTf3MKawF+mMAoyzlm2azpJ+IBoCSdG0=
+X-Received: by 2002:a05:600c:3503:: with SMTP id h3mr110888wmq.164.1643057996298;
+ Mon, 24 Jan 2022 12:59:56 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+From:   Hao Luo <haoluo@google.com>
+Date:   Mon, 24 Jan 2022 12:59:44 -0800
+Message-ID: <CA+khW7gh=vO8m-_SVnwWwj7kv+EDeUPcuWFqebf2Zmi9T_oEAQ@mail.gmail.com>
+Subject: [Question] How to reliably get BuildIDs from bpf prog
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        KP Singh <kpsingh@kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Blake Jones <blakejones@google.com>,
+        Alexey Alexandrov <aalexand@google.com>,
+        Namhyung Kim <namhyung@google.com>,
+        Ian Rogers <irogers@google.com>,
+        "pasha.tatashin@soleen.com" <pasha.tatashin@soleen.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+Dear BPF experts,
 
-[ Upstream commit 9f6b4fa2d2dfbff4b8a57eeb39b1128a6094ee20 ]
+I'm working on collecting some kernel performance data using BPF
+tracing prog. Our performance profiling team wants to associate the
+data with user stack information. One of the requirements is to
+reliably get BuildIDs from bpf_get_stackid() and other similar helpers
+[1].
 
-Currently, the `port >= N_CSI_PORTS || err` checks for ISP2400 are always
-evaluated as true because the err variable is set to `-EINVAL` on
-declaration but the variable is never used until the evaluation.
+As part of an early investigation, we found that there are a couple
+issues that make bpf_get_stackid() much less reliable than we'd like
+for our use:
 
-Looking at the diff of commit 3c0538fbad9f ("media: atomisp: get rid of
-most checks for ISP2401 version"), the `port >= N_CSI_PORTS` check is
-for ISP2400 and the err variable check is for ISP2401. Fix this issue
-by adding ISP version test there accordingly.
+1. The first page of many binaries (which contains the ELF headers and
+thus the BuildID that we need) is often not in memory. The failure of
+find_get_page() (called from build_id_parse()) is higher than we would
+want.
 
-Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/media/atomisp/pci/sh_css_mipi.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+2. When anonymous huge pages are used to hold some regions of process
+text, build_id_parse() also fails to get a BuildID because
+vma->vm_file is NULL.
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-index 483d40a467c74..65fc93c5d56bc 100644
---- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-@@ -430,7 +430,8 @@ allocate_mipi_frames(struct ia_css_pipe *pipe,
- 
- 	assert(port < N_CSI_PORTS);
- 
--	if (port >= N_CSI_PORTS || err) {
-+	if ((!IS_ISP2401 && port >= N_CSI_PORTS) ||
-+	    (IS_ISP2401 && err)) {
- 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
- 				    "allocate_mipi_frames(%p) exit: error: port is not correct (port=%d).\n",
- 				    pipe, port);
-@@ -559,7 +560,8 @@ free_mipi_frames(struct ia_css_pipe *pipe)
- 
- 		assert(port < N_CSI_PORTS);
- 
--		if (port >= N_CSI_PORTS || err) {
-+		if ((!IS_ISP2401 && port >= N_CSI_PORTS) ||
-+		    (IS_ISP2401 && err)) {
- 			ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
- 					    "free_mipi_frames(%p, %d) exit: error: pipe port is not correct.\n",
- 					    pipe, port);
-@@ -670,7 +672,8 @@ send_mipi_frames(struct ia_css_pipe *pipe)
- 
- 	assert(port < N_CSI_PORTS);
- 
--	if (port >= N_CSI_PORTS || err) {
-+	if ((!IS_ISP2401 && port >= N_CSI_PORTS) ||
-+	    (IS_ISP2401 && err)) {
- 		IA_CSS_ERROR("send_mipi_frames(%p) exit: invalid port specified (port=%d).\n",
- 			     pipe, port);
- 		return err;
--- 
-2.34.1
+These two issues are critical blockers for us to use BPF in
+production. Can we do better? What do other users do to reliably get
+build ids?
 
+Thanks very much,
+Hao
 
-
+[1] https://man7.org/linux/man-pages/man7/bpf-helpers.7.html
