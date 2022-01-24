@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE0FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295F1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:58:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386157AbiAXU5x (ORCPT
+        id S1443643AbiAXU5z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:57:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39176 "EHLO
+        Mon, 24 Jan 2022 15:57:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385460AbiAXUdZ (ORCPT
+        with ESMTP id S1385447AbiAXUdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:33:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0709C07E298;
-        Mon, 24 Jan 2022 11:45:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58718C07E295;
+        Mon, 24 Jan 2022 11:45:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63F9CB8121C;
-        Mon, 24 Jan 2022 19:45:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B47BC340E5;
-        Mon, 24 Jan 2022 19:45:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E811B811F9;
+        Mon, 24 Jan 2022 19:45:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A8B1C340E5;
+        Mon, 24 Jan 2022 19:45:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053528;
-        bh=pE1XdxEVbHz1gSf4Rh3y/sVw7bmiKe/EQ7YVF+zJq5U=;
+        s=korg; t=1643053515;
+        bh=gcY9DkbISMBEQVO3JWGLuPtvD2jNfR5mUs7pmMfGqp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FKkgEJFzRGEL57v35D7eUeYWLHv/a1VTyX8kXeAix1+XuntmjBi8wVIK93vUJi/7s
-         ghlGMWZxbkHq8QOER5NpQnSi4Yaqkjz4fEQ4gHxVmjx2GvWfQ/Plhn4+SkvU8qHFQw
-         AvXsUQ2n5qIKpqkYZ2Y4Y5hJKVCXYZgLLuKQ2w98=
+        b=XQq/i58M3cRtCSrXbkHYImmDkdBrv1QJxoiTsHiFF1sLePUyH3FBsgzA5o+knmRYz
+         52QCbxoJkPeHcV4C97s5jdzMEIbmdvRuAzXPbUmdoQeAz/3Nas6AWCFc3BZ/R2asDt
+         BRujlyTUHPlD91okkbehwe0+yYUjLCuZW+65knR0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Thara Gopinath <thara.gopinath@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 094/563] crypto: qce - fix uaf on qce_ahash_register_one
-Date:   Mon, 24 Jan 2022 19:37:39 +0100
-Message-Id: <20220124184027.640121536@linuxfoundation.org>
+Subject: [PATCH 5.10 090/563] fs: dlm: fix build with CONFIG_IPV6 disabled
+Date:   Mon, 24 Jan 2022 19:37:35 +0100
+Message-Id: <20220124184027.507660188@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,37 +51,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit b4cb4d31631912842eb7dce02b4350cbb7562d5e ]
+[ Upstream commit 1b9beda83e27a0c2cd75d1cb743c297c7b36c844 ]
 
-Pointer base points to sub field of tmpl, it
-is dereferenced after tmpl is freed. Fix
-this by accessing base before free tmpl.
+This patch will surround the AF_INET6 case in sk_error_report() of dlm
+with a #if IS_ENABLED(CONFIG_IPV6). The field sk->sk_v6_daddr is not
+defined when CONFIG_IPV6 is disabled. If CONFIG_IPV6 is disabled, the
+socket creation with AF_INET6 should already fail because a runtime
+check if AF_INET6 is registered. However if there is the possibility
+that AF_INET6 is set as sk_family the sk_error_report() callback will
+print then an invalid family type error.
 
-Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 4c3d90570bcc ("fs: dlm: don't call kernel_getpeername() in error_report()")
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qce/sha.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/dlm/lowcomms.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/crypto/qce/sha.c b/drivers/crypto/qce/sha.c
-index 87be96a0b0bba..8b4e79d882af4 100644
---- a/drivers/crypto/qce/sha.c
-+++ b/drivers/crypto/qce/sha.c
-@@ -533,8 +533,8 @@ static int qce_ahash_register_one(const struct qce_ahash_def *def,
- 
- 	ret = crypto_register_ahash(alg);
- 	if (ret) {
--		kfree(tmpl);
- 		dev_err(qce->dev, "%s registration failed\n", base->cra_name);
-+		kfree(tmpl);
- 		return ret;
- 	}
- 
+diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
+index 904855fa20655..68b765369c928 100644
+--- a/fs/dlm/lowcomms.c
++++ b/fs/dlm/lowcomms.c
+@@ -491,6 +491,7 @@ static void lowcomms_error_report(struct sock *sk)
+ 				   ntohs(inet->inet_dport), sk->sk_err,
+ 				   sk->sk_err_soft);
+ 		break;
++#if IS_ENABLED(CONFIG_IPV6)
+ 	case AF_INET6:
+ 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
+ 				   "sending to node %d at %pI6c, "
+@@ -499,6 +500,7 @@ static void lowcomms_error_report(struct sock *sk)
+ 				   ntohs(inet->inet_dport), sk->sk_err,
+ 				   sk->sk_err_soft);
+ 		break;
++#endif
+ 	default:
+ 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
+ 				   "invalid socket family %d set, "
 -- 
 2.34.1
 
