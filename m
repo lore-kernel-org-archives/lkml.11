@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6569BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AED22C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343719AbiAXSvh (ORCPT
+        id S1343743AbiAXSvl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:51:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49258 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245386AbiAXSub (ORCPT
+        Mon, 24 Jan 2022 13:51:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43108 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245399AbiAXSua (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:50:31 -0500
+        Mon, 24 Jan 2022 13:50:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A21C06175C;
+        Mon, 24 Jan 2022 10:50:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94A4B614E1;
-        Mon, 24 Jan 2022 18:50:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C742C340E5;
-        Mon, 24 Jan 2022 18:50:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 434FFB81221;
+        Mon, 24 Jan 2022 18:50:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 743A9C340E8;
+        Mon, 24 Jan 2022 18:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050230;
-        bh=gTiAsola0UWMwwPm3YlisJWsAT/oMqMZKVdHyRXMZh0=;
+        s=korg; t=1643050227;
+        bh=+JGX5V6bckuGbkPso6Uwk7DIgB1lnA95aSlFuON2aDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LzrFVwgVwkgdQytjt1k6vbyywv+o4h4vHjtHIn17Z+nqGrFiwjMMcGqt9uXSyoGXi
-         Bwd7B18PV9FS8Y4h6tUIMU2ZiwImDBn6ilBD0/koL1hAs7I9jdXM3p4T4/TBU+JMc2
-         UiJirk5SU2EuyOxwNNGcUffO0TM0NRDujj2mfgzs=
+        b=OQJeU4Duomf0w4F0llnz+DqbeK/7wjSugIvDfr6iAWkoZYWOocPn6qlO1eH5RYqxg
+         VUdQ1h0RurDx5V5SL/rPSUioAca6iKYR+1yT8gPiTmbJxSBPAQPFD6nbGtx7dSPTmp
+         gg3i78tQYfmZbdHfaFBF8jWJfxx29dHNQNXtYqvw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH 4.4 018/114] can: softing_cs: softingcs_probe(): fix memleak on registration failure
-Date:   Mon, 24 Jan 2022 19:41:53 +0100
-Message-Id: <20220124183927.678729716@linuxfoundation.org>
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.4 017/114] media: stk1160: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:52 +0100
+Message-Id: <20220124183927.645730424@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -48,34 +52,40 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johan Hovold <johan@kernel.org>
 
-commit ced4913efb0acc844ed65cc01d091a85d83a2082 upstream.
+commit 6aa6e70cdb5b863a57bad61310bf89b6617a5d2d upstream.
 
-In case device registration fails during probe, the driver state and
-the embedded platform device structure needs to be freed using
-platform_device_put() to properly free all resources (e.g. the device
-name).
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Fixes: 0a0b7a5f7a04 ("can: add driver for Softing card")
-Link: https://lore.kernel.org/all/20211222104843.6105-1-johan@kernel.org
-Cc: stable@vger.kernel.org # 2.6.38
+Fixes: 9cb2173e6ea8 ("[media] media: Add stk1160 new driver (easycap replacement)")
+Cc: stable@vger.kernel.org      # 3.7
 Signed-off-by: Johan Hovold <johan@kernel.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/can/softing/softing_cs.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/stk1160/stk1160-core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/can/softing/softing_cs.c
-+++ b/drivers/net/can/softing/softing_cs.c
-@@ -304,7 +304,7 @@ static int softingcs_probe(struct pcmcia
- 	return 0;
+--- a/drivers/media/usb/stk1160/stk1160-core.c
++++ b/drivers/media/usb/stk1160/stk1160-core.c
+@@ -76,7 +76,7 @@ int stk1160_read_reg(struct stk1160 *dev
+ 		return -ENOMEM;
+ 	ret = usb_control_msg(dev->udev, pipe, 0x00,
+ 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			0x00, reg, buf, sizeof(u8), HZ);
++			0x00, reg, buf, sizeof(u8), 1000);
+ 	if (ret < 0) {
+ 		stk1160_err("read failed on reg 0x%x (%d)\n",
+ 			reg, ret);
+@@ -96,7 +96,7 @@ int stk1160_write_reg(struct stk1160 *de
  
- platform_failed:
--	kfree(dev);
-+	platform_device_put(pdev);
- mem_failed:
- pcmcia_bad:
- pcmcia_failed:
+ 	ret =  usb_control_msg(dev->udev, pipe, 0x01,
+ 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			value, reg, NULL, 0, HZ);
++			value, reg, NULL, 0, 1000);
+ 	if (ret < 0) {
+ 		stk1160_err("write failed on reg 0x%x (%d)\n",
+ 			reg, ret);
 
 
