@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7AB1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF78CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:32:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588459AbiAXWc2 (ORCPT
+        id S1356536AbiAXWcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:32:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55298 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456551AbiAXVjb (ORCPT
+        Mon, 24 Jan 2022 17:32:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51208 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456592AbiAXVjf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94069C0417CA;
-        Mon, 24 Jan 2022 12:25:03 -0800 (PST)
+        Mon, 24 Jan 2022 16:39:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F2B0B810BD;
-        Mon, 24 Jan 2022 20:25:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7908BC340E5;
-        Mon, 24 Jan 2022 20:25:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B8E0B8105C;
+        Mon, 24 Jan 2022 21:39:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B87CC340E4;
+        Mon, 24 Jan 2022 21:39:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055901;
-        bh=38QJKayBH1t+mBmsiqgcjzBj6O8WHMCZs2mmLV6jwwU=;
+        s=korg; t=1643060373;
+        bh=Tc9AOZYZp2DQFZcIzTfoE35W2ly/fEgxYSyopAgJIBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u/2h1AcQtXpIyc8T1IC/WPoYeqNkIk7/tb6bR+8Vjp8fxJa9/PYzB/LKR/K9X80gL
-         HAA4tcQbweXs4vxPqhrXkegCURwCT/+PUIv0crMzNZXrYDLyO3BFBo1vi8/OWdLSDj
-         s9B6/zaKHrEQs+0kdL8zyMP2TaYOHpTIFSPP1TWk=
+        b=2L6/8r7ZV1OCC0AEwbWXnX7FEBzN/Rto8GNZr6Qo9EwK8jzumXVT/d4MNq7RppVUI
+         AGAG5I8E/nSuMjZBBArvDsUUMQS8OJTzGuYCxqp8sEGvGNj4DYLaS4XE8LetL78qhd
+         NTVCbbSaMH+1E5qf6KaDuKyxQYNS8e/1r9plqMbI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 304/846] power: reset: mt6397: Check for null res pointer
-Date:   Mon, 24 Jan 2022 19:37:01 +0100
-Message-Id: <20220124184111.391081587@linuxfoundation.org>
+        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 5.16 0926/1039] RDMA/rxe: Fix a typo in opcode name
+Date:   Mon, 24 Jan 2022 19:45:15 +0100
+Message-Id: <20220124184156.418140518@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 1c1348bf056dee665760a3bd1cd30b0be7554fc2 ]
+commit 8d1cfb884e881efd69a3be4ef10772c71cb22216 upstream.
 
-The return value of platform_get_resource() needs to be checked.
-To avoid use of error pointer in case that there is no suitable
-resource.
+There is a redundant ']' in the name of opcode IB_OPCODE_RC_SEND_MIDDLE,
+so just fix it.
 
-Fixes: d28c74c10751 ("power: reset: add driver for mt6323 poweroff")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20211218112320.3558770-1-cgxu519@mykernel.net
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/mt6323-poweroff.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/infiniband/sw/rxe/rxe_opcode.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/power/reset/mt6323-poweroff.c b/drivers/power/reset/mt6323-poweroff.c
-index 0532803e6cbc4..d90e76fcb9383 100644
---- a/drivers/power/reset/mt6323-poweroff.c
-+++ b/drivers/power/reset/mt6323-poweroff.c
-@@ -57,6 +57,9 @@ static int mt6323_pwrc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
-+
- 	pwrc->base = res->start;
- 	pwrc->regmap = mt6397_chip->regmap;
- 	pwrc->dev = &pdev->dev;
--- 
-2.34.1
-
+--- a/drivers/infiniband/sw/rxe/rxe_opcode.c
++++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
+@@ -117,7 +117,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NU
+ 		}
+ 	},
+ 	[IB_OPCODE_RC_SEND_MIDDLE]		= {
+-		.name	= "IB_OPCODE_RC_SEND_MIDDLE]",
++		.name	= "IB_OPCODE_RC_SEND_MIDDLE",
+ 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_SEND_MASK
+ 				| RXE_MIDDLE_MASK,
+ 		.length = RXE_BTH_BYTES,
 
 
