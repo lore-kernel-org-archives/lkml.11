@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 654EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97BE5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379917AbiAXWRo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:17:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
+        id S229551AbiAXWRz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 17:17:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453953AbiAXVbS (ORCPT
+        with ESMTP id S1388845AbiAXVM5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:31:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03DB6C075949;
-        Mon, 24 Jan 2022 12:20:35 -0800 (PST)
+        Mon, 24 Jan 2022 16:12:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DF8CC02B5F2;
+        Mon, 24 Jan 2022 12:09:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5E73B8122F;
-        Mon, 24 Jan 2022 20:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC417C340E5;
-        Mon, 24 Jan 2022 20:20:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D17F66136F;
+        Mon, 24 Jan 2022 20:09:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9D2BC340E7;
+        Mon, 24 Jan 2022 20:09:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055632;
-        bh=sgSscAIfs33is+A3+mF+JxJk+KOnqSxfxISmLEcfSqk=;
+        s=korg; t=1643054975;
+        bh=+cHD1sv0DCBEaOmQQwWTkSRUl1GaWxvlAts901+cBS8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ugJ7U/QeMWZxAur4U1Us4pkLcMl6lvEA0/IwwvypBJbtaBYfxNntto97LA4RRtgrD
-         phlV9c5Spi3Ox6h6Tsm8W0XYzprR+rmoYNoXa5Qyt21uZdqxgydsDntBfrSYwZt6ng
-         CfqSEuBOGo1UUoHlqjT3omjYuw7ixgNMhrkPZYNQ=
+        b=IW6/BbboiNzapHlf4piCYmk0uKAMZ1ELA20KXlNqdKBrNSI5pfaemjzUoiiX7Nt17
+         qS0980VA/22p281eeDhMJOO/wSWoA7p7enL7YQFYrcpKFPorqXWpHfuLvz2HY0nh4x
+         B5TqliJyyHLQnAMknApmQrByg6lbOHHKsp0Fae1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 213/846] wireless: iwlwifi: Fix a double free in iwl_txq_dyn_alloc_dma
-Date:   Mon, 24 Jan 2022 19:35:30 +0100
-Message-Id: <20220124184108.272161843@linuxfoundation.org>
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Kalle Valo <quic_kvalo@quicinc.com>
+Subject: [PATCH 5.10 563/563] ath10k: Fix the MTU size on QCA9377 SDIO
+Date:   Mon, 24 Jan 2022 19:45:28 +0100
+Message-Id: <20220124184043.924007897@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +48,208 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit f973795a8d19cbf3d03807704eb7c6ff65788d5a ]
+commit 09b8cd69edcf2be04a781e1781e98e52a775c9ad upstream.
 
-In iwl_txq_dyn_alloc_dma, txq->tfds is freed at first time by:
-iwl_txq_alloc()->goto err_free_tfds->dma_free_coherent(). But
-it forgot to set txq->tfds to NULL.
+On an imx6dl-pico-pi board with a QCA9377 SDIO chip, simply trying to
+connect via ssh to another machine causes:
 
-Then the txq->tfds is freed again in iwl_txq_dyn_alloc_dma by:
-goto error->iwl_txq_gen2_free_memory()->dma_free_coherent().
+[   55.824159] ath10k_sdio mmc1:0001:1: failed to transmit packet, dropping: -12
+[   55.832169] ath10k_sdio mmc1:0001:1: failed to submit frame: -12
+[   55.838529] ath10k_sdio mmc1:0001:1: failed to push frame: -12
+[   55.905863] ath10k_sdio mmc1:0001:1: failed to transmit packet, dropping: -12
+[   55.913650] ath10k_sdio mmc1:0001:1: failed to submit frame: -12
+[   55.919887] ath10k_sdio mmc1:0001:1: failed to push frame: -12
 
-My patch sets txq->tfds to NULL after the first free to avoid the
-double free.
+, leading to an ssh connection failure.
 
-Fixes: 0cd1ad2d7fd41 ("iwlwifi: move all bus-independent TX functions to common code")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Link: https://lore.kernel.org/r/20210403054755.4781-1-lyl2019@mail.ustc.edu.cn
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+One user inspected the size of frames on Wireshark and reported
+the followig:
+
+"I was able to narrow the issue down to the mtu. If I set the mtu for
+the wlan0 device to 1486 instead of 1500, the issue does not happen.
+
+The size of frames that I see on Wireshark is exactly 1500 after
+setting it to 1486."
+
+Clearing the HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE avoids the problem and
+the ssh command works successfully after that.
+
+Introduce a 'credit_size_workaround' field to ath10k_hw_params for
+the QCA9377 SDIO, so that the HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE
+is not set in this case.
+
+Tested with QCA9377 SDIO with firmware WLAN.TF.1.1.1-00061-QCATFSWPZ-1.
+
+Fixes: 2f918ea98606 ("ath10k: enable alt data of TX path for sdio")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211124131047.713756-1-festevam@denx.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/queue/tx.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ath10k/core.c |   19 ++++++++++++++++++-
+ drivers/net/wireless/ath/ath10k/hw.h   |    3 +++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-index 451b060693501..0f3526b0c5b00 100644
---- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-@@ -1072,6 +1072,7 @@ int iwl_txq_alloc(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
- 	return 0;
- err_free_tfds:
- 	dma_free_coherent(trans->dev, tfd_sz, txq->tfds, txq->dma_addr);
-+	txq->tfds = NULL;
- error:
- 	if (txq->entries && cmd_queue)
- 		for (i = 0; i < slots_num; i++)
--- 
-2.34.1
-
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -89,6 +89,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = true,
+ 	},
+ 	{
+@@ -123,6 +124,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = true,
+ 	},
+ 	{
+@@ -158,6 +160,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -187,6 +190,7 @@ static const struct ath10k_hw_params ath
+ 		.num_wds_entries = 0x20,
+ 		.uart_pin_workaround = true,
+ 		.tx_stats_over_pktlog = false,
++		.credit_size_workaround = false,
+ 		.bmi_large_size_download = true,
+ 		.supports_peer_stats_info = true,
+ 	},
+@@ -222,6 +226,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -256,6 +261,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -290,6 +296,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -327,6 +334,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = true,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.supports_peer_stats_info = true,
+ 	},
+@@ -368,6 +376,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -415,6 +424,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -459,6 +469,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -493,6 +504,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -529,6 +541,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = true,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -557,6 +570,7 @@ static const struct ath10k_hw_params ath
+ 		.ast_skid_limit = 0x10,
+ 		.num_wds_entries = 0x20,
+ 		.uart_pin_workaround = true,
++		.credit_size_workaround = true,
+ 	},
+ 	{
+ 		.id = QCA4019_HW_1_0_DEV_VERSION,
+@@ -597,6 +611,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ 	{
+@@ -624,6 +639,7 @@ static const struct ath10k_hw_params ath
+ 		.rri_on_ddr = true,
+ 		.hw_filter_reset_required = false,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 	},
+ };
+@@ -697,6 +713,7 @@ static void ath10k_send_suspend_complete
+ 
+ static int ath10k_init_sdio(struct ath10k *ar, enum ath10k_firmware_mode mode)
+ {
++	bool mtu_workaround = ar->hw_params.credit_size_workaround;
+ 	int ret;
+ 	u32 param = 0;
+ 
+@@ -714,7 +731,7 @@ static int ath10k_init_sdio(struct ath10
+ 
+ 	param |= HI_ACS_FLAGS_SDIO_REDUCE_TX_COMPL_SET;
+ 
+-	if (mode == ATH10K_FIRMWARE_MODE_NORMAL)
++	if (mode == ATH10K_FIRMWARE_MODE_NORMAL && !mtu_workaround)
+ 		param |= HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE;
+ 	else
+ 		param &= ~HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE;
+--- a/drivers/net/wireless/ath/ath10k/hw.h
++++ b/drivers/net/wireless/ath/ath10k/hw.h
+@@ -618,6 +618,9 @@ struct ath10k_hw_params {
+ 	 */
+ 	bool uart_pin_workaround;
+ 
++	/* Workaround for the credit size calculation */
++	bool credit_size_workaround;
++
+ 	/* tx stats support over pktlog */
+ 	bool tx_stats_over_pktlog;
+ 
 
 
