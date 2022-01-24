@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3EBFC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06989C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362216AbiAXXl6 (ORCPT
+        id S2362254AbiAXXmD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:41:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
+        Mon, 24 Jan 2022 18:42:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841130AbiAXW5l (ORCPT
+        with ESMTP id S1841129AbiAXW5l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:57:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9D04C0797BF;
-        Mon, 24 Jan 2022 13:12:07 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B47DC0401FF;
+        Mon, 24 Jan 2022 13:12:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 47FCF6131F;
-        Mon, 24 Jan 2022 21:12:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5616BC340E5;
-        Mon, 24 Jan 2022 21:12:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 00DA9B811FB;
+        Mon, 24 Jan 2022 21:12:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62CC3C340E5;
+        Mon, 24 Jan 2022 21:12:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058726;
-        bh=Q3ypDHHx3RUbuMxMVkYb3TNXwem+cB96Bf8NslW8Bak=;
+        s=korg; t=1643058732;
+        bh=GkT1JKyiWTehfmwWT0NQjNXlQrkt2/3NKwSy1Olvcsk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QNLPMzsEr1DCoA5tGWD97m2akatrcNwQHqWquUxO9lyv/BSt6Wna3y16IVI9O/cKI
-         i++5b/VQ/faMtXxTI47sL9mcYvMHZeCURd3DD593KEIE8Tz+KYj/mWToohOBIPUG2t
-         27vaMOza4vTaC1ZkX2rKEZUiv2Z9fkupJmJ4uVLU=
+        b=2eUlu+PYiETeCI8Xp7tYT5u8B/V0qn8YkNSSRkC0tEbELOTT8hwXCLxww8/2mPzFQ
+         CYZ1JUMjENBPqwZIkxOrs1blm5KEruUQnj3kK5tlz6sDtkVKiNhne4wXvOBI4dz3aH
+         Np9Y5AIaoaV1lruOMdeLpb8Mc7jD+hkiaLciv630=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
         "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0383/1039] rocker: fix a sleeping in atomic bug
-Date:   Mon, 24 Jan 2022 19:36:12 +0100
-Message-Id: <20220124184138.185390373@linuxfoundation.org>
+Subject: [PATCH 5.16 0385/1039] fsl/fman: Check for null pointer after calling devm_ioremap
+Date:   Mon, 24 Jan 2022 19:36:14 +0100
+Message-Id: <20220124184138.252013946@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,36 +50,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 43d012123122cc69feacab55b71369f386c19566 ]
+[ Upstream commit d5a73ec96cc57cf67e51b12820fc2354e7ca46f8 ]
 
-This code is holding the &ofdpa->flow_tbl_lock spinlock so it is not
-allowed to sleep.  That means we have to pass the OFDPA_OP_FLAG_NOWAIT
-flag to ofdpa_flow_tbl_del().
+As the possible failure of the allocation, the devm_ioremap() may return
+NULL pointer.
+Take tgec_initialization() as an example.
+If allocation fails, the params->base_addr will be NULL pointer and will
+be assigned to tgec->regs in tgec_config().
+Then it will cause the dereference of NULL pointer in set_mac_address(),
+which is called by tgec_init().
+Therefore, it should be better to add the sanity check after the calling
+of the devm_ioremap().
 
-Fixes: 936bd486564a ("rocker: use FIB notifications instead of switchdev calls")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 3933961682a3 ("fsl/fman: Add FMan MAC driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/rocker/rocker_ofdpa.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/fman/mac.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/rocker/rocker_ofdpa.c b/drivers/net/ethernet/rocker/rocker_ofdpa.c
-index 3e1ca7a8d0295..bc70c6abd6a5b 100644
---- a/drivers/net/ethernet/rocker/rocker_ofdpa.c
-+++ b/drivers/net/ethernet/rocker/rocker_ofdpa.c
-@@ -2783,7 +2783,8 @@ static void ofdpa_fib4_abort(struct rocker *rocker)
- 		if (!ofdpa_port)
- 			continue;
- 		nh->fib_nh_flags &= ~RTNH_F_OFFLOAD;
--		ofdpa_flow_tbl_del(ofdpa_port, OFDPA_OP_FLAG_REMOVE,
-+		ofdpa_flow_tbl_del(ofdpa_port,
-+				   OFDPA_OP_FLAG_REMOVE | OFDPA_OP_FLAG_NOWAIT,
- 				   flow_entry);
- 	}
- 	spin_unlock_irqrestore(&ofdpa->flow_tbl_lock, flags);
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index d9fc5c456bf3e..39ae965cd4f64 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -94,14 +94,17 @@ static void mac_exception(void *handle, enum fman_mac_exceptions ex)
+ 		__func__, ex);
+ }
+ 
+-static void set_fman_mac_params(struct mac_device *mac_dev,
+-				struct fman_mac_params *params)
++static int set_fman_mac_params(struct mac_device *mac_dev,
++			       struct fman_mac_params *params)
+ {
+ 	struct mac_priv_s *priv = mac_dev->priv;
+ 
+ 	params->base_addr = (typeof(params->base_addr))
+ 		devm_ioremap(priv->dev, mac_dev->res->start,
+ 			     resource_size(mac_dev->res));
++	if (!params->base_addr)
++		return -ENOMEM;
++
+ 	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
+ 	params->max_speed	= priv->max_speed;
+ 	params->phy_if		= mac_dev->phy_if;
+@@ -112,6 +115,8 @@ static void set_fman_mac_params(struct mac_device *mac_dev,
+ 	params->event_cb	= mac_exception;
+ 	params->dev_id		= mac_dev;
+ 	params->internal_phy_node = priv->internal_phy_node;
++
++	return 0;
+ }
+ 
+ static int tgec_initialization(struct mac_device *mac_dev)
+@@ -123,7 +128,9 @@ static int tgec_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	mac_dev->fman_mac = tgec_config(&params);
+ 	if (!mac_dev->fman_mac) {
+@@ -169,7 +176,9 @@ static int dtsec_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	mac_dev->fman_mac = dtsec_config(&params);
+ 	if (!mac_dev->fman_mac) {
+@@ -218,7 +227,9 @@ static int memac_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	if (priv->max_speed == SPEED_10000)
+ 		params.phy_if = PHY_INTERFACE_MODE_XGMII;
 -- 
 2.34.1
 
