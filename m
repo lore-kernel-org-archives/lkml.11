@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6084C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B61C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380294AbiAXUQF (ORCPT
+        id S1380324AbiAXUQI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57934 "EHLO
+        Mon, 24 Jan 2022 15:16:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348022AbiAXTwN (ORCPT
+        with ESMTP id S1350854AbiAXTwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:52:13 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C458C0617A7;
-        Mon, 24 Jan 2022 11:25:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CD33C041894;
+        Mon, 24 Jan 2022 11:24:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 046B6B8122A;
-        Mon, 24 Jan 2022 19:25:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 219F9C340E5;
-        Mon, 24 Jan 2022 19:25:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 149D6B81215;
+        Mon, 24 Jan 2022 19:24:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73E01C340E5;
+        Mon, 24 Jan 2022 19:24:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052315;
-        bh=UQ1kjsQKUztbG+mC2ezX3DTEhk+4oW25wpr9eV2E+4U=;
+        s=korg; t=1643052284;
+        bh=vSGR6VHbNUyq1gjucRiTGoZ958d6JifO3hYpyr6RMI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YNkME/0rhIXstVmjxx4oELvX5nXN387e3yUArXWYXnI23zFMG8VG0ZEhWth9nIYkh
-         SvBw3xK+8fwHcNoAeqvHFHWehssE5TcN0IvDacID6ctEIvjp8DCEKlobFlkSjqliul
-         72u/F51N7/R0J1fYx4i6m6hkAYdekYcJNHjlCE2E=
+        b=Rw13KTV1WO1xstTne2VLNndh+6o355KDHN0unho1se0EbP0FvsRxUOq6NqHsT2vLE
+         7PFGKvlwGfh46lNNmVIZegNzT6XNONbRtSiro6iRyCsm8ZMawtFMLkdg3DmgPdeUDn
+         SJWBnVMoGUGZ8LMqFDpCpw4l6qE+pTbFG+tv7CxM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 019/320] media: s2255: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:40:03 +0100
-Message-Id: <20220124183954.410001351@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.4 001/320] HID: uhid: Fix worker destroying device without any protection
+Date:   Mon, 24 Jan 2022 19:39:45 +0100
+Message-Id: <20220124183953.802311933@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,45 +51,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-commit f71d272ad4e354097020a4e6b1dc6e4b59feb50f upstream.
+commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+uhid has to run hid_add_device() from workqueue context while allowing
+parallel use of the userspace API (which is protected with ->devlock).
+But hid_add_device() can fail. Currently, that is handled by immediately
+destroying the associated HID device, without using ->devlock - but if
+there are concurrent requests from userspace, that's wrong and leads to
+NULL dereferences and/or memory corruption (via use-after-free).
 
-Use the common control-message timeout define for the five-second
-timeouts.
+Fix it by leaving the HID device as-is in the worker. We can clean it up
+later, either in the UHID_DESTROY command handler or in the ->release()
+handler.
 
-Fixes: 38f993ad8b1f ("V4L/DVB (8125): This driver adds support for the Sensoray 2255 devices.")
-Cc: stable@vger.kernel.org      # 2.6.27
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/s2255/s2255drv.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/drivers/media/usb/s2255/s2255drv.c
-+++ b/drivers/media/usb/s2255/s2255drv.c
-@@ -1884,7 +1884,7 @@ static long s2255_vendor_req(struct s225
- 				    USB_TYPE_VENDOR | USB_RECIP_DEVICE |
- 				    USB_DIR_IN,
- 				    Value, Index, buf,
--				    TransferBufferLength, HZ * 5);
-+				    TransferBufferLength, USB_CTRL_SET_TIMEOUT);
+--- a/drivers/hid/uhid.c
++++ b/drivers/hid/uhid.c
+@@ -28,11 +28,22 @@
  
- 		if (r >= 0)
- 			memcpy(TransferBuffer, buf, TransferBufferLength);
-@@ -1893,7 +1893,7 @@ static long s2255_vendor_req(struct s225
- 		r = usb_control_msg(dev->udev, usb_sndctrlpipe(dev->udev, 0),
- 				    Request, USB_TYPE_VENDOR | USB_RECIP_DEVICE,
- 				    Value, Index, buf,
--				    TransferBufferLength, HZ * 5);
-+				    TransferBufferLength, USB_CTRL_SET_TIMEOUT);
+ struct uhid_device {
+ 	struct mutex devlock;
++
++	/* This flag tracks whether the HID device is usable for commands from
++	 * userspace. The flag is already set before hid_add_device(), which
++	 * runs in workqueue context, to allow hid_add_device() to communicate
++	 * with userspace.
++	 * However, if hid_add_device() fails, the flag is cleared without
++	 * holding devlock.
++	 * We guarantee that if @running changes from true to false while you're
++	 * holding @devlock, it's still fine to access @hid.
++	 */
+ 	bool running;
+ 
+ 	__u8 *rd_data;
+ 	uint rd_size;
+ 
++	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
+ 	struct hid_device *hid;
+ 	struct uhid_event input_buf;
+ 
+@@ -63,9 +74,18 @@ static void uhid_device_add_worker(struc
+ 	if (ret) {
+ 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
+ 
+-		hid_destroy_device(uhid->hid);
+-		uhid->hid = NULL;
++		/* We used to call hid_destroy_device() here, but that's really
++		 * messy to get right because we have to coordinate with
++		 * concurrent writes from userspace that might be in the middle
++		 * of using uhid->hid.
++		 * Just leave uhid->hid as-is for now, and clean it up when
++		 * userspace tries to close or reinitialize the uhid instance.
++		 *
++		 * However, we do have to clear the ->running flag and do a
++		 * wakeup to make sure userspace knows that the device is gone.
++		 */
+ 		uhid->running = false;
++		wake_up_interruptible(&uhid->report_wait);
  	}
- 	kfree(buf);
- 	return r;
+ }
+ 
+@@ -474,7 +494,7 @@ static int uhid_dev_create2(struct uhid_
+ 	void *rd_data;
+ 	int ret;
+ 
+-	if (uhid->running)
++	if (uhid->hid)
+ 		return -EALREADY;
+ 
+ 	rd_size = ev->u.create2.rd_size;
+@@ -556,7 +576,7 @@ static int uhid_dev_create(struct uhid_d
+ 
+ static int uhid_dev_destroy(struct uhid_device *uhid)
+ {
+-	if (!uhid->running)
++	if (!uhid->hid)
+ 		return -EINVAL;
+ 
+ 	uhid->running = false;
+@@ -565,6 +585,7 @@ static int uhid_dev_destroy(struct uhid_
+ 	cancel_work_sync(&uhid->worker);
+ 
+ 	hid_destroy_device(uhid->hid);
++	uhid->hid = NULL;
+ 	kfree(uhid->rd_data);
+ 
+ 	return 0;
 
 
