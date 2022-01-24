@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEC3C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC5EC35271
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358445AbiAXTzO (ORCPT
+        id S1358731AbiAXTzn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33730 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355426AbiAXTlX (ORCPT
+        Mon, 24 Jan 2022 14:55:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348964AbiAXTk7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:23 -0500
+        Mon, 24 Jan 2022 14:40:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A579C0613EC;
+        Mon, 24 Jan 2022 11:19:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 56AAEB81229;
-        Mon, 24 Jan 2022 19:41:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FF2C340E5;
-        Mon, 24 Jan 2022 19:41:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11E1FB8121A;
+        Mon, 24 Jan 2022 19:19:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22CB1C340E5;
+        Mon, 24 Jan 2022 19:19:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053278;
-        bh=H0WDixWq1G9g12I0MwbrOEaV0Q3A4KaDbq65bdNHOcY=;
+        s=korg; t=1643051994;
+        bh=Y61sEYe89JMN62S2d5pSk0ZMtlqtnSfDmA0d2mMjqnQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CxRRgGb/moBju43CN2N2iKsBtkP98OffwHvzJwvyjZQB7Uj16I81wW1A/ZkEEy5XA
-         j5lGTfWk0/jeZ4qmuGFElshBAShSa9SHcaVa/OKnOk6TeuVomksyUTMzw7zzcE+2tv
-         IdSpHBuA8pMIYsI9vNszJKeRZZUxOXsl20UqfBpI=
+        b=0mJ8wv5/ZvWiEPD9Zt/YAWeueIp0QcxsDpsEANzzzkNAtikYmHuZl6I+c+k6BWHgP
+         1MZU9ypJ46E3l3Fh2Av+UEcJWFzvnsqZ0yFwEMUydRqN6J+3vWBgtHP95QL/9blTRl
+         It42y0AZy0aN9n5M1SAEXGPtph9l3A0bWIYBOiso=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas De Marchi <lucas.demarchi@intel.com>,
-        Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH 5.10 014/563] x86/gpu: Reserve stolen memory for first integrated Intel GPU
-Date:   Mon, 24 Jan 2022 19:36:19 +0100
-Message-Id: <20220124184024.911676383@linuxfoundation.org>
+        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 154/239] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+Date:   Mon, 24 Jan 2022 19:43:12 +0100
+Message-Id: <20220124183947.989896492@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,76 +50,90 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas De Marchi <lucas.demarchi@intel.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-commit 9c494ca4d3a535f9ca11ad6af1813983c1c6cbdd upstream.
+[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
 
-"Stolen memory" is memory set aside for use by an Intel integrated GPU.
-The intel_graphics_quirks() early quirk reserves this memory when it is
-called for a GPU that appears in the intel_early_ids[] table of integrated
-GPUs.
+Large pkt_len can lead to out-out-bound memcpy. Current
+ath9k_hif_usb_rx_stream allows combining the content of two urb
+inputs to one pkt. The first input can indicate the size of the
+pkt. Any remaining size is saved in hif_dev->rx_remain_len.
+While processing the next input, memcpy is used with rx_remain_len.
 
-Previously intel_graphics_quirks() was marked as QFLAG_APPLY_ONCE, so it
-was called only for the first Intel GPU found.  If a discrete GPU happened
-to be enumerated first, intel_graphics_quirks() was called for it but not
-for any integrated GPU found later.  Therefore, stolen memory for such an
-integrated GPU was never reserved.
+4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
+maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
+pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
 
-For example, this problem occurs in this Alderlake-P (integrated) + DG2
-(discrete) topology where the DG2 is found first, but stolen memory is
-associated with the integrated GPU:
+BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
 
-  - 00:01.0 Bridge
-    `- 03:00.0 DG2 discrete GPU
-  - 00:02.0 Integrated GPU (with stolen memory)
+CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
+Workqueue: events request_firmware_work_func
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ __kasan_report.cold+0x37/0x7c
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ kasan_report+0xe/0x20
+ check_memory_region+0x15a/0x1d0
+ memcpy+0x20/0x50
+ ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __usb_unanchor_urb+0x12f/0x210
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
 
-Remove the QFLAG_APPLY_ONCE flag and call intel_graphics_quirks() for every
-Intel GPU.  Reserve stolen memory for the first GPU that appears in
-intel_early_ids[].
+I found the bug using a custome USBFuzz port. It's a research work
+to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
+providing hand-crafted usb descriptors to QEMU.
 
-[bhelgaas: commit log, add code comment, squash in
-https://lore.kernel.org/r/20220118190558.2ququ4vdfjuahicm@ldmartin-desk2]
-Link: https://lore.kernel.org/r/20220114002843.2083382-1-lucas.demarchi@intel.com
-Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
+emulation, I found the KASAN report. The bug is triggerable whenever
+pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
+to test the driver works when applying the patch.
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/early-quirks.c |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
---- a/arch/x86/kernel/early-quirks.c
-+++ b/arch/x86/kernel/early-quirks.c
-@@ -515,6 +515,7 @@ static const struct intel_early_ops gen1
- 	.stolen_size = gen9_stolen_size,
- };
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 2ed98aaed6fb5..c8c7afe0e343e 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -590,6 +590,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 			return;
+ 		}
  
-+/* Intel integrated GPUs for which we need to reserve "stolen memory" */
- static const struct pci_device_id intel_early_ids[] __initconst = {
- 	INTEL_I830_IDS(&i830_early_ops),
- 	INTEL_I845G_IDS(&i845_early_ops),
-@@ -588,6 +589,13 @@ static void __init intel_graphics_quirks
- 	u16 device;
- 	int i;
- 
-+	/*
-+	 * Reserve "stolen memory" for an integrated GPU.  If we've already
-+	 * found one, there's nothing to do for other (discrete) GPUs.
-+	 */
-+	if (resource_size(&intel_graphics_stolen_res))
-+		return;
++		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
++			dev_err(&hif_dev->udev->dev,
++				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
++			RX_STAT_INC(skb_dropped);
++			return;
++		}
 +
- 	device = read_pci_config_16(num, slot, func, PCI_DEVICE_ID);
- 
- 	for (i = 0; i < ARRAY_SIZE(intel_early_ids); i++) {
-@@ -700,7 +708,7 @@ static struct chipset early_qrk[] __init
- 	{ PCI_VENDOR_ID_INTEL, 0x3406, PCI_CLASS_BRIDGE_HOST,
- 	  PCI_BASE_CLASS_BRIDGE, 0, intel_remapping_check },
- 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, PCI_CLASS_DISPLAY_VGA, PCI_ANY_ID,
--	  QFLAG_APPLY_ONCE, intel_graphics_quirks },
-+	  0, intel_graphics_quirks },
- 	/*
- 	 * HPET on the current version of the Baytrail platform has accuracy
- 	 * problems: it will halt in deep idle state - so we disable it.
+ 		pad_len = 4 - (pkt_len & 0x3);
+ 		if (pad_len == 4)
+ 			pad_len = 0;
+-- 
+2.34.1
+
 
 
