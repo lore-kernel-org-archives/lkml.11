@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EA4C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34D2C35271
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575204AbiAXVvI (ORCPT
+        id S1575223AbiAXVvJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:51:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449545AbiAXVPr (ORCPT
+        Mon, 24 Jan 2022 16:51:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34670 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449644AbiAXVP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:15:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5FBC09F4AD;
-        Mon, 24 Jan 2022 12:11:59 -0800 (PST)
+        Mon, 24 Jan 2022 16:15:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E94B2B811F9;
-        Mon, 24 Jan 2022 20:11:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21106C340E5;
-        Mon, 24 Jan 2022 20:11:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA315B811FB;
+        Mon, 24 Jan 2022 21:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13060C340E4;
+        Mon, 24 Jan 2022 21:15:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055116;
-        bh=vSGR6VHbNUyq1gjucRiTGoZ958d6JifO3hYpyr6RMI8=;
+        s=korg; t=1643058954;
+        bh=hoGmMt6X0klq0+u7iW/1fCYXghyAHMkMKI5zDTPe7y0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ytsRhZMxu1S6Lby44DAxyMB0b5HMMEssaBATzP1m8kpvtRJ/5RNK8E0Si08DNAII9
-         Ngw17kU00U8jtupLluMnBqrZCy4YD7Yz/7z6NQr7etYRgSQk9F2+sylA+oOqWVlyKk
-         OLSsues5X55xoR/koITjg/SAYTZfBFVxXMkklDIc=
+        b=ZHGYf+q3xVRrUFTLNJYl1nBUTn9NL3kA+6SvWp7yGE91D8Tob8Og8SKcQbXGPEDWn
+         SUjULQgHlAowYsPOopJ4hLAosWnpB+FPDtlOlnvp2qzZdihwdCEl666Xwu/aCXXR9W
+         23ODV/hrD2jV4E5KGj8GHp13uf+iW9bXphkX/cls=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 004/846] HID: uhid: Fix worker destroying device without any protection
-Date:   Mon, 24 Jan 2022 19:32:01 +0100
-Message-Id: <20220124184101.036700584@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0457/1039] ASoC: uniphier: drop selecting non-existing SND_SOC_UNIPHIER_AIO_DMA
+Date:   Mon, 24 Jan 2022 19:37:26 +0100
+Message-Id: <20220124184140.660840865@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,101 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
+[ Upstream commit 49f893253ab43566e34332a969324531fea463f6 ]
 
-uhid has to run hid_add_device() from workqueue context while allowing
-parallel use of the userspace API (which is protected with ->devlock).
-But hid_add_device() can fail. Currently, that is handled by immediately
-destroying the associated HID device, without using ->devlock - but if
-there are concurrent requests from userspace, that's wrong and leads to
-NULL dereferences and/or memory corruption (via use-after-free).
+Commit f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common
+driver") adds configs SND_SOC_UNIPHIER_{LD11,PXS2}, which select the
+non-existing config SND_SOC_UNIPHIER_AIO_DMA.
 
-Fix it by leaving the HID device as-is in the worker. We can clean it up
-later, either in the UHID_DESTROY command handler or in the ->release()
-handler.
+Hence, ./scripts/checkkconfigsymbols.py warns:
 
-Cc: stable@vger.kernel.org
-Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
-Signed-off-by: Jann Horn <jannh@google.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  SND_SOC_UNIPHIER_AIO_DMA
+  Referencing files: sound/soc/uniphier/Kconfig
+
+Probably, there is actually no further config intended to be selected
+here. So, just drop selecting the non-existing config.
+
+Fixes: f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common driver")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/r/20211125095158.8394-2-lukas.bulwahn@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ sound/soc/uniphier/Kconfig | 2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/hid/uhid.c
-+++ b/drivers/hid/uhid.c
-@@ -28,11 +28,22 @@
- 
- struct uhid_device {
- 	struct mutex devlock;
-+
-+	/* This flag tracks whether the HID device is usable for commands from
-+	 * userspace. The flag is already set before hid_add_device(), which
-+	 * runs in workqueue context, to allow hid_add_device() to communicate
-+	 * with userspace.
-+	 * However, if hid_add_device() fails, the flag is cleared without
-+	 * holding devlock.
-+	 * We guarantee that if @running changes from true to false while you're
-+	 * holding @devlock, it's still fine to access @hid.
-+	 */
- 	bool running;
- 
- 	__u8 *rd_data;
- 	uint rd_size;
- 
-+	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
- 	struct hid_device *hid;
- 	struct uhid_event input_buf;
- 
-@@ -63,9 +74,18 @@ static void uhid_device_add_worker(struc
- 	if (ret) {
- 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
- 
--		hid_destroy_device(uhid->hid);
--		uhid->hid = NULL;
-+		/* We used to call hid_destroy_device() here, but that's really
-+		 * messy to get right because we have to coordinate with
-+		 * concurrent writes from userspace that might be in the middle
-+		 * of using uhid->hid.
-+		 * Just leave uhid->hid as-is for now, and clean it up when
-+		 * userspace tries to close or reinitialize the uhid instance.
-+		 *
-+		 * However, we do have to clear the ->running flag and do a
-+		 * wakeup to make sure userspace knows that the device is gone.
-+		 */
- 		uhid->running = false;
-+		wake_up_interruptible(&uhid->report_wait);
- 	}
- }
- 
-@@ -474,7 +494,7 @@ static int uhid_dev_create2(struct uhid_
- 	void *rd_data;
- 	int ret;
- 
--	if (uhid->running)
-+	if (uhid->hid)
- 		return -EALREADY;
- 
- 	rd_size = ev->u.create2.rd_size;
-@@ -556,7 +576,7 @@ static int uhid_dev_create(struct uhid_d
- 
- static int uhid_dev_destroy(struct uhid_device *uhid)
- {
--	if (!uhid->running)
-+	if (!uhid->hid)
- 		return -EINVAL;
- 
- 	uhid->running = false;
-@@ -565,6 +585,7 @@ static int uhid_dev_destroy(struct uhid_
- 	cancel_work_sync(&uhid->worker);
- 
- 	hid_destroy_device(uhid->hid);
-+	uhid->hid = NULL;
- 	kfree(uhid->rd_data);
- 
- 	return 0;
+diff --git a/sound/soc/uniphier/Kconfig b/sound/soc/uniphier/Kconfig
+index aa3592ee1358b..ddfa6424c656b 100644
+--- a/sound/soc/uniphier/Kconfig
++++ b/sound/soc/uniphier/Kconfig
+@@ -23,7 +23,6 @@ config SND_SOC_UNIPHIER_LD11
+ 	tristate "UniPhier LD11/LD20 Device Driver"
+ 	depends on SND_SOC_UNIPHIER
+ 	select SND_SOC_UNIPHIER_AIO
+-	select SND_SOC_UNIPHIER_AIO_DMA
+ 	help
+ 	  This adds ASoC driver for Socionext UniPhier LD11/LD20
+ 	  input and output that can be used with other codecs.
+@@ -34,7 +33,6 @@ config SND_SOC_UNIPHIER_PXS2
+ 	tristate "UniPhier PXs2 Device Driver"
+ 	depends on SND_SOC_UNIPHIER
+ 	select SND_SOC_UNIPHIER_AIO
+-	select SND_SOC_UNIPHIER_AIO_DMA
+ 	help
+ 	  This adds ASoC driver for Socionext UniPhier PXs2
+ 	  input and output that can be used with other codecs.
+-- 
+2.34.1
+
 
 
