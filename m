@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EB6C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BBCAC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412410AbiAYAgx (ORCPT
+        id S3412522AbiAYAhM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:36:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58286 "EHLO
+        Mon, 24 Jan 2022 19:37:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2365364AbiAXXuq (ORCPT
+        with ESMTP id S2366200AbiAXXwa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:50:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E480C0FE6A7;
-        Mon, 24 Jan 2022 13:44:39 -0800 (PST)
+        Mon, 24 Jan 2022 18:52:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06BEEC07A95F;
+        Mon, 24 Jan 2022 13:45:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B11C561491;
-        Mon, 24 Jan 2022 21:44:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91751C340E4;
-        Mon, 24 Jan 2022 21:44:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91A53B81142;
+        Mon, 24 Jan 2022 21:45:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8569C340E4;
+        Mon, 24 Jan 2022 21:45:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060678;
-        bh=CqvvbWfk9xwC8WTepgsm14BUMfW2AL5e1e4ceJFL41U=;
+        s=korg; t=1643060718;
+        bh=iDFeLzaEtK0aETLPn/3Aj15BXnZkxD+Yg9u0RfYTh2U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iWBhZzXJesCxojYqjf9lx32yL5ka+co20ZN7vQeUClCEwQ+b2iYFaMgJW8Vi7TUjG
-         inxB5h5tKnEaR7pDkdh2DK4m5K/qHWt9CRb6x5cFpxAdV4XynoewUj2dyp0UdYPhLO
-         aGqv1IeibNa2IX/qKBleI2AQL1nIztzEZ3GnWDYI=
+        b=2lmojvs4cXXpwKXACm9iWn9IUQdDV993HmRk4T6YDX3XLvA3KNrvlFMQZfXSro7o2
+         iPB+PPx0KzJMYAEgyA4n30ZCPg2mqIzo+jguZkJebNbsmA04H7/EWWVhR+7thcgl/J
+         16dAPA+IR7ToK5IFEDoK0QfneMC2815p3hY0cQdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 1028/1039] lib82596: Fix IRQ check in sni_82596_probe
-Date:   Mon, 24 Jan 2022 19:46:57 +0100
-Message-Id: <20220124184159.847083815@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Paul Olaru <paul.olaru@oss.nxp.com>,
+        Bard Liao <bard.liao@intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.16 1039/1039] ASoC: SOF: handle paused streams during system suspend
+Date:   Mon, 24 Jan 2022 19:47:08 +0100
+Message-Id: <20220124184200.208540069@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,40 +54,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
 
-commit 99218cbf81bf21355a3de61cd46a706d36e900e6 upstream.
+commit 96da174024b9c63bd5d3358668d0bc12677be877 upstream.
 
-platform_get_irq() returns negative error number instead 0 on failure.
-And the doc of platform_get_irq() provides a usage example:
+During system suspend, paused streams do not get suspended.
+Therefore, we need to explicitly free these PCMs in the DSP
+and free the associated DAPM widgets so that they can be set
+up again during resume.
 
-    int irq = platform_get_irq(pdev, 0);
-    if (irq < 0)
-        return irq;
-
-Fix the check of return value to catch errors correctly.
-
-Fixes: 115978859272 ("i825xx: Move the Intel 82586/82593/82596 based drivers")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 5fcdbb2d45df ("ASoC: SOF: Add support for dynamic pipelines")
+Signed-off-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Reviewed-by: Paul Olaru <paul.olaru@oss.nxp.com>
+Reviewed-by: Bard Liao <bard.liao@intel.com>
+Reviewed-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
+Link: https://lore.kernel.org/r/20211123171606.129350-3-kai.vehmanen@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/i825xx/sni_82596.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ sound/soc/sof/pcm.c       |    5 +--
+ sound/soc/sof/sof-audio.c |   74 ++++++++++++++++++++++++++++++++++++++++++++--
+ sound/soc/sof/sof-audio.h |    2 +
+ 3 files changed, 76 insertions(+), 5 deletions(-)
 
---- a/drivers/net/ethernet/i825xx/sni_82596.c
-+++ b/drivers/net/ethernet/i825xx/sni_82596.c
-@@ -117,9 +117,10 @@ static int sni_82596_probe(struct platfo
- 	netdevice->dev_addr[5] = readb(eth_addr + 0x06);
- 	iounmap(eth_addr);
+--- a/sound/soc/sof/pcm.c
++++ b/sound/soc/sof/pcm.c
+@@ -100,9 +100,8 @@ void snd_sof_pcm_period_elapsed(struct s
+ }
+ EXPORT_SYMBOL(snd_sof_pcm_period_elapsed);
  
--	if (!netdevice->irq) {
-+	if (netdevice->irq < 0) {
- 		printk(KERN_ERR "%s: IRQ not found for i82596 at 0x%lx\n",
- 			__FILE__, netdevice->base_addr);
-+		retval = netdevice->irq;
- 		goto probe_failed;
+-static int sof_pcm_dsp_pcm_free(struct snd_pcm_substream *substream,
+-				struct snd_sof_dev *sdev,
+-				struct snd_sof_pcm *spcm)
++int sof_pcm_dsp_pcm_free(struct snd_pcm_substream *substream, struct snd_sof_dev *sdev,
++			 struct snd_sof_pcm *spcm)
+ {
+ 	struct sof_ipc_stream stream;
+ 	struct sof_ipc_reply reply;
+--- a/sound/soc/sof/sof-audio.c
++++ b/sound/soc/sof/sof-audio.c
+@@ -122,6 +122,14 @@ int sof_widget_free(struct snd_sof_dev *
+ 	case snd_soc_dapm_buffer:
+ 		ipc_free.hdr.cmd |= SOF_IPC_TPLG_BUFFER_FREE;
+ 		break;
++	case snd_soc_dapm_dai_in:
++	case snd_soc_dapm_dai_out:
++	{
++		struct snd_sof_dai *dai = swidget->private;
++
++		dai->configured = false;
++		fallthrough;
++	}
+ 	default:
+ 		ipc_free.hdr.cmd |= SOF_IPC_TPLG_COMP_FREE;
+ 		break;
+@@ -680,6 +688,55 @@ int sof_set_up_pipelines(struct snd_sof_
+ }
+ 
+ /*
++ * Free the PCM, its associated widgets and set the prepared flag to false for all PCMs that
++ * did not get suspended(ex: paused streams) so the widgets can be set up again during resume.
++ */
++static int sof_tear_down_left_over_pipelines(struct snd_sof_dev *sdev)
++{
++	struct snd_sof_widget *swidget;
++	struct snd_sof_pcm *spcm;
++	int dir, ret;
++
++	/*
++	 * free all PCMs and their associated DAPM widgets if their connected DAPM widget
++	 * list is not NULL. This should only be true for paused streams at this point.
++	 * This is equivalent to the handling of FE DAI suspend trigger for running streams.
++	 */
++	list_for_each_entry(spcm, &sdev->pcm_list, list)
++		for_each_pcm_streams(dir) {
++			struct snd_pcm_substream *substream = spcm->stream[dir].substream;
++
++			if (!substream || !substream->runtime)
++				continue;
++
++			if (spcm->stream[dir].list) {
++				ret = sof_pcm_dsp_pcm_free(substream, sdev, spcm);
++				if (ret < 0)
++					return ret;
++
++				ret = sof_widget_list_free(sdev, spcm, dir);
++				if (ret < 0) {
++					dev_err(sdev->dev, "failed to free widgets during suspend\n");
++					return ret;
++				}
++			}
++		}
++
++	/*
++	 * free any left over DAI widgets. This is equivalent to the handling of suspend trigger
++	 * for the BE DAI for running streams.
++	 */
++	list_for_each_entry(swidget, &sdev->widget_list, list)
++		if (WIDGET_IS_DAI(swidget->id) && swidget->use_count == 1) {
++			ret = sof_widget_free(sdev, swidget);
++			if (ret < 0)
++				return ret;
++		}
++
++	return 0;
++}
++
++/*
+  * For older firmware, this function doesn't free widgets for static pipelines during suspend.
+  * It only resets use_count for all widgets.
+  */
+@@ -693,8 +750,8 @@ int sof_tear_down_pipelines(struct snd_s
+ 	/*
+ 	 * This function is called during suspend and for one-time topology verification during
+ 	 * first boot. In both cases, there is no need to protect swidget->use_count and
+-	 * sroute->setup because during suspend all streams are suspended and during topology
+-	 * loading the sound card unavailable to open PCMs.
++	 * sroute->setup because during suspend all running streams are suspended and during
++	 * topology loading the sound card unavailable to open PCMs.
+ 	 */
+ 	list_for_each_entry(swidget, &sdev->widget_list, list) {
+ 		if (swidget->dynamic_pipeline_widget)
+@@ -713,6 +770,19 @@ int sof_tear_down_pipelines(struct snd_s
+ 			return ret;
  	}
  
++	/*
++	 * Tear down all pipelines associated with PCMs that did not get suspended
++	 * and unset the prepare flag so that they can be set up again during resume.
++	 * Skip this step for older firmware.
++	 */
++	if (!verify && v->abi_version >= SOF_ABI_VER(3, 19, 0)) {
++		ret = sof_tear_down_left_over_pipelines(sdev);
++		if (ret < 0) {
++			dev_err(sdev->dev, "failed to tear down paused pipelines\n");
++			return ret;
++		}
++	}
++
+ 	list_for_each_entry(sroute, &sdev->route_list, list)
+ 		sroute->setup = false;
+ 
+--- a/sound/soc/sof/sof-audio.h
++++ b/sound/soc/sof/sof-audio.h
+@@ -267,4 +267,6 @@ int sof_widget_free(struct snd_sof_dev *
+ /* PCM */
+ int sof_widget_list_setup(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm, int dir);
+ int sof_widget_list_free(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm, int dir);
++int sof_pcm_dsp_pcm_free(struct snd_pcm_substream *substream, struct snd_sof_dev *sdev,
++			 struct snd_sof_pcm *spcm);
+ #endif
 
 
