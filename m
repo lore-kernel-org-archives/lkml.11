@@ -2,240 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDA6C4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B704C35275
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366809AbiAXXxh (ORCPT
+        id S1382994AbiAXXyS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49184 "EHLO
+        Mon, 24 Jan 2022 18:54:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846030AbiAXXOO (ORCPT
+        with ESMTP id S1846490AbiAXXQG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:14 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845C0C06F8C2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:22:37 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id z131so5495962pgz.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:22:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YpyozKQg+308D8DXH4ejjXpy/uQNL1MLMopUiW1gyt0=;
-        b=MFN+GeC5TBnxb4Rbr/vO9y3o+Qqi6HhV1KvD9aSoeEA1HlJuA1Kjw0OG+c4ETZAGYT
-         7hRMSb7tTErMoJjogvXoPu3LjutHRGDCnIilEnaxZkCnP3i0D3BtuNIhtNKcljxVFJhE
-         DfcVteKWTP9tUhro+a5enzsAalT2r70VID5r0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YpyozKQg+308D8DXH4ejjXpy/uQNL1MLMopUiW1gyt0=;
-        b=14bqyNxabGmx0MGyQrWWKT3y3viHPOx9h2bsnpdg+ge3Zinz3+ccl616EYmK/bHN75
-         eLy9ADJXW/t+FSCBBFpS0gt+D6lgaU7E1BBnyM7VjcNpl9dmgGpIPC4ELEEW6E0YmgT/
-         pYrV79vp4rerlGr99Fd4gKIrbgm73DNiP1hxvSrxw4+e8jRedHYcZC5ssFhUlSDAAjdp
-         Nl22F/9W+mAZTGgYlrOOYPEwXe9NtKspYSpK1gF3JQkWKxeTSef9j9QjlafF4NwxDIqi
-         Ggkbz8FjXYKF6aAh7gqiiGiPz+E4yvJtG3QjHYk26s5aw4TYtTgeK49YOR4RmqxBTtvV
-         2CVQ==
-X-Gm-Message-State: AOAM533iDcKammJcupGkGaOpt3FD9f6H9KTPZzkgyY32M2s/nhd6W0hC
-        aimqPKnvVxFKBHWfEMuSXQ2xRw==
-X-Google-Smtp-Source: ABdhPJykSEUhExV5uSgDgwcOxuN//4yGOBWt8z3cAjgNQMtDG/WYh2+VEoGlrOBPWPnQX2RCWy5leQ==
-X-Received: by 2002:a63:3746:: with SMTP id g6mr12992725pgn.18.1643059357059;
-        Mon, 24 Jan 2022 13:22:37 -0800 (PST)
-Received: from chromium.org (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
-        by smtp.gmail.com with ESMTPSA id bc19sm2901282pgb.66.2022.01.24.13.22.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 13:22:36 -0800 (PST)
-Date:   Mon, 24 Jan 2022 21:22:35 +0000
-From:   Prashant Malani <pmalani@chromium.org>
-To:     Daisuke Nojiri <dnojiri@chromium.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Stephen Boyd <swboyd@chromium.org>, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2] power: supply: PCHG: Use MKBP for device event
- handling
-Message-ID: <Ye8Ym9Ie7UOp0/jY@chromium.org>
-References: <20220124010348.681893-1-dnojiri@chromium.org>
- <20220124011143.684348-1-dnojiri@chromium.org>
+        Mon, 24 Jan 2022 18:16:06 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82C24C0604DF;
+        Mon, 24 Jan 2022 13:24:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 47FA3B81057;
+        Mon, 24 Jan 2022 21:24:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67983C340E4;
+        Mon, 24 Jan 2022 21:24:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643059486;
+        bh=sdOOB4UKo5fjVxrk5O+5GVl9Uq6JG4ZrtYrtaSgng6U=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FTDYZrkNpWH8h8XxGiNPQXTww6PE1AZfzNGY0YLdDayESdsjP+bg1xIajym3Csw7K
+         yzOUv62VnlQuX/0+QKjbWr1roE96fl6yZ5mt4q6bCks1YE2gKk0xMI9DfjsCWVoYZk
+         h5kBvVuQKUy+3yWMQHGzmc5ysdPc/rMNgTJiMsl4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0632/1039] ath10k: drop beacon and probe response which leak from other channel
+Date:   Mon, 24 Jan 2022 19:40:21 +0100
+Message-Id: <20220124184146.591001438@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124011143.684348-1-dnojiri@chromium.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daisuke,
+From: Wen Gong <quic_wgong@quicinc.com>
 
-On Jan 23 17:11, Daisuke Nojiri wrote:
-> This patch makes the PCHG driver receive device events through
-> MKBP protocol since CrOS EC switched to deliver all peripheral
-> charge events to the MKBP protocol. This will unify PCHG event
-> handling on X86 and ARM.
-> 
-> Signed-off-by: Daisuke Nojiri <dnojiri@chromium.org>
-> ---
-> v1 -> v2
-> * Make the patch description concise.
-> * Change the order of if-conditions in cros_ec_notify.
-> ---
->  .../power/supply/cros_peripheral_charger.c    | 35 ++--------
->  .../linux/platform_data/cros_ec_commands.h    | 64 +++++++++++++++++++
+[ Upstream commit 3bf2537ec2e33310b431b53fd84be8833736c256 ]
 
-In the past, the maintainer here has requested the header update to be
-in a separate patch. Perhaps we should follow that format.
+When scan request on channel 1, it also receive beacon from other
+channels, and the beacon also indicate to mac80211 and wpa_supplicant,
+and then the bss info appears in radio measurement report of radio
+measurement sent from wpa_supplicant, thus lead RRM case fail.
 
->  2 files changed, 70 insertions(+), 29 deletions(-)
-> 
-> diff --git a/drivers/power/supply/cros_peripheral_charger.c b/drivers/power/supply/cros_peripheral_charger.c
-> index 305f10dfc06d1b..cb402f48087ddf 100644
-> --- a/drivers/power/supply/cros_peripheral_charger.c
-> +++ b/drivers/power/supply/cros_peripheral_charger.c
-> @@ -14,6 +14,7 @@
->  #include <linux/slab.h>
->  #include <linux/stringify.h>
->  #include <linux/types.h>
-> +#include <asm/unaligned.h>
->  
->  #define DRV_NAME		"cros-ec-pchg"
->  #define PCHG_DIR_PREFIX		"peripheral"
-> @@ -237,46 +238,22 @@ static int cros_pchg_event(const struct charger_data *charger,
->  	return NOTIFY_OK;
->  }
->  
-> -static u32 cros_get_device_event(const struct charger_data *charger)
-> -{
-> -	struct ec_params_device_event req;
-> -	struct ec_response_device_event rsp;
-> -	struct device *dev = charger->dev;
-> -	int ret;
-> -
-> -	req.param = EC_DEVICE_EVENT_PARAM_GET_CURRENT_EVENTS;
-> -	ret = cros_pchg_ec_command(charger, 0, EC_CMD_DEVICE_EVENT,
-> -				   &req, sizeof(req), &rsp, sizeof(rsp));
-> -	if (ret < 0) {
-> -		dev_warn(dev, "Unable to get device events (err:%d)\n", ret);
-> -		return 0;
-> -	}
-> -
-> -	return rsp.event_mask;
-> -}
-> -
->  static int cros_ec_notify(struct notifier_block *nb,
->  			  unsigned long queued_during_suspend,
->  			  void *data)
->  {
->  	struct cros_ec_device *ec_dev = (struct cros_ec_device *)data;
-> -	u32 host_event = cros_ec_get_host_event(ec_dev);
->  	struct charger_data *charger =
->  			container_of(nb, struct charger_data, notifier);
-> -	u32 device_event_mask;
-> +	u32 host_event;
->  
-> -	if (!host_event)
-> +	if (ec_dev->event_data.event_type != EC_MKBP_EVENT_PCHG
-> +			|| ec_dev->event_size != sizeof(host_event))
->  		return NOTIFY_DONE;
->  
-> -	if (!(host_event & EC_HOST_EVENT_MASK(EC_HOST_EVENT_DEVICE)))
-> -		return NOTIFY_DONE;
-> +	host_event = get_unaligned_le32(&ec_dev->event_data.data.host_event);
->  
-> -	/*
-> -	 * todo: Retrieve device event mask in common place
-> -	 * (e.g. cros_ec_proto.c).
-> -	 */
-> -	device_event_mask = cros_get_device_event(charger);
-> -	if (!(device_event_mask & EC_DEVICE_EVENT_MASK(EC_DEVICE_EVENT_WLC)))
-> +	if (!(host_event & EC_MKBP_PCHG_DEVICE_EVENT))
->  		return NOTIFY_DONE;
->  
->  	return cros_pchg_event(charger, host_event);
-> diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
-> index 271bd87bff0a25..c784bed3388865 100644
-> --- a/include/linux/platform_data/cros_ec_commands.h
-> +++ b/include/linux/platform_data/cros_ec_commands.h
-> @@ -3386,6 +3386,9 @@ enum ec_mkbp_event {
->  	/* Send an incoming CEC message to the AP */
->  	EC_MKBP_EVENT_CEC_MESSAGE = 9,
->  
-> +	/* Peripheral device charger event */
-> +	EC_MKBP_EVENT_PCHG = 12,
-> +
->  	/* Number of MKBP events */
->  	EC_MKBP_EVENT_COUNT,
->  };
-> @@ -5527,6 +5530,67 @@ enum pchg_state {
->  	[PCHG_STATE_CONNECTED] = "CONNECTED", \
->  	}
->  
-> +/**
-> + * Update firmware of peripheral chip
-> + */
-> +#define EC_CMD_PCHG_UPDATE 0x0136
-> +
-> +/* Port number is encoded in bit[28:31]. */
-> +#define EC_MKBP_PCHG_PORT_SHIFT		28
-> +/* Utility macro for converting MKBP event to port number. */
-> +#define EC_MKBP_PCHG_EVENT_TO_PORT(e)	(((e) >> EC_MKBP_PCHG_PORT_SHIFT) & 0xf)
-> +/* Utility macro for extracting event bits. */
-> +#define EC_MKBP_PCHG_EVENT_MASK(e)	((e) \
-> +					& GENMASK(EC_MKBP_PCHG_PORT_SHIFT-1, 0))
-> +
-> +#define EC_MKBP_PCHG_UPDATE_OPENED	BIT(0)
-> +#define EC_MKBP_PCHG_WRITE_COMPLETE	BIT(1)
-> +#define EC_MKBP_PCHG_UPDATE_CLOSED	BIT(2)
-> +#define EC_MKBP_PCHG_UPDATE_ERROR	BIT(3)
-> +#define EC_MKBP_PCHG_DEVICE_EVENT	BIT(4)
-> +
-> +enum ec_pchg_update_cmd {
-> +	/* Reset chip to normal mode. */
-> +	EC_PCHG_UPDATE_CMD_RESET_TO_NORMAL = 0,
-> +	/* Reset and put a chip in update (a.k.a. download) mode. */
-> +	EC_PCHG_UPDATE_CMD_OPEN,
-> +	/* Write a block of data containing FW image. */
-> +	EC_PCHG_UPDATE_CMD_WRITE,
-> +	/* Close update session. */
-> +	EC_PCHG_UPDATE_CMD_CLOSE,
-> +	/* End of commands */
-> +	EC_PCHG_UPDATE_CMD_COUNT,
-> +};
-> +
-> +struct ec_params_pchg_update {
-> +	/* PCHG port number */
-> +	uint8_t port;
-> +	/* enum ec_pchg_update_cmd */
-> +	uint8_t cmd;
-> +	/* Padding */
-> +	uint8_t reserved0;
-> +	uint8_t reserved1;
-> +	/* Version of new firmware */
-> +	uint32_t version;
-> +	/* CRC32 of new firmware */
-> +	uint32_t crc32;
-> +	/* Address in chip memory where <data> is written to */
-> +	uint32_t addr;
-> +	/* Size of <data> */
-> +	uint32_t size;
-> +	/* Partial data of new firmware */
-> +	uint8_t data[];
-> +} __ec_align4;
-> +
-> +BUILD_ASSERT(EC_PCHG_UPDATE_CMD_COUNT
-> +	     < BIT(sizeof(((struct ec_params_pchg_update *)0)->cmd)*8));
-> +
-> +struct ec_response_pchg_update {
-> +	/* Block size */
-> +	uint32_t block_size;
-> +} __ec_align4;
+This is to drop the beacon and probe response which is not the same
+channel of scanning.
 
-Do we need to introduce these structs if they are not being used anywhere?
-This header isn't auto-generated AFAIK.
+Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
 
-If they *are* being used, could you kindly point to where they are being
-used?
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211208061752.16564-1-quic_wgong@quicinc.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/wireless/ath/ath10k/wmi.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-Thanks,
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index 7c1c2658cb5f8..4733fd7fb169e 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -2611,9 +2611,30 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+ 		ath10k_mac_handle_beacon(ar, skb);
+ 
+ 	if (ieee80211_is_beacon(hdr->frame_control) ||
+-	    ieee80211_is_probe_resp(hdr->frame_control))
++	    ieee80211_is_probe_resp(hdr->frame_control)) {
++		struct ieee80211_mgmt *mgmt = (void *)skb->data;
++		u8 *ies;
++		int ies_ch;
++
+ 		status->boottime_ns = ktime_get_boottime_ns();
+ 
++		if (!ar->scan_channel)
++			goto drop;
++
++		ies = mgmt->u.beacon.variable;
++
++		ies_ch = cfg80211_get_ies_channel_number(mgmt->u.beacon.variable,
++							 skb_tail_pointer(skb) - ies,
++							 sband->band);
++
++		if (ies_ch > 0 && ies_ch != channel) {
++			ath10k_dbg(ar, ATH10K_DBG_MGMT,
++				   "channel mismatched ds channel %d scan channel %d\n",
++				   ies_ch, channel);
++			goto drop;
++		}
++	}
++
+ 	ath10k_dbg(ar, ATH10K_DBG_MGMT,
+ 		   "event mgmt rx skb %pK len %d ftype %02x stype %02x\n",
+ 		   skb, skb->len,
+@@ -2627,6 +2648,10 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+ 	ieee80211_rx_ni(ar->hw, skb);
+ 
+ 	return 0;
++
++drop:
++	dev_kfree_skb(skb);
++	return 0;
+ }
+ 
+ static int freq_to_idx(struct ath10k *ar, int freq)
+-- 
+2.34.1
+
+
+
