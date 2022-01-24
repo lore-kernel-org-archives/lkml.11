@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:43:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242457AbiAXInD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:43:03 -0500
-Received: from mga09.intel.com ([134.134.136.24]:62624 "EHLO mga09.intel.com"
+        id S242389AbiAXInH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:43:07 -0500
+Received: from mga09.intel.com ([134.134.136.24]:62581 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242277AbiAXImk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:42:40 -0500
+        id S242387AbiAXImp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:42:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643013760; x=1674549760;
+  t=1643013765; x=1674549765;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=dtfim9SEIDgnFiNewz+c+/ywOrcl4zmpQfWGZ7QNPtc=;
-  b=nTeyo3q4Rq64JPvWjxywUym6w2RGvAn2IS5O2f5upaI6LjDAgfJpWxvA
-   bFwb8J80AztMT3CB1Fwtuwr2P+g5Vu+aDs2kr0bZBePbx2KjO9jZGOlQF
-   Qz/ClqPxBXH1xxq5F62xwTj58y6u4eLxDbKBC/yVZwtmLWHXXueHTkaKb
-   iffqkeEKfgJdnPB+GcR6dfbafl370Mo3MscBm0mw037u8pdpry9gB9HaT
-   M2bnUwIJR7Tu6m5O80XoHjUqkZSHS23Wc1CU+kmRO1TbiUyHxuWoBJXug
-   1IOSe/QiMAagEQ2alpuPqN2nrhY4Wczqpzu4wVryUOKfArJZ+GrM+inUv
+  bh=wJb9eTAjmQ7zYzdn4Qp13ayT03ao8p4X0rn1JcgJoTI=;
+  b=SWNyqe/q6VH8AvZYcY4MUFg4uenRTU8WbBpZpKLAf9R/YEjEwHJyKE2h
+   Dv9ppxz+eZ27cCGphBpBXs84YpuKfXwuMmKgBUy8BWins0S0YUOVGjtZX
+   9xHiVgKSEnGkHtFQTkAyKhFiDODYhsvZSzboSYHoEKybG7nY3ZF/xd8pW
+   jwQ2qIX89QIKJvSremmujJq/CBGi/Zk1cHl3XmnOKl25qXfC0dUjJFBFW
+   YED9CX0mFAdGdjhGIQ2f9Cta65Ydj8agwOuV6oiy2RJIinti46s0kkVMd
+   +KEo4AMLlwlU7W6nLYJuT7qQD11sZ9lNX5d7tFMj60Sp6h58Jjw/ndzTh
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245778440"
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245778457"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="245778440"
+   d="scan'208";a="245778457"
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:42:38 -0800
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:42:40 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627417166"
+   d="scan'208";a="627417185"
 Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 00:42:36 -0800
+  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 00:42:38 -0800
 From:   Adrian Hunter <adrian.hunter@intel.com>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>
 Cc:     Jiri Olsa <jolsa@redhat.com>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
         Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 15/25] perf intel-pt: Synthesize iflag event
-Date:   Mon, 24 Jan 2022 10:41:51 +0200
-Message-Id: <20220124084201.2699795-16-adrian.hunter@intel.com>
+Subject: [PATCH 16/25] perf intel-pt: Synthesize new D and t flags
+Date:   Mon, 24 Jan 2022 10:41:52 +0200
+Message-Id: <20220124084201.2699795-17-adrian.hunter@intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220124084201.2699795-1-adrian.hunter@intel.com>
 References: <20220124084201.2699795-1-adrian.hunter@intel.com>
@@ -52,98 +52,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Synthesize an attribute event and sample events for changes to the
-interrupt flag represented by the MODE.Exec packet.
+Update sample flags to represent the state and changes to the interrupt
+flag.
 
 Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
 ---
- tools/perf/util/intel-pt.c | 52 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 52 insertions(+)
+ tools/perf/util/intel-pt.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
 diff --git a/tools/perf/util/intel-pt.c b/tools/perf/util/intel-pt.c
-index 1e07a3c03102..c5b860c842f0 100644
+index c5b860c842f0..d76e4b865cb0 100644
 --- a/tools/perf/util/intel-pt.c
 +++ b/tools/perf/util/intel-pt.c
-@@ -124,6 +124,9 @@ struct intel_pt {
- 	u64 evt_sample_type;
- 	u64 evt_id;
+@@ -1329,6 +1329,8 @@ static void intel_pt_set_pid_tid_cpu(struct intel_pt *pt,
  
-+	u64 iflag_chg_sample_type;
-+	u64 iflag_chg_id;
-+
- 	u64 tsc_bit;
- 	u64 mtc_bit;
- 	u64 mtc_freq_bits;
-@@ -2209,6 +2212,39 @@ static int intel_pt_synth_events_sample(struct intel_pt_queue *ptq)
- 					    pt->evt_sample_type);
- }
- 
-+static int intel_pt_synth_iflag_chg_sample(struct intel_pt_queue *ptq)
-+{
-+	struct intel_pt *pt = ptq->pt;
-+	union perf_event *event = ptq->event_buf;
-+	struct perf_sample sample = { .ip = 0, };
-+	struct perf_synth_intel_iflag_chg raw;
-+
-+	if (intel_pt_skip_event(pt))
-+		return 0;
-+
-+	intel_pt_prep_p_sample(pt, ptq, event, &sample);
-+
-+	sample.id = ptq->pt->iflag_chg_id;
-+	sample.stream_id = ptq->pt->iflag_chg_id;
-+
-+	raw.flags = 0;
-+	raw.iflag = ptq->state->to_iflag;
-+
-+	if (ptq->state->type & INTEL_PT_BRANCH) {
-+		raw.via_branch = 1;
-+		raw.branch_ip = ptq->state->to_ip;
-+	} else {
-+		sample.addr = 0;
-+	}
-+	sample.flags = ptq->flags;
-+
-+	sample.raw_size = perf_synth__raw_size(raw);
-+	sample.raw_data = perf_synth__raw_data(&raw);
-+
-+	return intel_pt_deliver_synth_event(pt, event, &sample,
-+					    pt->iflag_chg_sample_type);
-+}
-+
- static int intel_pt_synth_error(struct intel_pt *pt, int code, int cpu,
- 				pid_t pid, pid_t tid, u64 ip, u64 timestamp)
+ static void intel_pt_sample_flags(struct intel_pt_queue *ptq)
  {
-@@ -2321,6 +2357,11 @@ static int intel_pt_sample(struct intel_pt_queue *ptq)
- 			if (err)
- 				return err;
- 		}
-+		if (state->type & INTEL_PT_IFLAG_CHG) {
-+			err = intel_pt_synth_iflag_chg_sample(ptq);
-+			if (err)
-+				return err;
-+		}
- 	}
- 
- 	if (pt->sample_pwr_events) {
-@@ -3531,6 +3572,17 @@ static int intel_pt_synth_events(struct intel_pt *pt,
- 		id += 1;
- 	}
- 
-+	if (pt->synth_opts.intr_events && pt->cap_event_trace) {
-+		attr.config = PERF_SYNTH_INTEL_IFLAG_CHG;
-+		err = intel_pt_synth_event(session, "iflag", &attr, id);
-+		if (err)
-+			return err;
-+		pt->iflag_chg_sample_type = attr.sample_type;
-+		pt->iflag_chg_id = id;
-+		intel_pt_set_event_name(evlist, id, "iflag");
-+		id += 1;
-+	}
++	struct intel_pt *pt = ptq->pt;
 +
- 	return 0;
+ 	ptq->insn_len = 0;
+ 	if (ptq->state->flags & INTEL_PT_ABORT_TX) {
+ 		ptq->flags = PERF_IP_FLAG_BRANCH | PERF_IP_FLAG_TX_ABORT;
+@@ -1359,6 +1361,17 @@ static void intel_pt_sample_flags(struct intel_pt_queue *ptq)
+ 		ptq->flags |= PERF_IP_FLAG_TRACE_BEGIN;
+ 	if (ptq->state->type & INTEL_PT_TRACE_END)
+ 		ptq->flags |= PERF_IP_FLAG_TRACE_END;
++
++	if (pt->cap_event_trace) {
++		if (ptq->state->type & INTEL_PT_IFLAG_CHG) {
++			if (!ptq->state->from_iflag)
++				ptq->flags |= PERF_IP_FLAG_INTR_DISABLE;
++			if (ptq->state->from_iflag != ptq->state->to_iflag)
++				ptq->flags |= PERF_IP_FLAG_INTR_TOGGLE;
++		} else if (!ptq->state->to_iflag) {
++			ptq->flags |= PERF_IP_FLAG_INTR_DISABLE;
++		}
++	}
  }
  
+ static void intel_pt_setup_time_range(struct intel_pt *pt,
 -- 
 2.25.1
 
