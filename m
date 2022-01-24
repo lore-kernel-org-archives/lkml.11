@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A1F9C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE58BC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576588AbiAXVzT (ORCPT
+        id S1576655AbiAXVzj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:55:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51516 "EHLO
+        Mon, 24 Jan 2022 16:55:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450843AbiAXVVf (ORCPT
+        with ESMTP id S1450848AbiAXVVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:21:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A910C0604D7;
-        Mon, 24 Jan 2022 12:15:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DC5C0604DB;
+        Mon, 24 Jan 2022 12:16:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D5905B81229;
-        Mon, 24 Jan 2022 20:15:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F6B9C340E5;
-        Mon, 24 Jan 2022 20:15:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C51CFB8122F;
+        Mon, 24 Jan 2022 20:16:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06FD8C340E5;
+        Mon, 24 Jan 2022 20:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055340;
-        bh=8rZU2mkEPnLSkCNjqQB28l5RSQofZ+GqJfjHJOjlecg=;
+        s=korg; t=1643055359;
+        bh=IGQ79+0mpLsLx4VvMW/Aa9wP8BnjBB2PhCNUg0bhnrg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Mdjnzj7UnUvHGtreTKFwsvS4MUJCpSMqUgL7sHtazuPLH3o4XJ4hxTR6wWmvI+y0P
-         JszxB9cA5V63GpQbObk2Hde/yP9gE5x51Z+8uabG/rCfw8acnnK6RNJCtl8GdKFQQ3
-         x4xSZLUcIORYl6dv7io6lBHc6PbN3GZnSmJaOMDc=
+        b=1IwviWoj1hevjRqkf0U8WLKLkvHXNIAitY+aIjuSKyADdSGe4AIq8vFOxqBJOAvzM
+         o/ZrjrBAnF92O3UzryUldUDEb35iuLjfGKknX65S6zAwnoTN6WJg0L62d0UIRWQkxr
+         5j+hQA1d7PWHFhQvSv7m39mSQnNsC44l5tr7IVx0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
-        Alexander Stein <alexander.stein@mailbox.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 120/846] arm64: dts: amlogic: meson-g12: Fix GPU operating point table node name
-Date:   Mon, 24 Jan 2022 19:33:57 +0100
-Message-Id: <20220124184105.113776975@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 126/846] Bluetooth: stop proccessing malicious adv data
+Date:   Mon, 24 Jan 2022 19:34:03 +0100
+Message-Id: <20220124184105.320087206@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,40 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@mailbox.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit bb98a6fd0b0e227cefb2ba91cea2b55455f203b7 ]
+[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
 
-Starting with commit 94274f20f6bf ("dt-bindings: opp: Convert to DT
-schema") the opp node name has a mandatory pattern. This change
-fixes the dtbs_check warning:
-gpu-opp-table: $nodename:0: 'gpu-opp-table' does not match
-'^opp-table(-[a-z0-9]+)?$'
-Put the 'gpu' part at the end to match the pattern.
+Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
+problem was in missing validaion check.
 
-Fixes: 916a0edc43f0 ("arm64: dts: amlogic: meson-g12: add the Mali OPP table and use DVFS")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211026182813.900775-2-alexander.stein@mailbox.org
+We should check if data is not malicious and we can read next data block.
+If we won't check ptr validness, code can read a way beyond skb->end and
+it can cause problems, of course.
+
+Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
+Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/hci_event.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-index 00c6f53290d43..428449d98c0ae 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-@@ -58,7 +58,7 @@
- 		secure-monitor = <&sm>;
- 	};
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 0bca035bf2dcc..50d1d62c15ec8 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -5780,7 +5780,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
--	gpu_opp_table: gpu-opp-table {
-+	gpu_opp_table: opp-table-gpu {
- 		compatible = "operating-points-v2";
+-		if (ev->length <= HCI_MAX_AD_LENGTH) {
++		if (ev->length <= HCI_MAX_AD_LENGTH &&
++		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+ 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+ 					   ev->bdaddr_type, NULL, 0, rssi,
+@@ -5790,6 +5791,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		}
  
- 		opp-124999998 {
+ 		ptr += sizeof(*ev) + ev->length + 1;
++
++		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
++			break;
++		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 -- 
 2.34.1
 
