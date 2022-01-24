@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6707BC3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E321C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358781AbiAXTzq (ORCPT
+        id S1358835AbiAXTzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348963AbiAXTk7 (ORCPT
+        Mon, 24 Jan 2022 14:55:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37778 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355335AbiAXTkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A36D3C0613EE;
-        Mon, 24 Jan 2022 11:20:00 -0800 (PST)
+        Mon, 24 Jan 2022 14:40:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E7781B8122C;
-        Mon, 24 Jan 2022 19:19:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48825C340E5;
-        Mon, 24 Jan 2022 19:19:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A14F6135E;
+        Mon, 24 Jan 2022 19:40:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C863C340E5;
+        Mon, 24 Jan 2022 19:40:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051997;
-        bh=+/o87wEgqY3BX09jI3yJPJIclzPS1/TWr+xS85HssFE=;
+        s=korg; t=1643053230;
+        bh=o4vXwjtGO5bckZbOzF25uhyLz3mbp8Clz6bUC0ZiGSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yjs15q/v/dYVz0QSmf62MXUd4n5FksUmbzGHYbCCL2/HVbtyIByywqiluT4kFbUuL
-         VXx+B5GeC9HD69kRgi5tsqi3sNH6MSiQrt99kSumF4YLwSX5GhnfGKUpMYrI2odwx7
-         tbBp6Habzc4EmG1BOnSr8jdQEVbq9dfagyrNwJY4=
+        b=gUpzveh7nC8uOE/NkthwF7fMpdZJWvJ6fslIRb5vFAZ6ho408ZQgGpsfn+nroDBL1
+         y5Cm8pneoEDB3GR1KD4YHNegtwTQ9z5BPLCq/SO/J7NEAQ+NW14VsAG6HNLgERRbay
+         zPtrCIm/PK5cSI7362awXwwrbzNM43QchJ6//Gq4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 155/239] iwlwifi: fix leaks/bad data after failed firmware load
-Date:   Mon, 24 Jan 2022 19:43:13 +0100
-Message-Id: <20220124183948.020242158@linuxfoundation.org>
+        stable@vger.kernel.org, Patrick Doyle <pdoyle@irobot.com>,
+        Richard Weinberger <richard@nod.at>,
+        Yoshio Furuyama <ytc-mb-yfuruyama7@kioxia.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>
+Subject: [PATCH 5.4 319/320] mtd: nand: bbt: Fix corner case in bad block table handling
+Date:   Mon, 24 Jan 2022 19:45:03 +0100
+Message-Id: <20220124184004.787407516@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Doyle, Patrick <pdoyle@irobot.com>
 
-[ Upstream commit ab07506b0454bea606095951e19e72c282bfbb42 ]
+commit fd0d8d85f7230052e638a56d1bfea170c488e6bc upstream.
 
-If firmware load fails after having loaded some parts of the
-firmware, e.g. the IML image, then this would leak. For the
-host command list we'd end up running into a WARN on the next
-attempt to load another firmware image.
+In the unlikely event that both blocks 10 and 11 are marked as bad (on a
+32 bit machine), then the process of marking block 10 as bad stomps on
+cached entry for block 11.  There are (of course) other examples.
 
-Fix this by calling iwl_dealloc_ucode() on failures, and make
-that also clear the data so we start fresh on the next round.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210110539.1f742f0eb58a.I1315f22f6aa632d94ae2069f85e1bca5e734dce0@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Patrick Doyle <pdoyle@irobot.com>
+Reviewed-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Yoshio Furuyama <ytc-mb-yfuruyama7@kioxia.com>
+[<miquel.raynal@bootlin.com>: Fixed the title]
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: Frieder Schrempf <frieder.schrempf@kontron.de>
+Link: https://lore.kernel.org/linux-mtd/774a92693f311e7de01e5935e720a179fb1b2468.1616635406.git.ytc-mb-yfuruyama7@kioxia.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/mtd/nand/bbt.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index db6628d390a2a..72f5df66cdeb5 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -183,6 +183,9 @@ static void iwl_dealloc_ucode(struct iwl_drv *drv)
+--- a/drivers/mtd/nand/bbt.c
++++ b/drivers/mtd/nand/bbt.c
+@@ -123,7 +123,7 @@ int nanddev_bbt_set_block_status(struct
+ 		unsigned int rbits = bits_per_block + offs - BITS_PER_LONG;
  
- 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
- 		iwl_free_fw_img(drv, drv->fw.img + i);
-+
-+	/* clear the data for the aborted load case */
-+	memset(&drv->fw, 0, sizeof(drv->fw));
- }
- 
- static int iwl_alloc_fw_desc(struct iwl_drv *drv, struct fw_desc *desc,
-@@ -1270,6 +1273,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	int i;
- 	bool load_module = false;
- 	bool usniffer_images = false;
-+	bool failure = true;
- 
- 	fw->ucode_capa.max_probe_length = IWL_DEFAULT_MAX_PROBE_LENGTH;
- 	fw->ucode_capa.standard_phy_calibration_size =
-@@ -1537,6 +1541,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 				op->name, err);
- #endif
+ 		pos[1] &= ~GENMASK(rbits - 1, 0);
+-		pos[1] |= val >> rbits;
++		pos[1] |= val >> (bits_per_block - rbits);
  	}
-+	failure = false;
- 	goto free;
  
-  try_again:
-@@ -1552,6 +1557,9 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-  free:
-+	if (failure)
-+		iwl_dealloc_ucode(drv);
-+
- 	if (pieces) {
- 		for (i = 0; i < ARRAY_SIZE(pieces->img); i++)
- 			kfree(pieces->img[i].sec);
--- 
-2.34.1
-
+ 	return 0;
 
 
