@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F520C3526E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FEA9C47080
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443055AbiAXU4N (ORCPT
+        id S1443311AbiAXU4l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38722 "EHLO
+        Mon, 24 Jan 2022 15:56:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385491AbiAXUd3 (ORCPT
+        with ESMTP id S1385663AbiAXUdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:29 -0500
+        Mon, 24 Jan 2022 15:33:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EF0C061366;
-        Mon, 24 Jan 2022 11:13:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B955C07E2AF;
+        Mon, 24 Jan 2022 11:47:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E5700B811F9;
-        Mon, 24 Jan 2022 19:13:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 088EDC340E5;
-        Mon, 24 Jan 2022 19:13:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 35680B8119D;
+        Mon, 24 Jan 2022 19:47:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69EEEC340E5;
+        Mon, 24 Jan 2022 19:47:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051595;
-        bh=2Vc5uuT2sZZYyfYgafyeNPF3odAtR3w3IPP05lx1XxE=;
+        s=korg; t=1643053633;
+        bh=4itlxwBn5EdSktaGF08AngWq/0212fQDk0X/qUiyCQ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GZa4/994ccEa2soU0uAa7Ga+JachJxQlACjTn721WM3PrZkPId3+FnRpiWBYplR0Y
-         /j6XU44HBBvolVk1423uJ5XH+yythLQQDtPLo1y0jiZwB7tsClPbQp+1KU8c4qfczU
-         RqEIfEXW1jsW5z4JqTFv6NleQswx5NqCNA/F+/aQ=
+        b=NG+rqSsKpVaUGEblEKQpWEVZyOsAauCPJhZGiu2PUMJG4vhX8JEBku4VzcuVMb2cM
+         n0cFOb0yqtZAljlAZK80IogWM2O4fRTvEUI1wC65dK+5le4WTonOlIRlmIxD6N67Z3
+         MVx025LhPJZ2WL8xBF4vjWh3yjm3uAaQI9Kv/jng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 4.19 025/239] HID: wacom: Avoid using stale array indicies to read contact count
-Date:   Mon, 24 Jan 2022 19:41:03 +0100
-Message-Id: <20220124183943.920097912@linuxfoundation.org>
+        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
+        Nishanth Menon <nm@ti.com>, Pratyush Yadav <p.yadav@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 127/563] arm64: dts: ti: k3-j7200: Correct the d-cache-sets info
+Date:   Mon, 24 Jan 2022 19:38:12 +0100
+Message-Id: <20220124184028.796715914@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Nishanth Menon <nm@ti.com>
 
-commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
+[ Upstream commit a172c86931709d6663318609d71a811333bdf4b0 ]
 
-If we ever see a touch report with contact count data we initialize
-several variables used to read the contact count in the pre-report
-phase. These variables are never reset if we process a report which
-doesn't contain a contact count, however. This can cause the pre-
-report function to trigger a read of arbitrary memory (e.g. NULL
-if we're lucky) and potentially crash the driver.
+A72 Cluster (chapter 1.3.1 [1]) has 48KB Icache, 32KB Dcache and 1MB L2 Cache
+ - ICache is 3-way set-associative
+ - Dcache is 2-way set-associative
+ - Line size are 64bytes
 
-This commit restores resetting of the variables back to default
-"none" values that were used prior to the commit mentioned
-below.
+32KB (Dcache)/64 (fixed line length of 64 bytes) = 512 ways
+512 ways / 2 (Dcache is 2-way per set) = 256 sets.
 
-Link: https://github.com/linuxwacom/input-wacom/issues/276
-Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So, correct the d-cache-sets info.
+
+[1] https://www.ti.com/lit/pdf/spruiu1
+
+Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
+Reported-by: Peng Fan <peng.fan@nxp.com>
+Signed-off-by: Nishanth Menon <nm@ti.com>
+Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20211113042640.30955-1-nm@ti.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/wacom_wac.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/ti/k3-j7200.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2610,6 +2610,10 @@ static void wacom_wac_finger_pre_report(
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200.dtsi b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+index 081b8f3d44c44..03a9623f0f956 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
+@@ -60,7 +60,7 @@
+ 			i-cache-sets = <256>;
+ 			d-cache-size = <0x8000>;
+ 			d-cache-line-size = <64>;
+-			d-cache-sets = <128>;
++			d-cache-sets = <256>;
+ 			next-level-cache = <&L2_0>;
+ 		};
  
- 	hid_data->confidence = true;
- 
-+	hid_data->cc_report = 0;
-+	hid_data->cc_index = -1;
-+	hid_data->cc_value_index = -1;
-+
- 	for (i = 0; i < report->maxfield; i++) {
- 		struct hid_field *field = report->field[i];
- 		int j;
+@@ -74,7 +74,7 @@
+ 			i-cache-sets = <256>;
+ 			d-cache-size = <0x8000>;
+ 			d-cache-line-size = <64>;
+-			d-cache-sets = <128>;
++			d-cache-sets = <256>;
+ 			next-level-cache = <&L2_0>;
+ 		};
+ 	};
+-- 
+2.34.1
+
 
 
