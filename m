@@ -2,148 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31EF9C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCEAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362384AbiAXXmT (ORCPT
+        id S2362406AbiAXXmV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:19 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:41238 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843329AbiAXXDu (ORCPT
+        Mon, 24 Jan 2022 18:42:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1843345AbiAXXDv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:03:50 -0500
-Received: from [192.168.4.54] (cpe-70-95-196-11.san.res.rr.com [70.95.196.11])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6612120B6C61;
-        Mon, 24 Jan 2022 15:03:49 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6612120B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1643065429;
-        bh=erMbjM3XkmJLfKK8q0n5yEgsEAAwonKLOKfoVw5HxBQ=;
-        h=Date:From:Subject:To:Cc:From;
-        b=rCaPyArv7JzRk2A/NuDnfWI2VZX4LncAbOSOc1SI6p05uHnxI6WXtV0O4Hyh38cp7
-         dEQ+9Gr3ZdVlZcsQLrMmFpAQrON9wMRuQ2jG+GiCmANhIrRa9c0x8hhksAQbqMScvl
-         vb9wZ8vuVEXMM+uhpwf778/GWvFxxV2L4ch135zU=
-Message-ID: <9a34ee9b-0ede-30a6-0898-d32fe81d5b0c@linux.microsoft.com>
-Date:   Mon, 24 Jan 2022 15:03:48 -0800
+        Mon, 24 Jan 2022 18:03:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9D05C06C5A1;
+        Mon, 24 Jan 2022 13:14:35 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 778BE61471;
+        Mon, 24 Jan 2022 21:14:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E01AC340E5;
+        Mon, 24 Jan 2022 21:14:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058874;
+        bh=6Pwq7Qmz+CXAMR/zefiggxTOBO3q2PQ/Mc2rClt1aTc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SXRj0KwkBcPLDB07F+/cHb8ObWH1WybNTmNzhiQ0EiYsorcZg7A2bhiDGkz9ZMhNr
+         24HUW4teBFPDuo3JnTvbIMNV1ofSeGxZBORHw5KJbhVojf8d9S3lvvHFPmgNv3hwAl
+         LQQ/cz521HrWGeRKaEy9MVrZ2uPZIX0pupCb0EsM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0430/1039] can: mcp251xfd: add missing newline to printed strings
+Date:   Mon, 24 Jan 2022 19:36:59 +0100
+Message-Id: <20220124184139.748366175@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Vijay Balakrishna <vijayb@linux.microsoft.com>
-Subject: [arm64] kernel boot slowdown in v5.10.19 -> v5.10.42 update
-To:     Nicolas Saenz Julienne <nsaenzjulienne@suse.de>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Cc:     Linux kernel mailing list <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We noticed 150ms kernel boot slowdown back in June, 2021, when moving 
-from v5.10.19 to v5.10.42.  This on a 8GB SoC.  Only recently we 
-investigated this issue and found the regression is introduced by a 
-change in map_mem() (paging_init() -> map_mem() -> __map_memblock(), in 
-particular "map all the memory banks" for loop) by patch
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-2687275a5843d1089687f08fc64eb3f3b026a169
-arm64: Force NO_BLOCK_MAPPINGS if crashkernel reservation is required
+[ Upstream commit 3bd9d8ce6f8c5c43ee2f1106021db0f98882cc75 ]
 
-above is a follow up to
+This patch adds the missing newline to printed strings.
 
-0a30c53573b07d5561457e41fb0ab046cd857da5
-arm64: mm: Move reserve_crashkernel() into mem_init())
+Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
+Link: https://lore.kernel.org/all/20220105154300.1258636-4-mkl@pengutronix.de
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-which deferred crashkernel reservation into mem_init().
+diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+index e16dc482f3270..63613c186f173 100644
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -2625,7 +2625,7 @@ static int mcp251xfd_register_chip_detect(struct mcp251xfd_priv *priv)
+ 	if (!mcp251xfd_is_251X(priv) &&
+ 	    priv->devtype_data.model != devtype_data->model) {
+ 		netdev_info(ndev,
+-			    "Detected %s, but firmware specifies a %s. Fixing up.",
++			    "Detected %s, but firmware specifies a %s. Fixing up.\n",
+ 			    __mcp251xfd_get_model_str(devtype_data->model),
+ 			    mcp251xfd_get_model_str(priv));
+ 	}
+@@ -2662,7 +2662,7 @@ static int mcp251xfd_register_check_rx_int(struct mcp251xfd_priv *priv)
+ 		return 0;
+ 
+ 	netdev_info(priv->ndev,
+-		    "RX_INT active after softreset, disabling RX_INT support.");
++		    "RX_INT active after softreset, disabling RX_INT support.\n");
+ 	devm_gpiod_put(&priv->spi->dev, priv->rx_int);
+ 	priv->rx_int = NULL;
+ 
+-- 
+2.34.1
 
-The ~150ms slowdown disappears on booting without "crashkernel=.." on 
-kernel command-line.
 
-Please let us know if it known/understood or addressed already or being 
-looked into.  Any insight is appreciated.
 
-Thanks,
-Vijay
-
-console output collected with debug prints --
-
-[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd083]
-[    0.000000] Linux version 
-5.10.42.6-xxx-standard-2008.3.0-local-snapshot-01210432 
-(oe-user@oe-host) (clang version 10.[    0.000001] sched_clock: 64 bits 
-at 125MHz, resolution 8ns, wraps every 4398046511100ns
-[    0.000003]          2.560781952 MSFT: kernel boot start
-[    0.000484] Machine model: xxx
-[    0.009379] earlycon: uart8250 at MMIO32 0x0000000068a10000 (options '')
-[    0.009383] printk: bootconsole [uart8250] enabled
-[    0.009828] before paging_init()
-[    0.009977] before map_mem()
-[    0.009978] after memblock_mark_nomap()
-[    0.152388] after __map_memblock() for loop
-[    0.152391] after __map_memblock() kernel_start, kernel_end
-[    0.152393] after memblock_clear_nomap
-[    0.152394] after map_mem()
-[    0.152401] after paging_init()
-[    0.153273] NUMA: No NUMA configuration found
-[    0.153278] NUMA: Faking a node at [mem 
-0x0000000080000000-0x000000097fffffff]
-[    0.153282] NUMA: NODE_DATA [mem 0x97efec5c0-0x97efedfff]
-[    0.153316] Zone ranges:
-[    0.153319]   Normal   [mem 0x0000000080000000-0x000000097fffffff]
-[    0.153323]   Device   empty
-[    0.153325] Movable zone start for each node
-[    0.153326] Early memory node ranges
-[    0.153328]   node   0: [mem 0x0000000080000000-0x000000008adfffff]
-[    0.153330]   node   0: [mem 0x000000008ae00000-0x000000008f223fff]
-[    0.153331]   node   0: [mem 0x000000008f224000-0x00000000ffffffff]
-[    0.153333]   node   0: [mem 0x0000000880000000-0x00000008800fffff]
-[    0.153334]   node   0: [mem 0x0000000880100000-0x000000097fffffff]
-[    0.153337] Initmem setup node 0 [mem 
-0x0000000080000000-0x000000097fffffff]
-[    0.153340] On node 0 totalpages: 1572864
-[    0.153342]   Normal zone: 24576 pages used for memmap
-[    0.153343]   Normal zone: 0 pages reserved
-[    0.153345]   Normal zone: 1572864 pages, LIFO batch:63
-[    0.154507] crashkernel reserved: 0x0000000968e00000 - 
-0x0000000978e00000 (256 MB)
-
-Console output from PXE boot without "crashkernel=256M" boot parameter --
-[    0.000000] Booting Linux on physical CPU 0x0000000000 [0x410fd083]
-[    0.000000] Linux version 
-5.10.42.6-xxx-standard-2008.3.0-local-snapshot-01210432 
-(oe-user@oe-host) (clang version 10.[    0.000001] sched_clock: 64 bits 
-at 125MHz, resolution 8ns, wraps every 4398046511100ns
-[    0.000003]         14.765446920 MSFT: kernel boot start
-[    0.000484] Machine model: xxx
-[    0.009400] earlycon: uart8250 at MMIO32 0x0000000068a10000 (options '')
-[    0.009404] printk: bootconsole [uart8250] enabled
-[    0.009835] before paging_init()
-[    0.009986] before map_mem()
-[    0.009987] after memblock_mark_nomap()
-[    0.010154] after __map_memblock() for loop
-[    0.010156] after __map_memblock() kernel_start, kernel_end
-[    0.010158] after memblock_clear_nomap
-[    0.010159] after map_mem()
-[    0.010163] after paging_init()
-[    0.011002] NUMA: No NUMA configuration found
-[    0.011005] NUMA: Faking a node at [mem 
-0x0000000080000000-0x000000097fffffff]
-[    0.011009] NUMA: NODE_DATA [mem 0x97fbc65c0-0x97fbc7fff]
-[    0.011037] Zone ranges:
-[    0.011038]   Normal   [mem 0x0000000080000000-0x000000097fffffff]
-[    0.011041]   Device   empty
-[    0.011043] Movable zone start for each node
-[    0.011044] Early memory node ranges
-[    0.011046]   node   0: [mem 0x0000000080000000-0x000000008adfffff]
-[    0.011048]   node   0: [mem 0x000000008ae00000-0x000000008f223fff]
-[    0.011049]   node   0: [mem 0x000000008f224000-0x00000000ffffffff]
-[    0.011050]   node   0: [mem 0x0000000880000000-0x00000008800fffff]
-[    0.011052]   node   0: [mem 0x0000000880100000-0x000000097fffffff]
-[    0.011054] Initmem setup node 0 [mem 
-0x0000000080000000-0x000000097fffffff]
-[    0.011056] On node 0 totalpages: 1572864
-[    0.011058]   Normal zone: 24576 pages used for memmap
-[    0.011060]   Normal zone: 0 pages reserved
-[    0.011061]   Normal zone: 1572864 pages, LIFO batch:63
