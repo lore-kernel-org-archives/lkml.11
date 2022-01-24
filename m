@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B650DC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAE48C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346854AbiAXTMx (ORCPT
+        id S1346880AbiAXTMz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:12:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34852 "EHLO
+        Mon, 24 Jan 2022 14:12:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34980 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345669AbiAXTEa (ORCPT
+        with ESMTP id S1345897AbiAXTEn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:04:30 -0500
+        Mon, 24 Jan 2022 14:04:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DA50660BFB;
-        Mon, 24 Jan 2022 19:04:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5BC1C340E8;
-        Mon, 24 Jan 2022 19:04:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ACD0460B88;
+        Mon, 24 Jan 2022 19:04:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73926C340E5;
+        Mon, 24 Jan 2022 19:04:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051069;
-        bh=Xd1d9E2W2oLl5/hSvALHK3QW8GbMXU+W17RMmgqOxnc=;
+        s=korg; t=1643051082;
+        bh=DNwXRQqJ2zdm78xxZBfZY5HB4Qqc18c8IshS3hzlm+0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PUCe8dkfWF6SFTbN6Zc8LuHmQKwnOXpuNb39/3ToOckGHnRr1aQGF28EX/K8TROjL
-         bxjsabq+JR3r4l4C3Flfv0RnRv2JHH/kMwLScXveiwXi0oIlcDOZfUpSwx076HKDQb
-         JGhDUnZOJAFJ/3Y1OuBhTgLPTnsdg/Xe84Pru9HU=
+        b=kqU/+ORPfz6FGfshyo0SEFZsw2a2ZKaXyLZweF5BInvcuq9Ayf3v6vNPEkR/yFN10
+         oQvbBMbLVgE5TQKFsuslYRnQ0jkR0GjBxFCODWiUU4Mzew41fcOmOh0KWyZLMeIOd4
+         iH1LhG4Apo8inFGvr9abflzrMEzod7TkY+Vn4h4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 045/186] arm64: dts: qcom: msm8916: fix MMC controller aliases
-Date:   Mon, 24 Jan 2022 19:42:00 +0100
-Message-Id: <20220124183938.581354232@linuxfoundation.org>
+        stable@vger.kernel.org, Tasos Sahanidis <tasos@tasossah.com>,
+        Denis Efremov <efremov@linux.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 049/186] floppy: Fix hang in watchdog when disk is ejected
+Date:   Mon, 24 Jan 2022 19:42:04 +0100
+Message-Id: <20220124183938.707913060@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,38 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Tasos Sahanidis <tasos@tasossah.com>
 
-[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
+[ Upstream commit fb48febce7e30baed94dd791e19521abd2c3fd83 ]
 
-Change sdhcN aliases to mmcN to make them actually work. Currently the
-board uses non-standard aliases sdhcN, which do not work, resulting in
-mmc0 and mmc1 hosts randomly changing indices between boots.
+When the watchdog detects a disk change, it calls cancel_activity(),
+which in turn tries to cancel the fd_timer delayed work.
 
-Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
+In the above scenario, fd_timer_fn is set to fd_watchdog(), meaning
+it is trying to cancel its own work.
+This results in a hang as cancel_delayed_work_sync() is waiting for the
+watchdog (itself) to return, which never happens.
+
+This can be reproduced relatively consistently by attempting to read a
+broken floppy, and ejecting it while IO is being attempted and retried.
+
+To resolve this, this patch calls cancel_delayed_work() instead, which
+cancels the work without waiting for the watchdog to return and finish.
+
+Before this regression was introduced, the code in this section used
+del_timer(), and not del_timer_sync() to delete the watchdog timer.
+
+Link: https://lore.kernel.org/r/399e486c-6540-db27-76aa-7a271b061f76@tasossah.com
+Fixes: 070ad7e793dc ("floppy: convert to delayed work and single-thread wq")
+Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
+Signed-off-by: Denis Efremov <efremov@linux.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/block/floppy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index 94697bab3805f..a961b81060004 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -26,8 +26,8 @@
- 	#size-cells = <2>;
+diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
+index cbf74731cfce6..b6c99cf1ce745 100644
+--- a/drivers/block/floppy.c
++++ b/drivers/block/floppy.c
+@@ -994,7 +994,7 @@ static DECLARE_DELAYED_WORK(fd_timer, fd_timer_workfn);
+ static void cancel_activity(void)
+ {
+ 	do_floppy = NULL;
+-	cancel_delayed_work_sync(&fd_timer);
++	cancel_delayed_work(&fd_timer);
+ 	cancel_work_sync(&floppy_work);
+ }
  
- 	aliases {
--		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
--		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
-+		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
-+		mmc1 = &sdhc_2; /* SDC2 SD card slot */
- 	};
- 
- 	chosen { };
 -- 
 2.34.1
 
