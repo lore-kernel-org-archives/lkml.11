@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B8CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBE65C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848339AbiAXXWP (ORCPT
+        id S1848366AbiAXXWU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:22:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
+        Mon, 24 Jan 2022 18:22:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37098 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584676AbiAXWVc (ORCPT
+        with ESMTP id S1584614AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D89C041881;
-        Mon, 24 Jan 2022 12:52:49 -0800 (PST)
+        Mon, 24 Jan 2022 17:21:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D02D3C0424E8;
+        Mon, 24 Jan 2022 12:52:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 564CB611C2;
-        Mon, 24 Jan 2022 20:52:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CECAC340E5;
-        Mon, 24 Jan 2022 20:52:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96FE9B80FA3;
+        Mon, 24 Jan 2022 20:52:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3855C340E7;
+        Mon, 24 Jan 2022 20:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057568;
-        bh=PV3zTcZoEZBIfBNhE05GCrsJQVwhbmMUXbm4kUtn8zI=;
+        s=korg; t=1643057525;
+        bh=yu+IE5+gItyP4e2FuDlpjTgxMD8d6Lf0tXsdlecCLis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oG/h7ez1OU3vlzJLnvHfQH70PrRtUmnD0jHOiULPorwOcKbVXdfkssgvAdLj4GW1Y
-         DQyZ19Ka8etfAj9Wo+mhLlmMZ4c+ebzZDgj/VPR3Me5iR96zfTiW4ZgrNJE4MNbAip
-         p31Whvr18iKC7cMVw3gFAB0l915hbRVf1P38e2UI=
+        b=y4ooI4gY7h3FZ+76eXjWsQxusg6R153r+WaYvUEF5N4pSWxen4TvA6rEvEGo99iEW
+         /1ixmjoenjq7Rya0emsNcf1CTD5QV3iJBBzIciYVo/LZyI7GlpD9aIK44UE+51ecjk
+         07jYTkyGsnOlNAG1iu5sKsV1Jo9fV2Q1TjzhxFcg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0001/1039] KVM: x86/mmu: Fix write-protection of PTs mapped by the TDP MMU
-Date:   Mon, 24 Jan 2022 19:29:50 +0100
-Message-Id: <20220124184125.179384891@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.15 842/846] scripts/dtc: dtx_diff: remove broken example from help text
+Date:   Mon, 24 Jan 2022 19:45:59 +0100
+Message-Id: <20220124184129.956085407@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -52,56 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Matlack <dmatlack@google.com>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-commit 7c8a4742c4abe205ec9daf416c9d42fd6b406e8e upstream.
+commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
 
-When the TDP MMU is write-protection GFNs for page table protection (as
-opposed to for dirty logging, or due to the HVA not being writable), it
-checks if the SPTE is already write-protected and if so skips modifying
-the SPTE and the TLB flush.
+dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
+this has never worked: The /proc/self/fds/... paths passed by the shell
+will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
+but even with this check removed, the function cannot work: hexdump will
+eat up the DTB magic, making the subsequent dtc call fail, as a pipe
+cannot be rewound.
 
-This behavior is incorrect because it fails to check if the SPTE
-is write-protected for page table protection, i.e. fails to check
-that MMU-writable is '0'.  If the SPTE was write-protected for dirty
-logging but not page table protection, the SPTE could locklessly be made
-writable, and vCPUs could still be running with writable mappings cached
-in their TLB.
+Simply remove this broken example, as there is already an alternative one
+that works fine.
 
-Fix this by only skipping setting the SPTE if the SPTE is already
-write-protected *and* MMU-writable is already clear.  Technically,
-checking only MMU-writable would suffice; a SPTE cannot be writable
-without MMU-writable being set.  But check both to be paranoid and
-because it arguably yields more readable code.
-
-Fixes: 46044f72c382 ("kvm: x86/mmu: Support write protection for nesting in tdp MMU")
-Cc: stable@vger.kernel.org
-Signed-off-by: David Matlack <dmatlack@google.com>
-Message-Id: <20220113233020.3986005-2-dmatlack@google.com>
-Reviewed-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Reviewed-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/mmu/tdp_mmu.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ scripts/dtc/dtx_diff |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/arch/x86/kvm/mmu/tdp_mmu.c
-+++ b/arch/x86/kvm/mmu/tdp_mmu.c
-@@ -1442,12 +1442,12 @@ static bool write_protect_gfn(struct kvm
- 		    !is_last_spte(iter.old_spte, iter.level))
- 			continue;
+--- a/scripts/dtc/dtx_diff
++++ b/scripts/dtc/dtx_diff
+@@ -59,12 +59,8 @@ Otherwise DTx is treated as a dts source
+    or '/include/' to be processed.
  
--		if (!is_writable_pte(iter.old_spte))
--			break;
+    If DTx_1 and DTx_2 are in different architectures, then this script
+-   may not work since \${ARCH} is part of the include path.  Two possible
+-   workarounds:
 -
- 		new_spte = iter.old_spte &
- 			~(PT_WRITABLE_MASK | shadow_mmu_writable_mask);
+-      `basename $0` \\
+-          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
+-          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
++   may not work since \${ARCH} is part of the include path.  The following
++   workaround can be used:
  
-+		if (new_spte == iter.old_spte)
-+			break;
-+
- 		tdp_mmu_set_spte(kvm, &iter, new_spte);
- 		spte_set = true;
- 	}
+       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
+       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
 
 
