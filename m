@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62BA7C35271
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 817DCC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448334AbiAXVM1 (ORCPT
+        id S1448353AbiAXVM3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40268 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388384AbiAXUiz (ORCPT
+        Mon, 24 Jan 2022 16:12:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45552 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390766AbiAXUqP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:38:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07E4EC02414B;
-        Mon, 24 Jan 2022 11:51:10 -0800 (PST)
+        Mon, 24 Jan 2022 15:46:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A277601B6;
-        Mon, 24 Jan 2022 19:51:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 918FCC340E5;
-        Mon, 24 Jan 2022 19:51:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 50570B81253;
+        Mon, 24 Jan 2022 20:46:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E3A6C340E5;
+        Mon, 24 Jan 2022 20:46:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053869;
-        bh=38QJKayBH1t+mBmsiqgcjzBj6O8WHMCZs2mmLV6jwwU=;
+        s=korg; t=1643057173;
+        bh=KIekPdyAAYx3DbDY5ShyO0Q26/ob9MmYZs4wsnImTk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Fu8VgzP1d/xfs8QURiASTFhgV+2aejt3+eJ44b5auR75rcNihYZPSy/UyNE3vF6Z6
-         H+pV4U/F4jn3r9E0qfqm8oAjQfO7t3hdtHTht+4YByPPk7jdYnCUb5mDmrZ/NktbUP
-         5Rinzt7lKY9n9KZch2Coq5nlfX3w7ltvT5w9aWuo=
+        b=rfst4mgoUSB9MsSamVS4isg8KF3JyaoXL6xwaPf3O782uhS79J8EuMcYOoqp7M1bq
+         4hzXHDfsbdFWlRWvSo13pcmZrSxl6clGCseIB4TmMQy7IcBcBBwZIEIMSj93WMt9E2
+         ZUPjdjSoKAArmBQ2jbBSa+PuWvyfKNUQ/Cr4WxrQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 203/563] power: reset: mt6397: Check for null res pointer
-Date:   Mon, 24 Jan 2022 19:39:28 +0100
-Message-Id: <20220124184031.452159207@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.15 726/846] tracing/osnoise: Properly unhook events if start_per_cpu_kthreads() fails
+Date:   Mon, 24 Jan 2022 19:44:03 +0100
+Message-Id: <20220124184126.052371237@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
 
-[ Upstream commit 1c1348bf056dee665760a3bd1cd30b0be7554fc2 ]
+commit 0878355b51f5f26632e652c848a8e174bb02d22d upstream.
 
-The return value of platform_get_resource() needs to be checked.
-To avoid use of error pointer in case that there is no suitable
-resource.
+If start_per_cpu_kthreads() called from osnoise_workload_start() returns
+error, event hooks are left in broken state: unhook_irq_events() called
+but unhook_thread_events() and unhook_softirq_events() not called, and
+trace_osnoise_callback_enabled flag not cleared.
 
-Fixes: d28c74c10751 ("power: reset: add driver for mt6323 poweroff")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+On the next tracer enable, hooks get not installed due to
+trace_osnoise_callback_enabled flag.
+
+And on the further tracer disable an attempt to remove non-installed
+hooks happened, hitting a WARN_ON_ONCE() in tracepoint_remove_func().
+
+Fix the error path by adding the missing part of cleanup.
+While at this, introduce osnoise_unhook_events() to avoid code
+duplication between this error path and normal tracer disable.
+
+Link: https://lkml.kernel.org/r/20220109153459.3701773-1-nikita.yushchenko@virtuozzo.com
+
+Cc: stable@vger.kernel.org
+Fixes: bce29ac9ce0b ("trace: Add osnoise tracer")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/reset/mt6323-poweroff.c | 3 +++
- 1 file changed, 3 insertions(+)
+ kernel/trace/trace_osnoise.c |   20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/power/reset/mt6323-poweroff.c b/drivers/power/reset/mt6323-poweroff.c
-index 0532803e6cbc4..d90e76fcb9383 100644
---- a/drivers/power/reset/mt6323-poweroff.c
-+++ b/drivers/power/reset/mt6323-poweroff.c
-@@ -57,6 +57,9 @@ static int mt6323_pwrc_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -1932,6 +1932,13 @@ out_unhook_irq:
+ 	return -EINVAL;
+ }
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -EINVAL;
++static void osnoise_unhook_events(void)
++{
++	unhook_thread_events();
++	unhook_softirq_events();
++	unhook_irq_events();
++}
 +
- 	pwrc->base = res->start;
- 	pwrc->regmap = mt6397_chip->regmap;
- 	pwrc->dev = &pdev->dev;
--- 
-2.34.1
-
+ static int __osnoise_tracer_start(struct trace_array *tr)
+ {
+ 	int retval;
+@@ -1949,7 +1956,14 @@ static int __osnoise_tracer_start(struct
+ 
+ 	retval = start_per_cpu_kthreads(tr);
+ 	if (retval) {
+-		unhook_irq_events();
++		trace_osnoise_callback_enabled = false;
++		/*
++		 * Make sure that ftrace_nmi_enter/exit() see
++		 * trace_osnoise_callback_enabled as false before continuing.
++		 */
++		barrier();
++
++		osnoise_unhook_events();
+ 		return retval;
+ 	}
+ 
+@@ -1981,9 +1995,7 @@ static void osnoise_tracer_stop(struct t
+ 
+ 	stop_per_cpu_kthreads();
+ 
+-	unhook_irq_events();
+-	unhook_softirq_events();
+-	unhook_thread_events();
++	osnoise_unhook_events();
+ 
+ 	osnoise_busy = false;
+ }
 
 
