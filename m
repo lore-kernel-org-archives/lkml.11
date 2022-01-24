@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71030C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E41F5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244842AbiAXSBE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:01:04 -0500
-Received: from mga04.intel.com ([192.55.52.120]:41944 "EHLO mga04.intel.com"
+        id S235784AbiAXSBG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:01:06 -0500
+Received: from mga14.intel.com ([192.55.52.115]:63121 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244841AbiAXSAd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:00:33 -0500
+        id S244856AbiAXSAm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:00:42 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643047232; x=1674583232;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=GQ5E0i+zBiGPpozPgnHLAnkyvtSeafp3A0mHCHJieDY=;
-  b=aQlCK2Kk4zwsmu+vElfLBMXsITM8rTkMejV/LhKEM+PsPJ24mgX9U7Qo
-   YNXkpC33aY763VFEUrMM4V2ucUVFqygvEMMjgnBNePvKnzbIjr6Db8F8Y
-   mbcrB1iiRX8yEn0bp/xwnuTjFzv0raumScWJA/j4qF/9ozBzaujYAc1vl
-   hupqwk0sYHJhQrEjiwm3f0HR1Jylxp69RJaMTqdxwxVAIu6qJ5D5gAre0
-   WoJDUGhYwDTGmv4Q+6vvtRfrSiKztY4GHk3BEbs8FBCsG5ZYf4Mm5pgB5
-   W3sP6y23eCSK8Qp9wGN6Xj4Cs9HMDUlxbckbA+NeZJWcMhkQvEaSw6x1v
+  t=1643047242; x=1674583242;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=BQSospdD4gesHVIwJjnamUSWWSLW6vXQL72nOd9YKGI=;
+  b=TA2JAN2DVMPmfmWo5QitF5YwhQSauZWIrXi5sPUPbm9OPI4t/CXt+jAr
+   VqmvkwJrzQXSzXCQaWDfn5zmEh2N0Ven5UnjxaRkfAwJ2rF8wrwSHC/lT
+   rKX8u/0TYsbCD8j/+dN32jBfErggjJXD9auoR13SqwtgVP3W+ww0rSLFD
+   d+4evnZQ3Gmkf5zup9KQmfn6MoaimVBQgm6/3kk02z2myk1Hx2Wq3o54R
+   OTZmG6efBz5U/kWdCijIUwgs1QiSFeCiXWJPqzF9HxlqexIoEqJewoFvs
+   4Wq4LZ4r/n81LiIHfo4xFzVZEfwzLf49FBvKVQuT+Jey3nQjyxkTor7gW
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="244942117"
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246326299"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="244942117"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:00:32 -0800
+   d="scan'208";a="246326299"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:00:32 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="766479413"
+   d="scan'208";a="624164228"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 24 Jan 2022 10:00:29 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 24 Jan 2022 10:00:29 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 8101BA51; Mon, 24 Jan 2022 20:00:42 +0200 (EET)
+        id 52C3D178; Mon, 24 Jan 2022 20:00:42 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -49,45 +49,85 @@ Cc:     Richard Weinberger <richard@nod.at>,
         Andreas Noever <andreas.noever@gmail.com>,
         Michael Jamet <michael.jamet@intel.com>,
         Yehezkel Bernat <YehezkelShB@gmail.com>
-Subject: [PATCH v2 5/5] thunderbolt: Drop duplicate NULL checks around nvmem_unregister()
-Date:   Mon, 24 Jan 2022 20:00:40 +0200
-Message-Id: <20220124180040.50660-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/5] nvmem: core: Remove unused devm_nvmem_unregister()
+Date:   Mon, 24 Jan 2022 20:00:36 +0200
+Message-Id: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
-References: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since nvmem_unregister() checks for NULL, no need to repeat in
-the caller. Drop duplicate NULL checks.
+There are no users and seems no will come of the devm_nvmem_unregister().
+Remove the function and remove the unused devm_nvmem_match() along with it.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Mika Westerberg <mika.westerberg@linux.intel.com>
 ---
-v2: added tag (Mika)
- drivers/thunderbolt/nvm.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+v2: removed unused devm_nvmem_match() (lkp)
+ drivers/nvmem/core.c           | 22 ----------------------
+ include/linux/nvmem-provider.h |  8 --------
+ 2 files changed, 30 deletions(-)
 
-diff --git a/drivers/thunderbolt/nvm.c b/drivers/thunderbolt/nvm.c
-index 3a5336913cca..b3f310389378 100644
---- a/drivers/thunderbolt/nvm.c
-+++ b/drivers/thunderbolt/nvm.c
-@@ -154,10 +154,8 @@ int tb_nvm_add_non_active(struct tb_nvm *nvm, size_t size,
- void tb_nvm_free(struct tb_nvm *nvm)
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index 23a38dcf0fc4..1a70b3bdb71d 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -945,28 +945,6 @@ struct nvmem_device *devm_nvmem_register(struct device *dev,
+ }
+ EXPORT_SYMBOL_GPL(devm_nvmem_register);
+ 
+-static int devm_nvmem_match(struct device *dev, void *res, void *data)
+-{
+-	struct nvmem_device **r = res;
+-
+-	return *r == data;
+-}
+-
+-/**
+- * devm_nvmem_unregister() - Unregister previously registered managed nvmem
+- * device.
+- *
+- * @dev: Device that uses the nvmem device.
+- * @nvmem: Pointer to previously registered nvmem device.
+- *
+- * Return: Will be negative on error or zero on success.
+- */
+-int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
+-{
+-	return devres_release(dev, devm_nvmem_release, devm_nvmem_match, nvmem);
+-}
+-EXPORT_SYMBOL(devm_nvmem_unregister);
+-
+ static struct nvmem_device *__nvmem_device_get(void *data,
+ 			int (*match)(struct device *dev, const void *data))
  {
- 	if (nvm) {
--		if (nvm->non_active)
--			nvmem_unregister(nvm->non_active);
--		if (nvm->active)
--			nvmem_unregister(nvm->active);
-+		nvmem_unregister(nvm->non_active);
-+		nvmem_unregister(nvm->active);
- 		vfree(nvm->buf);
- 		ida_simple_remove(&nvm_ida, nvm->id);
- 	}
+diff --git a/include/linux/nvmem-provider.h b/include/linux/nvmem-provider.h
+index 98efb7b5660d..99c01c43d7a8 100644
+--- a/include/linux/nvmem-provider.h
++++ b/include/linux/nvmem-provider.h
+@@ -133,8 +133,6 @@ void nvmem_unregister(struct nvmem_device *nvmem);
+ struct nvmem_device *devm_nvmem_register(struct device *dev,
+ 					 const struct nvmem_config *cfg);
+ 
+-int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem);
+-
+ void nvmem_add_cell_table(struct nvmem_cell_table *table);
+ void nvmem_del_cell_table(struct nvmem_cell_table *table);
+ 
+@@ -153,12 +151,6 @@ devm_nvmem_register(struct device *dev, const struct nvmem_config *c)
+ 	return nvmem_register(c);
+ }
+ 
+-static inline int
+-devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
+-{
+-	return -EOPNOTSUPP;
+-}
+-
+ static inline void nvmem_add_cell_table(struct nvmem_cell_table *table) {}
+ static inline void nvmem_del_cell_table(struct nvmem_cell_table *table) {}
+ 
 -- 
 2.34.1
 
