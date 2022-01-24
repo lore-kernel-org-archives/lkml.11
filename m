@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61686C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCF5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457330AbiAXVla (ORCPT
+        id S1457521AbiAXVlp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56946 "EHLO
+        Mon, 24 Jan 2022 16:41:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57456 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445538AbiAXVEE (ORCPT
+        with ESMTP id S1445711AbiAXVEs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:04:04 -0500
+        Mon, 24 Jan 2022 16:04:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 315EFB81188;
-        Mon, 24 Jan 2022 21:04:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47D7BC340E5;
-        Mon, 24 Jan 2022 21:04:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21F5AB8123D;
+        Mon, 24 Jan 2022 21:04:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20E8DC340EA;
+        Mon, 24 Jan 2022 21:04:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058241;
-        bh=ory3SVYeIybujCMEfusN/VnvpGC5oI84n45u5L7CtDw=;
+        s=korg; t=1643058284;
+        bh=B2XzkCbD1hJiPE4C447BD00cSG+WKckSPUTUv11flOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bSWDneQCLNIgrd4NGaBoFqvSRHaW+HprUszwCa5b6UOvbl93etNjsvHdTDoSR5wig
-         k0e0SHNITXu9l12XkqY5ZnHwJgoyyuyurL/5F1T3CAjnzESY02xbJv32GSXQ3xAiUa
-         1vCq6tLAxQS6RFkVWg0IDgPlCsupYj6Cnn2NoHAU=
+        b=TlV+OK3AQtKuEjxHrjSkMzA/cvGhFvpVh626t0eOIK7rAikFAQueTt5m//8b11MQ4
+         hyRaZ5c2cpZSc7cBrgSaLubsVAYIIA9bDEi4TLzmvKGoRQfGE+J4MmDEKd34CNVeSX
+         YY50MTIfpOUfrsOaublkzQaUy98wAlFyY4eRMGTA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Walle <michael@walle.cc>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0224/1039] mtd: core: provide unique name for nvmem device
-Date:   Mon, 24 Jan 2022 19:33:33 +0100
-Message-Id: <20220124184132.862206603@linuxfoundation.org>
+Subject: [PATCH 5.16 0240/1039] platform/x86: wmi: Fix driver->notify() vs ->probe() race
+Date:   Mon, 24 Jan 2022 19:33:49 +0100
+Message-Id: <20220124184133.392081454@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,73 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Walle <michael@walle.cc>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit c048b60d39e109c201d31ed5ad3a4f939064d6c4 ]
+[ Upstream commit 9918878676a5f9e99b98679f04b9e6c0f5426b0a ]
 
-If there is more than one mtd device which supports OTP, there will
-be a kernel warning about duplicated sysfs entries and the probing will
-fail. This is because the nvmem device name is not unique. Make it
-unique by prepending the name of the mtd. E.g. before the name was
-"user-otp", now it will be "mtd0-user-otp".
+The driver core sets struct device->driver before calling out
+to the bus' probe() method, this leaves a window where an ACPI
+notify may happen on the WMI object before the driver's
+probe() method has completed running, causing e.g. the
+driver's notify() callback to get called with drvdata
+not yet being set leading to a NULL pointer deref.
 
-For reference the kernel splash is:
-[    4.665531] sysfs: cannot create duplicate filename '/bus/nvmem/devices/user-otp'
-[    4.673056] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.0-next-20211101+ #1296
-[    4.680565] Hardware name: Kontron SMARC-sAL28 (Single PHY) on SMARC Eval 2.0 carrier (DT)
-[    4.688856] Call trace:
-[    4.691303]  dump_backtrace+0x0/0x1bc
-[    4.694984]  show_stack+0x24/0x30
-[    4.698306]  dump_stack_lvl+0x68/0x84
-[    4.701980]  dump_stack+0x18/0x34
-[    4.705302]  sysfs_warn_dup+0x70/0x90
-[    4.708973]  sysfs_do_create_link_sd+0x144/0x150
-[    4.713603]  sysfs_create_link+0x2c/0x50
-[    4.717535]  bus_add_device+0x74/0x120
-[    4.721293]  device_add+0x330/0x890
-[    4.724791]  device_register+0x2c/0x40
-[    4.728550]  nvmem_register+0x240/0x9f0
-[    4.732398]  mtd_otp_nvmem_register+0xb0/0x10c
-[    4.736854]  mtd_device_parse_register+0x28c/0x2b4
-[    4.741659]  spi_nor_probe+0x20c/0x2e0
-[    4.745418]  spi_mem_probe+0x78/0xbc
-[    4.749001]  spi_probe+0x90/0xf0
-[    4.752237]  really_probe.part.0+0xa4/0x320
-..
-[    4.873936] mtd mtd1: Failed to register OTP NVMEM device
-[    4.894468] spi-nor: probe of spi0.0 failed with error -17
+At a check for this to the WMI core, ensuring that the notify()
+callback is not called before the driver is ready.
 
-Fixes: 4b361cfa8624 ("mtd: core: add OTP nvmem provider support")
-Signed-off-by: Michael Walle <michael@walle.cc>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211104134843.2642800-1-michael@walle.cc
+Fixes: 1686f5444546 ("platform/x86: wmi: Incorporate acpi_install_notify_handler")
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://lore.kernel.org/r/20211128190031.405620-2-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/mtdcore.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/platform/x86/wmi.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 9186268d361b4..fc0bed14bfb10 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -825,8 +825,7 @@ static struct nvmem_device *mtd_otp_nvmem_register(struct mtd_info *mtd,
+diff --git a/drivers/platform/x86/wmi.c b/drivers/platform/x86/wmi.c
+index 46178e03aecad..02aba274c4bc2 100644
+--- a/drivers/platform/x86/wmi.c
++++ b/drivers/platform/x86/wmi.c
+@@ -59,6 +59,7 @@ static_assert(__alignof__(struct guid_block) == 1);
  
- 	/* OTP nvmem will be registered on the physical device */
- 	config.dev = mtd->dev.parent;
--	/* just reuse the compatible as name */
--	config.name = compatible;
-+	config.name = kasprintf(GFP_KERNEL, "%s-%s", dev_name(&mtd->dev), compatible);
- 	config.id = NVMEM_DEVID_NONE;
- 	config.owner = THIS_MODULE;
- 	config.type = NVMEM_TYPE_OTP;
-@@ -842,6 +841,7 @@ static struct nvmem_device *mtd_otp_nvmem_register(struct mtd_info *mtd,
- 		nvmem = NULL;
+ enum {	/* wmi_block flags */
+ 	WMI_READ_TAKES_NO_ARGS,
++	WMI_PROBED,
+ };
  
- 	of_node_put(np);
-+	kfree(config.name);
+ struct wmi_block {
+@@ -1008,6 +1009,7 @@ static int wmi_dev_probe(struct device *dev)
+ 		}
+ 	}
  
- 	return nvmem;
- }
++	set_bit(WMI_PROBED, &wblock->flags);
+ 	return 0;
+ 
+ probe_misc_failure:
+@@ -1025,6 +1027,8 @@ static void wmi_dev_remove(struct device *dev)
+ 	struct wmi_block *wblock = dev_to_wblock(dev);
+ 	struct wmi_driver *wdriver = drv_to_wdrv(dev->driver);
+ 
++	clear_bit(WMI_PROBED, &wblock->flags);
++
+ 	if (wdriver->filter_callback) {
+ 		misc_deregister(&wblock->char_dev);
+ 		kfree(wblock->char_dev.name);
+@@ -1322,7 +1326,7 @@ static void acpi_wmi_notify_handler(acpi_handle handle, u32 event,
+ 		return;
+ 
+ 	/* If a driver is bound, then notify the driver. */
+-	if (wblock->dev.dev.driver) {
++	if (test_bit(WMI_PROBED, &wblock->flags) && wblock->dev.dev.driver) {
+ 		struct wmi_driver *driver = drv_to_wdrv(wblock->dev.dev.driver);
+ 		struct acpi_buffer evdata = { ACPI_ALLOCATE_BUFFER, NULL };
+ 		acpi_status status;
 -- 
 2.34.1
 
