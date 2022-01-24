@@ -2,138 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC99C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61513C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352924AbiAXTbQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50422 "EHLO
+        id S242721AbiAXTbW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:31:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350037AbiAXTXR (ORCPT
+        with ESMTP id S1346876AbiAXTXZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:23:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A162C061345;
-        Mon, 24 Jan 2022 11:09:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAD7460B86;
-        Mon, 24 Jan 2022 19:09:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76A0CC340E5;
-        Mon, 24 Jan 2022 19:09:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051390;
-        bh=TJQQhk+LtbsaVOiLRJNVbeEVkSaz5diuewmKJ4vB+uI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FCCbwUqVS3GPRf2UIpOiaxQOap7nwyO3SMJPyLev/8IZmajh0GXsJ+EPxudVmR2+H
-         QI9UOhgAf4M3jQUJEgIND0p67rXSgmVwn8dWUnlRQK3q9k/hR8JYSLOBODsrtWJFpJ
-         uaFuffLqhjSBqppLWD6SVMqPtIP4evi6mron5EXw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 113/186] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
-Date:   Mon, 24 Jan 2022 19:43:08 +0100
-Message-Id: <20220124183940.748943459@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 14:23:25 -0500
+Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A703C061348
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:11:01 -0800 (PST)
+Received: by mail-il1-x12b.google.com with SMTP id a18so14785678ilq.6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:11:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/Hb93v/cG3xs7a91RJePhFR111coG45/XiAqaJtoOXg=;
+        b=dekshM3r0iZqRnweN0cD1KEJ/ymwv3d8zD/lK38pye/d6XexTA41QPH7eF7J5ydIuP
+         T+vohEUegraekD/fwapCJeRUIjZm0tUtukdNQMo4cg6MypLPrzRTcMH+JFN8qkid4b7c
+         Fh307MemSL7Jm9rjOaMJSBJKqt2OAxti9p2cg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/Hb93v/cG3xs7a91RJePhFR111coG45/XiAqaJtoOXg=;
+        b=c+ysLtVJ6nfO8tZQ08Ghdk2fD+VhAt37nxiDiKktRIf0GNW7V4541gCDa7e05rQYiJ
+         omyeF4qKbIYQYBgfPKGtwl+6ZqyjA9aU71aszYS2wA0Cxph1HYyRZO5rccf9Ax6TRHI/
+         uslBsYTJS27PTarEOxk1MDsQjWbxL9jfaLL9wcyQb+qDQGKFsJvSYAAeCui+6PJNjUQS
+         jMdPG45H7j6krZlvwHezy2kRh/DxFrzHKY+0jEYUbnhkSPXy85LzKyBYYEUe0izBfRk3
+         rFhuorv/zVBGVyEulDN6wqCL3ajIDXiN57MEacjy9+Rei4XmQpQMKFg6vsHJfeTxU7xw
+         gsQw==
+X-Gm-Message-State: AOAM530S//9DIpZ9I01B3lqVQS/pg50FilmbnZJjcW5kbzmO3qtdCSbH
+        jyVVJQnWuw/neKdPlzg86CZC+goaovt6+g==
+X-Google-Smtp-Source: ABdhPJxASd5se2u1AqEk8tk+uZriphJSm2N0sua8b8k2guVozOoJw3qoMof49KUC0+Ptw0kjbloAwA==
+X-Received: by 2002:a05:6e02:1c4c:: with SMTP id d12mr9397233ilg.241.1643051460411;
+        Mon, 24 Jan 2022 11:11:00 -0800 (PST)
+Received: from mail-io1-f43.google.com (mail-io1-f43.google.com. [209.85.166.43])
+        by smtp.gmail.com with ESMTPSA id p11sm7217112iov.38.2022.01.24.11.10.59
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 11:10:59 -0800 (PST)
+Received: by mail-io1-f43.google.com with SMTP id q204so6226473iod.8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:10:59 -0800 (PST)
+X-Received: by 2002:a02:c726:: with SMTP id h6mr2352523jao.207.1643051459292;
+ Mon, 24 Jan 2022 11:10:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1643048114-2996-1-git-send-email-quic_sbillaka@quicinc.com> <1643048114-2996-3-git-send-email-quic_sbillaka@quicinc.com>
+In-Reply-To: <1643048114-2996-3-git-send-email-quic_sbillaka@quicinc.com>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Mon, 24 Jan 2022 11:10:48 -0800
+X-Gmail-Original-Message-ID: <CAD=FV=XLzCc-M6CMYOMMZ6cj+RMdwi4Uwsde=2s5V2pMWj_QTA@mail.gmail.com>
+Message-ID: <CAD=FV=XLzCc-M6CMYOMMZ6cj+RMdwi4Uwsde=2s5V2pMWj_QTA@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] drm/panel-edp: Add sharp panel support for sc7280
+To:     Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        freedreno <freedreno@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Rob Clark <robdclark@gmail.com>,
+        Sean Paul <seanpaul@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>, quic_kalyant@quicinc.com,
+        quic_abhinavk@quicinc.com, quic_khsieh@quicinc.com,
+        quic_mkrishn@quicinc.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+Hi,
 
-[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
+On Mon, Jan 24, 2022 at 10:16 AM Sankeerth Billakanti
+<quic_sbillaka@quicinc.com> wrote:
+>
+> Add eDP panel support for sc7280 CRD platform.
+>
+> Signed-off-by: Sankeerth Billakanti <quic_sbillaka@quicinc.com>
+> ---
+>  drivers/gpu/drm/panel/panel-edp.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/panel/panel-edp.c b/drivers/gpu/drm/panel/panel-edp.c
+> index 176ef0c..bb2e346 100644
+> --- a/drivers/gpu/drm/panel/panel-edp.c
+> +++ b/drivers/gpu/drm/panel/panel-edp.c
+> @@ -1605,6 +1605,14 @@ static const struct panel_desc sharp_lq123p1jx31 = {
+>         },
+>  };
+>
+> +static const struct panel_desc sharp_lq140m1jw46 = {
+> +       .bpc = 8,
+> +       .size = {
+> +               .width = 309,
+> +               .height = 173,
+> +       },
 
-Large pkt_len can lead to out-out-bound memcpy. Current
-ath9k_hif_usb_rx_stream allows combining the content of two urb
-inputs to one pkt. The first input can indicate the size of the
-pkt. Any remaining size is saved in hif_dev->rx_remain_len.
-While processing the next input, memcpy is used with rx_remain_len.
+Where are your delays? I very much doubt that they are all 0.
 
-4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
-maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
-pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+I guess you're also not putting timings in here and you're relying on
+these coming from the EDID? My own preference would be:
 
-BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
-Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
+1. If you are relying on a reliable way to read the EDID of the panel
+then you shouldn't even need to add anything to this section of the
+file. You should use the "edp-panel" compatible string and then add an
+entry to the "edp_panels" structure.
 
-CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
-Workqueue: events request_firmware_work_func
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- __kasan_report.cold+0x37/0x7c
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- kasan_report+0xe/0x20
- check_memory_region+0x15a/0x1d0
- memcpy+0x20/0x50
- ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __usb_unanchor_urb+0x12f/0x210
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
-
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
-
-After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
-emulation, I found the KASAN report. The bug is triggerable whenever
-pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
-to test the driver works when applying the patch.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index ce3a785212740..8125f17526519 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -588,6 +588,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 			return;
- 		}
- 
-+		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
-+			dev_err(&hif_dev->udev->dev,
-+				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
-+			RX_STAT_INC(skb_dropped);
-+			return;
-+		}
-+
- 		pad_len = 4 - (pkt_len & 0x3);
- 		if (pad_len == 4)
- 			pad_len = 0;
--- 
-2.34.1
+2. If you want to support folks that don't have a reliable way to read
+the EDID then you can add things here, but you should add a mode.
 
 
+> +};
+> +
+>  static const struct drm_display_mode starry_kr122ea0sra_mode = {
+>         .clock = 147000,
+>         .hdisplay = 1920,
+> @@ -1719,6 +1727,9 @@ static const struct of_device_id platform_of_match[] = {
+>                 .compatible = "sharp,lq123p1jx31",
+>                 .data = &sharp_lq123p1jx31,
+>         }, {
+> +               .compatible = "sharp_lq140m1jw46",
+> +               .data = &sharp_lq140m1jw46,
 
+Two problems:
+
+1. You should use a ",", not a "_" to separate the vendor from the model.
+
+2. You need to post device tree bindings for this.
+
+
+NOTE: if instead your eDP controller supports DP AUX bus then you
+don't need to add to this table at all and you don't need to add
+bindings. Instead, you'd add your EDID panel ID to the "edp_panels"
+structure.
