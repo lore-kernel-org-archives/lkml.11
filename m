@@ -2,127 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 974F5C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D19C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359812AbiAXXfA (ORCPT
+        id S2359791AbiAXXe5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:35:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838084AbiAXWpw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:45:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF01EC0550F3;
-        Mon, 24 Jan 2022 13:06:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A796B81142;
-        Mon, 24 Jan 2022 21:06:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A4F4C340E8;
-        Mon, 24 Jan 2022 21:06:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058380;
-        bh=f21MzGFvooadYexLUcwxb1T6t4IyhWjyJE0ILpkgpd8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jH6hmUVDhaWDu7YwmiQg+VHVb1c7XtnKVGbc/arLMIRuf+5/bJErMC324d3rfwlrj
-         QjARalrp/S6m8nvVieTNArxCcErgfLT6OXF8Az6HPPiHrYIWRwnDa1o6WdYvNkGCLC
-         rMTf9uC45wpcvKICEeBenvtve1SqYEzOzOlgsDKo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0271/1039] crypto: stm32/cryp - fix CTR counter carry
-Date:   Mon, 24 Jan 2022 19:34:20 +0100
-Message-Id: <20220124184134.410347685@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:34:57 -0500
+Received: from mga03.intel.com ([134.134.136.65]:45821 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1838274AbiAXWqQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:46:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643064376; x=1674600376;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=EQzUOUCbhBCOipT0hgr1+6zGQ5LZqpvbOMP2a69+wyU=;
+  b=UWs0bXavYQMfAHQt1q0oN4Z1b3qDjrq2+MxevRLVZRPqwiwNMs8OwL8N
+   jrfGKbA3aBQSLEwy+dBtJfRezP3zqvBn+/e4vt/HhXqMc/kb9myU7rinx
+   5C/skAqTBwNESlHRIk5+xQOHgK5Yp/+YrIvT6RIR197D04xkXr0SkRZj2
+   XI/ZsuQTYqTc9nlJzI1QvlRwfyxKmiQoO3keHcjgmQ1pskTTHiBsICLgq
+   7Aig2HgU7riF9dO+p4nllh1ZaAmxb8uXxoXkhaudcvgUY0sjpIPjKsf7c
+   j8KM4uJqUdJhxuBmH8RUTC+qpqEz4zjMtMaCHEPoleCFasCWCkUKVZRdC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="246110616"
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="246110616"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:46:15 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
+   d="scan'208";a="562823631"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga001.jf.intel.com with ESMTP; 24 Jan 2022 14:46:11 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC86F-000J2V-7B; Mon, 24 Jan 2022 22:46:11 +0000
+Date:   Tue, 25 Jan 2022 06:45:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Mark Salyzyn <salyzyn@google.com>
+Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>,
+        Kyungmin Park <kyungmin.park@samsung.com>,
+        Heesub Shin <heesub.shin@samsung.com>,
+        Laura Abbott <lauraa@codeaurora.org>,
+        Liam Mark <lmark@codeaurora.org>,
+        Vinayak Menon <vinmenon@codeaurora.org>,
+        Charan Teja Reddy <charante@codeaurora.org>,
+        Swathi Sridhar <swatsrid@codeaurora.org>
+Subject: [ammarfaizi2-block:google/android/kernel/common/android11-kiwi-5.4
+ 2314/9999] mm/page_alloc.c:2741:29: sparse: sparse: Using plain integer as
+ NULL pointer
+Message-ID: <202201250617.FDCLmCS1-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android11-kiwi-5.4
+head:   7d1d5848183bd1d9086d0572f9af431d3ded407f
+commit: b9d3d8f1e991052edb89b0537b8f2e8b2aa941ac [2314/9999] ANDROID: GKI: cma: redirect page allocation to CMA
+config: x86_64-randconfig-s022 (https://download.01.org/0day-ci/archive/20220125/202201250617.FDCLmCS1-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/ammarfaizi2/linux-block/commit/b9d3d8f1e991052edb89b0537b8f2e8b2aa941ac
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android11-kiwi-5.4
+        git checkout b9d3d8f1e991052edb89b0537b8f2e8b2aa941ac
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-[ Upstream commit 41c76690b0990efacd15d35cfb4e77318cd80ebb ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-STM32 CRYP hardware doesn't manage CTR counter bigger than max U32, as
-a workaround, at each block the current IV is saved, if the saved IV
-lower u32 is 0xFFFFFFFF, the full IV is manually incremented, and set
-in hardware.
-Fixes: bbb2832620ac ("crypto: stm32 - Fix sparse warnings")
 
-Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+sparse warnings: (new ones prefixed by >>)
+   mm/page_alloc.c:106:1: sparse: sparse: symbol 'pcpu_drain_mutex' was not declared. Should it be static?
+>> mm/page_alloc.c:2741:29: sparse: sparse: Using plain integer as NULL pointer
+   mm/page_alloc.c:3252:51: sparse: sparse: incorrect type in argument 7 (different base types) @@     expected int cma @@     got restricted gfp_t @@
+   mm/page_alloc.c:3252:51: sparse:     expected int cma
+   mm/page_alloc.c:3252:51: sparse:     got restricted gfp_t
+   mm/page_alloc.c: note: in included file (through include/linux/mm.h):
+   include/linux/gfp.h:325:27: sparse: sparse: restricted gfp_t degrades to integer
+   include/linux/gfp.h:325:27: sparse: sparse: restricted gfp_t degrades to integer
+
+vim +2741 mm/page_alloc.c
+
+  2736	
+  2737	static struct page *__rmqueue_cma(struct zone *zone, unsigned int order,
+  2738						int migratetype,
+  2739						unsigned int alloc_flags)
+  2740	{
+> 2741		struct page *page = 0;
+  2742	
+  2743	retry:
+  2744	#ifdef CONFIG_CMA
+  2745		if (migratetype == MIGRATE_MOVABLE && !zone->cma_alloc)
+  2746			page = __rmqueue_cma_fallback(zone, order);
+  2747		else
+  2748	#endif
+  2749			page = __rmqueue_smallest(zone, order, migratetype);
+  2750	
+  2751		if (unlikely(!page) && __rmqueue_fallback(zone, order, migratetype,
+  2752							  alloc_flags))
+  2753			goto retry;
+  2754	
+  2755		trace_mm_page_alloc_zone_locked(page, order, migratetype);
+  2756		return page;
+  2757	}
+  2758	
+
 ---
- drivers/crypto/stm32/stm32-cryp.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
-index 7389a0536ff02..d13b262b36252 100644
---- a/drivers/crypto/stm32/stm32-cryp.c
-+++ b/drivers/crypto/stm32/stm32-cryp.c
-@@ -163,7 +163,7 @@ struct stm32_cryp {
- 	struct scatter_walk     in_walk;
- 	struct scatter_walk     out_walk;
- 
--	u32                     last_ctr[4];
-+	__be32                  last_ctr[4];
- 	u32                     gcm_ctr;
- };
- 
-@@ -1217,27 +1217,26 @@ static void stm32_cryp_check_ctr_counter(struct stm32_cryp *cryp)
- {
- 	u32 cr;
- 
--	if (unlikely(cryp->last_ctr[3] == 0xFFFFFFFF)) {
--		cryp->last_ctr[3] = 0;
--		cryp->last_ctr[2]++;
--		if (!cryp->last_ctr[2]) {
--			cryp->last_ctr[1]++;
--			if (!cryp->last_ctr[1])
--				cryp->last_ctr[0]++;
--		}
-+	if (unlikely(cryp->last_ctr[3] == cpu_to_be32(0xFFFFFFFF))) {
-+		/*
-+		 * In this case, we need to increment manually the ctr counter,
-+		 * as HW doesn't handle the U32 carry.
-+		 */
-+		crypto_inc((u8 *)cryp->last_ctr, sizeof(cryp->last_ctr));
- 
- 		cr = stm32_cryp_read(cryp, CRYP_CR);
- 		stm32_cryp_write(cryp, CRYP_CR, cr & ~CR_CRYPEN);
- 
--		stm32_cryp_hw_write_iv(cryp, (__be32 *)cryp->last_ctr);
-+		stm32_cryp_hw_write_iv(cryp, cryp->last_ctr);
- 
- 		stm32_cryp_write(cryp, CRYP_CR, cr);
- 	}
- 
--	cryp->last_ctr[0] = stm32_cryp_read(cryp, CRYP_IV0LR);
--	cryp->last_ctr[1] = stm32_cryp_read(cryp, CRYP_IV0RR);
--	cryp->last_ctr[2] = stm32_cryp_read(cryp, CRYP_IV1LR);
--	cryp->last_ctr[3] = stm32_cryp_read(cryp, CRYP_IV1RR);
-+	/* The IV registers are BE  */
-+	cryp->last_ctr[0] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV0LR));
-+	cryp->last_ctr[1] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV0RR));
-+	cryp->last_ctr[2] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV1LR));
-+	cryp->last_ctr[3] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV1RR));
- }
- 
- static bool stm32_cryp_irq_read_data(struct stm32_cryp *cryp)
--- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
