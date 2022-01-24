@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3344DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC231C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586327AbiAXW0O (ORCPT
+        id S1586352AbiAXW0S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:26:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45348 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453740AbiAXVas (ORCPT
+        Mon, 24 Jan 2022 17:26:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51424 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453775AbiAXVay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:30:48 -0500
+        Mon, 24 Jan 2022 16:30:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0921DB811FB;
-        Mon, 24 Jan 2022 21:30:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20650C340E4;
-        Mon, 24 Jan 2022 21:30:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F71A614DD;
+        Mon, 24 Jan 2022 21:30:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7A7FC340E7;
+        Mon, 24 Jan 2022 21:30:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059845;
-        bh=B7cGSsiuqg4gQODx/pWR3gyLXkSyG0HwME+dWqp/SZM=;
+        s=korg; t=1643059851;
+        bh=PVz8ZLaocFB/t0tWMTtejzI8NBaFzsQAP49wgSYBZck=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jDFhCR2Dcwo9zeivPEkSdyctHsnf/5aJNM6GvZ7OT8KRbsyTyVKJPe4dZcOsl29PQ
-         0YfZKA5EeNi4BwRX7tOgDniA72CrFmRP9Z/o+ZoSPBkreANOWFUfqHAoWnGmaM5nYH
-         ZcYWfZTujFpTAeSYxLO6zV3uCQtrFFeFvG4KlgLI=
+        b=OoMghYkZMvsWBRrs4lRyGxHTP0niN1mzwX7Slqele+2yX0yRFg3o/Jr2HRnV8W89v
+         +a8+QdPzR9S0vbv14jTZj0ot7vCqf1IuFKO8dRpSrCCG5ztTYw2eyfUKy0syei6InN
+         Q1OaCcnyRhEKuPFFEfbrmg+tKDfJjhhtelK5yIXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bean Huo <beanhuo@micron.com>,
-        Bart Van Assche <bvanassche@acm.org>,
+        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
+        James Smart <jsmart2021@gmail.com>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0753/1039] scsi: ufs: Fix a kernel crash during shutdown
-Date:   Mon, 24 Jan 2022 19:42:22 +0100
-Message-Id: <20220124184150.648170734@linuxfoundation.org>
+Subject: [PATCH 5.16 0754/1039] scsi: lpfc: Fix leaked lpfc_dmabuf mbox allocations with NPIV
+Date:   Mon, 24 Jan 2022 19:42:23 +0100
+Message-Id: <20220124184150.679689672@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,83 +48,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 3489c34bd02b73a72646037d673a122a53cee174 ]
+[ Upstream commit f0d3919697492950f57a26a1093aee53880d669d ]
 
-Fix the following kernel crash:
+During rmmod testing, messages appeared indicating lpfc_mbuf_pool entries
+were still busy. This situation was only seen doing rmmod after at least 1
+vport (NPIV) instance was created and destroyed. The number of messages
+scaled with the number of vports created.
 
-Unable to handle kernel paging request at virtual address ffffffc91e735000
-Call trace:
- __queue_work+0x26c/0x624
- queue_work_on+0x6c/0xf0
- ufshcd_hold+0x12c/0x210
- __ufshcd_wl_suspend+0xc0/0x400
- ufshcd_wl_shutdown+0xb8/0xcc
- device_shutdown+0x184/0x224
- kernel_restart+0x4c/0x124
- __arm64_sys_reboot+0x194/0x264
- el0_svc_common+0xc8/0x1d4
- do_el0_svc+0x30/0x8c
- el0_svc+0x20/0x30
- el0_sync_handler+0x84/0xe4
- el0_sync+0x1bc/0x1c0
+When a vport is created, it can receive a PLOGI from another initiator
+Nport.  When this happens, the driver prepares to ack the PLOGI and
+prepares an RPI for registration (via mbx cmd) which includes an mbuf
+allocation. During the unsolicited PLOGI processing and after the RPI
+preparation, the driver recognizes it is one of the vport instances and
+decides to reject the PLOGI. During the LS_RJT preparation for the PLOGI,
+the mailbox struct allocated for RPI registration is freed, but the mbuf
+that was also allocated is not released.
 
-Fix this crash by ungating the clock before destroying the work queue on
-which clock gating work is queued.
+Fix by freeing the mbuf with the mailbox struct in the LS_RJT path.
 
-Link: https://lore.kernel.org/r/20211203231950.193369-15-bvanassche@acm.org
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+As part of the code review to figure the issue out a couple of other areas
+where found that also would not have released the mbuf. Those are cleaned
+up as well.
+
+Link: https://lore.kernel.org/r/20211204002644.116455-2-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
 Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/scsi/lpfc/lpfc_els.c       | 6 +++++-
+ drivers/scsi/lpfc/lpfc_init.c      | 8 ++++++--
+ drivers/scsi/lpfc/lpfc_nportdisc.c | 6 ++++++
+ 3 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 4394081806978..c94377aa82739 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -1666,7 +1666,8 @@ int ufshcd_hold(struct ufs_hba *hba, bool async)
- 	bool flush_result;
- 	unsigned long flags;
- 
--	if (!ufshcd_is_clkgating_allowed(hba))
-+	if (!ufshcd_is_clkgating_allowed(hba) ||
-+	    !hba->clk_gating.is_initialized)
- 		goto out;
- 	spin_lock_irqsave(hba->host->host_lock, flags);
- 	hba->clk_gating.active_reqs++;
-@@ -1826,7 +1827,7 @@ static void __ufshcd_release(struct ufs_hba *hba)
- 
- 	if (hba->clk_gating.active_reqs || hba->clk_gating.is_suspended ||
- 	    hba->ufshcd_state != UFSHCD_STATE_OPERATIONAL ||
--	    hba->outstanding_tasks ||
-+	    hba->outstanding_tasks || !hba->clk_gating.is_initialized ||
- 	    hba->active_uic_cmd || hba->uic_async_done ||
- 	    hba->clk_gating.state == CLKS_OFF)
- 		return;
-@@ -1961,11 +1962,15 @@ static void ufshcd_exit_clk_gating(struct ufs_hba *hba)
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index e83453bea2aee..5c10416c1c75a 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -6899,6 +6899,7 @@ static int
+ lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
  {
- 	if (!hba->clk_gating.is_initialized)
- 		return;
-+
- 	ufshcd_remove_clk_gating_sysfs(hba);
--	cancel_work_sync(&hba->clk_gating.ungate_work);
--	cancel_delayed_work_sync(&hba->clk_gating.gate_work);
--	destroy_workqueue(hba->clk_gating.clk_gating_workq);
-+
-+	/* Ungate the clock if necessary. */
-+	ufshcd_hold(hba, false);
- 	hba->clk_gating.is_initialized = false;
-+	ufshcd_release(hba);
-+
-+	destroy_workqueue(hba->clk_gating.clk_gating_workq);
- }
+ 	LPFC_MBOXQ_t *mbox = NULL;
++	struct lpfc_dmabuf *mp;
+ 	int rc;
  
- /* Must be called with host lock acquired */
+ 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
+@@ -6914,8 +6915,11 @@ lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
+ 	mbox->mbox_cmpl = lpfc_mbx_cmpl_rdp_page_a0;
+ 	mbox->ctx_ndlp = (struct lpfc_rdp_context *)rdp_context;
+ 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
+-	if (rc == MBX_NOT_FINISHED)
++	if (rc == MBX_NOT_FINISHED) {
++		mp = (struct lpfc_dmabuf *)mbox->ctx_buf;
++		lpfc_mbuf_free(phba, mp->virt, mp->phys);
+ 		goto issue_mbox_fail;
++	}
+ 
+ 	return 0;
+ 
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index ba17a8f740a95..7628b0634c57a 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -5373,8 +5373,10 @@ lpfc_sli4_async_link_evt(struct lpfc_hba *phba,
+ 	 */
+ 	if (!(phba->hba_flag & HBA_FCOE_MODE)) {
+ 		rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
+-		if (rc == MBX_NOT_FINISHED)
++		if (rc == MBX_NOT_FINISHED) {
++			lpfc_mbuf_free(phba, mp->virt, mp->phys);
+ 			goto out_free_dmabuf;
++		}
+ 		return;
+ 	}
+ 	/*
+@@ -6337,8 +6339,10 @@ lpfc_sli4_async_fc_evt(struct lpfc_hba *phba, struct lpfc_acqe_fc_la *acqe_fc)
+ 	}
+ 
+ 	rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
+-	if (rc == MBX_NOT_FINISHED)
++	if (rc == MBX_NOT_FINISHED) {
++		lpfc_mbuf_free(phba, mp->virt, mp->phys);
+ 		goto out_free_dmabuf;
++	}
+ 	return;
+ 
+ out_free_dmabuf:
+diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
+index 27263f02ab9f6..7d717a4ac14d1 100644
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -322,6 +322,7 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ {
+ 	struct lpfc_hba    *phba = vport->phba;
+ 	struct lpfc_dmabuf *pcmd;
++	struct lpfc_dmabuf *mp;
+ 	uint64_t nlp_portwwn = 0;
+ 	uint32_t *lp;
+ 	IOCB_t *icmd;
+@@ -571,6 +572,11 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 		 * a default RPI.
+ 		 */
+ 		if (phba->sli_rev == LPFC_SLI_REV4) {
++			mp = (struct lpfc_dmabuf *)login_mbox->ctx_buf;
++			if (mp) {
++				lpfc_mbuf_free(phba, mp->virt, mp->phys);
++				kfree(mp);
++			}
+ 			mempool_free(login_mbox, phba->mbox_mem_pool);
+ 			login_mbox = NULL;
+ 		} else {
 -- 
 2.34.1
 
