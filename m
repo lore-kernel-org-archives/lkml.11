@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00647C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BD5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:02:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344660AbiAXTBt (ORCPT
+        id S1344705AbiAXTB4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:01:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55618 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343518AbiAXS5t (ORCPT
+        Mon, 24 Jan 2022 14:01:56 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56912 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344104AbiAXS5y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:49 -0500
+        Mon, 24 Jan 2022 13:57:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 09CC5B8121C;
-        Mon, 24 Jan 2022 18:57:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF25C340E5;
-        Mon, 24 Jan 2022 18:57:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD52C61318;
+        Mon, 24 Jan 2022 18:57:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88235C340E5;
+        Mon, 24 Jan 2022 18:57:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050666;
-        bh=8HhqhLYUtzscszQjAX1dCUydahnbhPvnAe7pYo2zT+Y=;
+        s=korg; t=1643050673;
+        bh=X2HMSLWSypMHKIOh7Y660kYKewFTYjIlF/6xNVgEuFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zYd5Bvls/YEUFsQUt3AK+YZrMqvsifYgAWqP3YEYKCLIIZBjl4Xt7C61vzSbRDL/M
-         oLKHITcHGOKlILK4sbbiO6O1BEnAFq0ysFNhfpczQLBMmfBHlco6mQU0PvSoMhjX/g
-         cKc7gFFq2NROdJo5N++c8yGJ8FRG2NksbP72HjHI=
+        b=BYUQYybYptfOC0sbkpaRLon2SWR6uAZWWwcFZHpiNSZxHiZdzyMh5xD8CjueZKLCX
+         XEzjyKfr0VNJEV10QYuTc9ZGfL7+n0FBBw0x5UgNIMY6N1uk3rNzlavr0oCi9CRuDj
+         u2cwQ0c/S//Ul0ZFJXQ39pz4UWlrolUu/TIYSuUE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 073/157] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 24 Jan 2022 19:42:43 +0100
-Message-Id: <20220124183935.107317641@linuxfoundation.org>
+Subject: [PATCH 4.9 075/157] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
+Date:   Mon, 24 Jan 2022 19:42:45 +0100
+Message-Id: <20220124183935.166532036@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,38 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
 
-Fault injection test report debugfs entry leak as follows:
+Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
+when ar->tx_cmd->odata is NULL. The patch adds a null check to
+prevent such case.
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
+ ar5523_cmd+0x46a/0x581 [ar5523]
+ ar5523_probe.cold+0x1b7/0x18da [ar5523]
+ ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
+ ? __pm_runtime_set_status+0x54a/0x8f0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? pm_runtime_barrier+0x220/0x220
+ ? __pm_runtime_resume+0xb1/0xf0
+ usb_probe_interface+0x25b/0x710
+ really_probe+0x209/0x5d0
+ driver_probe_device+0xc6/0x1b0
+ device_driver_attach+0xe2/0x120
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
+I found the bug using a custome USBFuzz port. It's a research work
+to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
+providing hand-crafted usb descriptors to QEMU.
 
-Add the remove debugfs code to fix it.
+After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
+I got the null-ptr-deref bug. I believe the bug is triggerable whenever
+cmd->odata is NULL. After patching, I tested with the same input and no
+longer see the KASAN report.
 
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+This was NOT tested on a real device.
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index b43f31203a430..40e6e5feb1e06 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3148,6 +3148,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
- 
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
+index 9f4ee1d125b68..0c6b33c464cd9 100644
+--- a/drivers/net/wireless/ath/ar5523/ar5523.c
++++ b/drivers/net/wireless/ath/ar5523/ar5523.c
+@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
+ 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
+ 			return;
+ 		}
++		if (!cmd->odata) {
++			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
++			return;
++		}
+ 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
+ 		cmd->olen = sizeof(u32);
+ 		cmd->res = 0;
 -- 
 2.34.1
 
