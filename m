@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CCA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C813EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380711AbiAXWHP (ORCPT
+        id S1378953AbiAXWHh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:07:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48974 "EHLO
+        Mon, 24 Jan 2022 17:07:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449162AbiAXVO7 (ORCPT
+        with ESMTP id S1449139AbiAXVO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:14:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12CD4C061B39;
-        Mon, 24 Jan 2022 12:11:47 -0800 (PST)
+        Mon, 24 Jan 2022 16:14:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D80BC0610C6;
+        Mon, 24 Jan 2022 12:11:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D0BC4B8122A;
-        Mon, 24 Jan 2022 20:11:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F16B0C340E5;
-        Mon, 24 Jan 2022 20:11:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CEC26091A;
+        Mon, 24 Jan 2022 20:11:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF7B9C340E7;
+        Mon, 24 Jan 2022 20:11:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055104;
-        bh=4GRE6TVeOWy3Db5/cotVmYGmkp0EODEXe2xoBsTp6CE=;
+        s=korg; t=1643055095;
+        bh=uYz/Ns3E+w2ZjOC+zO1qZXD4ND4rwbLnrUZCfFXeUSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1X9v8KBV1F9buvXtg1NYggITw1SOJfq9EwtB2X5aICFmYdwXjnTYsty+MQcAsfm5H
-         1QYdycJU2kg+UDxx3hETKwAZQfGgtyPWnkui0ikAgt/TYXt7z4PdnkaXt9vk7jjpoU
-         1Iy+yDHasa+F3yx0iKTGe68jaPNY4WJrBbkb4vtA=
+        b=d83INRVXWrBDG+ACg43+4GBeQaudswPJpoDMoPJ/tbupjvSDkOZPc6pwMaBb3+lZh
+         1bxWQVxSWahE1/HOqd6AvwQAgGvlvmGx+iSad7DVgyKZr64k/WloQf8d3WOg1x98zw
+         kMB3TLtKDvEFQnKMOFeM5ZIxlrkj8YvK2Rh/yJkI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.15 010/846] f2fs: fix to do sanity check in is_alive()
-Date:   Mon, 24 Jan 2022 19:32:07 +0100
-Message-Id: <20220124184101.255054989@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 038/846] ksmbd: limits exceeding the maximum allowable outstanding requests
+Date:   Mon, 24 Jan 2022 19:32:35 +0100
+Message-Id: <20220124184102.259889512@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,34 +49,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit 77900c45ee5cd5da63bd4d818a41dbdf367e81cd upstream.
+commit b589f5db6d4af8f14d70e31e1276b4c017668a26 upstream.
 
-In fuzzed image, SSA table may indicate that a data block belongs to
-invalid node, which node ID is out-of-range (0, 1, 2 or max_nid), in
-order to avoid migrating inconsistent data in such corrupted image,
-let's do sanity check anyway before data block migration.
+If the client ignores the CreditResponse received from the server and
+continues to send the request, ksmbd limits the requests if it exceeds
+smb2 max credits.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/gc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ fs/ksmbd/connection.c |    1 +
+ fs/ksmbd/connection.h |    3 ++-
+ fs/ksmbd/smb2misc.c   |    9 +++++++++
+ fs/ksmbd/smb2pdu.c    |    1 +
+ 4 files changed, 13 insertions(+), 1 deletion(-)
 
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -1023,6 +1023,9 @@ static bool is_alive(struct f2fs_sb_info
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+--- a/fs/ksmbd/connection.c
++++ b/fs/ksmbd/connection.c
+@@ -62,6 +62,7 @@ struct ksmbd_conn *ksmbd_conn_alloc(void
+ 	atomic_set(&conn->req_running, 0);
+ 	atomic_set(&conn->r_count, 0);
+ 	conn->total_credits = 1;
++	conn->outstanding_credits = 1;
+ 
+ 	init_waitqueue_head(&conn->req_running_q);
+ 	INIT_LIST_HEAD(&conn->conns_list);
+--- a/fs/ksmbd/connection.h
++++ b/fs/ksmbd/connection.h
+@@ -61,7 +61,8 @@ struct ksmbd_conn {
+ 	atomic_t			req_running;
+ 	/* References which are made for this Server object*/
+ 	atomic_t			r_count;
+-	unsigned short			total_credits;
++	unsigned int			total_credits;
++	unsigned int			outstanding_credits;
+ 	spinlock_t			credits_lock;
+ 	wait_queue_head_t		req_running_q;
+ 	/* Lock to protect requests list*/
+--- a/fs/ksmbd/smb2misc.c
++++ b/fs/ksmbd/smb2misc.c
+@@ -338,7 +338,16 @@ static int smb2_validate_credit_charge(s
+ 			    credit_charge, conn->total_credits);
+ 		ret = 1;
+ 	}
++
++	if ((u64)conn->outstanding_credits + credit_charge > conn->vals->max_credits) {
++		ksmbd_debug(SMB, "Limits exceeding the maximum allowable outstanding requests, given : %u, pending : %u\n",
++			    credit_charge, conn->outstanding_credits);
++		ret = 1;
++	} else
++		conn->outstanding_credits += credit_charge;
++
+ 	spin_unlock(&conn->credits_lock);
++
+ 	return ret;
+ }
+ 
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -324,6 +324,7 @@ int smb2_set_rsp_credits(struct ksmbd_wo
  	}
  
-+	if (f2fs_check_nid_range(sbi, dni->ino))
-+		return false;
-+
- 	*nofs = ofs_of_node(node_page);
- 	source_blkaddr = data_blkaddr(NULL, node_page, ofs_in_node);
- 	f2fs_put_page(node_page, 1);
+ 	conn->total_credits -= credit_charge;
++	conn->outstanding_credits -= credit_charge;
+ 	credits_requested = max_t(unsigned short,
+ 				  le16_to_cpu(req_hdr->CreditRequest), 1);
+ 
 
 
