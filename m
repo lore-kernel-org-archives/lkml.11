@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED71C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451400AbiAXVWv (ORCPT
+        id S1451446AbiAXVW4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442670AbiAXUzE (ORCPT
+        Mon, 24 Jan 2022 16:22:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50276 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442810AbiAXUzY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0240AC047CE5;
-        Mon, 24 Jan 2022 12:00:02 -0800 (PST)
+        Mon, 24 Jan 2022 15:55:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9ECC6B81218;
-        Mon, 24 Jan 2022 20:00:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B44C9C340E5;
-        Mon, 24 Jan 2022 19:59:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58B59B8105C;
+        Mon, 24 Jan 2022 20:55:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB13C340E5;
+        Mon, 24 Jan 2022 20:55:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054400;
-        bh=sDAo1XnIxCI4a6omn15xDtLahALW8/Pua+mmxRBmHWo=;
+        s=korg; t=1643057722;
+        bh=l+gtYq5zMqIJC9T7FFg/WoG6gd4YYnKZA2mw7RhH/1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A5CcKB8hTvaBfwx4Xo4Qk+4E+Z6SurcG42hoPzA6WS18o39zqv96Klwdr/iUa66Hj
-         bc/9y7wRrCElb1QEwTKpsNDF/eKp02pTcAA9i4bzFdLi5twCOl9oJdtnBbmeyMt5e1
-         G3B0nq6HpYbWOw0p/Uw+Ruw7F+ishBm0hO4Wl94U=
+        b=aqFLcsiR+XlvMopzzu8l53+x4PZ59325kFSFLrjyu5PEQhdx4Gq2jo2QXYyLv21W7
+         R9TW9YO5jS24UqrBgBkEOD4NRyedNDzOjpagisDdw31MEYrx6W4PoSsPpD4pgfSe7M
+         9vA055luz9pmECekrDoeOgZNbzhM2Wj6DWdlk2/Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 377/563] iwlwifi: mvm: Fix calculation of frame length
-Date:   Mon, 24 Jan 2022 19:42:22 +0100
-Message-Id: <20220124184037.466685641@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Stable@vger.kernel.org
+Subject: [PATCH 5.16 0058/1039] iio: trigger: Fix a scheduling whilst atomic issue seen on tsc2046
+Date:   Mon, 24 Jan 2022 19:30:47 +0100
+Message-Id: <20220124184127.096367441@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,72 +50,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 40a0b38d7a7f91a6027287e0df54f5f547e8d27e ]
+commit 9020ef659885f2622cfb386cc229b6d618362895 upstream.
 
-The RADA might include in the Rx frame the MIC and CRC bytes.
-These bytes should be removed for non monitor interfaces and
-should not be passed to mac80211.
+IIO triggers are software IRQ chips that split an incoming IRQ into
+separate IRQs routed to all devices using the trigger.
+When all consumers are done then a trigger callback reenable() is
+called.  There are a few circumstances under which this can happen
+in atomic context.
 
-Fix the Rx processing to remove the extra bytes on non monitor
-cases.
+1) A single user of the trigger that calls the iio_trigger_done()
+function from interrupt context.
+2) A race between disconnecting the last device from a trigger and
+the trigger itself sucessfully being disabled.
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219121514.098be12c801e.I1d81733d8a75b84c3b20eb6e0d14ab3405ca6a86@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+To avoid a resulting scheduling whilst atomic, close this second corner
+by using schedule_work() to ensure the reenable is not done in atomic
+context.
+
+Note that drivers must be careful to manage the interaction of
+set_state() and reenable() callbacks to ensure appropriate reference
+counting if they are relying on the same hardware controls.
+
+Deliberately taking this the slow path rather than via a fixes tree
+because the error has hard to hit and I would like it to soak for a while
+before hitting a release kernel.
+
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: <Stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20211017172209.112387-1-jic23@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 27 +++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/iio/industrialio-trigger.c |   36 +++++++++++++++++++++++++++++++++++-
+ include/linux/iio/trigger.h        |    2 ++
+ 2 files changed, 37 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-index 838734fec5023..86b3fb321dfdd 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-@@ -177,12 +177,39 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
- 	struct iwl_rx_mpdu_desc *desc = (void *)pkt->data;
- 	unsigned int headlen, fraglen, pad_len = 0;
- 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
-+	u8 mic_crc_len = u8_get_bits(desc->mac_flags1,
-+				     IWL_RX_MPDU_MFLG1_MIC_CRC_LEN_MASK) << 1;
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -162,6 +162,39 @@ static struct iio_trigger *iio_trigger_a
+ 	return trig;
+ }
  
- 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
- 		len -= 2;
- 		pad_len = 2;
- 	}
- 
++static void iio_reenable_work_fn(struct work_struct *work)
++{
++	struct iio_trigger *trig = container_of(work, struct iio_trigger,
++						reenable_work);
++
 +	/*
-+	 * For non monitor interface strip the bytes the RADA might not have
-+	 * removed. As monitor interface cannot exist with other interfaces
-+	 * this removal is safe.
++	 * This 'might' occur after the trigger state is set to disabled -
++	 * in that case the driver should skip reenabling.
 +	 */
-+	if (mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS)) {
-+		u32 pkt_flags = le32_to_cpu(pkt->len_n_flags);
++	trig->ops->reenable(trig);
++}
 +
-+		/*
-+		 * If RADA was not enabled then decryption was not performed so
-+		 * the MIC cannot be removed.
-+		 */
-+		if (!(pkt_flags & FH_RSCSR_RADA_EN)) {
-+			if (WARN_ON(crypt_len > mic_crc_len))
-+				return -EINVAL;
++/*
++ * In general, reenable callbacks may need to sleep and this path is
++ * not performance sensitive, so just queue up a work item
++ * to reneable the trigger for us.
++ *
++ * Races that can cause this.
++ * 1) A handler occurs entirely in interrupt context so the counter
++ *    the final decrement is still in this interrupt.
++ * 2) The trigger has been removed, but one last interrupt gets through.
++ *
++ * For (1) we must call reenable, but not in atomic context.
++ * For (2) it should be safe to call reenanble, if drivers never blindly
++ * reenable after state is off.
++ */
++static void iio_trigger_notify_done_atomic(struct iio_trigger *trig)
++{
++	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
++	    trig->ops->reenable)
++		schedule_work(&trig->reenable_work);
++}
 +
-+			mic_crc_len -= crypt_len;
-+		}
-+
-+		if (WARN_ON(mic_crc_len > len))
-+			return -EINVAL;
-+
-+		len -= mic_crc_len;
-+	}
-+
- 	/* If frame is small enough to fit in skb->head, pull it completely.
- 	 * If not, only pull ieee80211_hdr (including crypto if present, and
- 	 * an additional 8 bytes for SNAP/ethertype, see below) so that
--- 
-2.34.1
-
+ void iio_trigger_poll(struct iio_trigger *trig)
+ {
+ 	int i;
+@@ -173,7 +206,7 @@ void iio_trigger_poll(struct iio_trigger
+ 			if (trig->subirqs[i].enabled)
+ 				generic_handle_irq(trig->subirq_base + i);
+ 			else
+-				iio_trigger_notify_done(trig);
++				iio_trigger_notify_done_atomic(trig);
+ 		}
+ 	}
+ }
+@@ -535,6 +568,7 @@ struct iio_trigger *viio_trigger_alloc(s
+ 	trig->dev.type = &iio_trig_type;
+ 	trig->dev.bus = &iio_bus_type;
+ 	device_initialize(&trig->dev);
++	INIT_WORK(&trig->reenable_work, iio_reenable_work_fn);
+ 
+ 	mutex_init(&trig->pool_lock);
+ 	trig->subirq_base = irq_alloc_descs(-1, 0,
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -55,6 +55,7 @@ struct iio_trigger_ops {
+  * @attached_own_device:[INTERN] if we are using our own device as trigger,
+  *			i.e. if we registered a poll function to the same
+  *			device as the one providing the trigger.
++ * @reenable_work:	[INTERN] work item used to ensure reenable can sleep.
+  **/
+ struct iio_trigger {
+ 	const struct iio_trigger_ops	*ops;
+@@ -74,6 +75,7 @@ struct iio_trigger {
+ 	unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
+ 	struct mutex			pool_lock;
+ 	bool				attached_own_device;
++	struct work_struct		reenable_work;
+ };
+ 
+ 
 
 
