@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D95C47080
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE17DC47082
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409584AbiAYA1C (ORCPT
+        id S3409774AbiAYA1X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:27:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573401AbiAXVoz (ORCPT
+        Mon, 24 Jan 2022 19:27:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53904 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573325AbiAXVou (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880B2C034036;
-        Mon, 24 Jan 2022 12:32:11 -0800 (PST)
+        Mon, 24 Jan 2022 16:44:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 69F0D61505;
-        Mon, 24 Jan 2022 20:32:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A9D3C340E5;
-        Mon, 24 Jan 2022 20:32:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D0E3B8105C;
+        Mon, 24 Jan 2022 21:44:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FE1FC340E4;
+        Mon, 24 Jan 2022 21:44:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056330;
-        bh=77zrGaV5IqpQkO6T/hLSsP09WV79+S1+/eQmIp2qcPk=;
+        s=korg; t=1643060687;
+        bh=cMFAZwDQpgjABQ2Q/fX+54tfhOManCJbXO3VeKI8TMU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c7mULvmU9Uivd4mF2SVkJHyWE4MSZeARYBKjwuBKy30csi3nFXRKWFJpg4UJzdnPz
-         KGnpUVBQ9OJT86vVmj1Cpyae1ucS8k96mwBiD7NF3CElAtmx42/6FPtoH6FotWj01N
-         EcaYcvqIZsz02LgWbaS6zXaQNYc41DZ9Bj3yyCq8=
+        b=hmpGdyrx9bwPeeVzRdkFfeYc6fkrVve81IzlTEa7Hy5PBq+16A0kyW5wwLL5wzeGC
+         jJYZlerHqA9JCM2KwjZMGQYPCbMflSzYVOZf9cwyid91GSUtWh8FguePCJM+ocCTCU
+         k4myKoZ23plLH9i8RJaXxfjV+mY/+g/fAS43laL4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 449/846] ASoC: imx-card: improve the sound quality for low rate
-Date:   Mon, 24 Jan 2022 19:39:26 +0100
-Message-Id: <20220124184116.482259576@linuxfoundation.org>
+        stable@vger.kernel.org, Jussi Maki <joamaki@gmail.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>, Moshe Tal <moshet@nvidia.com>,
+        Jay Vosburgh <jay.vosburgh@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 1030/1039] bonding: Fix extraction of ports from the packet headers
+Date:   Mon, 24 Jan 2022 19:46:59 +0100
+Message-Id: <20220124184159.911513508@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,62 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengjiu Wang <shengjiu.wang@nxp.com>
+From: Moshe Tal <moshet@nvidia.com>
 
-[ Upstream commit 3969341813eb56d2dfc39bb64229359a6ae3c195 ]
+commit 429e3d123d9a50cc9882402e40e0ac912d88cfcf upstream.
 
-According to RM, on auto mode:
-For codec AK4458 and AK4497, the lowest ratio of MLCK/FS is 256
-if sample rate is 8kHz-48kHz,
-For codec AK5558, the lowest ratio of MLCK/FS is 512 if sample
-rate is 8kHz-48kHz.
+Wrong hash sends single stream to multiple output interfaces.
 
-With these setting the sound quality for 8kHz-48kHz can be improved.
+The offset calculation was relative to skb->head, fix it to be relative
+to skb->data.
 
-Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
-Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
-Link: https://lore.kernel.org/r/1641292835-19085-4-git-send-email-shengjiu.wang@nxp.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a815bde56b15 ("net, bonding: Refactor bond_xmit_hash for use with
+xdp_buff")
+Reviewed-by: Jussi Maki <joamaki@gmail.com>
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Signed-off-by: Moshe Tal <moshet@nvidia.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/fsl/imx-card.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/bonding/bond_main.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
-index ad15974a22c3f..db947180617a6 100644
---- a/sound/soc/fsl/imx-card.c
-+++ b/sound/soc/fsl/imx-card.c
-@@ -120,7 +120,7 @@ struct imx_card_data {
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -3872,8 +3872,8 @@ u32 bond_xmit_hash(struct bonding *bond,
+ 	    skb->l4_hash)
+ 		return skb->hash;
  
- static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
- 	/* Normal, < 32kHz */
--	{ .rmin = 8000,   .rmax = 24000,  .wmin = 1024, .wmax = 1024, },
-+	{ .rmin = 8000,   .rmax = 24000,  .wmin = 256,  .wmax = 1024, },
- 	/* Normal, 32kHz */
- 	{ .rmin = 32000,  .rmax = 32000,  .wmin = 256,  .wmax = 1024, },
- 	/* Normal */
-@@ -151,8 +151,8 @@ static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
- 	 * Table 7      - mapping multiplier and speed mode
- 	 * Tables 8 & 9 - mapping speed mode and LRCK fs
- 	 */
--	{ .rmin = 8000,   .rmax = 32000,  .wmin = 1024, .wmax = 1024, }, /* Normal, <= 32kHz */
--	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, }, /* Normal */
-+	{ .rmin = 8000,   .rmax = 32000,  .wmin = 256,  .wmax = 1024, }, /* Normal, <= 32kHz */
-+	{ .rmin = 44100,  .rmax = 48000,  .wmin = 256,  .wmax = 512, }, /* Normal */
- 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, }, /* Double */
- 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, }, /* Quad */
- 	{ .rmin = 352800, .rmax = 384000, .wmin = 128,  .wmax = 128, }, /* Oct */
-@@ -164,7 +164,7 @@ static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
-  * (Table 4 from datasheet)
-  */
- static struct imx_akcodec_fs_mul ak5558_fs_mul[] = {
--	{ .rmin = 8000,   .rmax = 32000,  .wmin = 1024, .wmax = 1024, },
-+	{ .rmin = 8000,   .rmax = 32000,  .wmin = 512,  .wmax = 1024, },
- 	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, },
- 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, },
- 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, },
--- 
-2.34.1
-
+-	return __bond_xmit_hash(bond, skb, skb->head, skb->protocol,
+-				skb->mac_header, skb->network_header,
++	return __bond_xmit_hash(bond, skb, skb->data, skb->protocol,
++				skb_mac_offset(skb), skb_network_offset(skb),
+ 				skb_headlen(skb));
+ }
+ 
 
 
