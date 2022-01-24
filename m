@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19546C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3312C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347313AbiAXTbi (ORCPT
+        id S1346863AbiAXTbd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44700 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347562AbiAXTWg (ORCPT
+        Mon, 24 Jan 2022 14:31:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349925AbiAXTWz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:36 -0500
+        Mon, 24 Jan 2022 14:22:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DF8C02B865;
+        Mon, 24 Jan 2022 11:08:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C684B81253;
-        Mon, 24 Jan 2022 19:22:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912B6C340EA;
-        Mon, 24 Jan 2022 19:22:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B3060B7B;
+        Mon, 24 Jan 2022 19:08:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31DDCC340E8;
+        Mon, 24 Jan 2022 19:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052154;
-        bh=GLtLK6jPA6nPtqriz3ZVOeIfZ5OpRTdv6BTEh612+3M=;
+        s=korg; t=1643051324;
+        bh=R7V9/x7dkmKmUlvwmV4BF5Mr5APc4p8ioiYZydxfyRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=INCVsA7GwDQhjnM1wL2kvp8Seh0SDlmhkBN8V1JcaCFW9mAdxWe0H65bxmFMTyNY9
-         F38v7fpdD8qEVJ8tMzIqCN73HoZa5BqnfSsDVsmg7jTRw6R193VU+IyVTp2yYI+AtN
-         qPpGwzUWq/RuPg3Q5CdMgXWKlf1lFMF3ZHPutemo=
+        b=LhSvSf52qRW9iCzeWQB8DVBm7krQ6IxgIQ/uc0KRCqLxjgaVvZWI7v3UQFm2zDkuD
+         XwrQDEcUo3IBxD7bq7ZdEq8F99voWimXZ246ihKOSlU4Vl9qZpRUQmo+v4wsE1fUzT
+         c+tobpHa+0tbC/BM4AYMX58UMIwoHaQ8VgXpaWNo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 179/239] powerpc/powernv: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:37 +0100
-Message-Id: <20220124183948.791126261@linuxfoundation.org>
+Subject: [PATCH 4.14 108/186] media: igorplugusb: receiver overflow should be reported
+Date:   Mon, 24 Jan 2022 19:43:03 +0100
+Message-Id: <20220124183940.588661906@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,57 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Sean Young <sean@mess.org>
 
-[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
+[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Without this, some IR will be missing mid-stream and we might decode
+something which never really occurred.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
-
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
-
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/rc/igorplugusb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
-index 6c7ad1d8b32ed..21f0edcfb84ad 100644
---- a/arch/powerpc/platforms/powernv/opal-lpc.c
-+++ b/arch/powerpc/platforms/powernv/opal-lpc.c
-@@ -400,6 +400,7 @@ void __init opal_lpc_init(void)
- 		if (!of_get_property(np, "primary", NULL))
- 			continue;
- 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
-+		of_node_put(np);
- 		break;
- 	}
- 	if (opal_lpc_chip_id < 0)
+diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
+index a5ea86be8f449..2a0325d1f9def 100644
+--- a/drivers/media/rc/igorplugusb.c
++++ b/drivers/media/rc/igorplugusb.c
+@@ -73,9 +73,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
+ 	if (start >= len) {
+ 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
+ 	} else {
+-		if (overflow > 0)
++		if (overflow > 0) {
+ 			dev_warn(ir->dev, "receive overflow, at least %u lost",
+ 								overflow);
++			ir_raw_event_reset(ir->rc);
++		}
+ 
+ 		do {
+ 			rawir.duration = ir->buf_in[i] * 85333;
 -- 
 2.34.1
 
