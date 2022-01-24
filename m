@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68264C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DE3C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848584AbiAXXWt (ORCPT
+        id S1848527AbiAXXWk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:22:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39114 "EHLO
+        Mon, 24 Jan 2022 18:22:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587812AbiAXW3n (ORCPT
+        with ESMTP id S1350239AbiAXWNi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:29:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3B41C02B866;
-        Mon, 24 Jan 2022 12:55:25 -0800 (PST)
+        Mon, 24 Jan 2022 17:13:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9641C0E260D;
+        Mon, 24 Jan 2022 12:44:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 930B8611DA;
-        Mon, 24 Jan 2022 20:55:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A3CEC340E5;
-        Mon, 24 Jan 2022 20:55:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6870B8121C;
+        Mon, 24 Jan 2022 20:44:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C53CC340E5;
+        Mon, 24 Jan 2022 20:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057725;
-        bh=kL6LzLw+oTORP83YCmczMg/dp0X5Xod6kpxH5jq3mtE=;
+        s=korg; t=1643057043;
+        bh=qSHAdX9uc0AHbgp4tUx3Otx5dAYl9F+lSQ3RPSFr8sE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2rYuaOLyKO+bGs0hx1ICPgsWOdtQoSHwLBfY6wJXQhJt30Rwm1PS6nu8Txm1y+Pku
-         aKwLXov0Viwd6fop7PeUh8VlVPTYRF0WUtc/M09qE8ZysXDg941xB2lsJ28hl+Rogm
-         JP/GDnQKt1jVvtH1yzTf+b2MpZvmTxs+3or+kiyg=
+        b=bn0BibNpREuozh37s+QcjV2RcSUylmuIn3ng7nlvRYZm3aZ0vLifQTQnn4Xhv/kiP
+         bdb7v7AdHRilcznFbATGqtzGX2MCm1zAJ0SpazO2c3IpJiG4XZniGAz15FjKimtT0j
+         BYdHpMCR9vkLVkKvOKLkTCtJ0jcEB8f0Nhz7XiSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>
-Subject: [PATCH 5.16 0059/1039] lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
-Date:   Mon, 24 Jan 2022 19:30:48 +0100
-Message-Id: <20220124184127.128262775@linuxfoundation.org>
+        stable@vger.kernel.org, Jay Chen <jkchen@linux.alibaba.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 651/846] irqchip/gic-v4: Disable redistributors view of the VPE table at boot time
+Date:   Mon, 24 Jan 2022 19:42:48 +0100
+Message-Id: <20220124184123.496115157@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,55 +51,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Marc Zyngier <maz@kernel.org>
 
-commit bc93a22a19eb2b68a16ecf04cdf4b2ed65aaf398 upstream.
+[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
 
-On a kernel without CONFIG_STRICT_KERNEL_RWX, running EXEC_RODATA
-test leads to "Illegal instruction" failure.
+Jay Chen reported that using a kdump kernel on a GICv4.1 system
+results in a RAS error being delivered when the secondary kernel
+configures the ITS's view of the new VPE table.
 
-Looking at the content of rodata_objcopy.o, we see that the
-function content zeroes only:
+As it turns out, that's because each RD still has a pointer to
+the previous instance of the VPE table, and that particular
+implementation is very upset by seeing two bits of the HW that
+should point to the same table with different values.
 
-	Disassembly of section .rodata:
+To solve this, let's invalidate any reference that any RD has to
+the VPE table when discovering the RDs. The ITS can then be
+programmed as expected.
 
-	0000000000000000 <.lkdtm_rodata_do_nothing>:
-	   0:	00 00 00 00 	.long 0x0
-
-Add the contents flag in order to keep the content of the section
-while renaming it.
-
-	Disassembly of section .rodata:
-
-	0000000000000000 <.lkdtm_rodata_do_nothing>:
-	   0:	4e 80 00 20 	blr
-
-Fixes: e9e08a07385e ("lkdtm: support llvm-objcopy")
-Cc: stable@vger.kernel.org
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/8900731fbc05fb8b0de18af7133a8fc07c3c53a1.1633712176.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Jay Chen <jkchen@linux.alibaba.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
+Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lkdtm/Makefile |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
---- a/drivers/misc/lkdtm/Makefile
-+++ b/drivers/misc/lkdtm/Makefile
-@@ -20,7 +20,7 @@ CFLAGS_REMOVE_rodata.o		+= $(CC_FLAGS_LT
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index fd4e9a37fea67..7bbccb13b896b 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -920,6 +920,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
+ {
+ 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
  
- OBJCOPYFLAGS :=
- OBJCOPYFLAGS_rodata_objcopy.o	:= \
--			--rename-section .noinstr.text=.rodata,alloc,readonly,load
-+			--rename-section .noinstr.text=.rodata,alloc,readonly,load,contents
- targets += rodata.o rodata_objcopy.o
- $(obj)/rodata_objcopy.o: $(obj)/rodata.o FORCE
- 	$(call if_changed,objcopy)
++	/* Boot-time cleanip */
++	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
++		u64 val;
++
++		/* Deactivate any present vPE */
++		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
++		if (val & GICR_VPENDBASER_Valid)
++			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
++					      ptr + SZ_128K + GICR_VPENDBASER);
++
++		/* Mark the VPE table as invalid */
++		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
++		val &= ~GICR_VPROPBASER_4_1_VALID;
++		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
++	}
++
+ 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
+ 
+ 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
+-- 
+2.34.1
+
 
 
