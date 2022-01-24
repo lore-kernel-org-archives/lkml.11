@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B39BC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA5EC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348268AbiAXTPI (ORCPT
+        id S1348427AbiAXTPW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:15:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:32836 "EHLO
+        Mon, 24 Jan 2022 14:15:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33282 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345813AbiAXTGZ (ORCPT
+        with ESMTP id S238066AbiAXTHB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:06:25 -0500
+        Mon, 24 Jan 2022 14:07:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6141E603DE;
-        Mon, 24 Jan 2022 19:06:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25BAAC340E5;
-        Mon, 24 Jan 2022 19:06:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0165060BFB;
+        Mon, 24 Jan 2022 19:06:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9B5FC340E5;
+        Mon, 24 Jan 2022 19:06:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051184;
-        bh=2C18HuDLscgc4+tKatxU9QstG6/auVKahETKdInN1gE=;
+        s=korg; t=1643051213;
+        bh=UUCikyKIDcs3Go+mASe8ngo1/9EOj+3ZGtzTSW63IPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqhaJDh1lxqDHj3g3dngicRQ2tjXlGkIsyZpRGZPZWgBIRKxrFbdTmcwPnYEboUdl
-         YYSrn9eAdqVB7h5fScfsQzLVqvNI3N0a0gs5ZgfdDIfj/BcMnl7fgLKaWxY59SsMRt
-         Ct8zxF8c56ROrpSm9BKUKH88pZkWEYJSBk2Kjin0=
+        b=rfIthHfbCgbR07fdvGhHvjdW8V1Yf7WPPskGidsZuYIVZ1tLUoGu28Qel9zrLpRD5
+         v2pgiWAN+jT/KOtHJsGstvp2Lr3bnxHDmJz7VJ1hFvlIcKGrQQmdK/APhvPlu/vo46
+         R6vFjHPPxmwBBkijdgGiGRqRtD3g+m9u4ZCU1P+A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 082/186] misc: lattice-ecp3-config: Fix task hung when firmware load failed
-Date:   Mon, 24 Jan 2022 19:42:37 +0100
-Message-Id: <20220124183939.758150635@linuxfoundation.org>
+Subject: [PATCH 4.14 090/186] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 24 Jan 2022 19:42:45 +0100
+Message-Id: <20220124183940.007016835@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,93 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-[ Upstream commit fcee5ce50bdb21116711e38635e3865594af907e ]
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-When firmware load failed, kernel report task hung as follows:
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-INFO: task xrun:5191 blocked for more than 147 seconds.
-      Tainted: G        W         5.16.0-rc5-next-20211220+ #11
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:xrun            state:D stack:    0 pid: 5191 ppid:   270 flags:0x00000004
-Call Trace:
- __schedule+0xc12/0x4b50 kernel/sched/core.c:4986
- schedule+0xd7/0x260 kernel/sched/core.c:6369 (discriminator 1)
- schedule_timeout+0x7aa/0xa80 kernel/time/timer.c:1857
- wait_for_completion+0x181/0x290 kernel/sched/completion.c:85
- lattice_ecp3_remove+0x32/0x40 drivers/misc/lattice-ecp3-config.c:221
- spi_remove+0x72/0xb0 drivers/spi/spi.c:409
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
 
-lattice_ecp3_remove() wait for signals from firmware loading, but when
-load failed, firmware_load() does not send this signal. This cause
-device remove hung. Fix it by sending signal even if load failed.
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
 
-Fixes: 781551df57c7 ("misc: Add Lattice ECP3 FPGA configuration via SPI")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Link: https://lore.kernel.org/r/20211228125522.3122284-1-weiyongjun1@huawei.com
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lattice-ecp3-config.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/misc/lattice-ecp3-config.c b/drivers/misc/lattice-ecp3-config.c
-index 626fdcaf25101..645d26536114f 100644
---- a/drivers/misc/lattice-ecp3-config.c
-+++ b/drivers/misc/lattice-ecp3-config.c
-@@ -81,12 +81,12 @@ static void firmware_load(const struct firmware *fw, void *context)
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index 6029f9b00b4a0..61795025f11b6 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -608,7 +608,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
  
- 	if (fw == NULL) {
- 		dev_err(&spi->dev, "Cannot load firmware, aborting\n");
--		return;
-+		goto out;
- 	}
- 
- 	if (fw->size == 0) {
- 		dev_err(&spi->dev, "Error: Firmware size is 0!\n");
--		return;
-+		goto out;
- 	}
- 
- 	/* Fill dummy data (24 stuffing bits for commands) */
-@@ -108,7 +108,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 		dev_err(&spi->dev,
- 			"Error: No supported FPGA detected (JEDEC_ID=%08x)!\n",
- 			jedec_id);
--		return;
-+		goto out;
- 	}
- 
- 	dev_info(&spi->dev, "FPGA %s detected\n", ecp3_dev[i].name);
-@@ -121,7 +121,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 	buffer = kzalloc(fw->size + 8, GFP_KERNEL);
- 	if (!buffer) {
- 		dev_err(&spi->dev, "Error: Can't allocate memory!\n");
--		return;
-+		goto out;
- 	}
- 
- 	/*
-@@ -160,7 +160,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 			"Error: Timeout waiting for FPGA to clear (status=%08x)!\n",
- 			status);
- 		kfree(buffer);
--		return;
-+		goto out;
- 	}
- 
- 	dev_info(&spi->dev, "Configuring the FPGA...\n");
-@@ -186,7 +186,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 	release_firmware(fw);
- 
- 	kfree(buffer);
--
-+out:
- 	complete(&data->fw_loaded);
+-	return 0;
++	return stream_open(inode, file);
  }
  
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -1072,7 +1072,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
 -- 
 2.34.1
 
