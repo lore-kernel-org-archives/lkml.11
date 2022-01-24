@@ -2,135 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54FF3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848656AbiAXXXA (ORCPT
+        id S1849010AbiAXXYd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:23:00 -0500
-Received: from mga11.intel.com ([192.55.52.93]:52617 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1588580AbiAXWd3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:33:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643063603; x=1674599603;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=tiOqC+YWUvtyr8cm/6FJsbU9NS5AZTGBWl4YTiFLuE8=;
-  b=IjQ2k88tNlDdmWojeK1CZmda64IUJG+ElgukhIUz3erdDN/xPQMqgHqH
-   7HpX2QlnrzStIBdqov3Ak+mLE3wPd75i0gqpTh7btL6k08aFRNW+3yMvT
-   VjtXDQ4UGSt0AXuAcrt98vuoldZNEGleWQa+2yRGn3wKBZOS9ZZ1s3MEi
-   3mCTxnP2BNivYdbzJnGxZ/DaoGVH6+kSp09lxjhyPWh+IFI4SoMbCzQeH
-   VnME7XmAPQV+YgpR2RVSIceqjWx2e+/Bu0N1+PbQl+ROMm5qnYqpaeq2k
-   P0LdXF5TbekcyUEtJuRiubpNLTGtIgz2wekhGEWntZUt7ujlL5kudsma6
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="243760667"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="243760667"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:24:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="617403066"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Jan 2022 14:24:10 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC7kv-000IzK-Mt; Mon, 24 Jan 2022 22:24:09 +0000
-Date:   Tue, 25 Jan 2022 06:23:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: dtbs_check: arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:
- i2s@3830000: 'assigned-clock-rates' does not match any of the regexes:
- 'pinctrl-[0-9]+'
-Message-ID: <202201250436.5gEafGrM-lkp@intel.com>
+        Mon, 24 Jan 2022 18:24:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39504 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1588164AbiAXWbj (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:31:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 859B3C047CE3;
+        Mon, 24 Jan 2022 12:57:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 259A5611C8;
+        Mon, 24 Jan 2022 20:57:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 033E7C340E5;
+        Mon, 24 Jan 2022 20:57:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057828;
+        bh=5mn8xY2Rw2yKpuokmAWh9/JaNI4qxPL/snAS97h6juY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hvSKaK3iLPmDzpWIwoSiRXrEjsqHJ6LtUXH3Rcg8lauJa7x24IACbmMmk5IIyOUHB
+         q8hP4+HYdGt822MsA3V84ZD+AuJy1hpHW4Vb3f2yHgaUrw6Z0sZ1GI8zLN7V/WgL01
+         k8h0hioavYDL6YO6zz0jGdOzTXLyMIjSySqrRJq8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0093/1039] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
+Date:   Mon, 24 Jan 2022 19:31:22 +0100
+Message-Id: <20220124184128.282005419@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-commit: 58dfff3e984dfb96dae98008e6ea0ab92248d003 dt-bindings: Drop unnecessary pinctrl properties
-date:   4 days ago
-compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
-reproduce: make ARCH=arm dtbs_check
+From: Wang Hai <wanghai38@huawei.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
 
+I got a kernel BUG report when doing fault injection test:
 
-dtcheck warnings: (new ones prefixed by >>)
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pinctrl@13400000/wakeup-interrupt-controller: failed to match any schema with compatible: ['samsung,exynos4210-wakeup-eint']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pinctrl@13410000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pinctrl@14000000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pinctrl@14010000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pinctrl@3860000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/adma@3880000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pdma@121a0000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/pdma@121b0000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/mdma@10800000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/mdma@11c10000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
->> arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml: i2s@3830000: 'assigned-clock-rates' does not match any of the regexes: 'pinctrl-[0-9]+'
-   	From schema: Documentation/devicetree/bindings/sound/samsung-i2s.yaml
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/spi@12d20000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/spi@12d30000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/spi@12d40000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/dp-video-phy: failed to match any schema with compatible: ['samsung,exynos5420-dp-video-phy']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/mipi-video-phy: failed to match any schema with compatible: ['samsung,s5pv210-mipi-video-phy']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/dsi@14500000: failed to match any schema with compatible: ['samsung,exynos5410-mipi-dsi']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/i2c@12e00000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/i2c@12e10000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
-   arch/arm/boot/dts/exynos5422-odroidxu3.dt.yaml:0:0: /soc/i2c@12e20000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
---
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pinctrl@13400000/wakeup-interrupt-controller: failed to match any schema with compatible: ['samsung,exynos4210-wakeup-eint']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pinctrl@13410000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pinctrl@14000000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pinctrl@14010000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pinctrl@3860000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/adma@3880000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pdma@121a0000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/pdma@121b0000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/mdma@10800000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/mdma@11c10000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
->> arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml: i2s@3830000: 'assigned-clock-rates' does not match any of the regexes: 'pinctrl-[0-9]+'
-   	From schema: Documentation/devicetree/bindings/sound/samsung-i2s.yaml
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/spi@12d20000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/spi@12d30000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/spi@12d40000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/dp-video-phy: failed to match any schema with compatible: ['samsung,exynos5420-dp-video-phy']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/mipi-video-phy: failed to match any schema with compatible: ['samsung,s5pv210-mipi-video-phy']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/dsi@14500000: failed to match any schema with compatible: ['samsung,exynos5410-mipi-dsi']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/i2c@12e00000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/i2c@12e10000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
-   arch/arm/boot/dts/exynos5422-odroidxu3-lite.dt.yaml:0:0: /soc/i2c@12e20000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
---
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pinctrl@13400000/wakeup-interrupt-controller: failed to match any schema with compatible: ['samsung,exynos4210-wakeup-eint']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pinctrl@13410000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pinctrl@14000000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pinctrl@14010000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pinctrl@3860000: failed to match any schema with compatible: ['samsung,exynos5420-pinctrl']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/adma@3880000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pdma@121a0000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/pdma@121b0000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/mdma@10800000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/mdma@11c10000: failed to match any schema with compatible: ['arm,pl330', 'arm,primecell']
->> arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml: i2s@3830000: 'assigned-clock-rates' does not match any of the regexes: 'pinctrl-[0-9]+'
-   	From schema: Documentation/devicetree/bindings/sound/samsung-i2s.yaml
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/spi@12d20000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/spi@12d30000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/spi@12d40000: failed to match any schema with compatible: ['samsung,exynos4210-spi']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/dp-video-phy: failed to match any schema with compatible: ['samsung,exynos5420-dp-video-phy']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/mipi-video-phy: failed to match any schema with compatible: ['samsung,s5pv210-mipi-video-phy']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/dsi@14500000: failed to match any schema with compatible: ['samsung,exynos5410-mipi-dsi']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/i2c@12e00000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/i2c@12e10000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
-   arch/arm/boot/dts/exynos5422-odroidxu4.dt.yaml:0:0: /soc/i2c@12e20000: failed to match any schema with compatible: ['samsung,exynos5250-hsi2c']
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:45!
+...
+RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
+...
+Call Trace:
+ proto_unregister+0x83/0x220
+ cmtp_cleanup_sockets+0x37/0x40 [cmtp]
+ cmtp_exit+0xe/0x1f [cmtp]
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
+If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
+success. This will cause a kernel bug when accessing uncreated ctmp
+related data when the module exits.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ net/bluetooth/cmtp/core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
+index 0a2d78e811cf5..83eb84e8e688f 100644
+--- a/net/bluetooth/cmtp/core.c
++++ b/net/bluetooth/cmtp/core.c
+@@ -501,9 +501,7 @@ static int __init cmtp_init(void)
+ {
+ 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
+ 
+-	cmtp_init_sockets();
+-
+-	return 0;
++	return cmtp_init_sockets();
+ }
+ 
+ static void __exit cmtp_exit(void)
+-- 
+2.34.1
+
+
+
