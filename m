@@ -2,190 +2,217 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC5DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F285C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:06:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235231AbiAXKEx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:04:53 -0500
-Received: from foss.arm.com ([217.140.110.172]:56080 "EHLO foss.arm.com"
+        id S235103AbiAXKGd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:06:33 -0500
+Received: from mga01.intel.com ([192.55.52.88]:36581 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236988AbiAXKEU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:04:20 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92CA56D;
-        Mon, 24 Jan 2022 02:04:19 -0800 (PST)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 085F53F73B;
-        Mon, 24 Jan 2022 02:04:16 -0800 (PST)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
-        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
-        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
-        igor.skalkin@opensynergy.com, cristian.marussi@arm.com,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org
-Subject: [PATCH 6/6] [RFC] clk: scmi: Support atomic clock enable/disable API
-Date:   Mon, 24 Jan 2022 10:03:41 +0000
-Message-Id: <20220124100341.41191-7-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220124100341.41191-1-cristian.marussi@arm.com>
-References: <20220124100341.41191-1-cristian.marussi@arm.com>
+        id S229468AbiAXKGb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:06:31 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643018791; x=1674554791;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=vXih2oJzF7ANXqcyNOReROpTWMnd8OVyIeTVqG8ViRA=;
+  b=REsu0s6tXsT+nQ+rqUejQFzovs2YCdNCp83Wefomm/uZlpYixXY6SkRl
+   3yzlIDy/V3XFzTxfITL8ffeXSN2JU7lyRTCvWaUwYnFHOwPV+QLOTK3vp
+   xsicW/sXVtEoupVNBa23pLOve+kfEZaxhJWiXQxNiSSUzuEzw50gXUTMg
+   I7blSxULtC3loKofua5GKkBrkOOdpzoVrx1f4jTRygrd6Cbf4Y90wyu1z
+   jP7fg6V7X2CFFaqWukBiElpLOu9sfmp6G9kvoreBDukde4MNN2s+rWqzT
+   r3ysPKzQq0euhaLiLZrbj6iMOeOnIkU3emT8RxGiFUh0ky6pNYd1RaGws
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270447468"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="270447468"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 02:06:31 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="596745460"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 24 Jan 2022 02:06:29 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nBwF3-000IAO-9M; Mon, 24 Jan 2022 10:06:29 +0000
+Date:   Mon, 24 Jan 2022 18:06:05 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     "x86-ml" <x86@kernel.org>
+Cc:     linux-kernel@vger.kernel.org
+Subject: [tip:x86/build] BUILD SUCCESS
+ 4eda2bc3431ebe5c8361580877a4666d10ea28a7
+Message-ID: <61ee7a0d.v5N0c5u/C5IaEYKs%lkp@intel.com>
+User-Agent: Heirloom mailx 12.5 6/20/10
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support also atomic enable/disable clk_ops beside the bare non-atomic one
-(prepare/unprepare) when the underlying SCMI transport is configured to
-support atomic transactions for synchronous commands.
+tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git x86/build
+branch HEAD: 4eda2bc3431ebe5c8361580877a4666d10ea28a7  x86/Kconfig: Select ARCH_SELECT_MEMORY_MODEL only if FLATMEM and SPARSEMEM are possible
 
-Compare the SCMI system-wide configured atomic threshold latency time and
-the per-clock advertised enable latency (if any) to choose whether to
-provide sleeping prepare/unprepare vs atomic enable/disable.
+elapsed time: 721m
 
-Cc: Michael Turquette <mturquette@baylibre.com>
-Cc: Stephen Boyd <sboyd@kernel.org>
-Cc: linux-clk@vger.kernel.org
-Signed-off-by: Cristian Marussi <cristian.marussi@arm.com>
+configs tested: 141
+configs skipped: 73
+
+The following configs have been built successfully.
+More configs may be tested in the coming days.
+
+gcc tested configs:
+arm                                 defconfig
+arm64                            allyesconfig
+arm64                               defconfig
+arm                              allyesconfig
+arm                              allmodconfig
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220124
+arc                 nsimosci_hs_smp_defconfig
+arm                       imx_v6_v7_defconfig
+xtensa                       common_defconfig
+m68k                          multi_defconfig
+i386                                defconfig
+sh                          landisk_defconfig
+sh                          r7780mp_defconfig
+parisc                              defconfig
+powerpc                       eiger_defconfig
+sh                           se7751_defconfig
+sh                         microdev_defconfig
+powerpc                     stx_gp3_defconfig
+arm                         cm_x300_defconfig
+powerpc                     tqm8548_defconfig
+powerpc                 mpc837x_mds_defconfig
+sh                          rsk7269_defconfig
+arm                         vf610m4_defconfig
+sh                            shmin_defconfig
+parisc                           alldefconfig
+powerpc                 mpc85xx_cds_defconfig
+sparc                       sparc32_defconfig
+s390                          debug_defconfig
+nios2                            alldefconfig
+nds32                            alldefconfig
+powerpc                     taishan_defconfig
+xtensa                  audio_kc705_defconfig
+powerpc                      ppc40x_defconfig
+sh                           se7619_defconfig
+i386                             alldefconfig
+arc                        vdk_hs38_defconfig
+sh                           se7780_defconfig
+sh                         ap325rxa_defconfig
+arc                         haps_hs_defconfig
+powerpc                     mpc83xx_defconfig
+h8300                            alldefconfig
+powerpc                     tqm8541_defconfig
+sh                          sdk7780_defconfig
+mips                            gpr_defconfig
+microblaze                      mmu_defconfig
+mips                         cobalt_defconfig
+arm                  randconfig-c002-20220123
+arm                  randconfig-c002-20220124
+ia64                             allmodconfig
+ia64                                defconfig
+ia64                             allyesconfig
+m68k                             allmodconfig
+m68k                                defconfig
+m68k                             allyesconfig
+nios2                               defconfig
+arc                              allyesconfig
+nds32                             allnoconfig
+nds32                               defconfig
+nios2                            allyesconfig
+csky                                defconfig
+alpha                               defconfig
+alpha                            allyesconfig
+xtensa                           allyesconfig
+h8300                            allyesconfig
+arc                                 defconfig
+sh                               allmodconfig
+s390                             allyesconfig
+s390                             allmodconfig
+parisc                           allyesconfig
+s390                                defconfig
+i386                             allyesconfig
+sparc                            allyesconfig
+sparc                               defconfig
+i386                   debian-10.3-kselftests
+i386                              debian-10.3
+mips                             allyesconfig
+mips                             allmodconfig
+powerpc                          allyesconfig
+powerpc                          allmodconfig
+powerpc                           allnoconfig
+x86_64               randconfig-a002-20220124
+x86_64               randconfig-a003-20220124
+x86_64               randconfig-a001-20220124
+x86_64               randconfig-a004-20220124
+x86_64               randconfig-a005-20220124
+x86_64               randconfig-a006-20220124
+i386                 randconfig-a002-20220124
+i386                 randconfig-a005-20220124
+i386                 randconfig-a003-20220124
+i386                 randconfig-a004-20220124
+i386                 randconfig-a001-20220124
+i386                 randconfig-a006-20220124
+riscv                    nommu_k210_defconfig
+riscv                            allyesconfig
+riscv                    nommu_virt_defconfig
+riscv                             allnoconfig
+riscv                               defconfig
+riscv                          rv32_defconfig
+riscv                            allmodconfig
+x86_64                    rhel-8.3-kselftests
+um                           x86_64_defconfig
+um                             i386_defconfig
+x86_64                           allyesconfig
+x86_64                              defconfig
+x86_64                               rhel-8.3
+x86_64                          rhel-8.3-func
+x86_64                                  kexec
+
+clang tested configs:
+arm                  randconfig-c002-20220123
+arm                  randconfig-c002-20220124
+riscv                randconfig-c006-20220124
+riscv                randconfig-c006-20220123
+i386                 randconfig-c001-20220124
+powerpc              randconfig-c003-20220123
+powerpc              randconfig-c003-20220124
+mips                 randconfig-c004-20220123
+mips                 randconfig-c004-20220124
+x86_64               randconfig-c007-20220124
+x86_64                        randconfig-c007
+i386                          randconfig-c001
+powerpc                       ebony_defconfig
+mips                       rbtx49xx_defconfig
+arm                        spear3xx_defconfig
+powerpc                 mpc832x_rdb_defconfig
+arm                   milbeaut_m10v_defconfig
+powerpc                     mpc512x_defconfig
+mips                           ip22_defconfig
+mips                   sb1250_swarm_defconfig
+riscv                          rv32_defconfig
+x86_64               randconfig-a011-20220124
+x86_64               randconfig-a013-20220124
+x86_64               randconfig-a015-20220124
+x86_64               randconfig-a016-20220124
+x86_64               randconfig-a014-20220124
+x86_64               randconfig-a012-20220124
+i386                 randconfig-a011-20220124
+i386                 randconfig-a016-20220124
+i386                 randconfig-a013-20220124
+i386                 randconfig-a014-20220124
+i386                 randconfig-a015-20220124
+i386                 randconfig-a012-20220124
+riscv                randconfig-r042-20220124
+hexagon              randconfig-r045-20220124
+hexagon              randconfig-r041-20220124
+hexagon              randconfig-r045-20220123
+hexagon              randconfig-r041-20220123
+
 ---
-Tagged as RFC since dependent on a previous RFC patch
----
- drivers/clk/clk-scmi.c | 71 +++++++++++++++++++++++++++++++++++-------
- 1 file changed, 60 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/clk/clk-scmi.c b/drivers/clk/clk-scmi.c
-index 1e357d364ca2..2c7a830ce308 100644
---- a/drivers/clk/clk-scmi.c
-+++ b/drivers/clk/clk-scmi.c
-@@ -2,7 +2,7 @@
- /*
-  * System Control and Power Interface (SCMI) Protocol based clock driver
-  *
-- * Copyright (C) 2018-2021 ARM Ltd.
-+ * Copyright (C) 2018-2022 ARM Ltd.
-  */
- 
- #include <linux/clk-provider.h>
-@@ -88,21 +88,51 @@ static void scmi_clk_disable(struct clk_hw *hw)
- 	scmi_proto_clk_ops->disable(clk->ph, clk->id);
- }
- 
-+static int scmi_clk_atomic_enable(struct clk_hw *hw)
-+{
-+	struct scmi_clk *clk = to_scmi_clk(hw);
-+
-+	return scmi_proto_clk_ops->enable_atomic(clk->ph, clk->id);
-+}
-+
-+static void scmi_clk_atomic_disable(struct clk_hw *hw)
-+{
-+	struct scmi_clk *clk = to_scmi_clk(hw);
-+
-+	scmi_proto_clk_ops->disable_atomic(clk->ph, clk->id);
-+}
-+
-+/*
-+ * We can provide enable/disable atomic callbacks only if the underlying SCMI
-+ * transport for an SCMI instance is configured to handle SCMI commands in an
-+ * atomic manner.
-+ *
-+ * When no SCMI atomic transport support is available we instead provide only
-+ * the prepare/unprepare API, as allowed by the clock framework when atomic
-+ * calls are not available.
-+ *
-+ * Two distinct sets of clk_ops are provided since we could have multiple SCMI
-+ * instances with different underlying transport quality, so they cannot be
-+ * shared.
-+ */
- static const struct clk_ops scmi_clk_ops = {
- 	.recalc_rate = scmi_clk_recalc_rate,
- 	.round_rate = scmi_clk_round_rate,
- 	.set_rate = scmi_clk_set_rate,
--	/*
--	 * We can't provide enable/disable callback as we can't perform the same
--	 * in atomic context. Since the clock framework provides standard API
--	 * clk_prepare_enable that helps cases using clk_enable in non-atomic
--	 * context, it should be fine providing prepare/unprepare.
--	 */
- 	.prepare = scmi_clk_enable,
- 	.unprepare = scmi_clk_disable,
- };
- 
--static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
-+static const struct clk_ops scmi_atomic_clk_ops = {
-+	.recalc_rate = scmi_clk_recalc_rate,
-+	.round_rate = scmi_clk_round_rate,
-+	.set_rate = scmi_clk_set_rate,
-+	.enable = scmi_clk_atomic_enable,
-+	.disable = scmi_clk_atomic_disable,
-+};
-+
-+static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk,
-+			     const struct clk_ops *scmi_ops)
- {
- 	int ret;
- 	unsigned long min_rate, max_rate;
-@@ -110,7 +140,7 @@ static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
- 	struct clk_init_data init = {
- 		.flags = CLK_GET_RATE_NOCACHE,
- 		.num_parents = 0,
--		.ops = &scmi_clk_ops,
-+		.ops = scmi_ops,
- 		.name = sclk->info->name,
- 	};
- 
-@@ -139,6 +169,8 @@ static int scmi_clk_ops_init(struct device *dev, struct scmi_clk *sclk)
- static int scmi_clocks_probe(struct scmi_device *sdev)
- {
- 	int idx, count, err;
-+	unsigned int atomic_threshold;
-+	bool is_atomic;
- 	struct clk_hw **hws;
- 	struct clk_hw_onecell_data *clk_data;
- 	struct device *dev = &sdev->dev;
-@@ -168,8 +200,11 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
- 	clk_data->num = count;
- 	hws = clk_data->hws;
- 
-+	is_atomic = handle->is_transport_atomic(handle, &atomic_threshold);
-+
- 	for (idx = 0; idx < count; idx++) {
- 		struct scmi_clk *sclk;
-+		const struct clk_ops *scmi_ops;
- 
- 		sclk = devm_kzalloc(dev, sizeof(*sclk), GFP_KERNEL);
- 		if (!sclk)
-@@ -184,13 +219,27 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
- 		sclk->id = idx;
- 		sclk->ph = ph;
- 
--		err = scmi_clk_ops_init(dev, sclk);
-+		/*
-+		 * Note that when transport is atomic but SCMI protocol did not
-+		 * specify (or support) an enable_latency associated with a
-+		 * clock, we default to use atomic operations mode.
-+		 */
-+		if (is_atomic &&
-+		    sclk->info->enable_latency <= atomic_threshold)
-+			scmi_ops = &scmi_atomic_clk_ops;
-+		else
-+			scmi_ops = &scmi_clk_ops;
-+
-+		err = scmi_clk_ops_init(dev, sclk, scmi_ops);
- 		if (err) {
- 			dev_err(dev, "failed to register clock %d\n", idx);
- 			devm_kfree(dev, sclk);
- 			hws[idx] = NULL;
- 		} else {
--			dev_dbg(dev, "Registered clock:%s\n", sclk->info->name);
-+			dev_dbg(dev, "Registered clock:%s%s\n",
-+				sclk->info->name,
-+				scmi_ops == &scmi_atomic_clk_ops ?
-+				" (atomic ops)" : "");
- 			hws[idx] = &sclk->hw;
- 		}
- 	}
--- 
-2.17.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
