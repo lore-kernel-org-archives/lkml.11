@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41E8AC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5AFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422453AbiAYCbP (ORCPT
+        id S3422259AbiAYCax (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42724 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347363AbiAXUSp (ORCPT
+        Mon, 24 Jan 2022 21:30:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57536 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355506AbiAXUSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:18:45 -0500
+        Mon, 24 Jan 2022 15:18:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC3C61383;
-        Mon, 24 Jan 2022 20:18:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1B1CC36AE7;
-        Mon, 24 Jan 2022 20:18:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AC4BB81257;
+        Mon, 24 Jan 2022 20:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A001C36AE3;
+        Mon, 24 Jan 2022 20:18:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055521;
-        bh=zcjD8IIt5isRClkbcim/RGr754lvpzzmkoiQMRcYT3o=;
+        s=korg; t=1643055490;
+        bh=RqxmOMV1jbbNks5l2G4rA7iTPry5Lj3BtD4JRhgmkPc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s9ibgw77QVe9/3LZTLQQNMr8ZmGeX1eocyQ8aLvyFZ+4WNp3kVlWg5N35dQMoC4Ae
-         5+RxmGle/8j/O77Yw+hCAcFUocn8YFe/ku4VoVgQp7OxM4C6ucSqCIWHwgGATiiBgZ
-         40L2gXqBYzkJkNuro6RW9gASQIp28Yaj8vjiX4bk=
+        b=LlByAVNuocctxJQrUTYh0BIi+9nCQzlhSIjiFTbnLMEmNNDr268vG42lWzQEKGJwp
+         Ivfsr5/gzCcP34BDE9TbIXFuN5tsUa21RGudXRwqZ4/aJieBuXo1O4BMpqjOtZ5Amz
+         jVJ08DdYBVSziR2e0zLFu6gftUsr2Q+9WDe5rgIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Martin Weber <martin.weber@br-automation.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 177/846] arm64: dts: qcom: msm8916: fix MMC controller aliases
-Date:   Mon, 24 Jan 2022 19:34:54 +0100
-Message-Id: <20220124184107.075270852@linuxfoundation.org>
+Subject: [PATCH 5.15 168/846] media: coda: fix CODA960 JPEG encoder buffer overflow
+Date:   Mon, 24 Jan 2022 19:34:45 +0100
+Message-Id: <20220124184106.770269998@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,38 +50,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Philipp Zabel <p.zabel@pengutronix.de>
 
-[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
+[ Upstream commit 1a59cd88f55068710f6549bee548846661673780 ]
 
-Change sdhcN aliases to mmcN to make them actually work. Currently the
-board uses non-standard aliases sdhcN, which do not work, resulting in
-mmc0 and mmc1 hosts randomly changing indices between boots.
+Stop the CODA960 JPEG encoder from overflowing capture buffers.
+The bitstream buffer overflow interrupt doesn't seem to be connected,
+so this has to be handled via timeout instead.
 
-Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
+Reported-by: Martin Weber <martin.weber@br-automation.com>
+Fixes: 96f6f62c4656 ("media: coda: jpeg: add CODA960 JPEG encoder support")
+Tested-by: Martin Weber <martin.weber@br-automation.com>
+Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/coda/coda-common.c |  8 +++++---
+ drivers/media/platform/coda/coda-jpeg.c   | 21 ++++++++++++++++++++-
+ 2 files changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index 427bb20626549..8b27242724641 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -19,8 +19,8 @@
- 	#size-cells = <2>;
+diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
+index 0e312b0842d7f..9a2640a9c75c6 100644
+--- a/drivers/media/platform/coda/coda-common.c
++++ b/drivers/media/platform/coda/coda-common.c
+@@ -1537,11 +1537,13 @@ static void coda_pic_run_work(struct work_struct *work)
  
- 	aliases {
--		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
--		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
-+		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
-+		mmc1 = &sdhc_2; /* SDC2 SD card slot */
- 	};
+ 	if (!wait_for_completion_timeout(&ctx->completion,
+ 					 msecs_to_jiffies(1000))) {
+-		dev_err(dev->dev, "CODA PIC_RUN timeout\n");
++		if (ctx->use_bit) {
++			dev_err(dev->dev, "CODA PIC_RUN timeout\n");
  
- 	chosen { };
+-		ctx->hold = true;
++			ctx->hold = true;
+ 
+-		coda_hw_reset(ctx);
++			coda_hw_reset(ctx);
++		}
+ 
+ 		if (ctx->ops->run_timeout)
+ 			ctx->ops->run_timeout(ctx);
+diff --git a/drivers/media/platform/coda/coda-jpeg.c b/drivers/media/platform/coda/coda-jpeg.c
+index b11cfbe166dd3..a72f4655e5ad5 100644
+--- a/drivers/media/platform/coda/coda-jpeg.c
++++ b/drivers/media/platform/coda/coda-jpeg.c
+@@ -1127,7 +1127,8 @@ static int coda9_jpeg_prepare_encode(struct coda_ctx *ctx)
+ 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_BT_PTR);
+ 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_WD_PTR);
+ 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_BBSR);
+-	coda_write(dev, 0, CODA9_REG_JPEG_BBC_STRM_CTRL);
++	coda_write(dev, BIT(31) | ((end_addr - start_addr - header_len) / 256),
++		   CODA9_REG_JPEG_BBC_STRM_CTRL);
+ 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_CTRL);
+ 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_FF_RPTR);
+ 	coda_write(dev, 127, CODA9_REG_JPEG_GBU_BBER);
+@@ -1257,6 +1258,23 @@ static void coda9_jpeg_finish_encode(struct coda_ctx *ctx)
+ 	coda_hw_reset(ctx);
+ }
+ 
++static void coda9_jpeg_encode_timeout(struct coda_ctx *ctx)
++{
++	struct coda_dev *dev = ctx->dev;
++	u32 end_addr, wr_ptr;
++
++	/* Handle missing BBC overflow interrupt via timeout */
++	end_addr = coda_read(dev, CODA9_REG_JPEG_BBC_END_ADDR);
++	wr_ptr = coda_read(dev, CODA9_REG_JPEG_BBC_WR_PTR);
++	if (wr_ptr >= end_addr - 256) {
++		v4l2_err(&dev->v4l2_dev, "JPEG too large for capture buffer\n");
++		coda9_jpeg_finish_encode(ctx);
++		return;
++	}
++
++	coda_hw_reset(ctx);
++}
++
+ static void coda9_jpeg_release(struct coda_ctx *ctx)
+ {
+ 	int i;
+@@ -1276,6 +1294,7 @@ const struct coda_context_ops coda9_jpeg_encode_ops = {
+ 	.start_streaming = coda9_jpeg_start_encoding,
+ 	.prepare_run = coda9_jpeg_prepare_encode,
+ 	.finish_run = coda9_jpeg_finish_encode,
++	.run_timeout = coda9_jpeg_encode_timeout,
+ 	.release = coda9_jpeg_release,
+ };
+ 
 -- 
 2.34.1
 
