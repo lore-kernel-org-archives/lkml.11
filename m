@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52218C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADCB0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449015AbiAXVOe (ORCPT
+        id S1449052AbiAXVOk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:14:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40554 "EHLO
+        Mon, 24 Jan 2022 16:14:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41732 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391264AbiAXUrM (ORCPT
+        with ESMTP id S1391328AbiAXUrZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:47:12 -0500
+        Mon, 24 Jan 2022 15:47:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 52FF160918;
-        Mon, 24 Jan 2022 20:47:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E2FC340E5;
-        Mon, 24 Jan 2022 20:47:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1FD260B18;
+        Mon, 24 Jan 2022 20:47:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 722DBC340E5;
+        Mon, 24 Jan 2022 20:47:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057231;
-        bh=0L0DDiEfxGJyaxQOimR7aMe0htOuKRpRbrOBhnHMJQE=;
+        s=korg; t=1643057244;
+        bh=mGfUd3HAafgw69SmJ/VHmCTthCgBZVr9YmGbS1ZMPp4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lIm2smwI83+kCrbs6gtP1CSERxISnBXev6wzPMaGGpkUsRtefrCKbd0YWQXg8tuqj
-         x2WmWbBM0/AeVEIIqQrnhWlDu/E7665gBAOv9iD/6SRSyXTHV1IK3pwY9COknlnWVp
-         NTg60XqXua5MkaK1gLWdCnHjOPzA0UXzOgusIftM=
+        b=phBst9kyycBfjG9EjAevd7vnTwA+FUR9FfHkOsJztGTGc+W9GwKmgnR7EQz2xdNvv
+         3UrLMhlNKKz2rdnvvDJQ33aSlFd704/2HxMmQgwJSwXGsxNK1Uq1Or76Tw7I59uT6P
+         7B2NT/bZjAPSaILdk1XR2SRtDfKgQr6HRMhCn3Oo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriel Hojda <ghojda@yo2urs.ro>,
-        Markus Reichl <m.reichl@fivetechno.de>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 744/846] net: usb: Correct reset handling of smsc95xx
-Date:   Mon, 24 Jan 2022 19:44:21 +0100
-Message-Id: <20220124184126.654026824@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 747/846] scsi: ufs: ufs-mediatek: Fix error checking in ufs_mtk_init_va09_pwr_ctrl()
+Date:   Mon, 24 Jan 2022 19:44:24 +0100
+Message-Id: <20220124184126.749169560@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,40 +46,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Markus Reichl <m.reichl@fivetechno.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 0bf3885324a8599e3af4c7379b8d4f621c9bbffa upstream.
+commit 3ba880a12df5aa4488c18281701b5b1bc3d4531a upstream.
 
-On boards with LAN9514 and no preconfigured MAC address we don't get an
-ip address from DHCP after commit a049a30fc27c ("net: usb: Correct PHY handling
-of smsc95xx") anymore. Adding an explicit reset before starting the phy
-fixes the issue.
+The function regulator_get() returns an error pointer. Use IS_ERR() to
+validate the return value.
 
-[1]
-https://lore.kernel.org/netdev/199eebbd6b97f52b9119c9fa4fd8504f8a34de18.camel@collabora.com/
-
-From: Gabriel Hojda <ghojda@yo2urs.ro>
-Fixes: a049a30fc27c ("net: usb: Correct PHY handling of smsc95xx")
-Signed-off-by: Gabriel Hojda <ghojda@yo2urs.ro>
-Signed-off-by: Markus Reichl <m.reichl@fivetechno.de>
-Tested-by: Alexander Stein <alexander.stein@ew.tq-group.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/r/20211222070930.9449-1-linmq006@gmail.com
+Fixes: cf137b3ea49a ("scsi: ufs-mediatek: Support VA09 regulator operations")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/smsc95xx.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/scsi/ufs/ufs-mediatek.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -1961,7 +1961,8 @@ static const struct driver_info smsc95xx
- 	.bind		= smsc95xx_bind,
- 	.unbind		= smsc95xx_unbind,
- 	.link_reset	= smsc95xx_link_reset,
--	.reset		= smsc95xx_start_phy,
-+	.reset		= smsc95xx_reset,
-+	.check_connect	= smsc95xx_start_phy,
- 	.stop		= smsc95xx_stop,
- 	.rx_fixup	= smsc95xx_rx_fixup,
- 	.tx_fixup	= smsc95xx_tx_fixup,
+--- a/drivers/scsi/ufs/ufs-mediatek.c
++++ b/drivers/scsi/ufs/ufs-mediatek.c
+@@ -501,7 +501,7 @@ static void ufs_mtk_init_va09_pwr_ctrl(s
+ 	struct ufs_mtk_host *host = ufshcd_get_variant(hba);
+ 
+ 	host->reg_va09 = regulator_get(hba->dev, "va09");
+-	if (!host->reg_va09)
++	if (IS_ERR(host->reg_va09))
+ 		dev_info(hba->dev, "failed to get va09");
+ 	else
+ 		host->caps |= UFS_MTK_CAP_VA09_PWR_CTRL;
 
 
