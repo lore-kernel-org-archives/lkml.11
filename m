@@ -2,99 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE521C35268
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF34C3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358572AbiAXTz1 (ORCPT
+        id S1358615AbiAXTzb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
+        Mon, 24 Jan 2022 14:55:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349076AbiAXTlA (ORCPT
+        with ESMTP id S1349080AbiAXTlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:41:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB718C07A96A;
-        Mon, 24 Jan 2022 11:20:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AFDF612FA;
-        Mon, 24 Jan 2022 19:20:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C996C340E5;
-        Mon, 24 Jan 2022 19:20:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052000;
-        bh=6DzRQODJCjeMyBnMxcQy/tJblSzRKBAhvfHA3MzPxh0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R05fWYbiTuO0n3zCr3lQI5CfgOuA+8NwMM1SToPClI9HPq3p5hTS9E2DMDorhZ305
-         vDnPcjZ0IaEvgf6JVa8zAjhLxs+KZOoZdiJw/lPUV9DEp6Xw8KHiOOSVc+tCjrWvRw
-         ZgL7Ef4nAXnmkV4mvlox1uMhfejHvzxDEcjAkEDE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 156/239] iwlwifi: remove module loading failure message
-Date:   Mon, 24 Jan 2022 19:43:14 +0100
-Message-Id: <20220124183948.051913651@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5763AC07A96D
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:20:09 -0800 (PST)
+Received: by mail-oi1-x229.google.com with SMTP id y23so8784971oia.13
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:20:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Y8UlOKPL4x0I+w9FvmczKZQzjM11WitOpHu1NnDd7hI=;
+        b=EIvsCF/shkSJKYfdjXZKNXCsVd70UCSlAARnO6sDbsxiWBHwhD/82BOJnQrXDl9IOz
+         PFcMdh5ibyXsaAQcTPODkOpuxlRpW6Ykx3+iaL0mfu3o/5TQuzEDx8ce/CsAPrzpsBH0
+         Aq1xw2ZjdD9sgudMll8flbupKTmKPw8pARBNeIt/gt3ZmOXc0U4ez/5KDdbtmSmdJ/cY
+         A7Z4/te+96euwxEnd8/NJBr/0001w5zlvvzIJi/j/otI7/zc1nWeoYlU4o4Pp+0rrOEb
+         sMg62TePWcfT120HGmcpZPJ+W8BC4DVZ60OxaL1hE3s2BVUOxqLUUgtgRqjyoHlrl8LB
+         UFGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Y8UlOKPL4x0I+w9FvmczKZQzjM11WitOpHu1NnDd7hI=;
+        b=VFGyM+gedOMfU45UPgkWdCuK45LG3TLpJeTFyrMiCEl0dUKG7SucsG6dVuJ21vshMJ
+         Y6eseNs/fyZ9wD57AtUGaDDXbgEj5z8yESQY1J/J5tN6SSxLLCQT6ETLfiV+OqTADgts
+         X42O+rUQfeeSFzFnhde/CSH6yJ/vQV/5NdzMBfpZdb7xhSPoQZ4KzK1PxvHcOZP132Nv
+         Vk0UCjH7kUa5vFdGtqt4QQYmrN1OqbpkwoWW8HBROfEOxr4vBxRlLvP1NWOb27N8wkul
+         uCg1EBJnS5qqYdefY4rfS9S2jDPvyaxTy8uyTLTgbX0BTgIxBbTq1xmYvu+fYAftfhjn
+         mH1Q==
+X-Gm-Message-State: AOAM533yM20s9Dae1HfIIvOSANHRF/SODuVsp5UgaW/9wAUoWuo/E09O
+        7D6jXnm+f0djFCJXET3US+gh2c9+h5yL6/LpKDuWzGQc
+X-Google-Smtp-Source: ABdhPJwS85QtnAAmIxiRJFhdMAqQlvW1zcZquOPGUFZLskhO60Qo5Zms8Ge28nzBDwYGw0SYuP/P8X5DerGCwVBWtfo=
+X-Received: by 2002:a05:6808:300b:: with SMTP id ay11mr2766540oib.120.1643052008712;
+ Mon, 24 Jan 2022 11:20:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220124165552.56106-1-zhou1615@umn.edu>
+In-Reply-To: <20220124165552.56106-1-zhou1615@umn.edu>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 24 Jan 2022 14:19:57 -0500
+Message-ID: <CADnq5_MPvHgnW-Rpv-caNrgg+9XkVFZs2Oes1gKPyj=TesBKXw@mail.gmail.com>
+Subject: Re: [PATCH] drm/amd/display/dc/calcs/dce_calcs: Fix a memleak in calculate_bandwidth()
+To:     Zhou Qingyang <zhou1615@umn.edu>
+Cc:     Leo Li <sunpeng.li@amd.com>, Kangjie Lu <kjlu@umn.edu>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        David Airlie <airlied@linux.ie>,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+Applied.  Thanks!
 
-[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
+Alex
 
-When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
-when the opmode module cannot be loaded, due to completing
-the completion before using drv->dev, which can then already
-be freed.
-
-Fix this by removing the (fairly useless) message. Moving the
-completion later causes a deadlock instead, so that's not an
-option.
-
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 72f5df66cdeb5..c44108823f796 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -1532,15 +1532,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	 * else from proceeding if the module fails to load
- 	 * or hangs loading.
- 	 */
--	if (load_module) {
-+	if (load_module)
- 		request_module("%s", op->name);
--#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
--		if (err)
--			IWL_ERR(drv,
--				"failed to load module %s (error %d), is dynamic loading enabled?\n",
--				op->name, err);
--#endif
--	}
- 	failure = false;
- 	goto free;
- 
--- 
-2.34.1
-
-
-
+On Mon, Jan 24, 2022 at 12:05 PM Zhou Qingyang <zhou1615@umn.edu> wrote:
+>
+> In calculate_bandwidth(), the tag free_sclk and free_yclk are reversed,
+> which could lead to a memory leak of yclk.
+>
+> Fix this bug by changing the location of free_sclk and free_yclk.
+>
+> This bug was found by a static analyzer.
+>
+> Builds with 'make allyesconfig' show no new warnings,
+> and our static analyzer no longer warns about this code.
+>
+> Fixes: 2be8989d0fc2 ("drm/amd/display/dc/calcs/dce_calcs: Move some large variables from the stack to the heap")
+> Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+> ---
+> The analysis employs differential checking to identify inconsistent
+> security operations (e.g., checks or kfrees) between two code paths
+> and confirms that the inconsistent operations are not recovered in the
+> current function or the callers, so they constitute bugs.
+>
+> Note that, as a bug found by static analysis, it can be a false
+> positive or hard to trigger. Multiple researchers have cross-reviewed
+> the bug.
+>
+>  drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c b/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c
+> index ff5bb152ef49..e6ef36de0825 100644
+> --- a/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c
+> +++ b/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c
+> @@ -2033,10 +2033,10 @@ static void calculate_bandwidth(
+>         kfree(surface_type);
+>  free_tiling_mode:
+>         kfree(tiling_mode);
+> -free_yclk:
+> -       kfree(yclk);
+>  free_sclk:
+>         kfree(sclk);
+> +free_yclk:
+> +       kfree(yclk);
+>  }
+>
+>  /*******************************************************************************
+> --
+> 2.25.1
+>
