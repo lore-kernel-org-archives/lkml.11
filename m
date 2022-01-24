@@ -2,90 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48385C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:10:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39A1DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238418AbiAXMK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:10:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238278AbiAXMKN (ORCPT
+        id S238348AbiAXMKd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:10:33 -0500
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:42947 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238323AbiAXMKS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:10:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C113C06173B;
-        Mon, 24 Jan 2022 04:10:13 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38D72B80F91;
-        Mon, 24 Jan 2022 12:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E0ACAC340EB;
-        Mon, 24 Jan 2022 12:10:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643026210;
-        bh=IfvTnE0SElEHHi2ltg3BcoNG0+vnUbVnatoPsazTfrA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZLj8jiXKiBJXx4rz5XwFYC7F2XjUZnGHfOJboWp8mjLqhmW+yZQD2itVrdnb1VIft
-         GLVgY46o0Dbbn16NiSQTZDOtYXLvfTl4mRvhnEYve2lkrO5A6wUomuuA24A2RoeKd1
-         knerznu2BY2pSImVwzTmYwOgRrz+vPrC6/wNAZs7wttp3q7XJmUK6lNRkgqiSAJkYN
-         SN2ldaD2kxs8bUffx/pGX/6MHRAca7Nc2jjiTKmEWfBjeu50AdkX4FboYaQ0CQsL/O
-         aguooll5IwUjpo613xGDw/Qjzaq8PSzh8tP1s6p5GkgS4K9p4KnEU4MbCPQSrszpWo
-         lxEejI2Tu2KMw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3CDFC395DF;
-        Mon, 24 Jan 2022 12:10:10 +0000 (UTC)
+        Mon, 24 Jan 2022 07:10:18 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 1381C580355;
+        Mon, 24 Jan 2022 07:10:18 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute5.internal (MEProxy); Mon, 24 Jan 2022 07:10:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alistair23.me;
+         h=cc:cc:content-transfer-encoding:content-type:date:date:from
+        :from:in-reply-to:message-id:mime-version:reply-to:sender
+        :subject:subject:to:to; s=fm3; bh=yDDZWE4He/pimUZxCO0Sh7kk8bh3iF
+        5Bhx4IEsrP9p4=; b=fwxpbuyxqtScSM0n3F92+6NeWxGDQr6YYMqtldw5D3Pl0w
+        89qffJRwxvyMzBg5ke6MK2hVAJyyyHr5DQUUx/IStis4XFk0gkikurX8OrV+KFWc
+        r5o5MhfdXpHhteXf/bMyUv0WNGroUvmWsDBg8qv3VKHYl3OS8dHHLh4lj0a+88HO
+        yvaca0Kz+bUpH+jg+beKOqefBph5neGOV/KltgW9EWZXBUmt1TocsGD7yKI2cJWq
+        EUcpTLi5YRz7DqXr2cnIfXDJKARbXhyU1VK+f7BIDOHJBFEgd2GQP5+oO1Ovubar
+        RGdwGG0wRX0zOphBC71wlFqPJ6F6KBcW5A45BB/g==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=yDDZWE
+        4He/pimUZxCO0Sh7kk8bh3iF5Bhx4IEsrP9p4=; b=kjxqvDeGS98uzkQCCZmu+w
+        c5TqmMYwe+zhOzzq8xu0nmTLtWGkOZmhGa/jXdZNwZAxVKsNlctq8plk53yyc+PL
+        ANwMxsTGFU90E2ay0N1kc8aCuZ/6ONtI0DNDuhWrtAatFWVwwz2gp+5snRvOKxaB
+        BNBofqBbFUos089YpZYfN7cu1+oWwlUScCyCOHY/Ar3QECXYNhPIii3P4Y28KlY0
+        g3QPkJzJ6vJBRSJPONIpJ5HpQff7ySUT35MyClg1o9JhovOj+4dR2PBUmqGEvNTJ
+        iHXPBHKGxZXVIXHksJwyjvOZ8B+Kc9V0fQjkELCryMV2PDdhbFzPFH83Zo0561bg
+        ==
+X-ME-Sender: <xms:KZfuYTktgWwmvWVS94IjUqVu0EVkhIROgzFcASUjADkunOrLjnwfYA>
+    <xme:KZfuYW2TI6jUvYrIDj9a4BK6acgwpUHVUVFgBZ9szuCMAsqhHEZ-mzLzLjmTQsoV0
+    rOLK1_Vp9s1vp2lW7I>
+X-ME-Received: <xmr:KZfuYZoLdvNi-PPRbv-V-4rYYqL-0jisX-SQZDoTH2q7BNMda-F_wMKsmU_dCOKAc1PujXPVosSKTTYNg7G2uj3OG4NvsG6mG530KOJr5XfC>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvdeigdefjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffotggggfesthhqredtre
+    dtjeenucfhrhhomheptehlihhsthgrihhrucfhrhgrnhgtihhsuceorghlihhsthgrihhr
+    segrlhhishhtrghirhdvfedrmhgvqeenucggtffrrghtthgvrhhnpeehteefgfejueejtd
+    egvdfggefhiefgheffvdffudevveetjeduhfdukeduteevjeenucevlhhushhtvghrufhi
+    iigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegrlhhishhtrghirhesrghlihhsth
+    grihhrvdefrdhmvg
+X-ME-Proxy: <xmx:KZfuYbm4ijr_kGUpK3hJo7S7eACDvVOYpnO9RIk4VX-tjvMJiHWBzw>
+    <xmx:KZfuYR2h1oPS1S3IQwoEfUcl6DJwE1odkMxhI1419aGLIFtIjnv-7A>
+    <xmx:KZfuYatDxSRrkE2MmZA-o4gMHB0ylT8LEIsnkEx8Q7Z5PgOV2gvw4A>
+    <xmx:KpfuYSHrj8adsEToquzJvAdzuYD1geMjg3C3aCa6Xq-aRmgTlAwNYA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 24 Jan 2022 07:10:12 -0500 (EST)
+From:   Alistair Francis <alistair@alistair23.me>
+To:     broonie@kernel.org, robh+dt@kernel.org, kernel@pengutronix.de,
+        lgirdwood@gmail.com, lee.jones@linaro.org
+Cc:     linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-imx@nxp.com, rui.zhang@intel.com,
+        alistair23@gmail.com, amitk@kernel.org,
+        linux-arm-kernel@lists.infradead.org, andreas@kemnade.info,
+        s.hauer@pengutronix.de, linux-kernel@vger.kernel.org,
+        shawnguo@kernel.org, Alistair Francis <alistair@alistair23.me>
+Subject: [PATCH v18 0/8] Add support for the silergy,sy7636a
+Date:   Mon, 24 Jan 2022 22:10:01 +1000
+Message-Id: <20220124121009.108649-1-alistair@alistair23.me>
+X-Mailer: git-send-email 2.31.1
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net/smc: Transitional solution for clcsock race issue
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <164302621079.19022.3641686752810483922.git-patchwork-notify@kernel.org>
-Date:   Mon, 24 Jan 2022 12:10:10 +0000
-References: <1642844589-23022-1-git-send-email-guwen@linux.alibaba.com>
-In-Reply-To: <1642844589-23022-1-git-send-email-guwen@linux.alibaba.com>
-To:     Wen Gu <guwen@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Sat, 22 Jan 2022 17:43:09 +0800 you wrote:
-> We encountered a crash in smc_setsockopt() and it is caused by
-> accessing smc->clcsock after clcsock was released.
-> 
->  BUG: kernel NULL pointer dereference, address: 0000000000000020
->  #PF: supervisor read access in kernel mode
->  #PF: error_code(0x0000) - not-present page
->  PGD 0 P4D 0
->  Oops: 0000 [#1] PREEMPT SMP PTI
->  CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
->  RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
->  Call Trace:
->   <TASK>
->   __sys_setsockopt+0xfc/0x190
->   __x64_sys_setsockopt+0x20/0x30
->   do_syscall_64+0x34/0x90
->   entry_SYSCALL_64_after_hwframe+0x44/0xae
->  RIP: 0033:0x7f16ba83918e
->   </TASK>
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v2] net/smc: Transitional solution for clcsock race issue
-    https://git.kernel.org/netdev/net/c/c0bf3d8a943b
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+v18:=0D
+ - Rebase=0D
+v17:=0D
+ - Rebase and fix build issues=0D
+v16:=0D
+ - Improve vdd regulator comments=0D
+v15:=0D
+ - Address comments on the patches=0D
+v14:=0D
+ - Merge the thermal driver and hwmon=0D
+v13:=0D
+ - Address comments on thermal driver=0D
+ - Rebase on master (without other patches)=0D
+v12:=0D
+ - Rebase=0D
+v11:=0D
+ - Address comments on hwmon=0D
+ - Improve "mfd: simple-mfd-i2c: Add a Kconfig name" commit message=0D
+v10:=0D
+ - Use dev_get_regmap() instead of dev_get_drvdata()=0D
+v9:=0D
+ - Convert to use the simple-mfd-i2c instead=0D
+=0D
+Alistair Francis (8):=0D
+  dt-bindings: mfd: Initial commit of silergy,sy7636a.yaml=0D
+  mfd: simple-mfd-i2c: Add a Kconfig name=0D
+  mfd: simple-mfd-i2c: Enable support for the silergy,sy7636a=0D
+  regulator: sy7636a: Remove requirement on sy7636a mfd=0D
+  hwmon: sy7636a: Add temperature driver for sy7636a=0D
+  ARM: imx_v6_v7_defconfig: Enable silergy,sy7636a=0D
+  ARM: dts: imx7d-remarkable2: Enable silergy,sy7636a=0D
+  ARM: dts: imx7d-remarkable2: Enable lcdif=0D
+=0D
+ .../bindings/mfd/silergy,sy7636a.yaml         |  82 +++++++++++=0D
+ Documentation/hwmon/index.rst                 |   1 +=0D
+ Documentation/hwmon/sy7636a-hwmon.rst         |  26 ++++=0D
+ arch/arm/boot/dts/imx7d-remarkable2.dts       | 136 ++++++++++++++++++=0D
+ arch/arm/configs/imx_v6_v7_defconfig          |   3 +=0D
+ drivers/hwmon/Kconfig                         |   9 ++=0D
+ drivers/hwmon/Makefile                        |   1 +=0D
+ drivers/hwmon/sy7636a-hwmon.c                 | 106 ++++++++++++++=0D
+ drivers/mfd/Kconfig                           |   2 +-=0D
+ drivers/mfd/simple-mfd-i2c.c                  |  11 ++=0D
+ drivers/regulator/Kconfig                     |   1 -=0D
+ drivers/regulator/sy7636a-regulator.c         |   7 +-=0D
+ include/linux/mfd/sy7636a.h                   |  34 +++++=0D
+ 13 files changed, 415 insertions(+), 4 deletions(-)=0D
+ create mode 100644 Documentation/devicetree/bindings/mfd/silergy,sy7636a.y=
+aml=0D
+ create mode 100644 Documentation/hwmon/sy7636a-hwmon.rst=0D
+ create mode 100644 drivers/hwmon/sy7636a-hwmon.c=0D
+ create mode 100644 include/linux/mfd/sy7636a.h=0D
+=0D
+-- =0D
+2.31.1=0D
+=0D
