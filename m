@@ -2,45 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A960DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52644C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344370AbiAXSyd (ORCPT
+        id S1344396AbiAXSyi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343954AbiAXSwr (ORCPT
+        Mon, 24 Jan 2022 13:54:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50600 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343945AbiAXSws (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 170C1C06177D;
-        Mon, 24 Jan 2022 10:52:26 -0800 (PST)
+        Mon, 24 Jan 2022 13:52:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABA8F614EC;
-        Mon, 24 Jan 2022 18:52:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 715D0C340E8;
-        Mon, 24 Jan 2022 18:52:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 848826151A;
+        Mon, 24 Jan 2022 18:52:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6B1C340E5;
+        Mon, 24 Jan 2022 18:52:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050345;
-        bh=x4SL9WF8io313e5A39RZiytXL/H7HNZcY5I6SgbcOpA=;
+        s=korg; t=1643050366;
+        bh=tiEztUcTC2j5P794DPJgbNB59Cy+LICX+yJmsLn7KSc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LK+AkndQO4wk0E76lRCINlYVI3r72xApg4bYfV2FPKQYUefeL1KqYmVeALO/zPTh9
-         720EoYCFXFterTUAXuUea4/ne7b3q+jvdscAcTnkwCUBOBD7dms3ZKRySEUhmWQgjA
-         On4HeLH7lUji/djLQfnrPWN4DaBqfrqLqP76Y7S8=
+        b=UmNllmtrGRMIiydKpk4pDD0pFJL+VSlTygyOEFQbeffhRa69ouxt20M9c/CDCBVVr
+         OcyqV6qU+tnKlnu2dRTZEZ8PZK8EaOs9RrhsRZxr4yLVKl7rBVityjQ3RMuaoB7p4O
+         V/VABxsBO2gdz4iQXrJhgMneSbnlLypYDPXYM19k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 055/114] mips: bcm63xx: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:42:30 +0100
-Message-Id: <20220124183928.802970550@linuxfoundation.org>
+Subject: [PATCH 4.4 096/114] power: bq25890: Enable continuous conversion for ADC at charging
+Date:   Mon, 24 Jan 2022 19:43:11 +0100
+Message-Id: <20220124183930.077354285@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -52,46 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Yauhen Kharuzhy <jekhor@gmail.com>
 
-[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
+[ Upstream commit 80211be1b9dec04cc2805d3d81e2091ecac289a1 ]
 
-The MIPS BMC63XX subarch does not provide/support clk_set_parent().
-This causes build errors in a few drivers, so add a simple implementation
-of that function so that callers of it will build without errors.
+Instead of one shot run of ADC at beginning of charging, run continuous
+conversion to ensure that all charging-related values are monitored
+properly (input voltage, input current, themperature etc.).
 
-Fixes these build errors:
-
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
-
-Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Yauhen Kharuzhy <jekhor@gmail.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/bcm63xx/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/power/bq25890_charger.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
-index ef268c9aac80d..fe90c1c86a600 100644
---- a/arch/mips/bcm63xx/clk.c
-+++ b/arch/mips/bcm63xx/clk.c
-@@ -339,6 +339,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
+diff --git a/drivers/power/bq25890_charger.c b/drivers/power/bq25890_charger.c
+index f993a55cde20f..faf2a62435674 100644
+--- a/drivers/power/bq25890_charger.c
++++ b/drivers/power/bq25890_charger.c
+@@ -521,12 +521,12 @@ static void bq25890_handle_state_change(struct bq25890_device *bq,
  
-+int clk_set_parent(struct clk *clk, struct clk *parent)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(clk_set_parent);
-+
- unsigned long clk_get_rate(struct clk *clk)
- {
- 	return clk->rate;
+ 	if (!new_state->online) {			     /* power removed */
+ 		/* disable ADC */
+-		ret = bq25890_field_write(bq, F_CONV_START, 0);
++		ret = bq25890_field_write(bq, F_CONV_RATE, 0);
+ 		if (ret < 0)
+ 			goto error;
+ 	} else if (!old_state.online) {			    /* power inserted */
+ 		/* enable ADC, to have control of charge current/voltage */
+-		ret = bq25890_field_write(bq, F_CONV_START, 1);
++		ret = bq25890_field_write(bq, F_CONV_RATE, 1);
+ 		if (ret < 0)
+ 			goto error;
+ 	}
 -- 
 2.34.1
 
