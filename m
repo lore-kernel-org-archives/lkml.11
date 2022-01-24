@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 839DFC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF2CC3526D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380586AbiAXUQb (ORCPT
+        id S1380766AbiAXUQy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54256 "EHLO
+        Mon, 24 Jan 2022 15:16:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55680 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344741AbiAXT54 (ORCPT
+        with ESMTP id S1358273AbiAXT7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:56 -0500
+        Mon, 24 Jan 2022 14:59:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44288601B6;
-        Mon, 24 Jan 2022 19:57:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 208EDC340E5;
-        Mon, 24 Jan 2022 19:57:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 995BA60B43;
+        Mon, 24 Jan 2022 19:59:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69E57C340E5;
+        Mon, 24 Jan 2022 19:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054268;
-        bh=71nH87Z6BVAnpSiRG8nwjV+jcRkslnkAPdOkkfFElvE=;
+        s=korg; t=1643054359;
+        bh=Mmov4kXM/0WU3bh6vK5IbxHSy3H97/BMQnWmsVg6fm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k+sn+aJcOBYU4MZQGL3uQZ3gWmJk6jEkhwGNqtqGz6PrkZYcytsoLy+H/2+io7EHY
-         R/Z++UO8vc5XjVkt1ZRfaa8WI+vfBQbOhulBWPKwO0tUCfkAw4iHJ30rpbBYdIiG0A
-         10HUFjFJPxBY53rZHTolH0pQWqsTljGeq6rMRogI=
+        b=LDhG/HCEdfzq1g5EX3iyT5513seI2/TyI8kg7XEwg/t6oJtYDpB1wcxLzEqRI9ZI0
+         /OICjauJmL5K8n/dmrHz7bGugg9X7VDM7Co/fmasvqOHE8qXLpDIaQljPP+kVSlcSQ
+         eNfHVtiriLPMGS+XxwgjI5ZPs9DM8W9OJQ+64GkY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 334/563] ACPI: Change acpi_device_always_present() into acpi_device_override_status()
-Date:   Mon, 24 Jan 2022 19:41:39 +0100
-Message-Id: <20220124184035.980450043@linuxfoundation.org>
+Subject: [PATCH 5.10 364/563] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 24 Jan 2022 19:42:09 +0100
+Message-Id: <20220124184037.002398444@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,206 +47,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 1a68b346a2c9969c05e80a3b99a9ab160b5655c0 ]
+[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
 
-Currently, acpi_bus_get_status() calls acpi_device_always_present() to
-allow platform quirks to override the _STA return to report that a
-device is present (status = ACPI_STA_DEFAULT) independent of the _STA
-return.
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. saa7146_vv_release() will be called on
+failure of saa7146_register_device(). There is a dereference of
+dev->vv_data in saa7146_vv_release(), which could lead to a NULL
+pointer dereference on failure of saa7146_vv_init().
 
-In some cases it might also be useful to have the opposite functionality
-and have a platform quirk which marks a device as not present (status = 0)
-to work around ACPI table bugs.
+Fix this bug by adding a check of saa7146_vv_init().
 
-Change acpi_device_always_present() into a more generic
-acpi_device_override_status() function to allow this.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/bus.c       |  4 +--
- drivers/acpi/x86/utils.c | 64 +++++++++++++++++++++++-----------------
- include/acpi/acpi_bus.h  |  5 ++--
- 3 files changed, 42 insertions(+), 31 deletions(-)
+ drivers/media/common/saa7146/saa7146_fops.c | 2 +-
+ drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
-index e317214aabec5..5e14288fcabe9 100644
---- a/drivers/acpi/bus.c
-+++ b/drivers/acpi/bus.c
-@@ -98,8 +98,8 @@ int acpi_bus_get_status(struct acpi_device *device)
- 	acpi_status status;
- 	unsigned long long sta;
- 
--	if (acpi_device_always_present(device)) {
--		acpi_set_device_status(device, ACPI_STA_DEFAULT);
-+	if (acpi_device_override_status(device, &sta)) {
-+		acpi_set_device_status(device, sta);
- 		return 0;
+diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
+index d6531874faa65..8047e305f3d01 100644
+--- a/drivers/media/common/saa7146/saa7146_fops.c
++++ b/drivers/media/common/saa7146/saa7146_fops.c
+@@ -523,7 +523,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
+ 		ERR("out of memory. aborting.\n");
+ 		kfree(vv);
+ 		v4l2_ctrl_handler_free(hdl);
+-		return -1;
++		return -ENOMEM;
  	}
  
-diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
-index baaa44edc9441..c6b0782dcced5 100644
---- a/drivers/acpi/x86/utils.c
-+++ b/drivers/acpi/x86/utils.c
-@@ -22,54 +22,63 @@
-  * Some BIOS-es (temporarily) hide specific APCI devices to work around Windows
-  * driver bugs. We use DMI matching to match known cases of this.
-  *
-- * We work around this by always reporting ACPI_STA_DEFAULT for these
-- * devices. Note this MUST only be done for devices where this is safe.
-+ * Likewise sometimes some not-actually present devices are sometimes
-+ * reported as present, which may cause issues.
-  *
-- * This forcing of devices to be present is limited to specific CPU (SoC)
-- * models both to avoid potentially causing trouble on other models and
-- * because some HIDs are re-used on different SoCs for completely
-- * different devices.
-+ * We work around this by using the below quirk list to override the status
-+ * reported by the _STA method with a fixed value (ACPI_STA_DEFAULT or 0).
-+ * Note this MUST only be done for devices where this is safe.
-+ *
-+ * This status overriding is limited to specific CPU (SoC) models both to
-+ * avoid potentially causing trouble on other models and because some HIDs
-+ * are re-used on different SoCs for completely different devices.
-  */
--struct always_present_id {
-+struct override_status_id {
- 	struct acpi_device_id hid[2];
- 	struct x86_cpu_id cpu_ids[2];
- 	struct dmi_system_id dmi_ids[2]; /* Optional */
- 	const char *uid;
-+	unsigned long long status;
- };
+ 	saa7146_video_uops.init(dev,vv);
+diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
+index 2214c74bbbf15..3947701cd6c7e 100644
+--- a/drivers/media/pci/saa7146/hexium_gemini.c
++++ b/drivers/media/pci/saa7146/hexium_gemini.c
+@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
+ 	hexium_set_input(hexium, 0);
+ 	hexium->cur_input = 0;
  
--#define X86_MATCH(model)	X86_MATCH_INTEL_FAM6_MODEL(model, NULL)
--
--#define ENTRY(hid, uid, cpu_models, dmi...) {				\
-+#define ENTRY(status, hid, uid, cpu_model, dmi...) {			\
- 	{ { hid, }, {} },						\
--	{ cpu_models, {} },						\
-+	{ X86_MATCH_INTEL_FAM6_MODEL(cpu_model, NULL), {} },		\
- 	{ { .matches = dmi }, {} },					\
- 	uid,								\
-+	status,								\
- }
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		i2c_del_adapter(&hexium->i2c_adapter);
++		kfree(hexium);
++		return ret;
++	}
  
--static const struct always_present_id always_present_ids[] = {
-+#define PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
-+	ENTRY(ACPI_STA_DEFAULT, hid, uid, cpu_model, dmi)
-+
-+#define NOT_PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
-+	ENTRY(0, hid, uid, cpu_model, dmi)
-+
-+static const struct override_status_id override_status_ids[] = {
- 	/*
- 	 * Bay / Cherry Trail PWM directly poked by GPU driver in win10,
- 	 * but Linux uses a separate PWM driver, harmless if not used.
- 	 */
--	ENTRY("80860F09", "1", X86_MATCH(ATOM_SILVERMONT), {}),
--	ENTRY("80862288", "1", X86_MATCH(ATOM_AIRMONT), {}),
-+	PRESENT_ENTRY_HID("80860F09", "1", ATOM_SILVERMONT, {}),
-+	PRESENT_ENTRY_HID("80862288", "1", ATOM_AIRMONT, {}),
- 
- 	/*
- 	 * The INT0002 device is necessary to clear wakeup interrupt sources
- 	 * on Cherry Trail devices, without it we get nobody cared IRQ msgs.
- 	 */
--	ENTRY("INT0002", "1", X86_MATCH(ATOM_AIRMONT), {}),
-+	PRESENT_ENTRY_HID("INT0002", "1", ATOM_AIRMONT, {}),
- 	/*
- 	 * On the Dell Venue 11 Pro 7130 and 7139, the DSDT hides
- 	 * the touchscreen ACPI device until a certain time
- 	 * after _SB.PCI0.GFX0.LCD.LCD1._ON gets called has passed
- 	 * *and* _STA has been called at least 3 times since.
- 	 */
--	ENTRY("SYNA7500", "1", X86_MATCH(HASWELL_L), {
-+	PRESENT_ENTRY_HID("SYNA7500", "1", HASWELL_L, {
- 		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Venue 11 Pro 7130"),
- 	      }),
--	ENTRY("SYNA7500", "1", X86_MATCH(HASWELL_L), {
-+	PRESENT_ENTRY_HID("SYNA7500", "1", HASWELL_L, {
- 		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Venue 11 Pro 7139"),
- 	      }),
-@@ -85,19 +94,19 @@ static const struct always_present_id always_present_ids[] = {
- 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
- 	 * node which we should not enable, thus we also check the BIOS date.
- 	 */
--	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
-+	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
- 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
- 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
- 		DMI_MATCH(DMI_BIOS_DATE, "02/21/2017")
- 	      }),
--	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
-+	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
- 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
- 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
- 		DMI_MATCH(DMI_BIOS_DATE, "03/20/2017")
- 	      }),
--	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
-+	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
- 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
- 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
-@@ -105,26 +114,27 @@ static const struct always_present_id always_present_ids[] = {
- 	      }),
- };
- 
--bool acpi_device_always_present(struct acpi_device *adev)
-+bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
- {
- 	bool ret = false;
- 	unsigned int i;
- 
--	for (i = 0; i < ARRAY_SIZE(always_present_ids); i++) {
--		if (acpi_match_device_ids(adev, always_present_ids[i].hid))
-+	for (i = 0; i < ARRAY_SIZE(override_status_ids); i++) {
-+		if (acpi_match_device_ids(adev, override_status_ids[i].hid))
- 			continue;
- 
- 		if (!adev->pnp.unique_id ||
--		    strcmp(adev->pnp.unique_id, always_present_ids[i].uid))
-+		    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
- 			continue;
- 
--		if (!x86_match_cpu(always_present_ids[i].cpu_ids))
-+		if (!x86_match_cpu(override_status_ids[i].cpu_ids))
- 			continue;
- 
--		if (always_present_ids[i].dmi_ids[0].matches[0].slot &&
--		    !dmi_check_system(always_present_ids[i].dmi_ids))
-+		if (override_status_ids[i].dmi_ids[0].matches[0].slot &&
-+		    !dmi_check_system(override_status_ids[i].dmi_ids))
- 			continue;
- 
-+		*status = override_status_ids[i].status;
- 		ret = true;
- 		break;
- 	}
-diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
-index 6ad3b89a8a2e0..0f5366792d22e 100644
---- a/include/acpi/acpi_bus.h
-+++ b/include/acpi/acpi_bus.h
-@@ -605,9 +605,10 @@ int acpi_enable_wakeup_device_power(struct acpi_device *dev, int state);
- int acpi_disable_wakeup_device_power(struct acpi_device *dev);
- 
- #ifdef CONFIG_X86
--bool acpi_device_always_present(struct acpi_device *adev);
-+bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status);
- #else
--static inline bool acpi_device_always_present(struct acpi_device *adev)
-+static inline bool acpi_device_override_status(struct acpi_device *adev,
-+					       unsigned long long *status)
- {
- 	return false;
- }
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
 -- 
 2.34.1
 
