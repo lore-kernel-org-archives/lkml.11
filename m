@@ -2,89 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E22A4C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18938C4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356931AbiAXWa7 (ORCPT
+        id S1588020AbiAXWae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:30:59 -0500
-Received: from thorn.bewilderbeest.net ([71.19.156.171]:59675 "EHLO
-        thorn.bewilderbeest.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456407AbiAXVjW (ORCPT
+        Mon, 24 Jan 2022 17:30:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377582AbiAXViv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:22 -0500
-Received: from hatter.bewilderbeest.net (174-21-190-118.tukw.qwest.net [174.21.190.118])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 24 Jan 2022 16:38:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: zev)
-        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 7EF76690;
-        Mon, 24 Jan 2022 13:39:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
-        s=thorn; t=1643060342;
-        bh=DqrmV9MGxyAiCEmRUewAEVdQrxV9eeYb1sRoUnPeamw=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE3E2B815AC;
+        Mon, 24 Jan 2022 21:38:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056B6C36AEB;
+        Mon, 24 Jan 2022 21:38:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643060327;
+        bh=/CkJZbBS/noqHTVzt9gb1OaMJAK407vUfQxtvkkrFfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXBCUJKGE9YD/G80hJhY8Kfm2oTJoQuw5vq/kkdy2/kzNIVKnIlndgJziGn2ncHbk
-         PAFjxjq/BPYcA8gz2fpD5HIMaa8rE0WRHXsWiKFiEDHECiOowH7X8CLC9hDaIOW+BZ
-         6I0+4++DX2p/byi0oKBhTugMvf5sAqNDz133JjtU=
-From:   Zev Weiss <zev@bewilderbeest.net>
-To:     linux-i2c@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH 2/2] dt-bindings: i2c: add nxp,pca9541 release-delay-us property
-Date:   Mon, 24 Jan 2022 13:38:50 -0800
-Message-Id: <20220124213850.3766-3-zev@bewilderbeest.net>
+        b=0o463h19Qf/HjpGwKPT8ghXEAfITqpgz57SAWuZ/ySZMZk02aFm2Mhh54VEmL9FDe
+         ge3h+ONg1TyJgVTcDL72YOzGLSQsxCMaKP5QJfLDfi/VGlLNnvJq0RAFoaUpzpPSOj
+         32h09wrtzyPPGOrjZ2bB3LFPvldQCb1O8YkKQJXU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.16 0912/1039] Documentation: ACPI: Fix data node reference documentation
+Date:   Mon, 24 Jan 2022 19:45:01 +0100
+Message-Id: <20220124184155.959228329@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124213850.3766-1-zev@bewilderbeest.net>
-References: <20220124213850.3766-1-zev@bewilderbeest.net>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This property can be used to reduce arbitration overhead on busy i2c
-busses by retaining ownership for a brief period in anticipation of
-another transaction in the near future.
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
+commit a11174952205d082f1658fab4314f0caf706e0a8 upstream.
+
+The data node reference documentation was missing a package that must
+contain the property values, instead property name and multiple values
+being present in a single package. This is not aligned with the _DSD
+spec.
+
+Fix it by adding the package for the values.
+
+Also add the missing "reg" properties to two numbered nodes.
+
+Fixes: b10134a3643d ("ACPI: property: Document hierarchical data extension references")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/i2c/nxp,pca9541.txt | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ Documentation/firmware-guide/acpi/dsd/data-node-references.rst |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt b/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
-index 42bfc09c8918..c755da59d6ec 100644
---- a/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
-+++ b/Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
-@@ -6,6 +6,14 @@ Required Properties:
+--- a/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
++++ b/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
+@@ -5,7 +5,7 @@
+ Referencing hierarchical data nodes
+ ===================================
  
-   - reg: The I2C address of the device.
+-:Copyright: |copy| 2018 Intel Corporation
++:Copyright: |copy| 2018, 2021 Intel Corporation
+ :Author: Sakari Ailus <sakari.ailus@linux.intel.com>
  
-+Optional Properties:
-+
-+ - release-delay-us: the number of microseconds to delay before
-+   releasing the bus after a transaction.  If unspecified the default
-+   is zero (the bus is released immediately).  Non-zero values can
-+   reduce arbitration overhead for back-to-back transactions, at the
-+   cost of delaying the other master's access to the bus.
-+
-   The following required properties are defined externally:
- 
-   - I2C arbitration bus node. See i2c-arb.txt in this directory.
-@@ -13,9 +21,11 @@ Required Properties:
- 
- Example:
- 
-+	#include <dt-bindings/mux/mux.h>
- 	i2c-arbitrator@74 {
- 		compatible = "nxp,pca9541";
- 		reg = <0x74>;
-+		release-delay-us = <20000>;
- 
- 		i2c-arb {
- 			#address-cells = <1>;
--- 
-2.34.1
+ ACPI in general allows referring to device objects in the tree only.
+@@ -52,12 +52,14 @@ the ANOD object which is also the final
+ 	    Name (NOD0, Package() {
+ 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+ 		Package () {
++		    Package () { "reg", 0 },
+ 		    Package () { "random-property", 3 },
+ 		}
+ 	    })
+ 	    Name (NOD1, Package() {
+ 		ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+ 		Package () {
++		    Package () { "reg", 1 },
+ 		    Package () { "anothernode", "ANOD" },
+ 		}
+ 	    })
+@@ -74,7 +76,11 @@ the ANOD object which is also the final
+ 	    Name (_DSD, Package () {
+ 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+ 		Package () {
+-		    Package () { "reference", ^DEV0, "node@1", "anothernode" },
++		    Package () {
++			"reference", Package () {
++			    ^DEV0, "node@1", "anothernode"
++			}
++		    },
+ 		}
+ 	    })
+ 	}
+
 
