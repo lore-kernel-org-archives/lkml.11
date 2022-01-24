@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BED6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347657AbiAXTRB (ORCPT
+        id S1347728AbiAXTRI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:17:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38626 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343546AbiAXTI4 (ORCPT
+        Mon, 24 Jan 2022 14:17:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36368 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346886AbiAXTJI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:08:56 -0500
+        Mon, 24 Jan 2022 14:09:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1788D60BB9;
-        Mon, 24 Jan 2022 19:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC527C340E5;
-        Mon, 24 Jan 2022 19:08:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 10DD6B811FC;
+        Mon, 24 Jan 2022 19:09:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7194CC340E5;
+        Mon, 24 Jan 2022 19:09:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051334;
-        bh=q1AQ1O9jbhap56lP71ZI3bOXZMTG/h6Z1vfl4pHRoHA=;
+        s=korg; t=1643051343;
+        bh=qbuJzMLstbf2L54xjwrmp0834IdyaWQYNr1ugUCfyB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ULhIT4435jn+Ljr3uvz0pRgvOSl1VSYyxauTybHJpiDf1uPMY8M78GIH3zeNscAgn
-         KJppiO6F4XmLo2LWyMQ2PvjzVUEz5Jrk4lvv4MmVmQkUdNhgdle8PmD4GNBoUCmujb
-         Mhn3Ries+hBd0kmw05s7Mkh27HVoGUWS8R06QUfU=
+        b=TP02YYYTqq3fkpz6XoYa/UdxLTMxMo8p+FMr94cbK2dDlmFJkzWA3ucXP1r1x1lFq
+         Y37jRMukH9eVk2/r78Os1f6Fxxe8RwU2aMkWx0+ovEpUsc5RhVH8a07Sy4Rr7blhFQ
+         RbRYMgUf8NiceG4S1o8JIDmv4tC/5vq371Bw1G4M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 128/186] net: phy: marvell: configure RGMII delays for 88E1118
-Date:   Mon, 24 Jan 2022 19:43:23 +0100
-Message-Id: <20220124183941.227299670@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 131/186] parisc: Avoid calling faulthandler_disabled() twice
+Date:   Mon, 24 Jan 2022 19:43:26 +0100
+Message-Id: <20220124183941.326282967@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,53 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
+[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
 
-Corentin Labbe reports that the SSI 1328 does not work when allowing
-the PHY to operate at gigabit speeds, but does work with the generic
-PHY driver.
+In handle_interruption(), we call faulthandler_disabled() to check whether the
+fault handler is not disabled. If the fault handler is disabled, we immediately
+call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
+do_page_fault() attempts to fixup the exception by jumping to no_context:
 
-This appears to be because m88e1118_config_init() writes a fixed value
-to the MSCR register, claiming that this is to enable 1G speeds.
-However, this always sets bits 4 and 5, enabling RGMII transmit and
-receive delays. The suspicion is that the original board this was
-added for required the delays to make 1G speeds work.
+no_context:
 
-Add the necessary configuration for RGMII delays for the 88E1118 to
-bring this into line with the requirements for RGMII support, and thus
-make the SSI 1328 work.
+        if (!user_mode(regs) && fixup_exception(regs)) {
+                return;
+        }
 
-Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
+        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
 
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Apart from the error messages, the two blocks of code perform the same
+function.
+
+We can avoid two calls to faulthandler_disabled() by a simple revision
+to the code in handle_interruption().
+
+Note: I didn't try to fix the formatting of this code block.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/parisc/kernel/traps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 727b991312a4e..3d8d765932934 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -938,6 +938,12 @@ static int m88e1118_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
+diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
+index 9a898d68f4a0d..346456c43aa0b 100644
+--- a/arch/parisc/kernel/traps.c
++++ b/arch/parisc/kernel/traps.c
+@@ -795,7 +795,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
+ 	     * unless pagefault_disable() was called before.
+ 	     */
  
-+	if (phy_interface_is_rgmii(phydev)) {
-+		err = m88e1121_config_aneg_rgmii_delays(phydev);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	/* Adjust LED Control */
- 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
- 		err = phy_write(phydev, 0x10, 0x1100);
+-	    if (fault_space == 0 && !faulthandler_disabled())
++	    if (faulthandler_disabled() || fault_space == 0)
+ 	    {
+ 		/* Clean up and return if in exception table. */
+ 		if (fixup_exception(regs))
 -- 
 2.34.1
 
