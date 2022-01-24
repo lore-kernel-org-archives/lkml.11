@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F02F9C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE5D8C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423013AbiAYCcq (ORCPT
+        id S3422971AbiAYCck (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
+        Mon, 24 Jan 2022 21:32:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355743AbiAXUWc (ORCPT
+        with ESMTP id S1355550AbiAXUWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B842C061250;
-        Mon, 24 Jan 2022 11:10:49 -0800 (PST)
+        Mon, 24 Jan 2022 15:22:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A44C0417CC;
+        Mon, 24 Jan 2022 11:39:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 289E561299;
-        Mon, 24 Jan 2022 19:10:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EF9C340E5;
-        Mon, 24 Jan 2022 19:10:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6E020B8121C;
+        Mon, 24 Jan 2022 19:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78B57C340E5;
+        Mon, 24 Jan 2022 19:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051448;
-        bh=SkxgkeQKtRzsXP4qhrbvLWmh+8iL7PKLaOqj4Z1DGOc=;
+        s=korg; t=1643053196;
+        bh=XvKunCyUTqhoDJttVMh5EWZ4rnj0JNBQ0NSEL9yv4Ak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jT23P5FPGh1qF4P4Yuxbobwt/G6xCYcOg63bICO+pkmVjecKMlV4uwPosQ22L8rur
-         m99qkwdcGjL/mbsv2rYYnqGDCqJoV7qEE4peFibE6nLU9ibE+lU1e+ewUvQOBWGZOy
-         QQJVTCL8hgERzVFq40a2JNLp+ZXfkbqu6pgONAyQ=
+        b=kmsvG1WC1BAU75kosbi2IHI7+5/MX7h9cL0ntOru5anoZAIyUbZNk6NQVefkKJ19g
+         dyui+MiXQato9cCJeYUDPC8xJSZfxr1rfRG9wvPTXwUuc5BlZl++O+Br7kkeEPrkgV
+         ydt9Dihna92mDsaOJ5ngDIp3rLTzZePZ02o6bey8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 165/186] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
-Date:   Mon, 24 Jan 2022 19:44:00 +0100
-Message-Id: <20220124183942.423045708@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.4 306/320] dmaengine: at_xdmac: Print debug message after realeasing the lock
+Date:   Mon, 24 Jan 2022 19:44:50 +0100
+Message-Id: <20220124184004.356910982@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 3f7c239c7844d2044ed399399d97a5f1c6008e1b upstream.
+commit 5edc24ac876a928f36f407a0fcdb33b94a3a210f upstream.
 
-As reported by sparse: In the remove path, the driver would attempt to
-unmap its own priv pointer - instead of the io memory that it mapped
-in probe.
+It is desirable to do the prints without the lock held if possible, so
+move the print after the lock is released.
 
-Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-4-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/xgmac_mdio.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/dma/at_xdmac.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -301,9 +301,10 @@ err_ioremap:
- static int xgmac_mdio_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mdio_fsl_priv *priv = bus->priv;
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -424,10 +424,12 @@ static dma_cookie_t at_xdmac_tx_submit(s
+ 	spin_lock_irqsave(&atchan->lock, irqflags);
+ 	cookie = dma_cookie_assign(tx);
  
- 	mdiobus_unregister(bus);
--	iounmap(bus->priv);
-+	iounmap(priv->mdio_base);
- 	mdiobus_free(bus);
+-	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
+-		 __func__, atchan, desc);
+ 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
+ 	spin_unlock_irqrestore(&atchan->lock, irqflags);
++
++	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
++		 __func__, atchan, desc);
++
+ 	return cookie;
+ }
  
- 	return 0;
 
 
