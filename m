@@ -2,44 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18244C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 949FCC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378477AbiAXVnY (ORCPT
+        id S1458012AbiAXVmm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:43:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60808 "EHLO
+        Mon, 24 Jan 2022 16:42:42 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60440 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446991AbiAXVJr (ORCPT
+        with ESMTP id S1356318AbiAXVJE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:47 -0500
+        Mon, 24 Jan 2022 16:09:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8E67B81142;
-        Mon, 24 Jan 2022 21:09:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E52B4C340E5;
-        Mon, 24 Jan 2022 21:09:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B002B81188;
+        Mon, 24 Jan 2022 21:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CF85C340E5;
+        Mon, 24 Jan 2022 21:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058584;
-        bh=l3akZgYVfwMEfwcCOQk0BID8yWFagZs9UcWLxnR9ZfA=;
+        s=korg; t=1643058541;
+        bh=cAu+sl2eBg6gdowEPhXePwRqosKPNDPFudiZnY87b8I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XhV9cCh0loAfdmBlhtOwWUjPT0NV+2c0B66S8hsBQfy9DjP+6T1ZbIe6l2BGoEe/+
-         8NU/9ZlB3OXIwCpOwURez4WBHmAly0cEIv+Mlfcv7pIyDFZ9SzAJSzQf4Luzn7MvpN
-         KRh1x3lIGWknssJrmCNvBWEEapwxrr1MyDehpMKg=
+        b=WTyws1JwchORkfNDdXA+RW+KiJ+RT1Alw7VBrFsanqlcW5Tm230ICGMuYQifAK8J6
+         hu29JstGDkIZFftG5IANq95AFYKiskamGupxFc1SKGONa0HnEjdtYEm5RQtxyb6SkW
+         QpgFiKf/CdTYAWePOGblbSr08bfEUzIur32cFE68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andre Przywara <andre.przywara@arm.com>,
-        Adam Lackorzynski <adam@l4re.org>,
-        Peter Maydell <peter.maydell@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0303/1039] ARM: 9159/1: decompressor: Avoid UNPREDICTABLE NOP encoding
-Date:   Mon, 24 Jan 2022 19:34:52 +0100
-Message-Id: <20220124184135.499345733@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0322/1039] mt76: connac: introduce MCU_UNI_CMD macro
+Date:   Mon, 24 Jan 2022 19:35:11 +0100
+Message-Id: <20220124184136.123251460@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,98 +46,422 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andre Przywara <andre.przywara@arm.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit a92882a4d270fbcc021ee6848de5e48b7f0d27f3 ]
+[ Upstream commit 5472240245793c13e9986c61dd34c697296deed4 ]
 
-In the decompressor's head.S we need to start with an instruction that
-is some kind of NOP, but also mimics as the PE/COFF header, when the
-kernel is linked as an UEFI application. The clever solution here is
-"tstne r0, #0x4d000", which in the worst case just clobbers the
-condition flags, and bears the magic "MZ" signature in the lowest 16 bits.
+Similar to MCU_EXT_CMD, introduce MCU_UNI_CMD for unified commands
 
-However the encoding used (0x13105a4d) is actually not valid, since bits
-[15:12] are supposed to be 0 (written as "(0)" in the ARM ARM).
-Violating this is UNPREDICTABLE, and *can* trigger an UNDEFINED
-exception. Common Cortex cores seem to ignore those bits, but QEMU
-chooses to trap, so the code goes fishing because of a missing exception
-handler at this point. We are just saved by the fact that commonly (with
--kernel or when running from U-Boot) the "Z" bit is set, so the
-instruction is never executed. See [0] for more details.
-
-To make things more robust and avoid UNPREDICTABLE behaviour in the
-kernel code, lets replace this with a "two-instruction NOP":
-The first instruction is an exclusive OR, the effect of which the second
-instruction reverts. This does not leave any trace, neither in a
-register nor in the condition flags. Also it's a perfectly valid
-encoding. Kudos to Peter Maydell for coming up with this gem.
-
-[0] https://lore.kernel.org/qemu-devel/YTPIdbUCmwagL5%2FD@os.inf.tu-dresden.de/T/
-
-Link: https://lore.kernel.org/linux-arm-kernel/20210908162617.104962-1-andre.przywara@arm.com/T/
-
-Fixes: 81a0bc39ea19 ("ARM: add UEFI stub support")
-Signed-off-by: Andre Przywara <andre.przywara@arm.com>
-Reported-by: Adam Lackorzynski <adam@l4re.org>
-Suggested-by: Peter Maydell <peter.maydell@linaro.org>
-Reviewed-by: Ard Biesheuvel <ardb@kernel.org>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/compressed/efi-header.S | 22 ++++++++++++++--------
- arch/arm/boot/compressed/head.S       |  3 ++-
- 2 files changed, 16 insertions(+), 9 deletions(-)
+ .../net/wireless/mediatek/mt76/mt7615/mcu.c   | 26 +++++------
+ .../wireless/mediatek/mt76/mt76_connac_mcu.c  | 44 ++++++++++---------
+ .../wireless/mediatek/mt76/mt76_connac_mcu.h  | 19 ++++----
+ .../net/wireless/mediatek/mt76/mt7921/main.c  |  2 +-
+ .../net/wireless/mediatek/mt76/mt7921/mcu.c   | 36 +++++++--------
+ 5 files changed, 64 insertions(+), 63 deletions(-)
 
-diff --git a/arch/arm/boot/compressed/efi-header.S b/arch/arm/boot/compressed/efi-header.S
-index c0e7a745103e2..230030c130853 100644
---- a/arch/arm/boot/compressed/efi-header.S
-+++ b/arch/arm/boot/compressed/efi-header.S
-@@ -9,16 +9,22 @@
- #include <linux/sizes.h>
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+index 2232afed72912..fcbcfc9f5a04f 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mcu.c
+@@ -103,7 +103,7 @@ void mt7615_mcu_fill_msg(struct mt7615_dev *dev, struct sk_buff *skb,
+ 	if (wait_seq)
+ 		*wait_seq = seq;
  
- 		.macro	__nop
--#ifdef CONFIG_EFI_STUB
--		@ This is almost but not quite a NOP, since it does clobber the
--		@ condition flags. But it is the best we can do for EFI, since
--		@ PE/COFF expects the magic string "MZ" at offset 0, while the
--		@ ARM/Linux boot protocol expects an executable instruction
--		@ there.
--		.inst	MZ_MAGIC | (0x1310 << 16)	@ tstne r0, #0x4d000
--#else
-  AR_CLASS(	mov	r0, r0		)
-   M_CLASS(	nop.w			)
-+		.endm
-+
-+		.macro __initial_nops
-+#ifdef CONFIG_EFI_STUB
-+		@ This is a two-instruction NOP, which happens to bear the
-+		@ PE/COFF signature "MZ" in the first two bytes, so the kernel
-+		@ is accepted as an EFI binary. Booting via the UEFI stub
-+		@ will not execute those instructions, but the ARM/Linux
-+		@ boot protocol does, so we need some NOPs here.
-+		.inst	MZ_MAGIC | (0xe225 << 16)	@ eor r5, r5, 0x4d000
-+		eor	r5, r5, 0x4d000			@ undo previous insn
-+#else
-+		__nop
-+		__nop
- #endif
- 		.endm
+-	txd_len = cmd & MCU_UNI_PREFIX ? sizeof(*uni_txd) : sizeof(*mcu_txd);
++	txd_len = cmd & __MCU_CMD_FIELD_UNI ? sizeof(*uni_txd) : sizeof(*mcu_txd);
+ 	txd = (__le32 *)skb_push(skb, txd_len);
  
-diff --git a/arch/arm/boot/compressed/head.S b/arch/arm/boot/compressed/head.S
-index b1cb1972361b8..bf79f2f78d232 100644
---- a/arch/arm/boot/compressed/head.S
-+++ b/arch/arm/boot/compressed/head.S
-@@ -203,7 +203,8 @@ start:
- 		 * were patching the initial instructions of the kernel, i.e
- 		 * had started to exploit this "patch area".
- 		 */
--		.rept	7
-+		__initial_nops
-+		.rept	5
- 		__nop
- 		.endr
- #ifndef CONFIG_THUMB2_KERNEL
+ 	if (cmd != MCU_CMD_FW_SCATTER) {
+@@ -124,7 +124,7 @@ void mt7615_mcu_fill_msg(struct mt7615_dev *dev, struct sk_buff *skb,
+ 	      FIELD_PREP(MT_TXD1_PKT_FMT, pkt_fmt);
+ 	txd[1] = cpu_to_le32(val);
+ 
+-	if (cmd & MCU_UNI_PREFIX) {
++	if (cmd & __MCU_CMD_FIELD_UNI) {
+ 		uni_txd = (struct mt7615_uni_txd *)txd;
+ 		uni_txd->len = cpu_to_le16(skb->len - sizeof(uni_txd->txd));
+ 		uni_txd->option = MCU_CMD_UNI_EXT_ACK;
+@@ -182,12 +182,12 @@ int mt7615_mcu_parse_response(struct mt76_dev *mdev, int cmd,
+ 	} else if (cmd == MCU_EXT_QUERY(RF_REG_ACCESS)) {
+ 		skb_pull(skb, sizeof(*rxd));
+ 		ret = le32_to_cpu(*(__le32 *)&skb->data[8]);
+-	} else if (cmd == MCU_UNI_CMD_DEV_INFO_UPDATE ||
+-		   cmd == MCU_UNI_CMD_BSS_INFO_UPDATE ||
+-		   cmd == MCU_UNI_CMD_STA_REC_UPDATE ||
+-		   cmd == MCU_UNI_CMD_HIF_CTRL ||
+-		   cmd == MCU_UNI_CMD_OFFLOAD ||
+-		   cmd == MCU_UNI_CMD_SUSPEND) {
++	} else if (cmd == MCU_UNI_CMD(DEV_INFO_UPDATE) ||
++		   cmd == MCU_UNI_CMD(BSS_INFO_UPDATE) ||
++		   cmd == MCU_UNI_CMD(STA_REC_UPDATE) ||
++		   cmd == MCU_UNI_CMD(HIF_CTRL) ||
++		   cmd == MCU_UNI_CMD(OFFLOAD) ||
++		   cmd == MCU_UNI_CMD(SUSPEND)) {
+ 		struct mt7615_mcu_uni_event *event;
+ 
+ 		skb_pull(skb, sizeof(*rxd));
+@@ -1263,7 +1263,7 @@ mt7615_mcu_uni_add_beacon_offload(struct mt7615_dev *dev,
+ 	dev_kfree_skb(skb);
+ 
+ out:
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD_BSS_INFO_UPDATE,
++	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD(BSS_INFO_UPDATE),
+ 				 &req, sizeof(req), true);
+ }
+ 
+@@ -1292,7 +1292,7 @@ mt7615_mcu_uni_add_sta(struct mt7615_phy *phy, struct ieee80211_vif *vif,
+ 		       struct ieee80211_sta *sta, bool enable)
+ {
+ 	return __mt7615_mcu_add_sta(phy->mt76, vif, sta, enable,
+-				    MCU_UNI_CMD_STA_REC_UPDATE, true);
++				    MCU_UNI_CMD(STA_REC_UPDATE), true);
+ }
+ 
+ static int
+@@ -1326,7 +1326,7 @@ mt7615_mcu_uni_rx_ba(struct mt7615_dev *dev,
+ 	mt76_connac_mcu_sta_ba_tlv(skb, params, enable, false);
+ 
+ 	err = mt76_mcu_skb_send_msg(&dev->mt76, skb,
+-				    MCU_UNI_CMD_STA_REC_UPDATE, true);
++				    MCU_UNI_CMD(STA_REC_UPDATE), true);
+ 	if (err < 0 || !enable)
+ 		return err;
+ 
+@@ -1347,7 +1347,7 @@ mt7615_mcu_uni_rx_ba(struct mt7615_dev *dev,
+ 				    sta_wtbl, wtbl_hdr);
+ 
+ 	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
+-				     MCU_UNI_CMD_STA_REC_UPDATE, true);
++				     MCU_UNI_CMD(STA_REC_UPDATE), true);
+ }
+ 
+ static int
+@@ -1359,7 +1359,7 @@ mt7615_mcu_sta_uni_update_hdr_trans(struct mt7615_dev *dev,
+ 
+ 	return mt76_connac_mcu_sta_update_hdr_trans(&dev->mt76,
+ 						    vif, &msta->wcid,
+-						    MCU_UNI_CMD_STA_REC_UPDATE);
++						    MCU_UNI_CMD(STA_REC_UPDATE));
+ }
+ 
+ static const struct mt7615_mcu_ops uni_update_ops = {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+index f603c6fab583a..a5857a788da50 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -1071,7 +1071,7 @@ int mt76_connac_mcu_uni_add_dev(struct mt76_phy *phy,
+ 
+ 	memcpy(dev_req.tlv.omac_addr, vif->addr, ETH_ALEN);
+ 
+-	cmd = enable ? MCU_UNI_CMD_DEV_INFO_UPDATE : MCU_UNI_CMD_BSS_INFO_UPDATE;
++	cmd = enable ? MCU_UNI_CMD(DEV_INFO_UPDATE) : MCU_UNI_CMD(BSS_INFO_UPDATE);
+ 	data = enable ? (void *)&dev_req : (void *)&basic_req;
+ 	len = enable ? sizeof(dev_req) : sizeof(basic_req);
+ 
+@@ -1079,7 +1079,7 @@ int mt76_connac_mcu_uni_add_dev(struct mt76_phy *phy,
+ 	if (err < 0)
+ 		return err;
+ 
+-	cmd = enable ? MCU_UNI_CMD_BSS_INFO_UPDATE : MCU_UNI_CMD_DEV_INFO_UPDATE;
++	cmd = enable ? MCU_UNI_CMD(BSS_INFO_UPDATE) : MCU_UNI_CMD(DEV_INFO_UPDATE);
+ 	data = enable ? (void *)&basic_req : (void *)&dev_req;
+ 	len = enable ? sizeof(basic_req) : sizeof(dev_req);
+ 
+@@ -1131,7 +1131,8 @@ int mt76_connac_mcu_sta_ba(struct mt76_dev *dev, struct mt76_vif *mvif,
+ 	mt76_connac_mcu_wtbl_ba_tlv(dev, skb, params, enable, tx, sta_wtbl,
+ 				    wtbl_hdr);
+ 
+-	ret = mt76_mcu_skb_send_msg(dev, skb, MCU_UNI_CMD_STA_REC_UPDATE, true);
++	ret = mt76_mcu_skb_send_msg(dev, skb,
++				    MCU_UNI_CMD(STA_REC_UPDATE), true);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1141,8 +1142,8 @@ int mt76_connac_mcu_sta_ba(struct mt76_dev *dev, struct mt76_vif *mvif,
+ 
+ 	mt76_connac_mcu_sta_ba_tlv(skb, params, enable, tx);
+ 
+-	return mt76_mcu_skb_send_msg(dev, skb, MCU_UNI_CMD_STA_REC_UPDATE,
+-				     true);
++	return mt76_mcu_skb_send_msg(dev, skb,
++				     MCU_UNI_CMD(STA_REC_UPDATE), true);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_sta_ba);
+ 
+@@ -1352,7 +1353,7 @@ int mt76_connac_mcu_uni_add_bss(struct mt76_phy *phy,
+ 	basic_req.basic.sta_idx = cpu_to_le16(wcid->idx);
+ 	basic_req.basic.conn_state = !enable;
+ 
+-	err = mt76_mcu_send_msg(mdev, MCU_UNI_CMD_BSS_INFO_UPDATE, &basic_req,
++	err = mt76_mcu_send_msg(mdev, MCU_UNI_CMD(BSS_INFO_UPDATE), &basic_req,
+ 				sizeof(basic_req), true);
+ 	if (err < 0)
+ 		return err;
+@@ -1390,7 +1391,7 @@ int mt76_connac_mcu_uni_add_bss(struct mt76_phy *phy,
+ 
+ 		mt76_connac_mcu_uni_bss_he_tlv(phy, vif,
+ 					       (struct tlv *)&he_req.he);
+-		err = mt76_mcu_send_msg(mdev, MCU_UNI_CMD_BSS_INFO_UPDATE,
++		err = mt76_mcu_send_msg(mdev, MCU_UNI_CMD(BSS_INFO_UPDATE),
+ 					&he_req, sizeof(he_req), true);
+ 		if (err < 0)
+ 			return err;
+@@ -1428,7 +1429,7 @@ int mt76_connac_mcu_uni_add_bss(struct mt76_phy *phy,
+ 	else if (rlm_req.rlm.control_channel > rlm_req.rlm.center_chan)
+ 		rlm_req.rlm.sco = 3; /* SCB */
+ 
+-	return mt76_mcu_send_msg(mdev, MCU_UNI_CMD_BSS_INFO_UPDATE, &rlm_req,
++	return mt76_mcu_send_msg(mdev, MCU_UNI_CMD(BSS_INFO_UPDATE), &rlm_req,
+ 				 sizeof(rlm_req), true);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_uni_add_bss);
+@@ -2143,7 +2144,7 @@ int mt76_connac_mcu_update_arp_filter(struct mt76_dev *dev,
+ 		memcpy(addr, &info->arp_addr_list[i], sizeof(__be32));
+ 	}
+ 
+-	return mt76_mcu_skb_send_msg(dev, skb, MCU_UNI_CMD_OFFLOAD, true);
++	return mt76_mcu_skb_send_msg(dev, skb, MCU_UNI_CMD(OFFLOAD), true);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_update_arp_filter);
+ 
+@@ -2249,7 +2250,8 @@ int mt76_connac_mcu_update_gtk_rekey(struct ieee80211_hw *hw,
+ 	memcpy(gtk_tlv->kck, key->kck, NL80211_KCK_LEN);
+ 	memcpy(gtk_tlv->replay_ctr, key->replay_ctr, NL80211_REPLAY_CTR_LEN);
+ 
+-	return mt76_mcu_skb_send_msg(phy->dev, skb, MCU_UNI_CMD_OFFLOAD, true);
++	return mt76_mcu_skb_send_msg(phy->dev, skb,
++				     MCU_UNI_CMD(OFFLOAD), true);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_update_gtk_rekey);
+ 
+@@ -2275,8 +2277,8 @@ mt76_connac_mcu_set_arp_filter(struct mt76_dev *dev, struct ieee80211_vif *vif,
+ 		},
+ 	};
+ 
+-	return mt76_mcu_send_msg(dev, MCU_UNI_CMD_OFFLOAD, &req, sizeof(req),
+-				 true);
++	return mt76_mcu_send_msg(dev, MCU_UNI_CMD(OFFLOAD), &req,
++				 sizeof(req), true);
+ }
+ 
+ static int
+@@ -2301,8 +2303,8 @@ mt76_connac_mcu_set_gtk_rekey(struct mt76_dev *dev, struct ieee80211_vif *vif,
+ 		},
+ 	};
+ 
+-	return mt76_mcu_send_msg(dev, MCU_UNI_CMD_OFFLOAD, &req, sizeof(req),
+-				 true);
++	return mt76_mcu_send_msg(dev, MCU_UNI_CMD(OFFLOAD), &req,
++				 sizeof(req), true);
+ }
+ 
+ static int
+@@ -2331,8 +2333,8 @@ mt76_connac_mcu_set_suspend_mode(struct mt76_dev *dev,
+ 		},
+ 	};
+ 
+-	return mt76_mcu_send_msg(dev, MCU_UNI_CMD_SUSPEND, &req, sizeof(req),
+-				 true);
++	return mt76_mcu_send_msg(dev, MCU_UNI_CMD(SUSPEND), &req,
++				 sizeof(req), true);
+ }
+ 
+ static int
+@@ -2366,7 +2368,7 @@ mt76_connac_mcu_set_wow_pattern(struct mt76_dev *dev,
+ 	memcpy(ptlv->pattern, pattern->pattern, pattern->pattern_len);
+ 	memcpy(ptlv->mask, pattern->mask, DIV_ROUND_UP(pattern->pattern_len, 8));
+ 
+-	return mt76_mcu_skb_send_msg(dev, skb, MCU_UNI_CMD_SUSPEND, true);
++	return mt76_mcu_skb_send_msg(dev, skb, MCU_UNI_CMD(SUSPEND), true);
+ }
+ 
+ static int
+@@ -2418,8 +2420,8 @@ mt76_connac_mcu_set_wow_ctrl(struct mt76_phy *phy, struct ieee80211_vif *vif,
+ 	else if (mt76_is_sdio(dev))
+ 		req.wow_ctrl_tlv.wakeup_hif = WOW_GPIO;
+ 
+-	return mt76_mcu_send_msg(dev, MCU_UNI_CMD_SUSPEND, &req, sizeof(req),
+-				 true);
++	return mt76_mcu_send_msg(dev, MCU_UNI_CMD(SUSPEND), &req,
++				 sizeof(req), true);
+ }
+ 
+ int mt76_connac_mcu_set_hif_suspend(struct mt76_dev *dev, bool suspend)
+@@ -2452,8 +2454,8 @@ int mt76_connac_mcu_set_hif_suspend(struct mt76_dev *dev, bool suspend)
+ 	else if (mt76_is_sdio(dev))
+ 		req.hdr.hif_type = 0;
+ 
+-	return mt76_mcu_send_msg(dev, MCU_UNI_CMD_HIF_CTRL, &req, sizeof(req),
+-				 true);
++	return mt76_mcu_send_msg(dev, MCU_UNI_CMD(HIF_CTRL), &req,
++				 sizeof(req), true);
+ }
+ EXPORT_SYMBOL_GPL(mt76_connac_mcu_set_hif_suspend);
+ 
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+index b3cd6ca815278..5c5fab9154e59 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.h
+@@ -496,13 +496,13 @@ enum {
+ #define MCU_CMD_UNI_EXT_ACK			(MCU_CMD_ACK | MCU_CMD_UNI | \
+ 						 MCU_CMD_QUERY)
+ 
+-#define MCU_UNI_PREFIX				BIT(30)
+ #define MCU_CE_PREFIX				BIT(29)
+-#define MCU_CMD_MASK				~(MCU_UNI_PREFIX | MCU_CE_PREFIX)
++#define MCU_CMD_MASK				~(MCU_CE_PREFIX)
+ 
+ #define __MCU_CMD_FIELD_ID			GENMASK(7, 0)
+ #define __MCU_CMD_FIELD_EXT_ID			GENMASK(15, 8)
+ #define __MCU_CMD_FIELD_QUERY			BIT(16)
++#define __MCU_CMD_FIELD_UNI			BIT(17)
+ 
+ #define MCU_CMD(_t)				FIELD_PREP(__MCU_CMD_FIELD_ID,		\
+ 							   MCU_CMD_##_t)
+@@ -510,6 +510,9 @@ enum {
+ 						 FIELD_PREP(__MCU_CMD_FIELD_EXT_ID,	\
+ 							    MCU_EXT_CMD_##_t))
+ #define MCU_EXT_QUERY(_t)			(MCU_EXT_CMD(_t) | __MCU_CMD_FIELD_QUERY)
++#define MCU_UNI_CMD(_t)				(__MCU_CMD_FIELD_UNI |			\
++						 FIELD_PREP(__MCU_CMD_FIELD_ID,		\
++							    MCU_UNI_CMD_##_t))
+ 
+ enum {
+ 	MCU_EXT_CMD_EFUSE_ACCESS = 0x01,
+@@ -562,12 +565,12 @@ enum {
+ };
+ 
+ enum {
+-	MCU_UNI_CMD_DEV_INFO_UPDATE = MCU_UNI_PREFIX | 0x01,
+-	MCU_UNI_CMD_BSS_INFO_UPDATE = MCU_UNI_PREFIX | 0x02,
+-	MCU_UNI_CMD_STA_REC_UPDATE = MCU_UNI_PREFIX | 0x03,
+-	MCU_UNI_CMD_SUSPEND = MCU_UNI_PREFIX | 0x05,
+-	MCU_UNI_CMD_OFFLOAD = MCU_UNI_PREFIX | 0x06,
+-	MCU_UNI_CMD_HIF_CTRL = MCU_UNI_PREFIX | 0x07,
++	MCU_UNI_CMD_DEV_INFO_UPDATE = 0x01,
++	MCU_UNI_CMD_BSS_INFO_UPDATE = 0x02,
++	MCU_UNI_CMD_STA_REC_UPDATE = 0x03,
++	MCU_UNI_CMD_SUSPEND = 0x05,
++	MCU_UNI_CMD_OFFLOAD = 0x06,
++	MCU_UNI_CMD_HIF_CTRL = 0x07,
+ };
+ 
+ enum {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/main.c b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+index e7c9cb66a3543..8c55562c1a8d9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/main.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/main.c
+@@ -1316,7 +1316,7 @@ static void mt7921_sta_set_decap_offload(struct ieee80211_hw *hw,
+ 		clear_bit(MT_WCID_FLAG_HDR_TRANS, &msta->wcid.flags);
+ 
+ 	mt76_connac_mcu_sta_update_hdr_trans(&dev->mt76, vif, &msta->wcid,
+-					     MCU_UNI_CMD_STA_REC_UPDATE);
++					     MCU_UNI_CMD(STA_REC_UPDATE));
+ }
+ 
+ static int mt7921_set_sar_specs(struct ieee80211_hw *hw,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+index 51650e9e1845a..e741db152c0d2 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mcu.c
+@@ -187,12 +187,12 @@ int mt7921_mcu_parse_response(struct mt76_dev *mdev, int cmd,
+ 		ret = le32_to_cpu(*(__le32 *)skb->data);
+ 	} else if (cmd == MCU_EXT_CMD(EFUSE_ACCESS)) {
+ 		ret = mt7921_mcu_parse_eeprom(mdev, skb);
+-	} else if (cmd == MCU_UNI_CMD_DEV_INFO_UPDATE ||
+-		   cmd == MCU_UNI_CMD_BSS_INFO_UPDATE ||
+-		   cmd == MCU_UNI_CMD_STA_REC_UPDATE ||
+-		   cmd == MCU_UNI_CMD_HIF_CTRL ||
+-		   cmd == MCU_UNI_CMD_OFFLOAD ||
+-		   cmd == MCU_UNI_CMD_SUSPEND) {
++	} else if (cmd == MCU_UNI_CMD(DEV_INFO_UPDATE) ||
++		   cmd == MCU_UNI_CMD(BSS_INFO_UPDATE) ||
++		   cmd == MCU_UNI_CMD(STA_REC_UPDATE) ||
++		   cmd == MCU_UNI_CMD(HIF_CTRL) ||
++		   cmd == MCU_UNI_CMD(OFFLOAD) ||
++		   cmd == MCU_UNI_CMD(SUSPEND)) {
+ 		struct mt7921_mcu_uni_event *event;
+ 
+ 		skb_pull(skb, sizeof(*rxd));
+@@ -226,16 +226,12 @@ int mt7921_mcu_fill_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 	u32 val;
+ 	u8 seq;
+ 
+-	switch (cmd) {
+-	case MCU_UNI_CMD_HIF_CTRL:
+-	case MCU_UNI_CMD_SUSPEND:
+-	case MCU_UNI_CMD_OFFLOAD:
++	if (cmd == MCU_UNI_CMD(HIF_CTRL) ||
++	    cmd == MCU_UNI_CMD(SUSPEND) ||
++	    cmd == MCU_UNI_CMD(OFFLOAD))
+ 		mdev->mcu.timeout = HZ / 3;
+-		break;
+-	default:
++	else
+ 		mdev->mcu.timeout = 3 * HZ;
+-		break;
+-	}
+ 
+ 	seq = ++dev->mt76.mcu.msg_seq & 0xf;
+ 	if (!seq)
+@@ -244,7 +240,7 @@ int mt7921_mcu_fill_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 	if (cmd == MCU_CMD_FW_SCATTER)
+ 		goto exit;
+ 
+-	txd_len = cmd & MCU_UNI_PREFIX ? sizeof(*uni_txd) : sizeof(*mcu_txd);
++	txd_len = cmd & __MCU_CMD_FIELD_UNI ? sizeof(*uni_txd) : sizeof(*mcu_txd);
+ 	txd = (__le32 *)skb_push(skb, txd_len);
+ 
+ 	val = FIELD_PREP(MT_TXD0_TX_BYTES, skb->len) |
+@@ -256,7 +252,7 @@ int mt7921_mcu_fill_message(struct mt76_dev *mdev, struct sk_buff *skb,
+ 	      FIELD_PREP(MT_TXD1_HDR_FORMAT, MT_HDR_FORMAT_CMD);
+ 	txd[1] = cpu_to_le32(val);
+ 
+-	if (cmd & MCU_UNI_PREFIX) {
++	if (cmd & __MCU_CMD_FIELD_UNI) {
+ 		uni_txd = (struct mt7921_uni_txd *)txd;
+ 		uni_txd->len = cpu_to_le16(skb->len - sizeof(uni_txd->txd));
+ 		uni_txd->option = MCU_CMD_UNI_EXT_ACK;
+@@ -544,7 +540,7 @@ int mt7921_mcu_add_key(struct mt7921_dev *dev, struct ieee80211_vif *vif,
+ 		return ret;
+ 
+ 	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
+-				     MCU_UNI_CMD_STA_REC_UPDATE, true);
++				     MCU_UNI_CMD(STA_REC_UPDATE), true);
+ }
+ 
+ int mt7921_mcu_uni_tx_ba(struct mt7921_dev *dev,
+@@ -1132,7 +1128,7 @@ int mt7921_mcu_uni_bss_ps(struct mt7921_dev *dev, struct ieee80211_vif *vif)
+ 	if (vif->type != NL80211_IFTYPE_STATION)
+ 		return -EOPNOTSUPP;
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD_BSS_INFO_UPDATE,
++	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD(BSS_INFO_UPDATE),
+ 				 &ps_req, sizeof(ps_req), true);
+ }
+ 
+@@ -1168,7 +1164,7 @@ mt7921_mcu_uni_bss_bcnft(struct mt7921_dev *dev, struct ieee80211_vif *vif,
+ 	if (vif->type != NL80211_IFTYPE_STATION)
+ 		return 0;
+ 
+-	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD_BSS_INFO_UPDATE,
++	return mt76_mcu_send_msg(&dev->mt76, MCU_UNI_CMD(BSS_INFO_UPDATE),
+ 				 &bcnft_req, sizeof(bcnft_req), true);
+ }
+ 
+@@ -1223,7 +1219,7 @@ int mt7921_mcu_sta_update(struct mt7921_dev *dev, struct ieee80211_sta *sta,
+ 		.sta = sta,
+ 		.vif = vif,
+ 		.enable = enable,
+-		.cmd = MCU_UNI_CMD_STA_REC_UPDATE,
++		.cmd = MCU_UNI_CMD(STA_REC_UPDATE),
+ 		.state = state,
+ 		.offload_fw = true,
+ 		.rcpi = to_rcpi(rssi),
 -- 
 2.34.1
 
