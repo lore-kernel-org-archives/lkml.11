@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9317C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237429AbiAXTGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:06:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57470 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345446AbiAXTAT (ORCPT
+        id S1345579AbiAXTGS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:06:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345433AbiAXTAR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:19 -0500
+        Mon, 24 Jan 2022 14:00:17 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D74C061395;
+        Mon, 24 Jan 2022 10:57:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0874EB8122F;
-        Mon, 24 Jan 2022 19:00:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F94C340E5;
-        Mon, 24 Jan 2022 19:00:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 146AFB8121C;
+        Mon, 24 Jan 2022 18:57:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BCE6C340E5;
+        Mon, 24 Jan 2022 18:57:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050816;
-        bh=VCURiyomUVIPoWf9AU+8FLL/6YFSGAUikU9Mn+zQSdE=;
+        s=korg; t=1643050647;
+        bh=3/GDKWH79l9YKLNBw8nBU2t0luvKr2hRfUyc9c5GEiI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KA85OKoDneVlezWGaFdaZdvHlDLDOHCqXcDnUvgUFIC6eFrIMe01eZMgfDVjaW6jJ
-         gdN3EzUYMDj4OIyvx3gmBMW4ht5+Vt4m8SVqM8XQENMHeVpAtQcG69qIZBjHyQStxS
-         mdjV2iy/k51J1Eo4SllcW8ABhih7RGn1tih6HsOM=
+        b=xCGuxkcXueGrj5qbWx6e/NDz6jzE3oB+BXtA5EbY4/9JEeDjARdZow7uCyh9o3wWK
+         jtzqsOfInWHCkdt8E789G0ik703m8RS6oSxkbeB3XxNLU0RK8Wzu5DV/yPFCT0cWlI
+         G9i0brfbnPtrJhNLV8/X/T4Fysfeti5xmRJ9DTWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
-        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
-        Theodore Tso <tytso@mit.edu>, stable@kernel.org
-Subject: [PATCH 4.9 122/157] ext4: set csum seed in tmp inode while migrating to extents
-Date:   Mon, 24 Jan 2022 19:43:32 +0100
-Message-Id: <20220124183936.643926225@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 068/157] ASoC: samsung: idma: Check of ioremap return value
+Date:   Mon, 24 Jan 2022 19:42:38 +0100
+Message-Id: <20220124183934.947037909@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,55 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luís Henriques <lhenriques@suse.de>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
+[ Upstream commit 3ecb46755eb85456b459a1a9f952c52986bce8ec ]
 
-When migrating to extents, the temporary inode will have it's own checksum
-seed.  This means that, when swapping the inodes data, the inode checksums
-will be incorrect.
+Because of the potential failure of the ioremap(), the buf->area could
+be NULL.
+Therefore, we need to check it and return -ENOMEM in order to transfer
+the error.
 
-This can be fixed by recalculating the extents checksums again.  Or simply
-by copying the seed into the temporary inode.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
-Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
-Signed-off-by: Luís Henriques <lhenriques@suse.de>
-Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Cc: stable@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: f09aecd50f39 ("ASoC: SAMSUNG: Add I2S0 internal dma driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Link: https://lore.kernel.org/r/20211228034026.1659385-1-jiasheng@iscas.ac.cn
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/migrate.c |   12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ sound/soc/samsung/idma.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -484,6 +484,17 @@ int ext4_ext_migrate(struct inode *inode
- 		ext4_journal_stop(handle);
- 		goto out_unlock;
- 	}
-+	/*
-+	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
-+	 * is so that the metadata blocks will have the correct checksum after
-+	 * the migration.
-+	 *
-+	 * Note however that, if a crash occurs during the migration process,
-+	 * the recovery process is broken because the tmp_inode checksums will
-+	 * be wrong and the orphans cleanup will fail.
-+	 */
-+	ei = EXT4_I(inode);
-+	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
- 	i_size_write(tmp_inode, i_size_read(inode));
- 	/*
- 	 * Set the i_nlink to zero so it will be deleted later
-@@ -527,7 +538,6 @@ int ext4_ext_migrate(struct inode *inode
- 		goto out_tmp_inode;
- 	}
+diff --git a/sound/soc/samsung/idma.c b/sound/soc/samsung/idma.c
+index 3e408158625db..72014dea75422 100644
+--- a/sound/soc/samsung/idma.c
++++ b/sound/soc/samsung/idma.c
+@@ -369,6 +369,8 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
+ 	buf->addr = idma.lp_tx_addr;
+ 	buf->bytes = idma_hardware.buffer_bytes_max;
+ 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
++	if (!buf->area)
++		return -ENOMEM;
  
--	ei = EXT4_I(inode);
- 	i_data = ei->i_data;
- 	memset(&lb, 0, sizeof(lb));
- 
+ 	return 0;
+ }
+-- 
+2.34.1
+
 
 
