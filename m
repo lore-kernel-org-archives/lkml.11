@@ -2,112 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DA45C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:03:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2385C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244070AbiAXRD0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:03:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243962AbiAXRDU (ORCPT
+        id S244076AbiAXREX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:04:23 -0500
+Received: from mta-p8.oit.umn.edu ([134.84.196.208]:55534 "EHLO
+        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243962AbiAXREU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:03:20 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72468C061744
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:03:20 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id j14so11209509lja.3
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:03:20 -0800 (PST)
+        Mon, 24 Jan 2022 12:04:20 -0500
+Received: from localhost (unknown [127.0.0.1])
+        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 4JjGYG6q15z9vY6r
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:04:18 +0000 (UTC)
+X-Virus-Scanned: amavisd-new at umn.edu
+Received: from mta-p8.oit.umn.edu ([127.0.0.1])
+        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id H7FHHO1vlg44 for <linux-kernel@vger.kernel.org>;
+        Mon, 24 Jan 2022 11:04:18 -0600 (CST)
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 4JjGYG4mpVz9vY6m
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:04:18 -0600 (CST)
+DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 4JjGYG4mpVz9vY6m
+DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 4JjGYG4mpVz9vY6m
+Received: by mail-pg1-f199.google.com with SMTP id s5-20020a635245000000b0034ea48b7094so4575376pgl.12
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:04:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ventanamicro.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w4LPuie2gZC/4gV/HI33snifTw+KkH8sPMZQ+z2ss9g=;
-        b=GMNghxZcUBO0n0fyg056ZLP7pohxEmoQNb+q9Gx3aJL7yN5OgP3L3sAXKKeG0FS2FZ
-         Z6pDM9krJxdYNIX5JVA7jIf5PVEaWB3PGmkC7PzXiUasK0mbo88jhYgwCX1k5jbVbMqb
-         sJ3IiMLRCt+4TpzmjqS9TqholOAk3g9plbBE2UYD+tiolZfJWQ8Tpv/UiU12e2qoNkKc
-         ODqMMR230gAhWRVkS6W1VlA7aC/0QEKLOCbIpRFoA5Y/sHPFuo5qFoGPwmFbwk3Sb3qz
-         8/5ZUZJrGisb4JDzOH3FxSWlIGyw2MCJJOMZVNMiLFQ1TAbmhgYe1jIk4F2YTgopqVaN
-         sjaQ==
+        d=umn.edu; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FazSFMA+aZ9XoPqirxdQTRfh3CfesxK/5V0htIJuY88=;
+        b=PaWfKa1kKN2Zof2lfwbFJNDiHyqysB22EEnId9NaRlB/MV9/MtE+ezuNu9UyLZhJue
+         /iaiiqYVttjLceS5I7CQtz6z7dNPpfkFqKof/GWZnMhOpgb74L06Dusu+lfOAu3gW8td
+         /uXwRlFQ8hJkujrg8/1fsE2avXJgPCPlI5lDS7G4zjVeDfq14gTJ9wHtBGkypE/WYFvq
+         184zXbzKNFXzvicSjZcP1kqeIhoF6v+6ERwi3Mmrcd5drW+aLqXR1xEFLAEgaKVfScg9
+         cFo2jjjbpD5FID1+JIfNzvntGnp8PZEK06wM9ImCb7BXCdza/KjBTZ4t8SIipDmVNmn5
+         /J+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w4LPuie2gZC/4gV/HI33snifTw+KkH8sPMZQ+z2ss9g=;
-        b=owr0KyFCmNeRLMwUCQgNYZhdUCCAV0uidY4i/HKD1WAkobynkCjEGLITiA/oTaFtrL
-         GLA1RVYB2rKU4Ea9r9jvpvbtTtQLucA3Rm11eiT9nsvEE0fqFheCqL4J89SVfWi/d7l6
-         wOP3WbehLEqNy6F7ITqDYjxo0II0eEQToQckn7qE+QhdefRl1qo62SGBc7bbvHNZAKMi
-         1oZCXfwg1Y88uDzSD9GZ7dxKgpcHlVGDmNHCWogmNPRORo9hSt1sAbskyhOYzh7h3jtT
-         qJSAZQLl+lIckdEbkjkCjVrf7XKy+W3+jgUySAb7Rx+ufzEooMALDLAzV8jn4OJ69JvW
-         NLWA==
-X-Gm-Message-State: AOAM5330nZRlzENekPRtyxMYM1m7eZZFfrj3CWrsRPrIkHOLoAaEPsSd
-        srr3o/D/dQ2/xaa06cOQ2pU0XXe67LW1Sms6xUNLXw==
-X-Google-Smtp-Source: ABdhPJwIH+cyPsq9bO3FdraGj6OvSy6jgmkNSoCj6ohDecG2rjLAnn9SJiY8LIXwnWs9epmvSWObibUgPiIYbVjqz4c=
-X-Received: by 2002:a2e:b8d3:: with SMTP id s19mr12244345ljp.401.1643043798747;
- Mon, 24 Jan 2022 09:03:18 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FazSFMA+aZ9XoPqirxdQTRfh3CfesxK/5V0htIJuY88=;
+        b=BWWHvBslIvdbCXKT6z5onbOeTKkI2SWdqHnvDD4pr2hVcAqC4Zaf54kwrlGFn8/qpu
+         DIvRXkKms/Sp5sO5wxEzxC14wO+cB9Zch0yUjeHZx1Sh/hr8r8O9nUczOm3HSCIWdSS9
+         JDw1V7NbfcFTYaBUXxLOeGnMngIlh6TLvyMcd9b9hmYNotZni179rPXFFM6iU03BCkLa
+         4bEACHaRpyrMdQCCa71+IeC+TlBJo2zI0o59TwNOkSTFNad8mc2aK31LDvZhuAeMP1TZ
+         BwcAYDg9KA7LmOJ+MWDkpif/UDaaRkx8Dz0qhlSi47qZUKjybrcIb3+zBbdl5LUj9v44
+         MvUQ==
+X-Gm-Message-State: AOAM531a8kci4b+Zi5g6U9wOUhGf0urg1vMUye91lhQ5HUcy5b+c2OaL
+        Q/97ZoJVI4VVbnNWUEIK3r8QgP50YtTdNrzcVD/zDjz6EOUWyKMuMc0ZQ0nddOreqbmSLGfmbRk
+        vu/WxjreI3izMxr8Swx/pKNH+WI6x
+X-Received: by 2002:a17:90a:77c8:: with SMTP id e8mr2786747pjs.111.1643043857703;
+        Mon, 24 Jan 2022 09:04:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy7YNZc6mTIEdSdNIs3FzgPra3yoffvTnmNwSImjoKYeOXmKfcLsHqlEVt2QCw16aOAEFawTA==
+X-Received: by 2002:a17:90a:77c8:: with SMTP id e8mr2786724pjs.111.1643043857463;
+        Mon, 24 Jan 2022 09:04:17 -0800 (PST)
+Received: from zqy787-GE5S.lan ([36.4.61.248])
+        by smtp.gmail.com with ESMTPSA id 25sm20665228pje.22.2022.01.24.09.04.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 09:04:17 -0800 (PST)
+From:   Zhou Qingyang <zhou1615@umn.edu>
+To:     zhou1615@umn.edu
+Cc:     kjlu@umn.edu, Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Douglas Schilling Landgraf <dougsland@gmail.com>,
+        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] media: bttv: Fix a NULL pointer dereference in bttv_s_fbuf()
+Date:   Tue, 25 Jan 2022 01:04:09 +0800
+Message-Id: <20220124170411.58169-1-zhou1615@umn.edu>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211118192130.48b8f04c@xhacker> <20211118192651.605d0c80@xhacker>
- <CAN37VV6vfee+T18UkbDLe1ts87+Zvg25oQR1+VJD3e6SJFPPiA@mail.gmail.com>
- <YeqkIKUsdHH0ORxf@xhacker> <Ye0cCI8aAC8rL1IE@xhacker>
-In-Reply-To: <Ye0cCI8aAC8rL1IE@xhacker>
-From:   Mayuresh Chitale <mchitale@ventanamicro.com>
-Date:   Mon, 24 Jan 2022 22:32:43 +0530
-Message-ID: <CAN37VV4H=ts6GU1aV6M1mZk+SRb-3n3R_nz9Ao3_W1zcEKW4-A@mail.gmail.com>
-Subject: Re: [PATCH 11/12] riscv: extable: add a dedicated uaccess handler
-To:     Jisheng Zhang <jszhang@kernel.org>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Kefeng Wang <wangkefeng.wang@huawei.com>,
-        Tong Tiangen <tongtiangen@huawei.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kbuild@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jisheng,
+In bttv_s_fbuf(), the return value of videobuf_sg_alloc() is assigned
+to variable new and there is a dereference of it after that. the return
+value of videobuf_sg_alloc() could be NULL on failure of allocation,
+which could lead to a NULL pointer dereference.
 
-On Sun, Jan 23, 2022 at 2:50 PM Jisheng Zhang <jszhang@kernel.org> wrote:
->
-> On Fri, Jan 21, 2022 at 08:16:51PM +0800, Jisheng Zhang wrote:
-> > On Thu, Jan 20, 2022 at 11:45:34PM +0530, Mayuresh Chitale wrote:
-> > > Hello Jisheng,
-> >
-> > Hi,
-> >
-> > >
-> > > Just wanted to inform you that this patch breaks the writev02 test
-> > > case in LTP and if it is reverted then the test passes. If we run the
-> > > test through strace then we see that the test hangs and following is
-> > > the last line printed by strace:
-> > >
-> > > "writev(3, [{iov_base=0x7fff848a6000, iov_len=8192}, {iov_base=NULL,
-> > > iov_len=0}]"
-> > >
-> >
-> > Thanks for the bug report. I will try to fix it.
->
-> Hi Mayuresh,
->
-> I just sent out a fix for this bug. Per my test, the issue is fixed.
-> Could you please try?
->
-> Thanks
+Fix this bug by adding a NULL check of new.
 
-Your fix works as expected.
+This bug was found by a static analyzer.
 
-Thanks,
-Mayuresh.
+Builds with 'make allyesconfig' show no new warnings,
+and our static analyzer no longer warns about this code
+
+Fixes: 402aa76aa5e5 ("V4L/DVB (6911): Converted bttv to use video_ioctl2")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+---
+The analysis employs differential checking to identify inconsistent 
+security operations (e.g., checks or kfrees) between two code paths 
+and confirms that the inconsistent operations are not recovered in the
+current function or the callers, so they constitute bugs. 
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+ drivers/media/pci/bt8xx/bttv-driver.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
+index 5aa46593ddc6..c0664cffb881 100644
+--- a/drivers/media/pci/bt8xx/bttv-driver.c
++++ b/drivers/media/pci/bt8xx/bttv-driver.c
+@@ -2627,6 +2627,8 @@ static int bttv_s_fbuf(struct file *file, void *f,
+ 			struct bttv_buffer *new;
+ 
+ 			new = videobuf_sg_alloc(sizeof(*new));
++			if (!new)
++				return -ENOMEM;
+ 			new->crop = btv->crop[!!fh->do_crop].rect;
+ 			bttv_overlay_risc(btv, &fh->ov, fh->ovfmt, new);
+ 			retval = bttv_switch_overlay(btv, fh, new);
+-- 
+2.25.1
+
