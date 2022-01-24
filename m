@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E74C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E066AC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373597AbiAYAO5 (ORCPT
+        id S2374008AbiAYAPw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:14:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52478 "EHLO
+        Mon, 24 Jan 2022 19:15:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574354AbiAXX2Q (ORCPT
+        with ESMTP id S1383884AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:16 -0500
+        Mon, 24 Jan 2022 18:28:04 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5711EC0A54D9;
-        Mon, 24 Jan 2022 13:32:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8B2C01D7F8;
+        Mon, 24 Jan 2022 13:31:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14576B80FA1;
-        Mon, 24 Jan 2022 21:32:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D86C7C340E4;
-        Mon, 24 Jan 2022 21:32:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 454EDB81243;
+        Mon, 24 Jan 2022 21:31:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6572EC340E4;
+        Mon, 24 Jan 2022 21:31:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059971;
-        bh=GzbYbsXc5BwyTSbLqMt453HSpU4UrE4xgXx+YQpBbjc=;
+        s=korg; t=1643059901;
+        bh=vqm+l+et8fHmf+ZDrFYxAyjLbW9sX4AdX0B4LSjo1aY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b5ITBnkli9wJz6Uk5mClsU/jdyT5pdKGeI/lSITuKtuWjOVZoMaqBO08x8lCGdflM
-         4uFH4ovVnZEN2rE0L7stJfAdFXauUEOSD5BSGkgKl+dzp6vEB+1LeFgXWLB7Bc++lX
-         4CYpX7bqFM0ROFFb37BtlgOhnTJyjUei+a2F6dWM=
+        b=WDqjz8PBkgRwG5qIHpG+2ahaUFKj7uLUHgfbppe02BElOKgcC5EJwPnxxkkiaMYL7
+         7ReP34JqmyAWOPA8jAcjFDmxLkYw0MKdWoVF5HGSNG+uaXnPeYUKy0jk5zRTq6QFvF
+         D/Pl4tjq387Nr25zia2GS60O1jRwDySyiKZdawJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com,
-        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0763/1039] udf: Fix error handling in udf_new_inode()
-Date:   Mon, 24 Jan 2022 19:42:32 +0100
-Message-Id: <20220124184150.964657576@linuxfoundation.org>
+        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0773/1039] ASoC: mediatek: mt8192-mt6359: fix device_node leak
+Date:   Mon, 24 Jan 2022 19:42:42 +0100
+Message-Id: <20220124184151.286262603@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,43 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit f05f2429eec60851b98bdde213de31dab697c01b ]
+[ Upstream commit 4e28491a7a198c668437f2be8a91a76aa52f20eb ]
 
-When memory allocation of iinfo or block allocation fails, already
-allocated struct udf_inode_info gets freed with iput() and
-udf_evict_inode() may look at inode fields which are not properly
-initialized. Fix it by marking inode bad before dropping reference to it
-in udf_new_inode().
+The of_parse_phandle() document:
+    >>> Use of_node_put() on it when done.
 
-Reported-by: syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
+The driver didn't call of_node_put().  Fixes the leak.
+
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211214040028.2992627-1-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/udf/ialloc.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/fs/udf/ialloc.c b/fs/udf/ialloc.c
-index 2ecf0e87660e3..b5d611cee749c 100644
---- a/fs/udf/ialloc.c
-+++ b/fs/udf/ialloc.c
-@@ -77,6 +77,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
- 					GFP_KERNEL);
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index a606133951b70..24a5d0adec1ba 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -1172,7 +1172,11 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 		return ret;
  	}
- 	if (!iinfo->i_data) {
-+		make_bad_inode(inode);
- 		iput(inode);
- 		return ERR_PTR(-ENOMEM);
- 	}
-@@ -86,6 +87,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
- 			      dinfo->i_location.partitionReferenceNum,
- 			      start, &err);
- 	if (err) {
-+		make_bad_inode(inode);
- 		iput(inode);
- 		return ERR_PTR(err);
- 	}
+ 
+-	return devm_snd_soc_register_card(&pdev->dev, card);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++
++	of_node_put(platform_node);
++	of_node_put(hdmi_codec);
++	return ret;
+ }
+ 
+ #ifdef CONFIG_OF
 -- 
 2.34.1
 
