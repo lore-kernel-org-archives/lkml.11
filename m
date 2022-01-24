@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAC9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 849CCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346971AbiAXTJT (ORCPT
+        id S1347003AbiAXTJZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:09:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33282 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343934AbiAXTC5 (ORCPT
+        Mon, 24 Jan 2022 14:09:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57388 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343706AbiAXTBT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:57 -0500
+        Mon, 24 Jan 2022 14:01:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8354A6090C;
-        Mon, 24 Jan 2022 19:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57C7FC340E5;
-        Mon, 24 Jan 2022 19:02:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEED5B81232;
+        Mon, 24 Jan 2022 19:01:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FE0EC340E5;
+        Mon, 24 Jan 2022 19:01:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050976;
-        bh=dxUf+U6Z7K+kw5Lnyb3mdDP9kwZPt1I3PrYQHepooz4=;
+        s=korg; t=1643050876;
+        bh=5Xvu8d/C0wWF0Z0O/hZRvCFnTmXcuejuftS0FbGyOM4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZFvdtilGcnlTX5X4fqgZ0VUXS1J1aBasEYQkKPDGUL9DtYQCyToMmSucrFqOhjIV
-         7jPNuVcfxK6qnzL9ctQoNGzyncwd6S4a26UcVT+ik4oOjv5+e4uPR6zqowfqwK2yif
-         DUg99cbmms0UzT4iDToFn617PcQ0yU67RxAVunbE=
+        b=Yi1uho5+QbjOGPFWk3pZ27H9JwaZZktylyOJIdF/m0RRx8y4gs09VQIhQKi/DMhYK
+         +d+xVPEfTb4LYDPFzeWdjEe+YGvxTjwrnTFM3ob4zsuPSUIuyp6pCzPTqfTtMdTpTt
+         At3RVN4Z/t80gMpvgpeOg5BfBV4w/zfUcyJRck2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 015/186] Bluetooth: fix init and cleanup of sco_conn.timeout_work
-Date:   Mon, 24 Jan 2022 19:41:30 +0100
-Message-Id: <20220124183937.598856978@linuxfoundation.org>
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.9 140/157] dmaengine: at_xdmac: Fix lld view setting
+Date:   Mon, 24 Jan 2022 19:43:50 +0100
+Message-Id: <20220124183937.210054947@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,63 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 49d8a5606428ca0962d09050a5af81461ff90fbb upstream.
+commit 1385eb4d14d447cc5d744bc2ac34f43be66c9963 upstream.
 
-Before freeing struct sco_conn, all delayed timeout work should be
-cancelled. Otherwise, sco_sock_timeout could potentially use the
-sco_conn after it has been freed.
+AT_XDMAC_CNDC_NDVIEW_NDV3 was set even for AT_XDMAC_MBR_UBC_NDV2,
+because of the wrong bit handling. Fix it.
 
-Additionally, sco_conn.timeout_work should be initialized when the
-connection is allocated, not when the channel is added. This is
-because an sco_conn can create channels with multiple sockets over its
-lifetime, which happens if sockets are released but the connection
-isn't deleted.
-
-Fixes: ba316be1b6a0 ("Bluetooth: schedule SCO timeouts with delayed_work")
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-[OP: adjusted context for 4.14]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Fixes: ee0fe35c8dcd ("dmaengine: xdmac: Handle descriptor's view 3 registers")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-10-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/sco.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/dma/at_xdmac.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -133,6 +133,7 @@ static struct sco_conn *sco_conn_add(str
- 		return NULL;
- 
- 	spin_lock_init(&conn->lock);
-+	INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
- 
- 	hcon->sco_data = conn;
- 	conn->hcon = hcon;
-@@ -196,11 +197,11 @@ static void sco_conn_del(struct hci_conn
- 		sco_chan_del(sk, err);
- 		bh_unlock_sock(sk);
- 		sock_put(sk);
--
--		/* Ensure no more work items will run before freeing conn. */
--		cancel_delayed_work_sync(&conn->timeout_work);
- 	}
- 
-+	/* Ensure no more work items will run before freeing conn. */
-+	cancel_delayed_work_sync(&conn->timeout_work);
-+
- 	hcon->sco_data = NULL;
- 	kfree(conn);
- }
-@@ -213,8 +214,6 @@ static void __sco_chan_add(struct sco_co
- 	sco_pi(sk)->conn = conn;
- 	conn->sk = sk;
- 
--	INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
--
- 	if (parent)
- 		bt_accept_enqueue(parent, sk, true);
- }
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -100,6 +100,7 @@
+ #define		AT_XDMAC_CNDC_NDE		(0x1 << 0)		/* Channel x Next Descriptor Enable */
+ #define		AT_XDMAC_CNDC_NDSUP		(0x1 << 1)		/* Channel x Next Descriptor Source Update */
+ #define		AT_XDMAC_CNDC_NDDUP		(0x1 << 2)		/* Channel x Next Descriptor Destination Update */
++#define		AT_XDMAC_CNDC_NDVIEW_MASK	GENMASK(28, 27)
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV0	(0x0 << 3)		/* Channel x Next Descriptor View 0 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV1	(0x1 << 3)		/* Channel x Next Descriptor View 1 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV2	(0x2 << 3)		/* Channel x Next Descriptor View 2 */
+@@ -360,7 +361,8 @@ static void at_xdmac_start_xfer(struct a
+ 	 */
+ 	if (at_xdmac_chan_is_cyclic(atchan))
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV1;
+-	else if (first->lld.mbr_ubc & AT_XDMAC_MBR_UBC_NDV3)
++	else if ((first->lld.mbr_ubc &
++		  AT_XDMAC_CNDC_NDVIEW_MASK) == AT_XDMAC_MBR_UBC_NDV3)
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV3;
+ 	else
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV2;
 
 
