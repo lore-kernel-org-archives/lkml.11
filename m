@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDDFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B36C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387700AbiAXUhG (ORCPT
+        id S1387817AbiAXUhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:37:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379738AbiAXUMU (ORCPT
+        Mon, 24 Jan 2022 15:37:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55622 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379903AbiAXUPS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BE89C0604CE;
-        Mon, 24 Jan 2022 11:34:03 -0800 (PST)
+        Mon, 24 Jan 2022 15:15:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B0D561504;
-        Mon, 24 Jan 2022 19:34:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7662AC340E5;
-        Mon, 24 Jan 2022 19:34:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13FBCB8119E;
+        Mon, 24 Jan 2022 20:15:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F11C340E5;
+        Mon, 24 Jan 2022 20:15:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052842;
-        bh=PwjgCXsxBBNDaqdajnAiUXq66v/vFynQ/z8Ps+IVHK4=;
+        s=korg; t=1643055315;
+        bh=H/tPH33St1gFh5Gacd8JGf5OOGlFWqNnI4EL4xPm4mc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cPB5HLfHwC4Fv1bZyMybjC+uk4o1gJfA9dUZ0vHHqKVDaP+s1a2MoY1DAz8VHocxo
-         KlTn15WCFxhi8q76vU22CIs+5rAj0TxgjMFhqnJvbnfbcTUrmEhx/sXxAxLC0EDBJx
-         7ce/V0yeR8q4xfGtS/iCctXSGV2U3+L3u6IqsB7c=
+        b=WMEgoZO1KIGci+Sv3ADL/ujQTZ2O7xfWDBsXevVlRWJjvu9Kgx6Qwsf8dJHBQmvLV
+         vTrPzZS08n0UlsDpVLNkmkSB2vqEshnXbLh/1KY3/zzY26SW+BZzsT4grsuAjOkUWo
+         HNvPG1RKWbCCtJqYfLh8TSs6ebjn2awMR9hzWITk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 191/320] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:42:55 +0100
-Message-Id: <20220124184000.143564158@linuxfoundation.org>
+Subject: [PATCH 5.15 079/846] drm/panel: kingdisplay-kd097d04: Delete panel on attach() failure
+Date:   Mon, 24 Jan 2022 19:33:16 +0100
+Message-Id: <20220124184103.718360130@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +47,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
+[ Upstream commit 5f31dbeae8a88f31c3eb4eb526ab4807c40da241 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of saa7146_register_device(). There is a dereference of
-dev->vv_data in saa7146_vv_release(), which could lead to a NULL
-pointer dereference on failure of saa7146_vv_init().
+If we fail to attach (e.g., because 1 of 2 dual-DSI controllers aren't
+ready), we leave a dangling drm_panel reference to freed memory. Clean
+that up on failure.
 
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 2a994cbed6b2 ("drm/panel: Add Kingdisplay KD097D04 panel driver")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210923173336.1.Icb4d9dbc1817f4e826361a4f1cea7461541668f0@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/saa7146/saa7146_fops.c | 2 +-
- drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
-index aabb830e74689..4b332ea986168 100644
---- a/drivers/media/common/saa7146/saa7146_fops.c
-+++ b/drivers/media/common/saa7146/saa7146_fops.c
-@@ -525,7 +525,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
- 		ERR("out of memory. aborting.\n");
- 		kfree(vv);
- 		v4l2_ctrl_handler_free(hdl);
--		return -1;
-+		return -ENOMEM;
- 	}
+diff --git a/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c b/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
+index 86e4213e8bb13..daccb1fd5fdad 100644
+--- a/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
++++ b/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
+@@ -406,7 +406,13 @@ static int kingdisplay_panel_probe(struct mipi_dsi_device *dsi)
+ 	if (err < 0)
+ 		return err;
  
- 	saa7146_video_uops.init(dev,vv);
-diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
-index f962269306707..86d4e2abed82a 100644
---- a/drivers/media/pci/saa7146/hexium_gemini.c
-+++ b/drivers/media/pci/saa7146/hexium_gemini.c
-@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
- 	hexium_set_input(hexium, 0);
- 	hexium->cur_input = 0;
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		i2c_del_adapter(&hexium->i2c_adapter);
-+		kfree(hexium);
-+		return ret;
+-	return mipi_dsi_attach(dsi);
++	err = mipi_dsi_attach(dsi);
++	if (err < 0) {
++		kingdisplay_panel_del(kingdisplay);
++		return err;
 +	}
++
++	return 0;
+ }
  
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
+ static int kingdisplay_panel_remove(struct mipi_dsi_device *dsi)
 -- 
 2.34.1
 
