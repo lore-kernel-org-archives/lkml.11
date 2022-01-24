@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C0D0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 296C3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449686AbiAXVQA (ORCPT
+        id S1449666AbiAXVP5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:16:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43136 "EHLO
+        Mon, 24 Jan 2022 16:15:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41702 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359224AbiAXUt1 (ORCPT
+        with ESMTP id S1357541AbiAXUt3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:27 -0500
+        Mon, 24 Jan 2022 15:49:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 733FF60907;
-        Mon, 24 Jan 2022 20:49:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0512C340E7;
-        Mon, 24 Jan 2022 20:49:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9CC1C6090B;
+        Mon, 24 Jan 2022 20:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E3B5C340E5;
+        Mon, 24 Jan 2022 20:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057355;
-        bh=vaHrpZuT0SEiaCkxFuZmfH+VWUjcQY23cDzjyVIvb5I=;
+        s=korg; t=1643057368;
+        bh=dx/qqfHaqsrI53eoI4nrZXwWfm8wRxcE9Pn+R9RZmHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dmYcsDWfVUy+DSmgmWLWJnUqbee2lDCCJYsn1r6Awjx2EsOBDJs5wMwlopwQCj60Z
-         /6dj1wuysF3NzKxGe80NRcsegoLppnHrFT1042YfT5FOKhl/UCjLUcqYUjM8dNEZ8r
-         RIfP3OQoxqDtcuH0G9LUDlF7LQ4nxwgEi1al9eXw=
+        b=CEJhgWNJNqglqkjraxFWReAg7d3NIV5Apfrx5jw/9hOUoZVRpqGnZdAjVDL4CLl7r
+         ywktb4Dfe3mFfktPBwMciv47YkiSFJGFlqLiuOS/59zx+t1JK3yO4i9gExZ3w4yFTR
+         6HRZq1YMG7eBukfgvHIF8SEi/j8aqiNBshLCT6Gc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 784/846] af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
-Date:   Mon, 24 Jan 2022 19:45:01 +0100
-Message-Id: <20220124184127.999467307@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 757/846] block: fix async_depth sysfs interface for mq-deadline
+Date:   Mon, 24 Jan 2022 19:44:34 +0100
+Message-Id: <20220124184127.087380239@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,128 +46,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jens Axboe <axboe@kernel.dk>
 
-commit 9d6d7f1cb67cdee15f1a0e85aacfb924e0e02435 upstream.
+commit 46cdc45acb089c811d9a54fd50af33b96e5fae9d upstream.
 
-wait_for_unix_gc() reads unix_tot_inflight & gc_in_progress
-without synchronization.
+A previous commit added this feature, but it inadvertently used the wrong
+variable to show/store the setting from/to, victimized by copy/paste. Fix
+it up so that the async_depth sysfs interface reads and writes from the
+right setting.
 
-Adds READ_ONCE()/WRITE_ONCE() and their associated comments
-to better document the intent.
-
-BUG: KCSAN: data-race in unix_inflight / wait_for_unix_gc
-
-write to 0xffffffff86e2b7c0 of 4 bytes by task 9380 on cpu 0:
- unix_inflight+0x1e8/0x260 net/unix/scm.c:63
- unix_attach_fds+0x10c/0x1e0 net/unix/scm.c:121
- unix_scm_to_skb net/unix/af_unix.c:1674 [inline]
- unix_dgram_sendmsg+0x679/0x16b0 net/unix/af_unix.c:1817
- unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-read to 0xffffffff86e2b7c0 of 4 bytes by task 9375 on cpu 1:
- wait_for_unix_gc+0x24/0x160 net/unix/garbage.c:196
- unix_dgram_sendmsg+0x8e/0x16b0 net/unix/af_unix.c:1772
- unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
- sock_sendmsg_nosec net/socket.c:704 [inline]
- sock_sendmsg net/socket.c:724 [inline]
- ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
- ___sys_sendmsg net/socket.c:2463 [inline]
- __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
- __do_sys_sendmmsg net/socket.c:2578 [inline]
- __se_sys_sendmmsg net/socket.c:2575 [inline]
- __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-value changed: 0x00000002 -> 0x00000004
-
-Reported by Kernel Concurrency Sanitizer on:
-CPU: 1 PID: 9375 Comm: syz-executor.1 Not tainted 5.16.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-
-Fixes: 9915672d4127 ("af_unix: limit unix_tot_inflight")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Link: https://lore.kernel.org/r/20220114164328.2038499-1-eric.dumazet@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 07757588e507 ("block/mq-deadline: Reserve 25% of scheduler tags for synchronous requests")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215485
+Reviewed-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/unix/garbage.c |   14 +++++++++++---
- net/unix/scm.c     |    6 ++++--
- 2 files changed, 15 insertions(+), 5 deletions(-)
+ block/mq-deadline.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/net/unix/garbage.c
-+++ b/net/unix/garbage.c
-@@ -192,8 +192,11 @@ void wait_for_unix_gc(void)
- {
- 	/* If number of inflight sockets is insane,
- 	 * force a garbage collect right now.
-+	 * Paired with the WRITE_ONCE() in unix_inflight(),
-+	 * unix_notinflight() and gc_in_progress().
- 	 */
--	if (unix_tot_inflight > UNIX_INFLIGHT_TRIGGER_GC && !gc_in_progress)
-+	if (READ_ONCE(unix_tot_inflight) > UNIX_INFLIGHT_TRIGGER_GC &&
-+	    !READ_ONCE(gc_in_progress))
- 		unix_gc();
- 	wait_event(unix_gc_wait, gc_in_progress == false);
- }
-@@ -213,7 +216,9 @@ void unix_gc(void)
- 	if (gc_in_progress)
- 		goto out;
- 
--	gc_in_progress = true;
-+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
-+	WRITE_ONCE(gc_in_progress, true);
-+
- 	/* First, select candidates for garbage collection.  Only
- 	 * in-flight sockets are considered, and from those only ones
- 	 * which don't have any external reference.
-@@ -299,7 +304,10 @@ void unix_gc(void)
- 
- 	/* All candidates should have been detached by now. */
- 	BUG_ON(!list_empty(&gc_candidates));
--	gc_in_progress = false;
-+
-+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
-+	WRITE_ONCE(gc_in_progress, false);
-+
- 	wake_up(&unix_gc_wait);
- 
-  out:
---- a/net/unix/scm.c
-+++ b/net/unix/scm.c
-@@ -60,7 +60,8 @@ void unix_inflight(struct user_struct *u
- 		} else {
- 			BUG_ON(list_empty(&u->link));
- 		}
--		unix_tot_inflight++;
-+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
-+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight + 1);
- 	}
- 	user->unix_inflight++;
- 	spin_unlock(&unix_gc_lock);
-@@ -80,7 +81,8 @@ void unix_notinflight(struct user_struct
- 
- 		if (atomic_long_dec_and_test(&u->inflight))
- 			list_del_init(&u->link);
--		unix_tot_inflight--;
-+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
-+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight - 1);
- 	}
- 	user->unix_inflight--;
- 	spin_unlock(&unix_gc_lock);
+--- a/block/mq-deadline.c
++++ b/block/mq-deadline.c
+@@ -811,7 +811,7 @@ SHOW_JIFFIES(deadline_read_expire_show,
+ SHOW_JIFFIES(deadline_write_expire_show, dd->fifo_expire[DD_WRITE]);
+ SHOW_INT(deadline_writes_starved_show, dd->writes_starved);
+ SHOW_INT(deadline_front_merges_show, dd->front_merges);
+-SHOW_INT(deadline_async_depth_show, dd->front_merges);
++SHOW_INT(deadline_async_depth_show, dd->async_depth);
+ SHOW_INT(deadline_fifo_batch_show, dd->fifo_batch);
+ #undef SHOW_INT
+ #undef SHOW_JIFFIES
+@@ -840,7 +840,7 @@ STORE_JIFFIES(deadline_read_expire_store
+ STORE_JIFFIES(deadline_write_expire_store, &dd->fifo_expire[DD_WRITE], 0, INT_MAX);
+ STORE_INT(deadline_writes_starved_store, &dd->writes_starved, INT_MIN, INT_MAX);
+ STORE_INT(deadline_front_merges_store, &dd->front_merges, 0, 1);
+-STORE_INT(deadline_async_depth_store, &dd->front_merges, 1, INT_MAX);
++STORE_INT(deadline_async_depth_store, &dd->async_depth, 1, INT_MAX);
+ STORE_INT(deadline_fifo_batch_store, &dd->fifo_batch, 0, INT_MAX);
+ #undef STORE_FUNCTION
+ #undef STORE_INT
 
 
