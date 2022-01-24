@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B4B5C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DC20C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350980AbiAXUSB (ORCPT
+        id S1347557AbiAXUSF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:18:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45986 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353190AbiAXUBC (ORCPT
+        Mon, 24 Jan 2022 15:18:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359865AbiAXUBJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:02 -0500
+        Mon, 24 Jan 2022 15:01:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7264EC055A93;
+        Mon, 24 Jan 2022 11:28:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A33E8B8122A;
-        Mon, 24 Jan 2022 20:01:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9175C340E5;
-        Mon, 24 Jan 2022 20:00:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FDBFB811F9;
+        Mon, 24 Jan 2022 19:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ED6DC36AE3;
+        Mon, 24 Jan 2022 19:28:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054459;
-        bh=NsNmxlzJcp4bHdt1JVI79chzoIVKauwC5RQte6uzHu4=;
+        s=korg; t=1643052506;
+        bh=FWCm5xysMWqZECp81pwlwVFvC6oJtYvAhrTXIKd5FAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IIwQOCuU8/Q7IifiwSRKkHxsWJyta6kyLJkZBrcR2s0YqWDpdMrlQhH41ViEp8ZX0
-         EtjlVSqwW5ponDUp9IBK5wZBl8yH3Mhs6NF2lpygDuJiN1aQlP2JJDIiP1KjwKE0s9
-         NAd1kRwvqW9DnSVyRkNdRv1mYruiLGDayAIr1jKQ=
+        b=OLKJokWwxdNrY2IYVCAa/piluTBHpyz/kTsryj91JUt/SOuogvPL78OwZra1L6mcX
+         +fRM8FgXo7l+oOoWGAeS2gUnf5qkvKoyW0LWxgjbdb89BpzQQulrU/K5qil5baSTY5
+         Wc3flPrkzDu5xffQsuOp4rfQrx9/lrYMdNENKLJQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 354/563] selftests/ftrace: make kprobe profile testcase description unique
-Date:   Mon, 24 Jan 2022 19:41:59 +0100
-Message-Id: <20220124184036.659126137@linuxfoundation.org>
+Subject: [PATCH 5.4 081/320] crypto: stm32/cryp - fix lrw chaining mode
+Date:   Mon, 24 Jan 2022 19:41:05 +0100
+Message-Id: <20220124183956.496146394@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit e5992f373c6eed6d09e5858e9623df1259b3ce30 ]
+[ Upstream commit fa97dc2d48b476ea98199d808d3248d285987e99 ]
 
-Commit 32f6e5da83c7 ("selftests/ftrace: Add kprobe profile testcase")
-added a new kprobes testcase, but has a description which does not
-describe what the test case is doing and is duplicating the description
-of another test case.
+This fixes the lrw autotest if lrw uses the CRYP as the AES block cipher
+provider (as ecb(aes)). At end of request, CRYP should not update the IV
+in case of ECB chaining mode. Indeed the ECB chaining mode never uses
+the IV, but the software LRW chaining mode uses the IV field as
+a counter and due to the (unexpected) update done by CRYP while the AES
+block process, the counter get a wrong value when the IV overflow.
 
-Therefore change the test case description, so it is unique and then
-allows easily to tell which test case actually passed or failed.
+Fixes: 5f49f18d27cd ("crypto: stm32/cryp - update to return iv_out")
 
-Reported-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/ftrace/test.d/kprobe/profile.tc | 2 +-
+ drivers/crypto/stm32/stm32-cryp.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-index 98166fa3eb91c..34fb89b0c61fa 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-@@ -1,6 +1,6 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
--# description: Kprobe dynamic event - adding and removing
-+# description: Kprobe profile
- # requires: kprobe_events
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index c41e66211c5b4..69c2468f1053d 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -639,7 +639,7 @@ static void stm32_cryp_finish_req(struct stm32_cryp *cryp, int err)
+ 		/* Phase 4 : output tag */
+ 		err = stm32_cryp_read_auth_tag(cryp);
  
- ! grep -q 'myevent' kprobe_profile
+-	if (!err && (!(is_gcm(cryp) || is_ccm(cryp))))
++	if (!err && (!(is_gcm(cryp) || is_ccm(cryp) || is_ecb(cryp))))
+ 		stm32_cryp_get_iv(cryp);
+ 
+ 	if (cryp->sgs_copied) {
 -- 
 2.34.1
 
