@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DB31C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B54C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848404AbiAXXWZ (ORCPT
+        id S1848444AbiAXXWb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:22:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
+        Mon, 24 Jan 2022 18:22:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584596AbiAXWV3 (ORCPT
+        with ESMTP id S1584586AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD56AC0424E3;
-        Mon, 24 Jan 2022 12:51:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C055C0424E1;
+        Mon, 24 Jan 2022 12:51:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74EBFB8121C;
-        Mon, 24 Jan 2022 20:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FAE3C340E5;
-        Mon, 24 Jan 2022 20:51:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EEE46B810A8;
+        Mon, 24 Jan 2022 20:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3229BC340E5;
+        Mon, 24 Jan 2022 20:51:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057510;
-        bh=nLbfVhC+hx4MvmFjuVKHG5ErgMGtMOd4k9QUUTch4E8=;
+        s=korg; t=1643057488;
+        bh=z/kUukaJylcFxGt8AABs3R9KeYEcCOvB/8aKXDK3HDc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q4T0PHc97QjrEMbwnSIVbillB01aiPVaolJWYWzYarqcpRErJ9cAyEV01A9mKNn4o
-         CppMxZUYu1oE18Elty7tBGv71u0eL0Ygi+NpzWmZo6DdZSTA0lQNCVIuSkDNDbb6xx
-         4QVRWxgWAkYQ9DnNE7Nt0n3VWPXuSqUSG4rhu0x0=
+        b=g5cTEvsFfq8wOcSAg6np3DTq/DnPrp4rx437sJo8FGYiQo46leUO3hPZdKgKn8m0J
+         e0O8TB/OHTeEyK1S2DEQFi+jmqcJ3ufaDPtgklGoBgQB4fz9JVipxspbEHD/L+uxFZ
+         sdR7EP6EwZkUGEE/sKKDtanYlx1i579mFQDsIrcs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 837/846] net: mscc: ocelot: fix using match before it is set
-Date:   Mon, 24 Jan 2022 19:45:54 +0100
-Message-Id: <20220124184129.784468964@linuxfoundation.org>
+Subject: [PATCH 5.15 796/846] net: axienet: Fix TX ring slot available check
+Date:   Mon, 24 Jan 2022 19:45:13 +0100
+Message-Id: <20220124184128.409686443@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,57 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit baa59504c1cd0cca7d41954a45ee0b3dc78e41a0 upstream.
+commit 996defd7f8b5dafc1d480b7585c7c62437f80c3c upstream.
 
-Clang static analysis reports this issue
-ocelot_flower.c:563:8: warning: 1st function call argument
-  is an uninitialized value
-    !is_zero_ether_addr(match.mask->dst)) {
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The check for whether a TX ring slot was available was incorrect,
+since a slot which had been loaded with transmit data but the device had
+not started transmitting would be treated as available, potentially
+causing non-transmitted slots to be overwritten. The control field in
+the descriptor should be checked, rather than the status field (which may
+only be updated when the device completes the entry).
 
-The variable match is used before it is set.  So move the
-block.
-
-Fixes: 75944fda1dfe ("net: mscc: ocelot: offload ingress skbedit and vlan actions to VCAP IS1")
-Signed-off-by: Tom Rix <trix@redhat.com>
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot_flower.c |   15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -467,13 +467,6 @@ ocelot_flower_parse_key(struct ocelot *o
- 			return -EOPNOTSUPP;
- 		}
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -643,7 +643,6 @@ static int axienet_free_tx_chain(struct
+ 		if (cur_p->skb && (status & XAXIDMA_BD_STS_COMPLETE_MASK))
+ 			dev_consume_skb_irq(cur_p->skb);
  
--		if (filter->block_id == VCAP_IS1 &&
--		    !is_zero_ether_addr(match.mask->dst)) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Key type S1_NORMAL cannot match on destination MAC");
--			return -EOPNOTSUPP;
--		}
--
- 		/* The hw support mac matches only for MAC_ETYPE key,
- 		 * therefore if other matches(port, tcp flags, etc) are added
- 		 * then just bail out
-@@ -488,6 +481,14 @@ ocelot_flower_parse_key(struct ocelot *o
- 			return -EOPNOTSUPP;
+-		cur_p->cntrl = 0;
+ 		cur_p->app0 = 0;
+ 		cur_p->app1 = 0;
+ 		cur_p->app2 = 0;
+@@ -651,6 +650,7 @@ static int axienet_free_tx_chain(struct
+ 		cur_p->skb = NULL;
+ 		/* ensure our transmit path and device don't prematurely see status cleared */
+ 		wmb();
++		cur_p->cntrl = 0;
+ 		cur_p->status = 0;
  
- 		flow_rule_match_eth_addrs(rule, &match);
-+
-+		if (filter->block_id == VCAP_IS1 &&
-+		    !is_zero_ether_addr(match.mask->dst)) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Key type S1_NORMAL cannot match on destination MAC");
-+			return -EOPNOTSUPP;
-+		}
-+
- 		filter->key_type = OCELOT_VCAP_KEY_ETYPE;
- 		ether_addr_copy(filter->key.etype.dmac.value,
- 				match.key->dst);
+ 		if (sizep)
+@@ -713,7 +713,7 @@ static inline int axienet_check_tx_bd_sp
+ 	/* Ensure we see all descriptor updates from device or TX IRQ path */
+ 	rmb();
+ 	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
+-	if (cur_p->status & XAXIDMA_BD_STS_ALL_MASK)
++	if (cur_p->cntrl)
+ 		return NETDEV_TX_BUSY;
+ 	return 0;
+ }
 
 
