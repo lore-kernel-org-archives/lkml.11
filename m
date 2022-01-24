@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 439FCC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E401C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233707AbiAYCn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:43:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
+        id S1312728AbiAYCnt (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387518AbiAXUgy (ORCPT
+        with ESMTP id S1387510AbiAXUgx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:54 -0500
+        Mon, 24 Jan 2022 15:36:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398A6C038AF5;
-        Mon, 24 Jan 2022 11:50:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B17C02B8CC;
+        Mon, 24 Jan 2022 11:49:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEC6760A28;
-        Mon, 24 Jan 2022 19:50:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9462C340E7;
-        Mon, 24 Jan 2022 19:50:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9648660989;
+        Mon, 24 Jan 2022 19:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F529C340E5;
+        Mon, 24 Jan 2022 19:49:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053801;
-        bh=7Gn/6wz8LMSKYolBvf8PNaQwMzarikHb90OTHazhURw=;
+        s=korg; t=1643053787;
+        bh=zC2koczZ0VUmYS5Z+Ioxhq+/po4DCrtzwVL/2B+YlmA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MqoJ/xQmo/QPmoh1g4Be8RQ/SiPYLl1U/XkUVvjoMtySUuhZzlPZjlg4qXu3yteb5
-         A+hbJag3OuslgvnJ9oiko2t+SBRSah8vU09h+hZWXHPET/pV79G/OC9GEP7mJ16Wg6
-         Pu8fD6boxtq1vpdGyZqDDMJcplVDNjCD98y3hXho=
+        b=LRoUY7tF+/fLueG1Q1hxyZGzmn82+Yz392E+dmd+hmswTjShoRR9Mgb0phEaDSGib
+         5XaesjozojW0o4LxDxZkc2SoidZ2ZcRUHf2tgaGIh4HVPtHq4gUZK4JMlHcjvd4d2h
+         BHIEm7+DD3ljEi7zFkItOxwnhhLrbWvFZBEfitOQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
-        Quentin Perret <qperret@google.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 139/563] arm64: lib: Annotate {clear, copy}_page() as position-independent
-Date:   Mon, 24 Jan 2022 19:38:24 +0100
-Message-Id: <20220124184029.214159326@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Li Hua <hucool.lihua@huawei.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 145/563] sched/rt: Try to restart rt period timer when rt runtime exceeded
+Date:   Mon, 24 Jan 2022 19:38:30 +0100
+Message-Id: <20220124184029.412445053@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,63 +51,97 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Will Deacon <will@kernel.org>
+From: Li Hua <hucool.lihua@huawei.com>
 
-[ Upstream commit 8d9902055c57548bb342dc3ca78caa21e9643024 ]
+[ Upstream commit 9b58e976b3b391c0cf02e038d53dd0478ed3013c ]
 
-clear_page() and copy_page() are suitable for use outside of the kernel
-address space, so annotate them as position-independent code.
+When rt_runtime is modified from -1 to a valid control value, it may
+cause the task to be throttled all the time. Operations like the following
+will trigger the bug. E.g:
 
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Quentin Perret <qperret@google.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20210319100146.1149909-2-qperret@google.com
+  1. echo -1 > /proc/sys/kernel/sched_rt_runtime_us
+  2. Run a FIFO task named A that executes while(1)
+  3. echo 950000 > /proc/sys/kernel/sched_rt_runtime_us
+
+When rt_runtime is -1, The rt period timer will not be activated when task
+A enqueued. And then the task will be throttled after setting rt_runtime to
+950,000. The task will always be throttled because the rt period timer is
+not activated.
+
+Fixes: d0b27fa77854 ("sched: rt-group: synchonised bandwidth period")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Li Hua <hucool.lihua@huawei.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/20211203033618.11895-1-hucool.lihua@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/lib/clear_page.S | 4 ++--
- arch/arm64/lib/copy_page.S  | 4 ++--
- 2 files changed, 4 insertions(+), 4 deletions(-)
+ kernel/sched/rt.c | 23 ++++++++++++++++++-----
+ 1 file changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm64/lib/clear_page.S b/arch/arm64/lib/clear_page.S
-index 073acbf02a7c8..b84b179edba3a 100644
---- a/arch/arm64/lib/clear_page.S
-+++ b/arch/arm64/lib/clear_page.S
-@@ -14,7 +14,7 @@
-  * Parameters:
-  *	x0 - dest
-  */
--SYM_FUNC_START(clear_page)
-+SYM_FUNC_START_PI(clear_page)
- 	mrs	x1, dczid_el0
- 	and	w1, w1, #0xf
- 	mov	x2, #4
-@@ -25,5 +25,5 @@ SYM_FUNC_START(clear_page)
- 	tst	x0, #(PAGE_SIZE - 1)
- 	b.ne	1b
- 	ret
--SYM_FUNC_END(clear_page)
-+SYM_FUNC_END_PI(clear_page)
- EXPORT_SYMBOL(clear_page)
-diff --git a/arch/arm64/lib/copy_page.S b/arch/arm64/lib/copy_page.S
-index e7a793961408d..29144f4cd4492 100644
---- a/arch/arm64/lib/copy_page.S
-+++ b/arch/arm64/lib/copy_page.S
-@@ -17,7 +17,7 @@
-  *	x0 - dest
-  *	x1 - src
-  */
--SYM_FUNC_START(copy_page)
-+SYM_FUNC_START_PI(copy_page)
- alternative_if ARM64_HAS_NO_HW_PREFETCH
- 	// Prefetch three cache lines ahead.
- 	prfm	pldl1strm, [x1, #128]
-@@ -75,5 +75,5 @@ alternative_else_nop_endif
- 	stnp	x16, x17, [x0, #112 - 256]
+diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
+index b5cf418e2e3fe..41b14d9242039 100644
+--- a/kernel/sched/rt.c
++++ b/kernel/sched/rt.c
+@@ -52,11 +52,8 @@ void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime)
+ 	rt_b->rt_period_timer.function = sched_rt_period_timer;
+ }
  
- 	ret
--SYM_FUNC_END(copy_page)
-+SYM_FUNC_END_PI(copy_page)
- EXPORT_SYMBOL(copy_page)
+-static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
++static inline void do_start_rt_bandwidth(struct rt_bandwidth *rt_b)
+ {
+-	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
+-		return;
+-
+ 	raw_spin_lock(&rt_b->rt_runtime_lock);
+ 	if (!rt_b->rt_period_active) {
+ 		rt_b->rt_period_active = 1;
+@@ -75,6 +72,14 @@ static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
+ 	raw_spin_unlock(&rt_b->rt_runtime_lock);
+ }
+ 
++static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
++{
++	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
++		return;
++
++	do_start_rt_bandwidth(rt_b);
++}
++
+ void init_rt_rq(struct rt_rq *rt_rq)
+ {
+ 	struct rt_prio_array *array;
+@@ -1022,13 +1027,17 @@ static void update_curr_rt(struct rq *rq)
+ 
+ 	for_each_sched_rt_entity(rt_se) {
+ 		struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
++		int exceeded;
+ 
+ 		if (sched_rt_runtime(rt_rq) != RUNTIME_INF) {
+ 			raw_spin_lock(&rt_rq->rt_runtime_lock);
+ 			rt_rq->rt_time += delta_exec;
+-			if (sched_rt_runtime_exceeded(rt_rq))
++			exceeded = sched_rt_runtime_exceeded(rt_rq);
++			if (exceeded)
+ 				resched_curr(rq);
+ 			raw_spin_unlock(&rt_rq->rt_runtime_lock);
++			if (exceeded)
++				do_start_rt_bandwidth(sched_rt_bandwidth(rt_rq));
+ 		}
+ 	}
+ }
+@@ -2727,8 +2736,12 @@ static int sched_rt_global_validate(void)
+ 
+ static void sched_rt_do_global(void)
+ {
++	unsigned long flags;
++
++	raw_spin_lock_irqsave(&def_rt_bandwidth.rt_runtime_lock, flags);
+ 	def_rt_bandwidth.rt_runtime = global_rt_runtime();
+ 	def_rt_bandwidth.rt_period = ns_to_ktime(global_rt_period());
++	raw_spin_unlock_irqrestore(&def_rt_bandwidth.rt_runtime_lock, flags);
+ }
+ 
+ int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
 -- 
 2.34.1
 
