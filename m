@@ -2,26 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:03:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9935C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:03:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244886AbiAXSDs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:03:48 -0500
-Received: from out2.migadu.com ([188.165.223.204]:12794 "EHLO out2.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244847AbiAXSDc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:03:32 -0500
+        id S244928AbiAXSDv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:03:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59982 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241599AbiAXSDk (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:03:40 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C88C061401
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:03:40 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643047411;
+        t=1643047412;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ahnJF7fiV1PQKb8mnNBqV+WM+Otng1D4UaEsnbQTJqk=;
-        b=lqAs+zT4XMRomU8iZ8PbeDFJxGbPnuJNsrmN0ZaIKQRvuGypW8fdb9CucYgJ31hDACR6Ta
-        BezECebuq+k2O73QYA+PQGGi2UmZI+mQzAsGF4+/Ciqsr0oLCCm8ufDo2GrDwL4tzRjzNI
-        +8XZ3bmTE2+/B11BFjIa3GXBqB5SRok=
+        bh=bVjXHubzfURs5BxSD6VmUXrd7L08/2QwTbUc3U13ubk=;
+        b=SU6d7Bv0jM8rdpvS3ByZodPHSqJwNhhIh1C5GGE+qIK54FHXGgfEEuFAWlWZWbpM56lPIa
+        3V5ngkYGoZkQ0KGTFSgK9gU2Ny7WVkm0hyeyUb6R2lxPbTfW9ylzwegLBVHl/mBkcS+Exr
+        jlcGSX6VPjRBE0wJIMSKqS/8ph5A0O0=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -39,9 +43,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Evgenii Stepanov <eugenis@google.com>,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v6 09/39] kasan, page_alloc: refactor init checks in post_alloc_hook
-Date:   Mon, 24 Jan 2022 19:02:17 +0100
-Message-Id: <2283fde963adfd8a2b29a92066f106cc16661a3c.1643047180.git.andreyknvl@google.com>
+Subject: [PATCH v6 11/39] kasan, page_alloc: combine tag_clear_highpage calls in post_alloc_hook
+Date:   Mon, 24 Jan 2022 19:02:19 +0100
+Message-Id: <587e3fc36358b88049320a89cc8dc6deaecb0cda.1643047180.git.andreyknvl@google.com>
 In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
 References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,11 +58,8 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Separate code for zeroing memory from the code clearing tags in
-post_alloc_hook().
-
-This patch is not useful by itself but makes the simplifications in
-the following patches easier to follow.
+Move tag_clear_highpage() loops out of the kasan_has_integrated_init()
+clause as a code simplification.
 
 This patch does no functional changes.
 
@@ -70,43 +71,60 @@ Reviewed-by: Alexander Potapenko <glider@google.com>
 Changes v2->v3:
 - Update patch description.
 ---
- mm/page_alloc.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ mm/page_alloc.c | 32 ++++++++++++++++----------------
+ 1 file changed, 16 insertions(+), 16 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 8481420d2502..868480d463c7 100644
+index abed862d889d..b3959327e06c 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -2420,19 +2420,21 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
- 		kasan_alloc_pages(page, order, gfp_flags);
- 	} else {
- 		bool init = !want_init_on_free() && want_init_on_alloc(gfp_flags);
-+		bool init_tags = init && (gfp_flags & __GFP_ZEROTAGS);
+@@ -2419,30 +2419,30 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 	 * KASAN unpoisoning and memory initializion code must be
+ 	 * kept together to avoid discrepancies in behavior.
+ 	 */
++
++	/*
++	 * If memory tags should be zeroed (which happens only when memory
++	 * should be initialized as well).
++	 */
++	if (init_tags) {
++		int i;
++
++		/* Initialize both memory and tags. */
++		for (i = 0; i != 1 << order; ++i)
++			tag_clear_highpage(page + i);
++
++		/* Note that memory is already initialized by the loop above. */
++		init = false;
++	}
+ 	if (kasan_has_integrated_init()) {
+ 		if (gfp_flags & __GFP_SKIP_KASAN_POISON)
+ 			SetPageSkipKASanPoison(page);
  
+-		if (init_tags) {
+-			int i;
+-
+-			for (i = 0; i != 1 << order; ++i)
+-				tag_clear_highpage(page + i);
+-		} else {
++		if (!init_tags)
+ 			kasan_unpoison_pages(page, order, init);
+-		}
+ 	} else {
  		kasan_unpoison_pages(page, order, init);
  
--		if (init) {
--			if (gfp_flags & __GFP_ZEROTAGS) {
--				int i;
-+		if (init_tags) {
-+			int i;
- 
--				for (i = 0; i < 1 << order; i++)
--					tag_clear_highpage(page + i);
--			} else {
--				kernel_init_free_pages(page, 1 << order);
--			}
-+			for (i = 0; i < 1 << order; i++)
-+				tag_clear_highpage(page + i);
-+
-+			init = false;
- 		}
-+
-+		if (init)
-+			kernel_init_free_pages(page, 1 << order);
+-		if (init_tags) {
+-			int i;
+-
+-			for (i = 0; i < 1 << order; i++)
+-				tag_clear_highpage(page + i);
+-
+-			init = false;
+-		}
+-
+ 		if (init)
+ 			kernel_init_free_pages(page, 1 << order);
  	}
- 
- 	set_page_owner(page, order, gfp_flags);
 -- 
 2.25.1
 
