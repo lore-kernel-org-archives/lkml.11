@@ -2,121 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFF34C3526D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98434C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358615AbiAXTzb (ORCPT
+        id S1358460AbiAXTzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54244 "EHLO
+        Mon, 24 Jan 2022 14:55:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349080AbiAXTlA (ORCPT
+        with ESMTP id S1353078AbiAXTlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:00 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5763AC07A96D
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:20:09 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id y23so8784971oia.13
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:20:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y8UlOKPL4x0I+w9FvmczKZQzjM11WitOpHu1NnDd7hI=;
-        b=EIvsCF/shkSJKYfdjXZKNXCsVd70UCSlAARnO6sDbsxiWBHwhD/82BOJnQrXDl9IOz
-         PFcMdh5ibyXsaAQcTPODkOpuxlRpW6Ykx3+iaL0mfu3o/5TQuzEDx8ce/CsAPrzpsBH0
-         Aq1xw2ZjdD9sgudMll8flbupKTmKPw8pARBNeIt/gt3ZmOXc0U4ez/5KDdbtmSmdJ/cY
-         A7Z4/te+96euwxEnd8/NJBr/0001w5zlvvzIJi/j/otI7/zc1nWeoYlU4o4Pp+0rrOEb
-         sMg62TePWcfT120HGmcpZPJ+W8BC4DVZ60OxaL1hE3s2BVUOxqLUUgtgRqjyoHlrl8LB
-         UFGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y8UlOKPL4x0I+w9FvmczKZQzjM11WitOpHu1NnDd7hI=;
-        b=VFGyM+gedOMfU45UPgkWdCuK45LG3TLpJeTFyrMiCEl0dUKG7SucsG6dVuJ21vshMJ
-         Y6eseNs/fyZ9wD57AtUGaDDXbgEj5z8yESQY1J/J5tN6SSxLLCQT6ETLfiV+OqTADgts
-         X42O+rUQfeeSFzFnhde/CSH6yJ/vQV/5NdzMBfpZdb7xhSPoQZ4KzK1PxvHcOZP132Nv
-         Vk0UCjH7kUa5vFdGtqt4QQYmrN1OqbpkwoWW8HBROfEOxr4vBxRlLvP1NWOb27N8wkul
-         uCg1EBJnS5qqYdefY4rfS9S2jDPvyaxTy8uyTLTgbX0BTgIxBbTq1xmYvu+fYAftfhjn
-         mH1Q==
-X-Gm-Message-State: AOAM533yM20s9Dae1HfIIvOSANHRF/SODuVsp5UgaW/9wAUoWuo/E09O
-        7D6jXnm+f0djFCJXET3US+gh2c9+h5yL6/LpKDuWzGQc
-X-Google-Smtp-Source: ABdhPJwS85QtnAAmIxiRJFhdMAqQlvW1zcZquOPGUFZLskhO60Qo5Zms8Ge28nzBDwYGw0SYuP/P8X5DerGCwVBWtfo=
-X-Received: by 2002:a05:6808:300b:: with SMTP id ay11mr2766540oib.120.1643052008712;
- Mon, 24 Jan 2022 11:20:08 -0800 (PST)
-MIME-Version: 1.0
-References: <20220124165552.56106-1-zhou1615@umn.edu>
-In-Reply-To: <20220124165552.56106-1-zhou1615@umn.edu>
-From:   Alex Deucher <alexdeucher@gmail.com>
-Date:   Mon, 24 Jan 2022 14:19:57 -0500
-Message-ID: <CADnq5_MPvHgnW-Rpv-caNrgg+9XkVFZs2Oes1gKPyj=TesBKXw@mail.gmail.com>
-Subject: Re: [PATCH] drm/amd/display/dc/calcs/dce_calcs: Fix a memleak in calculate_bandwidth()
-To:     Zhou Qingyang <zhou1615@umn.edu>
-Cc:     Leo Li <sunpeng.li@amd.com>, Kangjie Lu <kjlu@umn.edu>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx list <amd-gfx@lists.freedesktop.org>,
-        David Airlie <airlied@linux.ie>,
-        Maling list - DRI developers 
-        <dri-devel@lists.freedesktop.org>,
+        Mon, 24 Jan 2022 14:41:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45DA1C07A971;
+        Mon, 24 Jan 2022 11:20:31 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0464BB8119D;
+        Mon, 24 Jan 2022 19:20:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C211C340E5;
+        Mon, 24 Jan 2022 19:20:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643052028;
+        bh=9KzqLyWNPtNjyKUaNk7Wi21QeiU1/TQnVwSNi8tWifw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aHx3LxLW0ZrOT4uJ6kDdkihNbFMjIdTjaX5WzzbnhFEmH7RcSVzziC9XDhM33yTM0
+         aRJtrAMrhG9z1i74ZeWpvGcM3wIhfxLzR0XCZ7FHgzOnbm5W63q5e4gLjzAsazdJPP
+         EsyYdC02cE9QpaMrbuohc2m1G6pun/7LAfrsd9MM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Zongmin Zhou <zhouzongmin@kylinos.cn>,
         Alex Deucher <alexander.deucher@amd.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 164/239] drm/amdgpu: fixup bad vram size on gmc v8
+Date:   Mon, 24 Jan 2022 19:43:22 +0100
+Message-Id: <20220124183948.311273742@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Applied.  Thanks!
+From: Zongmin Zhou <zhouzongmin@kylinos.cn>
 
-Alex
+[ Upstream commit 11544d77e3974924c5a9c8a8320b996a3e9b2f8b ]
 
-On Mon, Jan 24, 2022 at 12:05 PM Zhou Qingyang <zhou1615@umn.edu> wrote:
->
-> In calculate_bandwidth(), the tag free_sclk and free_yclk are reversed,
-> which could lead to a memory leak of yclk.
->
-> Fix this bug by changing the location of free_sclk and free_yclk.
->
-> This bug was found by a static analyzer.
->
-> Builds with 'make allyesconfig' show no new warnings,
-> and our static analyzer no longer warns about this code.
->
-> Fixes: 2be8989d0fc2 ("drm/amd/display/dc/calcs/dce_calcs: Move some large variables from the stack to the heap")
-> Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-> ---
-> The analysis employs differential checking to identify inconsistent
-> security operations (e.g., checks or kfrees) between two code paths
-> and confirms that the inconsistent operations are not recovered in the
-> current function or the callers, so they constitute bugs.
->
-> Note that, as a bug found by static analysis, it can be a false
-> positive or hard to trigger. Multiple researchers have cross-reviewed
-> the bug.
->
->  drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c b/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c
-> index ff5bb152ef49..e6ef36de0825 100644
-> --- a/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c
-> +++ b/drivers/gpu/drm/amd/display/dc/calcs/dce_calcs.c
-> @@ -2033,10 +2033,10 @@ static void calculate_bandwidth(
->         kfree(surface_type);
->  free_tiling_mode:
->         kfree(tiling_mode);
-> -free_yclk:
-> -       kfree(yclk);
->  free_sclk:
->         kfree(sclk);
-> +free_yclk:
-> +       kfree(yclk);
->  }
->
->  /*******************************************************************************
-> --
-> 2.25.1
->
+Some boards(like RX550) seem to have garbage in the upper
+16 bits of the vram size register.  Check for
+this and clamp the size properly.  Fixes
+boards reporting bogus amounts of vram.
+
+after add this patch,the maximum GPU VRAM size is 64GB,
+otherwise only 64GB vram size will be used.
+
+Signed-off-by: Zongmin Zhou<zhouzongmin@kylinos.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+index 1a744f964b301..358004a4650b6 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+@@ -520,10 +520,10 @@ static void gmc_v8_0_mc_program(struct amdgpu_device *adev)
+ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ {
+ 	int r;
++	u32 tmp;
+ 
+ 	adev->gmc.vram_width = amdgpu_atombios_get_vram_width(adev);
+ 	if (!adev->gmc.vram_width) {
+-		u32 tmp;
+ 		int chansize, numchan;
+ 
+ 		/* Get VRAM informations */
+@@ -567,8 +567,15 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ 		adev->gmc.vram_width = numchan * chansize;
+ 	}
+ 	/* size in MB on si */
+-	adev->gmc.mc_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
+-	adev->gmc.real_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
++	tmp = RREG32(mmCONFIG_MEMSIZE);
++	/* some boards may have garbage in the upper 16 bits */
++	if (tmp & 0xffff0000) {
++		DRM_INFO("Probable bad vram size: 0x%08x\n", tmp);
++		if (tmp & 0xffff)
++			tmp &= 0xffff;
++	}
++	adev->gmc.mc_vram_size = tmp * 1024ULL * 1024ULL;
++	adev->gmc.real_vram_size = adev->gmc.mc_vram_size;
+ 
+ 	if (!(adev->flags & AMD_IS_APU)) {
+ 		r = amdgpu_device_resize_fb_bar(adev);
+-- 
+2.34.1
+
+
+
