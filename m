@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C342C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F11C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423113AbiAYCc5 (ORCPT
+        id S3423244AbiAYCdW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356107AbiAXUWc (ORCPT
+        Mon, 24 Jan 2022 21:33:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52350 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383330AbiAXU1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7F5C061341;
-        Mon, 24 Jan 2022 11:09:44 -0800 (PST)
+        Mon, 24 Jan 2022 15:27:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C29560E8D;
-        Mon, 24 Jan 2022 19:09:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69743C340E5;
-        Mon, 24 Jan 2022 19:09:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6557F614EC;
+        Mon, 24 Jan 2022 20:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 492A8C340E5;
+        Mon, 24 Jan 2022 20:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051384;
-        bh=2RKnHRcMNEsbNzB2olYHLB1e0G04cMftUsVOEYp7ubg=;
+        s=korg; t=1643056028;
+        bh=3bYJ1Uv45V46z7TGSRB+5GaY5VET5wRoQDd1kBkBs3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wOhGB2/8siB+KLE0AoHA/QdOW4KBP5Q9aghmR+FgcBOA6hkGpbrMqIk0AGLuURMXA
-         QbZsZEbrhxGTKkJLe222el+9YXOuqLR5QvK8AktXKJqZSrbjNs+byGFESP2x1Ghfc5
-         uPGyIBBsuWpFcGe/7CJKjjGKIeLMlTfKrYUhULUc=
+        b=2pYqU4GbYQCklm0JVshHrPvdC5ObQnmilOZhsFt8+n8xp8mNvil8EQyw1R6uNLj4s
+         wrVyxXZU5OkTQhwUjTphcMstpX/4FytIRrIGXKo8hvPfXxkNnx0amdLE7sFL5NopD/
+         qiMAZGnuccxmHHC9GEYMWj940aZw5391r3RaeRAg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 111/186] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-Date:   Mon, 24 Jan 2022 19:43:06 +0100
-Message-Id: <20220124183940.687778352@linuxfoundation.org>
+Subject: [PATCH 5.15 346/846] lib/mpi: Add the return value check of kcalloc()
+Date:   Mon, 24 Jan 2022 19:37:43 +0100
+Message-Id: <20220124184112.880158506@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Zizhuang Deng <sunsetdzz@gmail.com>
 
-[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
+[ Upstream commit dd827abe296fe4249b2f8c9b95f72f814ea8348c ]
 
-The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
-MiB - 1. This was likely presumed to be the "limit" rather than length.
-Fix it up.
+Add the return value check of kcalloc() to avoid potential
+NULL ptr dereference.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Fixes: a8ea8bdd9df9 ("lib/mpi: Extend the MPI library")
+Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
+Reviewed-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ lib/mpi/mpi-mod.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index a9c3eef6c4e09..3307d816050fe 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -351,7 +351,7 @@
+diff --git a/lib/mpi/mpi-mod.c b/lib/mpi/mpi-mod.c
+index 47bc59edd4ff9..54fcc01564d9d 100644
+--- a/lib/mpi/mpi-mod.c
++++ b/lib/mpi/mpi-mod.c
+@@ -40,6 +40,8 @@ mpi_barrett_t mpi_barrett_init(MPI m, int copy)
  
- 	ccplex@e000000 {
- 		compatible = "nvidia,tegra186-ccplex-cluster";
--		reg = <0x0 0x0e000000 0x0 0x3fffff>;
-+		reg = <0x0 0x0e000000 0x0 0x400000>;
+ 	mpi_normalize(m);
+ 	ctx = kcalloc(1, sizeof(*ctx), GFP_KERNEL);
++	if (!ctx)
++		return NULL;
  
- 		nvidia,bpmp = <&bpmp>;
- 	};
+ 	if (copy) {
+ 		ctx->m = mpi_copy(m);
 -- 
 2.34.1
 
