@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51747C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E9DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1585864AbiAXWZI (ORCPT
+        id S1585981AbiAXWZa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:25:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45920 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454201AbiAXVcC (ORCPT
+        Mon, 24 Jan 2022 17:25:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449925AbiAXV3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:32:02 -0500
+        Mon, 24 Jan 2022 16:29:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D33BC01D7F4;
+        Mon, 24 Jan 2022 12:19:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C1A7B8122A;
-        Mon, 24 Jan 2022 21:31:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3A0AC340E4;
-        Mon, 24 Jan 2022 21:31:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D069614C9;
+        Mon, 24 Jan 2022 20:19:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A6A9C340F0;
+        Mon, 24 Jan 2022 20:19:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059918;
-        bh=IoB7Upsgx+3TaNkP2jKC4svaYwVImu5WjHntAS3c59E=;
+        s=korg; t=1643055545;
+        bh=iEifKO53anA59UcAXnnj8WQH6o4GLsEFVJBsKZrolJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XiYXDiGG/UZId/p9wcBtRK2+wi2bI3Iv/sSMwrFlru9TOQakXB5oPjJuJxFA3Op10
-         eyTEAvzPVPQl9HJKU/gQX/GyC3aTsmWUaotoWb6McSMpkAY0Ohy+NJ/+CxF2JGjgcr
-         cMr/m8NRk+C9CPxnlvxMYtuaX9z/tD1xHuLu/q6s=
+        b=H8R5I3/RqaJbcZiwPq3RtfwvHPlVQUZD0HxRJ5a9iPererbLGL15qcYw/4uA4+tjh
+         qdhJHQ0bxtV6pqzve8xQGvNHkl/EDreTvMShg/zWD/n+Oe2flOHXwKaocxK20Y8Ify
+         k4J1oQ8DtkiWNkGu/8y97FjkXGJZxKY9IHkH2BCM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0761/1039] powerpc/fadump: Fix inaccurate CPU state info in vmcore generated with panic
-Date:   Mon, 24 Jan 2022 19:42:30 +0100
-Message-Id: <20220124184150.901970198@linuxfoundation.org>
+Subject: [PATCH 5.15 154/846] tty: serial: atmel: Check return code of dmaengine_submit()
+Date:   Mon, 24 Jan 2022 19:34:31 +0100
+Message-Id: <20220124184106.302001620@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,129 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit 06e629c25daa519be620a8c17359ae8fc7a2e903 ]
+[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
 
-In panic path, fadump is triggered via a panic notifier function.
-Before calling panic notifier functions, smp_send_stop() gets called,
-which stops all CPUs except the panic'ing CPU. Commit 8389b37dffdc
-("powerpc: stop_this_cpu: remove the cpu from the online map.") and
-again commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
-started marking CPUs as offline while stopping them. So, if a kernel
-has either of the above commits, vmcore captured with fadump via panic
-path would not process register data for all CPUs except the panic'ing
-CPU. Sample output of crash-utility with such vmcore:
+The tx_submit() method of struct dma_async_tx_descriptor is entitled
+to do sanity checks and return errors if encountered. It's not the
+case for the DMA controller drivers that this client is using
+(at_h/xdmac), because they currently don't do sanity checks and always
+return a positive cookie at tx_submit() method. In case the controller
+drivers will implement sanity checks and return errors, print a message
+so that the client will be informed that something went wrong at
+tx_submit() level.
 
-  # crash vmlinux vmcore
-  ...
-        KERNEL: vmlinux
-      DUMPFILE: vmcore  [PARTIAL DUMP]
-          CPUS: 1
-          DATE: Wed Nov 10 09:56:34 EST 2021
-        UPTIME: 00:00:42
-  LOAD AVERAGE: 2.27, 0.69, 0.24
-         TASKS: 183
-      NODENAME: XXXXXXXXX
-       RELEASE: 5.15.0+
-       VERSION: #974 SMP Wed Nov 10 04:18:19 CST 2021
-       MACHINE: ppc64le  (2500 Mhz)
-        MEMORY: 8 GB
-         PANIC: "Kernel panic - not syncing: sysrq triggered crash"
-           PID: 3394
-       COMMAND: "bash"
-          TASK: c0000000150a5f80  [THREAD_INFO: c0000000150a5f80]
-           CPU: 1
-         STATE: TASK_RUNNING (PANIC)
-
-  crash> p -x __cpu_online_mask
-  __cpu_online_mask = $1 = {
-    bits = {0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-  }
-  crash>
-  crash>
-  crash> p -x __cpu_active_mask
-  __cpu_active_mask = $2 = {
-    bits = {0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-  }
-  crash>
-
-While this has been the case since fadump was introduced, the issue
-was not identified for two probable reasons:
-
-  - In general, the bulk of the vmcores analyzed were from crash
-    due to exception.
-
-  - The above did change since commit 8341f2f222d7 ("sysrq: Use
-    panic() to force a crash") started using panic() instead of
-    deferencing NULL pointer to force a kernel crash. But then
-    commit de6e5d38417e ("powerpc: smp_send_stop do not offline
-    stopped CPUs") stopped marking CPUs as offline till kernel
-    commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
-    reverted that change.
-
-To ensure post processing register data of all other CPUs happens
-as intended, let panic() function take the crash friendly path (read
-crash_smp_send_stop()) with the help of crash_kexec_post_notifiers
-option. Also, as register data for all CPUs is captured by f/w, skip
-IPI callbacks here for fadump, to avoid any complications in finding
-the right backtraces.
-
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211207103719.91117-2-hbathini@linux.ibm.com
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/fadump.c |  8 ++++++++
- arch/powerpc/kernel/smp.c    | 10 ++++++++++
- 2 files changed, 18 insertions(+)
+ drivers/tty/serial/atmel_serial.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index b7ceb041743c9..60f5fc14aa235 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -1641,6 +1641,14 @@ int __init setup_fadump(void)
- 	else if (fw_dump.reserve_dump_area_size)
- 		fw_dump.ops->fadump_init_mem_struct(&fw_dump);
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 249ea35088d27..16ff972decfef 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1004,6 +1004,11 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		desc->callback = atmel_complete_tx_dma;
+ 		desc->callback_param = atmel_port;
+ 		atmel_port->cookie_tx = dmaengine_submit(desc);
++		if (dma_submit_error(atmel_port->cookie_tx)) {
++			dev_err(port->dev, "dma_submit_error %d\n",
++				atmel_port->cookie_tx);
++			return;
++		}
+ 	}
  
-+	/*
-+	 * In case of panic, fadump is triggered via ppc_panic_event()
-+	 * panic notifier. Setting crash_kexec_post_notifiers to 'true'
-+	 * lets panic() function take crash friendly path before panic
-+	 * notifiers are invoked.
-+	 */
-+	crash_kexec_post_notifiers = true;
-+
- 	return 1;
- }
- subsys_initcall(setup_fadump);
-diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
-index 7201fdcf02f1c..c338f9d8ab37a 100644
---- a/arch/powerpc/kernel/smp.c
-+++ b/arch/powerpc/kernel/smp.c
-@@ -61,6 +61,7 @@
- #include <asm/cpu_has_feature.h>
- #include <asm/ftrace.h>
- #include <asm/kup.h>
-+#include <asm/fadump.h>
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1258,6 +1263,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	desc->callback_param = port;
+ 	atmel_port->desc_rx = desc;
+ 	atmel_port->cookie_rx = dmaengine_submit(desc);
++	if (dma_submit_error(atmel_port->cookie_rx)) {
++		dev_err(port->dev, "dma_submit_error %d\n",
++			atmel_port->cookie_rx);
++		goto chan_err;
++	}
  
- #ifdef DEBUG
- #include <asm/udbg.h>
-@@ -638,6 +639,15 @@ void crash_smp_send_stop(void)
- {
- 	static bool stopped = false;
- 
-+	/*
-+	 * In case of fadump, register data for all CPUs is captured by f/w
-+	 * on ibm,os-term rtas call. Skip IPI callbacks to other CPUs before
-+	 * this rtas call to avoid tricky post processing of those CPUs'
-+	 * backtraces.
-+	 */
-+	if (should_fadump_crash())
-+		return;
-+
- 	if (stopped)
- 		return;
+ 	return 0;
  
 -- 
 2.34.1
