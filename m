@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D89C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1BFC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:21:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343943AbiAXUVd (ORCPT
+        id S1381660AbiAXUVm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:21:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
+        Mon, 24 Jan 2022 15:21:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354637AbiAXUDQ (ORCPT
+        with ESMTP id S1376679AbiAXUDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:03:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2528C0680B1;
-        Mon, 24 Jan 2022 11:29:24 -0800 (PST)
+        Mon, 24 Jan 2022 15:03:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055D2C08E6DC;
+        Mon, 24 Jan 2022 11:29:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 822DF6121F;
-        Mon, 24 Jan 2022 19:29:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F8ACC340E5;
-        Mon, 24 Jan 2022 19:29:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B7B28B81238;
+        Mon, 24 Jan 2022 19:29:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4820C340E5;
+        Mon, 24 Jan 2022 19:29:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052564;
-        bh=O+wV61hDuUBLN9MQUp3fRVGM3ohEbAo7+Lu3sKVPxfY=;
+        s=korg; t=1643052581;
+        bh=J8duQaotuAl4FUUuOIClzvWBYiFdiRFM92W/pHtQcoo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y3L9HqBZ8xjspTEoaQdxe0FqizTnQHloQ64un2ZleSOEkKtUxA2aSD7ySs4h/3Y+8
-         dmN3R7EMYlMZdr3OK4AvtHWVzwy+HBWAPr9sXgqmwrR4RKgNN97UDXkmUOiws2/WVv
-         ahZvr1AQB2EX0Ol539lmxs8ueNfttomEf13bJmhg=
+        b=SJmM+oGcqZ0BG+Ym7hvZlF3eRAAxm9HG+6F+1DxrFKAFbLab2lljYwjPoWhzc6PPv
+         pRExZGqps2tmTp3tzPNZ15RUAluIzj5v8PvqEA15qZwldYbCU5DzHu6PtZwmvUFP9I
+         gQVUznnK8H6FsxYsebs5yAhAWd5zp/iErJnG5iAQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tasos Sahanidis <tasos@tasossah.com>,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 068/320] floppy: Fix hang in watchdog when disk is ejected
-Date:   Mon, 24 Jan 2022 19:40:52 +0100
-Message-Id: <20220124183956.040262234@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 107/320] Bluetooth: hci_bcm: Check for error irq
+Date:   Mon, 24 Jan 2022 19:41:31 +0100
+Message-Id: <20220124183957.360997824@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,50 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tasos Sahanidis <tasos@tasossah.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit fb48febce7e30baed94dd791e19521abd2c3fd83 ]
+[ Upstream commit b38cd3b42fba66cc538edb9cf77e07881f43f8e2 ]
 
-When the watchdog detects a disk change, it calls cancel_activity(),
-which in turn tries to cancel the fd_timer delayed work.
+For the possible failure of the platform_get_irq(), the returned irq
+could be error number and will finally cause the failure of the
+request_irq().
+Consider that platform_get_irq() can now in certain cases return
+-EPROBE_DEFER, and the consequences of letting request_irq() effectively
+convert that into -EINVAL, even at probe time rather than later on.
+So it might be better to check just now.
 
-In the above scenario, fd_timer_fn is set to fd_watchdog(), meaning
-it is trying to cancel its own work.
-This results in a hang as cancel_delayed_work_sync() is waiting for the
-watchdog (itself) to return, which never happens.
-
-This can be reproduced relatively consistently by attempting to read a
-broken floppy, and ejecting it while IO is being attempted and retried.
-
-To resolve this, this patch calls cancel_delayed_work() instead, which
-cancels the work without waiting for the watchdog to return and finish.
-
-Before this regression was introduced, the code in this section used
-del_timer(), and not del_timer_sync() to delete the watchdog timer.
-
-Link: https://lore.kernel.org/r/399e486c-6540-db27-76aa-7a271b061f76@tasossah.com
-Fixes: 070ad7e793dc ("floppy: convert to delayed work and single-thread wq")
-Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 0395ffc1ee05 ("Bluetooth: hci_bcm: Add PM for BCM devices")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bluetooth/hci_bcm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index ac97a1e2e5ddc..212a1e1ce0d9e 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -1003,7 +1003,7 @@ static DECLARE_DELAYED_WORK(fd_timer, fd_timer_workfn);
- static void cancel_activity(void)
- {
- 	do_floppy = NULL;
--	cancel_delayed_work_sync(&fd_timer);
-+	cancel_delayed_work(&fd_timer);
- 	cancel_work_sync(&floppy_work);
- }
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index 94ed734c1d7eb..c6bb380806f9b 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -1127,7 +1127,12 @@ static int bcm_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
+ 	dev->dev = &pdev->dev;
+-	dev->irq = platform_get_irq(pdev, 0);
++
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		return ret;
++
++	dev->irq = ret;
+ 
+ 	if (has_acpi_companion(&pdev->dev)) {
+ 		ret = bcm_acpi_probe(dev);
 -- 
 2.34.1
 
