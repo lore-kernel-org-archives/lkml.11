@@ -2,139 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6F8C4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2310DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353900AbiAXTfc (ORCPT
+        id S1353962AbiAXTfj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:32 -0500
-Received: from mga04.intel.com ([192.55.52.120]:46673 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351946AbiAXT3T (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643052558; x=1674588558;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=kw/Pqxn4zzEA3FRO8NnV1FqsGwZ/uPeuzfjR4yCnkRg=;
-  b=T+H02f1v0iCzGFNEQBucoogCJJrjA6zVx12rZAVxaKNkaxd7Pl6M9SFC
-   1xvQdJTsJ4Ma8viQ/0RtWdGNi/zRuAQIoJHG5ZodRTu9QCR8B2M2N7jc5
-   /dULbVBJ++G03bQTWagTJmENk+byyxS82sVFKQ/+j9pFLi9T8soXEHN2F
-   shv14GQQzussZX68nPQLCE8TGkCjhaFvNA5Gk4fWoNFGjcpLyvOsfOpf2
-   aH9JE6fNeYIsKJvPGUv2rTSJWESFoTIttcw5qs2R7zE0VzPbxYfRB1GUb
-   2WX8SrPO7Uwm++WwcERaq+nXX8Qw1MAZOadl62nd26Kol/D3cuA5Cr6PJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="244962033"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="244962033"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 11:25:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="624197286"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jan 2022 11:25:05 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC4xa-000IoX-Ry; Mon, 24 Jan 2022 19:25:02 +0000
-Date:   Tue, 25 Jan 2022 03:24:04 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [esmil:visionfive 59/63]
- drivers/soc/sifive/sifive_l2_cache.c:148:19: warning: result of comparison
- of constant 36507222016 with expression of type 'unsigned long' is always
- false
-Message-ID: <202201250206.q2ugUJBE-lkp@intel.com>
+        Mon, 24 Jan 2022 14:35:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50650 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343521AbiAXT1X (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 14:27:23 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21FC1B8124B;
+        Mon, 24 Jan 2022 19:27:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 243A1C340E5;
+        Mon, 24 Jan 2022 19:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643052440;
+        bh=vdjIyARKgv9EcTFHB7v6+qdFjZqx2Du06oVGbIDEcyk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fxN6cgpAKc1PLy2f+50C0JHmsI1wG2iE7xQ6l9pRm2Cm02Di0CMFeiZ9j6TPYniHF
+         JgC89bKTrX4BC9Jg6od3Rx4i/Cdq/bS2u6GaHFd+3Nlaupgj3urHq1JERonnkJzpO+
+         bhkoDDd9iXz4KGilBQsitd5gqYVXTA2dY87l7tMc=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 058/320] media: mtk-vcodec: call v4l2_m2m_ctx_release first when file is released
+Date:   Mon, 24 Jan 2022 19:40:42 +0100
+Message-Id: <20220124183955.713557769@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   fdbe623707a8f3f9b9d2cb3c4c240299a12b8302
-commit: c17f07c367229d46348e9005d004d8b3416637bc [59/63] RISC-V: Enable SIFIVE_L2_FLUSH for StarFive SoCs
-config: riscv-randconfig-r015-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250206.q2ugUJBE-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/esmil/linux/commit/c17f07c367229d46348e9005d004d8b3416637bc
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout c17f07c367229d46348e9005d004d8b3416637bc
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/soc/sifive/
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 9f89c881bffbdffe4060ffaef3489a2830a6dd9c ]
 
-All warnings (new ones prefixed by >>):
+The func v4l2_m2m_ctx_release waits for currently running jobs
+to finish and then stop streaming both queues and frees the buffers.
+All this should be done before the call to mtk_vcodec_enc_release
+which frees the encoder handler. This fixes null-pointer dereference bug:
 
-   drivers/soc/sifive/sifive_l2_cache.c:158:3: error: implicit declaration of function 'writeq' [-Werror,-Wimplicit-function-declaration]
-                   writeq(line, l2_base + SIFIVE_L2_FLUSH64);
-                   ^
->> drivers/soc/sifive/sifive_l2_cache.c:148:19: warning: result of comparison of constant 36507222016 with expression of type 'unsigned long' is always false [-Wtautological-constant-out-of-range-compare]
-              (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
-              ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning and 1 error generated.
+[  638.028076] Mem abort info:
+[  638.030932]   ESR = 0x96000004
+[  638.033978]   EC = 0x25: DABT (current EL), IL = 32 bits
+[  638.039293]   SET = 0, FnV = 0
+[  638.042338]   EA = 0, S1PTW = 0
+[  638.045474]   FSC = 0x04: level 0 translation fault
+[  638.050349] Data abort info:
+[  638.053224]   ISV = 0, ISS = 0x00000004
+[  638.057055]   CM = 0, WnR = 0
+[  638.060018] user pgtable: 4k pages, 48-bit VAs, pgdp=000000012b6db000
+[  638.066485] [00000000000001a0] pgd=0000000000000000, p4d=0000000000000000
+[  638.073277] Internal error: Oops: 96000004 [#1] SMP
+[  638.078145] Modules linked in: rfkill mtk_vcodec_dec mtk_vcodec_enc uvcvideo mtk_mdp mtk_vcodec_common videobuf2_dma_contig v4l2_h264 cdc_ether v4l2_mem2mem videobuf2_vmalloc usbnet videobuf2_memops videobuf2_v4l2 r8152 videobuf2_common videodev cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf elan_i2c elants_i2c sbs_battery mc cros_usbpd_charger cros_ec_chardev cros_usbpd_logger crct10dif_ce mtk_vpu fuse ip_tables x_tables ipv6
+[  638.118583] CPU: 0 PID: 212 Comm: kworker/u8:5 Not tainted 5.15.0-06427-g58a1d4dcfc74-dirty #109
+[  638.127357] Hardware name: Google Elm (DT)
+[  638.131444] Workqueue: mtk-vcodec-enc mtk_venc_worker [mtk_vcodec_enc]
+[  638.137974] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  638.144925] pc : vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
+[  638.150493] lr : venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
+[  638.156060] sp : ffff8000124d3c40
+[  638.159364] x29: ffff8000124d3c40 x28: 0000000000000000 x27: 0000000000000000
+[  638.166493] x26: 0000000000000000 x25: ffff0000e7f252d0 x24: ffff8000124d3d58
+[  638.173621] x23: ffff8000124d3d58 x22: ffff8000124d3d60 x21: 0000000000000001
+[  638.180750] x20: ffff80001137e000 x19: 0000000000000000 x18: 0000000000000001
+[  638.187878] x17: 000000040044ffff x16: 00400032b5503510 x15: 0000000000000000
+[  638.195006] x14: ffff8000118536c0 x13: ffff8000ee1da000 x12: 0000000030d4d91d
+[  638.202134] x11: 0000000000000000 x10: 0000000000000980 x9 : ffff8000124d3b20
+[  638.209262] x8 : ffff0000c18d4ea0 x7 : ffff0000c18d44c0 x6 : ffff0000c18d44c0
+[  638.216391] x5 : ffff80000904a3b0 x4 : ffff8000124d3d58 x3 : ffff8000124d3d60
+[  638.223519] x2 : ffff8000124d3d78 x1 : 0000000000000001 x0 : ffff80001137efb8
+[  638.230648] Call trace:
+[  638.233084]  vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
+[  638.238304]  venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
+[  638.243525]  mtk_venc_worker+0x110/0x250 [mtk_vcodec_enc]
+[  638.248918]  process_one_work+0x1f8/0x498
+[  638.252923]  worker_thread+0x140/0x538
+[  638.256664]  kthread+0x148/0x158
+[  638.259884]  ret_from_fork+0x10/0x20
+[  638.263455] Code: f90023f9 2a0103f5 aa0303f6 aa0403f8 (f940d277)
+[  638.269538] ---[ end trace e374fc10f8e181f5 ]---
 
-
-vim +148 drivers/soc/sifive/sifive_l2_cache.c
-
-a967a289f16969 arch/riscv/mm/sifive_l2_cache.c      Yash Shah          2019-05-06  126  
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  127  #ifdef CONFIG_SIFIVE_L2_FLUSH
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  128  void sifive_l2_flush64_range(unsigned long start, unsigned long len)
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  129  {
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  130  	unsigned long line;
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  131  
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  132  	if(!l2_base) {
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  133  		pr_warn("L2CACHE: base addr invalid, skipping flush\n");
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  134  		return;
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  135  	}
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  136  
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  137  	/* TODO: if (len == 0), skipping flush or going on? */
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  138  	if(!len) {
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  139  		pr_debug("L2CACHE: flush64 range @ 0x%lx(len:0)\n", start);
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  140  		return;
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  141  	}
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  142  
-0684fe29f5de5f drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  143  	len = len + (start % SIFIVE_L2_FLUSH64_LINE_LEN);
-0684fe29f5de5f drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  144  	start = ALIGN_DOWN(start, SIFIVE_L2_FLUSH64_LINE_LEN);
-0684fe29f5de5f drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  145  
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  146  	/* make sure the address is in the range */
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  147  	if(start < CONFIG_SIFIVE_L2_FLUSH_START ||
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08 @148  	   (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  149  			     CONFIG_SIFIVE_L2_FLUSH_SIZE)) {
-b5cf3456431952 drivers/soc/sifive/sifive_l2_cache.c Geert Uytterhoeven 2021-05-21  150  		WARN(1, "L2CACHE: flush64 out of range: %lx(%lx), skip flush\n",
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  151  		     start, len);
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  152  		return;
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  153  	}
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  154  
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  155  	mb();	/* sync */
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  156  	for (line = start; line < start + len;
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  157  	     line += SIFIVE_L2_FLUSH64_LINE_LEN) {
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  158  		writeq(line, l2_base + SIFIVE_L2_FLUSH64);
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  159  		mb();
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  160  	}
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  161  }
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  162  EXPORT_SYMBOL_GPL(sifive_l2_flush64_range);
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  163  #endif
-c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  164  
-
-:::::: The code at line 148 was first introduced by commit
-:::::: c6649e71d37210bc4c33eada849aeda98c823de9 sifive/sifive_l2_cache: Add sifive_l2_flush64_range function
-
-:::::: TO: Tom <support@vamrs.com>
-:::::: CC: Emil Renner Berthing <kernel@esmil.dk>
-
+[gst-master] root@debian:~/gst-build# [  638.019193] Unable to handle kernel NULL pointer dereference at virtual address 00000000000001a0
+Fixes: 4e855a6efa547 ("[media] vcodec: mediatek: Add Mediatek V4L2 Video Encoder Driver")
+Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+index 1d82aa2b6017c..dea0ee2cb7245 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+@@ -209,11 +209,11 @@ static int fops_vcodec_release(struct file *file)
+ 	mtk_v4l2_debug(1, "[%d] encoder", ctx->id);
+ 	mutex_lock(&dev->dev_mutex);
+ 
++	v4l2_m2m_ctx_release(ctx->m2m_ctx);
+ 	mtk_vcodec_enc_release(ctx);
+ 	v4l2_fh_del(&ctx->fh);
+ 	v4l2_fh_exit(&ctx->fh);
+ 	v4l2_ctrl_handler_free(&ctx->ctrl_hdl);
+-	v4l2_m2m_ctx_release(ctx->m2m_ctx);
+ 
+ 	list_del_init(&ctx->list);
+ 	kfree(ctx);
+-- 
+2.34.1
+
+
+
