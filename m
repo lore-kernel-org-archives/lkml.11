@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0423FC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44907C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582213AbiAXWOD (ORCPT
+        id S1379568AbiAXWOT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:14:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53030 "EHLO
+        Mon, 24 Jan 2022 17:14:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448991AbiAXV16 (ORCPT
+        with ESMTP id S1391084AbiAXV1j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:27:58 -0500
+        Mon, 24 Jan 2022 16:27:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E862C01D7EE;
-        Mon, 24 Jan 2022 12:19:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5D3C073237;
+        Mon, 24 Jan 2022 12:18:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B88E8B8121C;
-        Mon, 24 Jan 2022 20:19:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6CCFC340E5;
-        Mon, 24 Jan 2022 20:18:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5E6CB8121A;
+        Mon, 24 Jan 2022 20:18:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18F2C340E7;
+        Mon, 24 Jan 2022 20:18:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055539;
-        bh=f4qv9+XoMJz7jvZPqwNvE9ROL1hpgoLQm93jE0hJKBE=;
+        s=korg; t=1643055515;
+        bh=NuK78AgEPPXwPDmJW6dh2JNWyYPSk501rOialbEenj0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TMSWFwYDe+uZrSplUuuqpxFvVc7wi5sTov2WuiYgzdnJ8reU0iw04CwpQHvYKc6d4
-         ItPfvuj/Z5gYVDo/IeWCotp2nK+yVlRjuvtBUOjyG616VBc2Fw4QQkqu8LM+tkZHwC
-         bA5lXuHi29aCV07Iey3rN6yFegKfOg5WpFjG+JOY=
+        b=IGBsOVLBFRRNuPhvGFB/P54xQzy154eHUdN5R0JDJ2ntznbfEE3Qdt5Y5cFlzodAH
+         e2VNpfTRUUMNCk9RYc4jObv7qpdDGSMvVPgoPncSOx3o2bapETruy/5igDJIe5wJF3
+         KgH0zOjjwlthNQEAJsBwWKLo4tOcRwbjD0fRyHfE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anilkumar Kolli <akolli@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org,
+        Marco Chiappero <marco.chiappero@intel.com>,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 152/846] ath11k: Use host CE parameters for CE interrupts configuration
-Date:   Mon, 24 Jan 2022 19:34:29 +0100
-Message-Id: <20220124184106.237408110@linuxfoundation.org>
+Subject: [PATCH 5.15 149/846] crypto: qat - remove unnecessary collision prevention step in PFVF
+Date:   Mon, 24 Jan 2022 19:34:26 +0100
+Message-Id: <20220124184106.128886461@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,76 +52,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anilkumar Kolli <akolli@codeaurora.org>
+From: Marco Chiappero <marco.chiappero@intel.com>
 
-[ Upstream commit b689f091aafd1a874b2f88137934276ab0fca480 ]
+[ Upstream commit e17f49bb244a281fe39bfdad0306a38b3a02e7bf ]
 
-CE interrupt configuration uses host ce parameters to assign/free
-interrupts. Use host ce parameters to enable/disable interrupts.
-This patch fixes below BUG,
+The initial version of the PFVF protocol included an initial "carrier
+sensing" to get ownership of the channel.
 
-BUG: KASAN: global-out-of-bounds in 0xffffffbffdfb035c at addr
-ffffffbffde6eeac
- Read of size 4 by task kworker/u8:2/132
- Address belongs to variable ath11k_core_qmi_firmware_ready+0x1b0/0x5bc [ath11k]
+Collisions can happen anyway, the extra wait and test does not prevent
+collisions, it instead slows the communication down, so remove it.
 
-OOB is due to ath11k_ahb_ce_irqs_enable() iterates ce_count(which is 12)
-times and accessing 12th element in target_ce_config
-(which has only 11 elements) from ath11k_ahb_ce_irq_enable().
-
-With this change host ce configs are used to enable/disable interrupts.
-
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-00471-QCAHKSWPL_SILICONZ-1
-
-Fixes: 967c1d1131fa ("ath11k: move target ce configs to hw_params")
-Signed-off-by: Anilkumar Kolli <akolli@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1637249558-12793-1-git-send-email-akolli@codeaurora.org
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
+Reviewed-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/ahb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/crypto/qat/qat_common/adf_pf2vf_msg.c | 20 +------------------
+ 1 file changed, 1 insertion(+), 19 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 8c9c781afc3e5..096c502cce387 100644
---- a/drivers/net/wireless/ath/ath11k/ahb.c
-+++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -206,13 +206,13 @@ static void ath11k_ahb_clearbit32(struct ath11k_base *ab, u8 bit, u32 offset)
+diff --git a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+index 5a41beb8f20f6..d3f6ff68d45d9 100644
+--- a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
++++ b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+@@ -126,28 +126,10 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
+ 		goto out;
+ 	}
  
- static void ath11k_ahb_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
- {
--	const struct ce_pipe_config *ce_config;
-+	const struct ce_attr *ce_attr;
+-	/* Attempt to get ownership of PF2VF CSR */
+ 	msg &= ~local_in_use_mask;
+ 	msg |= local_in_use_pattern;
+-	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, msg);
  
--	ce_config = &ab->hw_params.target_ce_config[ce_id];
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_OUT)
-+	ce_attr = &ab->hw_params.host_ce_config[ce_id];
-+	if (ce_attr->src_nentries)
- 		ath11k_ahb_setbit32(ab, ce_id, CE_HOST_IE_ADDRESS);
+-	/* Wait in case remote func also attempting to get ownership */
+-	msleep(ADF_IOV_MSG_COLLISION_DETECT_DELAY);
+-
+-	val = ADF_CSR_RD(pmisc_bar_addr, pf2vf_offset);
+-	if ((val & local_in_use_mask) != local_in_use_pattern) {
+-		dev_dbg(&GET_DEV(accel_dev),
+-			"PF2VF CSR in use by remote - collision detected\n");
+-		ret = -EBUSY;
+-		goto out;
+-	}
+-
+-	/*
+-	 * This function now owns the PV2VF CSR.  The IN_USE_BY pattern must
+-	 * remain in the PF2VF CSR for all writes including ACK from remote
+-	 * until this local function relinquishes the CSR.  Send the message
+-	 * by interrupting the remote.
+-	 */
++	/* Attempt to get ownership of the PF2VF CSR */
+ 	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, msg | int_bit);
  
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_IN) {
-+	if (ce_attr->dest_nentries) {
- 		ath11k_ahb_setbit32(ab, ce_id, CE_HOST_IE_2_ADDRESS);
- 		ath11k_ahb_setbit32(ab, ce_id + CE_HOST_IE_3_SHIFT,
- 				    CE_HOST_IE_3_ADDRESS);
-@@ -221,13 +221,13 @@ static void ath11k_ahb_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
- 
- static void ath11k_ahb_ce_irq_disable(struct ath11k_base *ab, u16 ce_id)
- {
--	const struct ce_pipe_config *ce_config;
-+	const struct ce_attr *ce_attr;
- 
--	ce_config = &ab->hw_params.target_ce_config[ce_id];
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_OUT)
-+	ce_attr = &ab->hw_params.host_ce_config[ce_id];
-+	if (ce_attr->src_nentries)
- 		ath11k_ahb_clearbit32(ab, ce_id, CE_HOST_IE_ADDRESS);
- 
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_IN) {
-+	if (ce_attr->dest_nentries) {
- 		ath11k_ahb_clearbit32(ab, ce_id, CE_HOST_IE_2_ADDRESS);
- 		ath11k_ahb_clearbit32(ab, ce_id + CE_HOST_IE_3_SHIFT,
- 				      CE_HOST_IE_3_ADDRESS);
+ 	/* Wait for confirmation from remote func it received the message */
 -- 
 2.34.1
 
