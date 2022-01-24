@@ -2,110 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA615C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8888C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2372902AbiAYAMm (ORCPT
+        id S2372875AbiAYAMl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:12:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33620 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1578855AbiAXWEJ (ORCPT
+        Mon, 24 Jan 2022 19:12:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359871AbiAXWjp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:04:09 -0500
+        Mon, 24 Jan 2022 17:39:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A852C055A81;
+        Mon, 24 Jan 2022 13:03:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDE39B81233;
-        Mon, 24 Jan 2022 22:03:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47004C340E7;
-        Mon, 24 Jan 2022 22:03:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643061829;
-        bh=e8qGIsAwD8DVQC0GNO45q/1wa3k3d7Q+DpR8gTvss3M=;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CDC9B81142;
+        Mon, 24 Jan 2022 21:03:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 556B7C340E7;
+        Mon, 24 Jan 2022 21:03:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058192;
+        bh=8DVnjUcFd86DDYnkbU0t/VHkCYoGPiy5nOa4cst9MaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ugkMEX0juyhCZ0B4pLW2Mpr2boc7ujY0PFzg8DlmYDl2E/2jM6CnRw/15v8jMhayy
-         lrYKDF6B+nsYKxqs6Ve4vL8c5loQXXPGSfjANcAxp1Eural1t7d3DX1T1fS6ezQKkt
-         S5KGTOfyR79rq3AFzRf1/SIB/Ua5H5IpCaOU0rXaeFMtBlWfqG9EWAGoEDS2mmci6Y
-         g+kjRHxXpiCJAbKtJl0fUP5fo6Cy2NA4F8xVR7UZdSy673mtLi9Sq1ABufucof7DWC
-         hE+pCAqbvJnZ1HjOYBOIdMZqEI4jeuUBuqUFrNkJut9Z56HQGcF7YUlj8SbWZfSId6
-         YzS/dV4vFY61w==
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     linux-block@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-mmc@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bart Van Assche <bvanassche@acm.org>,
-        Hannes Reinecke <hare@suse.de>
-Subject: [PATCH v4 2/3] block: don't delete queue kobject before its children
-Date:   Mon, 24 Jan 2022 13:59:37 -0800
-Message-Id: <20220124215938.2769-3-ebiggers@kernel.org>
+        b=USfdiLNAQXTAYF5DHw9VeGl7c3ZvLaHel20+hf3HqOAOiJa05QAGAvUOkDqCSBwHq
+         AaE2JUbuObUNNdonLN5ySJfxwlHORbpEHB3UodrJDwW3a6Udm8Ym/taQORCgbLAY2p
+         mbINmoS1q0Qx2bDszXyMCEs4SrfuJTzdrJToAn2w=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0192/1039] media: mtk-vcodec: call v4l2_m2m_ctx_release first when file is released
+Date:   Mon, 24 Jan 2022 19:33:01 +0100
+Message-Id: <20220124184131.761761295@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124215938.2769-1-ebiggers@kernel.org>
-References: <20220124215938.2769-1-ebiggers@kernel.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
 
-kobjects aren't supposed to be deleted before their child kobjects are
-deleted.  Apparently this is usually benign; however, a WARN will be
-triggered if one of the child kobjects has a named attribute group:
+[ Upstream commit 9f89c881bffbdffe4060ffaef3489a2830a6dd9c ]
 
-    sysfs group 'modes' not found for kobject 'crypto'
-    WARNING: CPU: 0 PID: 1 at fs/sysfs/group.c:278 sysfs_remove_group+0x72/0x80
-    ...
-    Call Trace:
-      sysfs_remove_groups+0x29/0x40 fs/sysfs/group.c:312
-      __kobject_del+0x20/0x80 lib/kobject.c:611
-      kobject_cleanup+0xa4/0x140 lib/kobject.c:696
-      kobject_release lib/kobject.c:736 [inline]
-      kref_put include/linux/kref.h:65 [inline]
-      kobject_put+0x53/0x70 lib/kobject.c:753
-      blk_crypto_sysfs_unregister+0x10/0x20 block/blk-crypto-sysfs.c:159
-      blk_unregister_queue+0xb0/0x110 block/blk-sysfs.c:962
-      del_gendisk+0x117/0x250 block/genhd.c:610
+The func v4l2_m2m_ctx_release waits for currently running jobs
+to finish and then stop streaming both queues and frees the buffers.
+All this should be done before the call to mtk_vcodec_enc_release
+which frees the encoder handler. This fixes null-pointer dereference bug:
 
-Fix this by moving the kobject_del() and the corresponding
-kobject_uevent() to the correct place.
+[  638.028076] Mem abort info:
+[  638.030932]   ESR = 0x96000004
+[  638.033978]   EC = 0x25: DABT (current EL), IL = 32 bits
+[  638.039293]   SET = 0, FnV = 0
+[  638.042338]   EA = 0, S1PTW = 0
+[  638.045474]   FSC = 0x04: level 0 translation fault
+[  638.050349] Data abort info:
+[  638.053224]   ISV = 0, ISS = 0x00000004
+[  638.057055]   CM = 0, WnR = 0
+[  638.060018] user pgtable: 4k pages, 48-bit VAs, pgdp=000000012b6db000
+[  638.066485] [00000000000001a0] pgd=0000000000000000, p4d=0000000000000000
+[  638.073277] Internal error: Oops: 96000004 [#1] SMP
+[  638.078145] Modules linked in: rfkill mtk_vcodec_dec mtk_vcodec_enc uvcvideo mtk_mdp mtk_vcodec_common videobuf2_dma_contig v4l2_h264 cdc_ether v4l2_mem2mem videobuf2_vmalloc usbnet videobuf2_memops videobuf2_v4l2 r8152 videobuf2_common videodev cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf elan_i2c elants_i2c sbs_battery mc cros_usbpd_charger cros_ec_chardev cros_usbpd_logger crct10dif_ce mtk_vpu fuse ip_tables x_tables ipv6
+[  638.118583] CPU: 0 PID: 212 Comm: kworker/u8:5 Not tainted 5.15.0-06427-g58a1d4dcfc74-dirty #109
+[  638.127357] Hardware name: Google Elm (DT)
+[  638.131444] Workqueue: mtk-vcodec-enc mtk_venc_worker [mtk_vcodec_enc]
+[  638.137974] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  638.144925] pc : vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
+[  638.150493] lr : venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
+[  638.156060] sp : ffff8000124d3c40
+[  638.159364] x29: ffff8000124d3c40 x28: 0000000000000000 x27: 0000000000000000
+[  638.166493] x26: 0000000000000000 x25: ffff0000e7f252d0 x24: ffff8000124d3d58
+[  638.173621] x23: ffff8000124d3d58 x22: ffff8000124d3d60 x21: 0000000000000001
+[  638.180750] x20: ffff80001137e000 x19: 0000000000000000 x18: 0000000000000001
+[  638.187878] x17: 000000040044ffff x16: 00400032b5503510 x15: 0000000000000000
+[  638.195006] x14: ffff8000118536c0 x13: ffff8000ee1da000 x12: 0000000030d4d91d
+[  638.202134] x11: 0000000000000000 x10: 0000000000000980 x9 : ffff8000124d3b20
+[  638.209262] x8 : ffff0000c18d4ea0 x7 : ffff0000c18d44c0 x6 : ffff0000c18d44c0
+[  638.216391] x5 : ffff80000904a3b0 x4 : ffff8000124d3d58 x3 : ffff8000124d3d60
+[  638.223519] x2 : ffff8000124d3d78 x1 : 0000000000000001 x0 : ffff80001137efb8
+[  638.230648] Call trace:
+[  638.233084]  vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
+[  638.238304]  venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
+[  638.243525]  mtk_venc_worker+0x110/0x250 [mtk_vcodec_enc]
+[  638.248918]  process_one_work+0x1f8/0x498
+[  638.252923]  worker_thread+0x140/0x538
+[  638.256664]  kthread+0x148/0x158
+[  638.259884]  ret_from_fork+0x10/0x20
+[  638.263455] Code: f90023f9 2a0103f5 aa0303f6 aa0403f8 (f940d277)
+[  638.269538] ---[ end trace e374fc10f8e181f5 ]---
 
-Fixes: 2c2086afc2b8 ("block: Protect less code with sysfs_lock in blk_{un,}register_queue()")
-Reviewed-by: Hannes Reinecke <hare@suse.de>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Eric Biggers <ebiggers@google.com>
+[gst-master] root@debian:~/gst-build# [  638.019193] Unable to handle kernel NULL pointer dereference at virtual address 00000000000001a0
+Fixes: 4e855a6efa547 ("[media] vcodec: mediatek: Add Mediatek V4L2 Video Encoder Driver")
+Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-sysfs.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/block/blk-sysfs.c b/block/blk-sysfs.c
-index a02b42ad9a6e0..66deaa9f3bc97 100644
---- a/block/blk-sysfs.c
-+++ b/block/blk-sysfs.c
-@@ -954,15 +954,17 @@ void blk_unregister_queue(struct gendisk *disk)
- 	 */
- 	if (queue_is_mq(q))
- 		blk_mq_unregister_dev(disk_to_dev(disk), q);
--
--	kobject_uevent(&q->kobj, KOBJ_REMOVE);
--	kobject_del(&q->kobj);
- 	blk_trace_remove_sysfs(disk_to_dev(disk));
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+index eed67394cf463..f898226fc53e5 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+@@ -214,11 +214,11 @@ static int fops_vcodec_release(struct file *file)
+ 	mtk_v4l2_debug(1, "[%d] encoder", ctx->id);
+ 	mutex_lock(&dev->dev_mutex);
  
- 	mutex_lock(&q->sysfs_lock);
- 	elv_unregister_queue(q);
- 	disk_unregister_independent_access_ranges(disk);
- 	mutex_unlock(&q->sysfs_lock);
-+
-+	/* Now that we've deleted all child objects, we can delete the queue. */
-+	kobject_uevent(&q->kobj, KOBJ_REMOVE);
-+	kobject_del(&q->kobj);
-+
- 	mutex_unlock(&q->sysfs_dir_lock);
++	v4l2_m2m_ctx_release(ctx->m2m_ctx);
+ 	mtk_vcodec_enc_release(ctx);
+ 	v4l2_fh_del(&ctx->fh);
+ 	v4l2_fh_exit(&ctx->fh);
+ 	v4l2_ctrl_handler_free(&ctx->ctrl_hdl);
+-	v4l2_m2m_ctx_release(ctx->m2m_ctx);
  
- 	kobject_put(&disk_to_dev(disk)->kobj);
+ 	list_del_init(&ctx->list);
+ 	kfree(ctx);
 -- 
 2.34.1
+
+
 
