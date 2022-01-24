@@ -2,103 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8BB9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:24:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC61C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:25:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237828AbiAXOY5 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:24:57 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:20616 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238111AbiAXOYj (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:24:39 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-433-RsgB6JPWNyKzfZgGuJqN6g-1; Mon, 24 Jan 2022 09:24:35 -0500
-X-MC-Unique: RsgB6JPWNyKzfZgGuJqN6g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 23ED41923B80;
-        Mon, 24 Jan 2022 14:24:34 +0000 (UTC)
-Received: from x1.com (unknown [10.22.32.253])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 00925798B2;
-        Mon, 24 Jan 2022 14:24:32 +0000 (UTC)
-From:   Daniel Bristot de Oliveira <bristot@kernel.org>
-To:     Steven Rostedt <rostedt@goodmis.org>
-Cc:     Daniel Bristot de Oliveira <bristot@kernel.org>,
-        linux-kernel@vger.kernel.org, linux-trace-devel@vger.kernel.org
-Subject: [PATCH 6/8] rtla/timerlat_hist: Fix segmentation fault when failing to enable -t
-Date:   Mon, 24 Jan 2022 15:24:09 +0100
-Message-Id: <78b201bfbeabdb8c55fcd51d76e0475c437175ed.1643033113.git.bristot@kernel.org>
-In-Reply-To: <cover.1643033113.git.bristot@kernel.org>
-References: <cover.1643033113.git.bristot@kernel.org>
+        id S238362AbiAXOZJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:25:09 -0500
+Received: from mga03.intel.com ([134.134.136.65]:63763 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238109AbiAXOZG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 09:25:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643034306; x=1674570306;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=sfjkK22NlOUo/XJ4kG04bQhmoPnIkhf2ZWI38Fc2OVg=;
+  b=d29WbpZiD+hx8RUikC7umeIl9uefHO+RJChKWMc8+C5gShOMqNlM8XHp
+   UE3aBs9eqgiJcn8Ya9xZOdBqMOx/iRIiC7oewxl7X7CcKrDvt7VfOafBX
+   mAWgYGtk0s3CMhYOjQbhj1GOEw1954jM63E7ww2COxkm9mW1u0+pdtHXQ
+   t41/P/MscwKKeScWE0LDbqmEa2JCntq3GF4XPUe2rTxPieK9EGasdQ9eK
+   6+n813inj+4cApbTjq1t/XpYugY23X6LliyWCrDfAj5WZva88KuGOH9xI
+   9TCUEjgmRUyVDkDAxvuDtp9u4fdTHgN9Bm9EZWvNiaBQEJ80TdNbYzGg0
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="246000553"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="246000553"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:25:05 -0800
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="534242458"
+Received: from lahna.fi.intel.com (HELO lahna) ([10.237.72.162])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:25:03 -0800
+Received: by lahna (sSMTP sendmail emulation); Mon, 24 Jan 2022 16:22:49 +0200
+Date:   Mon, 24 Jan 2022 16:22:49 +0200
+From:   Mika Westerberg <mika.westerberg@linux.intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc:     Andreas Noever <andreas.noever@gmail.com>,
+        Michael Jamet <michael.jamet@intel.com>,
+        Yehezkel Bernat <YehezkelShB@gmail.com>,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-usb@vger.kernel.org
+Subject: Re: [PATCH] thunderbolt: Remove useless DMA-32 fallback configuration
+Message-ID: <Ye62OesXyIDhBEyy@lahna>
+References: <4b40fc065771fadc1a5187d533bd760e034ece58.1641732679.git.christophe.jaillet@wanadoo.fr>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b40fc065771fadc1a5187d533bd760e034ece58.1641732679.git.christophe.jaillet@wanadoo.fr>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-rtla timerlat hist is causing a segmentation fault when running with
-the --trace option on a kernel that does not support multiple
-instances. For example:
+On Sun, Jan 09, 2022 at 01:51:31PM +0100, Christophe JAILLET wrote:
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+> 
+> Simplify code and remove some dead code accordingly.
+> 
+> 
+> While at it, include directly <linux/dma-mapping.h> instead on relying on
+> indirect inclusion.
+> 
+> [1]: https://lkml.org/lkml/2021/6/7/398
+> 
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-    [root@f34 rtla]# rtla timerlat hist -t
-    failed to enable the tracer timerlat
-    Could not enable osnoiser tracer for tracing
-    Failed to enable the trace instance
-    Segmentation fault (core dumped)
-
-This error happens because the exit code of the tools is trying
-to destroy the trace instance that failed to be created.
-
-Rearrange the order in which trace instances are destroyed to avoid
-this problem.
-
-Fixes: (1eeb6328e8b3 "rtla/timerlat: Add timerlat hist mode")
-Cc: Daniel Bristot de Oliveira <bristot@kernel.org>
-Cc: Steven Rostedt <rostedt@goodmis.org>
-Cc: linux-kernel@vger.kernel.org
-Cc: linux-trace-devel@vger.kernel.org
-Signed-off-by: Daniel Bristot de Oliveira <bristot@kernel.org>
----
- tools/tracing/rtla/src/timerlat_hist.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/tools/tracing/rtla/src/timerlat_hist.c b/tools/tracing/rtla/src/timerlat_hist.c
-index 235f9620ef3d..74ccb6351ad2 100644
---- a/tools/tracing/rtla/src/timerlat_hist.c
-+++ b/tools/tracing/rtla/src/timerlat_hist.c
-@@ -792,7 +792,7 @@ int timerlat_hist_main(int argc, char *argv[])
- 						    trace);
- 		if (retval < 0) {
- 			err_msg("Error iterating on events\n");
--			goto out_hist;
-+			goto out_trace;
- 		}
- 
- 		if (!tracefs_trace_is_on(trace->inst))
-@@ -811,11 +811,12 @@ int timerlat_hist_main(int argc, char *argv[])
- 		}
- 	}
- 
-+out_trace:
-+	if (params->trace_output)
-+		osnoise_destroy_tool(record);
- out_hist:
- 	timerlat_free_histogram(tool->data);
- 	osnoise_destroy_tool(tool);
--	if (params->trace_output)
--		osnoise_destroy_tool(record);
- 	free(params);
- out_exit:
- 	exit(return_value);
--- 
-2.34.1
-
+Applied, thanks!
