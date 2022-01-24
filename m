@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77061C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E4FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384914AbiAXUaw (ORCPT
+        id S1356310AbiAXUa5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:30:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37400 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379284AbiAXULD (ORCPT
+        Mon, 24 Jan 2022 15:30:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379358AbiAXULU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:03 -0500
+        Mon, 24 Jan 2022 15:11:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FF5C06F8D4;
+        Mon, 24 Jan 2022 11:33:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CD8C61371;
-        Mon, 24 Jan 2022 20:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56573C340E5;
-        Mon, 24 Jan 2022 20:11:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91CA3B811FC;
+        Mon, 24 Jan 2022 19:33:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF652C340E5;
+        Mon, 24 Jan 2022 19:33:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055062;
-        bh=coNUTtreSapjjg9ezr4KWHjBcWf3lunj23LcLPSUqUg=;
+        s=korg; t=1643052791;
+        bh=qd+RMW3ekTWdd5Ghm7/F/Cbe9ZBpbdGE29aSnDE0Ntc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pfSaHCQUBeDPGEaJieQ0T5AERxPeQvgeJct+569PwYqiMqIs28szylAJuOPQlx5jB
-         R7DnfTF7onHPe9KckNih9ZWi6EtsqRe2q5FgM3pLiwnmNb/0oWuTl4U/bfy2meST7s
-         WPHDl83eNAxCc7v1kcykexBoe3iXA0r2tOA8M55g=
+        b=TY6eY/TIzB/ZXxr3IlKVOZ69EOUhUeC0JpSP1Lji8YDjZipz1ZYE3VUVUdfuaEJM+
+         tb1OLvlRF/h7xSCXOs/TLfsUfPGlFN62gzzUtkWAN+wbfmSmfJxfJgvBCeT48lvjBd
+         j848z2RUmpYsa5uMV0czXzMPuZx7a9RPIl7ACO/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedirhan KURT <windowz414@gnuweeb.org>,
-        Louvian Lyndal <louvianlyndal@gmail.com>,
-        Peter Cordes <peter@cordes.ca>,
-        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
-        Willy Tarreau <w@1wt.eu>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.15 028/846] tools/nolibc: x86-64: Fix startup code bug
-Date:   Mon, 24 Jan 2022 19:32:25 +0100
-Message-Id: <20220124184101.893309402@linuxfoundation.org>
+        stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 176/320] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
+Date:   Mon, 24 Jan 2022 19:42:40 +0100
+Message-Id: <20220124183959.647817904@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,97 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+From: James Hilliard <james.hilliard1@gmail.com>
 
-commit 937ed91c712273131de6d2a02caafd3ee84e0c72 upstream.
+[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
 
-Before this patch, the `_start` function looks like this:
-```
-0000000000001170 <_start>:
-    1170:	pop    %rdi
-    1171:	mov    %rsp,%rsi
-    1174:	lea    0x8(%rsi,%rdi,8),%rdx
-    1179:	and    $0xfffffffffffffff0,%rsp
-    117d:	sub    $0x8,%rsp
-    1181:	call   1000 <main>
-    1186:	movzbq %al,%rdi
-    118a:	mov    $0x3c,%rax
-    1191:	syscall
-    1193:	hlt
-    1194:	data16 cs nopw 0x0(%rax,%rax,1)
-    119f:	nop
-```
-Note the "and" to %rsp with $-16, it makes the %rsp be 16-byte aligned,
-but then there is a "sub" with $0x8 which makes the %rsp no longer
-16-byte aligned, then it calls main. That's the bug!
+Some uvc devices appear to require the maximum allowed USB timeout
+for GET_CUR/SET_CUR requests.
 
-What actually the x86-64 System V ABI mandates is that right before the
-"call", the %rsp must be 16-byte aligned, not after the "call". So the
-"sub" with $0x8 here breaks the alignment. Remove it.
+So lets just bump the UVC control timeout to 5 seconds which is the
+same as the usb ctrl get/set defaults:
+USB_CTRL_GET_TIMEOUT 5000
+USB_CTRL_SET_TIMEOUT 5000
 
-An example where this rule matters is when the callee needs to align
-its stack at 16-byte for aligned move instruction, like `movdqa` and
-`movaps`. If the callee can't align its stack properly, it will result
-in segmentation fault.
+It fixes the following runtime warnings:
+   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
+   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
 
-x86-64 System V ABI also mandates the deepest stack frame should be
-zero. Just to be safe, let's zero the %rbp on startup as the content
-of %rbp may be unspecified when the program starts. Now it looks like
-this:
-```
-0000000000001170 <_start>:
-    1170:	pop    %rdi
-    1171:	mov    %rsp,%rsi
-    1174:	lea    0x8(%rsi,%rdi,8),%rdx
-    1179:	xor    %ebp,%ebp                # zero the %rbp
-    117b:	and    $0xfffffffffffffff0,%rsp # align the %rsp
-    117f:	call   1000 <main>
-    1184:	movzbq %al,%rdi
-    1188:	mov    $0x3c,%rax
-    118f:	syscall
-    1191:	hlt
-    1192:	data16 cs nopw 0x0(%rax,%rax,1)
-    119d:	nopl   (%rax)
-```
-
-Cc: Bedirhan KURT <windowz414@gnuweeb.org>
-Cc: Louvian Lyndal <louvianlyndal@gmail.com>
-Reported-by: Peter Cordes <peter@cordes.ca>
-Signed-off-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
-[wt: I did this on purpose due to a misunderstanding of the spec, other
-     archs will thus have to be rechecked, particularly i386]
-Cc: stable@vger.kernel.org
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/include/nolibc/nolibc.h |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/media/usb/uvc/uvcvideo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -399,14 +399,20 @@ struct stat {
- })
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 24e3d8c647e77..5f137400bebd6 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -179,7 +179,7 @@
+ /* Maximum status buffer size in bytes of interrupt URB. */
+ #define UVC_MAX_STATUS_SIZE	16
  
- /* startup code */
-+/*
-+ * x86-64 System V ABI mandates:
-+ * 1) %rsp must be 16-byte aligned right before the function call.
-+ * 2) The deepest stack frame should be zero (the %rbp).
-+ *
-+ */
- asm(".section .text\n"
-     ".global _start\n"
-     "_start:\n"
-     "pop %rdi\n"                // argc   (first arg, %rdi)
-     "mov %rsp, %rsi\n"          // argv[] (second arg, %rsi)
-     "lea 8(%rsi,%rdi,8),%rdx\n" // then a NULL then envp (third arg, %rdx)
--    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned when
--    "sub $8, %rsp\n"            // entering the callee
-+    "xor %ebp, %ebp\n"          // zero the stack frame
-+    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
-     "call main\n"               // main() returns the status code, we'll exit with it.
-     "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
-     "mov $60, %rax\n"           // NR_exit == 60
+-#define UVC_CTRL_CONTROL_TIMEOUT	500
++#define UVC_CTRL_CONTROL_TIMEOUT	5000
+ #define UVC_CTRL_STREAMING_TIMEOUT	5000
+ 
+ /* Maximum allowed number of control mappings per device */
+-- 
+2.34.1
+
 
 
