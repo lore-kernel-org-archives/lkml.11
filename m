@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0420C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E616C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355059AbiAXTjz (ORCPT
+        id S1355079AbiAXTj5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:39:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349371AbiAXTd7 (ORCPT
+        Mon, 24 Jan 2022 14:39:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33022 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349435AbiAXTeK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:33:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 012FBC09B04F;
-        Mon, 24 Jan 2022 11:16:14 -0800 (PST)
+        Mon, 24 Jan 2022 14:34:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 968AF6130A;
-        Mon, 24 Jan 2022 19:16:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C958C340E5;
-        Mon, 24 Jan 2022 19:16:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B0D06141C;
+        Mon, 24 Jan 2022 19:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 878CBC340E8;
+        Mon, 24 Jan 2022 19:34:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051773;
-        bh=ePwTLxA62Y36SORi+qh5QbEO3e+K23U1KOM0lweoOO0=;
+        s=korg; t=1643052847;
+        bh=Mux5XJTW3pJiVPcl/iFS7hUyFsEJtVaPya5qb4ckeX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lx/c3da//267pxA023+TpriEV1jJVju4Ek5UwyTK/QX94Z5NVKBwZdDWAgcsRn4E6
-         x79x7sqc7iZ5UCorWruKDreobb2I6gGu64sXG65FzGbvh8a0jSHbXvv2VMKJWgXC6K
-         RQuD+pz6/6kHipGdOzNme8gapsjJbfs0dJAjDzu0=
+        b=O9ukjqbHFJI4u8EK1acklXuedqBmPLnXrLweHxEetECjZw82iZ4mMNVCasmYBYrr1
+         MBTvJLkCT8KO/moM68GiNrtPHZKITlHYxs45LsJfDexELOzbxZ5hzuHgnSjH3RoUX0
+         65gz8wDOWaHR28XHTHrRdZeQAxGGOU9IHucnPyIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 083/239] mmc: meson-mx-sdio: add IRQ check
-Date:   Mon, 24 Jan 2022 19:42:01 +0100
-Message-Id: <20220124183945.759993210@linuxfoundation.org>
+Subject: [PATCH 5.4 193/320] audit: ensure userspace is penalized the same as the kernel when under pressure
+Date:   Mon, 24 Jan 2022 19:42:57 +0100
+Message-Id: <20220124184000.210055259@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Paul Moore <paul@paul-moore.com>
 
-[ Upstream commit 8fc9a77bc64e1f23d07953439817d8402ac9706f ]
+[ Upstream commit 8f110f530635af44fff1f4ee100ecef0bac62510 ]
 
-The driver neglects to check the result of platform_get_irq()'s call and
-blithely passes the negative error codes to devm_request_threaded_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL, overriding
-an original error code. Stop calling devm_request_threaded_irq() with the
-invalid IRQ #s.
+Due to the audit control mutex necessary for serializing audit
+userspace messages we haven't been able to block/penalize userspace
+processes that attempt to send audit records while the system is
+under audit pressure.  The result is that privileged userspace
+applications have a priority boost with respect to audit as they are
+not bound by the same audit queue throttling as the other tasks on
+the system.
 
-Fixes: ed80a13bb4c4 ("mmc: meson-mx-sdio: Add a driver for the Amlogic Meson8 and Meson8b SoC")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Link: https://lore.kernel.org/r/20211217202717.10041-3-s.shtylyov@omp.ru
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+This patch attempts to restore some balance to the system when under
+audit pressure by blocking these privileged userspace tasks after
+they have finished their audit processing, and dropped the audit
+control mutex, but before they return to userspace.
+
+Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/meson-mx-sdio.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ kernel/audit.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/meson-mx-sdio.c b/drivers/mmc/host/meson-mx-sdio.c
-index 27837a794e7b3..1f7e4352b0677 100644
---- a/drivers/mmc/host/meson-mx-sdio.c
-+++ b/drivers/mmc/host/meson-mx-sdio.c
-@@ -668,6 +668,11 @@ static int meson_mx_mmc_probe(struct platform_device *pdev)
+diff --git a/kernel/audit.c b/kernel/audit.c
+index d67fce9e3f8b8..146edff0c73ec 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -1528,6 +1528,20 @@ static void audit_receive(struct sk_buff  *skb)
+ 		nlh = nlmsg_next(nlh, &len);
  	}
- 
- 	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		ret = irq;
-+		goto error_free_mmc;
-+	}
+ 	audit_ctl_unlock();
 +
- 	ret = devm_request_threaded_irq(host->controller_dev, irq,
- 					meson_mx_mmc_irq,
- 					meson_mx_mmc_irq_thread, IRQF_ONESHOT,
++	/* can't block with the ctrl lock, so penalize the sender now */
++	if (audit_backlog_limit &&
++	    (skb_queue_len(&audit_queue) > audit_backlog_limit)) {
++		DECLARE_WAITQUEUE(wait, current);
++
++		/* wake kauditd to try and flush the queue */
++		wake_up_interruptible(&kauditd_wait);
++
++		add_wait_queue_exclusive(&audit_backlog_wait, &wait);
++		set_current_state(TASK_UNINTERRUPTIBLE);
++		schedule_timeout(audit_backlog_wait_time);
++		remove_wait_queue(&audit_backlog_wait, &wait);
++	}
+ }
+ 
+ /* Run custom bind function on netlink socket group connect or bind requests. */
+@@ -1772,7 +1786,9 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
+ 	 *    task_tgid_vnr() since auditd_pid is set in audit_receive_msg()
+ 	 *    using a PID anchored in the caller's namespace
+ 	 * 2. generator holding the audit_cmd_mutex - we don't want to block
+-	 *    while holding the mutex */
++	 *    while holding the mutex, although we do penalize the sender
++	 *    later in audit_receive() when it is safe to block
++	 */
+ 	if (!(auditd_test_task(current) || audit_ctl_owner_current())) {
+ 		long stime = audit_backlog_wait_time;
+ 
 -- 
 2.34.1
 
