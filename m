@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BA8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44891C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346203AbiAXTFM (ORCPT
+        id S1346284AbiAXTFQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:05:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344772AbiAXS7M (ORCPT
+        Mon, 24 Jan 2022 14:05:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58564 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344910AbiAXS7g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:59:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1BD8C06127B;
-        Mon, 24 Jan 2022 10:56:21 -0800 (PST)
+        Mon, 24 Jan 2022 13:59:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51E5D61416;
-        Mon, 24 Jan 2022 18:56:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FD98C340E5;
-        Mon, 24 Jan 2022 18:56:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE2AE60909;
+        Mon, 24 Jan 2022 18:59:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EDD5C340E5;
+        Mon, 24 Jan 2022 18:59:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050580;
-        bh=Oo2lX6416TxPeLNk85BzSqjJdoOIIwJmRJQe4N3bdMg=;
+        s=korg; t=1643050775;
+        bh=ehxo8YQgznHOl0EbViewbaIP5NiLJZCNpNXsawUryR8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M0BVcOeJ+nfxQhXf65FCIfG+HFwaBwPDzjDJwH8/3Z+f1/58rsARlO5z6XV2Bb3+8
-         TO4R7OjvkydxD/j3gyb6HjlzKm3vA9OG5C9Az1yhlDy+ETcxjZhGScUigjsTngqUIz
-         A1imRAj9yJR0NwU0H5iPOGLBr3xNMMd752u3kAkg=
+        b=d0Hj4omVSC/gbT5VkWrXoDeAft0RgdnaWh75xGAFmBhj5eFI1UlCQyuftjjqChv7l
+         fq8mBZ+gMse6fVab1ubiJb6fPydtfEADykPUvpbr2RslMAtRhIoSijlElNrO2oSD2/
+         FX1Zx7te5hAdfi3ZsbxJ/tOdRgJPNfJKESbtm73Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Subject: [PATCH 4.9 015/157] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
-Date:   Mon, 24 Jan 2022 19:41:45 +0100
-Message-Id: <20220124183933.281022426@linuxfoundation.org>
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 107/157] powerpc/cell: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:43:17 +0100
+Message-Id: <20220124183936.163649241@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -51,102 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
+[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
 
-Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
-(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
-a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
+for_each_node_by_name performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-KASAN report:
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
-  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+// <smpl>
+@@
+expression e,e1;
+local idexpression n;
+@@
 
-  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x59
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   __kasan_report.cold+0x117/0x11c
-   ? mark_lock+0x480/0x4f0
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   kasan_report+0x38/0x50
-   nfc_alloc_send_skb+0x2d/0xc0
-   nfc_llcp_send_ui_frame+0x18c/0x2a0
-   ? nfc_llcp_send_i_frame+0x230/0x230
-   ? __local_bh_enable_ip+0x86/0xe0
-   ? llcp_sock_connect+0x470/0x470
-   ? llcp_sock_connect+0x470/0x470
-   sock_sendmsg+0x8e/0xa0
-   ____sys_sendmsg+0x253/0x3f0
+ for_each_node_by_name(n, e1) {
+   ... when != of_node_put(n)
+       when != e = n
+(
+   return n;
+|
++  of_node_put(n);
+?  return ...;
+)
    ...
+ }
+// </smpl>
 
-The issue was visible only with multiple simultaneous calls to bind() and
-sendmsg(), which resulted in most of the bind() calls to fail.  The
-bind() was failing on checking if there is available WKS/SDP/SAP
-(respective bit in 'struct nfc_llcp_local' fields).  When there was no
-available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
-socket was able to trigger mentioned NULL pointer dereference of
-nfc_llcp_sock->dev.
-
-The code looks simply racy and currently it protects several paths
-against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
-in error paths of bind().  The llcp_sock_sendmsg() did not have such
-check but called function nfc_llcp_send_ui_frame() had, although not
-protected with lock_sock().
-
-Therefore the race could look like (same socket is used all the time):
-  CPU0                                     CPU1
-  ====                                     ====
-  llcp_sock_bind()
-  - lock_sock()
-    - success
-  - release_sock()
-  - return 0
-                                           llcp_sock_sendmsg()
-                                           - lock_sock()
-                                           - release_sock()
-  llcp_sock_bind(), same socket
-  - lock_sock()
-    - error
-                                           - nfc_llcp_send_ui_frame()
-                                             - if (!llcp_sock->local)
-    - llcp_sock->local = NULL
-    - nfc_put_device(dev)
-                                             - dereference llcp_sock->dev
-  - release_sock()
-  - return -ERRNO
-
-The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
-lock, which is racy and ineffective check.  Instead, its caller
-llcp_sock_sendmsg(), should perform the check inside lock_sock().
-
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/nfc/llcp_sock.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/powerpc/platforms/cell/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -796,6 +796,11 @@ static int llcp_sock_sendmsg(struct sock
- 
- 	lock_sock(sk);
- 
-+	if (!llcp_sock->local) {
-+		release_sock(sk);
-+		return -ENODEV;
-+	}
-+
- 	if (sk->sk_type == SOCK_DGRAM) {
- 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
- 				 msg->msg_name);
+diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
+index 7ff51f96a00e8..8df43781f5db9 100644
+--- a/arch/powerpc/platforms/cell/iommu.c
++++ b/arch/powerpc/platforms/cell/iommu.c
+@@ -1107,6 +1107,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
+ 			if (hbase < dbase || (hend > (dbase + dsize))) {
+ 				pr_debug("iommu: hash window doesn't fit in"
+ 					 "real DMA window\n");
++				of_node_put(np);
+ 				return -1;
+ 			}
+ 		}
+-- 
+2.34.1
+
 
 
