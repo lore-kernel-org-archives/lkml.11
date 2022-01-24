@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C02FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 663CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387832AbiAXUhX (ORCPT
+        id S1387863AbiAXUh0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:37:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55578 "EHLO
+        Mon, 24 Jan 2022 15:37:26 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53384 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379844AbiAXUPM (ORCPT
+        with ESMTP id S1379577AbiAXULv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:15:12 -0500
+        Mon, 24 Jan 2022 15:11:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 190EEB81218;
-        Mon, 24 Jan 2022 20:15:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20621C340E5;
-        Mon, 24 Jan 2022 20:15:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0DE8B8124F;
+        Mon, 24 Jan 2022 20:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D97BC340E5;
+        Mon, 24 Jan 2022 20:11:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055309;
-        bh=WrCqZQRVcjEqYKrOwStT6HL75yR/zqNeI3M2IfBMBcI=;
+        s=korg; t=1643055107;
+        bh=An8I2X1HeZzcabaqTOQ17/TkbUwoB4zHWxvVJ1jR+Uc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0oXK0Dks5o/UTRomQV7qjT3PG3xyMNehpO5J+bPu9hCG+dxz2F5fLTmwH6MMdNkUq
-         fbI9m6jssJq4Jn5jLhER6+6Ix5+uQz0OV/8g6LLDL7SLyUlEGHqZcpeJznIeU1cldL
-         bW3TvbqeQN7zeslgZMomoNT420qroA+7N8nKgQ/0=
+        b=fhy1tQzN5gHq7bwRi3nubcmATR9HkGW00ZJttDah/S+SNHLVObYM3d1vinOcgv2e4
+         ioD6rELm063uzwixW7ieGc18mgMRZ9FMFtKtVC7BHthWrgE4//J7DKqhs2lCt09LFb
+         gQV6dTWRvegUH3cA6F0r2JpKi8WoSckDsi4JcyBg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 108/846] media: atomisp: add missing media_device_cleanup() in atomisp_unregister_entities()
-Date:   Mon, 24 Jan 2022 19:33:45 +0100
-Message-Id: <20220124184104.708373363@linuxfoundation.org>
+        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.15 011/846] f2fs: avoid EINVAL by SBI_NEED_FSCK when pinning a file
+Date:   Mon, 24 Jan 2022 19:32:08 +0100
+Message-Id: <20220124184101.296829277@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,43 +45,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-[ Upstream commit ce3015b7212e96db426d0c36f80fd159c91155d1 ]
+commit 19bdba5265624ba6b9d9dd936a0c6ccc167cfe80 upstream.
 
-After the commit 9832e155f1ed ("[media] media-device: split media
-initialization and registration"), calling media_device_cleanup()
-is needed it seems. However, currently it is missing for the module
-unload path.
+Android OTA failed due to SBI_NEED_FSCK flag when pinning the file. Let's avoid
+it since we can do in-place-updates.
 
-Note that for the probe failure path, it is already added in
-atomisp_register_entities().
-
-This patch adds the missing call of media_device_cleanup() in
-atomisp_unregister_entities().
-
-Fixes: a49d25364dfb ("staging/atomisp: Add support for the Intel IPU v2")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/staging/media/atomisp/pci/atomisp_v4l2.c | 1 +
- 1 file changed, 1 insertion(+)
+ fs/f2fs/data.c |    7 +++++--
+ fs/f2fs/file.c |   10 +++++-----
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-index 1e324f1f656e5..0511c454e769d 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-@@ -1182,6 +1182,7 @@ static void atomisp_unregister_entities(struct atomisp_device *isp)
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -2564,6 +2564,11 @@ bool f2fs_should_update_outplace(struct
+ {
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
  
- 	v4l2_device_unregister(&isp->v4l2_dev);
- 	media_device_unregister(&isp->media_dev);
-+	media_device_cleanup(&isp->media_dev);
- }
++	/* The below cases were checked when setting it. */
++	if (f2fs_is_pinned_file(inode))
++		return false;
++	if (fio && is_sbi_flag_set(sbi, SBI_NEED_FSCK))
++		return true;
+ 	if (f2fs_lfs_mode(sbi))
+ 		return true;
+ 	if (S_ISDIR(inode->i_mode))
+@@ -2572,8 +2577,6 @@ bool f2fs_should_update_outplace(struct
+ 		return true;
+ 	if (f2fs_is_atomic_file(inode))
+ 		return true;
+-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
+-		return true;
  
- static int atomisp_register_entities(struct atomisp_device *isp)
--- 
-2.34.1
-
+ 	/* swap file is migrating in aligned write mode */
+ 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -3143,17 +3143,17 @@ static int f2fs_ioc_set_pin_file(struct
+ 
+ 	inode_lock(inode);
+ 
+-	if (f2fs_should_update_outplace(inode, NULL)) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+ 	if (!pin) {
+ 		clear_inode_flag(inode, FI_PIN_FILE);
+ 		f2fs_i_gc_failures_write(inode, 0);
+ 		goto done;
+ 	}
+ 
++	if (f2fs_should_update_outplace(inode, NULL)) {
++		ret = -EINVAL;
++		goto out;
++	}
++
+ 	if (f2fs_pin_file_control(inode, false)) {
+ 		ret = -EAGAIN;
+ 		goto out;
 
 
