@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D77E7C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 564A9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379084AbiAXUKS (ORCPT
+        id S1379136AbiAXUKY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
+        Mon, 24 Jan 2022 15:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348424AbiAXTwj (ORCPT
+        with ESMTP id S1352168AbiAXTwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:39 -0500
+        Mon, 24 Jan 2022 14:52:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26D99C0617BD;
-        Mon, 24 Jan 2022 11:25:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D558C06138E;
+        Mon, 24 Jan 2022 11:25:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8D5F61483;
-        Mon, 24 Jan 2022 19:25:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA75AC340E5;
-        Mon, 24 Jan 2022 19:25:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E93746148B;
+        Mon, 24 Jan 2022 19:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB115C340E5;
+        Mon, 24 Jan 2022 19:25:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052328;
-        bh=x8ZQ3S8zIVTHi8vfagOrUccfQLdVTDvY8UlvC4IZUdc=;
+        s=korg; t=1643052343;
+        bh=DJ/cYkr8MzqT7hAfv92BLVMqYFrXoXo4x8FHMhWFLhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NmGxnUIHU4ZFabSU6Fxs0F4D6n0+HkeXqnqA5x2SYESg956U6mf+uV9U56oLZ/Mce
-         1XjAesKJxykWAFGi8tupqjHlsaobsZ/EA1i10CZwoKcgtwEEQByN6ILq5xTwazwNtR
-         fevI2ejUtVHe/SKhMNr7LMtnXTgPrVnAPFK+nfJ4=
+        b=Hd46jcAe/bMRU6y1iTVNEYlRGlbSkIamwpta2/28D0aA7CeE6ak9r1QR4fzYQ8oK8
+         9kmlYBy+pHVQsVRLgF58RQC4jWOYufYIr0bloFn+kYYqIPylkN4xzUcQVZ6mUibahC
+         JTthaUJooCqKq3DLTz3xoszrcNJzKGWY1GtYbKV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 022/320] media: pvrusb2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:40:06 +0100
-Message-Id: <20220124183954.505885405@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 006/320] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
+Date:   Mon, 24 Jan 2022 19:39:50 +0100
+Message-Id: <20220124183953.977141470@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,60 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
+commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
+(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
+a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
 
-Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
-Cc: stable@vger.kernel.org      # 2.6.18
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+KASAN report:
+
+  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
+  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+
+  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x45/0x59
+   ? nfc_alloc_send_skb+0x2d/0xc0
+   __kasan_report.cold+0x117/0x11c
+   ? mark_lock+0x480/0x4f0
+   ? nfc_alloc_send_skb+0x2d/0xc0
+   kasan_report+0x38/0x50
+   nfc_alloc_send_skb+0x2d/0xc0
+   nfc_llcp_send_ui_frame+0x18c/0x2a0
+   ? nfc_llcp_send_i_frame+0x230/0x230
+   ? __local_bh_enable_ip+0x86/0xe0
+   ? llcp_sock_connect+0x470/0x470
+   ? llcp_sock_connect+0x470/0x470
+   sock_sendmsg+0x8e/0xa0
+   ____sys_sendmsg+0x253/0x3f0
+   ...
+
+The issue was visible only with multiple simultaneous calls to bind() and
+sendmsg(), which resulted in most of the bind() calls to fail.  The
+bind() was failing on checking if there is available WKS/SDP/SAP
+(respective bit in 'struct nfc_llcp_local' fields).  When there was no
+available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
+socket was able to trigger mentioned NULL pointer dereference of
+nfc_llcp_sock->dev.
+
+The code looks simply racy and currently it protects several paths
+against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
+in error paths of bind().  The llcp_sock_sendmsg() did not have such
+check but called function nfc_llcp_send_ui_frame() had, although not
+protected with lock_sock().
+
+Therefore the race could look like (same socket is used all the time):
+  CPU0                                     CPU1
+  ====                                     ====
+  llcp_sock_bind()
+  - lock_sock()
+    - success
+  - release_sock()
+  - return 0
+                                           llcp_sock_sendmsg()
+                                           - lock_sock()
+                                           - release_sock()
+  llcp_sock_bind(), same socket
+  - lock_sock()
+    - error
+                                           - nfc_llcp_send_ui_frame()
+                                             - if (!llcp_sock->local)
+    - llcp_sock->local = NULL
+    - nfc_put_device(dev)
+                                             - dereference llcp_sock->dev
+  - release_sock()
+  - return -ERRNO
+
+The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
+lock, which is racy and ineffective check.  Instead, its caller
+llcp_sock_sendmsg(), should perform the check inside lock_sock().
+
+Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/nfc/llcp_sock.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -1468,7 +1468,7 @@ static int pvr2_upload_firmware1(struct
- 	for (address = 0; address < fwsize; address += 0x800) {
- 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
- 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
--				       0, fw_ptr, 0x800, HZ);
-+				       0, fw_ptr, 0x800, 1000);
- 	}
+--- a/net/nfc/llcp_sock.c
++++ b/net/nfc/llcp_sock.c
+@@ -789,6 +789,11 @@ static int llcp_sock_sendmsg(struct sock
  
- 	trace_firmware("Upload done, releasing device's CPU");
-@@ -1606,7 +1606,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
- 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
+ 	lock_sock(sk);
  
- 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
--				    &actual_length, HZ);
-+				    &actual_length, 1000);
- 		ret |= (actual_length != bcnt);
- 		if (ret) break;
- 		fw_done += bcnt;
-@@ -3439,7 +3439,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
- 						      0xa0,0xc0,
- 						      address,0,
- 						      hdw->fw_buffer+address,
--						      0x800,HZ);
-+						      0x800,1000);
- 				if (ret < 0) break;
- 			}
- 
-@@ -3978,7 +3978,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
- 	/* Write the CPUCS register on the 8051.  The lsb of the register
- 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
- 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
--	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
-+	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
- 	if (ret < 0) {
- 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
- 			   "cpureset_assert(%d) error=%d",val,ret);
++	if (!llcp_sock->local) {
++		release_sock(sk);
++		return -ENODEV;
++	}
++
+ 	if (sk->sk_type == SOCK_DGRAM) {
+ 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
+ 				 msg->msg_name);
 
 
