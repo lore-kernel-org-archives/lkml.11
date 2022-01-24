@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63236C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39873C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847849AbiAXXUq (ORCPT
+        id S1847821AbiAXXUn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:20:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37152 "EHLO
+        Mon, 24 Jan 2022 18:20:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584587AbiAXWV3 (ORCPT
+        with ESMTP id S1584592AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56999C0424E2;
-        Mon, 24 Jan 2022 12:51:34 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FD58C0424E5;
+        Mon, 24 Jan 2022 12:51:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E789B81061;
-        Mon, 24 Jan 2022 20:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D111C340E5;
-        Mon, 24 Jan 2022 20:51:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3B0E60B21;
+        Mon, 24 Jan 2022 20:51:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFE9AC340E5;
+        Mon, 24 Jan 2022 20:51:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057491;
-        bh=ZFkvLrbQuEXn14yPP2X0Q5NlzUl9AI4o2OqopNOvoAY=;
+        s=korg; t=1643057516;
+        bh=Q+kbtrSzN3sW0F+y05oRP18A4WGq9IVLlwKWgshlVIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHzykWs7qiIA7c7VZ9rDOUOQyWnHdQpYBolNIfyMhESmb3lZxAlH9RYUdFhqcJNPb
-         ZnD/yvsVWOn4cchjpIY7F0BGEXqN8pxGq5L414ToutLgiu8oA15chuFmYC7b4cHuS7
-         XmXtzXO2Fq2IFWD7Lm7k6pPJecY9Q1ZknojZlnC4=
+        b=OC5Ph9KqbvZXiXJNLoEYuP2OVy20E9wYr1qyWP6YNAVBb4KHb5QGqVriWNiIK0KUc
+         wIYFNhnVrLzktdm2PgMLijp7CJXfFsphI0gpj3FFaaR7DLu/90L0PAeoU3qTiCc4fq
+         tiQBB12GqWw9SejtIhQqin28R57q7wkA3nbS+mCI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5.15 787/846] pinctrl/rockchip: fix gpio device creation
-Date:   Mon, 24 Jan 2022 19:45:04 +0100
-Message-Id: <20220124184128.105321929@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@mailbox.org>,
+        Rob Herring <robh@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 5.15 839/846] dt-bindings: display: meson-vpu: Add missing amlogic,canvas property
+Date:   Mon, 24 Jan 2022 19:45:56 +0100
+Message-Id: <20220124184129.847445968@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,44 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Keeping <john@metanate.com>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-commit bceb6732f3fd2a55d8f2e518cced1c7555e216b6 upstream.
+commit 640f35b871d29cd685ce0ea0762636381beeb98a upstream.
 
-GPIO nodes are not themselves busses, so passing rockchip_bank_match
-here is wrong.  Passing NULL instead uses the standard bus match table
-which is more appropriate.
+This property was already mentioned in the old textual bindings
+amlogic,meson-vpu.txt, but got dropped during conversion.
+Adding it back similar to amlogic,gx-vdec.yaml.
 
-devm_of_platform_populate() shows that this is the normal way to call
-of_platform_populate() from a device driver, so in order to match that
-more closely also add the pinctrl device as the parent for the newly
-created GPIO controllers.
-
-Specifically, using the wrong match here can break dynamic GPIO hogs as
-marking the GPIO bank as a bus means that of_platform_notify() will set
-OF_POPULATED on new child nodes and if this happens before
-of_gpio_notify() is called then the new hog will be skipped as
-OF_POPULATED is already set.
-
-Fixes: 9ce9a02039de ("pinctrl/rockchip: drop the gpio related codes")
-Signed-off-by: John Keeping <john@metanate.com>
-Link: https://lore.kernel.org/r/20211126151352.1509583-1-john@metanate.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes: 6b9ebf1e0e67 ("dt-bindings: display: amlogic, meson-vpu: convert to yaml")
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211219094155.177206-1-alexander.stein@mailbox.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pinctrl/pinctrl-rockchip.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/pinctrl/pinctrl-rockchip.c
-+++ b/drivers/pinctrl/pinctrl-rockchip.c
-@@ -2748,7 +2748,7 @@ static int rockchip_pinctrl_probe(struct
+--- a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
++++ b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
+@@ -78,6 +78,10 @@ properties:
+   interrupts:
+     maxItems: 1
  
- 	platform_set_drvdata(pdev, info);
++  amlogic,canvas:
++    description: should point to a canvas provider node
++    $ref: /schemas/types.yaml#/definitions/phandle
++
+   power-domains:
+     maxItems: 1
+     description: phandle to the associated power domain
+@@ -106,6 +110,7 @@ required:
+   - port@1
+   - "#address-cells"
+   - "#size-cells"
++  - amlogic,canvas
  
--	ret = of_platform_populate(np, rockchip_bank_match, NULL, NULL);
-+	ret = of_platform_populate(np, NULL, NULL, &pdev->dev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to register gpio device\n");
- 		return ret;
+ additionalProperties: false
+ 
+@@ -118,6 +123,7 @@ examples:
+         interrupts = <3>;
+         #address-cells = <1>;
+         #size-cells = <0>;
++        amlogic,canvas = <&canvas>;
+ 
+         /* CVBS VDAC output port */
+         port@0 {
 
 
