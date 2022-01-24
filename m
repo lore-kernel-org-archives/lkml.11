@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B38BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343611AbiAXS6L (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:58:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53702 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343873AbiAXSzz (ORCPT
+        id S242594AbiAXS6Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:58:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344147AbiAXS4B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:55:55 -0500
+        Mon, 24 Jan 2022 13:56:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0200AC0617A9;
+        Mon, 24 Jan 2022 10:54:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46DA7B8122C;
-        Mon, 24 Jan 2022 18:55:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5337CC340E5;
-        Mon, 24 Jan 2022 18:55:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDC5BB8119D;
+        Mon, 24 Jan 2022 18:53:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4579C36AE9;
+        Mon, 24 Jan 2022 18:53:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050553;
-        bh=85ZKOly/jIKhJSM2YyWDUxBKNqjNm1US5//guO2uhV0=;
+        s=korg; t=1643050437;
+        bh=4Dw/6zFwUu1pvPlMw2/pQ1gJ+iowxFDpDx957UrzjiM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p17Pan8pnlHGLDywaUKf5OGdO5TrpvZLOfbkLYNy8dOzkQu48VJvbgBgj47BaLTxS
-         kU1ozh47RXBS0QmJGjngoG0iH1elsdvkZ+gkpj3halimeDnws558ehbnMbc6z2fAsO
-         EcPxkK0t1s4P2iBaOxFfod7kwkPf+Qnzq/mnCM8c=
+        b=ExvwCPWNcDnTl20lwT6qXgSr5gtjJCmPy2iYaLf5xyFxzg1GLEeZMCdCqsRttQ3Ae
+         juz1hAG4azMW4ipmNcU3v5rUuUPCI9rfIiyBBHHq5OYkMx0Ajrm+SeWGOza9tKkVb9
+         Tqs1Di3gcXE07CAQitX/FNSOHoRwBqiVWn5pFio0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 037/157] arm64: dts: qcom: msm8916: fix MMC controller aliases
-Date:   Mon, 24 Jan 2022 19:42:07 +0100
-Message-Id: <20220124183933.980599336@linuxfoundation.org>
+Subject: [PATCH 4.4 089/114] powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
+Date:   Mon, 24 Jan 2022 19:43:04 +0100
+Message-Id: <20220124183929.862014993@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
+References: <20220124183927.095545464@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit b0293c19d42f6d6951c2fab9a47fed50baf2c14d ]
+[ Upstream commit a4ac0d249a5db80e79d573db9e4ad29354b643a8 ]
 
-Change sdhcN aliases to mmcN to make them actually work. Currently the
-board uses non-standard aliases sdhcN, which do not work, resulting in
-mmc0 and mmc1 hosts randomly changing indices between boots.
+setup_profiling_timer() is only needed when CONFIG_PROFILING is enabled.
 
-Fixes: c4da5a561627 ("arm64: dts: qcom: Add msm8916 sdhci configuration nodes")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211201020559.1611890-1-dmitry.baryshkov@linaro.org
+Fixes the following W=1 warning when CONFIG_PROFILING=n:
+  linux/arch/powerpc/kernel/smp.c:1638:5: error: no previous prototype for ‘setup_profiling_timer’
+
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211124093254.1054750-5-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8916.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/powerpc/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8916.dtsi b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-index c2557cf43b3dc..d8bf83d732be3 100644
---- a/arch/arm64/boot/dts/qcom/msm8916.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8916.dtsi
-@@ -25,8 +25,8 @@
- 	#size-cells = <2>;
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index ec9ec2058d2d3..19ba60ab18073 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -732,10 +732,12 @@ void start_secondary(void *unused)
+ 	BUG();
+ }
  
- 	aliases {
--		sdhc1 = &sdhc_1; /* SDC1 eMMC slot */
--		sdhc2 = &sdhc_2; /* SDC2 SD card slot */
-+		mmc0 = &sdhc_1; /* SDC1 eMMC slot */
-+		mmc1 = &sdhc_2; /* SDC2 SD card slot */
- 	};
++#ifdef CONFIG_PROFILING
+ int setup_profiling_timer(unsigned int multiplier)
+ {
+ 	return 0;
+ }
++#endif
  
- 	chosen { };
+ #ifdef CONFIG_SCHED_SMT
+ /* cpumask of CPUs with asymetric SMT dependancy */
 -- 
 2.34.1
 
