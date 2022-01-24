@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 663CFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 640E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387863AbiAXUh0 (ORCPT
+        id S1387903AbiAXUhc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:37:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53384 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379577AbiAXULv (ORCPT
+        Mon, 24 Jan 2022 15:37:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380174AbiAXUPv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:51 -0500
+        Mon, 24 Jan 2022 15:15:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F23AC01D7D9;
+        Mon, 24 Jan 2022 11:38:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0DE8B8124F;
-        Mon, 24 Jan 2022 20:11:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D97BC340E5;
-        Mon, 24 Jan 2022 20:11:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F04E56153F;
+        Mon, 24 Jan 2022 19:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D028CC340E5;
+        Mon, 24 Jan 2022 19:38:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055107;
-        bh=An8I2X1HeZzcabaqTOQ17/TkbUwoB4zHWxvVJ1jR+Uc=;
+        s=korg; t=1643053088;
+        bh=d8IOgUuOdHwvSdiUZmBss8YbbyUAUuGdEZthO3GUveo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fhy1tQzN5gHq7bwRi3nubcmATR9HkGW00ZJttDah/S+SNHLVObYM3d1vinOcgv2e4
-         ioD6rELm063uzwixW7ieGc18mgMRZ9FMFtKtVC7BHthWrgE4//J7DKqhs2lCt09LFb
-         gQV6dTWRvegUH3cA6F0r2JpKi8WoSckDsi4JcyBg=
+        b=KziIE3EoQlJm2LOXWvfLm0Qv7f1A7vt1OJrlu4bQcal+r5e2AlkRrMDVibCCKVbss
+         dc4FIEvAQxBuc8ce2uXJBnfCyhQxDaVUbblX3A1TVxdGrhlNgUz3Wx/2sNOg+fX6CP
+         7R38p3rCU3yTGGPUZpc3ab1XP9RAdaMzp+YhovBs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.15 011/846] f2fs: avoid EINVAL by SBI_NEED_FSCK when pinning a file
-Date:   Mon, 24 Jan 2022 19:32:08 +0100
-Message-Id: <20220124184101.296829277@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@kernel.org
+Subject: [PATCH 5.4 271/320] ext4: Fix BUG_ON in ext4_bread when write quota data
+Date:   Mon, 24 Jan 2022 19:44:15 +0100
+Message-Id: <20220124184003.200217039@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,68 +50,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jaegeuk Kim <jaegeuk@kernel.org>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 19bdba5265624ba6b9d9dd936a0c6ccc167cfe80 upstream.
+commit 380a0091cab482489e9b19e07f2a166ad2b76d5c upstream.
 
-Android OTA failed due to SBI_NEED_FSCK flag when pinning the file. Let's avoid
-it since we can do in-place-updates.
+We got issue as follows when run syzkaller:
+[  167.936972] EXT4-fs error (device loop0): __ext4_remount:6314: comm rep: Abort forced by user
+[  167.938306] EXT4-fs (loop0): Remounting filesystem read-only
+[  167.981637] Assertion failure in ext4_getblk() at fs/ext4/inode.c:847: '(EXT4_SB(inode->i_sb)->s_mount_state & EXT4_FC_REPLAY) || handle != NULL || create == 0'
+[  167.983601] ------------[ cut here ]------------
+[  167.984245] kernel BUG at fs/ext4/inode.c:847!
+[  167.984882] invalid opcode: 0000 [#1] PREEMPT SMP KASAN PTI
+[  167.985624] CPU: 7 PID: 2290 Comm: rep Tainted: G    B             5.16.0-rc5-next-20211217+ #123
+[  167.986823] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS ?-20190727_073836-buildvm-ppc64le-16.ppc.fedoraproject.org-3.fc31 04/01/2014
+[  167.988590] RIP: 0010:ext4_getblk+0x17e/0x504
+[  167.989189] Code: c6 01 74 28 49 c7 c0 a0 a3 5c 9b b9 4f 03 00 00 48 c7 c2 80 9c 5c 9b 48 c7 c6 40 b6 5c 9b 48 c7 c7 20 a4 5c 9b e8 77 e3 fd ff <0f> 0b 8b 04 244
+[  167.991679] RSP: 0018:ffff8881736f7398 EFLAGS: 00010282
+[  167.992385] RAX: 0000000000000094 RBX: 1ffff1102e6dee75 RCX: 0000000000000000
+[  167.993337] RDX: 0000000000000001 RSI: ffffffff9b6e29e0 RDI: ffffed102e6dee66
+[  167.994292] RBP: ffff88816a076210 R08: 0000000000000094 R09: ffffed107363fa09
+[  167.995252] R10: ffff88839b1fd047 R11: ffffed107363fa08 R12: ffff88816a0761e8
+[  167.996205] R13: 0000000000000000 R14: 0000000000000021 R15: 0000000000000001
+[  167.997158] FS:  00007f6a1428c740(0000) GS:ffff88839b000000(0000) knlGS:0000000000000000
+[  167.998238] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  167.999025] CR2: 00007f6a140716c8 CR3: 0000000133216000 CR4: 00000000000006e0
+[  167.999987] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  168.000944] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  168.001899] Call Trace:
+[  168.002235]  <TASK>
+[  168.007167]  ext4_bread+0xd/0x53
+[  168.007612]  ext4_quota_write+0x20c/0x5c0
+[  168.010457]  write_blk+0x100/0x220
+[  168.010944]  remove_free_dqentry+0x1c6/0x440
+[  168.011525]  free_dqentry.isra.0+0x565/0x830
+[  168.012133]  remove_tree+0x318/0x6d0
+[  168.014744]  remove_tree+0x1eb/0x6d0
+[  168.017346]  remove_tree+0x1eb/0x6d0
+[  168.019969]  remove_tree+0x1eb/0x6d0
+[  168.022128]  qtree_release_dquot+0x291/0x340
+[  168.023297]  v2_release_dquot+0xce/0x120
+[  168.023847]  dquot_release+0x197/0x3e0
+[  168.024358]  ext4_release_dquot+0x22a/0x2d0
+[  168.024932]  dqput.part.0+0x1c9/0x900
+[  168.025430]  __dquot_drop+0x120/0x190
+[  168.025942]  ext4_clear_inode+0x86/0x220
+[  168.026472]  ext4_evict_inode+0x9e8/0xa22
+[  168.028200]  evict+0x29e/0x4f0
+[  168.028625]  dispose_list+0x102/0x1f0
+[  168.029148]  evict_inodes+0x2c1/0x3e0
+[  168.030188]  generic_shutdown_super+0xa4/0x3b0
+[  168.030817]  kill_block_super+0x95/0xd0
+[  168.031360]  deactivate_locked_super+0x85/0xd0
+[  168.031977]  cleanup_mnt+0x2bc/0x480
+[  168.033062]  task_work_run+0xd1/0x170
+[  168.033565]  do_exit+0xa4f/0x2b50
+[  168.037155]  do_group_exit+0xef/0x2d0
+[  168.037666]  __x64_sys_exit_group+0x3a/0x50
+[  168.038237]  do_syscall_64+0x3b/0x90
+[  168.038751]  entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+In order to reproduce this problem, the following conditions need to be met:
+1. Ext4 filesystem with no journal;
+2. Filesystem image with incorrect quota data;
+3. Abort filesystem forced by user;
+4. umount filesystem;
+
+As in ext4_quota_write:
+...
+         if (EXT4_SB(sb)->s_journal && !handle) {
+                 ext4_msg(sb, KERN_WARNING, "Quota write (off=%llu, len=%llu)"
+                         " cancelled because transaction is not started",
+                         (unsigned long long)off, (unsigned long long)len);
+                 return -EIO;
+         }
+...
+We only check handle if NULL when filesystem has journal. There is need
+check handle if NULL even when filesystem has no journal.
+
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20211223015506.297766-1-yebin10@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/data.c |    7 +++++--
- fs/f2fs/file.c |   10 +++++-----
- 2 files changed, 10 insertions(+), 7 deletions(-)
+ fs/ext4/super.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/f2fs/data.c
-+++ b/fs/f2fs/data.c
-@@ -2564,6 +2564,11 @@ bool f2fs_should_update_outplace(struct
- {
- 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6114,7 +6114,7 @@ static ssize_t ext4_quota_write(struct s
+ 	struct buffer_head *bh;
+ 	handle_t *handle = journal_current_handle();
  
-+	/* The below cases were checked when setting it. */
-+	if (f2fs_is_pinned_file(inode))
-+		return false;
-+	if (fio && is_sbi_flag_set(sbi, SBI_NEED_FSCK))
-+		return true;
- 	if (f2fs_lfs_mode(sbi))
- 		return true;
- 	if (S_ISDIR(inode->i_mode))
-@@ -2572,8 +2577,6 @@ bool f2fs_should_update_outplace(struct
- 		return true;
- 	if (f2fs_is_atomic_file(inode))
- 		return true;
--	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
--		return true;
- 
- 	/* swap file is migrating in aligned write mode */
- 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
---- a/fs/f2fs/file.c
-+++ b/fs/f2fs/file.c
-@@ -3143,17 +3143,17 @@ static int f2fs_ioc_set_pin_file(struct
- 
- 	inode_lock(inode);
- 
--	if (f2fs_should_update_outplace(inode, NULL)) {
--		ret = -EINVAL;
--		goto out;
--	}
--
- 	if (!pin) {
- 		clear_inode_flag(inode, FI_PIN_FILE);
- 		f2fs_i_gc_failures_write(inode, 0);
- 		goto done;
- 	}
- 
-+	if (f2fs_should_update_outplace(inode, NULL)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
-+
- 	if (f2fs_pin_file_control(inode, false)) {
- 		ret = -EAGAIN;
- 		goto out;
+-	if (EXT4_SB(sb)->s_journal && !handle) {
++	if (!handle) {
+ 		ext4_msg(sb, KERN_WARNING, "Quota write (off=%llu, len=%llu)"
+ 			" cancelled because transaction is not started",
+ 			(unsigned long long)off, (unsigned long long)len);
 
 
