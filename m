@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3714C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020D7C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383228AbiAXU07 (ORCPT
+        id S1383279AbiAXU1E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352528AbiAXT51 (ORCPT
+        Mon, 24 Jan 2022 15:27:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48466 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377085AbiAXUEz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16748C047CD7;
-        Mon, 24 Jan 2022 11:27:49 -0800 (PST)
+        Mon, 24 Jan 2022 15:04:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D16ABB8124F;
-        Mon, 24 Jan 2022 19:27:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A340C340E8;
-        Mon, 24 Jan 2022 19:27:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26F3CB8119E;
+        Mon, 24 Jan 2022 20:04:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CE63C340E5;
+        Mon, 24 Jan 2022 20:04:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052466;
-        bh=2GpnY8vqsVSbMQOw9UMBU8BSPRxFPtHHdtM8Ph3ap/g=;
+        s=korg; t=1643054692;
+        bh=1LRY7Hc5xtjb83pWWXrGzUxDQvG9QongWQv+GtMJcTY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gCEZuOWSXCNIXsIZ362k7BB9mOOelRlU4PrN0NBEBQslkvZlzQ1IzglM6pc5FxO3x
-         uf2QbA6Lem3LeTd9jVjdW7q/pPTshdGGYnrQZRvlWPtQ7ooMDG6HD4KtyrEFQbFXbz
-         HFDXxVqyTU6fjmpjAb2+fBX5WsHY+6ij92UcsO7Q=
+        b=Kyy7XG4vtS8pRQ793/7MnU2HJbsREvqwXNrlC6h6PNnViIvKl1wTOaW3BJUHMRx13
+         7M2xncIRzQJaWCG4IYv/TrfNUt4yWj9VuODTIsO7/UPn97aT+KF4Ddvb/gc26wJkQr
+         LsFDWuQf8u8Wz4SHb9SJ6HeTq7YM9/L9mosJWD10=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 069/320] staging: rtl8192e: return error code from rtllib_softmac_init()
-Date:   Mon, 24 Jan 2022 19:40:53 +0100
-Message-Id: <20220124183956.071298714@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.10 473/563] ext4: make sure quota gets properly shutdown on error
+Date:   Mon, 24 Jan 2022 19:43:58 +0100
+Message-Id: <20220124184040.829568391@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,71 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 68bf78ff59a0891eb1239948e94ce10f73a9dd30 ]
+commit 15fc69bbbbbc8c72e5f6cc4e1be0f51283c5448e upstream.
 
-If it fails to allocate 'dot11d_info', rtllib_softmac_init()
-should return error code. And remove unneccessary error message.
+When we hit an error when enabling quotas and setting inode flags, we do
+not properly shutdown quota subsystem despite returning error from
+Q_QUOTAON quotactl. This can lead to some odd situations like kernel
+using quota file while it is still writeable for userspace. Make sure we
+properly cleanup the quota subsystem in case of error.
 
-Fixes: 94a799425eee ("From: wlanfae <wlanfae@realtek.com>")
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20211202030704.2425621-2-yangyingliang@huawei.com
+Signed-off-by: Jan Kara <jack@suse.cz>
+Cc: stable@kernel.org
+Link: https://lore.kernel.org/r/20211007155336.12493-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/rtl8192e/rtllib.h         | 2 +-
- drivers/staging/rtl8192e/rtllib_softmac.c | 6 ++++--
- 2 files changed, 5 insertions(+), 3 deletions(-)
+ fs/ext4/super.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/rtl8192e/rtllib.h b/drivers/staging/rtl8192e/rtllib.h
-index 2eeb9a43734e3..49bf3ad31f912 100644
---- a/drivers/staging/rtl8192e/rtllib.h
-+++ b/drivers/staging/rtl8192e/rtllib.h
-@@ -1982,7 +1982,7 @@ void rtllib_softmac_xmit(struct rtllib_txb *txb, struct rtllib_device *ieee);
- void rtllib_stop_send_beacons(struct rtllib_device *ieee);
- void notify_wx_assoc_event(struct rtllib_device *ieee);
- void rtllib_start_ibss(struct rtllib_device *ieee);
--void rtllib_softmac_init(struct rtllib_device *ieee);
-+int rtllib_softmac_init(struct rtllib_device *ieee);
- void rtllib_softmac_free(struct rtllib_device *ieee);
- void rtllib_disassociate(struct rtllib_device *ieee);
- void rtllib_stop_scan(struct rtllib_device *ieee);
-diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
-index f2f7529e7c80e..4ff8fd694c600 100644
---- a/drivers/staging/rtl8192e/rtllib_softmac.c
-+++ b/drivers/staging/rtl8192e/rtllib_softmac.c
-@@ -2952,7 +2952,7 @@ void rtllib_start_protocol(struct rtllib_device *ieee)
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6341,10 +6341,7 @@ static int ext4_quota_on(struct super_bl
+ 
+ 	lockdep_set_quota_inode(path->dentry->d_inode, I_DATA_SEM_QUOTA);
+ 	err = dquot_quota_on(sb, type, format_id, path);
+-	if (err) {
+-		lockdep_set_quota_inode(path->dentry->d_inode,
+-					     I_DATA_SEM_NORMAL);
+-	} else {
++	if (!err) {
+ 		struct inode *inode = d_inode(path->dentry);
+ 		handle_t *handle;
+ 
+@@ -6364,7 +6361,12 @@ static int ext4_quota_on(struct super_bl
+ 		ext4_journal_stop(handle);
+ 	unlock_inode:
+ 		inode_unlock(inode);
++		if (err)
++			dquot_quota_off(sb, type);
  	}
++	if (err)
++		lockdep_set_quota_inode(path->dentry->d_inode,
++					     I_DATA_SEM_NORMAL);
+ 	return err;
  }
  
--void rtllib_softmac_init(struct rtllib_device *ieee)
-+int rtllib_softmac_init(struct rtllib_device *ieee)
- {
- 	int i;
- 
-@@ -2963,7 +2963,8 @@ void rtllib_softmac_init(struct rtllib_device *ieee)
- 		ieee->seq_ctrl[i] = 0;
- 	ieee->dot11d_info = kzalloc(sizeof(struct rt_dot11d_info), GFP_ATOMIC);
- 	if (!ieee->dot11d_info)
--		netdev_err(ieee->dev, "Can't alloc memory for DOT11D\n");
-+		return -ENOMEM;
-+
- 	ieee->LinkDetectInfo.SlotIndex = 0;
- 	ieee->LinkDetectInfo.SlotNum = 2;
- 	ieee->LinkDetectInfo.NumRecvBcnInPeriod = 0;
-@@ -3031,6 +3032,7 @@ void rtllib_softmac_init(struct rtllib_device *ieee)
- 	     (void(*)(unsigned long)) rtllib_sta_ps,
- 	     (unsigned long)ieee);
- 
-+	return 0;
- }
- 
- void rtllib_softmac_free(struct rtllib_device *ieee)
--- 
-2.34.1
-
 
 
