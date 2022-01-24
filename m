@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB11C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:16:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BB7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582359AbiAXWPL (ORCPT
+        id S1582617AbiAXWPc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452865AbiAXV1N (ORCPT
+        Mon, 24 Jan 2022 17:15:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46086 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443867AbiAXV1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:27:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45869C073227;
-        Mon, 24 Jan 2022 12:18:30 -0800 (PST)
+        Mon, 24 Jan 2022 16:27:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D709660B56;
-        Mon, 24 Jan 2022 20:18:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD416C340E5;
-        Mon, 24 Jan 2022 20:18:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 54888614B8;
+        Mon, 24 Jan 2022 21:27:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BDBC340E4;
+        Mon, 24 Jan 2022 21:27:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055509;
-        bh=TXWftH3Lvlt9MHh1xSd+HVBtOTeO7gkjpDkzqXx25Ww=;
+        s=korg; t=1643059624;
+        bh=3+demyXxz1HqrShCU0iSOzn9gxlNu+2vJqtRcEcN270=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=voiHKdiH30jYYYB/lnu1CUf+MWLedmZVqJnsdI9if0Ttyz5Qses8tGGYUfTHE4f9/
-         ysflh+muvc8pXKsflyEo7L0N9BrGc4SNWk8+eLz1AjTpJEtI4SkvKf4l4+w8JxaE0f
-         UMCiafFYj/X80WoblbLM7lvU1F/SZqOscBapbcA0=
+        b=PbCyQZoc8f0Y383/1nFgVx77mt3c7kjcoEEYzTkhmoEdlup/xcghwqasj1c2TLfwl
+         jofNxmJXfoaL+xQpAmw28Aisth4ooesYdStUSM+BJ3WZFoTloM7YPp9f4BCECvpeFv
+         RrNFTTvl4CQ3Uciy1+I8OqQOBNeTaqAecmZ9GCuU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 174/846] igc: AF_XDP zero-copy metadata adjust breaks SKBs on XDP_PASS
-Date:   Mon, 24 Jan 2022 19:34:51 +0100
-Message-Id: <20220124184106.979687442@linuxfoundation.org>
+        stable@vger.kernel.org, Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0678/1039] rtw88: 8822c: update rx settings to prevent potential hw deadlock
+Date:   Mon, 24 Jan 2022 19:41:07 +0100
+Message-Id: <20220124184148.153062248@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,46 +47,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit 4fa8fcd3440101dbacf4fae91de69877ef751977 ]
+[ Upstream commit c1afb26727d9e507d3e17a9890e7aaf7fc85cd55 ]
 
-Driver already implicitly supports XDP metadata access in AF_XDP
-zero-copy mode, as xsk_buff_pool's xp_alloc() naturally set xdp_buff
-data_meta equal data.
+These settings enables mac to detect and recover when rx fifo
+circuit deadlock occurs. Previous version missed this, so we fix it.
 
-This works fine for XDP and AF_XDP, but if a BPF-prog adjust via
-bpf_xdp_adjust_meta() and choose to call XDP_PASS, then igc function
-igc_construct_skb_zc() will construct an invalid SKB packet. The
-function correctly include the xdp->data_meta area in the memcpy, but
-forgot to pull header to take metasize into account.
-
-Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211217012708.8623-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 0a96627391a8c..c7fa978cdf02e 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2447,8 +2447,10 @@ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index a0d4d6e31fb49..dbf1ce3daeb8e 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1868,7 +1868,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
  
- 	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
- 	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
--	if (metasize)
-+	if (metasize) {
- 		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
-+	}
+ 	/* default rx filter setting */
+ 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
+-			  BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
++			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
+ 			  BIT_AB | BIT_AM | BIT_APM;
  
- 	return skb;
- }
+ 	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index 112faa60f653e..d9fbddd7b0f35 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -131,7 +131,7 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+index c409c8c29ec8b..e870ad7518342 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -205,7 +205,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+index 46b881e8e4feb..0e1c5d95d4649 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -1962,7 +1962,7 @@ static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ #define WLAN_MAC_INT_MIG_CFG		0x33330000
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
 -- 
 2.34.1
 
