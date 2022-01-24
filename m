@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55BC5C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B9EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384571AbiAXUaF (ORCPT
+        id S1384602AbiAXUaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:30:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36612 "EHLO
+        Mon, 24 Jan 2022 15:30:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36716 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378832AbiAXUJy (ORCPT
+        with ESMTP id S1378969AbiAXUKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:09:54 -0500
+        Mon, 24 Jan 2022 15:10:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9251960B56;
-        Mon, 24 Jan 2022 20:09:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56CCAC340E7;
-        Mon, 24 Jan 2022 20:09:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D72FD60B89;
+        Mon, 24 Jan 2022 20:10:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E16EBC340E7;
+        Mon, 24 Jan 2022 20:10:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054994;
-        bh=TdBfH9yDEX18SMwX7BpD8oKnsT0/eTI2XzEfRHK2+LY=;
+        s=korg; t=1643055006;
+        bh=q5rAvSQSqiGCGZnKtanoWi/vKTjCm/PgYIA9eIArUYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MlwejpFuhShu/0/fWaogsZMrCq765qpfDHwp+Hix7YTAnVg7DhW8y7LOzWpRkcOf4
-         ALr2AjEYvpkTbm9sJjCwIFQDDf7+LszOR7KMOfnHQq5dpsQ/ecZ776Jq572gQgx8px
-         1X/G9G3K/R7XRsqyuKdKQQ1PocJzSrbiX/dVfn4w=
+        b=tRe7LqORmN+Y2Nefu2huYh2MoSP56z9juy1N1T8bAkmuDwZNcwyMymO9FOyzwokS0
+         lORuR+Ub/sRCSUDUxizvwluPp+9/o+7vo9tWgB+rVyENFXJchcaq2suan6ZJ35PpJV
+         uMTcRTVIXa6uPlS56musmqN+W4eZvVLBsw3sCNQ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.10 540/563] dmaengine: at_xdmac: Dont start transactions at tx_submit level
-Date:   Mon, 24 Jan 2022 19:45:05 +0100
-Message-Id: <20220124184043.114975053@linuxfoundation.org>
+        stable@vger.kernel.org, Karl Kurbjun <kkurbjun@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 003/846] HID: Ignore battery for Elan touchscreen on HP Envy X360 15t-dr100
+Date:   Mon, 24 Jan 2022 19:32:00 +0100
+Message-Id: <20220124184100.997110508@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,53 +46,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Karl Kurbjun <kkurbjun@gmail.com>
 
-commit bccfb96b59179d4f96cbbd1ddff8fac6d335eae4 upstream.
+commit f3193ea1b6779023334faa72b214ece457e02656 upstream.
 
-tx_submit is supposed to push the current transaction descriptor to a
-pending queue, waiting for issue_pending() to be called. issue_pending()
-must start the transfer, not tx_submit(), thus remove
-at_xdmac_start_xfer() from at_xdmac_tx_submit(). Clients of at_xdmac that
-assume that tx_submit() starts the transfer must be updated and call
-dma_async_issue_pending() if they miss to call it (one example is
-atmel_serial).
+Battery status on Elan tablet driver is reported for the HP ENVY x360
+15t-dr100. There is no separate battery for the Elan controller resulting in a
+battery level report of 0% or 1% depending on whether a stylus has interacted
+with the screen. These low battery level reports causes a variety of bad
+behavior in desktop environments. This patch adds the appropriate quirk to
+indicate that the batery status is unused for this target.
 
-As the at_xdmac_start_xfer() is now called only from
-at_xdmac_advance_work() when !at_xdmac_chan_is_enabled(), the
-at_xdmac_chan_is_enabled() check is no longer needed in
-at_xdmac_start_xfer(), thus remove it.
-
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-2-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Karl Kurbjun <kkurbjun@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |    6 ------
- 1 file changed, 6 deletions(-)
+ drivers/hid/hid-ids.h   |    1 +
+ drivers/hid/hid-input.c |    2 ++
+ 2 files changed, 3 insertions(+)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -338,9 +338,6 @@ static void at_xdmac_start_xfer(struct a
- 
- 	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, first);
- 
--	if (at_xdmac_chan_is_enabled(atchan))
--		return;
--
- 	/* Set transfer as active to not try to start it again. */
- 	first->active_xfer = true;
- 
-@@ -430,9 +427,6 @@ static dma_cookie_t at_xdmac_tx_submit(s
- 	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
- 		 __func__, atchan, desc);
- 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
--	if (list_is_singular(&atchan->xfers_list))
--		at_xdmac_start_xfer(atchan, desc);
--
- 	spin_unlock_irqrestore(&atchan->lock, irqflags);
- 	return cookie;
- }
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -394,6 +394,7 @@
+ #define USB_DEVICE_ID_HP_X2		0x074d
+ #define USB_DEVICE_ID_HP_X2_10_COVER	0x0755
+ #define I2C_DEVICE_ID_HP_SPECTRE_X360_15	0x2817
++#define I2C_DEVICE_ID_HP_ENVY_X360_15T_DR100	0x29CF
+ #define USB_DEVICE_ID_ASUS_UX550VE_TOUCHSCREEN	0x2544
+ #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
+ #define I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN	0x261A
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -327,6 +327,8 @@ static const struct hid_device_id hid_ba
+ 	  HID_BATTERY_QUIRK_IGNORE },
+ 	{ HID_USB_DEVICE(USB_VENDOR_ID_ELAN, USB_DEVICE_ID_ASUS_UX550VE_TOUCHSCREEN),
+ 	  HID_BATTERY_QUIRK_IGNORE },
++	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_15T_DR100),
++	  HID_BATTERY_QUIRK_IGNORE },
+ 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_15),
+ 	  HID_BATTERY_QUIRK_IGNORE },
+ 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN),
 
 
