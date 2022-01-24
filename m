@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6D6AC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:04:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 846E0C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842004AbiAXXAe (ORCPT
+        id S1842042AbiAXXAl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:00:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        Mon, 24 Jan 2022 18:00:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577770AbiAXWBE (ORCPT
+        with ESMTP id S1577807AbiAXWBF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:01:04 -0500
+        Mon, 24 Jan 2022 17:01:05 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885FAC02B8F9;
-        Mon, 24 Jan 2022 12:40:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2750C02B843;
+        Mon, 24 Jan 2022 12:40:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4EE90B81060;
-        Mon, 24 Jan 2022 20:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54153C340E5;
-        Mon, 24 Jan 2022 20:40:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7EC7FB81057;
+        Mon, 24 Jan 2022 20:40:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4CD3C340E5;
+        Mon, 24 Jan 2022 20:40:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056815;
-        bh=PhaiHvgaJpNLluoQ655csgJdmKRf0MjZyKXxTOJ71MQ=;
+        s=korg; t=1643056833;
+        bh=tzqPQmB0l/jBnxjNIcccagNcnuy3tZP8oVuJy5/u0uM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tAdOaJW9I2PiRCnPpNBEsfTMJP07qHZaO30QV37u1wRsFTsKbdG6k45lujiTQROvs
-         UgjKBP3arPgZKpME78YoN0vYwDqbEyCKKOH/IWLxedQFAdU8m/lay9zLbaDSCQ/nsA
-         EbAyI+sxiAWTkFQT0NkWs32c5LWD3I+vX9mxfT78=
+        b=f8VSnLj9AKH8FEwgxolXBhKJmhuzxNUdeVDxfV8qzCBzeDI9PVdpIa8rgHyoExfaI
+         MsOLUdLiikSobhK5///xtxbfxqiBtdxDS5chiGJbYaumfwyGpLw2bDGd10tZJbkSb3
+         We1M1rRCIwZT8a9Ev5iL6evgSSiDKzL+/tPGbzgY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Corentin Labbe <clabbe.montjoie@gmail.com>,
-        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 608/846] net: phy: marvell: configure RGMII delays for 88E1118
-Date:   Mon, 24 Jan 2022 19:42:05 +0100
-Message-Id: <20220124184121.993809745@linuxfoundation.org>
+Subject: [PATCH 5.15 583/846] ath11k: Fix napi related hang
+Date:   Mon, 24 Jan 2022 19:41:40 +0100
+Message-Id: <20220124184121.158216137@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,50 +50,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
+[ Upstream commit d943fdad7589653065be0e20aadc6dff37725ed4 ]
 
-Corentin Labbe reports that the SSI 1328 does not work when allowing
-the PHY to operate at gigabit speeds, but does work with the generic
-PHY driver.
+Similar to the same bug in ath10k, a napi disable w/out it being enabled
+will hang forever.  I believe I saw this while trying rmmod after driver
+had some failure on startup.  Fix it by keeping state on whether napi is
+enabled or not.
 
-This appears to be because m88e1118_config_init() writes a fixed value
-to the MSCR register, claiming that this is to enable 1G speeds.
-However, this always sets bits 4 and 5, enabling RGMII transmit and
-receive delays. The suspicion is that the original board this was
-added for required the delays to make 1G speeds work.
+And, remove un-used napi pointer in ath11k driver base struct.
 
-Add the necessary configuration for RGMII delays for the 88E1118 to
-bring this into line with the requirements for RGMII support, and thus
-make the SSI 1328 work.
-
-Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
-
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20200903195254.29379-1-greearb@candelatech.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/wireless/ath/ath11k/ahb.c  |   12 +++++++++---
+ drivers/net/wireless/ath/ath11k/core.h |    2 +-
+ drivers/net/wireless/ath/ath11k/pci.c  |   12 +++++++++---
+ 3 files changed, 19 insertions(+), 7 deletions(-)
 
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -1244,6 +1244,12 @@ static int m88e1118_config_init(struct p
- 	if (err < 0)
- 		return err;
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -175,8 +175,11 @@ static void __ath11k_ahb_ext_irq_disable
  
-+	if (phy_interface_is_rgmii(phydev)) {
-+		err = m88e1121_config_aneg_rgmii_delays(phydev);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	/* Adjust LED Control */
- 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
- 		err = phy_write(phydev, 0x10, 0x1100);
+ 		ath11k_ahb_ext_grp_disable(irq_grp);
+ 
+-		napi_synchronize(&irq_grp->napi);
+-		napi_disable(&irq_grp->napi);
++		if (irq_grp->napi_enabled) {
++			napi_synchronize(&irq_grp->napi);
++			napi_disable(&irq_grp->napi);
++			irq_grp->napi_enabled = false;
++		}
+ 	}
+ }
+ 
+@@ -300,7 +303,10 @@ static void ath11k_ahb_ext_irq_enable(st
+ 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+-		napi_enable(&irq_grp->napi);
++		if (!irq_grp->napi_enabled) {
++			napi_enable(&irq_grp->napi);
++			irq_grp->napi_enabled = true;
++		}
+ 		ath11k_ahb_ext_grp_enable(irq_grp);
+ 	}
+ }
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -137,6 +137,7 @@ struct ath11k_ext_irq_grp {
+ 	u32 num_irq;
+ 	u32 grp_id;
+ 	u64 timestamp;
++	bool napi_enabled;
+ 	struct napi_struct napi;
+ 	struct net_device napi_ndev;
+ };
+@@ -706,7 +707,6 @@ struct ath11k_base {
+ 	u32 wlan_init_status;
+ 	int irq_num[ATH11K_IRQ_NUM_MAX];
+ 	struct ath11k_ext_irq_grp ext_irq_grp[ATH11K_EXT_IRQ_GRP_NUM_MAX];
+-	struct napi_struct *napi;
+ 	struct ath11k_targ_cap target_caps;
+ 	u32 ext_service_bitmap[WMI_SERVICE_EXT_BM_SIZE];
+ 	bool pdevs_macaddr_valid;
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -632,8 +632,11 @@ static void __ath11k_pci_ext_irq_disable
+ 
+ 		ath11k_pci_ext_grp_disable(irq_grp);
+ 
+-		napi_synchronize(&irq_grp->napi);
+-		napi_disable(&irq_grp->napi);
++		if (irq_grp->napi_enabled) {
++			napi_synchronize(&irq_grp->napi);
++			napi_disable(&irq_grp->napi);
++			irq_grp->napi_enabled = false;
++		}
+ 	}
+ }
+ 
+@@ -652,7 +655,10 @@ static void ath11k_pci_ext_irq_enable(st
+ 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+-		napi_enable(&irq_grp->napi);
++		if (!irq_grp->napi_enabled) {
++			napi_enable(&irq_grp->napi);
++			irq_grp->napi_enabled = true;
++		}
+ 		ath11k_pci_ext_grp_enable(irq_grp);
+ 	}
+ }
 
 
