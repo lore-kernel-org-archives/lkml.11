@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60F24C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0863C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348221AbiAXTXo (ORCPT
+        id S1347226AbiAXTXs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:23:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40006 "EHLO
+        Mon, 24 Jan 2022 14:23:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40176 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346733AbiAXTO3 (ORCPT
+        with ESMTP id S1348046AbiAXTOr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:14:29 -0500
+        Mon, 24 Jan 2022 14:14:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BECF7B81215;
-        Mon, 24 Jan 2022 19:14:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02254C340E5;
-        Mon, 24 Jan 2022 19:14:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F20B0B8121C;
+        Mon, 24 Jan 2022 19:14:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24347C340E5;
+        Mon, 24 Jan 2022 19:14:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051664;
-        bh=p0Cnf3znkraPCt4x9KOiFNhs/tkGgmGpZ0kwQ9xYIz8=;
+        s=korg; t=1643051683;
+        bh=D54MdEBmCYEy6ur7bgYgsa7SkjdZdJ+WIe8dfhTumU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oXLeKPFEEAKKKX6Soq9vPKbyC1uNGMB6XKTFcHK2fl26JfbMPfB7HGQbcofqBuG6/
-         /X2s25sd+ugkQk8fCZYtHxtuDZk0Rs+50DOz0ZWSNGX+iPJp6F8OoSEtiMR15tlhyl
-         4j3ZOQUoCKVTs0xkVmxJMzjOXNQZgrfxR1B6Wq5A=
+        b=PDStTNV6mZVICQuZHYjGQOs67wGh+3UPgdYaIsry/4tyXlwQufllXMzzCuqAiKL40
+         MP1EydNPSaaSxXbzzzp0lAvx7rGlvXJQjpFVV2bOOb4lYL6OX5FoKj2OZTwi0K1MhB
+         P+h+smN7obJUsBGvYawowjUzJFJoOwAISCG9qLXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Sumit Garg <sumit.garg@linaro.org>,
+        Jens Wiklander <jens.wiklander@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 048/239] wcn36xx: Indicate beacon not connection loss on MISSED_BEACON_IND
-Date:   Mon, 24 Jan 2022 19:41:26 +0100
-Message-Id: <20220124183944.666314390@linuxfoundation.org>
+Subject: [PATCH 4.19 054/239] tee: fix put order in teedev_close_context()
+Date:   Mon, 24 Jan 2022 19:41:32 +0100
+Message-Id: <20220124183944.853795376@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,49 +47,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Jens Wiklander <jens.wiklander@linaro.org>
 
-[ Upstream commit 588b45c88ae130fe373a8c50edaf54735c3f4fe3 ]
+[ Upstream commit f18397ab3ae23e8e43bba9986e66af6d4497f2ad ]
 
-Firmware can trigger a missed beacon indication, this is not the same as a
-lost signal.
+Prior to this patch was teedev_close_context() calling tee_device_put()
+before teedev_ctx_put() leading to teedev_ctx_release() accessing
+ctx->teedev just after the reference counter was decreased on the
+teedev. Fix this by calling teedev_ctx_put() before tee_device_put().
 
-Flag to Linux the missed beacon and let the WiFi stack decide for itself if
-the link is up or down by sending its own probe to determine this.
-
-We should only be signalling the link is lost when the firmware indicates
-
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211027232529.657764-1-bryan.odonoghue@linaro.org
+Fixes: 217e0250cccb ("tee: use reference counting for tee_context")
+Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
+Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/smd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tee/tee_core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index e75c1cfd85e63..741a830d9773b 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2311,7 +2311,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    tmp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 		}
- 		return 0;
- 	}
-@@ -2326,7 +2326,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    rsp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 			return 0;
- 		}
- 	}
+diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
+index dd46b758852aa..d42fc2ae8592e 100644
+--- a/drivers/tee/tee_core.c
++++ b/drivers/tee/tee_core.c
+@@ -96,8 +96,10 @@ void teedev_ctx_put(struct tee_context *ctx)
+ 
+ static void teedev_close_context(struct tee_context *ctx)
+ {
+-	tee_device_put(ctx->teedev);
++	struct tee_device *teedev = ctx->teedev;
++
+ 	teedev_ctx_put(ctx);
++	tee_device_put(teedev);
+ }
+ 
+ static int tee_release(struct inode *inode, struct file *filp)
 -- 
 2.34.1
 
