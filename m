@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6503C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8266C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447740AbiAXVLY (ORCPT
+        id S1447572AbiAXVK7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:11:24 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37962 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386588AbiAXUml (ORCPT
+        Mon, 24 Jan 2022 16:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390869AbiAXUqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:41 -0500
+        Mon, 24 Jan 2022 15:46:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE25DC061254;
+        Mon, 24 Jan 2022 11:56:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 45DBF61575;
-        Mon, 24 Jan 2022 20:42:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A1A3C340E5;
-        Mon, 24 Jan 2022 20:42:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E3C860B89;
+        Mon, 24 Jan 2022 19:56:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D15CC340E5;
+        Mon, 24 Jan 2022 19:56:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056957;
-        bh=YXBDOB0oCSKS1lj5s5dvau3YvJ0D92OK3LAuRsBUZ8A=;
+        s=korg; t=1643054179;
+        bh=lIX2r7eSQ/EpCjwtdMC7rJeKPE+cTnyydeIsvHazwQY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eTqU1CCCvlSDogeOr8xDuNinC5ucvYg/MIYd4Vj+kcRgVt+UY1pn8NnahMykt+dIF
-         xP2RlxHIBlHzsz6Piwu9SbY4rRnf4THMaQ+vkEGLiMYAr8zgnoB97x0nxLwoIJrWIf
-         BvNKVpJn+rH1n6JxtpR4KSTu+EQtk1/7j6qnU384=
+        b=FByfYnQhKGOYE43K5Bpt4OFYXJwGb0B+QxkS+tYqyo6vVkpSIPgDwaTGfKwzrtr6T
+         qcTmRfOx0KjcWrx73TBNuXKFW9vrGkRYJtAbIgqhtPX6PAxfHzVrNfss8x0WGYJeoj
+         AZtmZLGeEaRelhNgmHqOpbNXTdjz1YRYKu6/E4fg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 656/846] scsi: mpi3mr: Fixes around reply request queues
-Date:   Mon, 24 Jan 2022 19:42:53 +0100
-Message-Id: <20220124184123.673026064@linuxfoundation.org>
+Subject: [PATCH 5.10 304/563] drm/bridge: dw-hdmi: handle ELD when DRM_BRIDGE_ATTACH_NO_CONNECTOR
+Date:   Mon, 24 Jan 2022 19:41:09 +0100
+Message-Id: <20220124184034.955939214@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,60 +52,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Neil Armstrong <narmstrong@baylibre.com>
 
-[ Upstream commit 243bcc8efdb1f44b1a1d415e6821a246714c68ce ]
+[ Upstream commit 3f2532d65a571ca02258b547b5b68ab2e9406fdb ]
 
-Set reply queue depth of 1K for B0 and 4K for A0.
+The current ELD handling takes the internal connector ELD buffer and
+shares it to the I2S and AHB sub-driver.
 
-While freeing the segmented request queues use the actual queue depth that
-is used while creating them.
+But with DRM_BRIDGE_ATTACH_NO_CONNECTOR, the connector is created
+elsewhere (or not), and an eventual connector is known only
+if the bridge chain up to a connector is enabled.
 
-Link: https://lore.kernel.org/r/20211220141159.16117-25-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+The current dw-hdmi code gets the current connector from
+atomic_enable() so use the already stored connector pointer and
+replace the buffer pointer with a callback returning the current
+connector ELD buffer.
+
+Since a connector is not always available, either pass an empty
+ELD to the alsa HDMI driver or don't call snd_pcm_hw_constraint_eld()
+in AHB driver.
+
+Reported-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+[narmstrong: fixed typo in commit log]
+Acked-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211029135947.3022875-1-narmstrong@baylibre.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpi3mr/mpi3mr.h    | 3 ++-
- drivers/scsi/mpi3mr/mpi3mr_fw.c | 4 +++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c | 10 +++++++---
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h     |  4 ++--
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c |  9 ++++++++-
+ drivers/gpu/drm/bridge/synopsys/dw-hdmi.c           | 12 ++++++++++--
+ 4 files changed, 27 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/scsi/mpi3mr/mpi3mr.h b/drivers/scsi/mpi3mr/mpi3mr.h
-index 9787b53a2b598..2cc42432bd0c0 100644
---- a/drivers/scsi/mpi3mr/mpi3mr.h
-+++ b/drivers/scsi/mpi3mr/mpi3mr.h
-@@ -79,7 +79,8 @@ extern int prot_mask;
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
+index d0db1acf11d73..7d2ed0ed2fe26 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-ahb-audio.c
+@@ -320,13 +320,17 @@ static int dw_hdmi_open(struct snd_pcm_substream *substream)
+ 	struct snd_pcm_runtime *runtime = substream->runtime;
+ 	struct snd_dw_hdmi *dw = substream->private_data;
+ 	void __iomem *base = dw->data.base;
++	u8 *eld;
+ 	int ret;
  
- /* Operational queue management definitions */
- #define MPI3MR_OP_REQ_Q_QD		512
--#define MPI3MR_OP_REP_Q_QD		4096
-+#define MPI3MR_OP_REP_Q_QD		1024
-+#define MPI3MR_OP_REP_Q_QD4K		4096
- #define MPI3MR_OP_REQ_Q_SEG_SIZE	4096
- #define MPI3MR_OP_REP_Q_SEG_SIZE	4096
- #define MPI3MR_MAX_SEG_LIST_SIZE	4096
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-index 4a8316c6bd41a..5af36c54cb596 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-@@ -1278,7 +1278,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
- 			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
- 		}
- 	} else
--		size = mrioc->req_qinfo[q_idx].num_requests *
-+		size = mrioc->req_qinfo[q_idx].segment_qd *
- 		    mrioc->facts.op_req_sz;
+ 	runtime->hw = dw_hdmi_hw;
  
- 	for (j = 0; j < mrioc->req_qinfo[q_idx].num_segments; j++) {
-@@ -1565,6 +1565,8 @@ static int mpi3mr_create_op_reply_q(struct mpi3mr_ioc *mrioc, u16 qidx)
+-	ret = snd_pcm_hw_constraint_eld(runtime, dw->data.eld);
+-	if (ret < 0)
+-		return ret;
++	eld = dw->data.get_eld(dw->data.hdmi);
++	if (eld) {
++		ret = snd_pcm_hw_constraint_eld(runtime, eld);
++		if (ret < 0)
++			return ret;
++	}
  
- 	reply_qid = qidx + 1;
- 	op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD;
-+	if (!mrioc->pdev->revision)
-+		op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD4K;
- 	op_reply_q->ci = 0;
- 	op_reply_q->ephase = 1;
- 	atomic_set(&op_reply_q->pend_ios, 0);
+ 	ret = snd_pcm_limit_hw_rates(runtime);
+ 	if (ret < 0)
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
+index cb07dc0da5a70..f72d27208ebef 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-audio.h
+@@ -9,15 +9,15 @@ struct dw_hdmi_audio_data {
+ 	void __iomem *base;
+ 	int irq;
+ 	struct dw_hdmi *hdmi;
+-	u8 *eld;
++	u8 *(*get_eld)(struct dw_hdmi *hdmi);
+ };
+ 
+ struct dw_hdmi_i2s_audio_data {
+ 	struct dw_hdmi *hdmi;
+-	u8 *eld;
+ 
+ 	void (*write)(struct dw_hdmi *hdmi, u8 val, int offset);
+ 	u8 (*read)(struct dw_hdmi *hdmi, int offset);
++	u8 *(*get_eld)(struct dw_hdmi *hdmi);
+ };
+ 
+ #endif
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
+index 9fef6413741dc..9682416056ed6 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi-i2s-audio.c
+@@ -135,8 +135,15 @@ static int dw_hdmi_i2s_get_eld(struct device *dev, void *data, uint8_t *buf,
+ 			       size_t len)
+ {
+ 	struct dw_hdmi_i2s_audio_data *audio = data;
++	u8 *eld;
++
++	eld = audio->get_eld(audio->hdmi);
++	if (eld)
++		memcpy(buf, eld, min_t(size_t, MAX_ELD_BYTES, len));
++	else
++		/* Pass en empty ELD if connector not available */
++		memset(buf, 0, len);
+ 
+-	memcpy(buf, audio->eld, min_t(size_t, MAX_ELD_BYTES, len));
+ 	return 0;
+ }
+ 
+diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+index 0c79a9ba48bb6..29c0eb4bd7546 100644
+--- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
++++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+@@ -756,6 +756,14 @@ static void hdmi_enable_audio_clk(struct dw_hdmi *hdmi, bool enable)
+ 	hdmi_writeb(hdmi, hdmi->mc_clkdis, HDMI_MC_CLKDIS);
+ }
+ 
++static u8 *hdmi_audio_get_eld(struct dw_hdmi *hdmi)
++{
++	if (!hdmi->curr_conn)
++		return NULL;
++
++	return hdmi->curr_conn->eld;
++}
++
+ static void dw_hdmi_ahb_audio_enable(struct dw_hdmi *hdmi)
+ {
+ 	hdmi_set_cts_n(hdmi, hdmi->audio_cts, hdmi->audio_n);
+@@ -3395,7 +3403,7 @@ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
+ 		audio.base = hdmi->regs;
+ 		audio.irq = irq;
+ 		audio.hdmi = hdmi;
+-		audio.eld = hdmi->connector.eld;
++		audio.get_eld = hdmi_audio_get_eld;
+ 		hdmi->enable_audio = dw_hdmi_ahb_audio_enable;
+ 		hdmi->disable_audio = dw_hdmi_ahb_audio_disable;
+ 
+@@ -3408,7 +3416,7 @@ struct dw_hdmi *dw_hdmi_probe(struct platform_device *pdev,
+ 		struct dw_hdmi_i2s_audio_data audio;
+ 
+ 		audio.hdmi	= hdmi;
+-		audio.eld	= hdmi->connector.eld;
++		audio.get_eld	= hdmi_audio_get_eld;
+ 		audio.write	= hdmi_writeb;
+ 		audio.read	= hdmi_readb;
+ 		hdmi->enable_audio = dw_hdmi_i2s_audio_enable;
 -- 
 2.34.1
 
