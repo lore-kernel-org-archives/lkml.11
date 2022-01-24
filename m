@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2CD4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69508C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:02:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345996AbiAXUCY (ORCPT
+        id S1359778AbiAXUCc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:02:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57844 "EHLO
+        Mon, 24 Jan 2022 15:02:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52022 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354020AbiAXTfq (ORCPT
+        with ESMTP id S1351979AbiAXT3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:35:46 -0500
+        Mon, 24 Jan 2022 14:29:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7C7BB81238;
-        Mon, 24 Jan 2022 19:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE938C340E5;
-        Mon, 24 Jan 2022 19:35:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 390DFB81215;
+        Mon, 24 Jan 2022 19:29:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EE1DC340E8;
+        Mon, 24 Jan 2022 19:29:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052944;
-        bh=ETddzE3Lq3EU9bMSDlE2ShnRd8iiKQWFS2i5TL7wyWA=;
+        s=korg; t=1643052561;
+        bh=24dK8aJynKW8UzRARZZ9LbUpGPtlKnYUFP2ad0kgR6A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uDouDohxeLZIRD//iDkQ7g+t1TKCYLIbl+fQNhqd6V17UL9MicLWcEbtHs8Ybfw1b
-         gfoZCr+syRAtHz0z4c0gQQhWhmVZpId7hrP/fblgPacYGYPpy+L0Zp/pOkr7xhx6Ra
-         9gfWqR1c7eHYQfOjRERka3NSvhDo/6Yri90RUNII=
+        b=B5171Y+625JkClYzYTXaRyQ8sBAP6hwT3oaobyt4pz+VQ3hLiEBPeQEsrgEEIRxbk
+         mCktEIcbjwLEVQ+duoXmVyH3tMMkFUo45pKB3j6i2nLvb6H6MRwHE734qdKD3BQO7B
+         NZzdwymd8j1Xcxa8TmmwFCCa10YcZIFCuTCJ+cWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 224/320] powerpc/6xx: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:28 +0100
-Message-Id: <20220124184001.607075988@linuxfoundation.org>
+Subject: [PATCH 5.4 067/320] serial: amba-pl011: do not request memory region twice
+Date:   Mon, 24 Jan 2022 19:40:51 +0100
+Message-Id: <20220124183956.008990956@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,62 +46,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
 
-[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
+[ Upstream commit d1180405c7b5c7a1c6bde79d5fc24fe931430737 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+With commit 3873e2d7f63a ("drivers: PL011: refactor pl011_probe()") the
+function devm_ioremap() called from pl011_setup_port() was replaced with
+devm_ioremap_resource(). Since this function not only remaps but also
+requests the ports io memory region it now collides with the .config_port()
+callback which requests the same region at uart port registration.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+Since devm_ioremap_resource() already claims the memory successfully, the
+request in .config_port() fails.
 
-// <smpl>
-@@
-expression e;
-local idexpression n;
-@@
+Later at uart port deregistration the attempt to release the unclaimed
+memory also fails. The failure results in a “Trying to free nonexistent
+resource" warning.
 
-@@
-local idexpression n;
-expression e;
-@@
+Fix these issues by removing the callbacks that implement the redundant
+memory allocation/release. Also make sure that changing the drivers io
+memory base address via TIOCSSERIAL is not allowed any more.
 
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
+Fixes: 3873e2d7f63a ("drivers: PL011: refactor pl011_probe()")
+Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Link: https://lore.kernel.org/r/20211129174238.8333-1-LinoSanfilippo@gmx.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/amba-pl011.c | 27 +++------------------------
+ 1 file changed, 3 insertions(+), 24 deletions(-)
 
-diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-index a1b7f79a8a152..de10c13de15c6 100644
---- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-+++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-@@ -215,6 +215,7 @@ void hlwd_pic_probe(void)
- 			irq_set_chained_handler(cascade_virq,
- 						hlwd_pic_irq_cascade);
- 			hlwd_irq_host = host;
-+			of_node_put(np);
- 			break;
- 		}
- 	}
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 6741d0f3daf94..0bd8c05d72d60 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2094,32 +2094,13 @@ static const char *pl011_type(struct uart_port *port)
+ 	return uap->port.type == PORT_AMBA ? uap->type : NULL;
+ }
+ 
+-/*
+- * Release the memory region(s) being used by 'port'
+- */
+-static void pl011_release_port(struct uart_port *port)
+-{
+-	release_mem_region(port->mapbase, SZ_4K);
+-}
+-
+-/*
+- * Request the memory region(s) being used by 'port'
+- */
+-static int pl011_request_port(struct uart_port *port)
+-{
+-	return request_mem_region(port->mapbase, SZ_4K, "uart-pl011")
+-			!= NULL ? 0 : -EBUSY;
+-}
+-
+ /*
+  * Configure/autoconfigure the port.
+  */
+ static void pl011_config_port(struct uart_port *port, int flags)
+ {
+-	if (flags & UART_CONFIG_TYPE) {
++	if (flags & UART_CONFIG_TYPE)
+ 		port->type = PORT_AMBA;
+-		pl011_request_port(port);
+-	}
+ }
+ 
+ /*
+@@ -2134,6 +2115,8 @@ static int pl011_verify_port(struct uart_port *port, struct serial_struct *ser)
+ 		ret = -EINVAL;
+ 	if (ser->baud_base < 9600)
+ 		ret = -EINVAL;
++	if (port->mapbase != (unsigned long) ser->iomem_base)
++		ret = -EINVAL;
+ 	return ret;
+ }
+ 
+@@ -2151,8 +2134,6 @@ static const struct uart_ops amba_pl011_pops = {
+ 	.flush_buffer	= pl011_dma_flush_buffer,
+ 	.set_termios	= pl011_set_termios,
+ 	.type		= pl011_type,
+-	.release_port	= pl011_release_port,
+-	.request_port	= pl011_request_port,
+ 	.config_port	= pl011_config_port,
+ 	.verify_port	= pl011_verify_port,
+ #ifdef CONFIG_CONSOLE_POLL
+@@ -2182,8 +2163,6 @@ static const struct uart_ops sbsa_uart_pops = {
+ 	.shutdown	= sbsa_uart_shutdown,
+ 	.set_termios	= sbsa_uart_set_termios,
+ 	.type		= pl011_type,
+-	.release_port	= pl011_release_port,
+-	.request_port	= pl011_request_port,
+ 	.config_port	= pl011_config_port,
+ 	.verify_port	= pl011_verify_port,
+ #ifdef CONFIG_CONSOLE_POLL
 -- 
 2.34.1
 
