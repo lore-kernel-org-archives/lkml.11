@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951EDC3527A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C173CC3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386681AbiAXUfv (ORCPT
+        id S1386879AbiAXUgE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348595AbiAXUNT (ORCPT
+        Mon, 24 Jan 2022 15:36:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41064 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348467AbiAXUOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B954C028C34;
-        Mon, 24 Jan 2022 11:34:13 -0800 (PST)
+        Mon, 24 Jan 2022 15:14:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 051A8B81232;
-        Mon, 24 Jan 2022 19:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 362BBC340E5;
-        Mon, 24 Jan 2022 19:34:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07BE5611CD;
+        Mon, 24 Jan 2022 20:14:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D757FC340E5;
+        Mon, 24 Jan 2022 20:14:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052850;
-        bh=ix7wDqJn/RxHYwks4UqY3CjF4nw8nPf/m6csEMp6k/k=;
+        s=korg; t=1643055246;
+        bh=7qanzDnN7eNEgxgtzBO5i6iPcUJCL9BcsN+rhJvQ00E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PYoIjwYMu0bu0bluoxCv+20bSQneqjUEMCK5KdODzs8JHktjRhES4xMPKb6L6j2b6
-         g0IhHvtv3D5PST5+PHN8dEnb8/iIlBEyn3TiPULUpaV9sggb5Z6jvWb8ojV9TQQlyt
-         nQrlYQqFvJ8lJCVNp7yKxUxJCfm7P8v11CYzfLYA=
+        b=H3wI++9eCl/abWo7CVH6jBRa7S5uMT09JAmRIEVbFr4+k0PcPi19iRx5SHDskcz4J
+         GzjPs8avoQLUHTrdjwCbVxHmbJwCHqR4Bt8Dq5A3vg8JWAziltLtl+K66IKT55D4il
+         ZZhlDavMz+4sv5y01ORLHqysGcmvkgi5zk+J1oYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biwen Li <biwen.li@nxp.com>,
-        Li Yang <leoyang.lil@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 194/320] arm64: dts: ls1028a-qds: move rtc node to the correct i2c bus
-Date:   Mon, 24 Jan 2022 19:42:58 +0100
-Message-Id: <20220124184000.244014223@linuxfoundation.org>
+Subject: [PATCH 5.15 089/846] drm/vc4: hdmi: Set a default HSM rate
+Date:   Mon, 24 Jan 2022 19:33:26 +0100
+Message-Id: <20220124184104.060739850@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biwen Li <biwen.li@nxp.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit cbe9d948eadfe352ad45495a7cc5bf20a1b29d90 ]
+[ Upstream commit 3e85b81591609bb794bb00cd619b20965b5b38cd ]
 
-The i2c rtc is on i2c2 bus not i2c1 bus, so fix it in dts.
+When the firmware doesn't setup the HSM rate (such as when booting
+without an HDMI cable plugged in), its rate is 0 and thus any register
+access results in a CPU stall, even though HSM is enabled.
 
-Signed-off-by: Biwen Li <biwen.li@nxp.com>
-Signed-off-by: Li Yang <leoyang.lil@nxp.com>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Let's enforce a minimum rate at boot to avoid this issue.
+
+Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-4-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-index 078a5010228cd..0b3a93c4155d2 100644
---- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-+++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
-@@ -161,11 +161,6 @@
- 				vcc-supply = <&sb_3v3>;
- 			};
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index ed8a4b7f8b6e2..623a4699bd212 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -94,6 +94,7 @@
+ # define VC4_HD_M_SW_RST			BIT(2)
+ # define VC4_HD_M_ENABLE			BIT(0)
  
--			rtc@51 {
--				compatible = "nxp,pcf2129";
--				reg = <0x51>;
--			};
--
- 			eeprom@56 {
- 				compatible = "atmel,24c512";
- 				reg = <0x56>;
-@@ -209,6 +204,15 @@
++#define HSM_MIN_CLOCK_FREQ	120000000
+ #define CEC_CLOCK_FREQ 40000
  
- };
+ #define HDMI_14_MAX_TMDS_CLK   (340 * 1000 * 1000)
+@@ -2161,6 +2162,19 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 			vc4_hdmi->disable_4kp60 = true;
+ 	}
  
-+&i2c1 {
-+	status = "okay";
++	/*
++	 * If we boot without any cable connected to the HDMI connector,
++	 * the firmware will skip the HSM initialization and leave it
++	 * with a rate of 0, resulting in a bus lockup when we're
++	 * accessing the registers even if it's enabled.
++	 *
++	 * Let's put a sensible default at runtime_resume so that we
++	 * don't end up in this situation.
++	 */
++	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
++	if (ret)
++		goto err_put_ddc;
 +
-+	rtc@51 {
-+		compatible = "nxp,pcf2129";
-+		reg = <0x51>;
-+	};
-+};
-+
- &enetc_port1 {
- 	phy-handle = <&qds_phy1>;
- 	phy-connection-type = "rgmii-id";
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
+ 
 -- 
 2.34.1
 
