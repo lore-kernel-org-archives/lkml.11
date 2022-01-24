@@ -2,283 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3942CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B160C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238921AbiAXOfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:35:04 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:62544 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S238851AbiAXOfC (ORCPT
+        id S238361AbiAXOjs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:39:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240095AbiAXOjk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:35:02 -0500
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20OEHr4I004956;
-        Mon, 24 Jan 2022 14:35:01 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=jw3VQBR3L4SwMNlmNuj+3fny674ETFe88Mqy3G/OMuM=;
- b=tRcfYJ7nQ89mKnKaaBAmdRlfrRx4emUpUIEp/wzeF6X/F+xBB6Odk7NVPFKI2QuIyHhi
- GKCbdyu2Wml/8uN9JWDoKecxCX/zp6sqrMx0RGvp8FRTaHtVIQdX00YXHtQpEjWU8+lq
- 6TdVxth2r6xEAI9UcytlfwalshsCn52RtwTXQJOxFlf/6WDYb5WJBRVvFFyExkRWidLN
- j8Gr+0o0tMKYTx0BqQWhIjCl5rVPuaNluTP2ecaq2mG1kavNoFAp7wtLVekp+dGBLdTh
- B3Mwe3dm5/PKDclgvGDvPI0hx4qECjaHW/Xy4Np19p5a7kNe4CTqyc8WNBPJrbLrvQNn qg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dsvbf31yb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 14:35:01 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20OEIP3e011641;
-        Mon, 24 Jan 2022 14:35:00 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dsvbf31xs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 14:35:00 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20OESFVp019411;
-        Mon, 24 Jan 2022 14:34:59 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma06ams.nl.ibm.com with ESMTP id 3dr96j5fet-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 14:34:58 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20OEYtEF42664426
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 24 Jan 2022 14:34:55 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5FA7D5205A;
-        Mon, 24 Jan 2022 14:34:55 +0000 (GMT)
-Received: from [9.171.67.78] (unknown [9.171.67.78])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 59B655205F;
-        Mon, 24 Jan 2022 14:34:54 +0000 (GMT)
-Message-ID: <1c2a1e60-a4f6-2afa-6479-a2dbd0e6e849@linux.ibm.com>
-Date:   Mon, 24 Jan 2022 15:36:44 +0100
+        Mon, 24 Jan 2022 09:39:40 -0500
+Received: from mail-ot1-x330.google.com (mail-ot1-x330.google.com [IPv6:2607:f8b0:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E382C06173B;
+        Mon, 24 Jan 2022 06:39:40 -0800 (PST)
+Received: by mail-ot1-x330.google.com with SMTP id l64-20020a9d1b46000000b005983a0a8aaaso22536666otl.3;
+        Mon, 24 Jan 2022 06:39:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WRnmLg2nPya3Lli2a3VtYubGXc/FUMVFB+/lJ6rJUqw=;
+        b=JHy5ih6cO2KnwpVZg9yE8MS9kgaCBdqFYsbe5gYKEg4oYSjPv23OcnK7RozX2C/lTC
+         zxnk96DdQshmFsZxwaJ/pTs5Xw7OMlJ6Pno9zGzAhkR60O0oCe7XRMpQzLrhT46Y8lDD
+         6Rn2ueKzjR0QMFwFxntk/4odYw4FYUzkyIiAdkA7TCZoMbaSxvyziwhkjxipA/UWbz+1
+         C1OJ39n7sFGNpQYzgLiRBSMYldeDK2VsxZGwGjradQ8GNanKnG5nYJ+7rrdOIXHEHYt8
+         p3Lf+VbFKluFYCirULe4DvwmoyvWGJFwe6Zk5hLRaIHhqdc0QK5Rz3RLHYD2b3Vk+rlB
+         CUrA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WRnmLg2nPya3Lli2a3VtYubGXc/FUMVFB+/lJ6rJUqw=;
+        b=SgbjQgBSLmo8vUM/5Y6wcUVSaLUKaWi9QgpkfeRbvuQmQpih43BIwUiC+sNfv/I816
+         HYjSjqm8gSMLb103ui5UA0j6H4pySZm+aXyxyFGLUKLnspj8Fz7THtMt+O9ptkzQ12oM
+         FO66xalpPuB/Yn68xxiodjD2NFQSW2rQJZH5MmxlG1DCGKQvvdlimRMFAbF7m57oWxLy
+         7cobPJ3OexDPnawgKIL2Y4u76yOplTLXcd3LwIm5yXizEH8YwCz34GmptK5qhNUub189
+         OwdcTsu2bOyzd8GwHNrq4BOI/XEObMp2ce8NBzejXHmRCJXigZWJAOrJkVD2w77UJat0
+         PP/Q==
+X-Gm-Message-State: AOAM531sVVurxQ/2Z5xMEvooL7N+FKDPEAZmpCk5lxTPIi3+TdgIz+Gg
+        KVBtOSWCdkVVeqri5VvXt0C25LEaD0X/UVzQDGQ=
+X-Google-Smtp-Source: ABdhPJwV10rQv+WJ0fiTMkYZOugBJay7apmmkDUEn7c9Erwq89BMS5eSkAOWSsF7F1roYUJx1Pxydi+faZylXyrG6fI=
+X-Received: by 2002:a9d:f04:: with SMTP id 4mr11896147ott.326.1643035179591;
+ Mon, 24 Jan 2022 06:39:39 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 18/30] KVM: s390: pci: provide routines for
- enabling/disabling interpretation
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-19-mjrosato@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220114203145.242984-19-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 3YnikYjHUttUuBSe3PIcp1CRipfYsn2Q
-X-Proofpoint-ORIG-GUID: 6-s6tzk7Ddzw1wJTN4qKuwQ3FBVVRDLa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-24_07,2022-01-24_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
- bulkscore=0 phishscore=0 suspectscore=0 priorityscore=1501 mlxlogscore=999
- spamscore=0 mlxscore=0 lowpriorityscore=0 malwarescore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2201240094
+References: <20220112131552.3329380-1-aisheng.dong@nxp.com>
+In-Reply-To: <20220112131552.3329380-1-aisheng.dong@nxp.com>
+From:   Dong Aisheng <dongas86@gmail.com>
+Date:   Mon, 24 Jan 2022 22:34:00 +0800
+Message-ID: <CAA+hA=T=kavt-zvrraXh+BJcSPVWtzyXhkycrmdtNCxzKsbaaQ@mail.gmail.com>
+Subject: Re: [PATCH v2 0/2] mm: fix cma allocation fail sometimes
+To:     Dong Aisheng <aisheng.dong@nxp.com>
+Cc:     linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, jason.hui.liu@nxp.com,
+        leoyang.li@nxp.com, abel.vesa@nxp.com, shawnguo@kernel.org,
+        linux-imx@nxp.com, akpm@linux-foundation.org,
+        m.szyprowski@samsung.com, lecopzer.chen@mediatek.com,
+        david@redhat.com, vbabka@suse.cz, stable@vger.kernel.org,
+        shijie.qin@nxp.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Gently Ping...
 
-
-On 1/14/22 21:31, Matthew Rosato wrote:
-> These routines will be wired into the vfio_pci_zdev ioctl handlers to
-> respond to requests to enable / disable a device for zPCI Load/Store
-> interpretation.
-> 
-> The first time such a request is received, enable the necessary facilities
-> for the guest.
-> 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   arch/s390/include/asm/kvm_pci.h |  4 ++
->   arch/s390/kvm/pci.c             | 99 +++++++++++++++++++++++++++++++++
->   arch/s390/pci/pci.c             |  3 +
->   3 files changed, 106 insertions(+)
-> 
-> diff --git a/arch/s390/include/asm/kvm_pci.h b/arch/s390/include/asm/kvm_pci.h
-> index aafee2976929..072401aa7922 100644
-> --- a/arch/s390/include/asm/kvm_pci.h
-> +++ b/arch/s390/include/asm/kvm_pci.h
-> @@ -26,4 +26,8 @@ int kvm_s390_pci_dev_open(struct zpci_dev *zdev);
->   void kvm_s390_pci_dev_release(struct zpci_dev *zdev);
->   void kvm_s390_pci_attach_kvm(struct zpci_dev *zdev, struct kvm *kvm);
->   
-> +int kvm_s390_pci_interp_probe(struct zpci_dev *zdev);
-> +int kvm_s390_pci_interp_enable(struct zpci_dev *zdev);
-> +int kvm_s390_pci_interp_disable(struct zpci_dev *zdev);
-> +
->   #endif /* ASM_KVM_PCI_H */
-> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
-> index dae853da6df1..122d0992b521 100644
-> --- a/arch/s390/kvm/pci.c
-> +++ b/arch/s390/kvm/pci.c
-> @@ -12,7 +12,9 @@
->   #include <asm/kvm_pci.h>
->   #include <asm/pci.h>
->   #include <asm/pci_insn.h>
-> +#include <asm/sclp.h>
->   #include "pci.h"
-> +#include "kvm-s390.h"
->   
->   struct zpci_aift *aift;
->   
-> @@ -143,6 +145,103 @@ int kvm_s390_pci_aen_init(u8 nisc)
->   	return rc;
->   }
->   
-> +int kvm_s390_pci_interp_probe(struct zpci_dev *zdev)
-> +{
-> +	/* Must have appropriate hardware facilities */
-> +	if (!(sclp.has_zpci_lsi && test_facility(69)))
-
-Should'nt we also test the other facilities we need for the 
-interpretation like ARNI, AISII, ASI and GISA ?
-
-Or are we sure they are always there when ZPCI load/store interpretation 
-is available?
-
-
-> +		return -EINVAL;
-> +
-> +	/* Must have a KVM association registered */
-> +	if (!zdev->kzdev || !zdev->kzdev->kvm)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(kvm_s390_pci_interp_probe);
-> +
-> +int kvm_s390_pci_interp_enable(struct zpci_dev *zdev)
-> +{
-> +	u32 gd;
-> +	int rc;
-> +
-> +	if (!zdev->kzdev || !zdev->kzdev->kvm)
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * If this is the first request to use an interpreted device, make the
-> +	 * necessary vcpu changes
-> +	 */
-> +	if (!zdev->kzdev->kvm->arch.use_zpci_interp)
-> +		kvm_s390_vcpu_pci_enable_interp(zdev->kzdev->kvm);
-> +
-> +	/*
-> +	 * In the event of a system reset in userspace, the GISA designation
-> +	 * may still be assigned because the device is still enabled.
-> +	 * Verify it's the same guest before proceeding.
-> +	 */
-> +	gd = (u32)(u64)&zdev->kzdev->kvm->arch.sie_page2->gisa;
-
-should use the virt_to_phys transformation ?
-
-> +	if (zdev->gd != 0 && zdev->gd != gd)
-> +		return -EPERM;
-> +
-> +	if (zdev_enabled(zdev)) {
-> +		zdev->gd = 0;
-> +		rc = zpci_disable_device(zdev);
-> +		if (rc)
-> +			return rc;
-> +	}
-> +
-> +	/*
-> +	 * Store information about the identity of the kvm guest allowed to
-> +	 * access this device via interpretation to be used by host CLP
-> +	 */
-> +	zdev->gd = gd;
-> +
-> +	rc = zpci_enable_device(zdev);
-> +	if (rc)
-> +		goto err;
-> +
-> +	/* Re-register the IOMMU that was already created */
-> +	rc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-> +				virt_to_phys(zdev->dma_table));
-> +	if (rc)
-> +		goto err;
-> +
-> +	return rc;
-> +
-> +err:
-> +	zdev->gd = 0;
-> +	return rc;
-> +}
-> +EXPORT_SYMBOL_GPL(kvm_s390_pci_interp_enable);
-> +
-> +int kvm_s390_pci_interp_disable(struct zpci_dev *zdev)
-> +{
-> +	int rc;
-> +
-> +	if (zdev->gd == 0)
-> +		return -EINVAL;
-> +
-> +	/* Remove the host CLP guest designation */
-> +	zdev->gd = 0;
-> +
-> +	if (zdev_enabled(zdev)) {
-> +		rc = zpci_disable_device(zdev);
-> +		if (rc)
-> +			return rc;
-> +	}
-> +
-> +	rc = zpci_enable_device(zdev);
-> +	if (rc)
-> +		return rc;
-> +
-> +	/* Re-register the IOMMU that was already created */
-> +	rc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
-> +				virt_to_phys(zdev->dma_table));
-> +
-> +	return rc;
-> +}
-> +EXPORT_SYMBOL_GPL(kvm_s390_pci_interp_disable);
-> +
->   int kvm_s390_pci_dev_open(struct zpci_dev *zdev)
->   {
->   	struct kvm_zdev *kzdev;
-> diff --git a/arch/s390/pci/pci.c b/arch/s390/pci/pci.c
-> index 2a19becbc14c..58673f633869 100644
-> --- a/arch/s390/pci/pci.c
-> +++ b/arch/s390/pci/pci.c
-> @@ -147,6 +147,7 @@ int zpci_register_ioat(struct zpci_dev *zdev, u8 dmaas,
->   		zpci_dbg(3, "reg ioat fid:%x, cc:%d, status:%d\n", zdev->fid, cc, status);
->   	return cc;
->   }
-> +EXPORT_SYMBOL_GPL(zpci_register_ioat);
->   
->   /* Modify PCI: Unregister I/O address translation parameters */
->   int zpci_unregister_ioat(struct zpci_dev *zdev, u8 dmaas)
-> @@ -727,6 +728,7 @@ int zpci_enable_device(struct zpci_dev *zdev)
->   		zpci_update_fh(zdev, fh);
->   	return rc;
->   }
-> +EXPORT_SYMBOL_GPL(zpci_enable_device);
->   
->   int zpci_disable_device(struct zpci_dev *zdev)
->   {
-> @@ -750,6 +752,7 @@ int zpci_disable_device(struct zpci_dev *zdev)
->   	}
->   	return rc;
->   }
-> +EXPORT_SYMBOL_GPL(zpci_disable_device);
->   
->   /**
->    * zpci_hot_reset_device - perform a reset of the given zPCI function
-> 
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
+On Wed, Jan 12, 2022 at 9:17 PM Dong Aisheng <aisheng.dong@nxp.com> wrote:
+>
+> We observed an issue with NXP 5.15 LTS kernel that dma_alloc_coherent()
+> may fail sometimes when there're multiple processes trying to allocate
+> CMA memory.
+>
+> This issue can be very easily reproduced on MX6Q SDB board with latest
+> linux-next kernel by writing a test module creating 16 or 32 threads
+> allocating random size of CMA memory in parallel at the background.
+> Or simply enabling CONFIG_CMA_DEBUG, you can see endless of CMA alloc
+> retries during booting:
+> [    1.452124] cma: cma_alloc(): memory range at (ptrval) is busy,retrying
+> ....
+> (thousands of reties)
+> NOTE: MX6 has CONFIG_FORCE_MAX_ZONEORDER=14 which means MAX_ORDER is
+> 13 (32M).
+>
+> The root cause of this issue is that since commit a4efc174b382
+> ("mm/cma.c: remove redundant cma_mutex lock"), CMA supports concurrent
+> memory allocation.
+> It's possible that the pageblock process A try to alloc has already
+> been isolated by the allocation of process B during memory migration.
+>
+> When there're multi process allocating CMA memory in parallel, it's
+> likely that other the remain pageblocks may have also been isolated,
+> then CMA alloc fail finally during the first round of scanning of the
+> whole available CMA bitmap.
+>
+> This patchset introduces a retry mechanism to rescan CMA bitmap for -EBUSY
+> error in case the target pageblock may has been temporarily isolated
+> by others and released later.
+> It also improves the CMA allocation performance by trying the next
+> pageblock during reties rather than looping in the same pageblock
+> which is in -EBUSY state.
+>
+> Theoretically, this issue can be easily reproduced on ARMv7 platforms
+> with big MAX_ORDER/pageblock
+> e.g. 1G RAM(320M reserved CMA) and 32M pageblock ARM platform:
+> Page block order: 13
+> Pages per block:  8192
+>
+> The following test is based on linux-next: next-20211213.
+>
+> Without the fix, it's easily fail.
+> # insmod cma_alloc.ko pnum=16
+> [  274.322369] CMA alloc test enter: thread number: 16
+> [  274.329948] cpu: 0, pid: 692, index 4 pages 144
+> [  274.330143] cpu: 1, pid: 694, index 2 pages 44
+> [  274.330359] cpu: 2, pid: 695, index 7 pages 757
+> [  274.330760] cpu: 2, pid: 696, index 4 pages 144
+> [  274.330974] cpu: 2, pid: 697, index 6 pages 512
+> [  274.331223] cpu: 2, pid: 698, index 6 pages 512
+> [  274.331499] cpu: 2, pid: 699, index 2 pages 44
+> [  274.332228] cpu: 2, pid: 700, index 0 pages 7
+> [  274.337421] cpu: 0, pid: 701, index 1 pages 38
+> [  274.337618] cpu: 2, pid: 702, index 0 pages 7
+> [  274.344669] cpu: 1, pid: 703, index 0 pages 7
+> [  274.344807] cpu: 3, pid: 704, index 6 pages 512
+> [  274.348269] cpu: 2, pid: 705, index 5 pages 148
+> [  274.349490] cma: cma_alloc: reserved: alloc failed, req-size: 38 pages, ret: -16
+> [  274.366292] cpu: 1, pid: 706, index 4 pages 144
+> [  274.366562] cpu: 0, pid: 707, index 3 pages 128
+> [  274.367356] cma: cma_alloc: reserved: alloc failed, req-size: 128 pages, ret: -16
+> [  274.367370] cpu: 0, pid: 707, index 3 pages 128 failed
+> [  274.371148] cma: cma_alloc: reserved: alloc failed, req-size: 148 pages, ret: -16
+> [  274.375348] cma: cma_alloc: reserved: alloc failed, req-size: 144 pages, ret: -16
+> [  274.384256] cpu: 2, pid: 708, index 0 pages 7
+> ....
+>
+> With the fix, 32 threads allocating in parallel can pass overnight
+> stress test.
+>
+> root@imx6qpdlsolox:~# insmod cma_alloc.ko pnum=32
+> [  112.976809] cma_alloc: loading out-of-tree module taints kernel.
+> [  112.984128] CMA alloc test enter: thread number: 32
+> [  112.989748] cpu: 2, pid: 707, index 6 pages 512
+> [  112.994342] cpu: 1, pid: 708, index 6 pages 512
+> [  112.995162] cpu: 0, pid: 709, index 3 pages 128
+> [  112.995867] cpu: 2, pid: 710, index 0 pages 7
+> [  112.995910] cpu: 3, pid: 711, index 2 pages 44
+> [  112.996005] cpu: 3, pid: 712, index 7 pages 757
+> [  112.996098] cpu: 3, pid: 713, index 7 pages 757
+> ...
+> [41877.368163] cpu: 1, pid: 737, index 2 pages 44
+> [41877.369388] cpu: 1, pid: 736, index 3 pages 128
+> [41878.486516] cpu: 0, pid: 737, index 2 pages 44
+> [41878.486515] cpu: 2, pid: 739, index 4 pages 144
+> [41878.486622] cpu: 1, pid: 736, index 3 pages 128
+> [41878.486948] cpu: 2, pid: 735, index 7 pages 757
+> [41878.487279] cpu: 2, pid: 738, index 4 pages 144
+> [41879.526603] cpu: 1, pid: 739, index 3 pages 128
+> [41879.606491] cpu: 2, pid: 737, index 3 pages 128
+> [41879.606550] cpu: 0, pid: 736, index 0 pages 7
+> [41879.612271] cpu: 2, pid: 738, index 4 pages 144
+> ...
+>
+> v1:
+> https://patchwork.kernel.org/project/linux-mm/cover/20211215080242.3034856-1-aisheng.dong@nxp.com/
+>
+> Dong Aisheng (2):
+>   mm: cma: fix allocation may fail sometimes
+>   mm: cma: try next MAX_ORDER_NR_PAGES during retry
+>
+>  mm/cma.c | 15 ++++++++++++++-
+>  1 file changed, 14 insertions(+), 1 deletion(-)
+>
+> --
+> 2.25.1
+>
