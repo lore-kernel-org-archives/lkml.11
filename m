@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D699BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4104CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842553AbiAXXCF (ORCPT
+        id S1842605AbiAXXCO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:02:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58584 "EHLO
+        Mon, 24 Jan 2022 18:02:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457388AbiAXVzE (ORCPT
+        with ESMTP id S1456236AbiAXVzC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:04 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51FAC07E29A;
-        Mon, 24 Jan 2022 12:36:14 -0800 (PST)
+        Mon, 24 Jan 2022 16:55:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCDF5C07E28C;
+        Mon, 24 Jan 2022 12:35:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 817E661506;
-        Mon, 24 Jan 2022 20:36:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AFC0C340E5;
-        Mon, 24 Jan 2022 20:36:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A535B8122C;
+        Mon, 24 Jan 2022 20:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FCB4C340E5;
+        Mon, 24 Jan 2022 20:35:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056573;
-        bh=P/spAJxmOcg0CsJ9YcoIo2W2D/UaIjKalXakc50byHk=;
+        s=korg; t=1643056525;
+        bh=Zyr3CBRGN2JQ7UY6ojkYtCbeZFutKP8iHjvQV/pfcGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h+JepUfcumPe3HDqHOVPHQ3RWG6NBkfTZsbuMYquxsL7BLve4KxjO24G4eXil5GQd
-         GvOVZ32HFXTVlinlGN8fLpJ3D/xu7OYpnDrG/MLXtFDuxJ6CBjBoAy4OQ0SR+SdXRK
-         3PFU8CFI1e3T1lnKuamtmTX17XuM5+Ji6iG4UtNw=
+        b=D/gGGWdxnxiIdeMiOzjxEKwlu0UgfBdeviVUqsu25//XpblOSQMQTYbRn84JTNIA/
+         KutG01nm/RoxrwWAnycJbc5En8TS/pgLtiBk6L/UC2aPJMsVxIOTfWf4KMrI2FvSJi
+         oQ1O17KQ5WkgT04v6HRJCzbzPzOLJ7TXnnxsYLO0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 529/846] arm64: dts: renesas: Fix thermal bindings
-Date:   Mon, 24 Jan 2022 19:40:46 +0100
-Message-Id: <20220124184119.256587219@linuxfoundation.org>
+Subject: [PATCH 5.15 514/846] ACPI: Change acpi_device_always_present() into acpi_device_override_status()
+Date:   Mon, 24 Jan 2022 19:40:31 +0100
+Message-Id: <20220124184118.740936438@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -53,322 +50,206 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 82ce79391d0ec25ec8aaae3c0617b71048ff0836 ]
+[ Upstream commit 1a68b346a2c9969c05e80a3b99a9ab160b5655c0 ]
 
-The binding node names for the thermal zones are not successfully
-validated by the dt-schemas.
+Currently, acpi_bus_get_status() calls acpi_device_always_present() to
+allow platform quirks to override the _STA return to report that a
+device is present (status = ACPI_STA_DEFAULT) independent of the _STA
+return.
 
-Fix the validation by changing from sensor-thermalN or thermal-sensor-N
-to sensorN-thermal.  Provide node labels of the form sensorN_thermal to
-ensure consistency with the other platform implementations.
+In some cases it might also be useful to have the opposite functionality
+and have a platform quirk which marks a device as not present (status = 0)
+to work around ACPI table bugs.
 
-Signed-off-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Link: https://lore.kernel.org/r/20211104224033.3997504-1-kieran.bingham+renesas@ideasonboard.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Change acpi_device_always_present() into a more generic
+acpi_device_override_status() function to allow this.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/r8a774a1.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a774b1.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a774e1.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77951.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77960.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77961.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77965.dtsi |  6 +++---
- arch/arm64/boot/dts/renesas/r8a77980.dtsi |  4 ++--
- arch/arm64/boot/dts/renesas/r8a779a0.dtsi | 10 +++++-----
- 9 files changed, 28 insertions(+), 28 deletions(-)
+ drivers/acpi/bus.c       |  4 +--
+ drivers/acpi/x86/utils.c | 64 +++++++++++++++++++++++-----------------
+ include/acpi/acpi_bus.h  |  5 ++--
+ 3 files changed, 42 insertions(+), 31 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-index 6f4fffacfca21..e70aa5a087402 100644
---- a/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774a1.dtsi
-@@ -2784,7 +2784,7 @@
- 	};
+diff --git a/drivers/acpi/bus.c b/drivers/acpi/bus.c
+index fa923a9292244..dd535b4b9a160 100644
+--- a/drivers/acpi/bus.c
++++ b/drivers/acpi/bus.c
+@@ -98,8 +98,8 @@ int acpi_bus_get_status(struct acpi_device *device)
+ 	acpi_status status;
+ 	unsigned long long sta;
  
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2799,7 +2799,7 @@
- 			};
- 		};
+-	if (acpi_device_always_present(device)) {
+-		acpi_set_device_status(device, ACPI_STA_DEFAULT);
++	if (acpi_device_override_status(device, &sta)) {
++		acpi_set_device_status(device, sta);
+ 		return 0;
+ 	}
  
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2814,7 +2814,7 @@
- 			};
- 		};
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index 3bcac98f6eca6..edb4f3fd93dc3 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -22,54 +22,63 @@
+  * Some BIOS-es (temporarily) hide specific APCI devices to work around Windows
+  * driver bugs. We use DMI matching to match known cases of this.
+  *
+- * We work around this by always reporting ACPI_STA_DEFAULT for these
+- * devices. Note this MUST only be done for devices where this is safe.
++ * Likewise sometimes some not-actually present devices are sometimes
++ * reported as present, which may cause issues.
+  *
+- * This forcing of devices to be present is limited to specific CPU (SoC)
+- * models both to avoid potentially causing trouble on other models and
+- * because some HIDs are re-used on different SoCs for completely
+- * different devices.
++ * We work around this by using the below quirk list to override the status
++ * reported by the _STA method with a fixed value (ACPI_STA_DEFAULT or 0).
++ * Note this MUST only be done for devices where this is safe.
++ *
++ * This status overriding is limited to specific CPU (SoC) models both to
++ * avoid potentially causing trouble on other models and because some HIDs
++ * are re-used on different SoCs for completely different devices.
+  */
+-struct always_present_id {
++struct override_status_id {
+ 	struct acpi_device_id hid[2];
+ 	struct x86_cpu_id cpu_ids[2];
+ 	struct dmi_system_id dmi_ids[2]; /* Optional */
+ 	const char *uid;
++	unsigned long long status;
+ };
  
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-index 0f7bdfc90a0dc..6c5694fa66900 100644
---- a/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774b1.dtsi
-@@ -2629,7 +2629,7 @@
- 	};
+-#define X86_MATCH(model)	X86_MATCH_INTEL_FAM6_MODEL(model, NULL)
+-
+-#define ENTRY(hid, uid, cpu_models, dmi...) {				\
++#define ENTRY(status, hid, uid, cpu_model, dmi...) {			\
+ 	{ { hid, }, {} },						\
+-	{ cpu_models, {} },						\
++	{ X86_MATCH_INTEL_FAM6_MODEL(cpu_model, NULL), {} },		\
+ 	{ { .matches = dmi }, {} },					\
+ 	uid,								\
++	status,								\
+ }
  
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2644,7 +2644,7 @@
- 			};
- 		};
+-static const struct always_present_id always_present_ids[] = {
++#define PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
++	ENTRY(ACPI_STA_DEFAULT, hid, uid, cpu_model, dmi)
++
++#define NOT_PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
++	ENTRY(0, hid, uid, cpu_model, dmi)
++
++static const struct override_status_id override_status_ids[] = {
+ 	/*
+ 	 * Bay / Cherry Trail PWM directly poked by GPU driver in win10,
+ 	 * but Linux uses a separate PWM driver, harmless if not used.
+ 	 */
+-	ENTRY("80860F09", "1", X86_MATCH(ATOM_SILVERMONT), {}),
+-	ENTRY("80862288", "1", X86_MATCH(ATOM_AIRMONT), {}),
++	PRESENT_ENTRY_HID("80860F09", "1", ATOM_SILVERMONT, {}),
++	PRESENT_ENTRY_HID("80862288", "1", ATOM_AIRMONT, {}),
  
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2659,7 +2659,7 @@
- 			};
- 		};
+ 	/*
+ 	 * The INT0002 device is necessary to clear wakeup interrupt sources
+ 	 * on Cherry Trail devices, without it we get nobody cared IRQ msgs.
+ 	 */
+-	ENTRY("INT0002", "1", X86_MATCH(ATOM_AIRMONT), {}),
++	PRESENT_ENTRY_HID("INT0002", "1", ATOM_AIRMONT, {}),
+ 	/*
+ 	 * On the Dell Venue 11 Pro 7130 and 7139, the DSDT hides
+ 	 * the touchscreen ACPI device until a certain time
+ 	 * after _SB.PCI0.GFX0.LCD.LCD1._ON gets called has passed
+ 	 * *and* _STA has been called at least 3 times since.
+ 	 */
+-	ENTRY("SYNA7500", "1", X86_MATCH(HASWELL_L), {
++	PRESENT_ENTRY_HID("SYNA7500", "1", HASWELL_L, {
+ 		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Venue 11 Pro 7130"),
+ 	      }),
+-	ENTRY("SYNA7500", "1", X86_MATCH(HASWELL_L), {
++	PRESENT_ENTRY_HID("SYNA7500", "1", HASWELL_L, {
+ 		DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Venue 11 Pro 7139"),
+ 	      }),
+@@ -85,19 +94,19 @@ static const struct always_present_id always_present_ids[] = {
+ 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
+ 	 * node which we should not enable, thus we also check the BIOS date.
+ 	 */
+-	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
++	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
+ 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "02/21/2017")
+ 	      }),
+-	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
++	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
+ 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "03/20/2017")
+ 	      }),
+-	ENTRY("KIOX000A", "1", X86_MATCH(ATOM_AIRMONT), {
++	PRESENT_ENTRY_HID("KIOX000A", "1", ATOM_AIRMONT, {
+ 		DMI_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
+ 		DMI_MATCH(DMI_BOARD_NAME, "Default string"),
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+@@ -105,26 +114,27 @@ static const struct always_present_id always_present_ids[] = {
+ 	      }),
+ };
  
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-index 379a1300272ba..62209ab6deb9a 100644
---- a/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a774e1.dtsi
-@@ -2904,7 +2904,7 @@
- 	};
+-bool acpi_device_always_present(struct acpi_device *adev)
++bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
+ {
+ 	bool ret = false;
+ 	unsigned int i;
  
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2919,7 +2919,7 @@
- 			};
- 		};
+-	for (i = 0; i < ARRAY_SIZE(always_present_ids); i++) {
+-		if (acpi_match_device_ids(adev, always_present_ids[i].hid))
++	for (i = 0; i < ARRAY_SIZE(override_status_ids); i++) {
++		if (acpi_match_device_ids(adev, override_status_ids[i].hid))
+ 			continue;
  
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2934,7 +2934,7 @@
- 			};
- 		};
+ 		if (!adev->pnp.unique_id ||
+-		    strcmp(adev->pnp.unique_id, always_present_ids[i].uid))
++		    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
+ 			continue;
  
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77951.dtsi b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-index 1768a3e6bb8da..193d81be40fc4 100644
---- a/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77951.dtsi
-@@ -3375,7 +3375,7 @@
- 	};
+-		if (!x86_match_cpu(always_present_ids[i].cpu_ids))
++		if (!x86_match_cpu(override_status_ids[i].cpu_ids))
+ 			continue;
  
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -3390,7 +3390,7 @@
- 			};
- 		};
+-		if (always_present_ids[i].dmi_ids[0].matches[0].slot &&
+-		    !dmi_check_system(always_present_ids[i].dmi_ids))
++		if (override_status_ids[i].dmi_ids[0].matches[0].slot &&
++		    !dmi_check_system(override_status_ids[i].dmi_ids))
+ 			continue;
  
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -3405,7 +3405,7 @@
- 			};
- 		};
++		*status = override_status_ids[i].status;
+ 		ret = true;
+ 		break;
+ 	}
+diff --git a/include/acpi/acpi_bus.h b/include/acpi/acpi_bus.h
+index 13d93371790ec..e9c7d7b270e73 100644
+--- a/include/acpi/acpi_bus.h
++++ b/include/acpi/acpi_bus.h
+@@ -613,9 +613,10 @@ int acpi_enable_wakeup_device_power(struct acpi_device *dev, int state);
+ int acpi_disable_wakeup_device_power(struct acpi_device *dev);
  
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77960.dtsi b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-index 2bd8169735d35..b526e4f0ee6a8 100644
---- a/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77960.dtsi
-@@ -2972,7 +2972,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2987,7 +2987,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -3002,7 +3002,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77961.dtsi b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-index 041473aa5cd09..21fc95397c3c2 100644
---- a/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77961.dtsi
-@@ -2719,7 +2719,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2734,7 +2734,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2749,7 +2749,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77965.dtsi b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-index 08df75606430b..f9679a4dd85fa 100644
---- a/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77965.dtsi
-@@ -2784,7 +2784,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -2799,7 +2799,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -2814,7 +2814,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a77980.dtsi b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-index 6347d15e66b64..21fe602bd25af 100644
---- a/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a77980.dtsi
-@@ -1580,7 +1580,7 @@
- 	};
- 
- 	thermal-zones {
--		thermal-sensor-1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -1599,7 +1599,7 @@
- 			};
- 		};
- 
--		thermal-sensor-2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-diff --git a/arch/arm64/boot/dts/renesas/r8a779a0.dtsi b/arch/arm64/boot/dts/renesas/r8a779a0.dtsi
-index 631d520cebee5..26899fb768a73 100644
---- a/arch/arm64/boot/dts/renesas/r8a779a0.dtsi
-+++ b/arch/arm64/boot/dts/renesas/r8a779a0.dtsi
-@@ -1149,7 +1149,7 @@
- 	};
- 
- 	thermal-zones {
--		sensor_thermal1: sensor-thermal1 {
-+		sensor1_thermal: sensor1-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 0>;
-@@ -1163,7 +1163,7 @@
- 			};
- 		};
- 
--		sensor_thermal2: sensor-thermal2 {
-+		sensor2_thermal: sensor2-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 1>;
-@@ -1177,7 +1177,7 @@
- 			};
- 		};
- 
--		sensor_thermal3: sensor-thermal3 {
-+		sensor3_thermal: sensor3-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 2>;
-@@ -1191,7 +1191,7 @@
- 			};
- 		};
- 
--		sensor_thermal4: sensor-thermal4 {
-+		sensor4_thermal: sensor4-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 3>;
-@@ -1205,7 +1205,7 @@
- 			};
- 		};
- 
--		sensor_thermal5: sensor-thermal5 {
-+		sensor5_thermal: sensor5-thermal {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
- 			thermal-sensors = <&tsc 4>;
+ #ifdef CONFIG_X86
+-bool acpi_device_always_present(struct acpi_device *adev);
++bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status);
+ #else
+-static inline bool acpi_device_always_present(struct acpi_device *adev)
++static inline bool acpi_device_override_status(struct acpi_device *adev,
++					       unsigned long long *status)
+ {
+ 	return false;
+ }
 -- 
 2.34.1
 
