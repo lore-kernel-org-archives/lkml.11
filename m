@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EACA9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3F33C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835552AbiAXWgu (ORCPT
+        id S1835592AbiAXWg6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:36:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58600 "EHLO
+        Mon, 24 Jan 2022 17:36:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58642 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456858AbiAXVkR (ORCPT
+        with ESMTP id S1456908AbiAXVkW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:40:17 -0500
+        Mon, 24 Jan 2022 16:40:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96E346151D;
-        Mon, 24 Jan 2022 21:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DD59C340E4;
-        Mon, 24 Jan 2022 21:40:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5C73460917;
+        Mon, 24 Jan 2022 21:40:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D54DC340E4;
+        Mon, 24 Jan 2022 21:40:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060416;
-        bh=bp019RBoTTCh7yRBmXJPnGFc3pky8+XP4OrNPBx1/AM=;
+        s=korg; t=1643060421;
+        bh=ynCVUXTQ7FnnlhknExewIhvw4SXgBbC5W0Plz7G5ZNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oIOWU7J/EPdgH3JIiAAO0hDK8h0C06VTAVvQnXw7Y5mu7g/EBBCMl+OJEIR4/w6wJ
-         /qnkrkBjLiw6B8DI8916L+hYleQnMr+kto03++fSilQ5Q4ua4BR9Kn/w9f3EWyWVzV
-         BEXEg9N8ImAapw4PS6xptQ7OiIXmtMbH1IYAIC04=
+        b=qi+J/KVunaGM9jIRnboI5Tc741k0Vz0/MpwyywX+IORPvx7FYp/rOE86iIJfLkh8c
+         WS9Z0zebgmxP/l6kIjI1EZUPO+AXoz9VDTD2W2No4Vxhnx07kS7Qs/UdCnZLZUKPdf
+         awTklIUuaWW2S6IWZuBSSUhCTMKb0LB1CUeUbSrU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
-        Michael Rodin <mrodin@de.adit-jv.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.16 0907/1039] media: rcar-csi2: Optimize the selection PHTW register
-Date:   Mon, 24 Jan 2022 19:44:56 +0100
-Message-Id: <20220124184155.785926208@linuxfoundation.org>
+Subject: [PATCH 5.16 0909/1039] media: correct MEDIA_TEST_SUPPORT help text
+Date:   Mon, 24 Jan 2022 19:44:58 +0100
+Message-Id: <20220124184155.851593460@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,50 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Udipi <sudipi@jp.adit-jv.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-commit 549cc89cd09a85aaa16dc07ef3db811d5cf9bcb1 upstream.
+commit 09f4d1513267d0ab712f5d29e7bd136535748709 upstream.
 
-PHTW register is selected based on default bit rate from Table[1].
-for the bit rates less than or equal to 250. Currently first
-value of default bit rate which is greater than or equal to
-the caculated mbps is selected. This selection can be further
-improved by selecting the default bit rate which is nearest to
-the calculated value.
+Fix grammar/wording in the help text for MEDIA_TEST_SUPPORT.
 
-[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.12]
-
-Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
-Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Fixes: 4b32216adb01 ("media: split test drivers from platform directory")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/rcar-vin/rcar-csi2.c |    9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/media/Kconfig |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/media/platform/rcar-vin/rcar-csi2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
-@@ -1104,10 +1104,17 @@ static int rcsi2_phtw_write_mbps(struct
- 				 const struct rcsi2_mbps_reg *values, u16 code)
- {
- 	const struct rcsi2_mbps_reg *value;
-+	const struct rcsi2_mbps_reg *prev_value = NULL;
+--- a/drivers/media/Kconfig
++++ b/drivers/media/Kconfig
+@@ -141,10 +141,10 @@ config MEDIA_TEST_SUPPORT
+ 	prompt "Test drivers" if MEDIA_SUPPORT_FILTER
+ 	default y if !MEDIA_SUPPORT_FILTER
+ 	help
+-	  Those drivers should not be used on production Kernels, but
+-	  can be useful on debug ones. It enables several dummy drivers
+-	  that simulate a real hardware. Very useful to test userspace
+-	  applications and to validate if the subsystem core is doesn't
++	  These drivers should not be used on production kernels, but
++	  can be useful on debug ones. This option enables several dummy drivers
++	  that simulate real hardware. Very useful to test userspace
++	  applications and to validate if the subsystem core doesn't
+ 	  have regressions.
  
--	for (value = values; value->mbps; value++)
-+	for (value = values; value->mbps; value++) {
- 		if (value->mbps >= mbps)
- 			break;
-+		prev_value = value;
-+	}
-+
-+	if (prev_value &&
-+	    ((mbps - prev_value->mbps) <= (value->mbps - mbps)))
-+		value = prev_value;
- 
- 	if (!value->mbps) {
- 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
+ 	  Say Y if you want to use some virtual test driver.
 
 
