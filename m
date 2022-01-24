@@ -2,67 +2,167 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B94AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E73FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:34:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239105AbiAXObW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:31:22 -0500
-Received: from mga11.intel.com ([192.55.52.93]:9369 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238921AbiAXObN (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:31:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643034673; x=1674570673;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=gX4SVNGoVO+Y0+OG3nztV8ajdaDJcg5uJdE0l49TVIo=;
-  b=TJd/T98pfvPy0wEybs6ZVA1FLgl9yXhMUh0+dM2pWZ1zBtqx12VGYmVB
-   y2TekABdGGLTRdSCCU9hrIo8TBq1LpBoWt19Ak+KFV/MVQLy1UtbaCyBd
-   V0zUGga5yG7xGURBfboACEXXedTLvKNhwfmdXJs56NbfhsVsVvplfh00T
-   Mfi4GEQhH9cHkVzRpas5BWRib3cTTqux+5ynQc955mMevWyQ+4qi3FTPI
-   ljh7Q/1ooBbH83oJrXFNP11cPA+Mx9Brbyu735LGEfoxy9UFe3nwKCfVh
-   8mYp6073O12b2VraPfgH5X1P0YEJrrkbfPeOXUPyR0EyZnDoeLuDLfhhG
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="243653131"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="243653131"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:31:12 -0800
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="673641847"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:31:11 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nC0M9-00DvJF-3i;
-        Mon, 24 Jan 2022 16:30:05 +0200
-Date:   Mon, 24 Jan 2022 16:30:04 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v1 1/1] pinctrl: Place correctly CONFIG_PINCTRL_STMFX in
- the Makefile
-Message-ID: <Ye637G6zqfxiq6CP@smile.fi.intel.com>
-References: <20220112210456.29375-1-andriy.shevchenko@linux.intel.com>
+        id S238845AbiAXOes (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:34:48 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.222]:58734 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S237779AbiAXOer (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 09:34:47 -0500
+HMM_SOURCE_IP: 172.18.0.218:37604.302679515
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-112.38.63.33 (unknown [172.18.0.218])
+        by chinatelecom.cn (HERMES) with SMTP id 7E99928009A;
+        Mon, 24 Jan 2022 22:34:35 +0800 (CST)
+X-189-SAVE-TO-SEND: sunshouxin@chinatelecom.cn
+Received: from  ([172.18.0.218])
+        by app0025 with ESMTP id 7f167e02474647c4a9bfcfb9959c7b6e for nikolay@nvidia.com;
+        Mon, 24 Jan 2022 22:34:39 CST
+X-Transaction-ID: 7f167e02474647c4a9bfcfb9959c7b6e
+X-Real-From: sunshouxin@chinatelecom.cn
+X-Receive-IP: 172.18.0.218
+X-MEDUSA-Status: 0
+Sender: sunshouxin@chinatelecom.cn
+Message-ID: <f7a4697e-4be0-49c6-caa9-e56b43026654@chinatelecom.cn>
+Date:   Mon, 24 Jan 2022 22:34:32 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112210456.29375-1-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v7] net: bonding: Add support for IPV6 ns/na to
+ balance-alb/balance-tlb mode
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jay.vosburgh@canonical.com, huyd12@chinatelecom.cn
+References: <20220121082243.88155-1-sunshouxin@chinatelecom.cn>
+ <fb358da0-d255-301d-c39c-8232aa415a38@nvidia.com>
+From:   =?UTF-8?B?5a2Z5a6I6ZGr?= <sunshouxin@chinatelecom.cn>
+In-Reply-To: <fb358da0-d255-301d-c39c-8232aa415a38@nvidia.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 11:04:56PM +0200, Andy Shevchenko wrote:
-> Keep Makefile entries ordered in the same way as Kconfig ones.
 
-I have pushed rebased version to my review and testing queue, I'll send it in
-the PR for fixes to Linus W.
+在 2022/1/21 16:52, Nikolay Aleksandrov 写道:
+> On 21/01/2022 10:22, Sun Shouxin wrote:
+>> Since ipv6 neighbor solicitation and advertisement messages
+>> isn't handled gracefully in bond6 driver, we can see packet
+>> drop due to inconsistency between mac address in the option
+>> message and source MAC .
+>>
+>> Another examples is ipv6 neighbor solicitation and advertisement
+>> messages from VM via tap attached to host bridge, the src mac
+>> might be changed through balance-alb mode, but it is not synced
+>> with Link-layer address in the option message.
+>>
+>> The patch implements bond6's tx handle for ipv6 neighbor
+>> solicitation and advertisement messages.
+>>
+>> Suggested-by: Hu Yadi <huyd12@chinatelecom.cn>
+>> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+>> Signed-off-by: Sun Shouxin <sunshouxin@chinatelecom.cn>
+>> ---
+>>   drivers/net/bonding/bond_alb.c | 36 ++++++++++++++++++++++++++++++++++
+>>   1 file changed, 36 insertions(+)
+>>
+> Hi,
+> A few comments below,
 
--- 
-With Best Regards,
-Andy Shevchenko
+
+Thanks your comment, I'll adjust it and send out V8 soon.
 
 
+>
+>> diff --git a/drivers/net/bonding/bond_alb.c b/drivers/net/bonding/bond_alb.c
+>> index 533e476988f2..82b7071840b1 100644
+>> --- a/drivers/net/bonding/bond_alb.c
+>> +++ b/drivers/net/bonding/bond_alb.c
+>> @@ -1269,6 +1269,34 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
+>>   	return res;
+>>   }
+>>   
+>> +/*determine if the packet is NA or NS*
+> comments should have spaces, /* text */
+>
+>> +static bool __alb_determine_nd(struct icmp6hdr *hdr)
+>> +{
+>> +	if (hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+>> +	    hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
+>> +		return true;
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
+>> +static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+>> +{
+>> +	struct ipv6hdr *ip6hdr;
+>> +	struct icmp6hdr *hdr;
+>> +
+>> +	if (skb->protocol == htons(ETH_P_IPV6)) {
+> You can drop this test if you re-arrange the cases in the caller. More below.
+>
+>> +		ip6hdr = ipv6_hdr(skb);
+>> +		if (ip6hdr->nexthdr == IPPROTO_ICMPV6) {
+>> +			hdr = icmp6_hdr(skb);
+> You have to use pskb_may_pull here, only the IPv6 header is pulled by the caller
+> and certain to be in the linear part. Also you have to change one of the callers,
+> more below.
+>
+>> +			if (__alb_determine_nd(hdr))
+>> +				return true;
+> you can do directly return __alb_determine_nd(hdr) here.
+>
+>> +		}
+>> +	}
+>> +
+>> +	return false;
+>> +}
+>> +
+>>   /************************ exported alb functions ************************/
+>>   
+>>   int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
+>> @@ -1350,6 +1378,9 @@ struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,>  		switch (skb->protocol) {
+>>   		case htons(ETH_P_IP):
+>>   		case htons(ETH_P_IPV6):
+>> +			if (alb_determine_nd(skb, bond))
+>> +				break;
+>> +
+> You can drop the IPv6 test in alb_determine_nd() if you re-arrange the cases here.
+> Something like:
+>    		case htons(ETH_P_IPV6):
+> 			if (alb_determine_nd(skb, bond))
+> 				break;
+> 			fallthrough;
+>    		case htons(ETH_P_IP):
+>
+> You should also use pskb_may_pull to make sure the IPv6 header is in the linear part
+> and can be accessed.
+>
+>>   			hash_index = bond_xmit_hash(bond, skb);
+>>   			if (bond->params.tlb_dynamic_lb) {
+>>   				tx_slave = tlb_choose_channel(bond,
+>> @@ -1446,6 +1477,11 @@ struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+>>   			break;
+>>   		}
+>>   
+>> +		if (alb_determine_nd(skb, bond)) {
+>> +			do_tx_balance = false;
+>> +			break;
+>> +		}
+>> +
+>>   		hash_start = (char *)&ip6hdr->daddr;
+>>   		hash_size = sizeof(ip6hdr->daddr);
+>>   		break;
+>>
+>> base-commit: 79e06c4c4950be2abd8ca5d2428a8c915aa62c24
+> Thanks,
+>   Nik
+>
