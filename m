@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C33A8C35276
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A610C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367717AbiAXX4U (ORCPT
+        id S2367383AbiAXXzR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:56:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50034 "EHLO
+        Mon, 24 Jan 2022 18:55:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846417AbiAXXPz (ORCPT
+        with ESMTP id S1846529AbiAXXQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:15:55 -0500
+        Mon, 24 Jan 2022 18:16:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E6ECC0604D4;
-        Mon, 24 Jan 2022 13:24:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BB79C0617BB;
+        Mon, 24 Jan 2022 13:25:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45C0CB81057;
-        Mon, 24 Jan 2022 21:24:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76B06C340E4;
-        Mon, 24 Jan 2022 21:24:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 027AEB811A2;
+        Mon, 24 Jan 2022 21:25:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FEF8C340E5;
+        Mon, 24 Jan 2022 21:25:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059480;
-        bh=s5IjFqMJ/dT0kIt8h9WrHQlrzu3r9T+bGFdI2o8kycU=;
+        s=korg; t=1643059530;
+        bh=l5m0JNrwApBjUgpOL2jCcyrk+wjkCLYERdR8P9Cx/Vw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=faStgG3usJ/cAuKUTaCxnkhU0DChE5nEKJTr+TmFPi7QDGqs0jpdB5NavhR6aYywA
-         uPZvHJlXTxMUDV64v4cCW8sZLoIyRwzSzyGAy3UP8Aye23iqBjGnCai0L9e7XS7PCr
-         kTKZbWor4xBVieC93suXk0U2kyFqIZ/mTwegVmbI=
+        b=AXEjFp9vPfYuvNSqweUSV5h6LJlR8Vx35kMrME0Ep3SnDqDTcvBxC8m9f4FCnJJhO
+         Jn/lLoCmDErfWipqRlN6QoILlsGMVegnSbwN4gG4y/TDnQ8P7Nir65fOsP43uCRcLu
+         /Jb9l9xXNMfA0NN18dG2P5S402XFh9M5z3ioR32U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0630/1039] rtw89: dont kick off TX DMA if failed to write skb
-Date:   Mon, 24 Jan 2022 19:40:19 +0100
-Message-Id: <20220124184146.526481637@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
+        David Gow <davidgow@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0646/1039] kunit: Dont crash if no parameters are generated
+Date:   Mon, 24 Jan 2022 19:40:35 +0100
+Message-Id: <20220124184147.064749898@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,39 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: David Gow <davidgow@google.com>
 
-[ Upstream commit a58fdb7c843a37d6598204c6513961feefdadc6a ]
+[ Upstream commit 37dbb4c7c7442dbfc9b651e4ddd4afe30b26afc9 ]
 
-This is found by Smatch static checker warning:
-	drivers/net/wireless/realtek/rtw89/mac80211.c:31 rtw89_ops_tx()
-	error: uninitialized symbol 'qsel'.
+It's possible that a parameterised test could end up with zero
+parameters. At the moment, the test function will nevertheless be called
+with NULL as the parameter. Instead, don't try to run the test code, and
+just mark the test as SKIPped.
 
-The warning is because 'qsel' isn't filled by rtw89_core_tx_write() due to
-failed to write. The way to fix it is to avoid kicking off TX DMA, so add
-'return' to the failure case.
-
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211201093816.13806-1-pkshih@realtek.com
+Reported-by: Daniel Latypov <dlatypov@google.com>
+Signed-off-by: David Gow <davidgow@google.com>
+Reviewed-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw89/mac80211.c | 1 +
- 1 file changed, 1 insertion(+)
+ lib/kunit/test.c | 18 ++++++++++--------
+ 1 file changed, 10 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw89/mac80211.c b/drivers/net/wireless/realtek/rtw89/mac80211.c
-index 16dc6fb7dbb0b..e9d61e55e2d92 100644
---- a/drivers/net/wireless/realtek/rtw89/mac80211.c
-+++ b/drivers/net/wireless/realtek/rtw89/mac80211.c
-@@ -27,6 +27,7 @@ static void rtw89_ops_tx(struct ieee80211_hw *hw,
- 	if (ret) {
- 		rtw89_err(rtwdev, "failed to transmit skb: %d\n", ret);
- 		ieee80211_free_txskb(hw, skb);
-+		return;
- 	}
- 	rtw89_core_tx_kick_off(rtwdev, qsel);
- }
+diff --git a/lib/kunit/test.c b/lib/kunit/test.c
+index 3bd741e50a2d3..f96498ede2cc5 100644
+--- a/lib/kunit/test.c
++++ b/lib/kunit/test.c
+@@ -504,16 +504,18 @@ int kunit_run_tests(struct kunit_suite *suite)
+ 		struct kunit_result_stats param_stats = { 0 };
+ 		test_case->status = KUNIT_SKIPPED;
+ 
+-		if (test_case->generate_params) {
++		if (!test_case->generate_params) {
++			/* Non-parameterised test. */
++			kunit_run_case_catch_errors(suite, test_case, &test);
++			kunit_update_stats(&param_stats, test.status);
++		} else {
+ 			/* Get initial param. */
+ 			param_desc[0] = '\0';
+ 			test.param_value = test_case->generate_params(NULL, param_desc);
+-		}
+ 
+-		do {
+-			kunit_run_case_catch_errors(suite, test_case, &test);
++			while (test.param_value) {
++				kunit_run_case_catch_errors(suite, test_case, &test);
+ 
+-			if (test_case->generate_params) {
+ 				if (param_desc[0] == '\0') {
+ 					snprintf(param_desc, sizeof(param_desc),
+ 						 "param-%d", test.param_index);
+@@ -530,11 +532,11 @@ int kunit_run_tests(struct kunit_suite *suite)
+ 				param_desc[0] = '\0';
+ 				test.param_value = test_case->generate_params(test.param_value, param_desc);
+ 				test.param_index++;
+-			}
+ 
+-			kunit_update_stats(&param_stats, test.status);
++				kunit_update_stats(&param_stats, test.status);
++			}
++		}
+ 
+-		} while (test.param_value);
+ 
+ 		kunit_print_test_stats(&test, param_stats);
+ 
 -- 
 2.34.1
 
