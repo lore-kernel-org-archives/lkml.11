@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A492C35276
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18FE2C35275
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344460AbiAXT4m (ORCPT
+        id S1359229AbiAXT4h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        Mon, 24 Jan 2022 14:56:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354667AbiAXTg7 (ORCPT
+        with ESMTP id S1345733AbiAXThN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:36:59 -0500
+        Mon, 24 Jan 2022 14:37:13 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD11AC0612F8;
-        Mon, 24 Jan 2022 11:17:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11563C0604F5;
+        Mon, 24 Jan 2022 11:17:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9AE56B81236;
-        Mon, 24 Jan 2022 19:17:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E49C36AE9;
-        Mon, 24 Jan 2022 19:17:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1CE1B81240;
+        Mon, 24 Jan 2022 19:17:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF6BAC340E8;
+        Mon, 24 Jan 2022 19:17:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051823;
-        bh=M2+xpmoMG2NGJVhNb6RBrBI9zSJc9RCc0W1WeKz/v80=;
+        s=korg; t=1643051832;
+        bh=YMq4YagArqu2SkbnR06hP9VJO2Gh6ajfWQWPQ1uzrCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ucL6Fnu2dcFxzz5Oz4SHNvrjL8pybacqBj8WblczGozRsJp+m0SrZeAkoB8Uk0SCg
-         ByLea2dXXIJkLaPMqimPhM42xVomdLI0UsN05S74Vxoxe5ah7gZD3+WD7r1HFiGA0q
-         0HeXf3orYJNeGwsk/Qx5yazEId1nkIdi/HtoA3B4=
+        b=1aRgW+Kz1JjebxkWt5C0UfGEH887IUDZsr3X+RpqTPa8JnYaqgpb/NhEbwAPO3O6n
+         xmLbT7j5/MLkbtcVbz2bUHcccvJ1G9w2LjbfEmdMqS7852yM1+BeQ8MAHosXEyi8T9
+         Pm6G/rIVNPAPUzA42KPTmIhUIZ/Nl/UqbqVKjNoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 098/239] ext4: avoid trim error on fs with small groups
-Date:   Mon, 24 Jan 2022 19:42:16 +0100
-Message-Id: <20220124183946.222952786@linuxfoundation.org>
+Subject: [PATCH 4.19 100/239] ALSA: PCM: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:42:18 +0100
+Message-Id: <20220124183946.284895097@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -50,70 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
+[ Upstream commit 5471e9762e1af4b7df057a96bfd46cc250979b88 ]
 
-A user reported FITRIM ioctl failing for him on ext4 on some devices
-without apparent reason.  After some debugging we've found out that
-these devices (being LVM volumes) report rather large discard
-granularity of 42MB and the filesystem had 1k blocksize and thus group
-size of 8MB. Because ext4 FITRIM implementation puts discard
-granularity into minlen, ext4_trim_fs() declared the trim request as
-invalid. However just silently doing nothing seems to be a more
-appropriate reaction to such combination of parameters since user did
-not specify anything wrong.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-CC: Lukas Czerner <lczerner@redhat.com>
-Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Fixes: a8ff48cb7083 ("ALSA: pcm: Free chmap at PCM free callback, too")
+Link: https://lore.kernel.org/r/20211116071314.15065-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ioctl.c   | 2 --
- fs/ext4/mballoc.c | 8 ++++++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ sound/core/pcm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
-index 21c9ebfe83478..484cb68c34d92 100644
---- a/fs/ext4/ioctl.c
-+++ b/fs/ext4/ioctl.c
-@@ -1052,8 +1052,6 @@ resizefs_out:
- 		    sizeof(range)))
- 			return -EFAULT;
- 
--		range.minlen = max((unsigned int)range.minlen,
--				   q->limits.discard_granularity);
- 		ret = ext4_trim_fs(sb, &range);
- 		if (ret < 0)
- 			return ret;
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 447aa17c804e2..db8243627b085 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -5260,6 +5260,7 @@ out:
-  */
- int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+diff --git a/sound/core/pcm.c b/sound/core/pcm.c
+index 01b9d62eef14d..b6ed38dec4357 100644
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -874,7 +874,11 @@ EXPORT_SYMBOL(snd_pcm_new_internal);
+ static void free_chmap(struct snd_pcm_str *pstr)
  {
-+	struct request_queue *q = bdev_get_queue(sb->s_bdev);
- 	struct ext4_group_info *grp;
- 	ext4_group_t group, first_group, last_group;
- 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
-@@ -5278,6 +5279,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
- 	    start >= max_blks ||
- 	    range->len < sb->s_blocksize)
- 		return -EINVAL;
-+	/* No point to try to trim less than discard granularity */
-+	if (range->minlen < q->limits.discard_granularity) {
-+		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
-+			q->limits.discard_granularity >> sb->s_blocksize_bits);
-+		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
-+			goto out;
-+	}
- 	if (end >= max_blks)
- 		end = max_blks - 1;
- 	if (end <= first_data_blk)
+ 	if (pstr->chmap_kctl) {
+-		snd_ctl_remove(pstr->pcm->card, pstr->chmap_kctl);
++		struct snd_card *card = pstr->pcm->card;
++
++		down_write(&card->controls_rwsem);
++		snd_ctl_remove(card, pstr->chmap_kctl);
++		up_write(&card->controls_rwsem);
+ 		pstr->chmap_kctl = NULL;
+ 	}
+ }
 -- 
 2.34.1
 
