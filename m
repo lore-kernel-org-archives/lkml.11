@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB74C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 123BAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575730AbiAXVwZ (ORCPT
+        id S1575797AbiAXVwc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
+        Mon, 24 Jan 2022 16:52:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450151AbiAXVTu (ORCPT
+        with ESMTP id S1450069AbiAXVTl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E36C06F8FA;
-        Mon, 24 Jan 2022 12:14:01 -0800 (PST)
+        Mon, 24 Jan 2022 16:19:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5478C06F8EF;
+        Mon, 24 Jan 2022 12:13:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EBD066136F;
-        Mon, 24 Jan 2022 20:14:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5E8C340E5;
-        Mon, 24 Jan 2022 20:13:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6CBEFB810BD;
+        Mon, 24 Jan 2022 20:13:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7917FC340E5;
+        Mon, 24 Jan 2022 20:13:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055240;
-        bh=nLAh1WwS4fr/AUWaPNjL/z4wUxnfEXp/q678GyhCGxY=;
+        s=korg; t=1643055227;
+        bh=olKOp1fP6GqohxFV6u2yGgn8fWqUo03Gd4u6tv86pMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xWESEjb7M6nR+sQk9RKokRf/1h1hsNvNrfTxNJlQ6Bwl6v6uEnOSS/X0W3QRAkwH9
-         amOiD8RMxAe2ZvaQcvPtshrnN2Kw4r3R5Z2VuU0xN1eGz8w3oYT9KztDlvPmsvNxIQ
-         28Nml+OhwMZJdb4msqQmV1HMMtBmsxw0QG+ai70A=
+        b=Q5sAYIY26DEBSxvo4CH5Ld/nxcCrezuRdPjW4Cwg4uURhqTm+l3sqKg1q4Ns7vg4A
+         V9ci+2UJHlb9iy4iuTSEFfaoZOAFWQ+yAcGUfNbi7gUKulhFvB03ax9bKVbw6RebcW
+         Fo5zOAtuU5I3lvo2vPKEJWcD4LD2cpZrBanf30ko=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 087/846] clk: bcm-2835: Pick the closest clock rate
-Date:   Mon, 24 Jan 2022 19:33:24 +0100
-Message-Id: <20220124184103.987362267@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.15 039/846] ksmbd: add reserved room in ipc request/response
+Date:   Mon, 24 Jan 2022 19:32:36 +0100
+Message-Id: <20220124184102.289979131@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,46 +49,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-[ Upstream commit 5517357a4733d7cf7c17fc79d0530cfa47add372 ]
+commit 41dbda16a0902798e732abc6599de256b9dc3b27 upstream.
 
-The driver currently tries to pick the closest rate that is lower than
-the rate being requested.
+Whenever new parameter is added to smb configuration, It is possible
+to break the execution of the IPC daemon by mismatch size of
+request/response. This patch tries to reserve space in ipc request/response
+in advance to prevent that.
 
-This causes an issue with clk_set_min_rate() since it actively checks
-for the rounded rate to be above the minimum that was just set.
-
-Let's change the logic a bit to pick the closest rate to the requested
-rate, no matter if it's actually higher or lower.
-
-Fixes: 6d18b8adbe67 ("clk: bcm2835: Support for clock parent selection")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-2-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/bcm/clk-bcm2835.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ksmbd/ksmbd_netlink.h |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index a254512965eb8..bf97b2b2a63f8 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -1216,7 +1216,7 @@ static int bcm2835_clock_determine_rate(struct clk_hw *hw,
- 		rate = bcm2835_clock_choose_div_and_prate(hw, i, req->rate,
- 							  &div, &prate,
- 							  &avgrate);
--		if (rate > best_rate && rate <= req->rate) {
-+		if (abs(req->rate - rate) < abs(req->rate - best_rate)) {
- 			best_parent = parent;
- 			best_prate = prate;
- 			best_rate = rate;
--- 
-2.34.1
-
+--- a/fs/ksmbd/ksmbd_netlink.h
++++ b/fs/ksmbd/ksmbd_netlink.h
+@@ -104,6 +104,7 @@ struct ksmbd_startup_request {
+ 					 */
+ 	__u32	sub_auth[3];		/* Subauth value for Security ID */
+ 	__u32	smb2_max_credits;	/* MAX credits */
++	__u32	reserved[128];		/* Reserved room */
+ 	__u32	ifc_list_sz;		/* interfaces list size */
+ 	__s8	____payload[];
+ };
+@@ -114,7 +115,7 @@ struct ksmbd_startup_request {
+  * IPC request to shutdown ksmbd server.
+  */
+ struct ksmbd_shutdown_request {
+-	__s32	reserved;
++	__s32	reserved[16];
+ };
+ 
+ /*
+@@ -123,6 +124,7 @@ struct ksmbd_shutdown_request {
+ struct ksmbd_login_request {
+ 	__u32	handle;
+ 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ]; /* user account name */
++	__u32	reserved[16];				/* Reserved room */
+ };
+ 
+ /*
+@@ -136,6 +138,7 @@ struct ksmbd_login_response {
+ 	__u16	status;
+ 	__u16	hash_sz;			/* hash size */
+ 	__s8	hash[KSMBD_REQ_MAX_HASH_SZ];	/* password hash */
++	__u32	reserved[16];			/* Reserved room */
+ };
+ 
+ /*
+@@ -144,6 +147,7 @@ struct ksmbd_login_response {
+ struct ksmbd_share_config_request {
+ 	__u32	handle;
+ 	__s8	share_name[KSMBD_REQ_MAX_SHARE_NAME]; /* share name */
++	__u32	reserved[16];		/* Reserved room */
+ };
+ 
+ /*
+@@ -158,6 +162,7 @@ struct ksmbd_share_config_response {
+ 	__u16	force_directory_mode;
+ 	__u16	force_uid;
+ 	__u16	force_gid;
++	__u32	reserved[128];		/* Reserved room */
+ 	__u32	veto_list_sz;
+ 	__s8	____payload[];
+ };
+@@ -188,6 +193,7 @@ struct ksmbd_tree_connect_request {
+ 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ];
+ 	__s8	share[KSMBD_REQ_MAX_SHARE_NAME];
+ 	__s8	peer_addr[64];
++	__u32	reserved[16];		/* Reserved room */
+ };
+ 
+ /*
+@@ -197,6 +203,7 @@ struct ksmbd_tree_connect_response {
+ 	__u32	handle;
+ 	__u16	status;
+ 	__u16	connection_flags;
++	__u32	reserved[16];		/* Reserved room */
+ };
+ 
+ /*
+@@ -205,6 +212,7 @@ struct ksmbd_tree_connect_response {
+ struct ksmbd_tree_disconnect_request {
+ 	__u64	session_id;	/* session id */
+ 	__u64	connect_id;	/* tree connection id */
++	__u32	reserved[16];	/* Reserved room */
+ };
+ 
+ /*
+@@ -213,6 +221,7 @@ struct ksmbd_tree_disconnect_request {
+ struct ksmbd_logout_request {
+ 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ]; /* user account name */
+ 	__u32	account_flags;
++	__u32	reserved[16];				/* Reserved room */
+ };
+ 
+ /*
 
 
