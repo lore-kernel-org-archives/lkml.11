@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB260C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346240AbiAXUXn (ORCPT
+        id S1351241AbiAXUXy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:23:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56682 "EHLO
+        Mon, 24 Jan 2022 15:23:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60764 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346099AbiAXUA2 (ORCPT
+        with ESMTP id S1349002AbiAXUE0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:00:28 -0500
+        Mon, 24 Jan 2022 15:04:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4913612F0;
-        Mon, 24 Jan 2022 20:00:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D8DDC340E8;
-        Mon, 24 Jan 2022 20:00:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EDB7860FEA;
+        Mon, 24 Jan 2022 20:04:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71ACC340E5;
+        Mon, 24 Jan 2022 20:04:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054425;
-        bh=9zqniQmnmRj2EP7QeluyIKIoG9IT21ZtY1hW7QzQH5Y=;
+        s=korg; t=1643054665;
+        bh=4KlIyUwdaU0SslnKI/s1L0XxnUs5SxyM+C11F7GRPMo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FfVQ6AYg0Ov9apoImHL8kelULttcaV+qOqMh++Rb8hV95yRSq3ncHy1XSWcETYfhh
-         6i3K4QVT9Oxv7sI1NYNxCAJi8hF9PX9lHNVjkES0EhOQVw25woGsZWh4EHJzvbjf5a
-         WUOuIwxSHwPZIhjbJ62pqUxrM7vi6ATniNlCWQbw=
+        b=SHgLwC+iY8Y+ZOVRA/jYhPn3zDdQVw8AB/FkbIWP3tPQ+QRpsFG3z+1DI1jmfyord
+         ui/lKPol8rZr06Xw5eXfGodWdD7+tS5+lvm2HXd1FE126POsXgtFwusaYLlQWEsirj
+         k8ONNkjRFXSm3PQop4MDQbMH01fj7UWcqRkDizIM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 384/563] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
-Date:   Mon, 24 Jan 2022 19:42:29 +0100
-Message-Id: <20220124184037.702968319@linuxfoundation.org>
+        syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 431/563] udf: Fix error handling in udf_new_inode()
+Date:   Mon, 24 Jan 2022 19:43:16 +0100
+Message-Id: <20220124184039.356522375@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,131 +47,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
+[ Upstream commit f05f2429eec60851b98bdde213de31dab697c01b ]
 
-GC task can deadlock in read_cache_page() because it may attempt
-to release a page that is actually allocated by another task in
-jffs2_write_begin().
-The reason is that in jffs2_write_begin() there is a small window
-a cache page is allocated for use but not set Uptodate yet.
+When memory allocation of iinfo or block allocation fails, already
+allocated struct udf_inode_info gets freed with iput() and
+udf_evict_inode() may look at inode fields which are not properly
+initialized. Fix it by marking inode bad before dropping reference to it
+in udf_new_inode().
 
-This ends up with a deadlock between two tasks:
-1) A task (e.g. file copy)
-   - jffs2_write_begin() locks a cache page
-   - jffs2_write_end() tries to lock "alloc_sem" from
-	 jffs2_reserve_space() <-- STUCK
-2) GC task (jffs2_gcd_mtd3)
-   - jffs2_garbage_collect_pass() locks "alloc_sem"
-   - try to lock the same cache page in read_cache_page() <-- STUCK
-
-So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
-while reading data in a cache page.
-
-Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Reported-by: syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 15 deletions(-)
+ fs/udf/ialloc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
-index 4fc8cd698d1a4..bd7d58d27bfc6 100644
---- a/fs/jffs2/file.c
-+++ b/fs/jffs2/file.c
-@@ -136,20 +136,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 	struct page *pg;
- 	struct inode *inode = mapping->host;
- 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
-+	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 	pgoff_t index = pos >> PAGE_SHIFT;
- 	uint32_t pageofs = index << PAGE_SHIFT;
- 	int ret = 0;
- 
--	pg = grab_cache_page_write_begin(mapping, index, flags);
--	if (!pg)
--		return -ENOMEM;
--	*pagep = pg;
--
- 	jffs2_dbg(1, "%s()\n", __func__);
- 
- 	if (pageofs > inode->i_size) {
- 		/* Make new hole frag from old EOF to new page */
--		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 		struct jffs2_raw_inode ri;
- 		struct jffs2_full_dnode *fn;
- 		uint32_t alloc_len;
-@@ -160,7 +155,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
- 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
- 		if (ret)
--			goto out_page;
-+			goto out_err;
- 
- 		mutex_lock(&f->sem);
- 		memset(&ri, 0, sizeof(ri));
-@@ -190,7 +185,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			ret = PTR_ERR(fn);
- 			jffs2_complete_reservation(c);
- 			mutex_unlock(&f->sem);
--			goto out_page;
-+			goto out_err;
- 		}
- 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
- 		if (f->metadata) {
-@@ -205,13 +200,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			jffs2_free_full_dnode(fn);
- 			jffs2_complete_reservation(c);
- 			mutex_unlock(&f->sem);
--			goto out_page;
-+			goto out_err;
- 		}
- 		jffs2_complete_reservation(c);
- 		inode->i_size = pageofs;
- 		mutex_unlock(&f->sem);
+diff --git a/fs/udf/ialloc.c b/fs/udf/ialloc.c
+index 84ed23edebfd3..87a77bf70ee19 100644
+--- a/fs/udf/ialloc.c
++++ b/fs/udf/ialloc.c
+@@ -77,6 +77,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
+ 					GFP_KERNEL);
  	}
- 
-+	/*
-+	 * While getting a page and reading data in, lock c->alloc_sem until
-+	 * the page is Uptodate. Otherwise GC task may attempt to read the same
-+	 * page in read_cache_page(), which causes a deadlock.
-+	 */
-+	mutex_lock(&c->alloc_sem);
-+	pg = grab_cache_page_write_begin(mapping, index, flags);
-+	if (!pg) {
-+		ret = -ENOMEM;
-+		goto release_sem;
-+	}
-+	*pagep = pg;
-+
- 	/*
- 	 * Read in the page if it wasn't already present. Cannot optimize away
- 	 * the whole page write case until jffs2_write_end can handle the
-@@ -221,15 +229,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		mutex_lock(&f->sem);
- 		ret = jffs2_do_readpage_nolock(inode, pg);
- 		mutex_unlock(&f->sem);
--		if (ret)
--			goto out_page;
-+		if (ret) {
-+			unlock_page(pg);
-+			put_page(pg);
-+			goto release_sem;
-+		}
+ 	if (!iinfo->i_data) {
++		make_bad_inode(inode);
+ 		iput(inode);
+ 		return ERR_PTR(-ENOMEM);
  	}
- 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
--	return ret;
- 
--out_page:
--	unlock_page(pg);
--	put_page(pg);
-+release_sem:
-+	mutex_unlock(&c->alloc_sem);
-+out_err:
- 	return ret;
- }
- 
+@@ -86,6 +87,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
+ 			      dinfo->i_location.partitionReferenceNum,
+ 			      start, &err);
+ 	if (err) {
++		make_bad_inode(inode);
+ 		iput(inode);
+ 		return ERR_PTR(err);
+ 	}
 -- 
 2.34.1
 
