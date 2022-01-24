@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6924C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84080C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345183AbiAXTG4 (ORCPT
+        id S1346603AbiAXTHE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44398 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345668AbiAXTAw (ORCPT
+        Mon, 24 Jan 2022 14:07:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57774 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345676AbiAXTAy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:00:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351AEC061365;
-        Mon, 24 Jan 2022 10:58:17 -0800 (PST)
+        Mon, 24 Jan 2022 14:00:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDD59B81235;
-        Mon, 24 Jan 2022 18:58:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7471C340E5;
-        Mon, 24 Jan 2022 18:58:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5A08B81238;
+        Mon, 24 Jan 2022 19:00:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E114FC340E7;
+        Mon, 24 Jan 2022 19:00:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050695;
-        bh=l31NYPDy27HsQINdourGHA5+CrTxr1+qXptsDsZ7qy0=;
+        s=korg; t=1643050851;
+        bh=sGOvretFgauqF2/LGbvj1iZr7JxVo+3umuYUrti16Ho=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ccBx9IZTM1ODMIgWTYkCquGhUf0RnSOZYpCkfgknrDFVtlhj8uuROS0XGA8qoZZGy
-         Mr2ENuGlUgEwpfhU6GDRsNkVeQ14PeComNjPgyZBnAAxkdTFcnYDjsQWJhJl/l0ykj
-         mFz3EIPLe71sqr/7lhZs5KagFCiITggITPPP2S/k=
+        b=h5khCtPti/6XMR/3WB6H+1EB5CMpD8XkH7Pn0WJGQGj5mNGEawyjAJMj3HC6SIDpQ
+         h0j35m6NP6UK3q3EwfomJ9vSyPSgU+mL+IXMYNX5s1S7b+PfYCFzpyIZshNgwoVtN5
+         yqI/O2UWvMBJFLa7kN1tP0nd4x2kCB8+vC8QrpPY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tasos Sahanidis <tasos@tasossah.com>,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 041/157] floppy: Fix hang in watchdog when disk is ejected
-Date:   Mon, 24 Jan 2022 19:42:11 +0100
-Message-Id: <20220124183934.101171195@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 4.9 132/157] parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
+Date:   Mon, 24 Jan 2022 19:43:42 +0100
+Message-Id: <20220124183936.967542931@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -50,52 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tasos Sahanidis <tasos@tasossah.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit fb48febce7e30baed94dd791e19521abd2c3fd83 ]
+commit d24846a4246b6e61ecbd036880a4adf61681d241 upstream.
 
-When the watchdog detects a disk change, it calls cancel_activity(),
-which in turn tries to cancel the fd_timer delayed work.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
 
-In the above scenario, fd_timer_fn is set to fd_watchdog(), meaning
-it is trying to cancel its own work.
-This results in a hang as cancel_delayed_work_sync() is waiting for the
-watchdog (itself) to return, which never happens.
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
 
-This can be reproduced relatively consistently by attempting to read a
-broken floppy, and ejecting it while IO is being attempted and retried.
+Fix memory leak by calling kobject_put().
 
-To resolve this, this patch calls cancel_delayed_work() instead, which
-cancels the work without waiting for the watchdog to return and finish.
-
-Before this regression was introduced, the code in this section used
-del_timer(), and not del_timer_sync() to delete the watchdog timer.
-
-Link: https://lore.kernel.org/r/399e486c-6540-db27-76aa-7a271b061f76@tasossah.com
-Fixes: 070ad7e793dc ("floppy: convert to delayed work and single-thread wq")
-Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use kobject_init_and_add")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/block/floppy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/parisc/pdc_stable.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 4496e7a492352..d508dda49dee4 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -994,7 +994,7 @@ static DECLARE_DELAYED_WORK(fd_timer, fd_timer_workfn);
- static void cancel_activity(void)
- {
- 	do_floppy = NULL;
--	cancel_delayed_work_sync(&fd_timer);
-+	cancel_delayed_work(&fd_timer);
- 	cancel_work_sync(&floppy_work);
- }
+--- a/drivers/parisc/pdc_stable.c
++++ b/drivers/parisc/pdc_stable.c
+@@ -992,8 +992,10 @@ pdcs_register_pathentries(void)
+ 		entry->kobj.kset = paths_kset;
+ 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
+ 					   "%s", entry->name);
+-		if (err)
++		if (err) {
++			kobject_put(&entry->kobj);
+ 			return err;
++		}
  
--- 
-2.34.1
-
+ 		/* kobject is now registered */
+ 		write_lock(&entry->rw_lock);
 
 
