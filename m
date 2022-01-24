@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BD8C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD28C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587110AbiAXW1s (ORCPT
+        id S1587127AbiAXW1t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        Mon, 24 Jan 2022 17:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454565AbiAXVdI (ORCPT
+        with ESMTP id S1454654AbiAXVdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:08 -0500
+        Mon, 24 Jan 2022 16:33:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4818EC075D06;
-        Mon, 24 Jan 2022 12:21:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75BDC0612F3;
+        Mon, 24 Jan 2022 12:21:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03408B810BD;
-        Mon, 24 Jan 2022 20:21:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EFF9C340E8;
-        Mon, 24 Jan 2022 20:21:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B36CB81253;
+        Mon, 24 Jan 2022 20:21:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE77C340E7;
+        Mon, 24 Jan 2022 20:21:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055673;
-        bh=485Pel/umrmGTI7pbf0TizhUtAcoT/WJdPbsQcA5Gb0=;
+        s=korg; t=1643055686;
+        bh=po8e2/5PZlaR1L4ebFA+7hbiUKq4RTDZucpG7BuzS80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vi1PhsmsfhP4cyFTKGRgKOYU6Gmp3migt0Re946tPbFWyMUe7RILFVt3hsakJpDnt
-         1ZoJoNqjVZ8eDjIIHqMLVToVG60cHfojV8Gf6DUUEmfZWzQ2yE8fWr4CSCR6UmMYnG
-         XgIEPThRwRwUzj8RM8wFppaikjTm54DV/G0et0Pc=
+        b=06HCHkiSw4icqZVnOnubmI/cSKw8ytx3F6MVrAlqsLGLQN+SanCmGFX/zZ5y+MbEN
+         Qq74OW4loHkL1qPSVwEyoks4M9FT8kkjI9kM1pPiyuop499xZdLf3aL6BIEDDx9/9Q
+         EzPeihjE9SDKFPNv9efU05emE63ytPqc91lHdtvI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 229/846] selftests: clone3: clone3: add case CLONE3_ARGS_NO_TEST
-Date:   Mon, 24 Jan 2022 19:35:46 +0100
-Message-Id: <20220124184108.822268012@linuxfoundation.org>
+Subject: [PATCH 5.15 233/846] crypto: stm32/cryp - check early input data
+Date:   Mon, 24 Jan 2022 19:35:50 +0100
+Message-Id: <20220124184108.974205884@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,45 +51,239 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit a531b0c23c0fc68ad758cc31a74cf612a4dafeb0 ]
+[ Upstream commit 39e6e699c7fb92bdb2617b596ca4a4ea35c5d2a7 ]
 
-Building selftests/clone3 with clang warns about enumeration not handled
-in switch case:
+Some auto tests failed because driver wasn't returning the expected
+error with some input size/iv value/tag size.
+Now:
+ Return 0 early for empty buffer. (We don't need to start the engine for
+ an empty input buffer).
+ Accept any valid authsize for gcm(aes).
+ Return -EINVAL if iv for ccm(aes) is invalid.
+ Return -EINVAL if buffer size is a not a multiple of algorithm block size.
 
-clone3.c:54:10: warning: enumeration value 'CLONE3_ARGS_NO_TEST' not handled in switch [-Wswitch]
-        switch (test_mode) {
-                ^
+Fixes: 9e054ec21ef8 ("crypto: stm32 - Support for STM32 CRYP crypto module")
 
-Add the missing switch case with a comment.
-
-Fixes: 17a810699c18 ("selftests: add tests for clone3()")
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/clone3/clone3.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/crypto/stm32/stm32-cryp.c | 114 +++++++++++++++++++++++++++++-
+ 1 file changed, 113 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
-index 42be3b9258301..076cf4325f783 100644
---- a/tools/testing/selftests/clone3/clone3.c
-+++ b/tools/testing/selftests/clone3/clone3.c
-@@ -52,6 +52,12 @@ static int call_clone3(uint64_t flags, size_t size, enum test_mode test_mode)
- 		size = sizeof(struct __clone_args);
- 
- 	switch (test_mode) {
-+	case CLONE3_ARGS_NO_TEST:
-+		/*
-+		 * Uses default 'flags' and 'SIGCHLD'
-+		 * assignment.
-+		 */
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index e2bcc4f98b0ae..fd7fb73a4d450 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -799,7 +799,20 @@ static int stm32_cryp_aes_aead_setkey(struct crypto_aead *tfm, const u8 *key,
+ static int stm32_cryp_aes_gcm_setauthsize(struct crypto_aead *tfm,
+ 					  unsigned int authsize)
+ {
+-	return authsize == AES_BLOCK_SIZE ? 0 : -EINVAL;
++	switch (authsize) {
++	case 4:
++	case 8:
++	case 12:
++	case 13:
++	case 14:
++	case 15:
++	case 16:
 +		break;
- 	case CLONE3_ARGS_ALL_0:
- 		args.flags = 0;
- 		args.exit_signal = 0;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
+ }
+ 
+ static int stm32_cryp_aes_ccm_setauthsize(struct crypto_aead *tfm,
+@@ -823,31 +836,61 @@ static int stm32_cryp_aes_ccm_setauthsize(struct crypto_aead *tfm,
+ 
+ static int stm32_cryp_aes_ecb_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % AES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_AES | FLG_ECB | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_aes_ecb_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % AES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_AES | FLG_ECB);
+ }
+ 
+ static int stm32_cryp_aes_cbc_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % AES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_AES | FLG_CBC | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_aes_cbc_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % AES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_AES | FLG_CBC);
+ }
+ 
+ static int stm32_cryp_aes_ctr_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_AES | FLG_CTR | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_aes_ctr_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_AES | FLG_CTR);
+ }
+ 
+@@ -861,53 +904,122 @@ static int stm32_cryp_aes_gcm_decrypt(struct aead_request *req)
+ 	return stm32_cryp_aead_crypt(req, FLG_AES | FLG_GCM);
+ }
+ 
++static inline int crypto_ccm_check_iv(const u8 *iv)
++{
++	/* 2 <= L <= 8, so 1 <= L' <= 7. */
++	if (iv[0] < 1 || iv[0] > 7)
++		return -EINVAL;
++
++	return 0;
++}
++
+ static int stm32_cryp_aes_ccm_encrypt(struct aead_request *req)
+ {
++	int err;
++
++	err = crypto_ccm_check_iv(req->iv);
++	if (err)
++		return err;
++
+ 	return stm32_cryp_aead_crypt(req, FLG_AES | FLG_CCM | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_aes_ccm_decrypt(struct aead_request *req)
+ {
++	int err;
++
++	err = crypto_ccm_check_iv(req->iv);
++	if (err)
++		return err;
++
+ 	return stm32_cryp_aead_crypt(req, FLG_AES | FLG_CCM);
+ }
+ 
+ static int stm32_cryp_des_ecb_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_DES | FLG_ECB | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_des_ecb_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_DES | FLG_ECB);
+ }
+ 
+ static int stm32_cryp_des_cbc_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_DES | FLG_CBC | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_des_cbc_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_DES | FLG_CBC);
+ }
+ 
+ static int stm32_cryp_tdes_ecb_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_TDES | FLG_ECB | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_tdes_ecb_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_TDES | FLG_ECB);
+ }
+ 
+ static int stm32_cryp_tdes_cbc_encrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_TDES | FLG_CBC | FLG_ENCRYPT);
+ }
+ 
+ static int stm32_cryp_tdes_cbc_decrypt(struct skcipher_request *req)
+ {
++	if (req->cryptlen % DES_BLOCK_SIZE)
++		return -EINVAL;
++
++	if (req->cryptlen == 0)
++		return 0;
++
+ 	return stm32_cryp_crypt(req, FLG_TDES | FLG_CBC);
+ }
+ 
 -- 
 2.34.1
 
