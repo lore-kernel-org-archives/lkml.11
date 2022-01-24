@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5984DC35278
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED42DC35276
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843721AbiAXXFe (ORCPT
+        id S1843696AbiAXXFZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:05:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36724 "EHLO
+        Mon, 24 Jan 2022 18:05:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36182 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583332AbiAXWRi (ORCPT
+        with ESMTP id S1583232AbiAXWR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:17:38 -0500
+        Mon, 24 Jan 2022 17:17:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 492AEC0613A0;
-        Mon, 24 Jan 2022 12:48:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 124DDC06138F;
+        Mon, 24 Jan 2022 12:48:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D93A060F54;
-        Mon, 24 Jan 2022 20:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE361C340E7;
-        Mon, 24 Jan 2022 20:48:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3A2D60C19;
+        Mon, 24 Jan 2022 20:48:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8570DC340E5;
+        Mon, 24 Jan 2022 20:48:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057322;
-        bh=x1ittnNsJWwt1zDpNreQd8A+qpmVXaypmHKKZugegkE=;
+        s=korg; t=1643057298;
+        bh=6i/Lc3WTadO3w1mqFn1HbvI5iuw8Z8mWohFm0Ksrknc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BZ4ArYuB9T4b0bx0JEfxDhTLguJTgNSOANWXI4oz4DKuP4fGetEuMuw9WCUqV/VTm
-         CSZjp/CrPH61alOdz6Y6siZzsrH7EUU1plOIuELPBlDFXcR55AfpjxB8kN8+x3y1nR
-         8F37/gOe8yLS2LECx/kSb3Ri6t3ekSpWOUB6FIzY=
+        b=Z4GWvnvcj2yHScho/Dd7Z4H7qez3SyP2Lx9zY26ayyiCEN/xhYz69ATMxdgpTDKMJ
+         Ko8w2ZzV/dS4LrteDklgDFf/cKKAkthl0Mhmox+GolW/1g6PudeWDVSbZ9Mj5tm9NE
+         LwALerZMngssTMuziyRqDjj3H+K5fjnAi4KwZh7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.15 774/846] parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
-Date:   Mon, 24 Jan 2022 19:44:51 +0100
-Message-Id: <20220124184127.661919511@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.15 767/846] bpf: Mark PTR_TO_FUNC register initially with zero offset
+Date:   Mon, 24 Jan 2022 19:44:44 +0100
+Message-Id: <20220124184127.412298584@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,39 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-commit d24846a4246b6e61ecbd036880a4adf61681d241 upstream.
+commit d400a6cf1c8a57cdf10f35220ead3284320d85ff upstream.
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+Similar as with other pointer types where we use ldimm64, clear the register
+content to zero first, and then populate the PTR_TO_FUNC type and subprogno
+number. Currently this is not done, and leads to reuse of stale register
+tracking data.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+Given for special ldimm64 cases we always clear the register offset, make it
+common for all cases, so it won't be forgotten in future.
 
-Fix memory leak by calling kobject_put().
-
-Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use kobject_init_and_add")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/parisc/pdc_stable.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ kernel/bpf/verifier.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/parisc/pdc_stable.c
-+++ b/drivers/parisc/pdc_stable.c
-@@ -979,8 +979,10 @@ pdcs_register_pathentries(void)
- 		entry->kobj.kset = paths_kset;
- 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
- 					   "%s", entry->name);
--		if (err)
-+		if (err) {
-+			kobject_put(&entry->kobj);
- 			return err;
-+		}
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9199,9 +9199,13 @@ static int check_ld_imm(struct bpf_verif
+ 		return 0;
+ 	}
  
- 		/* kobject is now registered */
- 		write_lock(&entry->rw_lock);
+-	if (insn->src_reg == BPF_PSEUDO_BTF_ID) {
+-		mark_reg_known_zero(env, regs, insn->dst_reg);
++	/* All special src_reg cases are listed below. From this point onwards
++	 * we either succeed and assign a corresponding dst_reg->type after
++	 * zeroing the offset, or fail and reject the program.
++	 */
++	mark_reg_known_zero(env, regs, insn->dst_reg);
+ 
++	if (insn->src_reg == BPF_PSEUDO_BTF_ID) {
+ 		dst_reg->type = aux->btf_var.reg_type;
+ 		switch (dst_reg->type) {
+ 		case PTR_TO_MEM:
+@@ -9238,7 +9242,6 @@ static int check_ld_imm(struct bpf_verif
+ 	}
+ 
+ 	map = env->used_maps[aux->map_index];
+-	mark_reg_known_zero(env, regs, insn->dst_reg);
+ 	dst_reg->map_ptr = map;
+ 
+ 	if (insn->src_reg == BPF_PSEUDO_MAP_VALUE ||
 
 
