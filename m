@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8245DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380116AbiAXWI1 (ORCPT
+        id S1380208AbiAXWIe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:08:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449132AbiAXVO5 (ORCPT
+        Mon, 24 Jan 2022 17:08:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45706 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452206AbiAXVYR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:14:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F01C06E013;
-        Mon, 24 Jan 2022 12:11:21 -0800 (PST)
+        Mon, 24 Jan 2022 16:24:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69726B8122D;
-        Mon, 24 Jan 2022 20:11:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86951C340E5;
-        Mon, 24 Jan 2022 20:11:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D16D6614CB;
+        Mon, 24 Jan 2022 21:24:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4DC8C340E4;
+        Mon, 24 Jan 2022 21:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055080;
-        bh=5cGp+aSWnuWz15OHFFkJuyGsVGAc0ab+PsZw/z1KGJQ=;
+        s=korg; t=1643059456;
+        bh=3kPQFQXrFwsqTMtVM9ew+ZI2qMLU4r4nNQNU7LoZqa0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RmBJ1MYVbJoTpHMZk2IRrO4jfhldXQEnh1oE03HSnIEULmdoiO2zgy6zakwkZH4Z/
-         ulaRJxVADCOW+JeEXfnx+FqEmhVuvvyO8KhK/Vu9yH59qN2O3CdjvV4PyGYXpYENh6
-         WXrqxK+yeAsoVOP+n5j847CPSIFvmjWqOQN4aQVI=
+        b=pnCDK0m1xmVUdGxArAjBoIOM+r0ggwcZZQQT1NwzHH/p4ryshzsu/K94aUhPeZiw1
+         kVp5FtBMymFvcQPzNqbc5re5acb+GQBhDiQsKfRQPpuzEm8Z605f6IbbHnVBPqMpuf
+         wofZLctTVLk5xJelg7o+wv3Ss8hIDayiJc/JVL1I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 007/846] HID: wacom: Avoid using stale array indicies to read contact count
-Date:   Mon, 24 Jan 2022 19:32:04 +0100
-Message-Id: <20220124184101.152949416@linuxfoundation.org>
+        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0589/1039] mxser: dont throttle manually
+Date:   Mon, 24 Jan 2022 19:39:38 +0100
+Message-Id: <20220124184145.134971912@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +46,161 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Jiri Slaby <jslaby@suse.cz>
 
-commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
+[ Upstream commit c6693e6e07805f1b7822b13a5b482bf2b6a1f312 ]
 
-If we ever see a touch report with contact count data we initialize
-several variables used to read the contact count in the pre-report
-phase. These variables are never reset if we process a report which
-doesn't contain a contact count, however. This can cause the pre-
-report function to trigger a read of arbitrary memory (e.g. NULL
-if we're lucky) and potentially crash the driver.
+First, checking tty->receive_room to signalize whether there is enough space
+in the tty buffers does not make much sense. Provided the tty buffers
+are in tty_port and those are not checked at all.
 
-This commit restores resetting of the variables back to default
-"none" values that were used prior to the commit mentioned
-below.
+Second, if the rx path is throttled, with CRTSCTS, RTS is deasserted,
+but is never asserted again. This leads to port "lockup", not accepting
+any more input.
 
-Link: https://github.com/linuxwacom/input-wacom/issues/276
-Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+So:
+1) stty -F /dev/ttyMI0 crtscts # the mxser port
+2) stty -F /dev/ttyS6 crtscts # the connected port
+3) cat /dev/ttyMI0
+4) "write in a loop" to /dev/ttyS6
+5) cat from 3) produces the bytes from 4)
+6) killall -STOP cat (the 3)'s one)
+7) wait for RTS to drop on /dev/ttyMI0
+8) killall -CONT cat (again the 3)'s one)
+
+cat erroneously produces no more output now (i.e. no data sent from
+ttyS6 to ttyMI can be seen).
+
+Note that the step 7) is performed twice: once from n_tty by
+tty_throttle_safe(), once by mxser_stoprx() from the receive path. Then
+after step 7), n_tty correctly unthrottles the input, but mxser calls
+mxser_stoprx() again as there is still only a little space in n_tty
+buffers (tty->receive_room mentioned at the beginning), but the device's
+FIFO is/can be already filled.
+
+After this patch, the output is correctly resumed, i.e. n_tty both
+throttles and unthrottles without interfering with mxser's attempts.
+
+This allows us to get rid of the non-standard ldisc_stop_rx flag from
+struct mxser_port.
+
+Signed-off-by: Jiri Slaby <jslaby@suse.cz>
+Link: https://lore.kernel.org/r/20211118073125.12283-15-jslaby@suse.cz
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/wacom_wac.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/mxser.c | 36 ++++++------------------------------
+ 1 file changed, 6 insertions(+), 30 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2682,6 +2682,10 @@ static void wacom_wac_finger_pre_report(
+diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
+index 27caa2f9ba79b..3b5d193b7f245 100644
+--- a/drivers/tty/mxser.c
++++ b/drivers/tty/mxser.c
+@@ -251,8 +251,6 @@ struct mxser_port {
+ 	u8 MCR;			/* Modem control register */
+ 	u8 FCR;			/* FIFO control register */
  
- 	hid_data->confidence = true;
+-	bool ldisc_stop_rx;
+-
+ 	struct async_icount icount; /* kernel counters for 4 input interrupts */
+ 	unsigned int timeout;
  
-+	hid_data->cc_report = 0;
-+	hid_data->cc_index = -1;
-+	hid_data->cc_value_index = -1;
-+
- 	for (i = 0; i < report->maxfield; i++) {
- 		struct hid_field *field = report->field[i];
- 		int j;
+@@ -1323,11 +1321,14 @@ static int mxser_get_icount(struct tty_struct *tty,
+ 	return 0;
+ }
+ 
+-static void mxser_stoprx(struct tty_struct *tty)
++/*
++ * This routine is called by the upper-layer tty layer to signal that
++ * incoming characters should be throttled.
++ */
++static void mxser_throttle(struct tty_struct *tty)
+ {
+ 	struct mxser_port *info = tty->driver_data;
+ 
+-	info->ldisc_stop_rx = true;
+ 	if (I_IXOFF(tty)) {
+ 		if (info->board->must_hwid) {
+ 			info->IER &= ~MOXA_MUST_RECV_ISR;
+@@ -1346,21 +1347,11 @@ static void mxser_stoprx(struct tty_struct *tty)
+ 	}
+ }
+ 
+-/*
+- * This routine is called by the upper-layer tty layer to signal that
+- * incoming characters should be throttled.
+- */
+-static void mxser_throttle(struct tty_struct *tty)
+-{
+-	mxser_stoprx(tty);
+-}
+-
+ static void mxser_unthrottle(struct tty_struct *tty)
+ {
+ 	struct mxser_port *info = tty->driver_data;
+ 
+ 	/* startrx */
+-	info->ldisc_stop_rx = false;
+ 	if (I_IXOFF(tty)) {
+ 		if (info->x_char)
+ 			info->x_char = 0;
+@@ -1543,9 +1534,6 @@ static bool mxser_receive_chars_new(struct tty_struct *tty,
+ 	if (hwid == MOXA_MUST_MU150_HWID)
+ 		gdl &= MOXA_MUST_GDL_MASK;
+ 
+-	if (gdl >= tty->receive_room && !port->ldisc_stop_rx)
+-		mxser_stoprx(tty);
+-
+ 	while (gdl--) {
+ 		u8 ch = inb(port->ioaddr + UART_RX);
+ 		tty_insert_flip_char(&port->port, ch, 0);
+@@ -1558,10 +1546,8 @@ static u8 mxser_receive_chars_old(struct tty_struct *tty,
+ 		                struct mxser_port *port, u8 status)
+ {
+ 	enum mxser_must_hwid hwid = port->board->must_hwid;
+-	int recv_room = tty->receive_room;
+ 	int ignored = 0;
+ 	int max = 256;
+-	int cnt = 0;
+ 	u8 ch;
+ 
+ 	do {
+@@ -1596,14 +1582,8 @@ static u8 mxser_receive_chars_old(struct tty_struct *tty,
+ 					port->icount.overrun++;
+ 				}
+ 			}
+-			tty_insert_flip_char(&port->port, ch, flag);
+-			cnt++;
+-			if (cnt >= recv_room) {
+-				if (!port->ldisc_stop_rx)
+-					mxser_stoprx(tty);
++			if (!tty_insert_flip_char(&port->port, ch, flag))
+ 				break;
+-			}
+-
+ 		}
+ 
+ 		if (hwid)
+@@ -1618,9 +1598,6 @@ static u8 mxser_receive_chars_old(struct tty_struct *tty,
+ static u8 mxser_receive_chars(struct tty_struct *tty,
+ 		struct mxser_port *port, u8 status)
+ {
+-	if (tty->receive_room == 0 && !port->ldisc_stop_rx)
+-		mxser_stoprx(tty);
+-
+ 	if (!mxser_receive_chars_new(tty, port, status))
+ 		status = mxser_receive_chars_old(tty, port, status);
+ 
+@@ -1833,7 +1810,6 @@ static void mxser_initbrd(struct mxser_board *brd, bool high_baud)
+ 		tty_port_init(&info->port);
+ 		info->port.ops = &mxser_port_ops;
+ 		info->board = brd;
+-		info->ldisc_stop_rx = false;
+ 
+ 		/* Enhance mode enabled here */
+ 		if (brd->must_hwid != MOXA_OTHER_UART)
+-- 
+2.34.1
+
 
 
