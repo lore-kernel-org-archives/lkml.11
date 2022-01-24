@@ -2,170 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72C00C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:30:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3D66C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243167AbiAXNaU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:30:20 -0500
-Received: from mga07.intel.com ([134.134.136.100]:10513 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239975AbiAXNaS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:30:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643031018; x=1674567018;
-  h=date:from:to:cc:subject:message-id:reply-to:references:
-   mime-version:in-reply-to;
-  bh=s3MS9jlacq/GjKUc1J7BgRzARDrYpUsH/uofSxi2lpg=;
-  b=KLRPcaAbDHrNZpMyBof98siiy0gAuPPtlI4CKpGuBwNxzRetDKWphdC2
-   M1oo/sIUZg4nrBGVO7nf9hlVbZSIAk28FR33u2qrrLP8crYqrxVoqC1Ve
-   cmSg8ewfLxDCphmv31A8o4+OaeeCPJMYavnkHXm3z2TtHIiLW5PkXs9Z5
-   v7X0BUG/w3HXdktUQLGkGqIqKHVxb2InaeKZh+1njd7FhTt6wRy/BI88k
-   W4hfEndP3MtbUrRgJ698e30lU51j0NlhN71QgYKyLSWHo8nzZT3ZksVNr
-   Oh95EDet0nyKSanTgNQsC+shQhzmHA0UFcS5Sx7sUpfC/zB+Iyx2PqSPz
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="309362579"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="309362579"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 05:30:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="532077916"
-Received: from chaop.bj.intel.com (HELO localhost) ([10.240.192.101])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 05:30:05 -0800
-Date:   Mon, 24 Jan 2022 21:29:36 +0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     Steven Price <steven.price@arm.com>
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        qemu-devel@nongnu.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: Re: [PATCH v4 02/12] mm/memfd: Introduce MFD_INACCESSIBLE flag
-Message-ID: <20220124132936.GA55051@chaop.bj.intel.com>
-Reply-To: Chao Peng <chao.p.peng@linux.intel.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
- <20220118132121.31388-3-chao.p.peng@linux.intel.com>
- <8f1eba03-e5e9-e9fc-084d-0ef683093d65@arm.com>
+        id S243153AbiAXNb0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:31:26 -0500
+Received: from mail-wr1-f51.google.com ([209.85.221.51]:37696 "EHLO
+        mail-wr1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239932AbiAXNbX (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 08:31:23 -0500
+Received: by mail-wr1-f51.google.com with SMTP id w11so1460969wra.4;
+        Mon, 24 Jan 2022 05:31:22 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=l1L2Rdz570mj3uqEMkrYEWll3QovuaRRvHlpZ4r9ZnA=;
+        b=bhb72u64kN2DaaiDRKBm3srYQbPkbni6QUQsNrC6jrwypyAiZXJSO//IsgYjMs7BZF
+         36NU9jthShdIvrjvG1OpNoIJCYrDUJq+YIPXxQt8pJij3jD3OQgQ6f6x1PhMFpy00pEU
+         dXzoUUETdDYIiHDfd4xUsmUgVnK5mPphq2yh070bsjlEYHpq9qoC7Bi15wZcPSBkHqbi
+         /cf5EwQ3Bk+P26w1SwuXu/naXwdEbUL+eHvj59NvYKboFBmHxc8ZHsKOOspAuAQFdyB1
+         J+duMHJVyuLBny6yCYMrtYERcAgan+DqjK9bH309hA6xMMw9UN4AZt6aN5ejMILLbgtH
+         pxBQ==
+X-Gm-Message-State: AOAM530RswOWfhGGm8ovIseSEm6eLokz/M9f2bNNdMwGPaMnblA85Okh
+        cmLZVYLklQ1w2u0UoTjFr84=
+X-Google-Smtp-Source: ABdhPJwkDMc9NJe+pdTdSaDdZePRKMNgaZ3acGP1cCDaMSrKMK6SWMU13FrrulxNnCj36uSV8RHdvg==
+X-Received: by 2002:a5d:4bd0:: with SMTP id l16mr14356855wrt.93.1643031081599;
+        Mon, 24 Jan 2022 05:31:21 -0800 (PST)
+Received: from liuwe-devbox-debian-v2 ([51.145.34.42])
+        by smtp.gmail.com with ESMTPSA id o3sm14101129wrq.70.2022.01.24.05.31.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 05:31:21 -0800 (PST)
+Date:   Mon, 24 Jan 2022 13:31:19 +0000
+From:   Wei Liu <wei.liu@kernel.org>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Wei Liu <wei.liu@kernel.org>,
+        "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Hu <weh@microsoft.com>, Dexuan Cui <decui@microsoft.com>,
+        "drawat.floss@gmail.com" <drawat.floss@gmail.com>,
+        hhei <hhei@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
+Subject: Re: [PATCH 1/1] video: hyperv_fb: Fix validation of screen resolution
+Message-ID: <20220124133119.3yxfr7ypmmdotm6h@liuwe-devbox-debian-v2>
+References: <1642360711-2335-1-git-send-email-mikelley@microsoft.com>
+ <MN2PR21MB1295CE3BD15D4EB257A158DCCA569@MN2PR21MB1295.namprd21.prod.outlook.com>
+ <20220123215606.fzycryooluavtar4@liuwe-devbox-debian-v2>
+ <MWHPR21MB1593ED650DA82BC3009F66CED75D9@MWHPR21MB1593.namprd21.prod.outlook.com>
+ <20220123223030.ijdzrunduww76jiq@liuwe-devbox-debian-v2>
+ <e396a22d-7e0e-73a4-d831-f69dc854bfa8@gmx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8f1eba03-e5e9-e9fc-084d-0ef683093d65@arm.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <e396a22d-7e0e-73a4-d831-f69dc854bfa8@gmx.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 03:50:55PM +0000, Steven Price wrote:
-> On 18/01/2022 13:21, Chao Peng wrote:
-> > Introduce a new memfd_create() flag indicating the content of the
-> > created memfd is inaccessible from userspace. It does this by force
-> > setting F_SEAL_INACCESSIBLE seal when the file is created. It also set
-> > F_SEAL_SEAL to prevent future sealing, which means, it can not coexist
-> > with MFD_ALLOW_SEALING.
-> > 
-> > The pages backed by such memfd will be used as guest private memory in
-> > confidential computing environments such as Intel TDX/AMD SEV. Since
-> > page migration/swapping is not yet supported for such usages so these
-> > pages are currently marked as UNMOVABLE and UNEVICTABLE which makes
-> > them behave like long-term pinned pages.
-> > 
-> > Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
-> > ---
-> >  include/uapi/linux/memfd.h |  1 +
-> >  mm/memfd.c                 | 20 +++++++++++++++++++-
-> >  2 files changed, 20 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/include/uapi/linux/memfd.h b/include/uapi/linux/memfd.h
-> > index 7a8a26751c23..48750474b904 100644
-> > --- a/include/uapi/linux/memfd.h
-> > +++ b/include/uapi/linux/memfd.h
-> > @@ -8,6 +8,7 @@
-> >  #define MFD_CLOEXEC		0x0001U
-> >  #define MFD_ALLOW_SEALING	0x0002U
-> >  #define MFD_HUGETLB		0x0004U
-> > +#define MFD_INACCESSIBLE	0x0008U
-> >  
-> >  /*
-> >   * Huge page size encoding when MFD_HUGETLB is specified, and a huge page
-> > diff --git a/mm/memfd.c b/mm/memfd.c
-> > index 9f80f162791a..26998d96dc11 100644
-> > --- a/mm/memfd.c
-> > +++ b/mm/memfd.c
-> > @@ -245,16 +245,19 @@ long memfd_fcntl(struct file *file, unsigned int cmd, unsigned long arg)
-> >  #define MFD_NAME_PREFIX_LEN (sizeof(MFD_NAME_PREFIX) - 1)
-> >  #define MFD_NAME_MAX_LEN (NAME_MAX - MFD_NAME_PREFIX_LEN)
-> >  
-> > -#define MFD_ALL_FLAGS (MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_HUGETLB)
-> > +#define MFD_ALL_FLAGS (MFD_CLOEXEC | MFD_ALLOW_SEALING | MFD_HUGETLB | \
-> > +		       MFD_INACCESSIBLE)
-> >  
-> >  SYSCALL_DEFINE2(memfd_create,
-> >  		const char __user *, uname,
-> >  		unsigned int, flags)
-> >  {
-> > +	struct address_space *mapping;
-> >  	unsigned int *file_seals;
-> >  	struct file *file;
-> >  	int fd, error;
-> >  	char *name;
-> > +	gfp_t gfp;
-> >  	long len;
-> >  
-> >  	if (!(flags & MFD_HUGETLB)) {
-> > @@ -267,6 +270,10 @@ SYSCALL_DEFINE2(memfd_create,
-> >  			return -EINVAL;
-> >  	}
-> >  
-> > +	/* Disallow sealing when MFD_INACCESSIBLE is set. */
-> > +	if (flags & MFD_INACCESSIBLE && flags & MFD_ALLOW_SEALING)
-> > +		return -EINVAL;
-> > +
-> >  	/* length includes terminating zero */
-> >  	len = strnlen_user(uname, MFD_NAME_MAX_LEN + 1);
-> >  	if (len <= 0)
-> > @@ -315,6 +322,17 @@ SYSCALL_DEFINE2(memfd_create,
-> >  		*file_seals &= ~F_SEAL_SEAL;
-> >  	}
-> >  
-> > +	if (flags & MFD_INACCESSIBLE) {
-> > +		mapping = file_inode(file)->i_mapping;
-> > +		gfp = mapping_gfp_mask(mapping);
-> > +		gfp &= ~__GFP_MOVABLE;
-> > +		mapping_set_gfp_mask(mapping, gfp);
-> > +		mapping_set_unevictable(mapping);
-> > +
-> > +		file_seals = memfd_file_seals_ptr(file);
-> > +		*file_seals &= F_SEAL_SEAL | F_SEAL_INACCESSIBLE;
+On Mon, Jan 24, 2022 at 10:52:22AM +0100, Helge Deller wrote:
+> On 1/23/22 23:30, Wei Liu wrote:
+> > On Sun, Jan 23, 2022 at 10:27:56PM +0000, Michael Kelley (LINUX) wrote:
+> >> From: Wei Liu <wei.liu@kernel.org> Sent: Sunday, January 23, 2022 1:56 PM
+> >>>
+> >>> On Sun, Jan 16, 2022 at 09:53:06PM +0000, Haiyang Zhang wrote:
+> >>>>
+> >>>>
+> >>>>> -----Original Message-----
+> >>>>> From: Michael Kelley (LINUX) <mikelley@microsoft.com>
+> >>>>> Sent: Sunday, January 16, 2022 2:19 PM
+> >>>>> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
+> >>> <haiyangz@microsoft.com>; Stephen
+> >>>>> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Wei Hu
+> >>> <weh@microsoft.com>; Dexuan
+> >>>>> Cui <decui@microsoft.com>; drawat.floss@gmail.com; hhei <hhei@redhat.com>;
+> >>> linux-
+> >>>>> kernel@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-
+> >>> fbdev@vger.kernel.org; dri-
+> >>>>> devel@lists.freedesktop.org
+> >>>>> Cc: Michael Kelley (LINUX) <mikelley@microsoft.com>
+> >>>>> Subject: [PATCH 1/1] video: hyperv_fb: Fix validation of screen resolution
+> >>>>>
+> >>>>> In the WIN10 version of the Synthetic Video protocol with Hyper-V,
+> >>>>> Hyper-V reports a list of supported resolutions as part of the protocol
+> >>>>> negotiation. The driver calculates the maximum width and height from
+> >>>>> the list of resolutions, and uses those maximums to validate any screen
+> >>>>> resolution specified in the video= option on the kernel boot line.
+> >>>>>
+> >>>>> This method of validation is incorrect. For example, the list of
+> >>>>> supported resolutions could contain 1600x1200 and 1920x1080, both of
+> >>>>> which fit in an 8 Mbyte frame buffer.  But calculating the max width
+> >>>>> and height yields 1920 and 1200, and 1920x1200 resolution does not fit
+> >>>>> in an 8 Mbyte frame buffer.  Unfortunately, this resolution is accepted,
+> >>>>> causing a kernel fault when the driver accesses memory outside the
+> >>>>> frame buffer.
+> >>>>>
+> >>>>> Instead, validate the specified screen resolution by calculating
+> >>>>> its size, and comparing against the frame buffer size.  Delete the
+> >>>>> code for calculating the max width and height from the list of
+> >>>>> resolutions, since these max values have no use.  Also add the
+> >>>>> frame buffer size to the info message to aid in understanding why
+> >>>>> a resolution might be rejected.
+> >>>>>
+> >>>>> Fixes: 67e7cdb4829d ("video: hyperv: hyperv_fb: Obtain screen resolution from Hyper-V
+> >>>>> host")
+> >>>>> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
+> >>> [...]
+> >>>>
+> >>>> Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
+> >>>>
+> >>>
+> >>> Applied to hyperv-fixes. Thanks.
+> >>
+> >> This fix got pulled into the fbdev/for-next tree by a new maintainer, Helge Deller.
+> >> See https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git/commit/?h=for-next&id=bcc48f8d980b12e66a3d59dfa1041667db971d86
+> >
+> > OK. I will drop it from hyperv-fixes. Thanks for letting me know!
 > 
-> This looks backwards - the flags should be set on *file_seals, but here
-> you are unsetting all other flags.
+> Linus hasn't pulled my tree yet, and he will probably not before the
+> next merge window. So, if this is an urgent bugfix for you, I can offer
+> to drop it from the fbdev tree and that you take it through the hyperv-fixes tree.
+> In that case you may add an Acked-by: Helge Deller <deller@gmx.de>.
+> Just let me know what you prefer.
 
-Thanks Steve. '|=' actually should be used here.
+Hi Helge
 
-Chao
+Yes, I would like to upstream it as soon as possible so that it can
+propagate to stable trees and be backported by downstream vendors.
+
+I will pick it up in hyperv-fixes. Please drop it from your for-next
+tree.
+
+Thanks,
+Wei.
+
 > 
-> Steve
-> 
-> > +	}
-> > +
-> >  	fd_install(fd, file);
-> >  	kfree(name);
-> >  	return fd;
-> > 
+> Helge
