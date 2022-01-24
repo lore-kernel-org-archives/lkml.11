@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2461AC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A55BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377470AbiAXUFc (ORCPT
+        id S1377734AbiAXUFy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56432 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349990AbiAXTry (ORCPT
+        Mon, 24 Jan 2022 15:05:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45688 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349931AbiAXTse (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:47:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B350C038AF4;
-        Mon, 24 Jan 2022 11:23:28 -0800 (PST)
+        Mon, 24 Jan 2022 14:48:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BEF1961496;
-        Mon, 24 Jan 2022 19:23:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73D23C36AE2;
-        Mon, 24 Jan 2022 19:23:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9862E61523;
+        Mon, 24 Jan 2022 19:48:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F6E6C340E5;
+        Mon, 24 Jan 2022 19:48:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052207;
-        bh=WIhonFUuLPDgILEzIj8zMYalQ6tBoRgyQ7YNS/mS6RA=;
+        s=korg; t=1643053711;
+        bh=Ta3/1LLC6DwEG0sQyMUdKfg8TkHsYZQsq1+TVOjRIwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SE8YkIDaapaFZ9eUce/9+9jnmS0VU3QKn01siD7rAMVySd5tnI0Us0LCVX2WmBGkO
-         Un2z+2AHk8fB54rAsAp8MZsu7249JJOhKAupvSLbrdInb2Sk/uUVXwNkjHOltZwIC2
-         658d8DArUz10ruBOO1uVSPT8cWmQntxR19Uy5aqY=
+        b=MhyOhbMqhyCT9G+k1P89DP9zEyt0Su+Jij8psdXAjNHqvViWM32FdfljUJqNAMQbn
+         whBZrEGvUR7mFxenIyL16lqwA/MwmJnSHMtU9/I4AM+Zkimy3H7f6FpQefOG1KZu2A
+         rlEu80YBX9AZndlYyHaf98oyLodk/SwToeTKI6+Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.19 224/239] net: axienet: fix number of TX ring slots for available check
-Date:   Mon, 24 Jan 2022 19:44:22 +0100
-Message-Id: <20220124183950.232834013@linuxfoundation.org>
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 153/563] crypto: stm32 - Fix last sparse warning in stm32_cryp_check_ctr_counter
+Date:   Mon, 24 Jan 2022 19:38:38 +0100
+Message-Id: <20220124184029.691958504@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-commit aba57a823d2985a2cc8c74a2535f3a88e68d9424 upstream.
+[ Upstream commit 81064c96d88180ad6995d52419e94a78968308a2 ]
 
-The check for the number of available TX ring slots was off by 1 since a
-slot is required for the skb header as well as each fragment. This could
-result in overwriting a TX ring slot that was still in use.
+This patch changes the cast in stm32_cryp_check_ctr_counter from
+u32 to __be32 to match the prototype of stm32_cryp_hw_write_iv
+correctly.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/crypto/stm32/stm32-cryp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -682,7 +682,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 	num_frag = skb_shinfo(skb)->nr_frags;
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index 7999b26a16ed0..7389a0536ff02 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -1229,7 +1229,7 @@ static void stm32_cryp_check_ctr_counter(struct stm32_cryp *cryp)
+ 		cr = stm32_cryp_read(cryp, CRYP_CR);
+ 		stm32_cryp_write(cryp, CRYP_CR, cr & ~CR_CRYPEN);
  
--	if (axienet_check_tx_bd_space(lp, num_frag)) {
-+	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
- 		if (netif_queue_stopped(ndev))
- 			return NETDEV_TX_BUSY;
+-		stm32_cryp_hw_write_iv(cryp, (u32 *)cryp->last_ctr);
++		stm32_cryp_hw_write_iv(cryp, (__be32 *)cryp->last_ctr);
  
-@@ -692,7 +692,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 		smp_mb();
- 
- 		/* Space might have just been freed - check again */
--		if (axienet_check_tx_bd_space(lp, num_frag))
-+		if (axienet_check_tx_bd_space(lp, num_frag + 1))
- 			return NETDEV_TX_BUSY;
- 
- 		netif_wake_queue(ndev);
+ 		stm32_cryp_write(cryp, CRYP_CR, cr);
+ 	}
+-- 
+2.34.1
+
 
 
