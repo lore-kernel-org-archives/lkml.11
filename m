@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D153DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A7D5C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848164AbiAXXVx (ORCPT
+        id S1848469AbiAXXWe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:21:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38108 "EHLO
+        Mon, 24 Jan 2022 18:22:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586030AbiAXWZd (ORCPT
+        with ESMTP id S1586851AbiAXW1Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:25:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38DF5C035454;
-        Mon, 24 Jan 2022 12:54:19 -0800 (PST)
+        Mon, 24 Jan 2022 17:27:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD07BC019B16;
+        Mon, 24 Jan 2022 12:54:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA3E2B812A4;
-        Mon, 24 Jan 2022 20:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DD6AC340E5;
-        Mon, 24 Jan 2022 20:54:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D93D61287;
+        Mon, 24 Jan 2022 20:54:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51FEFC36B01;
+        Mon, 24 Jan 2022 20:54:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057656;
-        bh=l5GlaMQWhaM9tQ49nzfGO/tk9HkHi8Ff5Xjw5ttxKI8=;
+        s=korg; t=1643057671;
+        bh=olKOp1fP6GqohxFV6u2yGgn8fWqUo03Gd4u6tv86pMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fJzvl0d08y0/dI07MyYmLjb44i7kFuQT52ieEtYkowwFppM+k6/hrsgqSjajaR72z
-         xDJn0dgnWdX+Ww33QGm6EMxSW+0VN+ICCsf3oXkZO4sIXvYChOcx1DltJOLWoadTPQ
-         Owv3/PMEPGe6Fhb3/BkZHohc09KKtXyJ8GVuK2Ts=
+        b=z/1y1uJq8aiwJCwCHHeFVdn0xlCEcLGGEoQl3OZCzluHP5zpN3sSl9ijaZXDbt73D
+         j1/CMdy0rMPKk4Qu6VwSDJtlqHeNWJEA1x/V6PhiUPlBYrXv6OMDxoEoThSASt6ZYW
+         erXCJnlu9hFhHADN3h3xIGEywRlNQ2I5jCWIwkSo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Namjae Jeon <linkinjeon@kernel.org>,
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
         Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.16 0036/1039] ksmbd: uninitialized variable in create_socket()
-Date:   Mon, 24 Jan 2022 19:30:25 +0100
-Message-Id: <20220124184126.345329838@linuxfoundation.org>
+Subject: [PATCH 5.16 0041/1039] ksmbd: add reserved room in ipc request/response
+Date:   Mon, 24 Jan 2022 19:30:30 +0100
+Message-Id: <20220124184126.518506728@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,40 +49,104 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit b207602fb04537cb21ac38fabd7577eca2fa05ae upstream.
+commit 41dbda16a0902798e732abc6599de256b9dc3b27 upstream.
 
-The "ksmbd_socket" variable is not initialized on this error path.
+Whenever new parameter is added to smb configuration, It is possible
+to break the execution of the IPC daemon by mismatch size of
+request/response. This patch tries to reserve space in ipc request/response
+in advance to prevent that.
 
-Cc: stable@vger.kernel.org
-Fixes: 0626e6641f6b ("cifsd: add server handler for central processing and tranport layers")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
 Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ksmbd/transport_tcp.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/ksmbd/ksmbd_netlink.h |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/fs/ksmbd/transport_tcp.c
-+++ b/fs/ksmbd/transport_tcp.c
-@@ -404,7 +404,7 @@ static int create_socket(struct interfac
- 				  &ksmbd_socket);
- 		if (ret) {
- 			pr_err("Can't create socket for ipv4: %d\n", ret);
--			goto out_error;
-+			goto out_clear;
- 		}
+--- a/fs/ksmbd/ksmbd_netlink.h
++++ b/fs/ksmbd/ksmbd_netlink.h
+@@ -104,6 +104,7 @@ struct ksmbd_startup_request {
+ 					 */
+ 	__u32	sub_auth[3];		/* Subauth value for Security ID */
+ 	__u32	smb2_max_credits;	/* MAX credits */
++	__u32	reserved[128];		/* Reserved room */
+ 	__u32	ifc_list_sz;		/* interfaces list size */
+ 	__s8	____payload[];
+ };
+@@ -114,7 +115,7 @@ struct ksmbd_startup_request {
+  * IPC request to shutdown ksmbd server.
+  */
+ struct ksmbd_shutdown_request {
+-	__s32	reserved;
++	__s32	reserved[16];
+ };
  
- 		sin.sin_family = PF_INET;
-@@ -462,6 +462,7 @@ static int create_socket(struct interfac
+ /*
+@@ -123,6 +124,7 @@ struct ksmbd_shutdown_request {
+ struct ksmbd_login_request {
+ 	__u32	handle;
+ 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ]; /* user account name */
++	__u32	reserved[16];				/* Reserved room */
+ };
  
- out_error:
- 	tcp_destroy_socket(ksmbd_socket);
-+out_clear:
- 	iface->ksmbd_socket = NULL;
- 	return ret;
- }
+ /*
+@@ -136,6 +138,7 @@ struct ksmbd_login_response {
+ 	__u16	status;
+ 	__u16	hash_sz;			/* hash size */
+ 	__s8	hash[KSMBD_REQ_MAX_HASH_SZ];	/* password hash */
++	__u32	reserved[16];			/* Reserved room */
+ };
+ 
+ /*
+@@ -144,6 +147,7 @@ struct ksmbd_login_response {
+ struct ksmbd_share_config_request {
+ 	__u32	handle;
+ 	__s8	share_name[KSMBD_REQ_MAX_SHARE_NAME]; /* share name */
++	__u32	reserved[16];		/* Reserved room */
+ };
+ 
+ /*
+@@ -158,6 +162,7 @@ struct ksmbd_share_config_response {
+ 	__u16	force_directory_mode;
+ 	__u16	force_uid;
+ 	__u16	force_gid;
++	__u32	reserved[128];		/* Reserved room */
+ 	__u32	veto_list_sz;
+ 	__s8	____payload[];
+ };
+@@ -188,6 +193,7 @@ struct ksmbd_tree_connect_request {
+ 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ];
+ 	__s8	share[KSMBD_REQ_MAX_SHARE_NAME];
+ 	__s8	peer_addr[64];
++	__u32	reserved[16];		/* Reserved room */
+ };
+ 
+ /*
+@@ -197,6 +203,7 @@ struct ksmbd_tree_connect_response {
+ 	__u32	handle;
+ 	__u16	status;
+ 	__u16	connection_flags;
++	__u32	reserved[16];		/* Reserved room */
+ };
+ 
+ /*
+@@ -205,6 +212,7 @@ struct ksmbd_tree_connect_response {
+ struct ksmbd_tree_disconnect_request {
+ 	__u64	session_id;	/* session id */
+ 	__u64	connect_id;	/* tree connection id */
++	__u32	reserved[16];	/* Reserved room */
+ };
+ 
+ /*
+@@ -213,6 +221,7 @@ struct ksmbd_tree_disconnect_request {
+ struct ksmbd_logout_request {
+ 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ]; /* user account name */
+ 	__u32	account_flags;
++	__u32	reserved[16];				/* Reserved room */
+ };
+ 
+ /*
 
 
