@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CDC2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 431C6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:56:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343880AbiAXS4D (ORCPT
+        id S1344177AbiAXS4E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43086 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344187AbiAXSxy (ORCPT
+        Mon, 24 Jan 2022 13:56:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53188 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344233AbiAXSyB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:53:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB052C06175B;
-        Mon, 24 Jan 2022 10:53:05 -0800 (PST)
+        Mon, 24 Jan 2022 13:54:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 78049B810BD;
-        Mon, 24 Jan 2022 18:53:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83272C340E5;
-        Mon, 24 Jan 2022 18:53:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4986E61507;
+        Mon, 24 Jan 2022 18:54:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B35BC340E5;
+        Mon, 24 Jan 2022 18:53:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050383;
-        bh=SqqKlmrkJD2ajJiHT7F53gMvsqqsiJfdubXqh3QjyAo=;
+        s=korg; t=1643050440;
+        bh=P8JodIRX2uzjywT3FD6+DpyuTrOHA3GSKST3Iwdgot4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXHOT118XShLCB1XxGaKuI1ApFICs4MQBvuoFKVgUkti8rDp3d3q8u1miwMElwnrF
-         dMLsss3xAYnlfGMlVUvB5zNEUrsoUs57sHXo7X0rmeEzJlTknoB7gVmU0GFJNJ2EM4
-         0uTYihnLgT7TigeDT3MWEYFR2U0NGPnVRHTZn1oM=
+        b=gk3BE7J3Qp7aXxCQgrXnMZg1iEG78agJP06QMFsRB1RrCMa9sk+2kSADFy07yHF1T
+         FyoBfbMYWbbjnTRLKxfK31hZEIlT/bbwNnwgOiwSwREv2qZB0bM9yzhfXIv2VYEtDu
+         H4AQU2qY5pP58fljuWTRdG6wtwt4MDlEPVRLh+gk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.4 101/114] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
-Date:   Mon, 24 Jan 2022 19:43:16 +0100
-Message-Id: <20220124183930.228586236@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Joakim Tjernlund <joakim.tjernlund@infinera.com>,
+        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 090/114] i2c: mpc: Correct I2C reset procedure
+Date:   Mon, 24 Jan 2022 19:43:05 +0100
+Message-Id: <20220124183929.891467756@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -49,38 +48,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
 
-commit 0d375d610fa96524e2ee2b46830a46a7bfa92a9f upstream.
+[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
 
-This block is used in (at least) T1024 and T1040, including their
-variants like T1023 etc.
+Current I2C reset procedure is broken in two ways:
+1) It only generate 1 START instead of 9 STARTs and STOP.
+2) It leaves the bus Busy so every I2C xfer after the first
+   fixup calls the reset routine again, for every xfer there after.
 
-Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This fixes both errors.
+
+Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
---- a/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-+++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
-@@ -78,6 +78,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfc000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
+diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
+index 2e083a71c2215..988ea9df6654c 100644
+--- a/drivers/i2c/busses/i2c-mpc.c
++++ b/drivers/i2c/busses/i2c-mpc.c
+@@ -107,23 +107,30 @@ static irqreturn_t mpc_i2c_isr(int irq, void *dev_id)
+ /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
+  * the bus, because it wants to send ACK.
+  * Following sequence of enabling/disabling and sending start/stop generates
+- * the 9 pulses, so it's all OK.
++ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
+  */
+ static void mpc_i2c_fixup(struct mpc_i2c *i2c)
+ {
+ 	int k;
+-	u32 delay_val = 1000000 / i2c->real_clk + 1;
+-
+-	if (delay_val < 2)
+-		delay_val = 2;
++	unsigned long flags;
  
- 	xmdio0: mdio@fd000 {
-@@ -85,6 +86,7 @@ fman0: fman@400000 {
- 		#size-cells = <0>;
- 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
- 		reg = <0xfd000 0x1000>;
-+		fsl,erratum-a009885;
- 	};
+ 	for (k = 9; k; k--) {
+ 		writeccr(i2c, 0);
+-		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
++		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
++		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
++		readb(i2c->base + MPC_I2C_DR); /* init xfer */
++		udelay(15); /* let it hit the bus */
++		local_irq_save(flags); /* should not be delayed further */
++		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
+ 		readb(i2c->base + MPC_I2C_DR);
+-		writeccr(i2c, CCR_MEN);
+-		udelay(delay_val << 1);
++		if (k != 1)
++			udelay(5);
++		local_irq_restore(flags);
+ 	}
++	writeccr(i2c, CCR_MEN); /* Initiate STOP */
++	readb(i2c->base + MPC_I2C_DR);
++	udelay(15); /* Let STOP propagate */
++	writeccr(i2c, 0);
+ }
  
- 	ptp_timer0: ptp-timer@fe000 {
+ static int i2c_wait(struct mpc_i2c *i2c, unsigned timeout, int writing)
+-- 
+2.34.1
+
 
 
