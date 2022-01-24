@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C1EC35268
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D5BC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355678AbiAXU2Z (ORCPT
+        id S1356822AbiAXU2b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49364 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378162AbiAXUG2 (ORCPT
+        Mon, 24 Jan 2022 15:28:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377496AbiAXUFd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:06:28 -0500
+        Mon, 24 Jan 2022 15:05:33 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39F7CC08E87B;
+        Mon, 24 Jan 2022 11:32:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CE17B8122C;
-        Mon, 24 Jan 2022 20:06:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CD79DC340E5;
-        Mon, 24 Jan 2022 20:06:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EAC57B8125F;
+        Mon, 24 Jan 2022 19:32:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16C2FC340E7;
+        Mon, 24 Jan 2022 19:32:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054786;
-        bh=+7FxDuO7yr1t9qpl3uSqpYJ359PsLS1FIXDJxNUqOOs=;
+        s=korg; t=1643052722;
+        bh=WJ0l9wBkHylNm8t0kXEqMvXswbr+3A7YmZXxEF2MNFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BgIziojMZtZdnXFGD5B7n7ouJpbrp5Ztr8gWkCy5FWZJ2oqPcjBYi/EQ6iuc7Y/x6
-         hWaa1u5Lfa4xwVlExQer/CYNsjMKkgrYry0JxJ3t1WkyrQ8L9NFVa5AcULCEQl4Ylw
-         cBknH/Su/qh60N4Hfmjg7HQ/vSBfEpH9OYewhzmg=
+        b=B1AKckWe+MFjkDgav+L6fCdvKuTdeupaqHhFB2sT9j2Fd4HAz7ptYtGzqsPv7mZMO
+         186Nazkknkyh3az1yGZFqHeWawNmzklFvNrGc407Nd6ATc5Tro7FHjMkF7Z/BZpMRg
+         yibLoosSJexrqHVF4g+9Xpfhz+DMjRr5GhAA6Emg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Sun <sunhao.th@gmail.com>,
-        Qu Wenruo <wqu@suse.com>, Filipe Manana <fdmanana@suse.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.10 469/563] btrfs: fix deadlock between quota enable and other quota operations
-Date:   Mon, 24 Jan 2022 19:43:54 +0100
-Message-Id: <20220124184040.684821809@linuxfoundation.org>
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 153/320] fs: dlm: filter user dlm messages for kernel locks
+Date:   Mon, 24 Jan 2022 19:42:17 +0100
+Message-Id: <20220124183958.838861997@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,128 +50,118 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Filipe Manana <fdmanana@suse.com>
+From: Alexander Aring <aahringo@redhat.com>
 
-commit 232796df8c1437c41d308d161007f0715bac0a54 upstream.
+[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
 
-When enabling quotas, we attempt to commit a transaction while holding the
-mutex fs_info->qgroup_ioctl_lock. This can result on a deadlock with other
-quota operations such as:
+This patch fixes the following crash by receiving a invalid message:
 
-- qgroup creation and deletion, ioctl BTRFS_IOC_QGROUP_CREATE;
+[  160.672220] ==================================================================
+[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
+[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
+[  160.681447]
+[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
+[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
+[  160.685574] Workqueue: dlm_recv process_recv_sockets
+[  160.686721] Call Trace:
+[  160.687310]  dump_stack_lvl+0x56/0x6f
+[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
+[  160.689116]  kasan_report.cold.14+0x116/0x11b
+[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
+[  160.690832]  dlm_user_add_ast+0xc3/0x370
+[  160.691502]  _receive_unlock_reply+0x103/0x170
+[  160.692241]  _receive_message+0x11df/0x1ec0
+[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.694427]  ? lock_acquire+0x175/0x400
+[  160.695058]  ? do_purge.isra.51+0x200/0x200
+[  160.695744]  ? lock_acquired+0x360/0x5d0
+[  160.696400]  ? lock_contended+0x6a0/0x6a0
+[  160.697055]  ? lock_release+0x21d/0x5e0
+[  160.697686]  ? lock_is_held_type+0xe0/0x110
+[  160.698352]  ? lock_is_held_type+0xe0/0x110
+[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
+[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
+[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
+[  160.701249]  ? down_write_killable+0x2b0/0x2b0
+[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
+[  160.702690]  dlm_receive_buffer+0x1a5/0x210
+[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
+[  160.704210]  receive_from_sock+0x1c0/0x3b0
+[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
+[  160.705561]  ? lock_acquire+0x175/0x400
+[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.707681]  process_recv_sockets+0x32/0x40
+[  160.708366]  process_one_work+0x55e/0xad0
+[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
+[  160.709820]  worker_thread+0x65/0x5e0
+[  160.710423]  ? process_one_work+0xad0/0xad0
+[  160.711087]  kthread+0x1ed/0x220
+[  160.711628]  ? set_kthread_struct+0x80/0x80
+[  160.712314]  ret_from_fork+0x22/0x30
 
-- adding and removing qgroup relations, ioctl BTRFS_IOC_QGROUP_ASSIGN.
+The issue is that we received a DLM message for a user lock but the
+destination lock is a kernel lock. Note that the address which is trying
+to derefence is 00000000deadbeef, which is in a kernel lock
+lkb->lkb_astparam, this field should never be derefenced by the DLM
+kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
+(memory is shared by a union field). The struct lkb_ua will be handled
+by the DLM kernel stack but on a kernel lock it will contain invalid
+data and ends in most likely crashing the kernel.
 
-This is because these operations join a transaction and after that they
-attempt to lock the mutex fs_info->qgroup_ioctl_lock. Acquiring that mutex
-after joining or starting a transaction is a pattern followed everywhere
-in qgroups, so the quota enablement operation is the one at fault here,
-and should not commit a transaction while holding that mutex.
+It can be reproduced with two cluster nodes.
 
-Fix this by making the transaction commit while not holding the mutex.
-We are safe from two concurrent tasks trying to enable quotas because
-we are serialized by the rw semaphore fs_info->subvol_sem at
-btrfs_ioctl_quota_ctl(), which is the only call site for enabling
-quotas.
+node 2:
+dlm_tool join test
+echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
+echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
 
-When this deadlock happens, it produces a trace like the following:
+node 1:
+dlm_tool join test
 
-  INFO: task syz-executor:25604 blocked for more than 143 seconds.
-  Not tainted 5.15.0-rc6 #4
-  "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-  task:syz-executor state:D stack:24800 pid:25604 ppid: 24873 flags:0x00004004
-  Call Trace:
-  context_switch kernel/sched/core.c:4940 [inline]
-  __schedule+0xcd9/0x2530 kernel/sched/core.c:6287
-  schedule+0xd3/0x270 kernel/sched/core.c:6366
-  btrfs_commit_transaction+0x994/0x2e90 fs/btrfs/transaction.c:2201
-  btrfs_quota_enable+0x95c/0x1790 fs/btrfs/qgroup.c:1120
-  btrfs_ioctl_quota_ctl fs/btrfs/ioctl.c:4229 [inline]
-  btrfs_ioctl+0x637e/0x7b70 fs/btrfs/ioctl.c:5010
-  vfs_ioctl fs/ioctl.c:51 [inline]
-  __do_sys_ioctl fs/ioctl.c:874 [inline]
-  __se_sys_ioctl fs/ioctl.c:860 [inline]
-  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
-  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
-  RIP: 0033:0x7f86920b2c4d
-  RSP: 002b:00007f868f61ac58 EFLAGS: 00000246 ORIG_RAX: 0000000000000010
-  RAX: ffffffffffffffda RBX: 00007f86921d90a0 RCX: 00007f86920b2c4d
-  RDX: 0000000020005e40 RSI: 00000000c0109428 RDI: 0000000000000008
-  RBP: 00007f869212bd80 R08: 0000000000000000 R09: 0000000000000000
-  R10: 0000000000000000 R11: 0000000000000246 R12: 00007f86921d90a0
-  R13: 00007fff6d233e4f R14: 00007fff6d233ff0 R15: 00007f868f61adc0
-  INFO: task syz-executor:25628 blocked for more than 143 seconds.
-  Not tainted 5.15.0-rc6 #4
-  "echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-  task:syz-executor state:D stack:29080 pid:25628 ppid: 24873 flags:0x00004004
-  Call Trace:
-  context_switch kernel/sched/core.c:4940 [inline]
-  __schedule+0xcd9/0x2530 kernel/sched/core.c:6287
-  schedule+0xd3/0x270 kernel/sched/core.c:6366
-  schedule_preempt_disabled+0xf/0x20 kernel/sched/core.c:6425
-  __mutex_lock_common kernel/locking/mutex.c:669 [inline]
-  __mutex_lock+0xc96/0x1680 kernel/locking/mutex.c:729
-  btrfs_remove_qgroup+0xb7/0x7d0 fs/btrfs/qgroup.c:1548
-  btrfs_ioctl_qgroup_create fs/btrfs/ioctl.c:4333 [inline]
-  btrfs_ioctl+0x683c/0x7b70 fs/btrfs/ioctl.c:5014
-  vfs_ioctl fs/ioctl.c:51 [inline]
-  __do_sys_ioctl fs/ioctl.c:874 [inline]
-  __se_sys_ioctl fs/ioctl.c:860 [inline]
-  __x64_sys_ioctl+0x193/0x200 fs/ioctl.c:860
-  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
-  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
-  entry_SYSCALL_64_after_hwframe+0x44/0xae
+python:
+foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
+          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
+newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
+newFile.write(bytes(foo))
 
-Reported-by: Hao Sun <sunhao.th@gmail.com>
-Link: https://lore.kernel.org/linux-btrfs/CACkBjsZQF19bQ1C6=yetF3BvL10OSORpFUcWXTP6HErshDB4dQ@mail.gmail.com/
-Fixes: 340f1aa27f36 ("btrfs: qgroups: Move transaction management inside btrfs_quota_enable/disable")
-CC: stable@vger.kernel.org # 4.19
-Reviewed-by: Qu Wenruo <wqu@suse.com>
-Signed-off-by: Filipe Manana <fdmanana@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/qgroup.c |   19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ fs/dlm/lock.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
---- a/fs/btrfs/qgroup.c
-+++ b/fs/btrfs/qgroup.c
-@@ -941,6 +941,14 @@ int btrfs_quota_enable(struct btrfs_fs_i
- 	int ret = 0;
- 	int slot;
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index 18d81599522f3..53500b555bfa8 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -3975,6 +3975,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 	int from = ms->m_header.h_nodeid;
+ 	int error = 0;
  
-+	/*
-+	 * We need to have subvol_sem write locked, to prevent races between
-+	 * concurrent tasks trying to enable quotas, because we will unlock
-+	 * and relock qgroup_ioctl_lock before setting fs_info->quota_root
-+	 * and before setting BTRFS_FS_QUOTA_ENABLED.
-+	 */
-+	lockdep_assert_held_write(&fs_info->subvol_sem);
++	/* currently mixing of user/kernel locks are not supported */
++	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
++		log_error(lkb->lkb_resource->res_ls,
++			  "got user dlm message for a kernel lock");
++		error = -EINVAL;
++		goto out;
++	}
 +
- 	mutex_lock(&fs_info->qgroup_ioctl_lock);
- 	if (fs_info->quota_root)
- 		goto out;
-@@ -1118,8 +1126,19 @@ out_add_root:
- 		goto out_free_path;
+ 	switch (ms->m_type) {
+ 	case DLM_MSG_CONVERT:
+ 	case DLM_MSG_UNLOCK:
+@@ -4003,6 +4011,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 		error = -EINVAL;
  	}
  
-+	mutex_unlock(&fs_info->qgroup_ioctl_lock);
-+	/*
-+	 * Commit the transaction while not holding qgroup_ioctl_lock, to avoid
-+	 * a deadlock with tasks concurrently doing other qgroup operations, such
-+	 * adding/removing qgroups or adding/deleting qgroup relations for example,
-+	 * because all qgroup operations first start or join a transaction and then
-+	 * lock the qgroup_ioctl_lock mutex.
-+	 * We are safe from a concurrent task trying to enable quotas, by calling
-+	 * this function, since we are serialized by fs_info->subvol_sem.
-+	 */
- 	ret = btrfs_commit_transaction(trans);
- 	trans = NULL;
-+	mutex_lock(&fs_info->qgroup_ioctl_lock);
- 	if (ret)
- 		goto out_free_path;
- 
++out:
+ 	if (error)
+ 		log_error(lkb->lkb_resource->res_ls,
+ 			  "ignore invalid message %d from %d %x %x %x %d",
+-- 
+2.34.1
+
 
 
