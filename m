@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FB7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DFCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344554AbiAXT2x (ORCPT
+        id S1345296AbiAXT25 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:28:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41208 "EHLO
+        Mon, 24 Jan 2022 14:28:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41144 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346362AbiAXTQW (ORCPT
+        with ESMTP id S1345800AbiAXTQU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:16:22 -0500
+        Mon, 24 Jan 2022 14:16:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85162B81233;
-        Mon, 24 Jan 2022 19:16:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0615C340E5;
-        Mon, 24 Jan 2022 19:16:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 706E7B81235;
+        Mon, 24 Jan 2022 19:16:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E22BC340E5;
+        Mon, 24 Jan 2022 19:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051779;
-        bh=vwY5hP5VDu7uqgnjFVH0ubcGCxncZciHJeB2Ey2PIB4=;
+        s=korg; t=1643051776;
+        bh=X5jJ6NhYJuoshh5xIzUWV+HwgGDkQAbbJZYP703Wfao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bn/YxmshkJPfW4VOMUUvF1gANAEaK8djBuY5jZoK788EzhnEz3ekIChyO+gQNubjK
-         zxD8//IYg478cV1uAyKIjmwH5wVtak70Qm8LddNKQ/TrOVs+ihCMyZecgQTNT7kJMc
-         bN7jjAoHpwm/uvTf6gXfIntpJwTtp/4/ctCTMI7E=
+        b=gFdi7DUcc1fui/3wIE2VZmnnxKUc9REZ5RqbmQI7RS5HzH3IGP+B+l7fLQxSnRczM
+         waxklV8n96AN2vEmnF0LCyiB7lBg+Da7MsVrc6bPm7AQYwZ27qmSsT9MVYR8lrwz37
+         yAeP8k5noVgzXangw8BYMAmffzL9TxIud6B9YBGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 085/239] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in __nonstatic_find_io_region()
-Date:   Mon, 24 Jan 2022 19:42:03 +0100
-Message-Id: <20220124183945.822686934@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Zixun <zhang133010@icloud.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 084/239] x86/mce/inject: Avoid out-of-bounds write when setting flags
+Date:   Mon, 24 Jan 2022 19:42:02 +0100
+Message-Id: <20220124183945.791813622@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,53 +46,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Zhang Zixun <zhang133010@icloud.com>
 
-[ Upstream commit ca0fe0d7c35c97528bdf621fdca75f13157c27af ]
+[ Upstream commit de768416b203ac84e02a757b782a32efb388476f ]
 
-In __nonstatic_find_io_region(), pcmcia_make_resource() is assigned to
-res and used in pci_bus_alloc_resource(). There is a dereference of res
-in pci_bus_alloc_resource(), which could lead to a NULL pointer
-dereference on failure of pcmcia_make_resource().
+A contrived zero-length write, for example, by using write(2):
 
-Fix this bug by adding a check of res.
+  ...
+  ret = write(fd, str, 0);
+  ...
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+to the "flags" file causes:
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+  BUG: KASAN: stack-out-of-bounds in flags_write
+  Write of size 1 at addr ffff888019be7ddf by task writefile/3787
 
-Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
-and our static analyzer no longer warns about this code.
+  CPU: 4 PID: 3787 Comm: writefile Not tainted 5.16.0-rc7+ #12
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
 
-Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-[linux@dominikbrodowski.net: Fix typo in commit message]
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+due to accessing buf one char before its start.
+
+Prevent such out-of-bounds access.
+
+  [ bp: Productize into a proper patch. Link below is the next best
+    thing because the original mail didn't get archived on lore. ]
+
+Fixes: 0451d14d0561 ("EDAC, mce_amd_inj: Modify flags attribute to use string arguments")
+Signed-off-by: Zhang Zixun <zhang133010@icloud.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/linux-edac/YcnePfF1OOqoQwrX@zn.tnic/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pcmcia/rsrc_nonstatic.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kernel/cpu/mcheck/mce-inject.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
-index 49377d502b740..5cb29d6951df2 100644
---- a/drivers/pcmcia/rsrc_nonstatic.c
-+++ b/drivers/pcmcia/rsrc_nonstatic.c
-@@ -693,6 +693,9 @@ static struct resource *__nonstatic_find_io_region(struct pcmcia_socket *s,
- 	unsigned long min = base;
- 	int ret;
+diff --git a/arch/x86/kernel/cpu/mcheck/mce-inject.c b/arch/x86/kernel/cpu/mcheck/mce-inject.c
+index 9cc524be3c949..14dc3c1f7fb43 100644
+--- a/arch/x86/kernel/cpu/mcheck/mce-inject.c
++++ b/arch/x86/kernel/cpu/mcheck/mce-inject.c
+@@ -354,7 +354,7 @@ static ssize_t flags_write(struct file *filp, const char __user *ubuf,
+ 	char buf[MAX_FLAG_OPT_SIZE], *__buf;
+ 	int err;
  
-+	if (!res)
-+		return NULL;
-+
- 	data.mask = align - 1;
- 	data.offset = base & data.mask;
- 	data.map = &s_data->io_db;
+-	if (cnt > MAX_FLAG_OPT_SIZE)
++	if (!cnt || cnt > MAX_FLAG_OPT_SIZE)
+ 		return -EINVAL;
+ 
+ 	if (copy_from_user(&buf, ubuf, cnt))
 -- 
 2.34.1
 
