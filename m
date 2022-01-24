@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85AA4C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A46ACC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374593AbiAYAR3 (ORCPT
+        id S2374615AbiAYARc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
+        Mon, 24 Jan 2022 19:17:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458085AbiAXX2P (ORCPT
+        with ESMTP id S1356245AbiAXX2B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE344C01D7FC;
-        Mon, 24 Jan 2022 13:32:19 -0800 (PST)
+        Mon, 24 Jan 2022 18:28:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F578C01D7EA;
+        Mon, 24 Jan 2022 13:30:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 934D2B8105C;
-        Mon, 24 Jan 2022 21:32:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0C85C340E4;
-        Mon, 24 Jan 2022 21:32:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C07E614E1;
+        Mon, 24 Jan 2022 21:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13E06C340E4;
+        Mon, 24 Jan 2022 21:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059938;
-        bh=EA7dMKNdQg24nhqA/oLL+3Ocd+cZ/ldxMW1D3CxdYDs=;
+        s=korg; t=1643059848;
+        bh=G82Q4cPxhw81sOqVHOtuTQNejvoexVwt2CxtmuQC0No=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pqFGKyYR7JYddE/dLIoxcTABiKng5hTcmFmNrIxhq3u706tAqsme+ybkJSXLIhaS4
-         +7ffZPwdHPUEwNZlYQHPYMcIn2XQ9wXALgsQJE8WVAsdCjqunf4kQwuMhOa8crUOJu
-         5Vik0YAwXhsBb2mwJo5qFILq4UFClwN2+YkE8qsc=
+        b=BMk23j49+M25zpb1nZbDz2RrMhlBclyk19FOHtoGkDKllBECsPvvDZ77RTqUf7WGB
+         ZWNDoHMaAapDTYlAHpFJxp9Q/DpKwixVCN06d1GxPTK9imWxWlXIxA2YB0oJuhlWo6
+         sW8ZwVN58eiX5GnmJEyyJVe7u03wTCLpIDbXomZc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Richard Zhu <hongxing.zhu@nxp.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0785/1039] PCI: dwc: Do not remap invalid res
-Date:   Mon, 24 Jan 2022 19:42:54 +0100
-Message-Id: <20220124184151.676819654@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0727/1039] parisc: Avoid calling faulthandler_disabled() twice
+Date:   Mon, 24 Jan 2022 19:41:56 +0100
+Message-Id: <20220124184149.768356308@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,47 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tim Harvey <tharvey@gateworks.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 6e5ebc96ec651b67131f816d7e3bf286c635e749 ]
+[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
 
-On imx6 and perhaps others when pcie probes you get a:
-imx6q-pcie 33800000.pcie: invalid resource
+In handle_interruption(), we call faulthandler_disabled() to check whether the
+fault handler is not disabled. If the fault handler is disabled, we immediately
+call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
+do_page_fault() attempts to fixup the exception by jumping to no_context:
 
-This occurs because the atu is not specified in the DT and as such it
-should not be remapped.
+no_context:
 
-Link: https://lore.kernel.org/r/20211101180243.23761-1-tharvey@gateworks.com
-Fixes: 281f1f99cf3a ("PCI: dwc: Detect number of iATU windows")
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
-Cc: Richard Zhu <hongxing.zhu@nxp.com>
+        if (!user_mode(regs) && fixup_exception(regs)) {
+                return;
+        }
+
+        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
+
+Apart from the error messages, the two blocks of code perform the same
+function.
+
+We can avoid two calls to faulthandler_disabled() by a simple revision
+to the code in handle_interruption().
+
+Note: I didn't try to fix the formatting of this code block.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/dwc/pcie-designware.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/parisc/kernel/traps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
-index 850b4533f4ef5..d92c8a25094fa 100644
---- a/drivers/pci/controller/dwc/pcie-designware.c
-+++ b/drivers/pci/controller/dwc/pcie-designware.c
-@@ -672,10 +672,11 @@ void dw_pcie_iatu_detect(struct dw_pcie *pci)
- 		if (!pci->atu_base) {
- 			struct resource *res =
- 				platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
--			if (res)
-+			if (res) {
- 				pci->atu_size = resource_size(res);
--			pci->atu_base = devm_ioremap_resource(dev, res);
--			if (IS_ERR(pci->atu_base))
-+				pci->atu_base = devm_ioremap_resource(dev, res);
-+			}
-+			if (!pci->atu_base || IS_ERR(pci->atu_base))
- 				pci->atu_base = pci->dbi_base + DEFAULT_DBI_ATU_OFFSET;
- 		}
+diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
+index 892b7fc8f3c45..eb41fece19104 100644
+--- a/arch/parisc/kernel/traps.c
++++ b/arch/parisc/kernel/traps.c
+@@ -785,7 +785,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
+ 	     * unless pagefault_disable() was called before.
+ 	     */
  
+-	    if (fault_space == 0 && !faulthandler_disabled())
++	    if (faulthandler_disabled() || fault_space == 0)
+ 	    {
+ 		/* Clean up and return if in exception table. */
+ 		if (fixup_exception(regs))
 -- 
 2.34.1
 
