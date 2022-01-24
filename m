@@ -2,122 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772B6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C89D6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587328AbiAXW2G (ORCPT
+        id S1587364AbiAXW2L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454662AbiAXVdT (ORCPT
+        Mon, 24 Jan 2022 17:28:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47052 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454982AbiAXVeQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:19 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05800C07597B
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:21:27 -0800 (PST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1643055685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5FTeBFVoufuU7ZebHlDAFZY8PMUgfTQm18f5SfOHL8s=;
-        b=R1P7/uDqxqfBfk6N4xEy69WETfs1Jhu/2hRwCYOe8xPmYjIrg8SFqoZzucC0OcvPxGC7gE
-        5o4eT4spbf9a2ZqK7eh9QlzJNBKyf+ZApSxLDIzy/x5B94QW+Qz6zpqCKEdWp1IUDVNkXi
-        GYfV8E0MbwnGXMV3FJvetYWqtILk1ViWaKaz/QYbxXSq9U0fH7KpHObVTFwMWrGkAqCu/N
-        cl5gbESO88l9KqBeU+mOEeqASkjarlsDg43xmRuM8k87sqN3ZMUO/r1AZ7D/O7XYWNZ+yq
-        JSjH0RaYGsijeqNc8VmEpNnMPIpsZBmy23yo4XiUmbLqWnyg2sefiMDe1hbZ4Q==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1643055685;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5FTeBFVoufuU7ZebHlDAFZY8PMUgfTQm18f5SfOHL8s=;
-        b=hzlU/SjNn/fwwC/H/KRPQL79VdGm9mE7ZHkHxDA4MC0SLgFIgF2pfhSDFoTcrjigCCscSE
-        EYTOdPC2MJzUZHAw==
-To:     Fenghua Yu <fenghua.yu@intel.com>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Andy Lutomirski <luto@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Tony Luck <tony.luck@intel.com>,
-        Lu Baolu <baolu.lu@linux.intel.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>,
-        Ashok Raj <ashok.raj@intel.com>,
-        Ravi V Shankar <ravi.v.shankar@intel.com>
-Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Fenghua Yu <fenghua.yu@intel.com>
-Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
- allocation and free it on mm exit
-In-Reply-To: <20211217220136.2762116-6-fenghua.yu@intel.com>
-References: <20211217220136.2762116-1-fenghua.yu@intel.com>
- <20211217220136.2762116-6-fenghua.yu@intel.com>
-Date:   Mon, 24 Jan 2022 21:21:24 +0100
-Message-ID: <87ee4w6g1n.ffs@tglx>
+        Mon, 24 Jan 2022 16:34:16 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC08DB8123D;
+        Mon, 24 Jan 2022 21:34:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC18AC340E4;
+        Mon, 24 Jan 2022 21:34:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643060050;
+        bh=zDHN0pvH5VbPZU6z9GYhPXlHtcv0MaHvgRH814qRAaU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gqdRlHxtnuHtzvuK5LNvObnS9JU9UAw0zG4gjRz+V+udDzzXaW/sylwHwkKeuXBfK
+         spGGOjseoLlEDZvyPBI+K9ADqnzfQ/LifdRUofFCCt7StR1qlNxjcChFNfDQJkBkFl
+         FGgviaIH+zy/7FJczD3+MX5YoxqHVvHcqFVw/y1Q=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Felix Kuehling <Felix.Kuehling@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0822/1039] drm/amdkfd: Check for null pointer after calling kmemdup
+Date:   Mon, 24 Jan 2022 19:43:31 +0100
+Message-Id: <20220124184152.928542031@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 17 2021 at 22:01, Fenghua Yu wrote:
-> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
-> index bd41405d34e9..ee2294e02716 100644
-> --- a/drivers/iommu/iommu-sva-lib.c
-> +++ b/drivers/iommu/iommu-sva-lib.c
-> @@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
->   *
->   * Try to allocate a PASID for this mm, or take a reference to the existing one
->   * provided it fits within the [@min, @max] range. On success the PASID is
-> - * available in mm->pasid, and must be released with iommu_sva_free_pasid().
-> - * @min must be greater than 0, because 0 indicates an unused mm->pasid.
-> + * available in mm->pasid and will be available for the lifetime of the mm.
->   *
->   * Returns 0 on success and < 0 on error.
->   */
-> @@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
->  		return -EINVAL;
->  
->  	mutex_lock(&iommu_sva_lock);
-> -	if (mm->pasid) {
-> -		if (mm->pasid >= min && mm->pasid <= max)
-> -			ioasid_get(mm->pasid);
-> -		else
-> +	/* Is a PASID already associated with this mm? */
-> +	if (pasid_valid(mm->pasid)) {
-> +		if (mm->pasid < min || mm->pasid >= max)
->  			ret = -EOVERFLOW;
-> -	} else {
-> -		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-> -		if (pasid == INVALID_IOASID)
-> -			ret = -ENOMEM;
-> -		else
-> -			mm->pasid = pasid;
-> +		goto out;
->  	}
-> +
-> +	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
-> +	if (!pasid_valid(pasid))
-> +		ret = -ENOMEM;
-> +	else
-> +		mm_pasid_get(mm, pasid);
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-Hrm. This is odd.
+[ Upstream commit abfaf0eee97925905e742aa3b0b72e04a918fa9e ]
 
-> +/* Associate a PASID with an mm_struct: */
-> +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
-> +{
-> +	mm->pasid = pasid;
-> +}
+As the possible failure of the allocation, kmemdup() may return NULL
+pointer.
+Therefore, it should be better to check the 'props2' in order to prevent
+the dereference of NULL pointer.
 
-This does not get anything. It sets the allocated PASID in the mm. The
-refcount on the PASID was already taken by the allocation. So this
-should be mm_pasid_set() or mm_pasid_install(), right?
+Fixes: 3a87177eb141 ("drm/amdkfd: Add topology support for dGPUs")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-Thanks,
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+index cfedfb1e8596c..c33d689f29e8e 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1060,6 +1060,9 @@ static int kfd_parse_subtype_iolink(struct crat_subtype_iolink *iolink,
+ 			return -ENODEV;
+ 		/* same everything but the other direction */
+ 		props2 = kmemdup(props, sizeof(*props2), GFP_KERNEL);
++		if (!props2)
++			return -ENOMEM;
++
+ 		props2->node_from = id_to;
+ 		props2->node_to = id_from;
+ 		props2->kobj = NULL;
+-- 
+2.34.1
 
-        tglx
+
+
