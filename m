@@ -2,30 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DCBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994F4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245117AbiAXSH4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:07:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32820 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244955AbiAXSHb (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:07:31 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A014C061748
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:07:30 -0800 (PST)
+        id S244865AbiAXSIi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:08:38 -0500
+Received: from out2.migadu.com ([188.165.223.204]:15284 "EHLO out2.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235662AbiAXSIc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:08:32 -0500
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643047649;
+        t=1643047711;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ypDUrRwpvHxVi9/0pzLPCyjGz64l2U6vLcrEu5OiSo8=;
-        b=h5KNT+HE1tKNl8ee9QGd2J7zWqwuSghQOwH0ssGabPUeG/2X6n0oVJ+eGPg0ZJJjeEX/Ja
-        qkxlKfLQ+WQdvG4iYDLBizd0WFXWkjtg+5zwMDHoCl1l2+84TzWpdZeElA/8OFOjnTKSe0
-        Pl06koOQs2H3JvLAj2nhgTZi1e3hAow=
+        bh=XC1+Aytkcqzf1ileaTyJqJ/4yyuLy4mtp9hx3Zvq9co=;
+        b=liPt02iRnBFXDRR1MVekLfmjEXqPI0zE74mxmncZJzsGL2m2pdMXg9LmzHrwPK5jREkqe/
+        ebo9hFZ8whUpNBFzjwSRsc8PDTg6GjxiXszI48K3JzjnqGPL12Tpe7eKXWeEGyN0jfoiWF
+        nY++IFUHhmz7/ghqjQ+385MLJt2mOtI=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -43,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Evgenii Stepanov <eugenis@google.com>,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v6 34/39] kasan: clean up feature flags for HW_TAGS mode
-Date:   Mon, 24 Jan 2022 19:05:08 +0100
-Message-Id: <76ebb340265be57a218564a497e1f52ff36a3879.1643047180.git.andreyknvl@google.com>
+Subject: [PATCH v6 36/39] kasan: allow enabling KASAN_VMALLOC and SW/HW_TAGS
+Date:   Mon, 24 Jan 2022 19:05:10 +0100
+Message-Id: <bfa0fdedfe25f65e5caa4e410f074ddbac7a0b59.1643047180.git.andreyknvl@google.com>
 In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
 References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -58,133 +54,52 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-- Untie kasan_init_hw_tags() code from the default values of
-  kasan_arg_mode and kasan_arg_stacktrace.
+Allow enabling CONFIG_KASAN_VMALLOC with SW_TAGS and HW_TAGS KASAN
+modes.
 
-- Move static_branch_enable(&kasan_flag_enabled) to the end of
-  kasan_init_hw_tags_cpu().
+Also adjust CONFIG_KASAN_VMALLOC description:
 
-- Remove excessive comments in kasan_arg_mode switch.
-
-- Add new comments.
+- Mention HW_TAGS support.
+- Remove unneeded internal details: they have no place in Kconfig
+  description and are already explained in the documentation.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-
 ---
+ lib/Kconfig.kasan | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-Changes v4->v5:
-- Add this patch.
----
- mm/kasan/hw_tags.c | 38 +++++++++++++++++++++-----------------
- mm/kasan/kasan.h   |  2 +-
- 2 files changed, 22 insertions(+), 18 deletions(-)
-
-diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
-index 6509809dd5d8..6a3146d1ccc5 100644
---- a/mm/kasan/hw_tags.c
-+++ b/mm/kasan/hw_tags.c
-@@ -42,16 +42,22 @@ static enum kasan_arg kasan_arg __ro_after_init;
- static enum kasan_arg_mode kasan_arg_mode __ro_after_init;
- static enum kasan_arg_stacktrace kasan_arg_stacktrace __initdata;
+diff --git a/lib/Kconfig.kasan b/lib/Kconfig.kasan
+index 879757b6dd14..1f3e620188a2 100644
+--- a/lib/Kconfig.kasan
++++ b/lib/Kconfig.kasan
+@@ -178,17 +178,17 @@ config KASAN_TAGS_IDENTIFY
+ 	  memory consumption.
  
--/* Whether KASAN is enabled at all. */
-+/*
-+ * Whether KASAN is enabled at all.
-+ * The value remains false until KASAN is initialized by kasan_init_hw_tags().
-+ */
- DEFINE_STATIC_KEY_FALSE(kasan_flag_enabled);
- EXPORT_SYMBOL(kasan_flag_enabled);
- 
--/* Whether the selected mode is synchronous/asynchronous/asymmetric.*/
-+/*
-+ * Whether the selected mode is synchronous, asynchronous, or asymmetric.
-+ * Defaults to KASAN_MODE_SYNC.
-+ */
- enum kasan_mode kasan_mode __ro_after_init;
- EXPORT_SYMBOL_GPL(kasan_mode);
- 
- /* Whether to collect alloc/free stack traces. */
--DEFINE_STATIC_KEY_FALSE(kasan_flag_stacktrace);
-+DEFINE_STATIC_KEY_TRUE(kasan_flag_stacktrace);
- 
- /* kasan=off/on */
- static int __init early_kasan_flag(char *arg)
-@@ -127,7 +133,11 @@ void kasan_init_hw_tags_cpu(void)
- 	 * as this function is only called for MTE-capable hardware.
- 	 */
- 
--	/* If KASAN is disabled via command line, don't initialize it. */
-+	/*
-+	 * If KASAN is disabled via command line, don't initialize it.
-+	 * When this function is called, kasan_flag_enabled is not yet
-+	 * set by kasan_init_hw_tags(). Thus, check kasan_arg instead.
-+	 */
- 	if (kasan_arg == KASAN_ARG_OFF)
- 		return;
- 
-@@ -154,42 +164,36 @@ void __init kasan_init_hw_tags(void)
- 	if (kasan_arg == KASAN_ARG_OFF)
- 		return;
- 
--	/* Enable KASAN. */
--	static_branch_enable(&kasan_flag_enabled);
+ config KASAN_VMALLOC
+-	bool "Back mappings in vmalloc space with real shadow memory"
+-	depends on KASAN_GENERIC && HAVE_ARCH_KASAN_VMALLOC
++	bool "Check accesses to vmalloc allocations"
++	depends on HAVE_ARCH_KASAN_VMALLOC
+ 	help
+-	  By default, the shadow region for vmalloc space is the read-only
+-	  zero page. This means that KASAN cannot detect errors involving
+-	  vmalloc space.
 -
- 	switch (kasan_arg_mode) {
- 	case KASAN_ARG_MODE_DEFAULT:
--		/*
--		 * Default to sync mode.
--		 */
--		fallthrough;
-+		/* Default is specified by kasan_mode definition. */
-+		break;
- 	case KASAN_ARG_MODE_SYNC:
--		/* Sync mode enabled. */
- 		kasan_mode = KASAN_MODE_SYNC;
- 		break;
- 	case KASAN_ARG_MODE_ASYNC:
--		/* Async mode enabled. */
- 		kasan_mode = KASAN_MODE_ASYNC;
- 		break;
- 	case KASAN_ARG_MODE_ASYMM:
--		/* Asymm mode enabled. */
- 		kasan_mode = KASAN_MODE_ASYMM;
- 		break;
- 	}
- 
- 	switch (kasan_arg_stacktrace) {
- 	case KASAN_ARG_STACKTRACE_DEFAULT:
--		/* Default to enabling stack trace collection. */
--		static_branch_enable(&kasan_flag_stacktrace);
-+		/* Default is specified by kasan_flag_stacktrace definition. */
- 		break;
- 	case KASAN_ARG_STACKTRACE_OFF:
--		/* Do nothing, kasan_flag_stacktrace keeps its default value. */
-+		static_branch_disable(&kasan_flag_stacktrace);
- 		break;
- 	case KASAN_ARG_STACKTRACE_ON:
- 		static_branch_enable(&kasan_flag_stacktrace);
- 		break;
- 	}
- 
-+	/* KASAN is now initialized, enable it. */
-+	static_branch_enable(&kasan_flag_enabled);
+-	  Enabling this option will hook in to vmap/vmalloc and back those
+-	  mappings with real shadow memory allocated on demand. This allows
+-	  for KASAN to detect more sorts of errors (and to support vmapped
+-	  stacks), but at the cost of higher memory usage.
++	  This mode makes KASAN check accesses to vmalloc allocations for
++	  validity.
 +
- 	pr_info("KernelAddressSanitizer initialized (hw-tags, mode=%s, stacktrace=%s)\n",
- 		kasan_mode_info(),
- 		kasan_stack_collection_enabled() ? "on" : "off");
-diff --git a/mm/kasan/kasan.h b/mm/kasan/kasan.h
-index 020f3e57a03f..efda13a9ce6a 100644
---- a/mm/kasan/kasan.h
-+++ b/mm/kasan/kasan.h
-@@ -12,7 +12,7 @@
- #include <linux/static_key.h>
- #include "../slab.h"
++	  With software KASAN modes, checking is done for all types of vmalloc
++	  allocations. Enabling this option leads to higher memory usage.
++
++	  With hardware tag-based KASAN, only VM_ALLOC mappings are checked.
++	  There is no additional memory usage.
  
--DECLARE_STATIC_KEY_FALSE(kasan_flag_stacktrace);
-+DECLARE_STATIC_KEY_TRUE(kasan_flag_stacktrace);
- 
- enum kasan_mode {
- 	KASAN_MODE_SYNC,
+ config KASAN_KUNIT_TEST
+ 	tristate "KUnit-compatible tests of KASAN bug detection capabilities" if !KUNIT_ALL_TESTS
 -- 
 2.25.1
 
