@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 683FBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6BFC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344008AbiAXS7e (ORCPT
+        id S1345123AbiAXS7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55094 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343556AbiAXS5B (ORCPT
+        Mon, 24 Jan 2022 13:59:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344483AbiAXS4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:01 -0500
+        Mon, 24 Jan 2022 13:56:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E13C0612B0;
+        Mon, 24 Jan 2022 10:54:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5ECABB810BD;
-        Mon, 24 Jan 2022 18:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A7CC340E5;
-        Mon, 24 Jan 2022 18:56:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2BFDBB810BD;
+        Mon, 24 Jan 2022 18:54:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E5CC340E5;
+        Mon, 24 Jan 2022 18:54:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050619;
-        bh=y+we92SPknJm552z1ppO/DVAZMNczlZ+j1Y2CQ3lDoU=;
+        s=korg; t=1643050475;
+        bh=bfcNSSSFgCqI3GxKVbE6LXuPeSyfon74j0nK3vab2lY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nimoex8BIwEfsQnunmPmLnzSOVi28qVo/5So+MpIlgQX2iPA71RlyA1ZccouNY+uy
-         lpZo7EWzL41wQEQz6sZLWlewpHEw3Y0OHt3QIf3tmsy+IVD+CtZA/X2vAQmVgiFV1h
-         miEIyechZ5zuVGBN6CTCrb4ylQ4MykHweoAqIpLE=
+        b=NSaQcZPxe2InvKodciSfmD/LECf8NWmeWmK03ZVCBp4DkPYsxk2GFAsqkjaLWeV+A
+         vw0eL+wB4u7kZYbw1uAP56cLoQXomVHY8MFnydgi4zqBQ0hAL0CIRNMyMfj/r4Gs8T
+         kHjmfcItt3uDN30nbDxGDNfLGK/rHUkPT1rQPzWY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 060/157] RDMA/hns: Validate the pkey index
-Date:   Mon, 24 Jan 2022 19:42:30 +0100
-Message-Id: <20220124183934.685563589@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.9 007/157] random: fix data race on crng_node_pool
+Date:   Mon, 24 Jan 2022 19:41:37 +0100
+Message-Id: <20220124183933.019583375@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,37 +50,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Eric Biggers <ebiggers@google.com>
 
-[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
+commit 5d73d1e320c3fd94ea15ba5f79301da9a8bcc7de upstream.
 
-Before query pkey, make sure that the queried index is valid.
+extract_crng() and crng_backtrack_protect() load crng_node_pool with a
+plain load, which causes undefined behavior if do_numa_crng_init()
+modifies it concurrently.
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fix this by using READ_ONCE().  Note: as per the previous discussion
+https://lore.kernel.org/lkml/20211219025139.31085-1-ebiggers@kernel.org/T/#u,
+READ_ONCE() is believed to be sufficient here, and it was requested that
+it be used here instead of smp_load_acquire().
+
+Also change do_numa_crng_init() to set crng_node_pool using
+cmpxchg_release() instead of mb() + cmpxchg(), as the former is
+sufficient here but is more lightweight.
+
+Fixes: 1e7f583af67b ("random: make /dev/urandom scalable for silly userspace programs")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/char/random.c |   42 ++++++++++++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
-index 764e35a54457e..852aac146ac78 100644
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -475,6 +475,9 @@ static int hns_roce_query_gid(struct ib_device *ib_dev, u8 port_num, int index,
- static int hns_roce_query_pkey(struct ib_device *ib_dev, u8 port, u16 index,
- 			       u16 *pkey)
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -845,8 +845,8 @@ static void do_numa_crng_init(struct wor
+ 		crng_initialize(crng);
+ 		pool[i] = crng;
+ 	}
+-	mb();
+-	if (cmpxchg(&crng_node_pool, NULL, pool)) {
++	/* pairs with READ_ONCE() in select_crng() */
++	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
+ 		for_each_node(i)
+ 			kfree(pool[i]);
+ 		kfree(pool);
+@@ -859,8 +859,26 @@ static void numa_crng_init(void)
  {
-+	if (index > 0)
-+		return -EINVAL;
+ 	schedule_work(&numa_crng_init_work);
+ }
 +
- 	*pkey = PKEY_ID;
++static struct crng_state *select_crng(void)
++{
++	struct crng_state **pool;
++	int nid = numa_node_id();
++
++	/* pairs with cmpxchg_release() in do_numa_crng_init() */
++	pool = READ_ONCE(crng_node_pool);
++	if (pool && pool[nid])
++		return pool[nid];
++
++	return &primary_crng;
++}
+ #else
+ static void numa_crng_init(void) {}
++
++static struct crng_state *select_crng(void)
++{
++	return &primary_crng;
++}
+ #endif
  
- 	return 0;
--- 
-2.34.1
-
+ static void crng_reseed(struct crng_state *crng, struct entropy_store *r)
+@@ -945,15 +963,7 @@ static void _extract_crng(struct crng_st
+ 
+ static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_extract_crng(crng, out);
++	_extract_crng(select_crng(), out);
+ }
+ 
+ /*
+@@ -982,15 +992,7 @@ static void _crng_backtrack_protect(stru
+ 
+ static void crng_backtrack_protect(__u8 tmp[CHACHA20_BLOCK_SIZE], int used)
+ {
+-	struct crng_state *crng = NULL;
+-
+-#ifdef CONFIG_NUMA
+-	if (crng_node_pool)
+-		crng = crng_node_pool[numa_node_id()];
+-	if (crng == NULL)
+-#endif
+-		crng = &primary_crng;
+-	_crng_backtrack_protect(crng, tmp, used);
++	_crng_backtrack_protect(select_crng(), tmp, used);
+ }
+ 
+ static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
 
 
