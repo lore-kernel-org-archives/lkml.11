@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 125AEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF17EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580846AbiAXWKx (ORCPT
+        id S1580873AbiAXWKz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:10:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45234 "EHLO
+        Mon, 24 Jan 2022 17:10:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46400 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452401AbiAXVZ2 (ORCPT
+        with ESMTP id S1452425AbiAXVZe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:28 -0500
+        Mon, 24 Jan 2022 16:25:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59AAE61490;
-        Mon, 24 Jan 2022 21:25:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32E06C340E9;
-        Mon, 24 Jan 2022 21:25:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 10E556136E;
+        Mon, 24 Jan 2022 21:25:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F149EC340E4;
+        Mon, 24 Jan 2022 21:25:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059527;
-        bh=eFTZK+BDoNPOY/zrtFGms/hGWY8oU/F68SCn7MXvx3c=;
+        s=korg; t=1643059533;
+        bh=MwjSNMBDiKF0+H5jqz5A2By0pk1oW/OfxKi+IgH4XTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Lg49AQR9kaj636vLB9iCi3UZZr4F90hygygjKR32xiA8MiTlNwuDAb9X+OmfHBMfV
-         gx6W37WQNeKc0paTVLytVg3XabQnvujL16/A1JKflAFNCm100e3/hzP07VuDmxbTMo
-         aDc7PBvTDqBUsBkDYLcsCV5pgmZED2Wj2/Rst6rQ=
+        b=Cfo0KKNNaNtE5Y9Xutoz1CTIeELoJPmKANksg10GCe4f6FdwgVevTd6hp6rB7zRrw
+         v+cu9jdApbGgh5CxPdGM6kjWZvqRiGX7qPa3dp33x3cFCbQiO76/GyTPIyQnQt24v7
+         agMV4qz2iTKCdJQ8UyuueKc5k03gCrpX5ZSiKCJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Kumar <suresh2514@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0645/1039] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-Date:   Mon, 24 Jan 2022 19:40:34 +0100
-Message-Id: <20220124184147.033735836@linuxfoundation.org>
+Subject: [PATCH 5.16 0620/1039] media: atomisp: fix "variable dereferenced before check asd"
+Date:   Mon, 24 Jan 2022 19:40:09 +0100
+Message-Id: <20220124184146.177661596@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,68 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Kumar <surkumar@redhat.com>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
+[ Upstream commit ac56760a8bbb4e654b2fd54e5de79dd5d72f937d ]
 
-Currently "bond_should_notify_peers: slave ..." messages are printed whenever
-"bond_should_notify_peers" function is called.
+There are two occurrences where the variable 'asd' is dereferenced
+before check. Fix this issue by using the variable after the check.
 
-+++
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-...
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-+++
+Link: https://lore.kernel.org/linux-media/20211122074122.GA6581@kili/
 
-This is confusing and can also clutter up debug logs.
-Print logs only when the peer notification happens.
-
-Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Link: https://lore.kernel.org/linux-media/20211201141904.47231-1-kitakar@gmail.com
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/staging/media/atomisp/pci/atomisp_cmd.c   | 3 ++-
+ drivers/staging/media/atomisp/pci/atomisp_ioctl.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index ff8da720a33a7..0ac964359fbfe 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1096,9 +1096,6 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	slave = rcu_dereference(bond->curr_active_slave);
- 	rcu_read_unlock();
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_cmd.c b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
+index 1ddb9c815a3cb..ef0b0963cf930 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_cmd.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
+@@ -5224,7 +5224,7 @@ static int atomisp_set_fmt_to_isp(struct video_device *vdev,
+ 	int (*configure_pp_input)(struct atomisp_sub_device *asd,
+ 				  unsigned int width, unsigned int height) =
+ 				      configure_pp_input_nop;
+-	u16 stream_index = atomisp_source_pad_to_stream_id(asd, source_pad);
++	u16 stream_index;
+ 	const struct atomisp_in_fmt_conv *fc;
+ 	int ret, i;
  
--	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
--		   slave ? slave->dev->name : "NULL");
--
- 	if (!slave || !bond->send_peer_notif ||
- 	    bond->send_peer_notif %
- 	    max(1, bond->params.peer_notif_delay) != 0 ||
-@@ -1106,6 +1103,9 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
- 		return false;
+@@ -5233,6 +5233,7 @@ static int atomisp_set_fmt_to_isp(struct video_device *vdev,
+ 			__func__, vdev->name);
+ 		return -EINVAL;
+ 	}
++	stream_index = atomisp_source_pad_to_stream_id(asd, source_pad);
  
-+	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
-+		   slave ? slave->dev->name : "NULL");
-+
- 	return true;
- }
+ 	v4l2_fh_init(&fh.vfh, vdev);
  
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
+index 54624f8814e04..b7dda4b96d49c 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
+@@ -1123,7 +1123,7 @@ int __atomisp_reqbufs(struct file *file, void *fh,
+ 	struct ia_css_frame *frame;
+ 	struct videobuf_vmalloc_memory *vm_mem;
+ 	u16 source_pad = atomisp_subdev_source_pad(vdev);
+-	u16 stream_id = atomisp_source_pad_to_stream_id(asd, source_pad);
++	u16 stream_id;
+ 	int ret = 0, i = 0;
+ 
+ 	if (!asd) {
+@@ -1131,6 +1131,7 @@ int __atomisp_reqbufs(struct file *file, void *fh,
+ 			__func__, vdev->name);
+ 		return -EINVAL;
+ 	}
++	stream_id = atomisp_source_pad_to_stream_id(asd, source_pad);
+ 
+ 	if (req->count == 0) {
+ 		mutex_lock(&pipe->capq.vb_lock);
 -- 
 2.34.1
 
