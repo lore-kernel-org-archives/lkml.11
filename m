@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF38C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48093C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450423AbiAXWD2 (ORCPT
+        id S1578275AbiAXWCP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:03:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37392 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377231AbiAXVRu (ORCPT
+        Mon, 24 Jan 2022 17:02:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50938 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450659AbiAXVVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:17:50 -0500
+        Mon, 24 Jan 2022 16:21:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C868C0A1CC8;
+        Mon, 24 Jan 2022 12:14:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9BFFB81188;
-        Mon, 24 Jan 2022 21:17:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0571AC340E4;
-        Mon, 24 Jan 2022 21:17:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0099B8119E;
+        Mon, 24 Jan 2022 20:14:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12A99C340E5;
+        Mon, 24 Jan 2022 20:14:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059066;
-        bh=eXld64SAj0/uBme7zFW+YGIPcTAU5bs5ccJa8NjUrcA=;
+        s=korg; t=1643055288;
+        bh=hu1gV17cDebv5tvImuJ6Tjz/Hjil7NJhsdqGiuZJLm0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mLa9tCdHORe/pKLsgK4jEF02WRtUT1M6we7t/VRZxarZAIiCsH23KxO8dmIxZFyUw
-         i9AUzFpI6HPMcLTJ1PkxXHv5S1Am45jvACsrUKNqP8xYm1ledgASo12ANZUzdf9R0i
-         ZJR99UJKfDpCAwb9HFuSe1mwq1Cukr07WM08/Cqo=
+        b=d/zBVmqOHICsz5tNjuBAb9UjTy0fjwU/qNwXBVo577sDDoPZJxTLEZpWzzh3Noms/
+         +yX6sIDegJhXyycQG/ABQqAWu0pMvsXfEXXAgmEZqTAQQuRKdCoawuDNsyqac9+Gyz
+         ERxNsTLQOtMJeRmxrS8klPZien1Jip9sie5tekTU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Hector Martin <marcan@marcan.st>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0476/1039] iommu/io-pgtable-arm: Fix table descriptor paddr formatting
-Date:   Mon, 24 Jan 2022 19:37:45 +0100
-Message-Id: <20220124184141.276711853@linuxfoundation.org>
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 102/846] wcn36xx: populate band before determining rate on RX
+Date:   Mon, 24 Jan 2022 19:33:39 +0100
+Message-Id: <20220124184104.519231263@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,67 +51,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Benjamin Li <benl@squareup.com>
 
-[ Upstream commit 9abe2ac834851a7d0b0756e295cf7a292c45ca53 ]
+[ Upstream commit c9c5608fafe4dae975c9644c7d14c51ad3b0ed73 ]
 
-Table descriptors were being installed without properly formatting the
-address using paddr_to_iopte, which does not match up with the
-iopte_deref in __arm_lpae_map. This is incorrect for the LPAE pte
-format, as it does not handle the high bits properly.
+status.band is used in determination of status.rate -- for 5GHz on legacy
+rates there is a linear shift between the BD descriptor's rate field and
+the wcn36xx driver's rate table (wcn_5ghz_rates).
 
-This was found on Apple T6000 DARTs, which require a new pte format
-(different shift); adding support for that to
-paddr_to_iopte/iopte_to_paddr caused it to break badly, as even <48-bit
-addresses would end up incorrect in that case.
+We have a special clause to populate status.band for hardware scan offload
+frames. However, this block occurs after status.rate is already populated.
+Correctly handle this dependency by moving the band block before the rate
+block.
 
-Fixes: 6c89928ff7a0 ("iommu/io-pgtable-arm: Support 52-bit physical address")
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211120031343.88034-1-marcan@marcan.st
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
+This patch addresses kernel warnings & missing scan results for 5GHz APs
+that send their beacons/probe responses at the higher four legacy rates
+(24-54 Mbps), when using hardware scan offload:
+
+  ------------[ cut here ]------------
+  WARNING: CPU: 0 PID: 0 at net/mac80211/rx.c:4532 ieee80211_rx_napi+0x744/0x8d8
+  Modules linked in: wcn36xx [...]
+  CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         4.19.107-g73909fa #1
+  Hardware name: Square, Inc. T2 (all variants) (DT)
+  Call trace:
+  dump_backtrace+0x0/0x148
+  show_stack+0x14/0x1c
+  dump_stack+0xb8/0xf0
+  __warn+0x2ac/0x2d8
+  warn_slowpath_null+0x44/0x54
+  ieee80211_rx_napi+0x744/0x8d8
+  ieee80211_tasklet_handler+0xa4/0xe0
+  tasklet_action_common+0xe0/0x118
+  tasklet_action+0x20/0x28
+  __do_softirq+0x108/0x1ec
+  irq_exit+0xd4/0xd8
+  __handle_domain_irq+0x84/0xbc
+  gic_handle_irq+0x4c/0xb8
+  el1_irq+0xe8/0x190
+  lpm_cpuidle_enter+0x220/0x260
+  cpuidle_enter_state+0x114/0x1c0
+  cpuidle_enter+0x34/0x48
+  do_idle+0x150/0x268
+  cpu_startup_entry+0x20/0x24
+  rest_init+0xd4/0xe0
+  start_kernel+0x398/0x430
+  ---[ end trace ae28cb759352b403 ]---
+
+Fixes: 8a27ca394782 ("wcn36xx: Correct band/freq reporting on RX")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211104010548.1107405-2-benl@squareup.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 37 +++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index dd9e47189d0d9..94ff319ae8acc 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -315,11 +315,12 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 					     arm_lpae_iopte *ptep,
- 					     arm_lpae_iopte curr,
--					     struct io_pgtable_cfg *cfg)
-+					     struct arm_lpae_io_pgtable *data)
- {
- 	arm_lpae_iopte old, new;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index bbd7194c82e27..f76de106570d2 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -259,8 +259,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	fc = __le16_to_cpu(hdr->frame_control);
+ 	sn = IEEE80211_SEQ_TO_SN(__le16_to_cpu(hdr->seq_ctrl));
  
--	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
-+	new = paddr_to_iopte(__pa(table), data) | ARM_LPAE_PTE_TYPE_TABLE;
- 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
- 		new |= ARM_LPAE_PTE_NSTABLE;
+-	status.freq = WCN36XX_CENTER_FREQ(wcn);
+-	status.band = WCN36XX_BAND(wcn);
+ 	status.mactime = 10;
+ 	status.signal = -get_rssi0(bd);
+ 	status.antenna = 1;
+@@ -272,6 +270,25 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
  
-@@ -380,7 +381,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		if (!cptep)
- 			return -ENOMEM;
+ 	wcn36xx_dbg(WCN36XX_DBG_RX, "status.flags=%x\n", status.flag);
  
--		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
-+		pte = arm_lpae_install_table(cptep, ptep, 0, data);
- 		if (pte)
- 			__arm_lpae_free_pages(cptep, tblsz, cfg);
- 	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
-@@ -592,7 +593,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, 1, &tablep[i]);
- 	}
++	if (bd->scan_learn) {
++		/* If packet originate from hardware scanning, extract the
++		 * band/channel from bd descriptor.
++		 */
++		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
++
++		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
++			status.band = NL80211_BAND_5GHZ;
++			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
++								     status.band);
++		} else {
++			status.band = NL80211_BAND_2GHZ;
++			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
++		}
++	} else {
++		status.band = WCN36XX_BAND(wcn);
++		status.freq = WCN36XX_CENTER_FREQ(wcn);
++	}
++
+ 	if (bd->rate_id < ARRAY_SIZE(wcn36xx_rate_table)) {
+ 		rate = &wcn36xx_rate_table[bd->rate_id];
+ 		status.encoding = rate->encoding;
+@@ -298,22 +315,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	    ieee80211_is_probe_resp(hdr->frame_control))
+ 		status.boottime_ns = ktime_get_boottime_ns();
  
--	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
-+	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
- 	if (pte != blk_pte) {
- 		__arm_lpae_free_pages(tablep, tablesz, cfg);
- 		/*
+-	if (bd->scan_learn) {
+-		/* If packet originates from hardware scanning, extract the
+-		 * band/channel from bd descriptor.
+-		 */
+-		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
+-
+-		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
+-			status.band = NL80211_BAND_5GHZ;
+-			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
+-								     status.band);
+-		} else {
+-			status.band = NL80211_BAND_2GHZ;
+-			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
+-		}
+-	}
+-
+ 	memcpy(IEEE80211_SKB_RXCB(skb), &status, sizeof(status));
+ 
+ 	if (ieee80211_is_beacon(hdr->frame_control)) {
 -- 
 2.34.1
 
