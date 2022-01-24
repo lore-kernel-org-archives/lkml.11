@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6389BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B807C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575899AbiAXVwl (ORCPT
+        id S1575933AbiAXVwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43222 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450448AbiAXVUg (ORCPT
+        Mon, 24 Jan 2022 16:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351988AbiAXVTB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:20:36 -0500
+        Mon, 24 Jan 2022 16:19:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B1BC06F8CB;
+        Mon, 24 Jan 2022 12:12:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17297614B4;
-        Mon, 24 Jan 2022 21:20:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F97DC340E4;
-        Mon, 24 Jan 2022 21:20:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A0EB61375;
+        Mon, 24 Jan 2022 20:12:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56FCAC340E7;
+        Mon, 24 Jan 2022 20:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059233;
-        bh=LsVwnJIEvisLM9UBPEff0RzYO/iKyX2BTRuQHjWcbMc=;
+        s=korg; t=1643055177;
+        bh=RHR1IXkcIgk2HJtIz0MhPowxjEOro65WsiGHJqwdpCQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6zrh275JShnzzN+imn/4jk1mkOnKbaJ2UEHF8BT0/OldA8d3jdLDF+uqetRv9dNH
-         WsaVXR1BqgeT06Qqg7oee3enknDcqco5pWYfb87EC31vFFPKp9olYvDizunkoLHqYk
-         8J7ufPFbcamrpw+A1vT8QZLyqPSVduSvj7zV3euc=
+        b=IVcLS4MlqI9lBDZAkRptHIUKQq26FuWR9YmaM8shZek6anmde8LOyBz9DefcdSf4l
+         plZzyVbPbSa2vHv5fkBQLusP0IY0BqcfF6BIcmG15yAk3bk7C6h+gWK50W/7hY+sA4
+         jbzv1atBlFIVOlm7jEbSlOrXeOSpnFQGeL1ea4co=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0514/1039] arm64: tegra: Remove non existent Tegra194 reset
-Date:   Mon, 24 Jan 2022 19:38:23 +0100
-Message-Id: <20220124184142.566214059@linuxfoundation.org>
+        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.15 066/846] drm/tegra: Add back arm_iommu_detach_device()
+Date:   Mon, 24 Jan 2022 19:33:03 +0100
+Message-Id: <20220124184103.245035526@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,40 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Dmitry Osipenko <digetx@gmail.com>
 
-[ Upstream commit 146b3a77af8091cabbd1decc51d67799e69682d2 ]
+commit d210919dbdc8a82c676cc3e3c370b1802be63124 upstream.
 
-Tegra194 does not really have "hda2codec_2x" related reset. Hence drop
-this entry to reflect actual HW.
+DMA buffers of 2D/3D engines aren't mapped properly when
+CONFIG_ARM_DMA_USE_IOMMU=y. The memory management code of Tegra DRM driver
+has a longstanding overhaul overdue and it's not obvious where the problem
+is in this case. Hence let's add back the old workaround which we already
+had sometime before. It explicitly detaches DRM devices from the offending
+implicit IOMMU domain. This fixes a completely broken 2d/3d drivers in
+case of ARM32 multiplatform kernel config.
 
-Fixes: 4878cc0c9fab ("arm64: tegra: Add HDA controller on Tegra194")
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Link: https://lore.kernel.org/r/1640260431-11613-4-git-send-email-spujar@nvidia.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: fa6661b7aa0b ("drm/tegra: Optionally attach clients to the IOMMU")
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/tegra/drm.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index 851e049b3519c..dcc0e55d6bdbb 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -976,9 +976,8 @@
- 				 <&bpmp TEGRA194_CLK_HDA2CODEC_2X>;
- 			clock-names = "hda", "hda2hdmi", "hda2codec_2x";
- 			resets = <&bpmp TEGRA194_RESET_HDA>,
--				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>,
--				 <&bpmp TEGRA194_RESET_HDA2CODEC_2X>;
--			reset-names = "hda", "hda2hdmi", "hda2codec_2x";
-+				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>;
-+			reset-names = "hda", "hda2hdmi";
- 			power-domains = <&bpmp TEGRA194_POWER_DOMAIN_DISP>;
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_HDAR &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_HDAW &emc>;
--- 
-2.34.1
-
+--- a/drivers/gpu/drm/tegra/drm.c
++++ b/drivers/gpu/drm/tegra/drm.c
+@@ -21,6 +21,10 @@
+ #include <drm/drm_prime.h>
+ #include <drm/drm_vblank.h>
+ 
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++#include <asm/dma-iommu.h>
++#endif
++
+ #include "dc.h"
+ #include "drm.h"
+ #include "gem.h"
+@@ -936,6 +940,17 @@ int host1x_client_iommu_attach(struct ho
+ 	struct iommu_group *group = NULL;
+ 	int err;
+ 
++#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
++	if (client->dev->archdata.mapping) {
++		struct dma_iommu_mapping *mapping =
++				to_dma_iommu_mapping(client->dev);
++		arm_iommu_detach_device(client->dev);
++		arm_iommu_release_mapping(mapping);
++
++		domain = iommu_get_domain_for_dev(client->dev);
++	}
++#endif
++
+ 	/*
+ 	 * If the host1x client is already attached to an IOMMU domain that is
+ 	 * not the shared IOMMU domain, don't try to attach it to a different
 
 
