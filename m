@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED0CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82BD8C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587084AbiAXW1n (ORCPT
+        id S1587110AbiAXW1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46408 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454580AbiAXVdJ (ORCPT
+        Mon, 24 Jan 2022 17:27:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454565AbiAXVdI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:09 -0500
+        Mon, 24 Jan 2022 16:33:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4818EC075D06;
+        Mon, 24 Jan 2022 12:21:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 200F3B8121C;
-        Mon, 24 Jan 2022 21:33:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51206C340E4;
-        Mon, 24 Jan 2022 21:33:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 03408B810BD;
+        Mon, 24 Jan 2022 20:21:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EFF9C340E8;
+        Mon, 24 Jan 2022 20:21:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059986;
-        bh=L5fMBsQ4GFTUWDax+L1PtBdZ0vB16WfrrFYjYR1GER4=;
+        s=korg; t=1643055673;
+        bh=485Pel/umrmGTI7pbf0TizhUtAcoT/WJdPbsQcA5Gb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UlZMnhP06SX2RZT2XsycRtsaAS3NL6anW+Vwd4Puv0IO/qbw8asMlu8v9jFbIVHHr
-         JuYdXkjG0JvRi5zO5Il66rJAKt3qJtlGI6jPnPy4J+mUrMceTWXSQblIC4r2m4nu6z
-         eMENmvbW4iDLWptMHtO8twOlWtBb/xYnHyJmstK0=
+        b=Vi1PhsmsfhP4cyFTKGRgKOYU6Gmp3migt0Re946tPbFWyMUe7RILFVt3hsakJpDnt
+         1ZoJoNqjVZ8eDjIIHqMLVToVG60cHfojV8Gf6DUUEmfZWzQ2yE8fWr4CSCR6UmMYnG
+         XgIEPThRwRwUzj8RM8wFppaikjTm54DV/G0et0Pc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0768/1039] ASoC: SOF: ipc: Add null pointer check for substream->runtime
-Date:   Mon, 24 Jan 2022 19:42:37 +0100
-Message-Id: <20220124184151.127977893@linuxfoundation.org>
+Subject: [PATCH 5.15 229/846] selftests: clone3: clone3: add case CLONE3_ARGS_NO_TEST
+Date:   Mon, 24 Jan 2022 19:35:46 +0100
+Message-Id: <20220124184108.822268012@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-[ Upstream commit 182b682b9ab1348e07ea1bf9d8f2505cc67f9237 ]
+[ Upstream commit a531b0c23c0fc68ad758cc31a74cf612a4dafeb0 ]
 
-When pcm stream is stopped "substream->runtime" pointer will be set
-to NULL by ALSA core. In case host received an ipc msg from firmware
-of type IPC_STREAM_POSITION after pcm stream is stopped, there will
-be kernel NULL pointer exception in ipc_period_elapsed(). This patch
-fixes it by adding NULL pointer check for "substream->runtime".
+Building selftests/clone3 with clang warns about enumeration not handled
+in switch case:
 
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Link: https://lore.kernel.org/r/20211216232422.345164-3-pierre-louis.bossart@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+clone3.c:54:10: warning: enumeration value 'CLONE3_ARGS_NO_TEST' not handled in switch [-Wswitch]
+        switch (test_mode) {
+                ^
+
+Add the missing switch case with a comment.
+
+Fixes: 17a810699c18 ("selftests: add tests for clone3()")
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/sof/ipc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/clone3/clone3.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/sound/soc/sof/ipc.c b/sound/soc/sof/ipc.c
-index e6c53c6c470e4..ca30c506a0fd6 100644
---- a/sound/soc/sof/ipc.c
-+++ b/sound/soc/sof/ipc.c
-@@ -547,7 +547,8 @@ static void ipc_period_elapsed(struct snd_sof_dev *sdev, u32 msg_id)
+diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
+index 42be3b9258301..076cf4325f783 100644
+--- a/tools/testing/selftests/clone3/clone3.c
++++ b/tools/testing/selftests/clone3/clone3.c
+@@ -52,6 +52,12 @@ static int call_clone3(uint64_t flags, size_t size, enum test_mode test_mode)
+ 		size = sizeof(struct __clone_args);
  
- 	if (spcm->pcm.compress)
- 		snd_sof_compr_fragment_elapsed(stream->cstream);
--	else if (!stream->substream->runtime->no_period_wakeup)
-+	else if (stream->substream->runtime &&
-+		 !stream->substream->runtime->no_period_wakeup)
- 		/* only inform ALSA for period_wakeup mode */
- 		snd_sof_pcm_period_elapsed(stream->substream);
- }
+ 	switch (test_mode) {
++	case CLONE3_ARGS_NO_TEST:
++		/*
++		 * Uses default 'flags' and 'SIGCHLD'
++		 * assignment.
++		 */
++		break;
+ 	case CLONE3_ARGS_ALL_0:
+ 		args.flags = 0;
+ 		args.exit_signal = 0;
 -- 
 2.34.1
 
