@@ -2,78 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB22C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B68FC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238911AbiAXVqP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:46:15 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:55055 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448337AbiAXVM2 (ORCPT
+        id S1378722AbiAXVqV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 16:46:21 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33960 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448321AbiAXVM1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:12:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
-  t=1643058748; x=1674594748;
-  h=date:from:to:cc:message-id:references:mime-version:
-   in-reply-to:subject;
-  bh=s08kGL1P6vWKXvsndk5HwY8vMXv8Hz2WGGuKsGt7M+M=;
-  b=Lt24+Kwh4B2vxFMObDYugoNvzC+0bVYqPVLp4pet6BWgIT7rqAUzfT0e
-   ZZgVZhu0LqdjiHOV0RwGKa5xn6p6D6SDHea6XhMdMz6Bkkplo/KuTD8Yc
-   DRiP8b+zP0CvKjJmo0dG8EzEygfor9G9x/oBVJMOBl2s5YYvjpiuX+n8C
-   E=;
-X-IronPort-AV: E=Sophos;i="5.88,313,1635206400"; 
-   d="scan'208";a="171375781"
-Subject: Re: [PATCH 1/3] memblock: define functions to set the usable memory range
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-6002.iad6.amazon.com with ESMTP; 24 Jan 2022 21:05:45 +0000
-Received: from EX13MTAUEB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
-        by email-inbound-relay-iad-1a-b27d4a00.us-east-1.amazon.com (Postfix) with ESMTPS id 3023081139;
-        Mon, 24 Jan 2022 21:05:39 +0000 (UTC)
-Received: from EX13D19UEB001.ant.amazon.com (10.43.60.16) by
- EX13MTAUEB001.ant.amazon.com (10.43.60.129) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 24 Jan 2022 21:05:39 +0000
-Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
- EX13D19UEB001.ant.amazon.com (10.43.60.16) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 24 Jan 2022 21:05:39 +0000
-Received: from dev-dsk-fllinden-2c-d7720709.us-west-2.amazon.com
- (172.19.206.175) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
- Server id 15.0.1497.28 via Frontend Transport; Mon, 24 Jan 2022 21:05:38
- +0000
-Received: by dev-dsk-fllinden-2c-d7720709.us-west-2.amazon.com (Postfix, from userid 6262777)
-        id 1DC072A; Mon, 24 Jan 2022 21:05:38 +0000 (UTC)
-Date:   Mon, 24 Jan 2022 21:05:38 +0000
-From:   Frank van der Linden <fllinden@amazon.com>
-To:     Mike Rapoport <rppt@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>, <robh+dt@kernel.org>,
-        <frowand.list@gmail.com>, <ardb@kernel.org>, <linux-mm@kvack.org>,
-        <devicetree@vger.kernel.org>, <linux-efi@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <kexec@lists.infradead.org>,
-        <catalin.marinas@arm.com>, <will@kernel.org>,
-        <geert+renesas@glider.be>
-Message-ID: <20220124210538.GA15943@dev-dsk-fllinden-2c-d7720709.us-west-2.amazon.com>
-References: <20220110210809.3528-1-fllinden@amazon.com>
- <20220110210809.3528-2-fllinden@amazon.com> <Yd1cnquQFZoNE7FP@kernel.org>
+        Mon, 24 Jan 2022 16:12:27 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1A2CAB8123D;
+        Mon, 24 Jan 2022 21:12:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68BEBC340E5;
+        Mon, 24 Jan 2022 21:12:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058744;
+        bh=cZlP7inydCpcNyjSPOxf7NCHLOzHE2ldB8dKrIBV8pU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BsJe1Io6TcIskWxCC+vmN/DsR5+3H+q/EBAeI37DQMpmh4mbcNm3lNo2gb2XqBRsc
+         0DX0Sli9O1mnkh3PekaSub3thsJHU8A14XfZ7WEpIgAXUBEfwCj9wDQuSMkDseCfyO
+         Iyzouan8N3yUTRrP4pSuG1krBMZJmviWfIi3jTBg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Karsten Graul <kgraul@linux.ibm.com>,
+        Wen Gu <guwen@linux.alibaba.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0388/1039] net/smc: Reset conn->lgr when link group registration fails
+Date:   Mon, 24 Jan 2022 19:36:17 +0100
+Message-Id: <20220124184138.361043091@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <Yd1cnquQFZoNE7FP@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Meanwhile, it seems that this issue was already addressed in:
+From: Wen Gu <guwen@linux.alibaba.com>
 
-https://lore.kernel.org/all/20211215021348.8766-1-kernelfans@gmail.com/
+[ Upstream commit 36595d8ad46d9e4c41cc7c48c4405b7c3322deac ]
 
-..which has now been pulled in, and sent to stable@ for 5.15. I
-somehow missed that message, and sent my change in a few weeks
-later.
+SMC connections might fail to be registered in a link group due to
+unable to find a usable link during its creation. As a result,
+smc_conn_create() will return a failure and most resources related
+to the connection won't be applied or initialized, such as
+conn->abort_work or conn->lnk.
 
-The fix to just reserve the ranges does seem a bit cleaner overall,
-but this will do fine.
+If smc_conn_free() is invoked later, it will try to access the
+uninitialized resources related to the connection, thus causing
+a warning or crash.
 
-Thanks!
+This patch tries to fix this by resetting conn->lgr to NULL if an
+abnormal exit occurs in smc_lgr_register_conn(), thus avoiding the
+access to uninitialized resources in smc_conn_free().
 
-- Frank
+Meanwhile, the new created link group should be terminated if smc
+connections can't be registered in it. So smc_lgr_cleanup_early() is
+modified to take care of link group only and invoked to terminate
+unusable link group by smc_conn_create(). The call to smc_conn_free()
+is moved out from smc_lgr_cleanup_early() to smc_conn_abort().
+
+Fixes: 56bc3b2094b4 ("net/smc: assign link to a new connection")
+Suggested-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/smc/af_smc.c   |  8 +++++---
+ net/smc/smc_core.c | 12 +++++++-----
+ net/smc/smc_core.h |  2 +-
+ 3 files changed, 13 insertions(+), 9 deletions(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 1c9289f56dc47..211cd91b6c408 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -632,10 +632,12 @@ static int smc_connect_decline_fallback(struct smc_sock *smc, int reason_code,
+ 
+ static void smc_conn_abort(struct smc_sock *smc, int local_first)
+ {
++	struct smc_connection *conn = &smc->conn;
++	struct smc_link_group *lgr = conn->lgr;
++
++	smc_conn_free(conn);
+ 	if (local_first)
+-		smc_lgr_cleanup_early(&smc->conn);
+-	else
+-		smc_conn_free(&smc->conn);
++		smc_lgr_cleanup_early(lgr);
+ }
+ 
+ /* check if there is a rdma device available for this connection. */
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index a6849362f4ddd..c9a8092c4ac96 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -171,8 +171,10 @@ static int smc_lgr_register_conn(struct smc_connection *conn, bool first)
+ 
+ 	if (!conn->lgr->is_smcd) {
+ 		rc = smcr_lgr_conn_assign_link(conn, first);
+-		if (rc)
++		if (rc) {
++			conn->lgr = NULL;
+ 			return rc;
++		}
+ 	}
+ 	/* find a new alert_token_local value not yet used by some connection
+ 	 * in this link group
+@@ -622,15 +624,13 @@ int smcd_nl_get_lgr(struct sk_buff *skb, struct netlink_callback *cb)
+ 	return skb->len;
+ }
+ 
+-void smc_lgr_cleanup_early(struct smc_connection *conn)
++void smc_lgr_cleanup_early(struct smc_link_group *lgr)
+ {
+-	struct smc_link_group *lgr = conn->lgr;
+ 	spinlock_t *lgr_lock;
+ 
+ 	if (!lgr)
+ 		return;
+ 
+-	smc_conn_free(conn);
+ 	smc_lgr_list_head(lgr, &lgr_lock);
+ 	spin_lock_bh(lgr_lock);
+ 	/* do not use this link group for new connections */
+@@ -1832,8 +1832,10 @@ create:
+ 		write_lock_bh(&lgr->conns_lock);
+ 		rc = smc_lgr_register_conn(conn, true);
+ 		write_unlock_bh(&lgr->conns_lock);
+-		if (rc)
++		if (rc) {
++			smc_lgr_cleanup_early(lgr);
+ 			goto out;
++		}
+ 	}
+ 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
+ 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index d63b08274197e..73d0c35d3eb77 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -468,7 +468,7 @@ static inline void smc_set_pci_values(struct pci_dev *pci_dev,
+ struct smc_sock;
+ struct smc_clc_msg_accept_confirm;
+ 
+-void smc_lgr_cleanup_early(struct smc_connection *conn);
++void smc_lgr_cleanup_early(struct smc_link_group *lgr);
+ void smc_lgr_terminate_sched(struct smc_link_group *lgr);
+ void smcr_port_add(struct smc_ib_device *smcibdev, u8 ibport);
+ void smcr_port_err(struct smc_ib_device *smcibdev, u8 ibport);
+-- 
+2.34.1
+
+
+
