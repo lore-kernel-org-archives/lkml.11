@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72096C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:54:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C78FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:54:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346696AbiAXTyF (ORCPT
+        id S1357138AbiAXTyM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:54:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40436 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355625AbiAXTnC (ORCPT
+        Mon, 24 Jan 2022 14:54:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55724 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355648AbiAXTnC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:43:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCDBC09424B;
+        Mon, 24 Jan 2022 11:22:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6A606135E;
-        Mon, 24 Jan 2022 19:42:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F33C340E5;
-        Mon, 24 Jan 2022 19:42:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E082B613B3;
+        Mon, 24 Jan 2022 19:22:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94F55C340E5;
+        Mon, 24 Jan 2022 19:22:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053376;
-        bh=H/tPH33St1gFh5Gacd8JGf5OOGlFWqNnI4EL4xPm4mc=;
+        s=korg; t=1643052123;
+        bh=H7nvbYrauUoPT2xybAP6oulzQf5nTaPhNr5TPD56VnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+cX1YA652ZuRjNUDOAn1mDfKvWGzIqcS93vKaSISLVzl7fDwylVbstk0ycp8MtI/
-         EOlvuaAkJUiNlmB8KuJ4bKNXQk5SWc6qVdDXC/sNBlt75f0QohsZjMdND7OSTN/b/+
-         NzTYSFCR7Ar4xuYAqdZN98bTVBE7S+rFnbwt2jrE=
+        b=WTiCqKDFWBPoD/a6m3b618L43Cjj6xD1Wzr7K2v2YQmdu6GO8PVCstNA+UgVFcaoJ
+         xoApaWTO6gwHbzD2OT+7XDymG0dd8cUfEpNEsbqlDHUiI+X6knYsUuTnhogt1mC/35
+         vBSisPJPAoRCMyKrycVIuY5uUbuil8oTIcDr0ncs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 045/563] drm/panel: kingdisplay-kd097d04: Delete panel on attach() failure
-Date:   Mon, 24 Jan 2022 19:36:50 +0100
-Message-Id: <20220124184025.969267910@linuxfoundation.org>
+        stable@vger.kernel.org, Petr Cvachoucek <cvachoucek@gmail.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 4.19 196/239] ubifs: Error path in ubifs_remount_rw() seems to wrongly free write buffers
+Date:   Mon, 24 Jan 2022 19:43:54 +0100
+Message-Id: <20220124183949.342700197@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,44 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Petr Cvachoucek <cvachoucek@gmail.com>
 
-[ Upstream commit 5f31dbeae8a88f31c3eb4eb526ab4807c40da241 ]
+commit 3fea4d9d160186617ff40490ae01f4f4f36b28ff upstream.
 
-If we fail to attach (e.g., because 1 of 2 dual-DSI controllers aren't
-ready), we leave a dangling drm_panel reference to freed memory. Clean
-that up on failure.
+it seems freeing the write buffers in the error path of the
+ubifs_remount_rw() is wrong. It leads later to a kernel oops like this:
 
-Fixes: 2a994cbed6b2 ("drm/panel: Add Kingdisplay KD097D04 panel driver")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210923173336.1.Icb4d9dbc1817f4e826361a4f1cea7461541668f0@changeid
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+[10016.431274] UBIFS (ubi0:0): start fixing up free space
+[10090.810042] UBIFS (ubi0:0): free space fixup complete
+[10090.814623] UBIFS error (ubi0:0 pid 512): ubifs_remount_fs: cannot
+spawn "ubifs_bgt0_0", error -4
+[10101.915108] UBIFS (ubi0:0): background thread "ubifs_bgt0_0" started,
+PID 517
+[10105.275498] Unable to handle kernel NULL pointer dereference at
+virtual address 0000000000000030
+[10105.284352] Mem abort info:
+[10105.287160]   ESR = 0x96000006
+[10105.290252]   EC = 0x25: DABT (current EL), IL = 32 bits
+[10105.295592]   SET = 0, FnV = 0
+[10105.298652]   EA = 0, S1PTW = 0
+[10105.301848] Data abort info:
+[10105.304723]   ISV = 0, ISS = 0x00000006
+[10105.308573]   CM = 0, WnR = 0
+[10105.311564] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000f03d1000
+[10105.318034] [0000000000000030] pgd=00000000f6cee003,
+pud=00000000f4884003, pmd=0000000000000000
+[10105.326783] Internal error: Oops: 96000006 [#1] PREEMPT SMP
+[10105.332355] Modules linked in: ath10k_pci ath10k_core ath mac80211
+libarc4 cfg80211 nvme nvme_core cryptodev(O)
+[10105.342468] CPU: 3 PID: 518 Comm: touch Tainted: G           O
+5.4.3 #1
+[10105.349517] Hardware name: HYPEX CPU (DT)
+[10105.353525] pstate: 40000005 (nZcv daif -PAN -UAO)
+[10105.358324] pc : atomic64_try_cmpxchg_acquire.constprop.22+0x8/0x34
+[10105.364596] lr : mutex_lock+0x1c/0x34
+[10105.368253] sp : ffff000075633aa0
+[10105.371563] x29: ffff000075633aa0 x28: 0000000000000001
+[10105.376874] x27: ffff000076fa80c8 x26: 0000000000000004
+[10105.382185] x25: 0000000000000030 x24: 0000000000000000
+[10105.387495] x23: 0000000000000000 x22: 0000000000000038
+[10105.392807] x21: 000000000000000c x20: ffff000076fa80c8
+[10105.398119] x19: ffff000076fa8000 x18: 0000000000000000
+[10105.403429] x17: 0000000000000000 x16: 0000000000000000
+[10105.408741] x15: 0000000000000000 x14: fefefefefefefeff
+[10105.414052] x13: 0000000000000000 x12: 0000000000000fe0
+[10105.419364] x11: 0000000000000fe0 x10: ffff000076709020
+[10105.424675] x9 : 0000000000000000 x8 : 00000000000000a0
+[10105.429986] x7 : ffff000076fa80f4 x6 : 0000000000000030
+[10105.435297] x5 : 0000000000000000 x4 : 0000000000000000
+[10105.440609] x3 : 0000000000000000 x2 : ffff00006f276040
+[10105.445920] x1 : ffff000075633ab8 x0 : 0000000000000030
+[10105.451232] Call trace:
+[10105.453676]  atomic64_try_cmpxchg_acquire.constprop.22+0x8/0x34
+[10105.459600]  ubifs_garbage_collect+0xb4/0x334
+[10105.463956]  ubifs_budget_space+0x398/0x458
+[10105.468139]  ubifs_create+0x50/0x180
+[10105.471712]  path_openat+0x6a0/0x9b0
+[10105.475284]  do_filp_open+0x34/0x7c
+[10105.478771]  do_sys_open+0x78/0xe4
+[10105.482170]  __arm64_sys_openat+0x1c/0x24
+[10105.486180]  el0_svc_handler+0x84/0xc8
+[10105.489928]  el0_svc+0x8/0xc
+[10105.492808] Code: 52800013 17fffffb d2800003 f9800011 (c85ffc05)
+[10105.498903] ---[ end trace 46b721d93267a586 ]---
+
+To reproduce the problem:
+
+1. Filesystem initially mounted read-only, free space fixup flag set.
+
+2. mount -o remount,rw <mountpoint>
+
+3. it takes some time (free space fixup running)
+    ... try to terminate running mount by CTRL-C
+    ... does not respond, only after free space fixup is complete
+    ... then "ubifs_remount_fs: cannot spawn "ubifs_bgt0_0", error -4"
+
+4. mount -o remount,rw <mountpoint>
+    ... now finished instantly (fixup already done).
+
+5. Create file or just unmount the filesystem and we get the oops.
+
+Cc: <stable@vger.kernel.org>
+Fixes: b50b9f408502 ("UBIFS: do not free write-buffers when in R/O mode")
+Signed-off-by: Petr Cvachoucek <cvachoucek@gmail.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ fs/ubifs/super.c |    1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c b/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
-index 86e4213e8bb13..daccb1fd5fdad 100644
---- a/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
-+++ b/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
-@@ -406,7 +406,13 @@ static int kingdisplay_panel_probe(struct mipi_dsi_device *dsi)
- 	if (err < 0)
- 		return err;
- 
--	return mipi_dsi_attach(dsi);
-+	err = mipi_dsi_attach(dsi);
-+	if (err < 0) {
-+		kingdisplay_panel_del(kingdisplay);
-+		return err;
-+	}
-+
-+	return 0;
- }
- 
- static int kingdisplay_panel_remove(struct mipi_dsi_device *dsi)
--- 
-2.34.1
-
+--- a/fs/ubifs/super.c
++++ b/fs/ubifs/super.c
+@@ -1730,7 +1730,6 @@ out:
+ 		kthread_stop(c->bgt);
+ 		c->bgt = NULL;
+ 	}
+-	free_wbufs(c);
+ 	kfree(c->write_reserve_buf);
+ 	c->write_reserve_buf = NULL;
+ 	vfree(c->ileb_buf);
 
 
