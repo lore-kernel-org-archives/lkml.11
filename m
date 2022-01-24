@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 917FBC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEEE5C3527E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446969AbiAXVJp (ORCPT
+        id S1447284AbiAXVKX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:09:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388894AbiAXUkO (ORCPT
+        Mon, 24 Jan 2022 16:10:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46738 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390742AbiAXUqJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:40:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0903DC04591A;
-        Mon, 24 Jan 2022 11:51:40 -0800 (PST)
+        Mon, 24 Jan 2022 15:46:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D93F6090C;
-        Mon, 24 Jan 2022 19:51:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83766C340E5;
-        Mon, 24 Jan 2022 19:51:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DF19B8122A;
+        Mon, 24 Jan 2022 20:46:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7354AC340E5;
+        Mon, 24 Jan 2022 20:46:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053899;
-        bh=kbRf5scrruy7y6jvXJpnetLiMFEv5Gi2TPuf03fCRF0=;
+        s=korg; t=1643057167;
+        bh=iVX2nFnEFRhokD0VjO3Y941ZpUA2yRw+aa5PKgYWm4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r6itZoRLfbbi85oNQISlqRDilkLQ1HyeTJY45zCb16TPQcBAGj1gcY8E38PMXDkAt
-         xmN1/T3gNeKZTWCELJ7+wAhJv91jmTBostLeI2id6ewPFOhUU0EJKZJd/ON0wfe7TG
-         o22dbJ1/F3XdMRsEYgy8jzWCN/tKV05wWaz3yiGk=
+        b=U1fyC7UXzzdo+9zWhVBOTyQS5hkZ6dyAbS9vWj7GDXseRwX1ueThJ8ED1nb+DxWhQ
+         pt2zxpV7Mp0fjmtyQSI43+d62vq9207ZAiaP7VEGkZKBUDf025GVGUB8Ga2FUalAhm
+         9PmSV37+PwK/2lVopZ2zMGPSBIwh3dRDDZyuT9DI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 180/563] iwlwifi: mvm: fix 32-bit build in FTM
-Date:   Mon, 24 Jan 2022 19:39:05 +0100
-Message-Id: <20220124184030.645268819@linuxfoundation.org>
+        stable@vger.kernel.org, Xie Yongji <xieyongji@bytedance.com>,
+        Miklos Szeredi <mszeredi@redhat.com>
+Subject: [PATCH 5.15 680/846] fuse: Pass correct lend value to filemap_write_and_wait_range()
+Date:   Mon, 24 Jan 2022 19:43:17 +0100
+Message-Id: <20220124184124.534235330@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Xie Yongji <xieyongji@bytedance.com>
 
-[ Upstream commit 8b0f92549f2c2458200935c12a2e2a6e80234cf5 ]
+commit e388164ea385f04666c4633f5dc4f951fca71890 upstream.
 
-On a 32-bit build, the division here needs to be done
-using do_div(), otherwise the compiler will try to call
-a function that doesn't exist, thus failing to build.
+The acceptable maximum value of lend parameter in
+filemap_write_and_wait_range() is LLONG_MAX rather than -1. And there is
+also some logic depending on LLONG_MAX check in write_cache_pages(). So
+let's pass LLONG_MAX to filemap_write_and_wait_range() in
+fuse_writeback_range() instead.
 
-Fixes: b68bd2e3143a ("iwlwifi: mvm: Add FTM initiator RTT smoothing logic")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219111352.e56cbf614a4d.Ib98004ccd2c7a55fd883a8ea7eebd810f406dec6@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 59bda8ecee2f ("fuse: flush extending writes")
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+Cc: <stable@vger.kernel.org> # v5.15
+Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/fuse/file.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-index a0ce761d0c59b..fe3d52620a897 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-@@ -967,7 +967,8 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
- 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
- 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
+--- a/fs/fuse/file.c
++++ b/fs/fuse/file.c
+@@ -2913,7 +2913,7 @@ fuse_direct_IO(struct kiocb *iocb, struc
  
--	rtt_avg = (alpha * rtt + (100 - alpha) * resp->rtt_avg) / 100;
-+	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
-+	do_div(rtt_avg, 100);
+ static int fuse_writeback_range(struct inode *inode, loff_t start, loff_t end)
+ {
+-	int err = filemap_write_and_wait_range(inode->i_mapping, start, -1);
++	int err = filemap_write_and_wait_range(inode->i_mapping, start, LLONG_MAX);
  
- 	IWL_DEBUG_INFO(mvm,
- 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
--- 
-2.34.1
-
+ 	if (!err)
+ 		fuse_sync_writes(inode);
 
 
