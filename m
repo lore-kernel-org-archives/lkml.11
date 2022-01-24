@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14740C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:09:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A497C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:09:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353938AbiAXUJR (ORCPT
+        id S1354287AbiAXUJX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:09:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345252AbiAXTvT (ORCPT
+        Mon, 24 Jan 2022 15:09:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49486 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345444AbiAXTv7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:51:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4988C019B3B;
-        Mon, 24 Jan 2022 11:24:17 -0800 (PST)
+        Mon, 24 Jan 2022 14:51:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D857612FA;
-        Mon, 24 Jan 2022 19:24:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4734EC340E5;
-        Mon, 24 Jan 2022 19:24:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A71960FE0;
+        Mon, 24 Jan 2022 19:51:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E478C340E5;
+        Mon, 24 Jan 2022 19:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052256;
-        bh=8fEnRPti32v240Rgrcx2wQprpQYqogqlTQ6lb/w3fLk=;
+        s=korg; t=1643053917;
+        bh=JWqpxqKlVhff/kyKeh/XNYbKg6VwUJvBcSXp1JJWZ5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x0hJoRZC/7xffE2lqPaxB2Y+sJfQpYFUpHVDNJVz8Ce4SuaPD9AwQFHtSIzXbn4rG
-         w/rF15M3quTmiN33r7l0DD/2KjlL2hodeOQFvpAdkpsGNaOwjhpYk68/2b4rFNv21w
-         +ZXTVa2w3RXlLf4sqk9qrRyLOLdRloyYlBo5nCBw=
+        b=OsGwV+OZiIVh+zAJgO4uKYXAtoYVcllmSEel/pJph8orK49aVVLFXDz0kHHDk/c3y
+         09FXitVC4sDuRh7AEKT0SWuCKVqKHwbjw5bq98oUHJMEZVWvzl/8KRpjAtuNxm6twE
+         ThpZgewVOw50GZA2BMtufhZ2B5FqbPg6MLwFZoXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Amir Goldstein <amir73il@gmail.com>,
-        Miklos Szeredi <mszeredi@redhat.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.19 239/239] fuse: fix live lock in fuse_iget()
-Date:   Mon, 24 Jan 2022 19:44:37 +0100
-Message-Id: <20220124183950.693455840@linuxfoundation.org>
+        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 220/563] net/mlx5e: Fix page DMA map/unmap attributes
+Date:   Mon, 24 Jan 2022 19:39:45 +0100
+Message-Id: <20220124184032.056935072@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,52 +48,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amir Goldstein <amir73il@gmail.com>
+From: Aya Levin <ayal@nvidia.com>
 
-commit 775c5033a0d164622d9d10dd0f0a5531639ed3ed upstream.
+[ Upstream commit 0b7cfa4082fbf550595bc0e40f05614bd83bf0cd ]
 
-Commit 5d069dbe8aaf ("fuse: fix bad inode") replaced make_bad_inode()
-in fuse_iget() with a private implementation fuse_make_bad().
+Driver initiates DMA sync, hence it may skip CPU sync. Add
+DMA_ATTR_SKIP_CPU_SYNC as input attribute both to dma_map_page and
+dma_unmap_page to avoid redundant sync with the CPU.
+When forcing the device to work with SWIOTLB, the extra sync might cause
+data corruption. The driver unmaps the whole page while the hardware
+used just a part of the bounce buffer. So syncing overrides the entire
+page with bounce buffer that only partially contains real data.
 
-The private implementation fails to remove the bad inode from inode
-cache, so the retry loop with iget5_locked() finds the same bad inode
-and marks it bad forever.
-
-kmsg snip:
-
-[ ] rcu: INFO: rcu_sched self-detected stall on CPU
-...
-[ ]  ? bit_wait_io+0x50/0x50
-[ ]  ? fuse_init_file_inode+0x70/0x70
-[ ]  ? find_inode.isra.32+0x60/0xb0
-[ ]  ? fuse_init_file_inode+0x70/0x70
-[ ]  ilookup5_nowait+0x65/0x90
-[ ]  ? fuse_init_file_inode+0x70/0x70
-[ ]  ilookup5.part.36+0x2e/0x80
-[ ]  ? fuse_init_file_inode+0x70/0x70
-[ ]  ? fuse_inode_eq+0x20/0x20
-[ ]  iget5_locked+0x21/0x80
-[ ]  ? fuse_inode_eq+0x20/0x20
-[ ]  fuse_iget+0x96/0x1b0
-
-Fixes: 5d069dbe8aaf ("fuse: fix bad inode")
-Signed-off-by: Amir Goldstein <amir73il@gmail.com>
-Signed-off-by: Miklos Szeredi <mszeredi@redhat.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: bc77b240b3c5 ("net/mlx5e: Add fragmented memory support for RX multi packet WQE")
+Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/fuse/fuse_i.h |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c | 4 ++--
+ drivers/net/ethernet/mellanox/mlx5/core/en_rx.c       | 7 ++++---
+ 2 files changed, 6 insertions(+), 5 deletions(-)
 
---- a/fs/fuse/fuse_i.h
-+++ b/fs/fuse/fuse_i.h
-@@ -704,6 +704,7 @@ static inline u64 get_node_id(struct ino
- 
- static inline void fuse_make_bad(struct inode *inode)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+index 71e8d66fa1509..6692bc8333f73 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
+@@ -11,13 +11,13 @@ static int mlx5e_xsk_map_pool(struct mlx5e_priv *priv,
  {
-+	remove_inode_hash(inode);
- 	set_bit(FUSE_I_BAD, &get_fuse_inode(inode)->state);
+ 	struct device *dev = mlx5_core_dma_dev(priv->mdev);
+ 
+-	return xsk_pool_dma_map(pool, dev, 0);
++	return xsk_pool_dma_map(pool, dev, DMA_ATTR_SKIP_CPU_SYNC);
  }
  
+ static void mlx5e_xsk_unmap_pool(struct mlx5e_priv *priv,
+ 				 struct xsk_buff_pool *pool)
+ {
+-	return xsk_pool_dma_unmap(pool, 0);
++	return xsk_pool_dma_unmap(pool, DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ 
+ static int mlx5e_xsk_get_pools(struct mlx5e_xsk *xsk)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 117a593414537..d384403d73f69 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -276,8 +276,8 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq,
+ 	if (unlikely(!dma_info->page))
+ 		return -ENOMEM;
+ 
+-	dma_info->addr = dma_map_page(rq->pdev, dma_info->page, 0,
+-				      PAGE_SIZE, rq->buff.map_dir);
++	dma_info->addr = dma_map_page_attrs(rq->pdev, dma_info->page, 0, PAGE_SIZE,
++					    rq->buff.map_dir, DMA_ATTR_SKIP_CPU_SYNC);
+ 	if (unlikely(dma_mapping_error(rq->pdev, dma_info->addr))) {
+ 		page_pool_recycle_direct(rq->page_pool, dma_info->page);
+ 		dma_info->page = NULL;
+@@ -298,7 +298,8 @@ static inline int mlx5e_page_alloc(struct mlx5e_rq *rq,
+ 
+ void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct mlx5e_dma_info *dma_info)
+ {
+-	dma_unmap_page(rq->pdev, dma_info->addr, PAGE_SIZE, rq->buff.map_dir);
++	dma_unmap_page_attrs(rq->pdev, dma_info->addr, PAGE_SIZE, rq->buff.map_dir,
++			     DMA_ATTR_SKIP_CPU_SYNC);
+ }
+ 
+ void mlx5e_page_release_dynamic(struct mlx5e_rq *rq,
+-- 
+2.34.1
+
 
 
