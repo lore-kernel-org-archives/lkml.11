@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 754ABC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E114C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837953AbiAXWpk (ORCPT
+        id S1837979AbiAXWpn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48590 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377411AbiAXVh3 (ORCPT
+        Mon, 24 Jan 2022 17:45:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377400AbiAXVha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:29 -0500
+        Mon, 24 Jan 2022 16:37:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D766DC0BD11D;
+        Mon, 24 Jan 2022 12:23:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 27F16B81249;
-        Mon, 24 Jan 2022 21:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50BDAC340E7;
-        Mon, 24 Jan 2022 21:37:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9665CB8122D;
+        Mon, 24 Jan 2022 20:23:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9DF0C340E5;
+        Mon, 24 Jan 2022 20:23:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060243;
-        bh=EGoeGKQZGN4rz6badnfdmxmFtuNPyW71vKWzKsfoxtw=;
+        s=korg; t=1643055802;
+        bh=SFpaN1Q+FQLxVudgmI3DnJry1PBPmM+zzf/zOsrDouM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OppixS0rpSNcq4UJuvM7PceDP7D+1db425qJU8vErx4cwRnN17wmjbHWAJP3yJEHQ
-         46rIxmXFaeemUQ+hp6t3h+t3isbGohsVwuTvztIARO9HZTQGk+mjiA/9S+jw7dDSve
-         L9LbRmvGoVq8SuqF6RBys8eXopcRvl9/i453Bu8U=
+        b=Bti/cxbvA0uOxw8Gt089m+vggJkFsy/aPwAW6jnldkg42U4ngJy5IzPO5Ib+f9GR3
+         j6BdtE78Us5vLIBiT3UsKiXN7QK4c3Sci6geX5RJrTWklTDXRoZOn6taLG2dXZ8alt
+         mtlgPCgY4gb/Dzbwnh6Lmj2SIfcYg2syiDya7fg0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Fink <lukas.fink1@gmail.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 0868/1039] drm/amdgpu: Fix rejecting Tahiti GPUs
-Date:   Mon, 24 Jan 2022 19:44:17 +0100
-Message-Id: <20220124184154.481629804@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Errera <nathan.errera@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 271/846] iwlwifi: mvm: test roc running status bits before removing the sta
+Date:   Mon, 24 Jan 2022 19:36:28 +0100
+Message-Id: <20220124184110.278730882@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,43 +50,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Fink <lukas.fink1@gmail.com>
+From: Nathan Errera <nathan.errera@intel.com>
 
-commit 3993a799fc971bc9b918bd969aa55864447b5dde upstream.
+[ Upstream commit 998e1aba6e5eb35370eaf30ccc1823426ec11f90 ]
 
-eb4fd29afd4a ("drm/amdgpu: bind to any 0x1002 PCI diplay class device") added
-generic bindings to amdgpu so that that it binds to all display class devices
-with VID 0x1002 and then rejects those in amdgpu_pci_probe.
+In some cases the sta is being removed twice since we do not test the
+roc aux running before removing it. Start looking at the bit before
+removing the sta.
 
-Unfortunately it reuses a driver_data value of 0 to detect those new bindings,
-which is already used to denote CHIP_TAHITI ASICs.
-
-The driver_data value given to those new bindings was changed in
-dd0761fd24ea1 ("drm/amdgpu: set CHIP_IP_DISCOVERY as the asic type by default")
-to CHIP_IP_DISCOVERY (=36), but it seems that the check in amdgpu_pci_probe
-was forgotten to be changed. Therefore, it still rejects Tahiti GPUs.
-
-Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1860
-Fixes: eb4fd29afd4a ("drm/amdgpu: bind to any 0x1002 PCI diplay class device")
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Lukas Fink <lukas.fink1@gmail.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Nathan Errera <nathan.errera@intel.com>
+Fixes: 2c2c3647cde4 ("iwlwifi: mvm: support ADD_STA_CMD_API_S ver 12")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211219121514.d5376ac6bcb0.Ic5f8470ea60c072bde9d1503e5f528b65e301e20@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/wireless/intel/iwlwifi/mvm/time-event.c   | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_drv.c
-@@ -1928,7 +1928,7 @@ static int amdgpu_pci_probe(struct pci_d
- 			return -ENODEV;
- 	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index e91f8e889df70..f93f15357a3f8 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -49,14 +49,13 @@ void iwl_mvm_roc_done_wk(struct work_struct *wk)
+ 	struct iwl_mvm *mvm = container_of(wk, struct iwl_mvm, roc_done_wk);
  
--	if (flags == 0) {
-+	if (flags == CHIP_IP_DISCOVERY) {
- 		DRM_INFO("Unsupported asic.  Remove me when IP discovery init is in place.\n");
- 		return -ENODEV;
- 	}
+ 	/*
+-	 * Clear the ROC_RUNNING /ROC_AUX_RUNNING status bit.
++	 * Clear the ROC_RUNNING status bit.
+ 	 * This will cause the TX path to drop offchannel transmissions.
+ 	 * That would also be done by mac80211, but it is racy, in particular
+ 	 * in the case that the time event actually completed in the firmware
+ 	 * (which is handled in iwl_mvm_te_handle_notif).
+ 	 */
+ 	clear_bit(IWL_MVM_STATUS_ROC_RUNNING, &mvm->status);
+-	clear_bit(IWL_MVM_STATUS_ROC_AUX_RUNNING, &mvm->status);
+ 
+ 	synchronize_net();
+ 
+@@ -82,9 +81,19 @@ void iwl_mvm_roc_done_wk(struct work_struct *wk)
+ 			mvmvif = iwl_mvm_vif_from_mac80211(mvm->p2p_device_vif);
+ 			iwl_mvm_flush_sta(mvm, &mvmvif->bcast_sta, true);
+ 		}
+-	} else {
++	}
++
++	/*
++	 * Clear the ROC_AUX_RUNNING status bit.
++	 * This will cause the TX path to drop offchannel transmissions.
++	 * That would also be done by mac80211, but it is racy, in particular
++	 * in the case that the time event actually completed in the firmware
++	 * (which is handled in iwl_mvm_te_handle_notif).
++	 */
++	if (test_and_clear_bit(IWL_MVM_STATUS_ROC_AUX_RUNNING, &mvm->status)) {
+ 		/* do the same in case of hot spot 2.0 */
+ 		iwl_mvm_flush_sta(mvm, &mvm->aux_sta, true);
++
+ 		/* In newer version of this command an aux station is added only
+ 		 * in cases of dedicated tx queue and need to be removed in end
+ 		 * of use */
+-- 
+2.34.1
+
 
 
