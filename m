@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB69DC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8828C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359099AbiAXT4U (ORCPT
+        id S1359069AbiAXT4S (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:20 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42288 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355616AbiAXTot (ORCPT
+        Mon, 24 Jan 2022 14:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347390AbiAXThf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:49 -0500
+        Mon, 24 Jan 2022 14:37:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE41C034016;
+        Mon, 24 Jan 2022 11:17:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D281F6131E;
-        Mon, 24 Jan 2022 19:44:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B42F0C340E5;
-        Mon, 24 Jan 2022 19:44:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B20B56131D;
+        Mon, 24 Jan 2022 19:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B3D0C340E8;
+        Mon, 24 Jan 2022 19:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053488;
-        bh=NnJCk13Goff3H48BL/psmetMcVRnOhKs9tjpoNimvyg=;
+        s=korg; t=1643051848;
+        bh=N0oQUiaIHtDW7XHvXmF08AzAXS3DvHsObImsogfjiTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Llk8SmJq92rKeW6AZaHFsfJdltP6EGS6M6H3VK+b5avkxSssInGvzbXeaRF7zxPzO
-         zStG3xtS4YUsuif39s8fVIRDW9rFFoiQurU4AV4PRsu9fXHlinzcPhug7vJNwObaVe
-         Nw5z2swwxhPtNLBCTttXnE1zvKWiuaOVr/AVLOmU=
+        b=xkUxufUt3NA0Mb0BULHthqZVSSn8AOIdV8fA/W9XT5ssUoJ6tADWI6NT6yBIVGO9A
+         CXsn0nkA5BW4cPYNspP4YKC8ffvFtpxaLT4phgyvoq0TVTC4vOxkJffKij4PtKg8fO
+         6oA5Cul0dwoayXbyqjAD3nNsH5Q9OLCoFcXxA4Os=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 082/563] fs: dlm: use sk->sk_socket instead of con->sock
-Date:   Mon, 24 Jan 2022 19:37:27 +0100
-Message-Id: <20220124184027.228849912@linuxfoundation.org>
+        stable@vger.kernel.org, Bixuan Cui <cuibixuan@linux.alibaba.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 105/239] ALSA: oss: fix compile error when OSS_DEBUG is enabled
+Date:   Mon, 24 Jan 2022 19:42:23 +0100
+Message-Id: <20220124183946.446789306@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,34 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Bixuan Cui <cuibixuan@linux.alibaba.com>
 
-[ Upstream commit feb704bd17786c8ff52a49d7759b8ee4f3a5aaac ]
+[ Upstream commit 8e7daf318d97f25e18b2fc7eb5909e34cd903575 ]
 
-Instead of dereference "con->sock" we can get the socket structure over
-"sk->sk_socket" as well. This patch will switch to this behaviour.
+Fix compile error when OSS_DEBUG is enabled:
+    sound/core/oss/pcm_oss.c: In function 'snd_pcm_oss_set_trigger':
+    sound/core/oss/pcm_oss.c:2055:10: error: 'substream' undeclared (first
+    use in this function); did you mean 'csubstream'?
+      pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
+              ^
 
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Fixes: 61efcee8608c ("ALSA: oss: Use standard printk helpers")
+Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+Link: https://lore.kernel.org/r/1638349134-110369-1-git-send-email-cuibixuan@linux.alibaba.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lowcomms.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ sound/core/oss/pcm_oss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/dlm/lowcomms.c b/fs/dlm/lowcomms.c
-index 0c78fdfb1f6fa..0a8645ed4b2d6 100644
---- a/fs/dlm/lowcomms.c
-+++ b/fs/dlm/lowcomms.c
-@@ -480,8 +480,7 @@ static void lowcomms_error_report(struct sock *sk)
- 		goto out;
+diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
+index 2b3bd6f31e4c1..cd68a0ae82d31 100644
+--- a/sound/core/oss/pcm_oss.c
++++ b/sound/core/oss/pcm_oss.c
+@@ -2070,7 +2070,7 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
+ 	int err, cmd;
  
- 	orig_report = listen_sock.sk_error_report;
--	if (con->sock == NULL ||
--	    kernel_getpeername(con->sock, (struct sockaddr *)&saddr) < 0) {
-+	if (kernel_getpeername(sk->sk_socket, (struct sockaddr *)&saddr) < 0) {
- 		printk_ratelimited(KERN_ERR "dlm: node %d: socket error "
- 				   "sending to node %d, port %d, "
- 				   "sk_err=%d/%d\n", dlm_our_nodeid(),
+ #ifdef OSS_DEBUG
+-	pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
++	pr_debug("pcm_oss: trigger = 0x%x\n", trigger);
+ #endif
+ 	
+ 	psubstream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
 -- 
 2.34.1
 
