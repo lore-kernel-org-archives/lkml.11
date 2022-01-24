@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF01C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A03A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365773AbiAXXvl (ORCPT
+        id S2365792AbiAXXvn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47708 "EHLO
+        Mon, 24 Jan 2022 18:51:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1843485AbiAXXED (ORCPT
+        with ESMTP id S1843476AbiAXXED (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:04:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35D90C06C5B5;
-        Mon, 24 Jan 2022 13:15:48 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CF6DC06C5AE;
+        Mon, 24 Jan 2022 13:15:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EF778B80CCF;
-        Mon, 24 Jan 2022 21:15:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A11C3C340E4;
-        Mon, 24 Jan 2022 21:15:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C82861484;
+        Mon, 24 Jan 2022 21:15:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AF4EC340E5;
+        Mon, 24 Jan 2022 21:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058945;
-        bh=ZTrTILL+jVZqYLfi1HTYLKwvvvtqq9rneJNTbYsC+Cc=;
+        s=korg; t=1643058917;
+        bh=StLZvHkPPjNWX2Zkf87Xunam5bpuvhcD5gKxOAP1LCo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aKh1gYRSsDwVu7Yl+znqypXGnHKHALv6GMGDso0G9bRSJGaIdIm9n+8WN4d5Oqge3
-         fVcLL6s1uB5QccBOAnU8Yht1wEzIomrWjZVMsNoo2YheqLMYP72P4qslCaygE1nrAx
-         yxd3LVlcwNuqF6iM+vmVq09ACP6y8IyXTZNwRDFs=
+        b=rehNUeHjYOlq1lAUKykXTH8FHqjZ0OCIUNPHm0gv/zAgQ/KM1ZqCU2kBxv0LrgLnn
+         /8oPjocxA2z4xyszo4zeKh8wPbihbPzRoyZMkylovZsrewFwz+Tn/Awwer3LFRkg8I
+         s8bNsWxp3PdGoQ2DiIssM/80iO+3cuZ0jXXFmCus=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Ford <aford173@gmail.com>,
-        Fabio Estevam <festevam@gmail.com>,
-        Abel Vesa <abel.vesa@nxp.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0454/1039] clk: imx8mn: Fix imx8mn_clko1_sels
-Date:   Mon, 24 Jan 2022 19:37:23 +0100
-Message-Id: <20220124184140.560309215@linuxfoundation.org>
+        stable@vger.kernel.org, Shay Drory <shayd@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0412/1039] net/mlx5: Fix access to sf_dev_table on allocation failure
+Date:   Mon, 24 Jan 2022 19:36:41 +0100
+Message-Id: <20220124184139.165179659@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,48 +51,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ford <aford173@gmail.com>
+From: Shay Drory <shayd@nvidia.com>
 
-[ Upstream commit 570727e9acfac1c2330a01dd5e1272e9c3acec08 ]
+[ Upstream commit a1c7c49c2091926962f8c1c866d386febffec5d8 ]
 
-When attempting to use sys_pll1_80m as the parent for clko1, the
-system hangs.  This is due to the fact that the source select
-for sys_pll1_80m was incorrectly pointing to m7_alt_pll_clk, which
-doesn't yet exist.
+Even when SF devices are supported, the SF device table allocation
+can still fail.
+In such case mlx5_sf_dev_supported still reports true, but SF device
+table is invalid. This can result in NULL table access.
 
-According to Rev 3 of the TRM, The imx8mn_clko1_sels also incorrectly
-references an osc_27m which does not exist, nor does an entry for
-source select bits 010b.  Fix both by inserting a dummy clock into
-the missing space in the table and renaming the incorrectly name clock
-with dummy.
+Hence, fix it by adding NULL table check.
 
-Fixes: 96d6392b54db ("clk: imx: Add support for i.MX8MN clock driver")
-Signed-off-by: Adam Ford <aford173@gmail.com>
-Reviewed-by: Fabio Estevam <festevam@gmail.com>
-Link: https://lore.kernel.org/r/20211117133202.775633-1-aford173@gmail.com
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
+Fixes: 1958fc2f0712 ("net/mlx5: SF, Add auxiliary device driver")
+Signed-off-by: Shay Drory <shayd@nvidia.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/imx/clk-imx8mn.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/clk/imx/clk-imx8mn.c b/drivers/clk/imx/clk-imx8mn.c
-index c55577604e16a..021355a247081 100644
---- a/drivers/clk/imx/clk-imx8mn.c
-+++ b/drivers/clk/imx/clk-imx8mn.c
-@@ -277,9 +277,9 @@ static const char * const imx8mn_pdm_sels[] = {"osc_24m", "sys_pll2_100m", "audi
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+index f37db7cc32a65..7da012ff0d419 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+@@ -30,10 +30,7 @@ bool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev)
+ {
+ 	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
  
- static const char * const imx8mn_dram_core_sels[] = {"dram_pll_out", "dram_alt_root", };
+-	if (!mlx5_sf_dev_supported(dev))
+-		return false;
+-
+-	return !xa_empty(&table->devices);
++	return table && !xa_empty(&table->devices);
+ }
  
--static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "osc_27m",
--						 "sys_pll1_200m", "audio_pll2_out", "vpu_pll",
--						 "sys_pll1_80m", };
-+static const char * const imx8mn_clko1_sels[] = {"osc_24m", "sys_pll1_800m", "dummy",
-+						 "sys_pll1_200m", "audio_pll2_out", "sys_pll2_500m",
-+						 "dummy", "sys_pll1_80m", };
- static const char * const imx8mn_clko2_sels[] = {"osc_24m", "sys_pll2_200m", "sys_pll1_400m",
- 						 "sys_pll2_166m", "sys_pll3_out", "audio_pll1_out",
- 						 "video_pll1_out", "osc_32k", };
+ static ssize_t sfnum_show(struct device *dev, struct device_attribute *attr, char *buf)
 -- 
 2.34.1
 
