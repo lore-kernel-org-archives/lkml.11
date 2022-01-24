@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98748C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442855AbiAXUzd (ORCPT
+        id S1442884AbiAXUzh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:55:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58674 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385399AbiAXUdU (ORCPT
+        Mon, 24 Jan 2022 15:55:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385437AbiAXUdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:20 -0500
+        Mon, 24 Jan 2022 15:33:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FAC4C07E28D;
+        Mon, 24 Jan 2022 11:44:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0617D61540;
-        Mon, 24 Jan 2022 20:33:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA53EC340E8;
-        Mon, 24 Jan 2022 20:33:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C7B6B81188;
+        Mon, 24 Jan 2022 19:44:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 801D1C340E5;
+        Mon, 24 Jan 2022 19:44:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056399;
-        bh=Vxt7sL+McsR0Y4kjTfaLdO0eDNOwuRPngtrNVKeST7o=;
+        s=korg; t=1643053473;
+        bh=DZ4Jp7C3DdKT3ZEr59HlmA50ha8hspxA4zx5neyeWA8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lqJe3w1Q07E2QeGt5H4mwSrK5Kr/wLJpBDx3XFNKIiYy4uNYVIucStBL6q3SENmrZ
-         Mle+ogZ2VHm39ZWUdywQnfPED+Lv7LpdQ28x4QbTz5fxJwHaKJczAw9G8G77n3XPBl
-         wIwl6K63B+UPeClK2dDgxaa1vvYOQ0tkO53JWxrw=
+        b=fCOqmgjec7yZFZHloUnCOcALZPxRGkFZY+QsMuM7iMnSHMF1sHuUiPZ7T11vZkZoZ
+         D8OLftCLJST5On+zSFYET84Cl8o08qplheG/KhE/sPAJ4EUbs1DCb+L3r7GeeItBcK
+         cGCAzm53Wgxaca2ynBom++6F7UpY/ZfZY8ODfYyY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 438/846] arm64: tegra: Remove non existent Tegra194 reset
-Date:   Mon, 24 Jan 2022 19:39:15 +0100
-Message-Id: <20220124184116.088164253@linuxfoundation.org>
+        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 069/563] media: atomisp: fix inverted error check for ia_css_mipi_is_source_port_valid()
+Date:   Mon, 24 Jan 2022 19:37:14 +0100
+Message-Id: <20220124184026.792914310@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,38 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit 146b3a77af8091cabbd1decc51d67799e69682d2 ]
+[ Upstream commit d21ce8c2f7bf6d737b60c09f86db141b9e8e47f0 ]
 
-Tegra194 does not really have "hda2codec_2x" related reset. Hence drop
-this entry to reflect actual HW.
+The function ia_css_mipi_is_source_port_valid() returns true if the port
+is valid. So, we can't use the existing err variable as is.
 
-Fixes: 4878cc0c9fab ("arm64: tegra: Add HDA controller on Tegra194")
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Link: https://lore.kernel.org/r/1640260431-11613-4-git-send-email-spujar@nvidia.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+To fix this issue while reusing that variable, invert the return value
+when assigning it to the variable.
+
+Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ .../staging/media/atomisp/pci/sh_css_mipi.c   | 24 ++++++++++++-------
+ 1 file changed, 15 insertions(+), 9 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index c8250a3f7891f..510d2974470cd 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -818,9 +818,8 @@
- 				 <&bpmp TEGRA194_CLK_HDA2CODEC_2X>;
- 			clock-names = "hda", "hda2hdmi", "hda2codec_2x";
- 			resets = <&bpmp TEGRA194_RESET_HDA>,
--				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>,
--				 <&bpmp TEGRA194_RESET_HDA2CODEC_2X>;
--			reset-names = "hda", "hda2hdmi", "hda2codec_2x";
-+				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>;
-+			reset-names = "hda", "hda2hdmi";
- 			power-domains = <&bpmp TEGRA194_POWER_DOMAIN_DISP>;
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_HDAR &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_HDAW &emc>;
+diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
+index 34b71c1b7c1ec..651eda0469b23 100644
+--- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
++++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
+@@ -439,10 +439,12 @@ allocate_mipi_frames(struct ia_css_pipe *pipe,
+ 		return 0; /* AM TODO: Check  */
+ 	}
+ 
+-	if (!IS_ISP2401)
++	if (!IS_ISP2401) {
+ 		port = (unsigned int)pipe->stream->config.source.port.port;
+-	else
+-		err = ia_css_mipi_is_source_port_valid(pipe, &port);
++	} else {
++		/* Returns true if port is valid. So, invert it */
++		err = !ia_css_mipi_is_source_port_valid(pipe, &port);
++	}
+ 
+ 	assert(port < N_CSI_PORTS);
+ 
+@@ -572,10 +574,12 @@ free_mipi_frames(struct ia_css_pipe *pipe) {
+ 			return err;
+ 		}
+ 
+-		if (!IS_ISP2401)
++		if (!IS_ISP2401) {
+ 			port = (unsigned int)pipe->stream->config.source.port.port;
+-		else
+-			err = ia_css_mipi_is_source_port_valid(pipe, &port);
++		} else {
++			/* Returns true if port is valid. So, invert it */
++			err = !ia_css_mipi_is_source_port_valid(pipe, &port);
++		}
+ 
+ 		assert(port < N_CSI_PORTS);
+ 
+@@ -685,10 +689,12 @@ send_mipi_frames(struct ia_css_pipe *pipe) {
+ 		/* TODO: AM: maybe this should be returning an error. */
+ 	}
+ 
+-	if (!IS_ISP2401)
++	if (!IS_ISP2401) {
+ 		port = (unsigned int)pipe->stream->config.source.port.port;
+-	else
+-		err = ia_css_mipi_is_source_port_valid(pipe, &port);
++	} else {
++		/* Returns true if port is valid. So, invert it */
++		err = !ia_css_mipi_is_source_port_valid(pipe, &port);
++	}
+ 
+ 	assert(port < N_CSI_PORTS);
+ 
 -- 
 2.34.1
 
