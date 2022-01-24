@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D01A7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 630F5C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455769AbiAXVgG (ORCPT
+        id S1455755AbiAXVgF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:36:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42824 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358918AbiAXUtD (ORCPT
+        Mon, 24 Jan 2022 16:36:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381767AbiAXUtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:03 -0500
+        Mon, 24 Jan 2022 15:49:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FDD9C0418B5;
+        Mon, 24 Jan 2022 11:58:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F042660E8D;
-        Mon, 24 Jan 2022 20:49:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D4BC340E5;
-        Mon, 24 Jan 2022 20:48:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D1129B81218;
+        Mon, 24 Jan 2022 19:57:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 110D1C340E5;
+        Mon, 24 Jan 2022 19:57:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057340;
-        bh=kwp53B5aQK63xTNBGxMPd0Dfca1gi9Z5Waz2Qy/vQRM=;
+        s=korg; t=1643054277;
+        bh=zFvwzpFQWjdF+o/sqOiU7jfu+9OjkMg1F/9RRwCH8ws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w21xIvLkGAcX2so7h8u6IJExhP4U1JA4F42m3X3HM8PzkC2duJlty96EMhFOlq9Gr
-         +y8ymZETLldd9a6mNhO42B/H5qbgLAtc96/LWmeGE1NswAnXVYxeO19iHVGW3or1gU
-         1hOZ789zYRdqMf1Dv6lPVgRr657cNLq0wvBvwuKQ=
+        b=r6S4ZmOoZ2Skam62FMmMvq5Ve+SVDfpydQ9YNQ7kIWZ/AFOa4x1Lis53XANpwp/d9
+         pPUt8ZmZgbIkoai6Y6dFz4Uz3nkmj93uqholSRZSu8tpcO1dAzTSJ1GQVTo0hQUFTm
+         h8jXY4rTrqyxugOROtTrPce1ccEDZV1/1wb2OBo4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hyeong-Jun Kim <hj514.kim@samsung.com>,
-        Sungjong Seo <sj1557.seo@samsung.com>,
-        Youngjin Gil <youngjin.gil@samsung.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.15 780/846] f2fs: compress: fix potential deadlock of compress file
-Date:   Mon, 24 Jan 2022 19:44:57 +0100
-Message-Id: <20220124184127.866064172@linuxfoundation.org>
+        stable@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 337/563] arm64: dts: ti: j7200-main: Fix dtbs_check serdes_ln_ctrl node
+Date:   Mon, 24 Jan 2022 19:41:42 +0100
+Message-Id: <20220124184036.087679600@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,141 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hyeong-Jun Kim <hj514.kim@samsung.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-commit 7377e853967ba45bf409e3b5536624d2cbc99f21 upstream.
+[ Upstream commit 4d3984906397581dc0ccb6a02bf16b6ff82c9192 ]
 
-There is a potential deadlock between writeback process and a process
-performing write_begin() or write_cache_pages() while trying to write
-same compress file, but not compressable, as below:
+Fix 'dtbs_check' in serdes_ln_ctrl (serdes-ln-ctrl@4080) node by
+changing the node name to mux-controller@4080.
 
-[Process A] - doing checkpoint
-[Process B]                     [Process C]
-f2fs_write_cache_pages()
-- lock_page() [all pages in cluster, 0-31]
-- f2fs_write_multi_pages()
- - f2fs_write_raw_pages()
-  - f2fs_write_single_data_page()
-   - f2fs_do_write_data_page()
-     - return -EAGAIN [f2fs_trylock_op() failed]
-   - unlock_page(page) [e.g., page 0]
-                                - generic_perform_write()
-                                 - f2fs_write_begin()
-                                  - f2fs_prepare_compress_overwrite()
-                                   - prepare_compress_overwrite()
-                                    - lock_page() [e.g., page 0]
-                                    - lock_page() [e.g., page 1]
-   - lock_page(page) [e.g., page 0]
-
-Since there is no compress process, it is no longer necessary to hold
-locks on every pages in cluster within f2fs_write_raw_pages().
-
-This patch changes f2fs_write_raw_pages() to release all locks first
-and then perform write same as the non-compress file in
-f2fs_write_cache_pages().
-
-Fixes: 4c8ff7095bef ("f2fs: support data compression")
-Signed-off-by: Hyeong-Jun Kim <hj514.kim@samsung.com>
-Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
-Signed-off-by: Youngjin Gil <youngjin.gil@samsung.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20211126084555.17797-2-kishon@ti.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/compress.c |   50 ++++++++++++++++++++++----------------------------
- 1 file changed, 22 insertions(+), 28 deletions(-)
+ arch/arm64/boot/dts/ti/k3-j7200-main.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/f2fs/compress.c
-+++ b/fs/f2fs/compress.c
-@@ -1448,25 +1448,38 @@ static int f2fs_write_raw_pages(struct c
- 					enum iostat_type io_type)
- {
- 	struct address_space *mapping = cc->inode->i_mapping;
--	int _submitted, compr_blocks, ret;
--	int i = -1, err = 0;
-+	int _submitted, compr_blocks, ret, i;
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+index 5832ad830ed14..1ab9f9604af6c 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+@@ -25,7 +25,7 @@
+ 		#size-cells = <1>;
+ 		ranges = <0x00 0x00 0x00100000 0x1c000>;
  
- 	compr_blocks = f2fs_compressed_blocks(cc);
--	if (compr_blocks < 0) {
--		err = compr_blocks;
--		goto out_err;
-+
-+	for (i = 0; i < cc->cluster_size; i++) {
-+		if (!cc->rpages[i])
-+			continue;
-+
-+		redirty_page_for_writepage(wbc, cc->rpages[i]);
-+		unlock_page(cc->rpages[i]);
- 	}
- 
-+	if (compr_blocks < 0)
-+		return compr_blocks;
-+
- 	for (i = 0; i < cc->cluster_size; i++) {
- 		if (!cc->rpages[i])
- 			continue;
- retry_write:
-+		lock_page(cc->rpages[i]);
-+
- 		if (cc->rpages[i]->mapping != mapping) {
-+continue_unlock:
- 			unlock_page(cc->rpages[i]);
- 			continue;
- 		}
- 
--		BUG_ON(!PageLocked(cc->rpages[i]));
-+		if (!PageDirty(cc->rpages[i]))
-+			goto continue_unlock;
-+
-+		if (!clear_page_dirty_for_io(cc->rpages[i]))
-+			goto continue_unlock;
- 
- 		ret = f2fs_write_single_data_page(cc->rpages[i], &_submitted,
- 						NULL, NULL, wbc, io_type,
-@@ -1481,26 +1494,15 @@ retry_write:
- 				 * avoid deadlock caused by cluster update race
- 				 * from foreground operation.
- 				 */
--				if (IS_NOQUOTA(cc->inode)) {
--					err = 0;
--					goto out_err;
--				}
-+				if (IS_NOQUOTA(cc->inode))
-+					return 0;
- 				ret = 0;
- 				cond_resched();
- 				congestion_wait(BLK_RW_ASYNC,
- 						DEFAULT_IO_TIMEOUT);
--				lock_page(cc->rpages[i]);
--
--				if (!PageDirty(cc->rpages[i])) {
--					unlock_page(cc->rpages[i]);
--					continue;
--				}
--
--				clear_page_dirty_for_io(cc->rpages[i]);
- 				goto retry_write;
- 			}
--			err = ret;
--			goto out_err;
-+			return ret;
- 		}
- 
- 		*submitted += _submitted;
-@@ -1509,14 +1511,6 @@ retry_write:
- 	f2fs_balance_fs(F2FS_M_SB(mapping), true);
- 
- 	return 0;
--out_err:
--	for (++i; i < cc->cluster_size; i++) {
--		if (!cc->rpages[i])
--			continue;
--		redirty_page_for_writepage(wbc, cc->rpages[i]);
--		unlock_page(cc->rpages[i]);
--	}
--	return err;
- }
- 
- int f2fs_write_multi_pages(struct compress_ctx *cc,
+-		serdes_ln_ctrl: serdes-ln-ctrl@4080 {
++		serdes_ln_ctrl: mux-controller@4080 {
+ 			compatible = "mmio-mux";
+ 			#mux-control-cells = <1>;
+ 			mux-reg-masks = <0x4080 0x3>, <0x4084 0x3>, /* SERDES0 lane0/1 select */
+-- 
+2.34.1
+
 
 
