@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38377C35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8B6C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366853AbiAXXxl (ORCPT
+        id S2367119AbiAXXyM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49158 "EHLO
+        Mon, 24 Jan 2022 18:54:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846022AbiAXXOO (ORCPT
+        with ESMTP id S1837907AbiAXWpe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:14 -0500
+        Mon, 24 Jan 2022 17:45:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DEEC067A78;
-        Mon, 24 Jan 2022 13:22:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B248C0550CC;
+        Mon, 24 Jan 2022 13:05:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A22B561469;
-        Mon, 24 Jan 2022 21:22:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77B64C340E5;
-        Mon, 24 Jan 2022 21:22:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC1196142E;
+        Mon, 24 Jan 2022 21:05:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC90EC340E5;
+        Mon, 24 Jan 2022 21:05:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059334;
-        bh=S72zmxOG0k3L7U4zKehJLaSpMyumIyBnV8FZbTgUH0Q=;
+        s=korg; t=1643058355;
+        bh=bRSguhJPl84harqENFcTRVmow9GIgHPy1csFS3mmJgc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=avMkpndoVQuWigQsiY/V/OP5DG0njWSTlVoPRUy9ODjnAuH5O1KCjX3k1HVRmhs9q
-         o1gF8NX/CtnRlvK0yF1QT7Y/AoDwdre0h58Al2+MJkAsM31yc/b3Z5e/Ha1ISOGR5y
-         zQh+tefodzTSfsbtS6IyH76I3tYHzkFBI5CQhmak=
+        b=GPDib1kgn+XJ4rW5nCXjJl/UMc3HpysAQX6W7sRGXJyYZsEKq3dpRE5pqCXEMbqZ6
+         i9lbS0uwXA2lhH/ihvZLP4wppRFA4bom0ZGqXsfJBTpbk6ACMJNzDzRGYapdRGu3/G
+         YneZH12yIp5T0N2xnNxhptydTjaVNZnTfIagzfVw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org,
+        Vincent Donnefort <vincent.donnefort@arm.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Valentin Schneider <valentin.schneider@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0580/1039] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
-Date:   Mon, 24 Jan 2022 19:39:29 +0100
-Message-Id: <20220124184144.841835919@linuxfoundation.org>
+Subject: [PATCH 5.16 0230/1039] sched/fair: Fix detection of per-CPU kthreads waking a task
+Date:   Mon, 24 Jan 2022 19:33:39 +0100
+Message-Id: <20220124184133.054095952@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,119 +53,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Vincent Donnefort <vincent.donnefort@arm.com>
 
-[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
+[ Upstream commit 8b4e74ccb582797f6f0b0a50372ebd9fd2372a27 ]
 
-Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
-DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
+select_idle_sibling() has a special case for tasks woken up by a per-CPU
+kthread, where the selected CPU is the previous one. However, the current
+condition for this exit path is incomplete. A task can wake up from an
+interrupt context (e.g. hrtimer), while a per-CPU kthread is running. A
+such scenario would spuriously trigger the special case described above.
+Also, a recent change made the idle task like a regular per-CPU kthread,
+hence making that situation more likely to happen
+(is_per_cpu_kthread(swapper) being true now).
 
-So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
-Kconfig and rename the definitions to IMX27 as further clean-up.
+Checking for task context makes sure select_idle_sibling() will not
+interpret a wake up from any other context as a wake up by a per-CPU
+kthread.
 
-This issue was discovered with ./scripts/checkkconfigsymbols.py, which
-reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
-SOC_IMX21.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fixes: 52262ee567ad ("sched/fair: Allow a per-CPU kthread waking a task to stack on the same CPU, to fix XFS performance regression")
+Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
+Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
+Link: https://lore.kernel.org/r/20211201143450.479472-1-vincent.donnefort@arm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/Kconfig.debug            | 14 +++++++-------
- arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ kernel/sched/fair.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 98436702e0c7e..644875d73ba15 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -410,12 +410,12 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on i.MX25.
- 
--	config DEBUG_IMX21_IMX27_UART
--		bool "i.MX21 and i.MX27 Debug UART"
--		depends on SOC_IMX21 || SOC_IMX27
-+	config DEBUG_IMX27_UART
-+		bool "i.MX27 Debug UART"
-+		depends on SOC_IMX27
- 		help
- 		  Say Y here if you want kernel low-level debugging support
--		  on i.MX21 or i.MX27.
-+		  on i.MX27.
- 
- 	config DEBUG_IMX28_UART
- 		bool "i.MX28 Debug UART"
-@@ -1481,7 +1481,7 @@ config DEBUG_IMX_UART_PORT
- 	int "i.MX Debug UART Port Selection"
- 	depends on DEBUG_IMX1_UART || \
- 		   DEBUG_IMX25_UART || \
--		   DEBUG_IMX21_IMX27_UART || \
-+		   DEBUG_IMX27_UART || \
- 		   DEBUG_IMX31_UART || \
- 		   DEBUG_IMX35_UART || \
- 		   DEBUG_IMX50_UART || \
-@@ -1540,12 +1540,12 @@ config DEBUG_LL_INCLUDE
- 	default "debug/icedcc.S" if DEBUG_ICEDCC
- 	default "debug/imx.S" if DEBUG_IMX1_UART || \
- 				 DEBUG_IMX25_UART || \
--				 DEBUG_IMX21_IMX27_UART || \
-+				 DEBUG_IMX27_UART || \
- 				 DEBUG_IMX31_UART || \
- 				 DEBUG_IMX35_UART || \
- 				 DEBUG_IMX50_UART || \
- 				 DEBUG_IMX51_UART || \
--				 DEBUG_IMX53_UART ||\
-+				 DEBUG_IMX53_UART || \
- 				 DEBUG_IMX6Q_UART || \
- 				 DEBUG_IMX6SL_UART || \
- 				 DEBUG_IMX6SX_UART || \
-diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
-index c8eb83d4b8964..3edbb3c5b42bf 100644
---- a/arch/arm/include/debug/imx-uart.h
-+++ b/arch/arm/include/debug/imx-uart.h
-@@ -11,13 +11,6 @@
- #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
- #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
- 
--#define IMX21_UART1_BASE_ADDR	0x1000a000
--#define IMX21_UART2_BASE_ADDR	0x1000b000
--#define IMX21_UART3_BASE_ADDR	0x1000c000
--#define IMX21_UART4_BASE_ADDR	0x1000d000
--#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
--#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
--
- #define IMX25_UART1_BASE_ADDR	0x43f90000
- #define IMX25_UART2_BASE_ADDR	0x43f94000
- #define IMX25_UART3_BASE_ADDR	0x5000c000
-@@ -26,6 +19,13 @@
- #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
- #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
- 
-+#define IMX27_UART1_BASE_ADDR	0x1000a000
-+#define IMX27_UART2_BASE_ADDR	0x1000b000
-+#define IMX27_UART3_BASE_ADDR	0x1000c000
-+#define IMX27_UART4_BASE_ADDR	0x1000d000
-+#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
-+#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
-+
- #define IMX31_UART1_BASE_ADDR	0x43f90000
- #define IMX31_UART2_BASE_ADDR	0x43f94000
- #define IMX31_UART3_BASE_ADDR	0x5000c000
-@@ -112,10 +112,10 @@
- 
- #ifdef CONFIG_DEBUG_IMX1_UART
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
--#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
--#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
- #elif defined(CONFIG_DEBUG_IMX25_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
-+#elif defined(CONFIG_DEBUG_IMX27_UART)
-+#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
- #elif defined(CONFIG_DEBUG_IMX31_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
- #elif defined(CONFIG_DEBUG_IMX35_UART)
+diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
+index 6e476f6d94351..97d89516fbea2 100644
+--- a/kernel/sched/fair.c
++++ b/kernel/sched/fair.c
+@@ -6398,6 +6398,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
+ 	 * pattern is IO completions.
+ 	 */
+ 	if (is_per_cpu_kthread(current) &&
++	    in_task() &&
+ 	    prev == smp_processor_id() &&
+ 	    this_rq()->nr_running <= 1) {
+ 		return prev;
 -- 
 2.34.1
 
