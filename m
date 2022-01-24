@@ -2,117 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15369C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837679AbiAXW4R (ORCPT
+        id S1838349AbiAXW40 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:56:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59550 "EHLO
+        Mon, 24 Jan 2022 17:56:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456750AbiAXVzC (ORCPT
+        with ESMTP id S1457425AbiAXVzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:02 -0500
+        Mon, 24 Jan 2022 16:55:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61500C07E295;
-        Mon, 24 Jan 2022 12:36:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAEBBC07E297;
+        Mon, 24 Jan 2022 12:36:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C4E61536;
-        Mon, 24 Jan 2022 20:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D111CC340E5;
-        Mon, 24 Jan 2022 20:35:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056559;
-        bh=mVwKOa9TdbM1aRje2DNNGkcxM/BY7WVf6u62VGJnVNo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gTUsgdr899ihHNllE6u+2f8mw2tcMhBipmfFdg6peEWTnH+xzZ4iWosNBhc5UE2fm
-         J0VEYiLoMqUH0xiU/Yz1CCBgJ3uowk8h6IvcQN3HPOb1LKx+BA7p2yRMi9QWd6IZgc
-         2P9J4m8mvfahU0O9NQb/1jx+Dvseh/YzitPTD53U=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 524/846] media: rcar-vin: Update format alignment constraints
-Date:   Mon, 24 Jan 2022 19:40:41 +0100
-Message-Id: <20220124184119.088634474@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78A2A614FF;
+        Mon, 24 Jan 2022 20:36:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15638C340E7;
+        Mon, 24 Jan 2022 20:36:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643056569;
+        bh=N6HkrGlOPhp/lfQrBU6OuWeAmsz4cFxje4P56uyHS08=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=tMvS0u9vqPHiJmamtWo2hxIfeAM+s7Ecv0ZmZJ0nQZ3D9W1YwYkePQzqZdW43jJC/
+         pfn1HewwRr0fGJ+xwd5Szt17yDi6vy2vdgPuuIuDHKlaCZuIULmPqLbZn9cVnX2nzn
+         AtH4RV7t+kJEaz7frVA2Aebsq/f/78dU+4jAly/NqVY6WvAUtuMyruYuYh2yF/EwF4
+         nhXr1MwoYKa6iexDzDGY+fGXeEWHH1cVD03wqebpbpxEwrgzZAcxu4mUZBDTrdMb4K
+         albBIx6R0f/tPjsk7yittG9m7wqN75cGDYd3L2DxSO/JotyKF7DmJsKKXj/81iMtvq
+         fD0RpJx+KWiuQ==
+Date:   Mon, 24 Jan 2022 14:42:53 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Viresh Kumar <vireshk@kernel.org>, Johan Hovold <johan@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH][next] staging: greybus: i2c: Use struct_size() helper in
+ gb_i2c_operation_create()
+Message-ID: <20220124204253.GA11735@embeddedor>
+References: <20220121222250.GA73021@embeddedor>
+ <202201241213.82E7D9F598@keescook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202201241213.82E7D9F598@keescook>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+On Mon, Jan 24, 2022 at 12:19:03PM -0800, Kees Cook wrote:
+> On Fri, Jan 21, 2022 at 04:22:50PM -0600, Gustavo A. R. Silva wrote:
+> > Make use of the struct_size() helper instead of an open-coded version,
+> > in order to avoid any potential type mistakes or integer overflows that,
+> > in the worst scenario, could lead to heap overflows.
+> > 
+> > Also, address the following sparse warnings:
+> > drivers/staging/greybus/i2c.c:111:24: warning: using sizeof on a flexible structure
+> > 
+> > Link: https://github.com/KSPP/linux/issues/174
+> > Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+> > ---
+> >  drivers/staging/greybus/i2c.c | 4 +---
+> >  1 file changed, 1 insertion(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/staging/greybus/i2c.c b/drivers/staging/greybus/i2c.c
+> > index de2f6516da09..9dfc6791c20e 100644
+> > --- a/drivers/staging/greybus/i2c.c
+> > +++ b/drivers/staging/greybus/i2c.c
+> > @@ -108,9 +108,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
+> >  		else
+> >  			data_out_size += (u32)msg->len;
+> >  
+> > -	request_size = sizeof(*request);
+> > -	request_size += msg_count * sizeof(*op);
+> > -	request_size += data_out_size;
+> > +	request_size = struct_size(request, ops, msg_count) + data_out_size;
+> 
+> This could still overflow if struct_size() returns SIZE_MAX. Perhaps:
 
-[ Upstream commit da6911f330d40cfe115a37249e47643eff555e82 ]
+uggh... I got too excited with all the new cases reported. 
+> 
+> 	if (check_add_overflow(struct_size(request, ops, msg_count),
+> 			       data_out_size, &request_size))
+> 		request_size = SIZE_MAX;
 
-This change fixes two issues with the size constraints for buffers.
+Yep; I'll respin and include this change, thanks!
+> 
+> I should brush off the saturating arithmetic helpers series:
+> https://lore.kernel.org/all/20210920180853.1825195-1-keescook@chromium.org/
 
-- There is no width alignment constraint for RGB formats. Prior to this
-  change they were treated as YUV and as a result were more restricted
-  than needed. Add a new check to differentiate between the two.
+Yeah; those helpers are very much needed in many places we need to audit...
 
-- The minimum width and height supported is 5x2, not 2x4, this is an
-  artifact from the driver's soc-camera days. Fix this incorrect
-  assumption.
-
-Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/platform/rcar-vin/rcar-v4l2.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/media/platform/rcar-vin/rcar-v4l2.c b/drivers/media/platform/rcar-vin/rcar-v4l2.c
-index 0d141155f0e3e..eb8c79bac540f 100644
---- a/drivers/media/platform/rcar-vin/rcar-v4l2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-v4l2.c
-@@ -175,20 +175,27 @@ static void rvin_format_align(struct rvin_dev *vin, struct v4l2_pix_format *pix)
- 		break;
- 	}
- 
--	/* HW limit width to a multiple of 32 (2^5) for NV12/16 else 2 (2^1) */
-+	/* Hardware limits width alignment based on format. */
- 	switch (pix->pixelformat) {
-+	/* Multiple of 32 (2^5) for NV12/16. */
- 	case V4L2_PIX_FMT_NV12:
- 	case V4L2_PIX_FMT_NV16:
- 		walign = 5;
- 		break;
--	default:
-+	/* Multiple of 2 (2^1) for YUV. */
-+	case V4L2_PIX_FMT_YUYV:
-+	case V4L2_PIX_FMT_UYVY:
- 		walign = 1;
- 		break;
-+	/* No multiple for RGB. */
-+	default:
-+		walign = 0;
-+		break;
- 	}
- 
- 	/* Limit to VIN capabilities */
--	v4l_bound_align_image(&pix->width, 2, vin->info->max_width, walign,
--			      &pix->height, 4, vin->info->max_height, 2, 0);
-+	v4l_bound_align_image(&pix->width, 5, vin->info->max_width, walign,
-+			      &pix->height, 2, vin->info->max_height, 0, 0);
- 
- 	pix->bytesperline = rvin_format_bytesperline(vin, pix);
- 	pix->sizeimage = rvin_format_sizeimage(pix);
--- 
-2.34.1
-
-
-
+--
+Gustavo
