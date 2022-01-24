@@ -2,58 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C5F4C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 560E2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579301AbiAXWFT (ORCPT
+        id S1579514AbiAXWFu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:05:19 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:53874 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376896AbiAXVQe (ORCPT
+        Mon, 24 Jan 2022 17:05:50 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40378 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1451683AbiAXVXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:16:34 -0500
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 7CF74200230;
-        Mon, 24 Jan 2022 21:16:25 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 49054809C2; Mon, 24 Jan 2022 22:15:21 +0100 (CET)
-Date:   Mon, 24 Jan 2022 22:15:21 +0100
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     andrew.shadura@collabora.co.uk
-Cc:     jikos@kernel.org, benjamin.tissoires@redhat.com,
-        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-crypto@vger.kernel.org, herbert@gondor.apana.org.au
-Subject: hid-u2fzero.c - hw_random quality set to 1?
-Message-ID: <Ye8W6bOh85JILMrp@owl.dominikbrodowski.net>
+        Mon, 24 Jan 2022 16:23:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 14973B812A5;
+        Mon, 24 Jan 2022 21:23:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CABFC340E4;
+        Mon, 24 Jan 2022 21:23:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643059398;
+        bh=AXo2SKIfBrFl+rOiVbbS6B5EIC7YCr/SvPrUDVh/G4E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gNk40HvlRwkbemebPbUe1fIVVztT8DPR/kxwCVbMwTEJF4WtpMKEMNSxxoJhygzcM
+         4yCp4vCO8ijXQrSvSKPzGXz6aGUm+D3ORZaUJcHq6fjn4BRqcbwSVRH6ajObM+vT2A
+         dGQZG16nIX/ErapTrJFvsIt7ui6vmJdXRTX8Rvt0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Adam Ward <Adam.Ward.opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0602/1039] regulator: da9121: Prevent current limit change when enabled
+Date:   Mon, 24 Jan 2022 19:39:51 +0100
+Message-Id: <20220124184145.573533146@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+From: Adam Ward <Adam.Ward.opensource@diasemi.com>
 
-is there any specific rationale why the quality of the hid-u2fzero.c hw
-rng is set to 1, meaning that only 1 bit of entrop is added per 1024 bits
-of input (see drivers/char/hw_random/core.c)? That actually means that
-currently no entropy is credited at all, as this driver will return not
-more than 64 bytes (= rc), and then
+[ Upstream commit 24f0853228f3b98f1ef08d5824376c69bb8124d2 ]
 
-	rc * current_quality * 8 >> 10
+Prevent changing current limit when enabled as a precaution against
+possibile instability due to tight integration with switching cycle
 
-evaluates to 0. While this is addressed by a patch I just submitted,[*]
-I'd like to know whether this low quality setting is correct.
+Signed-off-by: Adam Ward <Adam.Ward.opensource@diasemi.com>
+Link: https://lore.kernel.org/r/52ee682476004a1736c1e0293358987319c1c415.1638223185.git.Adam.Ward.opensource@diasemi.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/regulator/da9121-regulator.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Thanks,
-	Dominik
+diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
+index e669250902580..0a4fd449c27d1 100644
+--- a/drivers/regulator/da9121-regulator.c
++++ b/drivers/regulator/da9121-regulator.c
+@@ -253,6 +253,11 @@ static int da9121_set_current_limit(struct regulator_dev *rdev,
+ 		goto error;
+ 	}
+ 
++	if (rdev->desc->ops->is_enabled(rdev)) {
++		ret = -EBUSY;
++		goto error;
++	}
++
+ 	ret = da9121_ceiling_selector(rdev, min_ua, max_ua, &sel);
+ 	if (ret < 0)
+ 		goto error;
+-- 
+2.34.1
 
-[*] https://lore.kernel.org/linux-crypto/20220124202951.28579-6-linux@dominikbrodowski.net/
+
+
