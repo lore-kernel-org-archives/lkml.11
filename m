@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0857EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A216C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379480AbiAXWRA (ORCPT
+        id S1580252AbiAXWRQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:17:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        Mon, 24 Jan 2022 17:17:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390872AbiAXVM6 (ORCPT
+        with ESMTP id S1448508AbiAXVM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:12:58 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76C86C06E001;
-        Mon, 24 Jan 2022 12:10:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 325E6C06E00D;
+        Mon, 24 Jan 2022 12:10:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F2A8B8119E;
-        Mon, 24 Jan 2022 20:10:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D574C340E7;
-        Mon, 24 Jan 2022 20:10:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFCF4B8121A;
+        Mon, 24 Jan 2022 20:10:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 276B4C340E5;
+        Mon, 24 Jan 2022 20:10:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055022;
-        bh=iC3yFsiXLxji/n8wtnpCQ/0JmVUjZqt5fHAV9bJWQ+Y=;
+        s=korg; t=1643055049;
+        bh=sPzD3sIHCoQZ6kq2zRn0RcdzuU13RsPBbpmhmt4Sj7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QTlOta8NVYNDXdd6nveGwKO7Y9SgxTDv3u52ooSDWEtypOe0jgPFcIAriaFAgIizK
-         zwf5uNtada/A2IixJJR65WAVYLmI+4+06MWqX09zGWYSYFonWoS9CfJLMBhOyYmTQG
-         vpPPGV+hMfCEU1s31T9Sev3EKqfOw8a1nDr050as=
+        b=Vcgph0N9XDuqUqGDjRvT1AbwfnWB/qVHz4r2zigyhs4jex3GyC6vrRNdsmfXnM0df
+         vHrto3vipvZ3OF+u9qgRWgmmGSDPiG/kQj78uCyq7tCSiZyXvSM4aZH2paW10tKWCk
+         EDh9RnyHQ+8FSabFJjZDdCiCbXAi0akYAFMqw9RA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.15 016/846] mtd: rawnand: davinci: Dont calculate ECC when reading page
-Date:   Mon, 24 Jan 2022 19:32:13 +0100
-Message-Id: <20220124184101.470672588@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Kossifidis <mick@ics.forth.gr>,
+        Alexandre Ghiti <alex@ghiti.fr>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 024/846] riscv: Dont use va_pa_offset on kdump
+Date:   Mon, 24 Jan 2022 19:32:21 +0100
+Message-Id: <20220124184101.760975660@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,42 +50,81 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Nick Kossifidis <mick@ics.forth.gr>
 
-commit 71e89591502d737c10db2bd4d8fcfaa352552afb upstream.
+commit a11c07f032a0e9a562a32ece73af96b0e754c4b3 upstream.
 
-The function nand_davinci_read_page_hwecc_oob_first() does read the ECC
-data from the OOB area. Therefore it does not need to calculate the ECC
-as it is already available.
+On kdump instead of using an intermediate step to relocate the kernel,
+that lives in a "control buffer" outside the current kernel's mapping,
+we jump to the crash kernel directly by calling riscv_kexec_norelocate().
+The current implementation uses va_pa_offset while switching to physical
+addressing, however since we moved the kernel outside the linear mapping
+this won't work anymore since riscv_kexec_norelocate() is part of the
+kernel mapping and we should use kernel_map.va_kernel_pa_offset, and also
+take XIP kernel into account.
 
-Cc: <stable@vger.kernel.org> # v5.2
-Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-1-paul@crapouillou.net
+We don't really need to use va_pa_offset on riscv_kexec_norelocate, we
+can just set STVEC to the physical address of the new kernel instead and
+let the hart jump to the new kernel on the next instruction after setting
+SATP to zero. This fixes kdump and is also simpler/cleaner.
+
+I tested this on the latest qemu and HiFive Unmatched and works as
+expected.
+
+Fixes: 2bfc6cd81bd1 ("riscv: Move kernel mapping outside of linear mapping")
+Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+Reviewed-by: Alexandre Ghiti <alex@ghiti.fr>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/davinci_nand.c |    3 ---
- 1 file changed, 3 deletions(-)
+ arch/riscv/kernel/kexec_relocate.S |   20 +++++++++-----------
+ 1 file changed, 9 insertions(+), 11 deletions(-)
 
---- a/drivers/mtd/nand/raw/davinci_nand.c
-+++ b/drivers/mtd/nand/raw/davinci_nand.c
-@@ -394,7 +394,6 @@ static int nand_davinci_read_page_hwecc_
- 	int eccsteps = chip->ecc.steps;
- 	uint8_t *p = buf;
- 	uint8_t *ecc_code = chip->ecc.code_buf;
--	uint8_t *ecc_calc = chip->ecc.calc_buf;
- 	unsigned int max_bitflips = 0;
+--- a/arch/riscv/kernel/kexec_relocate.S
++++ b/arch/riscv/kernel/kexec_relocate.S
+@@ -159,25 +159,15 @@ SYM_CODE_START(riscv_kexec_norelocate)
+ 	 * s0: (const) Phys address to jump to
+ 	 * s1: (const) Phys address of the FDT image
+ 	 * s2: (const) The hartid of the current hart
+-	 * s3: (const) kernel_map.va_pa_offset, used when switching MMU off
+ 	 */
+ 	mv	s0, a1
+ 	mv	s1, a2
+ 	mv	s2, a3
+-	mv	s3, a4
  
- 	/* Read the OOB area first */
-@@ -420,8 +419,6 @@ static int nand_davinci_read_page_hwecc_
- 		if (ret)
- 			return ret;
+ 	/* Disable / cleanup interrupts */
+ 	csrw	CSR_SIE, zero
+ 	csrw	CSR_SIP, zero
  
--		chip->ecc.calculate(chip, p, &ecc_calc[i]);
+-	/* Switch to physical addressing */
+-	la	s4, 1f
+-	sub	s4, s4, s3
+-	csrw	CSR_STVEC, s4
+-	csrw	CSR_SATP, zero
 -
- 		stat = chip->ecc.correct(chip, p, &ecc_code[i], NULL);
- 		if (stat == -EBADMSG &&
- 		    (chip->ecc.options & NAND_ECC_GENERIC_ERASED_CHECK)) {
+-.align 2
+-1:
+ 	/* Pass the arguments to the next kernel  / Cleanup*/
+ 	mv	a0, s2
+ 	mv	a1, s1
+@@ -214,7 +204,15 @@ SYM_CODE_START(riscv_kexec_norelocate)
+ 	csrw	CSR_SCAUSE, zero
+ 	csrw	CSR_SSCRATCH, zero
+ 
+-	jalr	zero, a2, 0
++	/*
++	 * Switch to physical addressing
++	 * This will also trigger a jump to CSR_STVEC
++	 * which in this case is the address of the new
++	 * kernel.
++	 */
++	csrw	CSR_STVEC, a2
++	csrw	CSR_SATP, zero
++
+ SYM_CODE_END(riscv_kexec_norelocate)
+ 
+ .section ".rodata"
 
 
