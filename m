@@ -2,94 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7141C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1614C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410382AbiAYA3H (ORCPT
+        id S3410363AbiAYA3E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56380 "EHLO
+        Mon, 24 Jan 2022 19:29:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2362636AbiAXXmo (ORCPT
+        with ESMTP id S2362664AbiAXXmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:42:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 347E6C0FCED3;
-        Mon, 24 Jan 2022 13:39:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 24 Jan 2022 18:42:45 -0500
+Received: from thorn.bewilderbeest.net (thorn.bewilderbeest.net [IPv6:2605:2700:0:5::4713:9cab])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCAB7C0FCEDC
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:39:02 -0800 (PST)
+Received: from hatter.bewilderbeest.net (174-21-190-118.tukw.qwest.net [174.21.190.118])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE47FB8123A;
-        Mon, 24 Jan 2022 21:39:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A8FAC340E4;
-        Mon, 24 Jan 2022 21:38:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060339;
-        bh=9wTFvCDXsLGr2ff4ZSyAlfnhmj5VqNbcLjP9DYhL73E=;
+        (Authenticated sender: zev)
+        by thorn.bewilderbeest.net (Postfix) with ESMTPSA id 3B729631;
+        Mon, 24 Jan 2022 13:39:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bewilderbeest.net;
+        s=thorn; t=1643060342;
+        bh=TQdtq1xEutLhm8c8Qf43KWKlCveAJESF7JMSVl2lQuE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mBgNh3yAdHUczciJxBxhQYcUIbwFzmPfGMz+AY5TJQ/Jwv0WlFeU0Cz8bnqur0OjI
-         ppsNvQLcva3XaKSQ2H2um6u9MXJHiZbHs6Q039DC8eFHPLbOAn6LwboB+dckzd+yVN
-         3OraCji/JPHeCIeXCyBoN82akUTC8Sy3/cWRBZUs=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: [PATCH 5.16 0916/1039] Documentation: fix firewire.rst ABI file path error
-Date:   Mon, 24 Jan 2022 19:45:05 +0100
-Message-Id: <20220124184156.084771133@linuxfoundation.org>
+        b=hMfoF86skJdkCyhEGSaUgjYLxT7NFfz/RdR70RDZMTLwxal26CNO6UsQK8B6hqm3j
+         n8yAzLtn0n7X+oQvwPYeg7mcof4TiEA5R4lrtt8us2zq+byDEqylikZHU5TCw91Vjz
+         o8KNozgZwirHfaKJ2SK4CpaYp6fMA+Eu3aI2lcxI=
+From:   Zev Weiss <zev@bewilderbeest.net>
+To:     linux-i2c@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+        Peter Rosin <peda@axentia.se>
+Cc:     Zev Weiss <zev@bewilderbeest.net>, openbmc@lists.ozlabs.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] i2c: mux: pca9541: add delayed-release support
+Date:   Mon, 24 Jan 2022 13:38:49 -0800
+Message-Id: <20220124213850.3766-2-zev@bewilderbeest.net>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220124213850.3766-1-zev@bewilderbeest.net>
+References: <20220124213850.3766-1-zev@bewilderbeest.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+For heavily-utilized i2c busses, the overhead of reacquiring bus
+ownership on every transaction can be quite substantial.  By delaying
+the release of the bus (in anticipation of another transaction needing
+to re-acquire ownership in the near future), we can reduce the
+overhead significantly -- a subsequent transaction that arrives within
+the delay window can merely verify that we still own it.
 
-commit b0ac702f3329cdc8a06dcaac73183d4b5a2b942d upstream.
+The new "release-delay-us" DT property specifies a number of
+microseconds to wait after a transaction before releasing the bus
+(zero by default so as to preserve the existing behavior of releasing
+it immediately).
 
-Adjust the path of the ABI files for firewire.rst to prevent a
-documentation build error. Prevents this problem:
-
-Sphinx parallel build error:
-docutils.utils.SystemMessage: Documentation/driver-api/firewire.rst:22: (SEVERE/4) Problems with "include" directive path:
-InputError: [Errno 2] No such file or directory: '../Documentation/driver-api/ABI/stable/firewire-cdev'.
-
-Fixes: 2f4830ef96d2 ("FireWire: add driver-api Introduction section")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Tested-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/20220119033905.4779-1-rdunlap@infradead.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Zev Weiss <zev@bewilderbeest.net>
 ---
- Documentation/driver-api/firewire.rst |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/i2c/muxes/i2c-mux-pca9541.c | 56 ++++++++++++++++++++++++-----
+ 1 file changed, 47 insertions(+), 9 deletions(-)
 
---- a/Documentation/driver-api/firewire.rst
-+++ b/Documentation/driver-api/firewire.rst
-@@ -19,7 +19,7 @@ of kernel interfaces is available via ex
- Firewire char device data structures
- ====================================
+diff --git a/drivers/i2c/muxes/i2c-mux-pca9541.c b/drivers/i2c/muxes/i2c-mux-pca9541.c
+index 6daec8d3d331..76269bf9f9ca 100644
+--- a/drivers/i2c/muxes/i2c-mux-pca9541.c
++++ b/drivers/i2c/muxes/i2c-mux-pca9541.c
+@@ -19,6 +19,7 @@
+ #include <linux/bitops.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
++#include <linux/devm-helpers.h>
+ #include <linux/i2c.h>
+ #include <linux/i2c-mux.h>
+ #include <linux/jiffies.h>
+@@ -75,6 +76,8 @@ struct pca9541 {
+ 	struct i2c_client *client;
+ 	unsigned long select_timeout;
+ 	unsigned long arb_timeout;
++	unsigned long release_delay;
++	struct delayed_work release_work;
+ };
  
--.. include:: /ABI/stable/firewire-cdev
-+.. include:: ../ABI/stable/firewire-cdev
-     :literal:
+ static const struct i2c_device_id pca9541_id[] = {
+@@ -127,8 +130,11 @@ static int pca9541_reg_read(struct i2c_client *client, u8 command)
+  * Arbitration management functions
+  */
  
- .. kernel-doc:: include/uapi/linux/firewire-cdev.h
-@@ -28,7 +28,7 @@ Firewire char device data structures
- Firewire device probing and sysfs interfaces
- ============================================
+-/* Release bus. Also reset NTESTON and BUSINIT if it was set. */
+-static void pca9541_release_bus(struct i2c_client *client)
++/*
++ * Release bus. Also reset NTESTON and BUSINIT if it was set.
++ * client->adapter must already be locked.
++ */
++static void __pca9541_release_bus(struct i2c_client *client)
+ {
+ 	int reg;
  
--.. include:: /ABI/stable/sysfs-bus-firewire
-+.. include:: ../ABI/stable/sysfs-bus-firewire
-     :literal:
+@@ -138,6 +144,13 @@ static void pca9541_release_bus(struct i2c_client *client)
+ 				  (reg & PCA9541_CTL_NBUSON) >> 1);
+ }
  
- .. kernel-doc:: drivers/firewire/core-device.c
-
++static void pca9541_release_bus(struct i2c_client *client)
++{
++	i2c_lock_bus(client->adapter, I2C_LOCK_SEGMENT);
++	__pca9541_release_bus(client);
++	i2c_unlock_bus(client->adapter, I2C_LOCK_SEGMENT);
++}
++
+ /*
+  * Arbitration is defined as a two-step process. A bus master can only activate
+  * the slave bus if it owns it; otherwise it has to request ownership first.
+@@ -254,6 +267,9 @@ static int pca9541_select_chan(struct i2c_mux_core *muxc, u32 chan)
+ 	unsigned long timeout = jiffies + ARB2_TIMEOUT;
+ 		/* give up after this time */
+ 
++	if (data->release_delay)
++		cancel_delayed_work_sync(&data->release_work);
++
+ 	data->arb_timeout = jiffies + ARB_TIMEOUT;
+ 		/* force bus ownership after this time */
+ 
+@@ -276,10 +292,21 @@ static int pca9541_release_chan(struct i2c_mux_core *muxc, u32 chan)
+ 	struct pca9541 *data = i2c_mux_priv(muxc);
+ 	struct i2c_client *client = data->client;
+ 
+-	pca9541_release_bus(client);
++	if (data->release_delay)
++		schedule_delayed_work(&data->release_work, data->release_delay);
++	else
++		__pca9541_release_bus(client);
++
+ 	return 0;
+ }
+ 
++static void pca9541_release_workfn(struct work_struct *work)
++{
++	struct pca9541 *data = container_of(work, struct pca9541, release_work.work);
++
++	pca9541_release_bus(data->client);
++}
++
+ /*
+  * I2C init/probing/exit functions
+  */
+@@ -289,18 +316,13 @@ static int pca9541_probe(struct i2c_client *client,
+ 	struct i2c_adapter *adap = client->adapter;
+ 	struct i2c_mux_core *muxc;
+ 	struct pca9541 *data;
++	u32 release_delay_us;
+ 	int ret;
+ 
+ 	if (!i2c_check_functionality(adap, I2C_FUNC_SMBUS_BYTE_DATA))
+ 		return -ENODEV;
+ 
+-	/*
+-	 * I2C accesses are unprotected here.
+-	 * We have to lock the I2C segment before releasing the bus.
+-	 */
+-	i2c_lock_bus(adap, I2C_LOCK_SEGMENT);
+ 	pca9541_release_bus(client);
+-	i2c_unlock_bus(adap, I2C_LOCK_SEGMENT);
+ 
+ 	/* Create mux adapter */
+ 
+@@ -313,6 +335,14 @@ static int pca9541_probe(struct i2c_client *client,
+ 	data = i2c_mux_priv(muxc);
+ 	data->client = client;
+ 
++	if (!device_property_read_u32(&client->dev, "release-delay-us", &release_delay_us)) {
++		data->release_delay = usecs_to_jiffies(release_delay_us);
++		ret = devm_delayed_work_autocancel(&client->dev, &data->release_work,
++						   pca9541_release_workfn);
++		if (ret)
++			return ret;
++	}
++
+ 	i2c_set_clientdata(client, muxc);
+ 
+ 	ret = i2c_mux_add_adapter(muxc, 0, 0, 0);
+@@ -328,6 +358,14 @@ static int pca9541_probe(struct i2c_client *client,
+ static int pca9541_remove(struct i2c_client *client)
+ {
+ 	struct i2c_mux_core *muxc = i2c_get_clientdata(client);
++	struct pca9541 *data = i2c_mux_priv(muxc);
++
++	/*
++	 * Ensure the bus is released (in case the device gets destroyed
++	 * before release_work runs).
++	 */
++	if (data->release_delay)
++		pca9541_release_bus(client);
+ 
+ 	i2c_mux_del_adapters(muxc);
+ 	return 0;
+-- 
+2.34.1
 
