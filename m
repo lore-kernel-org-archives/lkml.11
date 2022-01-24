@@ -2,177 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB94CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B2EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:19:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847077AbiAXXS0 (ORCPT
+        id S1847029AbiAXXSV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:18:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37622 "EHLO
+        Mon, 24 Jan 2022 18:18:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585996AbiAXWZb (ORCPT
+        with ESMTP id S1585997AbiAXWZb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:25:31 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F30DC08C5DA;
-        Mon, 24 Jan 2022 12:54:15 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id j23so53695316edp.5;
-        Mon, 24 Jan 2022 12:54:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Dq82rTxhxBvlr65w2A2LxY6QpISYac4cCUON/cmECxM=;
-        b=BKwlTzCftZwPf6j/zl1A5IP6JA/uv6iAJ245F7MdeRr53EcaA58eHLhNWC2fEK4KE/
-         aa7mm4s9YlBHAb2/gxhtizia/ONBaQHnhqZts6FCR+S3k0ZwLd/STZR0P37Eevplq/PY
-         xK3knjKKrSAxGkbWH6ZiECl4cDe0TIh1LV9boZPVyVDrzm4bLPevoYNgWzV6osoPDMl6
-         eBIeumWpiR56Bw6IHhndLVgqhaz2dzWqHvCfq1SD4nHJOOeneP/PWDHpwcqMIb6VH9Sb
-         OAfAWnKxTtCxjg/umTgwEdIzyucc2fxMoPvsFfXqCFEYG759Bz12biGyXBY+p2BMgrQ7
-         nzWg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Dq82rTxhxBvlr65w2A2LxY6QpISYac4cCUON/cmECxM=;
-        b=z9aSUCSBL0Ny5mXnvQxupA1yucyC6BA9AK9RlfTSlk9zIBzLMc7B59FHHcLfs25URZ
-         p2kW+IlpOBUfW91XSvyfi9uPLioLZs9mDKMkvKmTQKnE6CbpsqU5HyEj4gsa+E9x2RH9
-         pSwLxRDmFI+zs4JfLxOjFDYoooxVkwj3HiqBs1jf/0ITXpeLtPbn+rjBjUYLMJ0/Ob2H
-         Yd4B9XMljbKbCnkOmlLaiySSIeKhzAJK7DitVgclt3a8jDu6ANreJMCbcOvAhx7UNnKi
-         3CkBIpiqEZfX5zdBhRch0TjpimfE7RLUuoDGkprc9Nm4qdCYTm0v8r9VT+kbJkms9rVF
-         wMlQ==
-X-Gm-Message-State: AOAM533oMlygrh48Lq4v9y69y0X0LrTWwRu7Hko+POPRgiVyG2B6CxnR
-        bkh28Ol3AoCpV6sEQTIwUQICO35qszSgJMuV7UE=
-X-Google-Smtp-Source: ABdhPJxgCjB5sxN7wLpYS0l6Ot8/8MQ39XA1r1OciT5BGHQ3M7sM442yKV2s5PadWccZJTn6fI64HXfhnIWhErZiY/s=
-X-Received: by 2002:a50:cf86:: with SMTP id h6mr17934469edk.82.1643057653792;
- Mon, 24 Jan 2022 12:54:13 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF36C08C5D8;
+        Mon, 24 Jan 2022 12:54:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49ACD611C2;
+        Mon, 24 Jan 2022 20:54:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C2C5C340E5;
+        Mon, 24 Jan 2022 20:54:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057653;
+        bh=pOMuClDdtMKtaAUzzkfbJsxX0oBaFCtga5RqV+vM42Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JdB7B/TPgQQDKVc1Fb521n139HvNNlilCJFfCPbB8jLRK3drjTdmJJC0JqH755z3O
+         wUIEjWfO5ATOiIOJiOK19agwCNo8MVX+XeQJHY96Hxd6DxHyyg0vVavRnlLpp1ECG6
+         b/UfAHzl/UyBcpkiv4rishA9vWgx39CcheKnZi4c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 0035/1039] net: phy: marvell: add Marvell specific PHY loopback
+Date:   Mon, 24 Jan 2022 19:30:24 +0100
+Message-Id: <20220124184126.314205688@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20200203053650.8923-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20200203053650.8923-1-xiyou.wangcong@gmail.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Mon, 24 Jan 2022 12:54:01 -0800
-Message-ID: <CAHbLzkoUmhPbnt=yMfBSFs2G6r2S5ggD6AkYQvg0zxBAqQK2fA@mail.gmail.com>
-Subject: Re: [Patch v3] block: introduce block_rq_error tracepoint
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     linux-block@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Steven Rostedt <rostedt@goodmis.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi folks,
+From: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
 
-I think the problems fixed by this patch still exist and we do need
-this patch to make disk error handling in rasdaemon easier. I saw
-Steven already gave his reviewed-by, I'm wondering why this patch was
-not merged to upstream? I didn't see any unsolved comments.
+commit 020a45aff1190c32b1087cd75b57fbf6bff46ea6 upstream.
 
-If it looks fine, would Jens (I guess it should go with block tree)
-please merge this patch upstream? The latest kernel moved
-blk_update_request() to blk-mq.c, if it is ok to move forward, I could
-prepare a new version.
+Existing genphy_loopback() is not applicable for Marvell PHY. Besides
+configuring bit-6 and bit-13 in Page 0 Register 0 (Copper Control
+Register), it is also required to configure same bits  in Page 2
+Register 21 (MAC Specific Control Register 2) according to speed of
+the loopback is operating.
 
-Thanks,
-Yang
+Tested working on Marvell88E1510 PHY for all speeds (1000/100/10Mbps).
 
-On Sun, Feb 2, 2020 at 11:15 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
->
-> Currently, rasdaemon uses the existing tracepoint block_rq_complete
-> and filters out non-error cases in order to capture block disk errors.
->
-> But there are a few problems with this approach:
->
-> 1. Even kernel trace filter could do the filtering work, there is
->    still some overhead after we enable this tracepoint.
->
-> 2. The filter is merely based on errno, which does not align with kernel
->    logic to check the errors for print_req_error().
->
-> 3. block_rq_complete only provides dev major and minor to identify
->    the block device, it is not convenient to use in user-space.
->
-> So introduce a new tracepoint block_rq_error just for the error case
-> and provides the device name for convenience too. With this patch,
-> rasdaemon could switch to block_rq_error.
->
-> Cc: Jens Axboe <axboe@kernel.dk>
-> Cc: Steven Rostedt <rostedt@goodmis.org>
-> Signed-off-by: Cong Wang <xiyou.wangcong@gmail.com>
-> ---
->  block/blk-core.c             |  4 +++-
->  include/trace/events/block.h | 41 ++++++++++++++++++++++++++++++++++++
->  2 files changed, 44 insertions(+), 1 deletion(-)
->
-> diff --git a/block/blk-core.c b/block/blk-core.c
-> index 089e890ab208..0c7ad70d06be 100644
-> --- a/block/blk-core.c
-> +++ b/block/blk-core.c
-> @@ -1450,8 +1450,10 @@ bool blk_update_request(struct request *req, blk_status_t error,
->  #endif
->
->         if (unlikely(error && !blk_rq_is_passthrough(req) &&
-> -                    !(req->rq_flags & RQF_QUIET)))
-> +                    !(req->rq_flags & RQF_QUIET))) {
-> +               trace_block_rq_error(req, blk_status_to_errno(error), nr_bytes);
->                 print_req_error(req, error, __func__);
-> +       }
->
->         blk_account_io_completion(req, nr_bytes);
->
-> diff --git a/include/trace/events/block.h b/include/trace/events/block.h
-> index 81b43f5bdf23..575054e7cfa0 100644
-> --- a/include/trace/events/block.h
-> +++ b/include/trace/events/block.h
-> @@ -145,6 +145,47 @@ TRACE_EVENT(block_rq_complete,
->                   __entry->nr_sector, __entry->error)
->  );
->
-> +/**
-> + * block_rq_error - block IO operation error reported by device driver
-> + * @rq: block operations request
-> + * @error: status code
-> + * @nr_bytes: number of completed bytes
-> + *
-> + * The block_rq_error tracepoint event indicates that some portion
-> + * of operation request has failed as reported by the device driver.
-> + */
-> +TRACE_EVENT(block_rq_error,
-> +
-> +       TP_PROTO(struct request *rq, int error, unsigned int nr_bytes),
-> +
-> +       TP_ARGS(rq, error, nr_bytes),
-> +
-> +       TP_STRUCT__entry(
-> +               __field(  dev_t,        dev                     )
-> +               __string( name,         rq->rq_disk ? rq->rq_disk->disk_name : "?")
-> +               __field(  sector_t,     sector                  )
-> +               __field(  unsigned int, nr_sector               )
-> +               __field(  int,          error                   )
-> +               __array(  char,         rwbs,   RWBS_LEN        )
-> +       ),
-> +
-> +       TP_fast_assign(
-> +               __entry->dev       = rq->rq_disk ? disk_devt(rq->rq_disk) : 0;
-> +               __assign_str(name,   rq->rq_disk ? rq->rq_disk->disk_name : "?");
-> +               __entry->sector    = blk_rq_pos(rq);
-> +               __entry->nr_sector = nr_bytes >> 9;
-> +               __entry->error     = error;
-> +
-> +               blk_fill_rwbs(__entry->rwbs, rq->cmd_flags, nr_bytes);
-> +       ),
-> +
-> +       TP_printk("%d,%d %s %s %llu + %u [%d]",
-> +                 MAJOR(__entry->dev), MINOR(__entry->dev),
-> +                 __get_str(name), __entry->rwbs,
-> +                 (unsigned long long)__entry->sector,
-> +                 __entry->nr_sector, __entry->error)
-> +);
-> +
->  DECLARE_EVENT_CLASS(block_rq,
->
->         TP_PROTO(struct request_queue *q, struct request *rq),
-> --
-> 2.21.1
->
+FIXME: Based on trial and error test, it seem 1G need to have delay between
+soft reset and loopback enablement.
+
+Fixes: 014068dcb5b1 ("net: phy: genphy_loopback: add link speed configuration")
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/phy/marvell.c |   56 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
+
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -189,6 +189,8 @@
+ #define MII_88E1510_GEN_CTRL_REG_1_MODE_RGMII_SGMII	0x4
+ #define MII_88E1510_GEN_CTRL_REG_1_RESET	0x8000	/* Soft reset */
+ 
++#define MII_88E1510_MSCR_2		0x15
++
+ #define MII_VCT5_TX_RX_MDI0_COUPLING	0x10
+ #define MII_VCT5_TX_RX_MDI1_COUPLING	0x11
+ #define MII_VCT5_TX_RX_MDI2_COUPLING	0x12
+@@ -1932,6 +1934,58 @@ static void marvell_get_stats(struct phy
+ 		data[i] = marvell_get_stat(phydev, i);
+ }
+ 
++static int m88e1510_loopback(struct phy_device *phydev, bool enable)
++{
++	int err;
++
++	if (enable) {
++		u16 bmcr_ctl = 0, mscr2_ctl = 0;
++
++		if (phydev->speed == SPEED_1000)
++			bmcr_ctl = BMCR_SPEED1000;
++		else if (phydev->speed == SPEED_100)
++			bmcr_ctl = BMCR_SPEED100;
++
++		if (phydev->duplex == DUPLEX_FULL)
++			bmcr_ctl |= BMCR_FULLDPLX;
++
++		err = phy_write(phydev, MII_BMCR, bmcr_ctl);
++		if (err < 0)
++			return err;
++
++		if (phydev->speed == SPEED_1000)
++			mscr2_ctl = BMCR_SPEED1000;
++		else if (phydev->speed == SPEED_100)
++			mscr2_ctl = BMCR_SPEED100;
++
++		err = phy_modify_paged(phydev, MII_MARVELL_MSCR_PAGE,
++				       MII_88E1510_MSCR_2, BMCR_SPEED1000 |
++				       BMCR_SPEED100, mscr2_ctl);
++		if (err < 0)
++			return err;
++
++		/* Need soft reset to have speed configuration takes effect */
++		err = genphy_soft_reset(phydev);
++		if (err < 0)
++			return err;
++
++		/* FIXME: Based on trial and error test, it seem 1G need to have
++		 * delay between soft reset and loopback enablement.
++		 */
++		if (phydev->speed == SPEED_1000)
++			msleep(1000);
++
++		return phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK,
++				  BMCR_LOOPBACK);
++	} else {
++		err = phy_modify(phydev, MII_BMCR, BMCR_LOOPBACK, 0);
++		if (err < 0)
++			return err;
++
++		return phy_config_aneg(phydev);
++	}
++}
++
+ static int marvell_vct5_wait_complete(struct phy_device *phydev)
+ {
+ 	int i;
+@@ -3078,7 +3132,7 @@ static struct phy_driver marvell_drivers
+ 		.get_sset_count = marvell_get_sset_count,
+ 		.get_strings = marvell_get_strings,
+ 		.get_stats = marvell_get_stats,
+-		.set_loopback = genphy_loopback,
++		.set_loopback = m88e1510_loopback,
+ 		.get_tunable = m88e1011_get_tunable,
+ 		.set_tunable = m88e1011_set_tunable,
+ 		.cable_test_start = marvell_vct7_cable_test_start,
+
+
