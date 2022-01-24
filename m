@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CBEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C81FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835378AbiAXWgQ (ORCPT
+        id S1835357AbiAXWgK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:36:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55862 "EHLO
+        Mon, 24 Jan 2022 17:36:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456717AbiAXVjz (ORCPT
+        with ESMTP id S1456713AbiAXVjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C4AC0419C8;
-        Mon, 24 Jan 2022 12:26:30 -0800 (PST)
+        Mon, 24 Jan 2022 16:39:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81078C0419C9;
+        Mon, 24 Jan 2022 12:26:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1DBBB8122F;
-        Mon, 24 Jan 2022 20:26:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25E50C340E5;
-        Mon, 24 Jan 2022 20:26:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EBD66150F;
+        Mon, 24 Jan 2022 20:26:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 204DAC340E5;
+        Mon, 24 Jan 2022 20:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055987;
-        bh=dpr/6SmkftpYgHSoOA96Mr8yGDl3BpFvFZ1P7MbL7hc=;
+        s=korg; t=1643055990;
+        bh=O59Wt/hOMkwJpFVVFf+WeiotE2h/uvQbmmOt8NKRTKo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TIxaM6Z1dfYWSvPh7F1TgP+sztAyUkebHvG+ELmwIJWRPZU03iZvnvVNKUEy4F41n
-         p/Z8nBBCoPeSvePj4bSSVNmYf8iEfD5oEDPcwr+hhQnqNPxCrMaJEyVTbZqVOJHWxI
-         MttNbLwq/Xo1VSLrT3v30/9LgZwDK2ykzGBvQFuo=
+        b=Rs86k6QKrpdl8+0F2tbYq7Kh7KV1n9lge02wXZ16yw0VQEdPQiP2mH5O8d3tBX+bS
+         c7/GUuBqnf4e8S6h/YHIrnyObMRqWjhf++ilFUW/Qih6eFK2JBYobxbHukCn8EOCCJ
+         nhrc/DMC11ZrXqw7XarXj+RL8OYZvFUr6Ze+3IfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>,
+        John Keeping <john@metanate.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 289/846] backlight: qcom-wled: Override default length with qcom,enabled-strings
-Date:   Mon, 24 Jan 2022 19:36:46 +0100
-Message-Id: <20220124184110.905695395@linuxfoundation.org>
+Subject: [PATCH 5.15 326/846] usb: dwc2: gadget: initialize max_speed from params
+Date:   Mon, 24 Jan 2022 19:37:23 +0100
+Message-Id: <20220124184112.151733041@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -54,62 +51,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: John Keeping <john@metanate.com>
 
-[ Upstream commit 2b4b49602f9feca7b7a84eaa33ad9e666c8aa695 ]
+[ Upstream commit 92ef98a4caacad6d4a1490dda45d81ae5ccf5bc9 ]
 
-The length of qcom,enabled-strings as property array is enough to
-determine the number of strings to be enabled, without needing to set
-qcom,num-strings to override the default number of strings when less
-than the default (which is also the maximum) is provided in DT.
+DWC2 may be paired with a full-speed PHY which is not capable of
+high-speed operation.  Report this correctly to the gadget core by
+setting max_speed from the core parameters.
 
-This also introduces an extra warning when qcom,num-strings is set,
-denoting that it is not necessary to set both anymore.  It is usually
-more concise to set just qcom,num-length when a zero-based, contiguous
-range of strings is needed (the majority of the cases), or to only set
-qcom,enabled-strings when a specific set of indices is desired.
+Prior to commit 5324bad66f09f ("usb: dwc2: gadget: implement
+udc_set_speed()") this didn't cause the hardware to be configured
+incorrectly, although the speed may have been reported incorrectly.  But
+after that commit params.speed is updated based on a value passed in by
+the gadget core which may set it to a faster speed than is supported by
+the hardware.  Initialising the max_speed parameter ensures the speed
+passed to dwc2_gadget_set_speed() will be one supported by the hardware.
 
-Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211115203459.1634079-6-marijn.suijten@somainline.org
+Fixes: 5324bad66f09f ("usb: dwc2: gadget: implement udc_set_speed()")
+Acked-by: Minas Harutyunyan <Minas.Harutyunyan@synopsys.com>
+Signed-off-by: John Keeping <john@metanate.com>
+Link: https://lore.kernel.org/r/20220106115731.1473909-1-john@metanate.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/backlight/qcom-wled.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ drivers/usb/dwc2/gadget.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
-index dbcbeda655192..c057368e5056e 100644
---- a/drivers/video/backlight/qcom-wled.c
-+++ b/drivers/video/backlight/qcom-wled.c
-@@ -1521,6 +1521,8 @@ static int wled_configure(struct wled *wled)
- 				return -EINVAL;
- 			}
- 		}
+diff --git a/drivers/usb/dwc2/gadget.c b/drivers/usb/dwc2/gadget.c
+index 2190225bf3da2..ea0d2d6139a68 100644
+--- a/drivers/usb/dwc2/gadget.c
++++ b/drivers/usb/dwc2/gadget.c
+@@ -4974,7 +4974,18 @@ int dwc2_gadget_init(struct dwc2_hsotg *hsotg)
+ 		hsotg->params.g_np_tx_fifo_size);
+ 	dev_dbg(dev, "RXFIFO size: %d\n", hsotg->params.g_rx_fifo_size);
+ 
+-	hsotg->gadget.max_speed = USB_SPEED_HIGH;
++	switch (hsotg->params.speed) {
++	case DWC2_SPEED_PARAM_LOW:
++		hsotg->gadget.max_speed = USB_SPEED_LOW;
++		break;
++	case DWC2_SPEED_PARAM_FULL:
++		hsotg->gadget.max_speed = USB_SPEED_FULL;
++		break;
++	default:
++		hsotg->gadget.max_speed = USB_SPEED_HIGH;
++		break;
++	}
 +
-+		cfg->num_strings = string_len;
- 	}
- 
- 	rc = of_property_read_u32(dev->of_node, "qcom,num-strings", &val);
-@@ -1531,9 +1533,13 @@ static int wled_configure(struct wled *wled)
- 			return -EINVAL;
- 		}
- 
--		if (string_len > 0 && val > string_len) {
--			dev_err(dev, "qcom,num-strings exceeds qcom,enabled-strings\n");
--			return -EINVAL;
-+		if (string_len > 0) {
-+			dev_warn(dev, "Only one of qcom,num-strings or qcom,enabled-strings"
-+				      " should be set\n");
-+			if (val > string_len) {
-+				dev_err(dev, "qcom,num-strings exceeds qcom,enabled-strings\n");
-+				return -EINVAL;
-+			}
- 		}
- 
- 		cfg->num_strings = val;
+ 	hsotg->gadget.ops = &dwc2_hsotg_gadget_ops;
+ 	hsotg->gadget.name = dev_name(dev);
+ 	hsotg->remote_wakeup_allowed = 0;
 -- 
 2.34.1
 
