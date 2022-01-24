@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4243C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE415C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:29:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586434AbiAXW0d (ORCPT
+        id S1586417AbiAXW0b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:26:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
+        Mon, 24 Jan 2022 17:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452482AbiAXVZn (ORCPT
+        with ESMTP id S1453859AbiAXVbF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:43 -0500
+        Mon, 24 Jan 2022 16:31:05 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94BAEC01D7D4;
-        Mon, 24 Jan 2022 12:18:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D81EC0AD1A2;
+        Mon, 24 Jan 2022 12:19:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35A11B815A6;
-        Mon, 24 Jan 2022 20:18:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30DB1C341FF;
-        Mon, 24 Jan 2022 20:18:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB231B81229;
+        Mon, 24 Jan 2022 20:19:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C797C340E5;
+        Mon, 24 Jan 2022 20:19:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055484;
-        bh=f3b3+/8enhU9oiq+uqDceZ/8WeLGhFM0bhGzBlO54Dg=;
+        s=korg; t=1643055579;
+        bh=AtSJyWWQBR0qTc4KjdnINqtOHj8XVN61e4NKDvYhRxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TDPjJXtxZECoDrUrYfdzyGhc2PwYMphfLX3MftGDL+UyNFP5HPbOKB7FEgkkviPwW
-         HDalkEoFlOJ7WetBz7cIcOILutqx35gaoX/AljeES+DE4wxDrVWNSB0Man7xESIn4z
-         Zwj2SgUJp+LXEkF2U7Kz4mN65zIQUJMkaxOqea1Y=
+        b=gY8CsRtTLG6PbffeC/BTK9mihgRbOdGFGYgvkGa+2ZxcPwK8iZk2MUxe71XB8cmb6
+         g/BTD9xm/LZ6DR/Sd3pxJV8Zvzy+S09Sb7q128PtnJsrWQLQ5WkM/r0yKDx8+uqbHF
+         4UbVs/Yf6by+IyoeyIE5Gv56FlR3W9SsDU96Mn3U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 166/846] media: mtk-vcodec: call v4l2_m2m_ctx_release first when file is released
-Date:   Mon, 24 Jan 2022 19:34:43 +0100
-Message-Id: <20220124184106.707330444@linuxfoundation.org>
+Subject: [PATCH 5.15 198/846] bpf: Fix the test_task_vma selftest to support output shorter than 1 kB
+Date:   Mon, 24 Jan 2022 19:35:15 +0100
+Message-Id: <20220124184107.775121833@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,83 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit 9f89c881bffbdffe4060ffaef3489a2830a6dd9c ]
+[ Upstream commit da54ab14953c38d98cb3e34c564c06c3739394b2 ]
 
-The func v4l2_m2m_ctx_release waits for currently running jobs
-to finish and then stop streaming both queues and frees the buffers.
-All this should be done before the call to mtk_vcodec_enc_release
-which frees the encoder handler. This fixes null-pointer dereference bug:
+The test for bpf_iter_task_vma assumes that the output will be longer
+than 1 kB, as the comment above the loop says. Due to this assumption,
+the loop becomes infinite if the output turns to be shorter than 1 kB.
+The return value of read_fd_into_buffer is 0 when the end of file was
+reached, and len isn't being increased any more.
 
-[  638.028076] Mem abort info:
-[  638.030932]   ESR = 0x96000004
-[  638.033978]   EC = 0x25: DABT (current EL), IL = 32 bits
-[  638.039293]   SET = 0, FnV = 0
-[  638.042338]   EA = 0, S1PTW = 0
-[  638.045474]   FSC = 0x04: level 0 translation fault
-[  638.050349] Data abort info:
-[  638.053224]   ISV = 0, ISS = 0x00000004
-[  638.057055]   CM = 0, WnR = 0
-[  638.060018] user pgtable: 4k pages, 48-bit VAs, pgdp=000000012b6db000
-[  638.066485] [00000000000001a0] pgd=0000000000000000, p4d=0000000000000000
-[  638.073277] Internal error: Oops: 96000004 [#1] SMP
-[  638.078145] Modules linked in: rfkill mtk_vcodec_dec mtk_vcodec_enc uvcvideo mtk_mdp mtk_vcodec_common videobuf2_dma_contig v4l2_h264 cdc_ether v4l2_mem2mem videobuf2_vmalloc usbnet videobuf2_memops videobuf2_v4l2 r8152 videobuf2_common videodev cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf elan_i2c elants_i2c sbs_battery mc cros_usbpd_charger cros_ec_chardev cros_usbpd_logger crct10dif_ce mtk_vpu fuse ip_tables x_tables ipv6
-[  638.118583] CPU: 0 PID: 212 Comm: kworker/u8:5 Not tainted 5.15.0-06427-g58a1d4dcfc74-dirty #109
-[  638.127357] Hardware name: Google Elm (DT)
-[  638.131444] Workqueue: mtk-vcodec-enc mtk_venc_worker [mtk_vcodec_enc]
-[  638.137974] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[  638.144925] pc : vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
-[  638.150493] lr : venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
-[  638.156060] sp : ffff8000124d3c40
-[  638.159364] x29: ffff8000124d3c40 x28: 0000000000000000 x27: 0000000000000000
-[  638.166493] x26: 0000000000000000 x25: ffff0000e7f252d0 x24: ffff8000124d3d58
-[  638.173621] x23: ffff8000124d3d58 x22: ffff8000124d3d60 x21: 0000000000000001
-[  638.180750] x20: ffff80001137e000 x19: 0000000000000000 x18: 0000000000000001
-[  638.187878] x17: 000000040044ffff x16: 00400032b5503510 x15: 0000000000000000
-[  638.195006] x14: ffff8000118536c0 x13: ffff8000ee1da000 x12: 0000000030d4d91d
-[  638.202134] x11: 0000000000000000 x10: 0000000000000980 x9 : ffff8000124d3b20
-[  638.209262] x8 : ffff0000c18d4ea0 x7 : ffff0000c18d44c0 x6 : ffff0000c18d44c0
-[  638.216391] x5 : ffff80000904a3b0 x4 : ffff8000124d3d58 x3 : ffff8000124d3d60
-[  638.223519] x2 : ffff8000124d3d78 x1 : 0000000000000001 x0 : ffff80001137efb8
-[  638.230648] Call trace:
-[  638.233084]  vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
-[  638.238304]  venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
-[  638.243525]  mtk_venc_worker+0x110/0x250 [mtk_vcodec_enc]
-[  638.248918]  process_one_work+0x1f8/0x498
-[  638.252923]  worker_thread+0x140/0x538
-[  638.256664]  kthread+0x148/0x158
-[  638.259884]  ret_from_fork+0x10/0x20
-[  638.263455] Code: f90023f9 2a0103f5 aa0303f6 aa0403f8 (f940d277)
-[  638.269538] ---[ end trace e374fc10f8e181f5 ]---
+This commit adds a break on EOF to handle short output correctly. For
+the reference, this is the contents that I get when running test_progs
+under vmtest.sh, and it's shorter than 1 kB:
 
-[gst-master] root@debian:~/gst-build# [  638.019193] Unable to handle kernel NULL pointer dereference at virtual address 00000000000001a0
-Fixes: 4e855a6efa547 ("[media] vcodec: mediatek: Add Mediatek V4L2 Video Encoder Driver")
-Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+00400000-00401000 r--p 00000000 fe:00 25867     /root/bpf/test_progs
+00401000-00674000 r-xp 00001000 fe:00 25867     /root/bpf/test_progs
+00674000-0095f000 r--p 00274000 fe:00 25867     /root/bpf/test_progs
+0095f000-00983000 r--p 0055e000 fe:00 25867     /root/bpf/test_progs
+00983000-00a8a000 rw-p 00582000 fe:00 25867     /root/bpf/test_progs
+00a8a000-0484e000 rw-p 00000000 00:00 0
+7f6c64000000-7f6c64021000 rw-p 00000000 00:00 0
+7f6c64021000-7f6c68000000 ---p 00000000 00:00 0
+7f6c6ac8f000-7f6c6ac90000 r--s 00000000 00:0d 8032
+anon_inode:bpf-map
+7f6c6ac90000-7f6c6ac91000 ---p 00000000 00:00 0
+7f6c6ac91000-7f6c6b491000 rw-p 00000000 00:00 0
+7f6c6b491000-7f6c6b492000 r--s 00000000 00:0d 8032
+anon_inode:bpf-map
+7f6c6b492000-7f6c6b493000 rw-s 00000000 00:0d 8032
+anon_inode:bpf-map
+7ffc1e23d000-7ffc1e25e000 rw-p 00000000 00:00 0
+7ffc1e3b8000-7ffc1e3bc000 r--p 00000000 00:00 0
+7ffc1e3bc000-7ffc1e3bd000 r-xp 00000000 00:00 0
+7fffffffe000-7ffffffff000 --xp 00000000 00:00 0
+
+Fixes: e8168840e16c ("selftests/bpf: Add test for bpf_iter_task_vma")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211130181811.594220-1-maximmi@nvidia.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/bpf/prog_tests/bpf_iter.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
-index 45d1870c83dd7..4ced20ca647b1 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
-@@ -218,11 +218,11 @@ static int fops_vcodec_release(struct file *file)
- 	mtk_v4l2_debug(1, "[%d] encoder", ctx->id);
- 	mutex_lock(&dev->dev_mutex);
+diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+index 77ac24b191d4c..dc18e5ae0febc 100644
+--- a/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
++++ b/tools/testing/selftests/bpf/prog_tests/bpf_iter.c
+@@ -1208,13 +1208,14 @@ static void test_task_vma(void)
+ 		goto out;
  
-+	v4l2_m2m_ctx_release(ctx->m2m_ctx);
- 	mtk_vcodec_enc_release(ctx);
- 	v4l2_fh_del(&ctx->fh);
- 	v4l2_fh_exit(&ctx->fh);
- 	v4l2_ctrl_handler_free(&ctx->ctrl_hdl);
--	v4l2_m2m_ctx_release(ctx->m2m_ctx);
- 
- 	list_del_init(&ctx->list);
- 	kfree(ctx);
+ 	/* Read CMP_BUFFER_SIZE (1kB) from bpf_iter. Read in small chunks
+-	 * to trigger seq_file corner cases. The expected output is much
+-	 * longer than 1kB, so the while loop will terminate.
++	 * to trigger seq_file corner cases.
+ 	 */
+ 	len = 0;
+ 	while (len < CMP_BUFFER_SIZE) {
+ 		err = read_fd_into_buffer(iter_fd, task_vma_output + len,
+ 					  min(read_size, CMP_BUFFER_SIZE - len));
++		if (!err)
++			break;
+ 		if (CHECK(err < 0, "read_iter_fd", "read_iter_fd failed\n"))
+ 			goto out;
+ 		len += err;
 -- 
 2.34.1
 
