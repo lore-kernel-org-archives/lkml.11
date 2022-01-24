@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C47C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D657C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366630AbiAXXxM (ORCPT
+        id S2366867AbiAXXxn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50158 "EHLO
+        Mon, 24 Jan 2022 18:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846073AbiAXXOW (ORCPT
+        with ESMTP id S1846023AbiAXXOO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46AF6C061748;
-        Mon, 24 Jan 2022 13:23:04 -0800 (PST)
+        Mon, 24 Jan 2022 18:14:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E7FDC067A7A;
+        Mon, 24 Jan 2022 13:22:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC59A614B7;
-        Mon, 24 Jan 2022 21:23:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C66C340E4;
-        Mon, 24 Jan 2022 21:23:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 278C8B81188;
+        Mon, 24 Jan 2022 21:22:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 514AAC340E4;
+        Mon, 24 Jan 2022 21:22:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059383;
-        bh=3qRhBNKvmScCvIXd2l25/NHmnMaxhw46rXHT+wEJ4FI=;
+        s=korg; t=1643059339;
+        bh=RCAXm/IjT3B6yE8K0IDp6JIGWscVB0c2c/ZLJ90b314=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tqqjxlXRkJuzmdCP9zbhaJa3BMkgkAXPbl/kN/PEyJAATRu/m9ct8HvKlphw3CzYR
-         o3iBvtm/Cs15ruFyVJzHaw1aJpndpiO4Tzje1mQ+0br4Ee3aphdtTrSlUpiYHPtSV6
-         kG9G9KDdKwLWETv92LaqY7ill68w8kbiBR0qZimA=
+        b=TMmmimB2MsbkDHD/TBIw9HujecLv5riURGWKmwdhF3QLk+FwxjIlHW3B+xA53r9iY
+         wDtFdfEI7v1jzPD2QYqHhGnLXzAfQFTGxV+8LQwJmeeduGkUCEG/fPjmslZ6C+CrDX
+         dVCRPrn24rUEQRCZ+qDyYintkCxiniYyScwEhZJg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0598/1039] rsi: Fix use-after-free in rsi_rx_done_handler()
-Date:   Mon, 24 Jan 2022 19:39:47 +0100
-Message-Id: <20220124184145.439873933@linuxfoundation.org>
+Subject: [PATCH 5.16 0550/1039] selftests/bpf: Fix memory leaks in btf_type_c_dump() helper
+Date:   Mon, 24 Jan 2022 19:38:59 +0100
+Message-Id: <20220124184143.768902747@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,86 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit b07e3c6ebc0c20c772c0f54042e430acec2945c3 ]
+[ Upstream commit 8ba285874913da21ca39a46376e9cc5ce0f45f94 ]
 
-When freeing rx_cb->rx_skb, the pointer is not set to NULL,
-a later rsi_rx_done_handler call will try to read the freed
-address.
-This bug will very likley lead to double free, although
-detected early as use-after-free bug.
+Free up memory and resources used by temporary allocated memstream and
+btf_dump instance.
 
-The bug is triggerable with a compromised/malfunctional usb
-device. After applying the patch, the same input no longer
-triggers the use-after-free.
-
-Attached is the kasan report from fuzzing.
-
-BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
-Read of size 4 at addr ffff8880188e5930 by task modprobe/231
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- __kasan_report.cold+0x37/0x7c
- ? dma_direct_unmap_page+0x90/0x110
- ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- kasan_report+0xe/0x20
- rsi_rx_done_handler+0x354/0x430 [rsi_usb]
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __usb_hcd_giveback_urb+0x380/0x380
- ? apic_timer_interrupt+0xa/0x20
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- ? handle_irq_event+0xcd/0x157
- ? handle_edge_irq+0x1eb/0x7b0
- irq_exit+0x114/0x140
- do_IRQ+0x91/0x1e0
- common_interrupt+0xf/0xf
- </IRQ>
-
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-4-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_usb.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/btf_helpers.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
-index 6821ea9918956..3cca1823c458a 100644
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -269,8 +269,12 @@ static void rsi_rx_done_handler(struct urb *urb)
- 	struct rsi_91x_usbdev *dev = (struct rsi_91x_usbdev *)rx_cb->data;
- 	int status = -EINVAL;
- 
-+	if (!rx_cb->rx_skb)
-+		return;
-+
- 	if (urb->status) {
- 		dev_kfree_skb(rx_cb->rx_skb);
-+		rx_cb->rx_skb = NULL;
- 		return;
+diff --git a/tools/testing/selftests/bpf/btf_helpers.c b/tools/testing/selftests/bpf/btf_helpers.c
+index b5b6b013a245e..3d1a748d09d81 100644
+--- a/tools/testing/selftests/bpf/btf_helpers.c
++++ b/tools/testing/selftests/bpf/btf_helpers.c
+@@ -251,18 +251,23 @@ const char *btf_type_c_dump(const struct btf *btf)
+ 	d = btf_dump__new(btf, NULL, &opts, btf_dump_printf);
+ 	if (libbpf_get_error(d)) {
+ 		fprintf(stderr, "Failed to create btf_dump instance: %ld\n", libbpf_get_error(d));
+-		return NULL;
++		goto err_out;
  	}
  
-@@ -294,8 +298,10 @@ out:
- 	if (rsi_rx_urb_submit(dev->priv, rx_cb->ep_num, GFP_ATOMIC))
- 		rsi_dbg(ERR_ZONE, "%s: Failed in urb submission", __func__);
+ 	for (i = 1; i < btf__type_cnt(btf); i++) {
+ 		err = btf_dump__dump_type(d, i);
+ 		if (err) {
+ 			fprintf(stderr, "Failed to dump type [%d]: %d\n", i, err);
+-			return NULL;
++			goto err_out;
+ 		}
+ 	}
  
--	if (status)
-+	if (status) {
- 		dev_kfree_skb(rx_cb->rx_skb);
-+		rx_cb->rx_skb = NULL;
-+	}
++	btf_dump__free(d);
+ 	fflush(buf_file);
+ 	fclose(buf_file);
+ 	return buf;
++err_out:
++	btf_dump__free(d);
++	fclose(buf_file);
++	return NULL;
  }
- 
- static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 -- 
 2.34.1
 
