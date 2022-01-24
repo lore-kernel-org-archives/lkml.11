@@ -2,79 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42B49C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADDAC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421423AbiAYC0w (ORCPT
+        id S3421447AbiAYC05 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:52 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:58342 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357333AbiAXTtw (ORCPT
+        Mon, 24 Jan 2022 21:26:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39068 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357576AbiAXTuT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:49:52 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 5FBE42113A;
-        Mon, 24 Jan 2022 19:49:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643053790;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lSB/HKbk/o697vERtOHKC1oUxFtTGY1mq5Ymy+OsCfE=;
-        b=sgK3GhGtwEfItF5vh2VmPhgD5Rf6JoYXxVsyPpGa4H5jbV3KcRkfF6+m441azdLepOhK9H
-        WWuld4kkv5AZ0A0Mu00FrhN3sysxmihLFRW8mzZ5yxht0d/LDr/QOphQhOHV6Xw9wEWlRN
-        CO0CWWluK3q09C17/l4nGp+09CPS0rk=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643053790;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=lSB/HKbk/o697vERtOHKC1oUxFtTGY1mq5Ymy+OsCfE=;
-        b=AczkhFgdVZQppvz1h4XFkKufdIxGYT/bVxpC3BgLrXUwiOKCsKE9YjBYtHCniBCq5RxkU/
-        XnEGb2Jq6i5IuUAA==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 45D07A3B83;
-        Mon, 24 Jan 2022 19:49:50 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 5D6ECDA7A3; Mon, 24 Jan 2022 20:49:10 +0100 (CET)
-Date:   Mon, 24 Jan 2022 20:49:10 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     trix@redhat.com
-Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        nathan@kernel.org, ndesaulniers@google.com, anand.jain@oracle.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH] btrfs: initialize variable cancel
-Message-ID: <20220124194910.GF14046@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz, trix@redhat.com, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com, nathan@kernel.org,
-        ndesaulniers@google.com, anand.jain@oracle.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev
-References: <20220121134522.832207-1-trix@redhat.com>
+        Mon, 24 Jan 2022 14:50:19 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F18E6B8122F;
+        Mon, 24 Jan 2022 19:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF2AC340E5;
+        Mon, 24 Jan 2022 19:50:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053816;
+        bh=nbudAHV5Id/HIQCDuN+n30CdC18eMXg3cLWyw/aOG2Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=xcUiGlPwnnAtBIBkiyjcXbU5I68M7s4hID9899QKqvkdDkEMaMoyF4sKn7r7cwxyM
+         LpPEz41y3UgTylmgBbxDoJMUtQxKf91ya/5fbsVyZrZTocus/Hdvea/lvXHsZveYbw
+         JtOCXj98AXiVNKs5yq8vL5c6hPdW6vcKtBVV3YdE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 187/563] Bluetooth: L2CAP: Fix using wrong mode
+Date:   Mon, 24 Jan 2022 19:39:12 +0100
+Message-Id: <20220124184030.887767032@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121134522.832207-1-trix@redhat.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 05:45:22AM -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Clang static analysis reports this problem
-> ioctl.c:3333:8: warning: 3rd function call argument is an
->   uninitialized value
->     ret = exclop_start_or_cancel_reloc(fs_info,
-> 
-> cancel is only set in one branch of an if-check and is
-> always used.  So initialize to false.
-> 
-> Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
-> Signed-off-by: Tom Rix <trix@redhat.com>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-Added to misc-next, with the updted subject line, thanks.
+[ Upstream commit 30d57722732d9736554f85f75f9d7ad5402d192e ]
+
+If user has a set to use SOCK_STREAM the socket would default to
+L2CAP_MODE_ERTM which later needs to be adjusted if the destination
+address is LE which doesn't support such mode.
+
+Fixes: 15f02b9105625 ("Bluetooth: L2CAP: Add initial code for Enhanced Credit Based Mode")
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/bluetooth/l2cap_sock.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
+
+diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+index 4574c5cb1b596..251017c69ab7f 100644
+--- a/net/bluetooth/l2cap_sock.c
++++ b/net/bluetooth/l2cap_sock.c
+@@ -161,7 +161,11 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
+ 		break;
+ 	}
+ 
+-	if (chan->psm && bdaddr_type_is_le(chan->src_type))
++	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
++	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
++	 */
++	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
++	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
+ 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+ 
+ 	chan->state = BT_BOUND;
+@@ -255,7 +259,11 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
+ 			return -EINVAL;
+ 	}
+ 
+-	if (chan->psm && bdaddr_type_is_le(chan->src_type) && !chan->mode)
++	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
++	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
++	 */
++	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
++	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
+ 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+ 
+ 	l2cap_sock_init_pid(sk);
+-- 
+2.34.1
+
+
+
