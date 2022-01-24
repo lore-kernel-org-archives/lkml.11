@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A91C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386120AbiAXUfL (ORCPT
+        id S1386208AbiAXUfP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54100 "EHLO
+        Mon, 24 Jan 2022 15:35:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52018 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354844AbiAXUMs (ORCPT
+        with ESMTP id S1379794AbiAXUMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:48 -0500
+        Mon, 24 Jan 2022 15:12:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2B846B8122C;
-        Mon, 24 Jan 2022 20:12:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F252C36AF7;
-        Mon, 24 Jan 2022 20:12:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A935B81218;
+        Mon, 24 Jan 2022 20:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AFB0C340E7;
+        Mon, 24 Jan 2022 20:12:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055165;
-        bh=OyAxWRyTORWwfydUXk/mk1xaM+bjpiLPUqUmxODiws8=;
+        s=korg; t=1643055157;
+        bh=ZysuhQ7Pz6OFnxju1Jqcw21yLpfW3eWSCctuI/N59A8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OelarNXx1G+nrnz2qn0SyShP2nPLRfv7koAsN1AlqtVneHA1lLEOl7w2oM54C/2PB
-         JjKUEeR1ezFlksuUm78c/A6S63pMeMBgNP5KlIMmpNyKX5e8v50EvoLfE9w9XlSt9T
-         nV6QKQE3ln1p5AIEgmzA8yXQDIZlJYNUxgGE4HNA=
+        b=tQAe9faIuVNjxB0fa2Qff8Gr0T83Uu/strL9xrk2k9SJtfQg8GLwSpi8hieayFSrb
+         qfC7ztdgcqs4jU7mGK8ACKQv6QrOe6gfbGFpmKDsl/0L77I0YCa3lG1T+N3uyx3OF7
+         m67ZkheK6Bdj/qTRcomViWgMcNHwCnaZ3DzXcdH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        D Scott Phillips <scott@os.amperecomputing.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>
-Subject: [PATCH 5.15 062/846] arm64: errata: Fix exec handling in erratum 1418040 workaround
-Date:   Mon, 24 Jan 2022 19:32:59 +0100
-Message-Id: <20220124184103.109839229@linuxfoundation.org>
+        stable@vger.kernel.org, Manivannan Sadhasivam <mani@kernel.org>,
+        Bhaumik Bhatt <quic_bbhatt@quicinc.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: [PATCH 5.15 059/846] bus: mhi: core: Fix reading wake_capable channel configuration
+Date:   Mon, 24 Jan 2022 19:32:56 +0100
+Message-Id: <20220124184102.997191555@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,102 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: D Scott Phillips <scott@os.amperecomputing.com>
+From: Bhaumik Bhatt <quic_bbhatt@quicinc.com>
 
-commit 38e0257e0e6f4fef2aa2966b089b56a8b1cfb75c upstream.
+commit 42c4668f7efe1485dfc382517b412c0c6ab102b8 upstream.
 
-The erratum 1418040 workaround enables CNTVCT_EL1 access trapping in EL0
-when executing compat threads. The workaround is applied when switching
-between tasks, but the need for the workaround could also change at an
-exec(), when a non-compat task execs a compat binary or vice versa. Apply
-the workaround in arch_setup_new_exec().
+The 'wake-capable' entry in channel configuration is not set when
+parsing the configuration specified by the controller driver. Add
+the missing entry to ensure channel is correctly specified as a
+'wake-capable' channel.
 
-This leaves a small window of time between SET_PERSONALITY and
-arch_setup_new_exec where preemption could occur and confuse the old
-workaround logic that compares TIF_32BIT between prev and next. Instead, we
-can just read cntkctl to make sure it's in the state that the next task
-needs. I measured cntkctl read time to be about the same as a mov from a
-general-purpose register on N1. Update the workaround logic to examine the
-current value of cntkctl instead of the previous task's compat state.
-
-Fixes: d49f7d7376d0 ("arm64: Move handling of erratum 1418040 into C code")
-Cc: <stable@vger.kernel.org> # 5.9.x
-Signed-off-by: D Scott Phillips <scott@os.amperecomputing.com>
-Reviewed-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211220234114.3926-1-scott@os.amperecomputing.com
-Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
+Link: https://lore.kernel.org/r/1638320491-13382-1-git-send-email-quic_bbhatt@quicinc.com
+Fixes: 0cbf260820fa ("bus: mhi: core: Add support for registering MHI controllers")
+Cc: stable@vger.kernel.org
+Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Bhaumik Bhatt <quic_bbhatt@quicinc.com>
+Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Link: https://lore.kernel.org/r/20211216081227.237749-7-manivannan.sadhasivam@linaro.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/kernel/process.c |   39 ++++++++++++++++-----------------------
- 1 file changed, 16 insertions(+), 23 deletions(-)
+ drivers/bus/mhi/core/init.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/arm64/kernel/process.c
-+++ b/arch/arm64/kernel/process.c
-@@ -439,34 +439,26 @@ static void entry_task_switch(struct tas
+--- a/drivers/bus/mhi/core/init.c
++++ b/drivers/bus/mhi/core/init.c
+@@ -788,6 +788,7 @@ static int parse_ch_cfg(struct mhi_contr
+ 		mhi_chan->offload_ch = ch_cfg->offload_channel;
+ 		mhi_chan->db_cfg.reset_req = ch_cfg->doorbell_mode_switch;
+ 		mhi_chan->pre_alloc = ch_cfg->auto_queue;
++		mhi_chan->wake_capable = ch_cfg->wake_capable;
  
- /*
-  * ARM erratum 1418040 handling, affecting the 32bit view of CNTVCT.
-- * Assuming the virtual counter is enabled at the beginning of times:
-- *
-- * - disable access when switching from a 64bit task to a 32bit task
-- * - enable access when switching from a 32bit task to a 64bit task
-+ * Ensure access is disabled when switching to a 32bit task, ensure
-+ * access is enabled when switching to a 64bit task.
-  */
--static void erratum_1418040_thread_switch(struct task_struct *prev,
--					  struct task_struct *next)
-+static void erratum_1418040_thread_switch(struct task_struct *next)
- {
--	bool prev32, next32;
--	u64 val;
--
--	if (!IS_ENABLED(CONFIG_ARM64_ERRATUM_1418040))
--		return;
--
--	prev32 = is_compat_thread(task_thread_info(prev));
--	next32 = is_compat_thread(task_thread_info(next));
--
--	if (prev32 == next32 || !this_cpu_has_cap(ARM64_WORKAROUND_1418040))
-+	if (!IS_ENABLED(CONFIG_ARM64_ERRATUM_1418040) ||
-+	    !this_cpu_has_cap(ARM64_WORKAROUND_1418040))
- 		return;
- 
--	val = read_sysreg(cntkctl_el1);
--
--	if (!next32)
--		val |= ARCH_TIMER_USR_VCT_ACCESS_EN;
-+	if (is_compat_thread(task_thread_info(next)))
-+		sysreg_clear_set(cntkctl_el1, ARCH_TIMER_USR_VCT_ACCESS_EN, 0);
- 	else
--		val &= ~ARCH_TIMER_USR_VCT_ACCESS_EN;
-+		sysreg_clear_set(cntkctl_el1, 0, ARCH_TIMER_USR_VCT_ACCESS_EN);
-+}
- 
--	write_sysreg(val, cntkctl_el1);
-+static void erratum_1418040_new_exec(void)
-+{
-+	preempt_disable();
-+	erratum_1418040_thread_switch(current);
-+	preempt_enable();
- }
- 
- /*
-@@ -501,7 +493,7 @@ __notrace_funcgraph struct task_struct *
- 	contextidr_thread_switch(next);
- 	entry_task_switch(next);
- 	ssbs_thread_switch(next);
--	erratum_1418040_thread_switch(prev, next);
-+	erratum_1418040_thread_switch(next);
- 	ptrauth_thread_switch_user(next);
- 
- 	/*
-@@ -613,6 +605,7 @@ void arch_setup_new_exec(void)
- 	current->mm->context.flags = mmflags;
- 	ptrauth_thread_init_user();
- 	mte_thread_init_user();
-+	erratum_1418040_new_exec();
- 
- 	if (task_spec_ssb_noexec(current)) {
- 		arch_prctl_spec_ctrl_set(current, PR_SPEC_STORE_BYPASS,
+ 		/*
+ 		 * If MHI host allocates buffers, then the channel direction
 
 
