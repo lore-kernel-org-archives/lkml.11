@@ -2,137 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3999CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29140C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1316261AbiAYCzi (ORCPT
+        id S1316244AbiAYCzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:55:38 -0500
-Received: from mga07.intel.com ([134.134.136.100]:1109 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S3412899AbiAYAh7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:37:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643071079; x=1674607079;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xADFYjtp43qyO+CIOIsghZgbI9d5poWSqca6xjSn2SY=;
-  b=NNZz/p+MmoWb5lB9hh+E2K2UhBj0Ygfxwf33KBz/fjuKxdgrgjEC0t6Q
-   fTLLv9QTjcvUTCh+7obvuHDm25abLKTglqKew7n+dIyr2VAocVloaiQ/N
-   gekoYeJ6ShioxbhHvxvluxT/dC2oRxD7M521mkNuTBFVFhaatHkCGIQNI
-   bPIjhKSAmu0OXvNsQoo4PTBiSr8mVz7KQHH86HqvouuOOyGvKRsZ9+sn4
-   FCafDe7WFQBQwQ3NFn7VbWmq6zLak+PFxLACHY51o1BbK5+G3vEqINYy/
-   Rlj8RlGrv8jBLcSZb/AOdwaWY8uCCKKoDG1Hj1CAPtNtmqVEZykLTs81I
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="309501730"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="309501730"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 16:27:18 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="580573139"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 24 Jan 2022 16:27:14 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC9g2-000J6t-CL; Tue, 25 Jan 2022 00:27:14 +0000
-Date:   Tue, 25 Jan 2022 08:26:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Stephen Dickey <quic_dickey@quicinc.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org, Todd Kjos <tkjos@google.com>
-Subject: [ammarfaizi2-block:google/android/kernel/common/android13-5.15
- 2898/2936] kernel/sched/sched.h:1553:15: error: must use 'struct' tag to
- refer to type 'rq'
-Message-ID: <202201250831.PBiV30bo-lkp@intel.com>
+        Mon, 24 Jan 2022 21:55:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41654 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3412672AbiAYAh2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 19:37:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01581C09F495;
+        Mon, 24 Jan 2022 12:11:12 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94BA26131F;
+        Mon, 24 Jan 2022 20:11:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59A71C340E5;
+        Mon, 24 Jan 2022 20:11:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643055071;
+        bh=TEw8/WP6YfHH4W4x2h4ZS/43zd1x6SlbIuZzOc87T74=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YY98EUjQ6v0HPiq+dqM194w4TybQptNBKZwe3ny+YMCq5N0qL6rXde5HhB7Te9Ax+
+         O/EOWP29j7+NnS7LMh6mcx5dfPTmr3gz5CS0la7eLkOV4mMnxUKZJz76FXL/QLwsxT
+         3nwAVv69pUP4Zussail3o+2Af31UlMnJ0mtHTY+g=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.15 031/846] tools/nolibc: fix incorrect truncation of exit code
+Date:   Mon, 24 Jan 2022 19:32:28 +0100
+Message-Id: <20220124184101.994950551@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android13-5.15
-head:   b7e4947b29bb8d0351c581d9365780d9b6f4d702
-commit: 50f5345c8756129044a3246800f51f04ae2f55b0 [2898/2936] ANDROID: __migrate_task header
-config: arm-randconfig-r003-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250831.PBiV30bo-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2e58a18910867ba6795066e044293e6daf89edf5)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://github.com/ammarfaizi2/linux-block/commit/50f5345c8756129044a3246800f51f04ae2f55b0
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android13-5.15
-        git checkout 50f5345c8756129044a3246800f51f04ae2f55b0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash kernel/
+From: Willy Tarreau <w@1wt.eu>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+commit de0244ae40ae91145faaf164a4252347607c3711 upstream.
 
-All errors (new ones prefixed by >>):
+Ammar Faizi reported that our exit code handling is wrong. We truncate
+it to the lowest 8 bits but the syscall itself is expected to take a
+regular 32-bit signed integer, not an unsigned char. It's the kernel
+that later truncates it to the lowest 8 bits. The difference is visible
+in strace, where the program below used to show exit(255) instead of
+exit(-1):
 
-   In file included from kernel/sched/core.c:13:
->> kernel/sched/sched.h:1553:15: error: must use 'struct' tag to refer to type 'rq'
-   static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-                 ^
-                 struct 
-   1 error generated.
---
-   In file included from kernel/sched/fair.c:23:
->> kernel/sched/sched.h:1553:15: error: must use 'struct' tag to refer to type 'rq'
-   static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-                 ^
-                 struct 
-   kernel/sched/fair.c:628:5: warning: no previous prototype for function 'sched_update_scaling' [-Wmissing-prototypes]
-   int sched_update_scaling(void)
-       ^
-   kernel/sched/fair.c:628:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int sched_update_scaling(void)
-   ^
-   static 
-   kernel/sched/fair.c:4494:6: warning: no previous prototype for function 'set_next_entity' [-Wmissing-prototypes]
-   void set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
-        ^
-   kernel/sched/fair.c:4494:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void set_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *se)
-   ^
-   static 
-   2 warnings and 1 error generated.
---
-   In file included from kernel/sched/rt.c:6:
->> kernel/sched/sched.h:1553:15: error: must use 'struct' tag to refer to type 'rq'
-   static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-                 ^
-                 struct 
-   kernel/sched/rt.c:677:6: warning: no previous prototype for function 'sched_rt_bandwidth_account' [-Wmissing-prototypes]
-   bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
-        ^
-   kernel/sched/rt.c:677:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   bool sched_rt_bandwidth_account(struct rt_rq *rt_rq)
-   ^
-   static 
-   1 warning and 1 error generated.
+  int main(void)
+  {
+        return -1;
+  }
 
+This patch applies the fix to all archs. x86_64, i386, arm64, armv7 and
+mips were all tested and confirmed to work fine now. Risc-v was not
+tested but the change is trivial and exactly the same as for other archs.
 
-vim +1553 kernel/sched/sched.h
-
-  1548	
-  1549	#ifdef CONFIG_SMP
-  1550	extern struct rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-  1551					 struct task_struct *p, int dest_cpu);
-  1552	#else /* !CONFIG_SMP */
-> 1553	static inline rq *__migrate_task(struct rq *rq, struct rq_flags *rf,
-  1554					 struct task_struct *p, int dest_cpu) { return rq; }
-  1555	#endif
-  1556	
-
+Reported-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+Cc: stable@vger.kernel.org
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ tools/include/nolibc/nolibc.h |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
+
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -414,7 +414,7 @@ asm(".section .text\n"
+     "xor %ebp, %ebp\n"          // zero the stack frame
+     "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
+     "call main\n"               // main() returns the status code, we'll exit with it.
+-    "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
++    "mov %eax, %edi\n"          // retrieve exit code (32 bit)
+     "mov $60, %rax\n"           // NR_exit == 60
+     "syscall\n"                 // really exit
+     "hlt\n"                     // ensure it does not return
+@@ -602,9 +602,9 @@ asm(".section .text\n"
+     "push %ebx\n"               // support both regparm and plain stack modes
+     "push %eax\n"
+     "call main\n"               // main() returns the status code in %eax
+-    "movzbl %al, %ebx\n"        // retrieve exit code from lower 8 bits
+-    "movl   $1, %eax\n"         // NR_exit == 1
+-    "int    $0x80\n"            // exit now
++    "mov %eax, %ebx\n"          // retrieve exit code (32-bit int)
++    "movl $1, %eax\n"           // NR_exit == 1
++    "int $0x80\n"               // exit now
+     "hlt\n"                     // ensure it does not
+     "");
+ 
+@@ -788,7 +788,6 @@ asm(".section .text\n"
+     "and %r3, %r1, $-8\n"         // AAPCS : sp must be 8-byte aligned in the
+     "mov %sp, %r3\n"              //         callee, an bl doesn't push (lr=pc)
+     "bl main\n"                   // main() returns the status code, we'll exit with it.
+-    "and %r0, %r0, $0xff\n"       // limit exit code to 8 bits
+     "movs r7, $1\n"               // NR_exit == 1
+     "svc $0x00\n"
+     "");
+@@ -985,7 +984,6 @@ asm(".section .text\n"
+     "add x2, x2, x1\n"            //           + argv
+     "and sp, x1, -16\n"           // sp must be 16-byte aligned in the callee
+     "bl main\n"                   // main() returns the status code, we'll exit with it.
+-    "and x0, x0, 0xff\n"          // limit exit code to 8 bits
+     "mov x8, 93\n"                // NR_exit == 93
+     "svc #0\n"
+     "");
+@@ -1190,7 +1188,7 @@ asm(".section .text\n"
+     "addiu $sp,$sp,-16\n"         // the callee expects to save a0..a3 there!
+     "jal main\n"                  // main() returns the status code, we'll exit with it.
+     "nop\n"                       // delayed slot
+-    "and $a0, $v0, 0xff\n"        // limit exit code to 8 bits
++    "move $a0, $v0\n"             // retrieve 32-bit exit code from v0
+     "li $v0, 4001\n"              // NR_exit == 4001
+     "syscall\n"
+     ".end __start\n"
+@@ -1388,7 +1386,6 @@ asm(".section .text\n"
+     "add   a2,a2,a1\n"           //             + argv
+     "andi  sp,a1,-16\n"          // sp must be 16-byte aligned
+     "call  main\n"               // main() returns the status code, we'll exit with it.
+-    "andi  a0, a0, 0xff\n"       // limit exit code to 8 bits
+     "li a7, 93\n"                // NR_exit == 93
+     "ecall\n"
+     "");
+
+
