@@ -2,29 +2,32 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F0FAC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38DA5C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242674AbiAXM5Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:57:25 -0500
-Received: from foss.arm.com ([217.140.110.172]:32832 "EHLO foss.arm.com"
+        id S242730AbiAXM5d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:57:33 -0500
+Received: from foss.arm.com ([217.140.110.172]:32872 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242240AbiAXM5N (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:57:13 -0500
+        id S242707AbiAXM5Z (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:57:25 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 459B4ED1;
-        Mon, 24 Jan 2022 04:57:13 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0F327D6E;
+        Mon, 24 Jan 2022 04:57:25 -0800 (PST)
 Received: from p8cg001049571a15.arm.com (unknown [10.163.43.190])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 8DBA03F774;
-        Mon, 24 Jan 2022 04:57:10 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 449A63F774;
+        Mon, 24 Jan 2022 04:57:20 -0800 (PST)
 From:   Anshuman Khandual <anshuman.khandual@arm.com>
 To:     linux-mm@kvack.org
 Cc:     linux-kernel@vger.kernel.org, hch@infradead.org,
         akpm@linux-foundation.org,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Subject: [RFC V1 01/31] mm/debug_vm_pgtable: Directly use vm_get_page_prot()
-Date:   Mon, 24 Jan 2022 18:26:38 +0530
-Message-Id: <1643029028-12710-2-git-send-email-anshuman.khandual@arm.com>
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [RFC V1 04/31] powerpc/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date:   Mon, 24 Jan 2022 18:26:41 +0530
+Message-Id: <1643029028-12710-5-git-send-email-anshuman.khandual@arm.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
 References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
@@ -32,114 +35,141 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Although protection_map[] contains the platform defined page protection map
-, vm_get_page_prot() is the right interface to call for page protection for
-a given vm_flags. Hence lets use it directly instead. This will also reduce
-dependency on protection_map[].
+This defines and exports a platform specific custom vm_get_page_prot() via
+subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+macros can be dropped which are no longer needed. While here, this also
+localizes arch_vm_get_page_prot() as powerpc_vm_get_page_prot().
 
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: linux-mm@kvack.org
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linuxppc-dev@lists.ozlabs.org
 Cc: linux-kernel@vger.kernel.org
 Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
- mm/debug_vm_pgtable.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+ arch/powerpc/Kconfig               |  1 +
+ arch/powerpc/include/asm/mman.h    |  3 +-
+ arch/powerpc/include/asm/pgtable.h | 19 ------------
+ arch/powerpc/mm/mmap.c             | 47 ++++++++++++++++++++++++++++++
+ 4 files changed, 49 insertions(+), 21 deletions(-)
 
-diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
-index a7ac97c76762..07593eb79338 100644
---- a/mm/debug_vm_pgtable.c
-+++ b/mm/debug_vm_pgtable.c
-@@ -93,7 +93,7 @@ struct pgtable_debug_args {
+diff --git a/arch/powerpc/Kconfig b/arch/powerpc/Kconfig
+index b779603978e1..ddb4a3687c05 100644
+--- a/arch/powerpc/Kconfig
++++ b/arch/powerpc/Kconfig
+@@ -135,6 +135,7 @@ config PPC
+ 	select ARCH_HAS_TICK_BROADCAST		if GENERIC_CLOCKEVENTS_BROADCAST
+ 	select ARCH_HAS_UACCESS_FLUSHCACHE
+ 	select ARCH_HAS_UBSAN_SANITIZE_ALL
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_HAVE_NMI_SAFE_CMPXCHG
+ 	select ARCH_KEEP_MEMBLOCK
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+diff --git a/arch/powerpc/include/asm/mman.h b/arch/powerpc/include/asm/mman.h
+index 7cb6d18f5cd6..7b10c2031e82 100644
+--- a/arch/powerpc/include/asm/mman.h
++++ b/arch/powerpc/include/asm/mman.h
+@@ -24,7 +24,7 @@ static inline unsigned long arch_calc_vm_prot_bits(unsigned long prot,
+ }
+ #define arch_calc_vm_prot_bits(prot, pkey) arch_calc_vm_prot_bits(prot, pkey)
  
- static void __init pte_basic_tests(struct pgtable_debug_args *args, int idx)
+-static inline pgprot_t arch_vm_get_page_prot(unsigned long vm_flags)
++static inline pgprot_t powerpc_vm_get_page_prot(unsigned long vm_flags)
  {
--	pgprot_t prot = protection_map[idx];
-+	pgprot_t prot = vm_get_page_prot(idx);
- 	pte_t pte = pfn_pte(args->fixed_pte_pfn, prot);
- 	unsigned long val = idx, *ptr = &val;
+ #ifdef CONFIG_PPC_MEM_KEYS
+ 	return (vm_flags & VM_SAO) ?
+@@ -34,7 +34,6 @@ static inline pgprot_t arch_vm_get_page_prot(unsigned long vm_flags)
+ 	return (vm_flags & VM_SAO) ? __pgprot(_PAGE_SAO) : __pgprot(0);
+ #endif
+ }
+-#define arch_vm_get_page_prot(vm_flags) arch_vm_get_page_prot(vm_flags)
  
-@@ -101,7 +101,7 @@ static void __init pte_basic_tests(struct pgtable_debug_args *args, int idx)
- 
- 	/*
- 	 * This test needs to be executed after the given page table entry
--	 * is created with pfn_pte() to make sure that protection_map[idx]
-+	 * is created with pfn_pte() to make sure that vm_get_page_prot(idx)
- 	 * does not have the dirty bit enabled from the beginning. This is
- 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
- 	 * dirty bit being set.
-@@ -188,7 +188,7 @@ static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
- static void __init pmd_basic_tests(struct pgtable_debug_args *args, int idx)
+ static inline bool arch_validate_prot(unsigned long prot, unsigned long addr)
  {
--	pgprot_t prot = protection_map[idx];
-+	pgprot_t prot = vm_get_page_prot(idx);
- 	unsigned long val = idx, *ptr = &val;
- 	pmd_t pmd;
+diff --git a/arch/powerpc/include/asm/pgtable.h b/arch/powerpc/include/asm/pgtable.h
+index d564d0ecd4cd..3cbb6de20f9d 100644
+--- a/arch/powerpc/include/asm/pgtable.h
++++ b/arch/powerpc/include/asm/pgtable.h
+@@ -20,25 +20,6 @@ struct mm_struct;
+ #include <asm/nohash/pgtable.h>
+ #endif /* !CONFIG_PPC_BOOK3S */
  
-@@ -200,7 +200,7 @@ static void __init pmd_basic_tests(struct pgtable_debug_args *args, int idx)
+-/* Note due to the way vm flags are laid out, the bits are XWR */
+-#define __P000	PAGE_NONE
+-#define __P001	PAGE_READONLY
+-#define __P010	PAGE_COPY
+-#define __P011	PAGE_COPY
+-#define __P100	PAGE_READONLY_X
+-#define __P101	PAGE_READONLY_X
+-#define __P110	PAGE_COPY_X
+-#define __P111	PAGE_COPY_X
+-
+-#define __S000	PAGE_NONE
+-#define __S001	PAGE_READONLY
+-#define __S010	PAGE_SHARED
+-#define __S011	PAGE_SHARED
+-#define __S100	PAGE_READONLY_X
+-#define __S101	PAGE_READONLY_X
+-#define __S110	PAGE_SHARED_X
+-#define __S111	PAGE_SHARED_X
+-
+ #ifndef __ASSEMBLY__
  
- 	/*
- 	 * This test needs to be executed after the given page table entry
--	 * is created with pfn_pmd() to make sure that protection_map[idx]
-+	 * is created with pfn_pmd() to make sure that vm_get_page_prot(idx)
- 	 * does not have the dirty bit enabled from the beginning. This is
- 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
- 	 * dirty bit being set.
-@@ -323,7 +323,7 @@ static void __init pmd_savedwrite_tests(struct pgtable_debug_args *args)
- #ifdef CONFIG_HAVE_ARCH_TRANSPARENT_HUGEPAGE_PUD
- static void __init pud_basic_tests(struct pgtable_debug_args *args, int idx)
- {
--	pgprot_t prot = protection_map[idx];
-+	pgprot_t prot = vm_get_page_prot(idx);
- 	unsigned long val = idx, *ptr = &val;
- 	pud_t pud;
- 
-@@ -335,7 +335,7 @@ static void __init pud_basic_tests(struct pgtable_debug_args *args, int idx)
- 
- 	/*
- 	 * This test needs to be executed after the given page table entry
--	 * is created with pfn_pud() to make sure that protection_map[idx]
-+	 * is created with pfn_pud() to make sure that vm_get_page_prot(idx)
- 	 * does not have the dirty bit enabled from the beginning. This is
- 	 * important for platforms like arm64 where (!PTE_RDONLY) indicate
- 	 * dirty bit being set.
-@@ -1104,14 +1104,14 @@ static int __init init_args(struct pgtable_debug_args *args)
- 	/*
- 	 * Initialize the debugging data.
- 	 *
--	 * protection_map[0] (or even protection_map[8]) will help create
--	 * page table entries with PROT_NONE permission as required for
--	 * pxx_protnone_tests().
-+	 * vm_get_page_prot(VM_NONE) or vm_get_page_prot(VM_SHARED|VM_NONE)
-+	 * will help create page table entries with PROT_NONE permission as
-+	 * required for pxx_protnone_tests().
- 	 */
- 	memset(args, 0, sizeof(*args));
- 	args->vaddr              = get_random_vaddr();
- 	args->page_prot          = vm_get_page_prot(VMFLAGS);
--	args->page_prot_none     = protection_map[0];
-+	args->page_prot_none     = vm_get_page_prot(VM_NONE);
- 	args->is_contiguous_page = false;
- 	args->pud_pfn            = ULONG_MAX;
- 	args->pmd_pfn            = ULONG_MAX;
-@@ -1246,12 +1246,15 @@ static int __init debug_vm_pgtable(void)
- 		return ret;
- 
- 	/*
--	 * Iterate over the protection_map[] to make sure that all
-+	 * Iterate over each possible vm_flags to make sure that all
- 	 * the basic page table transformation validations just hold
- 	 * true irrespective of the starting protection value for a
- 	 * given page table entry.
-+	 *
-+	 * Protection based vm_flags combinatins are always linear
-+	 * and increasing i.e VM_NONE ..[VM_SHARED|READ|WRITE|EXEC].
- 	 */
--	for (idx = 0; idx < ARRAY_SIZE(protection_map); idx++) {
-+	for (idx = VM_NONE; idx <= (VM_SHARED | VM_READ | VM_WRITE | VM_EXEC); idx++) {
- 		pte_basic_tests(&args, idx);
- 		pmd_basic_tests(&args, idx);
- 		pud_basic_tests(&args, idx);
+ #ifndef MAX_PTRS_PER_PGD
+diff --git a/arch/powerpc/mm/mmap.c b/arch/powerpc/mm/mmap.c
+index c475cf810aa8..7f05e7903bd2 100644
+--- a/arch/powerpc/mm/mmap.c
++++ b/arch/powerpc/mm/mmap.c
+@@ -254,3 +254,50 @@ void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
+ 		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+ 	}
+ }
++
++static inline pgprot_t __vm_get_page_prot(unsigned long vm_flags)
++{
++	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
++	case VM_NONE:
++		return PAGE_NONE;
++	case VM_READ:
++		return PAGE_READONLY;
++	case VM_WRITE:
++		return PAGE_COPY;
++	case VM_READ | VM_WRITE:
++		return PAGE_COPY;
++	case VM_EXEC:
++		return PAGE_READONLY_X;
++	case VM_EXEC | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_EXEC | VM_WRITE:
++		return PAGE_COPY_X;
++	case VM_EXEC | VM_READ | VM_WRITE:
++		return PAGE_COPY_X;
++	case VM_SHARED:
++		return PAGE_NONE;
++	case VM_SHARED | VM_READ:
++		return PAGE_READONLY;
++	case VM_SHARED | VM_WRITE:
++		return PAGE_SHARED;
++	case VM_SHARED | VM_READ | VM_WRITE:
++		return PAGE_SHARED;
++	case VM_SHARED | VM_EXEC:
++		return PAGE_READONLY_X;
++	case VM_SHARED | VM_EXEC | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_SHARED | VM_EXEC | VM_WRITE:
++		return PAGE_SHARED_X;
++	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
++		return PAGE_SHARED_X;
++	default:
++		BUILD_BUG();
++	}
++}
++
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++	return __pgprot(pgprot_val(__vm_get_page_prot(vm_flags)) |
++	       pgprot_val(powerpc_vm_get_page_prot(vm_flags)));
++}
++EXPORT_SYMBOL(vm_get_page_prot);
 -- 
 2.25.1
 
