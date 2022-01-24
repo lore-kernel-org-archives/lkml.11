@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C89C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 954EAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229593AbiAXVNN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:13:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40718 "EHLO
+        id S1448471AbiAXVMk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 16:12:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387549AbiAXUgz (ORCPT
+        with ESMTP id S1390872AbiAXUqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76737C02B8CE;
-        Mon, 24 Jan 2022 11:50:10 -0800 (PST)
+        Mon, 24 Jan 2022 15:46:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF102C061259;
+        Mon, 24 Jan 2022 11:56:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EDBACB811F9;
-        Mon, 24 Jan 2022 19:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B2AC340E5;
-        Mon, 24 Jan 2022 19:50:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5CC6760B89;
+        Mon, 24 Jan 2022 19:56:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BB8CC340E5;
+        Mon, 24 Jan 2022 19:56:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053807;
-        bh=Z4WqW7aiWhpSpvVTjLKFKzmmQSWflf5Gz0MzVnFB0Xs=;
+        s=korg; t=1643054182;
+        bh=N+xAuBNrumYAwKdpAGtW0TSvVD1arLgbiAIJ/iqPfH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r345/yzNxGFQa7OADeUtBrjg7IZY1Oil2SEMPU+FjbOmm9x8akedWawS9hyYPWJXw
-         Z/3lcfwSwFbJrjpvjUjyDsaFqLooZRk0bXOzDGd5mjbfacojHBNnbK4WEG/3mZ1iGv
-         etZihHhNrZyIgk6RSf7GYOgKuPerhOlUHhgHrq9M=
+        b=1Wgc1tA4QNEdQ8/T3xWQNaqSBbTnoU4lWyWnxMlzzKRl/U0evUKk9+6XO2qZ7qfLG
+         /TF301QQ+QmgT3mVsDLyW0FHmNQ4wCOp0HSwAWQINjfMMjoa0kqjGoLfd6IB/99sZP
+         fRZVnZ58qo04AV4O95JQ0jaPUNvIEy0jLV0CXi/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bernard Zhao <bernard@vivo.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Diego Viola <diego.viola@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Karol Herbst <kherbst@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 184/563] selinux: fix potential memleak in selinux_add_opt()
-Date:   Mon, 24 Jan 2022 19:39:09 +0100
-Message-Id: <20220124184030.782697105@linuxfoundation.org>
+Subject: [PATCH 5.10 305/563] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
+Date:   Mon, 24 Jan 2022 19:41:10 +0100
+Message-Id: <20220124184034.988303891@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,61 +51,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bernard Zhao <bernard@vivo.com>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit 2e08df3c7c4e4e74e3dd5104c100f0bf6288aaa8 ]
+[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
 
-This patch try to fix potential memleak in error branch.
+There have been reports of the WFI timing out on some boards, and a
+patch was proposed to just remove it.  This stuff is rather fragile,
+and I believe the WFI might be needed with our FW prior to GM200.
 
-Fixes: ba6418623385 ("selinux: new helper - selinux_add_opt()")
-Signed-off-by: Bernard Zhao <bernard@vivo.com>
-[PM: tweak the subject line, add Fixes tag]
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+However, we probably should not be touching PMU during init on GPUs
+where we depend on NVIDIA FW, outside of limited circumstances, so
+this should be a somewhat safer change that achieves the desired
+result.
+
+Reported-by: Diego Viola <diego.viola@gmail.com>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- security/selinux/hooks.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-index ff2191ae53528..86159b32921cc 100644
---- a/security/selinux/hooks.c
-+++ b/security/selinux/hooks.c
-@@ -947,18 +947,22 @@ out:
- static int selinux_add_opt(int token, const char *s, void **mnt_opts)
- {
- 	struct selinux_mnt_opts *opts = *mnt_opts;
-+	bool is_alloc_opts = false;
- 
- 	if (token == Opt_seclabel)	/* eaten and completely ignored */
- 		return 0;
- 
-+	if (!s)
-+		return -ENOMEM;
-+
- 	if (!opts) {
- 		opts = kzalloc(sizeof(struct selinux_mnt_opts), GFP_KERNEL);
- 		if (!opts)
- 			return -ENOMEM;
- 		*mnt_opts = opts;
-+		is_alloc_opts = true;
- 	}
--	if (!s)
--		return -ENOMEM;
-+
- 	switch (token) {
- 	case Opt_context:
- 		if (opts->context || opts->defcontext)
-@@ -983,6 +987,10 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
- 	}
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+index a0fe607c9c07f..3bfc55c571b5e 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -94,20 +94,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
  	return 0;
- Einval:
-+	if (is_alloc_opts) {
-+		kfree(opts);
-+		*mnt_opts = NULL;
-+	}
- 	pr_warn(SEL_MOUNT_FAIL_MSG);
- 	return -EINVAL;
  }
+ 
+-static int
++static void
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
+ 
+ 	if (!pmu->func->enabled(pmu))
+-		return 0;
+-
+-	/* Inhibit interrupts, and wait for idle. */
+-	nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-	nvkm_msec(device, 2000,
+-		if (!nvkm_rd32(device, 0x10a04c))
+-			break;
+-	);
++		return;
+ 
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -118,25 +111,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
+-
+-	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	return nvkm_pmu_reset(pmu);
++	nvkm_pmu_reset(pmu);
++	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	int ret = nvkm_pmu_reset(pmu);
+-	if (ret == 0 && pmu->func->init)
+-		ret = pmu->func->init(pmu);
+-	return ret;
++	struct nvkm_device *device = pmu->subdev.device;
++
++	if (!pmu->func->init)
++		return 0;
++
++	if (pmu->func->enabled(pmu)) {
++		/* Inhibit interrupts, and wait for idle. */
++		nvkm_wr32(device, 0x10a014, 0x0000ffff);
++		nvkm_msec(device, 2000,
++			if (!nvkm_rd32(device, 0x10a04c))
++				break;
++		);
++
++		nvkm_pmu_reset(pmu);
++	}
++
++	return pmu->func->init(pmu);
+ }
+ 
+ static void *
 -- 
 2.34.1
 
