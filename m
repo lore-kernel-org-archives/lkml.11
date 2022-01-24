@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 572C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDF3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237407AbiAXTSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:18:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36230 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346828AbiAXTIT (ORCPT
+        id S1346828AbiAXTSK (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:18:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60190 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344119AbiAXTDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:08:19 -0500
+        Mon, 24 Jan 2022 14:03:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A9A66121F;
-        Mon, 24 Jan 2022 19:08:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE94C340E7;
-        Mon, 24 Jan 2022 19:08:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 160C3B8121F;
+        Mon, 24 Jan 2022 19:03:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B45C340E5;
+        Mon, 24 Jan 2022 19:03:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051298;
-        bh=iG87uSHs6Uxi9pA35W4fWuC2vqqSy6dBDllOCeBnKQ8=;
+        s=korg; t=1643051025;
+        bh=7Jxp6D6htDCCccYyU2JW7clNMIT81xHBMJgawc9qhac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oQ7nlGJ9hzhHFl5UBMPGctguYE+H27sQPP+zgl71C91DpedHAYy7TlC8lRE540/Iz
-         pgZEDkPuxiivbpot81izt7Gwu4gzJ1e41n0l9S0XuwNtDqTS/9wGYnh2L5ArGOYrF4
-         UEGMw0NcDjmSQ76a2WvsKbutuhSqKbPsyq2wZMgM=
+        b=wl7eGZzFa3+txvPB5u9IIuX4lUyp6royOSONPSbjxr2HIEc0LgNGz7xScYoHKX/hN
+         XCzTFlXjRCsSmPN87Jq+xTypBL92hEAI7ylwNetIq1yJY5rL/LczQbkFsMY/rCC65b
+         ikwzVyAQ0cMMJGcNPSkFZichAeO7B9W5NGJl+0tE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Langsdorf <mlangsdo@redhat.com>,
-        Bob Moore <robert.moore@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 118/186] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
-Date:   Mon, 24 Jan 2022 19:43:13 +0100
-Message-Id: <20220124183940.910320823@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 003/186] USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
+Date:   Mon, 24 Jan 2022 19:41:18 +0100
+Message-Id: <20220124183937.218520473@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,56 +46,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Langsdorf <mlangsdo@redhat.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
+commit 1d7d4c07932e04355d6e6528d44a2f2c9e354346 upstream.
 
-ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
+When the USB core code for getting root-hub status reports was
+originally written, it was assumed that the hub driver would be its
+only caller.  But this isn't true now; user programs can use usbfs to
+communicate with root hubs and get status reports.  When they do this,
+they may use a transfer_buffer that is smaller than the data returned
+by the HCD, which will lead to a buffer overflow error when
+usb_hcd_poll_rh_status() tries to store the status data.  This was
+discovered by syzbot:
 
-The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
-test that size is small enough to not cause an overflow when
-applied to a 32-bit integer.
+BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+BUG: KASAN: slab-out-of-bounds in usb_hcd_poll_rh_status+0x5f4/0x780 drivers/usb/core/hcd.c:776
+Write of size 2 at addr ffff88801da403c0 by task syz-executor133/4062
 
-Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
-ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
-redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
+This patch fixes the bug by reducing the amount of status data if it
+won't fit in the transfer_buffer.  If some data gets discarded then
+the URB's completion status is set to -EOVERFLOW rather than 0, to let
+the user know what happened.
 
-This was inititally reported on Linux where a size of 102 in
-ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
-initialization code.
-
-Link: https://github.com/acpica/acpica/commit/bc02c76d
-Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-and-tested-by: syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/Yc+3UIQJ2STbxNua@rowland.harvard.edu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/acpi/actypes.h | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/usb/core/hcd.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
-index 71fadbe77e211..2c5df69e67819 100644
---- a/include/acpi/actypes.h
-+++ b/include/acpi/actypes.h
-@@ -560,8 +560,14 @@ typedef u64 acpi_integer;
-  * Can be used with access_width of struct acpi_generic_address and access_size of
-  * struct acpi_resource_generic_register.
-  */
--#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
--#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
-+#define ACPI_ACCESS_BIT_SHIFT		2
-+#define ACPI_ACCESS_BYTE_SHIFT		-1
-+#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
-+#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
-+#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
-+#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
-+#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
-+#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -761,6 +761,7 @@ void usb_hcd_poll_rh_status(struct usb_h
+ {
+ 	struct urb	*urb;
+ 	int		length;
++	int		status;
+ 	unsigned long	flags;
+ 	char		buffer[6];	/* Any root hubs with > 31 ports? */
  
- /*******************************************************************************
-  *
--- 
-2.34.1
-
+@@ -778,11 +779,17 @@ void usb_hcd_poll_rh_status(struct usb_h
+ 		if (urb) {
+ 			clear_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
+ 			hcd->status_urb = NULL;
++			if (urb->transfer_buffer_length >= length) {
++				status = 0;
++			} else {
++				status = -EOVERFLOW;
++				length = urb->transfer_buffer_length;
++			}
+ 			urb->actual_length = length;
+ 			memcpy(urb->transfer_buffer, buffer, length);
+ 
+ 			usb_hcd_unlink_urb_from_ep(hcd, urb);
+-			usb_hcd_giveback_urb(hcd, urb, 0);
++			usb_hcd_giveback_urb(hcd, urb, status);
+ 		} else {
+ 			length = 0;
+ 			set_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
 
 
