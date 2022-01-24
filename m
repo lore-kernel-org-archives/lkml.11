@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 827CCC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48794C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422806AbiAYCcM (ORCPT
+        id S3422914AbiAYCcY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47144 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380340AbiAXUVJ (ORCPT
+        Mon, 24 Jan 2022 21:32:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37014 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355546AbiAXUWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:21:09 -0500
+        Mon, 24 Jan 2022 15:22:30 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E85B2C0417CD;
+        Mon, 24 Jan 2022 11:40:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FA6D61233;
-        Mon, 24 Jan 2022 20:21:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487A0C340E7;
-        Mon, 24 Jan 2022 20:21:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 87DD66135E;
+        Mon, 24 Jan 2022 19:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A815C340E5;
+        Mon, 24 Jan 2022 19:40:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055667;
-        bh=z2Lk3Y7qtlsFod4BlQ5zakyhSX2kYedjVU7vDnFZYew=;
+        s=korg; t=1643053206;
+        bh=Ss9cJ1xCoPXGKemzTHnuPgLOcrn/oCFFznA4VV3+pwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dH9OS99q+208Ib/6eFcc0GAhxARffYaO1YdwTgpDV2g66I0Ua5scXGf1/ofbFeKYL
-         5XkWztbFrOQRb+Um1xD9paG0HJv+kFBdWjrHXPTbOZpW8+SkVfDRYyGm2nQJKe0nR6
-         wjuo2sVv93UwvfdjVRx2tUfYVvPJqNqRe74btn7U=
+        b=WUD6ZmlJtRmcwHo+Zd6D6EHzKzhWzoIYvjwBwqJWpf5ciP1IM8HP7y2zAtB4hSpn4
+         y+o5epPQ6MEGj4XDcOokDds2f+wls7rp+CvNePGkr4uwp9IE0kUrk9uITltufESj1h
+         SOFwVPaG88/2X8EsTEYOXPMbbmTWOxa91mGApV5Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 227/846] xfrm: fix a small bug in xfrm_sa_len()
-Date:   Mon, 24 Jan 2022 19:35:44 +0100
-Message-Id: <20220124184108.752445388@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.4 277/320] Documentation: dmaengine: Correctly describe dmatest with channel unset
+Date:   Mon, 24 Jan 2022 19:44:21 +0100
+Message-Id: <20220124184003.392558506@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,38 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Daniel Thompson <daniel.thompson@linaro.org>
 
-[ Upstream commit 7770a39d7c63faec6c4f33666d49a8cb664d0482 ]
+commit c61d7b2ef141abf81140756b45860a2306f395a2 upstream.
 
-copy_user_offload() will actually push a struct struct xfrm_user_offload,
-which is different than (struct xfrm_state *)->xso
-(struct xfrm_state_offload)
+Currently the documentation states that channels must be configured before
+running the dmatest. This has not been true since commit 6b41030fdc79
+("dmaengine: dmatest: Restore default for channel"). Fix accordingly.
 
-Fixes: d77e38e612a01 ("xfrm: Add an IPsec hardware offloading API")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6b41030fdc79 ("dmaengine: dmatest: Restore default for channel")
+Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
+Link: https://lore.kernel.org/r/20211118100952.27268-3-daniel.thompson@linaro.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xfrm/xfrm_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ Documentation/driver-api/dmaengine/dmatest.rst |    7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 3a3cb09eec122..11574314de09f 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -3058,7 +3058,7 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
- 	if (x->props.extra_flags)
- 		l += nla_total_size(sizeof(x->props.extra_flags));
- 	if (x->xso.dev)
--		 l += nla_total_size(sizeof(x->xso));
-+		 l += nla_total_size(sizeof(struct xfrm_user_offload));
- 	if (x->props.smark.v | x->props.smark.m) {
- 		l += nla_total_size(sizeof(x->props.smark.v));
- 		l += nla_total_size(sizeof(x->props.smark.m));
--- 
-2.34.1
-
+--- a/Documentation/driver-api/dmaengine/dmatest.rst
++++ b/Documentation/driver-api/dmaengine/dmatest.rst
+@@ -143,13 +143,14 @@ Part 5 - Handling channel allocation
+ Allocating Channels
+ -------------------
+ 
+-Channels are required to be configured prior to starting the test run.
+-Attempting to run the test without configuring the channels will fail.
++Channels do not need to be configured prior to starting a test run. Attempting
++to run the test without configuring the channels will result in testing any
++channels that are available.
+ 
+ Example::
+ 
+     % echo 1 > /sys/module/dmatest/parameters/run
+-    dmatest: Could not start test, no channels configured
++    dmatest: No channels configured, continue with any
+ 
+ Channels are registered using the "channel" parameter. Channels can be requested by their
+ name, once requested, the channel is registered and a pending thread is added to the test list.
 
 
