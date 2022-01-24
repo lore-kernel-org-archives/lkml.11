@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7BAFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD399C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836825AbiAXWkz (ORCPT
+        id S1836868AbiAXWlF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:40:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60198 "EHLO
+        Mon, 24 Jan 2022 17:41:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60054 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457683AbiAXVmI (ORCPT
+        with ESMTP id S1457624AbiAXVl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:08 -0500
+        Mon, 24 Jan 2022 16:41:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 006B76150E;
-        Mon, 24 Jan 2022 21:42:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F74DC340E4;
-        Mon, 24 Jan 2022 21:42:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1567F61320;
+        Mon, 24 Jan 2022 21:41:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCEE6C340E4;
+        Mon, 24 Jan 2022 21:41:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060526;
-        bh=JR+CIPlwPm4CxYIFpJ+ZR7WBCsiaKJG3Bzl/6RlkOPU=;
+        s=korg; t=1643060517;
+        bh=G9DGqFM3J6+IZWyQueHkSzbTE2a7MnnhPz7w4RWVOFs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QtN0Cyto/FFNsImIHEEq8ymMMOeGg89PSrS8htN3KXvTPFrgcIwfEu5rY7HRjVlf9
-         xZJkhu35Yn2pasCcFwBov6BGLFwNlJ2ySod70YU9NyKLZl3fVxJSVCIldZJooqZ92K
-         6ss03ueZOMvfL4iBsItUdu5UIveDIbxL1XlCEr9Y=
+        b=dYi/gA8fAKu+CuU3AxAi8uUf2AxbxW/hvcahtnnN1vlZ5MXqYCVPzhkJN6tJ1kqGX
+         4AhVJrjkt3lC1qPosNo0Z1iUCKnCWOgmGy7EKAX76C52ObP4XhfiGYhW+P4JxIAEKb
+         4K1AR5jfby/RRxKZ1oSquR73UsaLG2zAM34p4LNg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 0945/1039] ipv4: avoid quadratic behavior in netns dismantle
-Date:   Mon, 24 Jan 2022 19:45:34 +0100
-Message-Id: <20220124184157.064140950@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.16 0942/1039] bpf: Mark PTR_TO_FUNC register initially with zero offset
+Date:   Mon, 24 Jan 2022 19:45:31 +0100
+Message-Id: <20220124184156.957782600@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,139 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-commit d07418afea8f1d9896aaf9dc5ae47ac4f45b220c upstream.
+commit d400a6cf1c8a57cdf10f35220ead3284320d85ff upstream.
 
-net/ipv4/fib_semantics.c uses an hash table of 256 slots,
-keyed by device ifindexes: fib_info_devhash[DEVINDEX_HASHSIZE]
+Similar as with other pointer types where we use ldimm64, clear the register
+content to zero first, and then populate the PTR_TO_FUNC type and subprogno
+number. Currently this is not done, and leads to reuse of stale register
+tracking data.
 
-Problem is that with network namespaces, devices tend
-to use the same ifindex.
+Given for special ldimm64 cases we always clear the register offset, make it
+common for all cases, so it won't be forgotten in future.
 
-lo device for instance has a fixed ifindex of one,
-for all network namespaces.
-
-This means that hosts with thousands of netns spend
-a lot of time looking at some hash buckets with thousands
-of elements, notably at netns dismantle.
-
-Simply add a per netns perturbation (net_hash_mix())
-to spread elements more uniformely.
-
-Also change fib_devindex_hashfn() to use more entropy.
-
-Fixes: aa79e66eee5d ("net: Make ifindex generation per-net namespace")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 69c087ba6225 ("bpf: Add bpf_for_each_map_elem() helper")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Acked-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/fib_semantics.c |   36 +++++++++++++++++-------------------
- 1 file changed, 17 insertions(+), 19 deletions(-)
+ kernel/bpf/verifier.c |    9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -29,6 +29,7 @@
- #include <linux/init.h>
- #include <linux/slab.h>
- #include <linux/netlink.h>
-+#include <linux/hash.h>
- 
- #include <net/arp.h>
- #include <net/ip.h>
-@@ -319,11 +320,15 @@ static inline int nh_comp(struct fib_inf
- 
- static inline unsigned int fib_devindex_hashfn(unsigned int val)
- {
--	unsigned int mask = DEVINDEX_HASHSIZE - 1;
-+	return hash_32(val, DEVINDEX_HASHBITS);
-+}
-+
-+static struct hlist_head *
-+fib_info_devhash_bucket(const struct net_device *dev)
-+{
-+	u32 val = net_hash_mix(dev_net(dev)) ^ dev->ifindex;
- 
--	return (val ^
--		(val >> DEVINDEX_HASHBITS) ^
--		(val >> (DEVINDEX_HASHBITS * 2))) & mask;
-+	return &fib_info_devhash[fib_devindex_hashfn(val)];
- }
- 
- static unsigned int fib_info_hashfn_1(int init_val, u8 protocol, u8 scope,
-@@ -433,12 +438,11 @@ int ip_fib_check_default(__be32 gw, stru
- {
- 	struct hlist_head *head;
- 	struct fib_nh *nh;
--	unsigned int hash;
- 
- 	spin_lock(&fib_info_lock);
- 
--	hash = fib_devindex_hashfn(dev->ifindex);
--	head = &fib_info_devhash[hash];
-+	head = fib_info_devhash_bucket(dev);
-+
- 	hlist_for_each_entry(nh, head, nh_hash) {
- 		if (nh->fib_nh_dev == dev &&
- 		    nh->fib_nh_gw4 == gw &&
-@@ -1607,12 +1611,10 @@ link_it:
- 	} else {
- 		change_nexthops(fi) {
- 			struct hlist_head *head;
--			unsigned int hash;
- 
- 			if (!nexthop_nh->fib_nh_dev)
- 				continue;
--			hash = fib_devindex_hashfn(nexthop_nh->fib_nh_dev->ifindex);
--			head = &fib_info_devhash[hash];
-+			head = fib_info_devhash_bucket(nexthop_nh->fib_nh_dev);
- 			hlist_add_head(&nexthop_nh->nh_hash, head);
- 		} endfor_nexthops(fi)
- 	}
-@@ -1964,8 +1966,7 @@ void fib_nhc_update_mtu(struct fib_nh_co
- 
- void fib_sync_mtu(struct net_device *dev, u32 orig_mtu)
- {
--	unsigned int hash = fib_devindex_hashfn(dev->ifindex);
--	struct hlist_head *head = &fib_info_devhash[hash];
-+	struct hlist_head *head = fib_info_devhash_bucket(dev);
- 	struct fib_nh *nh;
- 
- 	hlist_for_each_entry(nh, head, nh_hash) {
-@@ -1984,12 +1985,11 @@ void fib_sync_mtu(struct net_device *dev
-  */
- int fib_sync_down_dev(struct net_device *dev, unsigned long event, bool force)
- {
--	int ret = 0;
--	int scope = RT_SCOPE_NOWHERE;
-+	struct hlist_head *head = fib_info_devhash_bucket(dev);
- 	struct fib_info *prev_fi = NULL;
--	unsigned int hash = fib_devindex_hashfn(dev->ifindex);
--	struct hlist_head *head = &fib_info_devhash[hash];
-+	int scope = RT_SCOPE_NOWHERE;
- 	struct fib_nh *nh;
-+	int ret = 0;
- 
- 	if (force)
- 		scope = -1;
-@@ -2134,7 +2134,6 @@ out:
- int fib_sync_up(struct net_device *dev, unsigned char nh_flags)
- {
- 	struct fib_info *prev_fi;
--	unsigned int hash;
- 	struct hlist_head *head;
- 	struct fib_nh *nh;
- 	int ret;
-@@ -2150,8 +2149,7 @@ int fib_sync_up(struct net_device *dev,
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -9389,9 +9389,13 @@ static int check_ld_imm(struct bpf_verif
+ 		return 0;
  	}
  
- 	prev_fi = NULL;
--	hash = fib_devindex_hashfn(dev->ifindex);
--	head = &fib_info_devhash[hash];
-+	head = fib_info_devhash_bucket(dev);
- 	ret = 0;
+-	if (insn->src_reg == BPF_PSEUDO_BTF_ID) {
+-		mark_reg_known_zero(env, regs, insn->dst_reg);
++	/* All special src_reg cases are listed below. From this point onwards
++	 * we either succeed and assign a corresponding dst_reg->type after
++	 * zeroing the offset, or fail and reject the program.
++	 */
++	mark_reg_known_zero(env, regs, insn->dst_reg);
  
- 	hlist_for_each_entry(nh, head, nh_hash) {
++	if (insn->src_reg == BPF_PSEUDO_BTF_ID) {
+ 		dst_reg->type = aux->btf_var.reg_type;
+ 		switch (dst_reg->type) {
+ 		case PTR_TO_MEM:
+@@ -9429,7 +9433,6 @@ static int check_ld_imm(struct bpf_verif
+ 	}
+ 
+ 	map = env->used_maps[aux->map_index];
+-	mark_reg_known_zero(env, regs, insn->dst_reg);
+ 	dst_reg->map_ptr = map;
+ 
+ 	if (insn->src_reg == BPF_PSEUDO_MAP_VALUE ||
 
 
