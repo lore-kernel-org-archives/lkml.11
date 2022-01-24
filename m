@@ -2,197 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E27D7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:58:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8CCCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:59:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242894AbiAXM6z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:58:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242865AbiAXM6q (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:58:46 -0500
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2292FC061757
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:58:45 -0800 (PST)
-Received: by mail-pj1-x102d.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so15790516pju.2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:58:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jKkNxr+1cB+XB6YIAl08DtywpPMNPFY1xvETiNerBv4=;
-        b=ZTfY83ziPZR4GDz3xQZpQlufTJscwAsvrvRRKBUGWxqDkdA1va0RwigvqsJh8vqQS2
-         Cr1CSfGsdyFEDox/gdOe5UN+gfJl/M1PhQGqJzwQ7WkKUKAP0LFzEedI6vKoyqCpdEF9
-         3gSBuybAkNcdAU6be2n77jFlYV6Dl9/KVa8pK++wGo/ARHH4NuZJ22KzHFwt8CBWqGT4
-         oeOm3pKjlWSLNYHeBK0FjBJXueBfTunP+wd2pFCeti1eTpXzXT2rppGwLhnnHXUkLTBL
-         RY3CsxJneexPIuOsYHKLRG4PaJwytL1K04wvJIgNj4fjM2IKDQ1GN6+0dopPvh4yxYVt
-         o8iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=jKkNxr+1cB+XB6YIAl08DtywpPMNPFY1xvETiNerBv4=;
-        b=cCcjG8B+xJaKyyUxF7Z356xTKWxQgPHPj5Osa0/aPmEb36lP3uL7+Wwo7HbvqPCotd
-         iV/sO3cMrhXipwUlB/S5DmwnjxjSrsL4IjlcVCSUQiNnAnS8WSdhOQYlNhX03G6MyxQv
-         q8t1hcxkc2mcI4znT7Hb5L0w8ePZpf/ycob63vQ9H2F/iQbSn+Z7sahplxWR8BPSAYsm
-         1QK8QUqmwjmV4UG4CFM/CSbf5hCiGtBnKPk+YjrsLbqIDjEXYpVeQQ/GMRThzMV8oaCt
-         WHZ5vZ+QVnu+KLoaUMLdlsl5XSjfATpypTtFCW1sXFBHDzY2DMYSnYpwkL/acY0RgA03
-         pZmg==
-X-Gm-Message-State: AOAM531EWVkWFOUF4xK59PiKQRrmvJoU4YgR+HDJNb+0T8BVAZpqOcfu
-        SJ2Qepo5AljNs4DfnQ+bTRY=
-X-Google-Smtp-Source: ABdhPJyYbcsc9C2l2KCNpEBfLe8n7n6WB0ovH6E/D5v67OB9y4UJCJuIP9SuFmcGrvjnGCSW3/k40Q==
-X-Received: by 2002:a17:902:ab82:b0:14a:188a:cd1f with SMTP id f2-20020a170902ab8200b0014a188acd1fmr14279622plr.44.1643029124671;
-        Mon, 24 Jan 2022 04:58:44 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id s23sm17794805pfg.144.2022.01.24.04.58.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 04:58:44 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     matthew.brost@intel.com
-Cc:     airlied@linux.ie, andi.shyti@intel.com, chris@chris-wilson.co.uk,
-        daniel@ffwll.ch, daniele.ceraolospurio@intel.com,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        jani.nikula@linux.intel.com, jason@jlekstrand.net,
-        joonas.lahtinen@linux.intel.com, linmq006@gmail.com,
-        linux-kernel@vger.kernel.org, lucas.demarchi@intel.com,
-        maarten.lankhorst@linux.intel.com, rodrigo.vivi@intel.com
-Subject: [PATCH v2] drm/i915/selftests: Fix NULL vs IS_ERR checking for kernel_context
-Date:   Mon, 24 Jan 2022 12:58:37 +0000
-Message-Id: <20220124125837.10467-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220112175338.GA12463@jons-linux-dev-box>
-References: <20220112175338.GA12463@jons-linux-dev-box>
+        id S242828AbiAXM7A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:59:00 -0500
+Received: from foss.arm.com ([217.140.110.172]:33200 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239714AbiAXM6r (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:58:47 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 1D65C113E;
+        Mon, 24 Jan 2022 04:58:47 -0800 (PST)
+Received: from p8cg001049571a15.arm.com (unknown [10.163.43.190])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 181AD3F774;
+        Mon, 24 Jan 2022 04:58:43 -0800 (PST)
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+To:     linux-mm@kvack.org
+Cc:     linux-kernel@vger.kernel.org, hch@infradead.org,
+        akpm@linux-foundation.org,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Michal Simek <monstr@monstr.eu>
+Subject: [RFC V1 24/31] microblaze/mm: Enable ARCH_HAS_VM_GET_PAGE_PROT
+Date:   Mon, 24 Jan 2022 18:27:01 +0530
+Message-Id: <1643029028-12710-25-git-send-email-anshuman.khandual@arm.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
+References: <1643029028-12710-1-git-send-email-anshuman.khandual@arm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since i915_gem_create_context() function return error pointers,
-the kernel_context() function does not return null, It returns error
-pointers too. Using IS_ERR() to check the return value to fix this.
+This defines and exports a platform specific custom vm_get_page_prot() via
+subscribing ARCH_HAS_VM_GET_PAGE_PROT. Subsequently all __SXXX and __PXXX
+macros can be dropped which are no longer needed.
 
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Cc: Michal Simek <monstr@monstr.eu>
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
 ---
-Changes in v2:
-- clean up unneeded initialization of err.
----
- drivers/gpu/drm/i915/gt/selftest_execlists.c | 43 ++++++++++++++------
- 1 file changed, 30 insertions(+), 13 deletions(-)
+ arch/microblaze/Kconfig               |  1 +
+ arch/microblaze/include/asm/pgtable.h | 17 -----------
+ arch/microblaze/mm/init.c             | 41 +++++++++++++++++++++++++++
+ 3 files changed, 42 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/gpu/drm/i915/gt/selftest_execlists.c b/drivers/gpu/drm/i915/gt/selftest_execlists.c
-index b367ecfa42de..0d453ddcede4 100644
---- a/drivers/gpu/drm/i915/gt/selftest_execlists.c
-+++ b/drivers/gpu/drm/i915/gt/selftest_execlists.c
-@@ -1531,7 +1531,7 @@ static int live_busywait_preempt(void *arg)
- 	struct drm_i915_gem_object *obj;
- 	struct i915_vma *vma;
- 	enum intel_engine_id id;
--	int err = -ENOMEM;
-+	int err;
- 	u32 *map;
+diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
+index 59798e43cdb0..f2c25ba8621e 100644
+--- a/arch/microblaze/Kconfig
++++ b/arch/microblaze/Kconfig
+@@ -7,6 +7,7 @@ config MICROBLAZE
+ 	select ARCH_HAS_GCOV_PROFILE_ALL
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU
+ 	select ARCH_HAS_SYNC_DMA_FOR_DEVICE
++	select ARCH_HAS_VM_GET_PAGE_PROT
+ 	select ARCH_MIGHT_HAVE_PC_PARPORT
+ 	select ARCH_WANT_IPC_PARSE_VERSION
+ 	select BUILDTIME_TABLE_SORT
+diff --git a/arch/microblaze/include/asm/pgtable.h b/arch/microblaze/include/asm/pgtable.h
+index c136a01e467e..6df373077ff2 100644
+--- a/arch/microblaze/include/asm/pgtable.h
++++ b/arch/microblaze/include/asm/pgtable.h
+@@ -204,23 +204,6 @@ extern pte_t *va_to_pte(unsigned long address);
+  * We consider execute permission the same as read.
+  * Also, write permissions imply read permissions.
+  */
+-#define __P000	PAGE_NONE
+-#define __P001	PAGE_READONLY_X
+-#define __P010	PAGE_COPY
+-#define __P011	PAGE_COPY_X
+-#define __P100	PAGE_READONLY
+-#define __P101	PAGE_READONLY_X
+-#define __P110	PAGE_COPY
+-#define __P111	PAGE_COPY_X
+-
+-#define __S000	PAGE_NONE
+-#define __S001	PAGE_READONLY_X
+-#define __S010	PAGE_SHARED
+-#define __S011	PAGE_SHARED_X
+-#define __S100	PAGE_READONLY
+-#define __S101	PAGE_READONLY_X
+-#define __S110	PAGE_SHARED
+-#define __S111	PAGE_SHARED_X
  
- 	/*
-@@ -1540,13 +1540,16 @@ static int live_busywait_preempt(void *arg)
- 	 */
+ #ifndef __ASSEMBLY__
+ /*
+diff --git a/arch/microblaze/mm/init.c b/arch/microblaze/mm/init.c
+index 952f35b335b2..40bc28f86144 100644
+--- a/arch/microblaze/mm/init.c
++++ b/arch/microblaze/mm/init.c
+@@ -280,3 +280,44 @@ void * __ref zalloc_maybe_bootmem(size_t size, gfp_t mask)
  
- 	ctx_hi = kernel_context(gt->i915, NULL);
--	if (!ctx_hi)
--		return -ENOMEM;
-+	if (IS_ERR(ctx_hi))
-+		return IS_ERR(ctx_hi);
+ 	return p;
+ }
 +
- 	ctx_hi->sched.priority = I915_CONTEXT_MAX_USER_PRIORITY;
- 
- 	ctx_lo = kernel_context(gt->i915, NULL);
--	if (!ctx_lo)
-+	if (IS_ERR(ctx_lo)) {
-+		err = PTR_ERR(ctx_lo);
- 		goto err_ctx_hi;
++pgprot_t vm_get_page_prot(unsigned long vm_flags)
++{
++	switch (vm_flags & (VM_READ | VM_WRITE | VM_EXEC | VM_SHARED)) {
++	case VM_NONE:
++		return PAGE_NONE;
++	case VM_READ:
++		return PAGE_READONLY_X;
++	case VM_WRITE:
++		return PAGE_COPY;
++	case VM_READ | VM_WRITE:
++		return PAGE_COPY_X;
++	case VM_EXEC:
++		return PAGE_READONLY;
++	case VM_EXEC | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_EXEC | VM_WRITE:
++		return PAGE_COPY;
++	case VM_EXEC | VM_READ | VM_WRITE:
++		return PAGE_COPY_X;
++	case VM_SHARED:
++		return PAGE_NONE;
++	case VM_SHARED | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_SHARED | VM_WRITE:
++		return PAGE_SHARED;
++	case VM_SHARED | VM_READ | VM_WRITE:
++		return PAGE_SHARED_X;
++	case VM_SHARED | VM_EXEC:
++		return PAGE_READONLY;
++	case VM_SHARED | VM_EXEC | VM_READ:
++		return PAGE_READONLY_X;
++	case VM_SHARED | VM_EXEC | VM_WRITE:
++		return PAGE_SHARED;
++	case VM_SHARED | VM_EXEC | VM_READ | VM_WRITE:
++		return PAGE_SHARED_X;
++	default:
++		BUILD_BUG();
 +	}
- 	ctx_lo->sched.priority = I915_CONTEXT_MIN_USER_PRIORITY;
- 
- 	obj = i915_gem_object_create_internal(gt->i915, PAGE_SIZE);
-@@ -1742,13 +1745,17 @@ static int live_preempt(void *arg)
- 		goto err_spin_hi;
- 
- 	ctx_hi = kernel_context(gt->i915, NULL);
--	if (!ctx_hi)
-+	if (IS_ERR(ctx_hi)) {
-+		err = PTR_ERR(ctx_hi);
- 		goto err_spin_lo;
-+	}
- 	ctx_hi->sched.priority = I915_CONTEXT_MAX_USER_PRIORITY;
- 
- 	ctx_lo = kernel_context(gt->i915, NULL);
--	if (!ctx_lo)
-+	if (IS_ERR(ctx_lo)) {
-+		err = PTR_ERR(ctx_lo);
- 		goto err_ctx_hi;
-+	}
- 	ctx_lo->sched.priority = I915_CONTEXT_MIN_USER_PRIORITY;
- 
- 	for_each_engine(engine, gt, id) {
-@@ -1834,12 +1841,16 @@ static int live_late_preempt(void *arg)
- 		goto err_spin_hi;
- 
- 	ctx_hi = kernel_context(gt->i915, NULL);
--	if (!ctx_hi)
-+	if (IS_ERR(ctx_hi)) {
-+		err = PTR_ERR(ctx_hi);
- 		goto err_spin_lo;
-+	}
- 
- 	ctx_lo = kernel_context(gt->i915, NULL);
--	if (!ctx_lo)
-+	if (IS_ERR(ctx_lo)) {
-+		err = PTR_ERR(ctx_lo);
- 		goto err_ctx_hi;
-+	}
- 
- 	/* Make sure ctx_lo stays before ctx_hi until we trigger preemption. */
- 	ctx_lo->sched.priority = 1;
-@@ -1928,8 +1939,8 @@ struct preempt_client {
- static int preempt_client_init(struct intel_gt *gt, struct preempt_client *c)
- {
- 	c->ctx = kernel_context(gt->i915, NULL);
--	if (!c->ctx)
--		return -ENOMEM;
-+	if (IS_ERR(c->ctx))
-+		return PTR_ERR(c->ctx);
- 
- 	if (igt_spinner_init(&c->spin, gt))
- 		goto err_ctx;
-@@ -3385,13 +3396,17 @@ static int live_preempt_timeout(void *arg)
- 		return -ENOMEM;
- 
- 	ctx_hi = kernel_context(gt->i915, NULL);
--	if (!ctx_hi)
-+	if (IS_ERR(ctx_hi)) {
-+		err = PTR_ERR(ctx_hi);
- 		goto err_spin_lo;
-+	}
- 	ctx_hi->sched.priority = I915_CONTEXT_MAX_USER_PRIORITY;
- 
- 	ctx_lo = kernel_context(gt->i915, NULL);
--	if (!ctx_lo)
-+	if (IS_ERR(ctx_lo)) {
-+		err = PTR_ERR(ctx_lo);
- 		goto err_ctx_hi;
-+	}
- 	ctx_lo->sched.priority = I915_CONTEXT_MIN_USER_PRIORITY;
- 
- 	for_each_engine(engine, gt, id) {
-@@ -3683,8 +3698,10 @@ static int live_preempt_smoke(void *arg)
- 
- 	for (n = 0; n < smoke.ncontext; n++) {
- 		smoke.contexts[n] = kernel_context(smoke.gt->i915, NULL);
--		if (!smoke.contexts[n])
-+		if (IS_ERR(smoke.contexts[n])) {
-+			err = PTR_ERR(smoke.contexts[n]);
- 			goto err_ctx;
-+		}
- 	}
- 
- 	for (n = 0; n < ARRAY_SIZE(phase); n++) {
++}
++EXPORT_SYMBOL(vm_get_page_prot);
 -- 
-2.17.1
+2.25.1
 
