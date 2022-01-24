@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E4C5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:16:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D634CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348291AbiAXTPK (ORCPT
+        id S1348102AbiAXTOx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:15:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34852 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346466AbiAXTGc (ORCPT
+        Mon, 24 Jan 2022 14:14:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:32904 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344554AbiAXTFh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:06:32 -0500
+        Mon, 24 Jan 2022 14:05:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B657F60B7B;
-        Mon, 24 Jan 2022 19:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7ACFFC340E5;
-        Mon, 24 Jan 2022 19:06:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4C68B8122F;
+        Mon, 24 Jan 2022 19:05:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E992EC340E5;
+        Mon, 24 Jan 2022 19:05:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051191;
-        bh=6aZxP0g4u8y40VBC+MWBOQ/7B6eeg9OTY1wH6MZHeqE=;
+        s=korg; t=1643051134;
+        bh=nmjZSEe7ziaN378FuR/msL8ZIqf1i8BMls2oqwT16d4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xow3ulbR/E45AjR19OBCJSTYO9wZiAdv/GbSlm4keaFiuBVhVu5giYPDnRPPNdDUe
-         jekIX4FJunsV0bTbzYn5B14DPUAIjDxyNODXyhrV/BqUtS2yfHuUvBedlLUNArC3Tt
-         gWAtCAl+e0KR88jnFWdrkH3oOX1HU8vCHLd/Y1pI=
+        b=w/6Gk6okjnVlB2acgNyIlzl3WEPmxPSq450s65c+qescYquB02aM6lOMMKOtq342a
+         vRnEA87kmdD/KVqXzo8uCMpQF8ENE/nE3Y5WVA3OznhLSe1ybO8xHkIhWcEIcDwblp
+         8BScHwRVfXOG2y28BuKUiZd/dRqrRvPBGXxcKx7I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 084/186] mips: bcm63xx: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:42:39 +0100
-Message-Id: <20220124183939.819403611@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Subject: [PATCH 4.14 038/186] Bluetooth: stop proccessing malicious adv data
+Date:   Mon, 24 Jan 2022 19:41:53 +0100
+Message-Id: <20220124183938.352879074@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -49,46 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
+[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
 
-The MIPS BMC63XX subarch does not provide/support clk_set_parent().
-This causes build errors in a few drivers, so add a simple implementation
-of that function so that callers of it will build without errors.
+Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
+problem was in missing validaion check.
 
-Fixes these build errors:
+We should check if data is not malicious and we can read next data block.
+If we won't check ptr validness, code can read a way beyond skb->end and
+it can cause problems, of course.
 
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
-
-Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
+Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/bcm63xx/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ net/bluetooth/hci_event.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
-index d2a5054b0492b..73f2534b9676d 100644
---- a/arch/mips/bcm63xx/clk.c
-+++ b/arch/mips/bcm63xx/clk.c
-@@ -343,6 +343,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 5186f199d892c..eca596a56f46b 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -4967,7 +4967,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		struct hci_ev_le_advertising_info *ev = ptr;
+ 		s8 rssi;
  
-+int clk_set_parent(struct clk *clk, struct clk *parent)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(clk_set_parent);
+-		if (ev->length <= HCI_MAX_AD_LENGTH) {
++		if (ev->length <= HCI_MAX_AD_LENGTH &&
++		    ev->data + ev->length <= skb_tail_pointer(skb)) {
+ 			rssi = ev->data[ev->length];
+ 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
+ 					   ev->bdaddr_type, NULL, 0, rssi,
+@@ -4977,6 +4978,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
+ 		}
+ 
+ 		ptr += sizeof(*ev) + ev->length + 1;
 +
- unsigned long clk_get_rate(struct clk *clk)
- {
- 	if (!clk)
++		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
++			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
++			break;
++		}
+ 	}
+ 
+ 	hci_dev_unlock(hdev);
 -- 
 2.34.1
 
