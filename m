@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95D87C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B58CC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392563AbiAXUva (ORCPT
+        id S1442075AbiAXUwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:51:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351395AbiAXU2Q (ORCPT
+        Mon, 24 Jan 2022 15:52:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34664 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384463AbiAXU3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:28:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16260C0612A7;
-        Mon, 24 Jan 2022 11:42:02 -0800 (PST)
+        Mon, 24 Jan 2022 15:29:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C65CEB81142;
-        Mon, 24 Jan 2022 19:42:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D72E7C340E5;
-        Mon, 24 Jan 2022 19:41:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 809E7B810BD;
+        Mon, 24 Jan 2022 20:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3365C340E5;
+        Mon, 24 Jan 2022 20:29:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053319;
-        bh=4gyB6Qv06tdS2Y/R6K7VxixzmD3znTGhfuyIXYLQd0M=;
+        s=korg; t=1643056188;
+        bh=/SUbhHhQrO39kbZ9cTdSArrIMeAS48tRAwkreXpJDdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mgmzW+P/Pwj18vDVEa8X3XePSLK/cG3lEr8pYOXcy1bSq+sMgkkhGFplvw/hs9oPO
-         Jb99+zhi8UJy0tD/sv5czwu2lCXKi3kc0nUkVMkHxopiHUbXMhLA3kG8ncVoYxNsjk
-         VB4Yz/ZJcQgDSixHRIajpQhoTzCc4kYis0ygyqck=
+        b=0fYmdMN3nNM7MOGnJ3BUzJh1eLgSmaKkmZXK8jENjcbwGeFelvLxsAgINlOfekNtb
+         P8CgutPh0JGc1qmcSmKVkjOgNyqvuBf1p95kbGBtgKyVVNNL5TtXFYmDMTxMiLgGfc
+         otEYJ7zU92zeHfTj1HxrZEkrj6JhopBENl7vDLoM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.10 026/563] media: redrat3: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:36:31 +0100
-Message-Id: <20220124184025.329801638@linuxfoundation.org>
+        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 368/846] bnxt_en: Refactor coredump functions
+Date:   Mon, 24 Jan 2022 19:38:05 +0100
+Message-Id: <20220124184113.639255723@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,115 +48,125 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Edwin Peer <edwin.peer@broadcom.com>
 
-commit 2adc965c8bfa224e11ecccf9c92fd458c4236428 upstream.
+[ Upstream commit 9a575c8c25ae2372112db6d6b3e553cd90e9f02b ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+The coredump functionality will be used by devlink health. Refactor
+these functions that get coredump and coredump length. There is no
+functional change, but the following checkpatch warnings were
+addressed:
 
-Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
-Cc: stable@vger.kernel.org      # 3.0
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  - strscpy is preferred over strlcpy.
+  - sscanf results should be checked, with an additional warning.
+
+Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/redrat3.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 48 ++++++++++++-------
+ 1 file changed, 31 insertions(+), 17 deletions(-)
 
---- a/drivers/media/rc/redrat3.c
-+++ b/drivers/media/rc/redrat3.c
-@@ -404,7 +404,7 @@ static int redrat3_send_cmd(int cmd, str
- 	udev = rr3->udev;
- 	res = usb_control_msg(udev, usb_rcvctrlpipe(udev, 0), cmd,
- 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
--			      0x0000, 0x0000, data, sizeof(u8), HZ * 10);
-+			      0x0000, 0x0000, data, sizeof(u8), 10000);
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index 7260910e75fb2..161c354ed4864 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3803,7 +3803,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+ 	record->low_version = 0;
+ 	record->high_version = 1;
+ 	record->asic_state = 0;
+-	strlcpy(record->system_name, utsname()->nodename,
++	strscpy(record->system_name, utsname()->nodename,
+ 		sizeof(record->system_name));
+ 	record->year = cpu_to_le16(tm.tm_year + 1900);
+ 	record->month = cpu_to_le16(tm.tm_mon + 1);
+@@ -3815,11 +3815,12 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+ 	strcpy(record->commandline, "ethtool -w");
+ 	record->total_segments = cpu_to_le32(total_segs);
  
- 	if (res < 0) {
- 		dev_err(rr3->dev, "%s: Error sending rr3 cmd res %d, data %d",
-@@ -480,7 +480,7 @@ static u32 redrat3_get_timeout(struct re
- 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
- 	ret = usb_control_msg(rr3->udev, pipe, RR3_GET_IR_PARAM,
- 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
--			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, HZ * 5);
-+			      RR3_IR_IO_SIG_TIMEOUT, 0, tmp, len, 5000);
- 	if (ret != len)
- 		dev_warn(rr3->dev, "Failed to read timeout from hardware\n");
- 	else {
-@@ -510,7 +510,7 @@ static int redrat3_set_timeout(struct rc
- 	ret = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), RR3_SET_IR_PARAM,
- 		     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
- 		     RR3_IR_IO_SIG_TIMEOUT, 0, timeout, sizeof(*timeout),
--		     HZ * 25);
-+		     25000);
- 	dev_dbg(dev, "set ir parm timeout %d ret 0x%02x\n",
- 						be32_to_cpu(*timeout), ret);
+-	sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor);
++	if (sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor) != 2)
++		netdev_warn(bp->dev, "Unknown OS release in coredump\n");
+ 	record->os_ver_major = cpu_to_le32(os_ver_major);
+ 	record->os_ver_minor = cpu_to_le32(os_ver_minor);
  
-@@ -542,32 +542,32 @@ static void redrat3_reset(struct redrat3
- 	*val = 0x01;
- 	rc = usb_control_msg(udev, rxpipe, RR3_RESET,
- 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
--			     RR3_CPUCS_REG_ADDR, 0, val, len, HZ * 25);
-+			     RR3_CPUCS_REG_ADDR, 0, val, len, 25000);
- 	dev_dbg(dev, "reset returned 0x%02x\n", rc);
+-	strlcpy(record->os_name, utsname()->sysname, 32);
++	strscpy(record->os_name, utsname()->sysname, sizeof(record->os_name));
+ 	time64_to_tm(end, 0, &tm);
+ 	record->end_year = cpu_to_le16(tm.tm_year + 1900);
+ 	record->end_month = cpu_to_le16(tm.tm_mon + 1);
+@@ -3837,7 +3838,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
+ 	record->ioctl_high_version = 0;
+ }
  
- 	*val = length_fuzz;
- 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
- 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
--			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, HZ * 25);
-+			     RR3_IR_IO_LENGTH_FUZZ, 0, val, len, 25000);
- 	dev_dbg(dev, "set ir parm len fuzz %d rc 0x%02x\n", *val, rc);
+-static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
++static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+ {
+ 	u32 ver_get_resp_len = sizeof(struct hwrm_ver_get_output);
+ 	u32 offset = 0, seg_hdr_len, seg_record_len, buf_len = 0;
+@@ -3940,6 +3941,30 @@ err:
+ 	return rc;
+ }
  
- 	*val = (65536 - (minimum_pause * 2000)) / 256;
- 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
- 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
--			     RR3_IR_IO_MIN_PAUSE, 0, val, len, HZ * 25);
-+			     RR3_IR_IO_MIN_PAUSE, 0, val, len, 25000);
- 	dev_dbg(dev, "set ir parm min pause %d rc 0x%02x\n", *val, rc);
++static int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
++{
++	if (dump_type == BNXT_DUMP_CRASH) {
++#ifdef CONFIG_TEE_BNXT_FW
++		return tee_bnxt_copy_coredump(buf, 0, *dump_len);
++#else
++		return -EOPNOTSUPP;
++#endif
++	} else {
++		return __bnxt_get_coredump(bp, buf, dump_len);
++	}
++}
++
++static u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
++{
++	u32 len = 0;
++
++	if (dump_type == BNXT_DUMP_CRASH)
++		len = BNXT_CRASH_DUMP_LEN;
++	else
++		__bnxt_get_coredump(bp, NULL, &len);
++	return len;
++}
++
+ static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+@@ -3971,10 +3996,7 @@ static int bnxt_get_dump_flag(struct net_device *dev, struct ethtool_dump *dump)
+ 			bp->ver_resp.hwrm_fw_rsvd_8b;
  
- 	*val = periods_measure_carrier;
- 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
- 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
--			     RR3_IR_IO_PERIODS_MF, 0, val, len, HZ * 25);
-+			     RR3_IR_IO_PERIODS_MF, 0, val, len, 25000);
- 	dev_dbg(dev, "set ir parm periods measure carrier %d rc 0x%02x", *val,
- 									rc);
+ 	dump->flag = bp->dump_flag;
+-	if (bp->dump_flag == BNXT_DUMP_CRASH)
+-		dump->len = BNXT_CRASH_DUMP_LEN;
+-	else
+-		bnxt_get_coredump(bp, NULL, &dump->len);
++	dump->len = bnxt_get_coredump_length(bp, bp->dump_flag);
+ 	return 0;
+ }
  
- 	*val = RR3_DRIVER_MAXLENS;
- 	rc = usb_control_msg(udev, txpipe, RR3_SET_IR_PARAM,
- 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_OUT,
--			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, HZ * 25);
-+			     RR3_IR_IO_MAX_LENGTHS, 0, val, len, 25000);
- 	dev_dbg(dev, "set ir parm max lens %d rc 0x%02x\n", *val, rc);
+@@ -3989,15 +4011,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
+ 	memset(buf, 0, dump->len);
  
- 	kfree(val);
-@@ -585,7 +585,7 @@ static void redrat3_get_firmware_rev(str
- 	rc = usb_control_msg(rr3->udev, usb_rcvctrlpipe(rr3->udev, 0),
- 			     RR3_FW_VERSION,
- 			     USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
--			     0, 0, buffer, RR3_FW_VERSION_LEN, HZ * 5);
-+			     0, 0, buffer, RR3_FW_VERSION_LEN, 5000);
+ 	dump->flag = bp->dump_flag;
+-	if (dump->flag == BNXT_DUMP_CRASH) {
+-#ifdef CONFIG_TEE_BNXT_FW
+-		return tee_bnxt_copy_coredump(buf, 0, dump->len);
+-#endif
+-	} else {
+-		return bnxt_get_coredump(bp, buf, &dump->len);
+-	}
+-
+-	return 0;
++	return bnxt_get_coredump(bp, dump->flag, buf, &dump->len);
+ }
  
- 	if (rc >= 0)
- 		dev_info(rr3->dev, "Firmware rev: %s", buffer);
-@@ -825,14 +825,14 @@ static int redrat3_transmit_ir(struct rc
- 
- 	pipe = usb_sndbulkpipe(rr3->udev, rr3->ep_out->bEndpointAddress);
- 	ret = usb_bulk_msg(rr3->udev, pipe, irdata,
--			    sendbuf_len, &ret_len, 10 * HZ);
-+			    sendbuf_len, &ret_len, 10000);
- 	dev_dbg(dev, "sent %d bytes, (ret %d)\n", ret_len, ret);
- 
- 	/* now tell the hardware to transmit what we sent it */
- 	pipe = usb_rcvctrlpipe(rr3->udev, 0);
- 	ret = usb_control_msg(rr3->udev, pipe, RR3_TX_SEND_SIGNAL,
- 			      USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
--			      0, 0, irdata, 2, HZ * 10);
-+			      0, 0, irdata, 2, 10000);
- 
- 	if (ret < 0)
- 		dev_err(dev, "Error: control msg send failed, rc %d\n", ret);
+ static int bnxt_get_ts_info(struct net_device *dev,
+-- 
+2.34.1
+
 
 
