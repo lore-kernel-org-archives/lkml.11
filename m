@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F730C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B87CFC3527C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367937AbiAXX4w (ORCPT
+        id S1386287AbiAXX5J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:56:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50494 "EHLO
+        Mon, 24 Jan 2022 18:57:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846423AbiAXXPz (ORCPT
+        with ESMTP id S1846418AbiAXXPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:15:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF966C0604D1;
-        Mon, 24 Jan 2022 13:24:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80B05C0604D8;
+        Mon, 24 Jan 2022 13:24:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CB8EB8122A;
-        Mon, 24 Jan 2022 21:24:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97129C340E4;
-        Mon, 24 Jan 2022 21:24:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4757AB8122A;
+        Mon, 24 Jan 2022 21:24:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75869C340E4;
+        Mon, 24 Jan 2022 21:24:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059462;
-        bh=P0K1qFpXW6iZLb8fx18FKgzSyX5CF/f0E9RlLpHqlc0=;
+        s=korg; t=1643059483;
+        bh=KnyhTXWyAhQ6+TJyfkCxRN8k4+AZ9shB9T5IiZSCg30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IN3QVG7F4Nqw5Kht3s/NXcgVqZI9JFeegJ5QCPt0DbXdCwaWjzCB0cu26YZT9vyym
-         6k/lfCtM2C/eSj5st1M5k0gx1tFjFxtL/hni1BmJB63dO4x0jw3Xbbbg9aYgm/B58S
-         xoLSRqIqNSA3sW8E3rhJ3gpCr2jRWgQ81d1NjHfM=
+        b=SLLIhh1JEZYVZQcPCcIHDWexNiPeIwyfJ7VvU83HWGlBj/OAKR6eKpwiFVKhcVNgb
+         UsxVJtSsWcPIAqFwIoGHJ9TLNZHhGLkmDviIMkoZhrhjQhslgzx6tw/Xv8DjcFk3hP
+         3EmX944dv5RE0yFEHsS4zHDigI0WIqW5DmgRBm7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Emil Renner Berthing <kernel@esmil.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
+        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0591/1039] serial: 8250_dw: Add StarFive JH7100 quirk
-Date:   Mon, 24 Jan 2022 19:39:40 +0100
-Message-Id: <20220124184145.197234693@linuxfoundation.org>
+Subject: [PATCH 5.16 0631/1039] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 24 Jan 2022 19:40:20 +0100
+Message-Id: <20220124184146.560054936@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,48 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emil Renner Berthing <kernel@esmil.dk>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit 57dcb6ec85d59e04285b7dcf10924bb819c8e46f ]
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-On the StarFive JH7100 RISC-V SoC the UART core clocks can't be set to
-exactly 16 * 115200Hz and many other common bitrates. Trying this will
-only result in a higher input clock, but low enough that the UART's
-internal divisor can't come close enough to the baud rate target.
-So rather than try to set the input clock it's better to skip the
-clk_set_rate call and rely solely on the UART's internal divisor.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Link: https://lore.kernel.org/r/20211116150119.2171-15-kernel@esmil.dk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_dw.c | 3 +++
+ net/core/net-sysfs.c | 3 +++
  1 file changed, 3 insertions(+)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 53f57c3b9f42c..1769808031c52 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -414,6 +414,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 9c01c642cf9ef..d7f9ee830d34c 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1820,6 +1820,9 @@ static void remove_queue_kobjects(struct net_device *dev)
  
- 		if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
- 			p->serial_out = dw8250_serial_out38x;
-+		if (of_device_is_compatible(np, "starfive,jh7100-uart"))
-+			p->set_termios = dw8250_do_set_termios;
- 
- 	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
- 		p->iotype = UPIO_MEM32;
-@@ -696,6 +698,7 @@ static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "cavium,octeon-3860-uart" },
- 	{ .compatible = "marvell,armada-38x-uart" },
- 	{ .compatible = "renesas,rzn1-uart" },
-+	{ .compatible = "starfive,jh7100-uart" },
- 	{ /* Sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
 2.34.1
 
