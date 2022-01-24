@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5160FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE6CC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413514AbiAYAjP (ORCPT
+        id S3413499AbiAYAjN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:39:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57736 "EHLO
+        Mon, 24 Jan 2022 19:39:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2363975AbiAXXq1 (ORCPT
+        with ESMTP id S2363952AbiAXXq1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:46:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C997C034004;
-        Mon, 24 Jan 2022 13:41:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFFCAC0BD12D;
+        Mon, 24 Jan 2022 13:40:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28E0661491;
-        Mon, 24 Jan 2022 21:41:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F31F5C340E4;
-        Mon, 24 Jan 2022 21:41:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EC166150E;
+        Mon, 24 Jan 2022 21:40:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC27C340E7;
+        Mon, 24 Jan 2022 21:40:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060469;
-        bh=clJKJIMLveFPr341YCQwA2mBwhvvUxBYHR+Sa1luDz0=;
+        s=korg; t=1643060433;
+        bh=Bf7idONjgD/oBEZ0+ZWnrASVJYEbrOEFixMhi+GyhwY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=joH1g3i3h+XhkHuOmqoqDlVDfsPGDrEKPUOpqi3eBUeyd4yW7shZB6Lzd9u4fh1zD
-         7XDKAwevdZ7PXBSOMKi2nBAUK7Fbri2g4HrmpGYGlgmOfdXkw2ZsbMT9NKksFT8Lbz
-         EJNpyIaWiKg2Ab3Moh1tqkLYs1E1BgjQvzgkAQAw=
+        b=HusHj/c4eu3BgWBYAJDqbUZ4jRbcyIvLbVeVUH64doxBevSKo9/+6fy6HirQDp/74
+         p1ti1UNhBdGmnjHDfRLvhsXJTYhi8/clqDA1I/e3OesQBmkpJRidsFLnWJdoWkgli5
+         Z64f08CgB/7Pc1e1qdywWVt7U7jiWbSEFBdkrvow=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.16 0958/1039] f2fs: fix to check available space of CP area correctly in update_ckpt_flags()
-Date:   Mon, 24 Jan 2022 19:45:47 +0100
-Message-Id: <20220124184157.498540022@linuxfoundation.org>
+        stable@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Subject: [PATCH 5.16 0939/1039] bpftool: Fix indent in option lists in the documentation
+Date:   Mon, 24 Jan 2022 19:45:28 +0100
+Message-Id: <20220124184156.849678945@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,33 +49,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Quentin Monnet <quentin@isovalent.com>
 
-commit b702c83e2eaa2fa2d72e957c55c0321535cc8b9f upstream.
+commit 986dec18bbf41f50edc2e0aa4ac5ef8e0f64f328 upstream.
 
-Otherwise, nat_bit area may be persisted across boundary of CP area during
-nat_bit rebuilding.
+Mixed indentation levels in the lists of options in bpftool's
+documentation produces some unexpected results. For the "bpftool" man
+page, it prints a warning:
 
-Fixes: 94c821fb286b ("f2fs: rebuild nat_bits during umount")
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+    $ make -C bpftool.8
+      GEN     bpftool.8
+    <stdin>:26: (ERROR/3) Unexpected indentation.
+
+For other pages, there is no warning, but it results in a line break
+appearing in the option lists in the generated man pages.
+
+RST paragraphs should have a uniform indentation level. Let's fix it.
+
+Fixes: c07ba629df97 ("tools: bpftool: Update and synchronise option list in doc and help msg")
+Fixes: 8cc8c6357c8f ("tools: bpftool: Document and add bash completion for -L, -B options")
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211110114632.24537-5-quentin@isovalent.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/checkpoint.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ tools/bpf/bpftool/Documentation/bpftool-btf.rst    |    2 +-
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |    2 +-
+ tools/bpf/bpftool/Documentation/bpftool-gen.rst    |    2 +-
+ tools/bpf/bpftool/Documentation/bpftool-link.rst   |    2 +-
+ tools/bpf/bpftool/Documentation/bpftool-map.rst    |    6 +++---
+ tools/bpf/bpftool/Documentation/bpftool-prog.rst   |    8 ++++----
+ tools/bpf/bpftool/Documentation/bpftool.rst        |    6 +++---
+ 7 files changed, 14 insertions(+), 14 deletions(-)
 
---- a/fs/f2fs/checkpoint.c
-+++ b/fs/f2fs/checkpoint.c
-@@ -1302,8 +1302,8 @@ static void update_ckpt_flags(struct f2f
- 	unsigned long flags;
+--- a/tools/bpf/bpftool/Documentation/bpftool-btf.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-btf.rst
+@@ -13,7 +13,7 @@ SYNOPSIS
+ 	**bpftool** [*OPTIONS*] **btf** *COMMAND*
  
- 	if (cpc->reason & CP_UMOUNT) {
--		if (le32_to_cpu(ckpt->cp_pack_total_block_count) >
--			sbi->blocks_per_seg - NM_I(sbi)->nat_bits_blocks) {
-+		if (le32_to_cpu(ckpt->cp_pack_total_block_count) +
-+			NM_I(sbi)->nat_bits_blocks > sbi->blocks_per_seg) {
- 			clear_ckpt_flags(sbi, CP_NAT_BITS_FLAG);
- 			f2fs_notice(sbi, "Disable nat_bits due to no space");
- 		} else if (!is_set_ckpt_flags(sbi, CP_NAT_BITS_FLAG) &&
+ 	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | {**-d** | **--debug** } |
+-		{ **-B** | **--base-btf** } }
++	{ **-B** | **--base-btf** } }
+ 
+ 	*COMMANDS* := { **dump** | **help** }
+ 
+--- a/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-cgroup.rst
+@@ -13,7 +13,7 @@ SYNOPSIS
+ 	**bpftool** [*OPTIONS*] **cgroup** *COMMAND*
+ 
+ 	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } |
+-		{ **-f** | **--bpffs** } }
++	{ **-f** | **--bpffs** } }
+ 
+ 	*COMMANDS* :=
+ 	{ **show** | **list** | **tree** | **attach** | **detach** | **help** }
+--- a/tools/bpf/bpftool/Documentation/bpftool-gen.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-gen.rst
+@@ -13,7 +13,7 @@ SYNOPSIS
+ 	**bpftool** [*OPTIONS*] **gen** *COMMAND*
+ 
+ 	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } |
+-		{ **-L** | **--use-loader** } }
++	{ **-L** | **--use-loader** } }
+ 
+ 	*COMMAND* := { **object** | **skeleton** | **help** }
+ 
+--- a/tools/bpf/bpftool/Documentation/bpftool-link.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-link.rst
+@@ -13,7 +13,7 @@ SYNOPSIS
+ 	**bpftool** [*OPTIONS*] **link** *COMMAND*
+ 
+ 	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } |
+-		{ **-f** | **--bpffs** } | { **-n** | **--nomount** } }
++	{ **-f** | **--bpffs** } | { **-n** | **--nomount** } }
+ 
+ 	*COMMANDS* := { **show** | **list** | **pin** | **help** }
+ 
+--- a/tools/bpf/bpftool/Documentation/bpftool-map.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-map.rst
+@@ -13,11 +13,11 @@ SYNOPSIS
+ 	**bpftool** [*OPTIONS*] **map** *COMMAND*
+ 
+ 	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } |
+-		{ **-f** | **--bpffs** } | { **-n** | **--nomount** } }
++	{ **-f** | **--bpffs** } | { **-n** | **--nomount** } }
+ 
+ 	*COMMANDS* :=
+-	{ **show** | **list** | **create** | **dump** | **update** | **lookup** | **getnext**
+-	| **delete** | **pin** | **help** }
++	{ **show** | **list** | **create** | **dump** | **update** | **lookup** | **getnext** |
++	**delete** | **pin** | **help** }
+ 
+ MAP COMMANDS
+ =============
+--- a/tools/bpf/bpftool/Documentation/bpftool-prog.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-prog.rst
+@@ -13,12 +13,12 @@ SYNOPSIS
+ 	**bpftool** [*OPTIONS*] **prog** *COMMAND*
+ 
+ 	*OPTIONS* := { { **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } |
+-		{ **-f** | **--bpffs** } | { **-m** | **--mapcompat** } | { **-n** | **--nomount** } |
+-		{ **-L** | **--use-loader** } }
++	{ **-f** | **--bpffs** } | { **-m** | **--mapcompat** } | { **-n** | **--nomount** } |
++	{ **-L** | **--use-loader** } }
+ 
+ 	*COMMANDS* :=
+-	{ **show** | **list** | **dump xlated** | **dump jited** | **pin** | **load**
+-	| **loadall** | **help** }
++	{ **show** | **list** | **dump xlated** | **dump jited** | **pin** | **load** |
++	**loadall** | **help** }
+ 
+ PROG COMMANDS
+ =============
+--- a/tools/bpf/bpftool/Documentation/bpftool.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool.rst
+@@ -19,14 +19,14 @@ SYNOPSIS
+ 	*OBJECT* := { **map** | **program** | **cgroup** | **perf** | **net** | **feature** }
+ 
+ 	*OPTIONS* := { { **-V** | **--version** } |
+-		{ **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } }
++	{ **-j** | **--json** } [{ **-p** | **--pretty** }] | { **-d** | **--debug** } }
+ 
+ 	*MAP-COMMANDS* :=
+ 	{ **show** | **list** | **create** | **dump** | **update** | **lookup** | **getnext** |
+-		**delete** | **pin** | **event_pipe** | **help** }
++	**delete** | **pin** | **event_pipe** | **help** }
+ 
+ 	*PROG-COMMANDS* := { **show** | **list** | **dump jited** | **dump xlated** | **pin** |
+-		**load** | **attach** | **detach** | **help** }
++	**load** | **attach** | **detach** | **help** }
+ 
+ 	*CGROUP-COMMANDS* := { **show** | **list** | **attach** | **detach** | **help** }
+ 
 
 
