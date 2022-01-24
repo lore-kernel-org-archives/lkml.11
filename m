@@ -2,94 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA94C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E0FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457162AbiAXVlF (ORCPT
+        id S1457209AbiAXVlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:05 -0500
-Received: from relay033.a.hostedemail.com ([64.99.140.33]:2941 "EHLO
-        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1351907AbiAXVDF (ORCPT
+        Mon, 24 Jan 2022 16:41:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55816 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445470AbiAXVDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:05 -0500
-Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay08.hostedemail.com (Postfix) with ESMTP id 647BB210AB;
-        Mon, 24 Jan 2022 21:03:03 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id D692520030;
-        Mon, 24 Jan 2022 21:03:01 +0000 (UTC)
-Message-ID: <864dfbfdc44e288e99cf7baa3aa8f7c8568db507.camel@perches.com>
-Subject: Re: [PATCH 2/2] KVM: x86: Use memcmp in kvm_cpuid_check_equal()
-From:   Joe Perches <joe@perches.com>
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Igor Mammedov <imammedo@redhat.com>,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 24 Jan 2022 13:03:00 -0800
-In-Reply-To: <20220124103606.2630588-3-vkuznets@redhat.com>
-References: <20220124103606.2630588-1-vkuznets@redhat.com>
-         <20220124103606.2630588-3-vkuznets@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        Mon, 24 Jan 2022 16:03:38 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9A00612E9;
+        Mon, 24 Jan 2022 21:03:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E62AC340E8;
+        Mon, 24 Jan 2022 21:03:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058211;
+        bh=O3Mm+E9WAl3ZojjyLaoVq+63RC1/Ltx/9eK75UIsuGw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rqfL0qM2s8lvJAHeyrUShdDeuotW/8dr+AK/6a6KDmVP/vwJgnzYi95s7S0aCAWVK
+         Tvt7AuF/k+41bKnXOzRSqw6XWRkExLglMnx30RAlyNaGmwQOcgQJtAInOitgV2PAb+
+         xY3eOjTMwWozBW4a8k1BAmrJvfFqN+msMqs4bNio=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0215/1039] libbpf: Clean gen_loaders attach kind.
+Date:   Mon, 24 Jan 2022 19:33:24 +0100
+Message-Id: <20220124184132.566260527@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: gkdp8cdydwpxgpnnhk3gx3ocsdue6wgx
-X-Rspamd-Server: rspamout05
-X-Rspamd-Queue-Id: D692520030
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX19QDOkk4WUvsKIAh9pZT26JkxbkBW5jJ9w=
-X-HE-Tag: 1643058181-282243
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 2022-01-24 at 11:36 +0100, Vitaly Kuznetsov wrote:
-> kvm_cpuid_check_equal() should also check .flags equality but instead
-> of adding it to the existing check, just switch to using memcmp() for
-> the whole 'struct kvm_cpuid_entry2'.
+From: Alexei Starovoitov <ast@kernel.org>
 
-Is the struct padding guaranteed to be identical ?
+[ Upstream commit 19250f5fc0c283892a61f3abf9d65e6325f63897 ]
 
-> 
-> When .flags are not checked, kvm_cpuid_check_equal() may allow an update
-> which it shouldn't but kvm_set_cpuid() does not actually update anything
-> and just returns success.
-> 
-> Suggested-by: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-> ---
->  arch/x86/kvm/cpuid.c | 13 ++-----------
->  1 file changed, 2 insertions(+), 11 deletions(-)
-> 
-> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-> index 89d7822a8f5b..7dd9c8f4f46e 100644
-> --- a/arch/x86/kvm/cpuid.c
-> +++ b/arch/x86/kvm/cpuid.c
-> @@ -123,20 +123,11 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
->  static int kvm_cpuid_check_equal(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
->  				 int nent)
->  {
-> -	struct kvm_cpuid_entry2 *orig;
-> -	int i;
-> -
->  	if (nent != vcpu->arch.cpuid_nent)
->  		return -EINVAL;
->  
-> -	for (i = 0; i < nent; i++) {
-> -		orig = &vcpu->arch.cpuid_entries[i];
-> -		if (e2[i].function != orig->function ||
-> -		    e2[i].index != orig->index ||
-> -		    e2[i].eax != orig->eax || e2[i].ebx != orig->ebx ||
-> -		    e2[i].ecx != orig->ecx || e2[i].edx != orig->edx)
-> -			return -EINVAL;
-> -	}
-> +	if (memcmp(e2, vcpu->arch.cpuid_entries, nent * sizeof(*e2)))
-> +		return -EINVAL;
->  
->  	return 0;
->  }
+The gen_loader has to clear attach_kind otherwise the programs
+without attach_btf_id will fail load if they follow programs
+with attach_btf_id.
+
+Fixes: 67234743736a ("libbpf: Generate loader program out of BPF ELF file.")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211201181040.23337-12-alexei.starovoitov@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/lib/bpf/gen_loader.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/gen_loader.c b/tools/lib/bpf/gen_loader.c
+index 5aad39e92a7a5..4ac65afc99e50 100644
+--- a/tools/lib/bpf/gen_loader.c
++++ b/tools/lib/bpf/gen_loader.c
+@@ -993,9 +993,11 @@ void bpf_gen__prog_load(struct bpf_gen *gen,
+ 	debug_ret(gen, "prog_load %s insn_cnt %d", attr.prog_name, attr.insn_cnt);
+ 	/* successful or not, close btf module FDs used in extern ksyms and attach_btf_obj_fd */
+ 	cleanup_relos(gen, insns);
+-	if (gen->attach_kind)
++	if (gen->attach_kind) {
+ 		emit_sys_close_blob(gen,
+ 				    attr_field(prog_load_attr, attach_btf_obj_fd));
++		gen->attach_kind = 0;
++	}
+ 	emit_check_err(gen);
+ 	/* remember prog_fd in the stack, if successful */
+ 	emit(gen, BPF_STX_MEM(BPF_W, BPF_REG_10, BPF_REG_7,
+-- 
+2.34.1
+
 
 
