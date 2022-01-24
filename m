@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB825C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D47F4C3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842587AbiAXXCL (ORCPT
+        id S1842704AbiAXXC0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:02:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        Mon, 24 Jan 2022 18:02:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456635AbiAXVzC (ORCPT
+        with ESMTP id S1456252AbiAXVzB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:02 -0500
+        Mon, 24 Jan 2022 16:55:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 503EDC07E294;
-        Mon, 24 Jan 2022 12:35:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7AF11C061374;
+        Mon, 24 Jan 2022 12:35:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E385561535;
-        Mon, 24 Jan 2022 20:35:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC45C340E5;
-        Mon, 24 Jan 2022 20:35:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFE9261506;
+        Mon, 24 Jan 2022 20:35:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D14C3C340E5;
+        Mon, 24 Jan 2022 20:35:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056556;
-        bh=FxcP2RgsoTRkS8NgbR8HIDQitWFPSxNhzfk712i6GBk=;
+        s=korg; t=1643056535;
+        bh=/fz8R9Sbjn3w8t5mzfnd8lHHUg9DAMlrcSLYF2aU6Ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ehLcWXjCZX2lTk4yB7jtyXdOpUzgz2/xcgVLLtVFH8RbcLetcuk3Ipuk7SVfOZAQf
-         cg6KlFI65FJh5dXM93OWflhrFinhO6wmwY8Vw6aAZ2R+ry36x5c289l6jWqylEumlb
-         0llu3hzxATJ4I40rImPPIVQkK5yJX0QVQDMhrtoE=
+        b=YqoX2hji39ESLKF6f9WLiMYScbt9qYlbtLFtLCsqpLxuroPgmlJWInG17MvnckIDC
+         3csUEwpALQkjUnPr+vA1QaYH7tpA2RqhhhuWlC5FnMappOSkHYScichmnnEt5e0Oys
+         Uso1sxWmxWLtz1rq1RuNfDiITiKTWuBgRh7+D9oE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Kishon Vijay Abraham I <kishon@ti.com>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 523/846] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
-Date:   Mon, 24 Jan 2022 19:40:40 +0100
-Message-Id: <20220124184119.058010210@linuxfoundation.org>
+Subject: [PATCH 5.15 517/846] arm64: dts: ti: j7200-main: Fix dtbs_check serdes_ln_ctrl node
+Date:   Mon, 24 Jan 2022 19:40:34 +0100
+Message-Id: <20220124184118.850098553@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,43 +51,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Hilliard <james.hilliard1@gmail.com>
+From: Kishon Vijay Abraham I <kishon@ti.com>
 
-[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
+[ Upstream commit 4d3984906397581dc0ccb6a02bf16b6ff82c9192 ]
 
-Some uvc devices appear to require the maximum allowed USB timeout
-for GET_CUR/SET_CUR requests.
+Fix 'dtbs_check' in serdes_ln_ctrl (serdes-ln-ctrl@4080) node by
+changing the node name to mux-controller@4080.
 
-So lets just bump the UVC control timeout to 5 seconds which is the
-same as the usb ctrl get/set defaults:
-USB_CTRL_GET_TIMEOUT 5000
-USB_CTRL_SET_TIMEOUT 5000
-
-It fixes the following runtime warnings:
-   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
-   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
-
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
+Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Link: https://lore.kernel.org/r/20211126084555.17797-2-kishon@ti.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/uvc/uvcvideo.h | 2 +-
+ arch/arm64/boot/dts/ti/k3-j7200-main.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index cce5e38133cd3..c3ea6a53869f5 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -189,7 +189,7 @@
- /* Maximum status buffer size in bytes of interrupt URB. */
- #define UVC_MAX_STATUS_SIZE	16
+diff --git a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+index 874cba75e9a5a..7daa280220442 100644
+--- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
+@@ -32,7 +32,7 @@
+ 		#size-cells = <1>;
+ 		ranges = <0x00 0x00 0x00100000 0x1c000>;
  
--#define UVC_CTRL_CONTROL_TIMEOUT	500
-+#define UVC_CTRL_CONTROL_TIMEOUT	5000
- #define UVC_CTRL_STREAMING_TIMEOUT	5000
- 
- /* Maximum allowed number of control mappings per device */
+-		serdes_ln_ctrl: serdes-ln-ctrl@4080 {
++		serdes_ln_ctrl: mux-controller@4080 {
+ 			compatible = "mmio-mux";
+ 			#mux-control-cells = <1>;
+ 			mux-reg-masks = <0x4080 0x3>, <0x4084 0x3>, /* SERDES0 lane0/1 select */
 -- 
 2.34.1
 
