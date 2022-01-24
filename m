@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F277C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF10C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422154AbiAYCaW (ORCPT
+        id S3422235AbiAYCah (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:30:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379374AbiAXULU (ORCPT
+        Mon, 24 Jan 2022 21:30:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57596 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355791AbiAXUSS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B422C06F8E0;
-        Mon, 24 Jan 2022 11:33:27 -0800 (PST)
+        Mon, 24 Jan 2022 15:18:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28EF6B811FC;
-        Mon, 24 Jan 2022 19:33:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5086AC340E5;
-        Mon, 24 Jan 2022 19:33:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2C00AB81218;
+        Mon, 24 Jan 2022 20:18:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CB34C33DE4;
+        Mon, 24 Jan 2022 20:18:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052804;
-        bh=QzS4tXh8Kdb+NYlC5nFHkToGbuxguFI/gh7D8iqd0oc=;
+        s=korg; t=1643055493;
+        bh=lHDIrkJS0aK/qJe448wvM8aM+uv2N3T66ApDFw8VJbM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P1wOvy8Hbe/UQQhFjKIQpwcWFztU2WqXQ81VQ5db290uHArVItTIuCzJyMdCjG8dm
-         UXgTd3Sf3LbM2O8pD+GuZBskXqiiG56t1vHjC/kt3VQwxb8Mm3jiuC+/9bO3AX8MfG
-         NDuUEMi0D/rYbneTLqFcxWi1NQ2hPRY76DKtB/ag=
+        b=YvT6Y5DZMj921BmU9wM5YEi+F5tt+1JxsaXFK5nk87Ie8xvR83H32cb0AUEa/95/y
+         wKt9tmt3hm48v3JZ+sqhwzyvmSBuJa/kSxl12nR4oknHhoTu/GHjGNKoJLbdQIi8a7
+         hk4UfeiRiU0QNemhXXrzuW/wke3pyELtesvB5qz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sebastian Gottschall <s.gottschall@dd-wrt.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        Mansur Alisha Shaik <mansur@codeaurora.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 180/320] ath10k: Fix tx hanging
-Date:   Mon, 24 Jan 2022 19:42:44 +0100
-Message-Id: <20220124183959.787054022@linuxfoundation.org>
+Subject: [PATCH 5.15 169/846] media: venus: correct low power frequency calculation for encoder
+Date:   Mon, 24 Jan 2022 19:34:46 +0100
+Message-Id: <20220124184106.806797081@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,54 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+From: Mansur Alisha Shaik <mansur@codeaurora.org>
 
-[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
+[ Upstream commit b1f9bb8020783a48151e3a2864fbdc70548566dd ]
 
-While running stress tests in roaming scenarios (switching ap's every 5
-seconds, we discovered a issue which leads to tx hangings of exactly 5
-seconds while or after scanning for new accesspoints. We found out that
-this hanging is triggered by ath10k_mac_wait_tx_complete since the
-empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
-To fix this, we simply move the wake_up call to htt_tx_dec_pending,
-since this call was missed on several locations within the ath10k code.
+In exististing implimentation, in min_loaded_core() for low_power
+vpp frequency value is considering as vpp_freq instead of low_power_freq.
+Fixed this by correcting vpp frequency calculation for encoder.
 
-Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
+Fixes: 3cfe5815ce0e (media: venus: Enable low power setting for encoder)
+Signed-off-by: Mansur Alisha Shaik <mansur@codeaurora.org>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
- drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/media/platform/qcom/venus/pm_helpers.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index c38e1963ebc05..f73ed1044390c 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -147,6 +147,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
- 	htt->num_pending_tx--;
- 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
- 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
-+
-+	if (htt->num_pending_tx == 0)
-+		wake_up(&htt->empty_tx_wq);
- }
+diff --git a/drivers/media/platform/qcom/venus/pm_helpers.c b/drivers/media/platform/qcom/venus/pm_helpers.c
+index e031fd17f4e75..d382872bc8a08 100644
+--- a/drivers/media/platform/qcom/venus/pm_helpers.c
++++ b/drivers/media/platform/qcom/venus/pm_helpers.c
+@@ -587,8 +587,8 @@ min_loaded_core(struct venus_inst *inst, u32 *min_coreid, u32 *min_load, bool lo
+ 		if (inst->session_type == VIDC_SESSION_TYPE_DEC)
+ 			vpp_freq = inst_pos->clk_data.vpp_freq;
+ 		else if (inst->session_type == VIDC_SESSION_TYPE_ENC)
+-			vpp_freq = low_power ? inst_pos->clk_data.vpp_freq :
+-				inst_pos->clk_data.low_power_freq;
++			vpp_freq = low_power ? inst_pos->clk_data.low_power_freq :
++				inst_pos->clk_data.vpp_freq;
+ 		else
+ 			continue;
  
- int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index f46b9083bbf10..2c254f43790d2 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -80,8 +80,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
- 
- 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
- 	ath10k_htt_tx_dec_pending(htt);
--	if (htt->num_pending_tx == 0)
--		wake_up(&htt->empty_tx_wq);
- 	spin_unlock_bh(&htt->tx_lock);
- 
- 	rcu_read_lock();
 -- 
 2.34.1
 
