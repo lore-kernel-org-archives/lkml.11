@@ -2,191 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:21:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BFB9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241827AbiAXSVQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:21:16 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:55926 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235924AbiAXSVJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:21:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643048469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bYdjcQywipkMB8Wx1BG67FbDu6sqjBU0caVbeXrGM5Q=;
-        b=Iy33zitt0axIuzUZhWRttqHSOs41oTkxDJiW7GDr7V92XF/sM26YQeGnoNaNiEFX5nMS+X
-        t2N+sHRJ9P81ZoOgiabDCTs+U/zCHhftwzOPvnQ9Bq1bDjxUFIhZ2Xp+JCSu6ZLOVeo4gM
-        9zKoIHt+zezT5IyicqPzCZuDLPd0C8M=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-214-3H4F0t18PtaUBfGq1f-RDQ-1; Mon, 24 Jan 2022 13:21:05 -0500
-X-MC-Unique: 3H4F0t18PtaUBfGq1f-RDQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06D561083F60;
-        Mon, 24 Jan 2022 18:21:04 +0000 (UTC)
-Received: from fuller.cnet (ovpn-112-2.gru2.redhat.com [10.97.112.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6FBFF77469;
-        Mon, 24 Jan 2022 18:20:43 +0000 (UTC)
-Received: by fuller.cnet (Postfix, from userid 1000)
-        id B2E2E4188583; Mon, 24 Jan 2022 15:20:25 -0300 (-03)
-Date:   Mon, 24 Jan 2022 15:20:25 -0300
-From:   Marcelo Tosatti <mtosatti@redhat.com>
-To:     Frederic Weisbecker <frederic@kernel.org>
-Cc:     Christoph Lameter <cl@linux.com>, linux-kernel@vger.kernel.org,
-        Nitesh Lal <nilal@redhat.com>,
-        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: Re: [patch v8 02/10] add prctl task isolation prctl docs and samples
-Message-ID: <Ye7t6TI6lAOEwmDJ@fuller.cnet>
-References: <20211208161000.684779248@fuller.cnet>
- <20220106234956.GA1321256@lothringen>
- <20220107113001.GA105857@fuller.cnet>
- <20220108000308.GB1337751@lothringen>
- <Ye7roobHDqVogulr@fuller.cnet>
+        id S241869AbiAXSVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:21:51 -0500
+Received: from mga06.intel.com ([134.134.136.31]:44634 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232267AbiAXSVu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:21:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643048510; x=1674584510;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=y26tplK4MBeJTPKdULtMzAi3fXJk9jnVW3LLq/q0kbA=;
+  b=E+kJA/nEgQFNVULdUQmiyNdGDZaLvQ4Uytu2Yc9e4+gPD4I3ihXAs2p4
+   G8Wc/4Jys1AE8USaoVzsMcCEg/S98bGN4uRQHh6GmZyxK7KJpJztH7INJ
+   Kff/8aNeXb9/NtaZkPeZVFo6XsJWiJ+IgWQTlqhOpEJ3+h1GW7JT1/V/Q
+   NlL00YW1BtdCQMX/SZAqd2DT+3PXDwijWx9LqMJsGzqx61UjC3BmXlO1J
+   MzcN1q/WT9tZ8estfzusy/gz0rXskuripvEdq+I+lwfYRl5fC2CNuJlI0
+   loUxC4DX5qt1aO4+N07qjJVfkG9UN8F57VMH/Yvwx/FvaAVaUxi++WCqs
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="306828256"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="306828256"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:21:49 -0800
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="695519102"
+Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:21:49 -0800
+From:   ira.weiny@intel.com
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Ira Weiny <ira.weiny@intel.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH V2] highmem: Document kunmap_local()
+Date:   Mon, 24 Jan 2022 10:21:38 -0800
+Message-Id: <20220124182138.816693-1-ira.weiny@intel.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <Ye6bhQG6b6caYurD@infradead.org>
+References: <Ye6bhQG6b6caYurD@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ye7roobHDqVogulr@fuller.cnet>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 03:10:42PM -0300, Marcelo Tosatti wrote:
-> On Sat, Jan 08, 2022 at 01:03:08AM +0100, Frederic Weisbecker wrote:
-> > On Fri, Jan 07, 2022 at 08:30:01AM -0300, Marcelo Tosatti wrote:
-> > > On Fri, Jan 07, 2022 at 12:49:56AM +0100, Frederic Weisbecker wrote:
-> > > > On Wed, Dec 08, 2021 at 01:09:08PM -0300, Marcelo Tosatti wrote:
-> > > > > Add documentation and userspace sample code for prctl
-> > > > > task isolation interface.
-> > > > > 
-> > > > > Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-> > > > 
-> > > > Acked-by: Frederic Weisbecker <frederic@kernel.org>
-> > > > 
-> > > > Thanks a lot! Time for me to look at the rest of the series.
-> > > > 
-> > > > Would be nice to have Thomas's opinion as well at least on
-> > > > the interface (this patch).
-> > > 
-> > > Yes. AFAIAW most of his earlier comments on what the 
-> > > interface should look like have been addressed (or at
-> > > least i've tried to)... including the ability for
-> > > the system admin to configure the isolation options.
-> > > 
-> > > The one thing missing is to attempt to enter nohz_full
-> > > on activation (which Christoph asked for).
-> > > 
-> > > Christoph, have a question on that. At
-> > > https://lkml.org/lkml/2021/12/14/346, you wrote:
-> > > 
-> > > "Applications running would ideally have no performance penalty and there
-> > > is no  issue with kernel activity unless the application is in its special
-> > > low latency loop. NOHZ is currently only activated after spinning in that
-> > > loop for 2 seconds or so. Would be best to be able to trigger that
-> > > manually somehow."
-> > > 
-> > > So was thinking of something similar to what the full task isolation
-> > > patchset does (with the behavior of returning an error as option...):
-> > > 
-> > > +int try_stop_full_tick(void)
-> > > +{
-> > > +	int cpu = smp_processor_id();
-> > > +	struct tick_sched *ts = this_cpu_ptr(&tick_cpu_sched);
-> > > +
-> > > +	/* For an unstable clock, we should return a permanent error code. */
-> > > +	if (atomic_read(&tick_dep_mask) & TICK_DEP_MASK_CLOCK_UNSTABLE)
-> > > +		return -EINVAL;
-> > > +
-> > > +	if (!can_stop_full_tick(cpu, ts))
-> > > +		return -EAGAIN;
-> > > +
-> > > +	tick_nohz_stop_sched_tick(ts, cpu);
-> > > +	return 0;
-> > > +}
-> > > 
-> > > Is that sufficient? (note it might still be possible 
-> > > for a failure to enter nohz_full due to a number of 
-> > > reasons), see tick_nohz_stop_sched_tick.
-> > 
-> > Well, I guess we can simply make tick_nohz_full_update_tick() an API, then
-> > it could be a QUIESCE feature.
-> > 
-> > But keep in mind we may not only fail to enter into nohz_full mode, we
-> > may also enter it but, instead of completely stopping the tick, it can
-> > be delayed to some future if there is still a timer callback queued somewhere.
-> > 
-> > Make sure you test "ts->next_tick == KTIME_MAX" after stopping the tick.
-> > 
-> > This raise the question: what do we do if a quiescing fails? At least if it's a
-> > oneshot, we can return an -EBUSY from the prctl() but otherwise, subsequent kernel
-> > entry/exit are a problem.
-> 
-> Well, maybe two modes can be specified for the NOHZ_FULL task isolation
-> feature. On activation of task isolation:
-> 
-> 	- Hint (default). Attempt to enter nohz_full mode,
-> 	  continue if unable to do so.
-> 
-> 	- Mandatory. Return an error if unable to enter nohz_full mode
-> 	  (tracing required to determine actual reason. is that OK?)
+From: Ira Weiny <ira.weiny@intel.com>
 
-This mode is poorly defined. What happens if some event after task
-isolation activation causes nohz_full mode to be disabled ?
+Some users of kmap() add an offset to the kmap() address to be used
+during the mapping.
 
-Or an alternative is to let the verification of nohz_full mode 
-to take place at a different location, for example a BPF tool.
-This works for our usecase, i believe.
+When converting to kmap_local_page() the base address does not
+need to be stored because any address within the page can be used in
+kunmap_local().  However, this was not clear from the documentation and
+cause some questions.[1]
 
-> 
-> static bool check_tick_dependency(atomic_t *dep)
-> {
->         int val = atomic_read(dep);
-> 
->         if (val & TICK_DEP_MASK_POSIX_TIMER) {
->                 trace_tick_stop(0, TICK_DEP_MASK_POSIX_TIMER);
->                 return true;
->         }
-> 
->         if (val & TICK_DEP_MASK_PERF_EVENTS) {
->                 trace_tick_stop(0, TICK_DEP_MASK_PERF_EVENTS);
->                 return true;
->         }
-> 
->         if (val & TICK_DEP_MASK_SCHED) {
->                 trace_tick_stop(0, TICK_DEP_MASK_SCHED);
->                 return true;
->         }
-> 
->         if (val & TICK_DEP_MASK_CLOCK_UNSTABLE) {
->                 trace_tick_stop(0, TICK_DEP_MASK_CLOCK_UNSTABLE);
->                 return true;
->         }
-> 
->         if (val & TICK_DEP_MASK_RCU) {
->                 trace_tick_stop(0, TICK_DEP_MASK_RCU);
->                 return true;
->         }
-> 
->         return false;
-> }
-> 
-> One thing that can be done on the handlers is to execute any pending irq_work, which
-> would fix:
-> 
-> https://lkml.org/lkml/2021/6/18/1174
-> 
-> How about that ?
-> 
+Document that any address in the page can be used in kunmap_local() to
+clarify this for future users.
+
+[1] https://lore.kernel.org/lkml/20211213154543.GM3538886@iweiny-DESK2.sc.intel.com/
+
+Cc: Christoph Hellwig <hch@infradead.org>
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
+
+---
+Changes for V2
+	Use suggested verbiage from Christoph Hellwig
+---
+ include/linux/highmem-internal.h | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+
+diff --git a/include/linux/highmem-internal.h b/include/linux/highmem-internal.h
+index 0a0b2b09b1b8..a77be5630209 100644
+--- a/include/linux/highmem-internal.h
++++ b/include/linux/highmem-internal.h
+@@ -246,6 +246,16 @@ do {								\
+ 	__kunmap_atomic(__addr);				\
+ } while (0)
+ 
++/**
++ * kunmap_local - Unmap a page mapped via kmap_local_page().
++ * @__addr: An address within the page mapped
++ *
++ * @__addr can be any address within the mapped page.  Commonly it is the
++ * address return from kmap_local_page(), but it can also include offsets.
++ *
++ * Unmapping should be done in the reverse order of the mapping.  See
++ * kmap_local_page() for details.
++ */
+ #define kunmap_local(__addr)					\
+ do {								\
+ 	BUILD_BUG_ON(__same_type((__addr), struct page *));	\
+-- 
+2.31.1
 
