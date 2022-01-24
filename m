@@ -2,173 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4446DC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843993AbiAXXHR (ORCPT
+        id S1384012AbiAXXHe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:07:17 -0500
-Received: from mga01.intel.com ([192.55.52.88]:43067 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1584285AbiAXWUh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:20:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643062836; x=1674598836;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=KTx3QBS/bCeJLJyH0VTSsPA6HKtWhrWvddCv03rGT8E=;
-  b=Oo2+BdFCv2wbmzsE8EfQXdAbPE4ExNChj0VsiYrEZiOeVRG3XqOP54ni
-   zDHFJpchv4GZngv4VfUXbgiqwk9kaCU67/zhjYzrblnDjaOGKgDKRJCSq
-   HrS+FLWyz4GQiO/Tzik6n5kZNX3C96g9Fs8dufty2oVehIQRLVych9xyT
-   LK5hvP5GHn9dpvh+8OFBHUTIgnOq8AUrlNPhoXBjAfHGxatofDlQhSQFN
-   5vNzO9fZH+MfcM89D5veGB4XI/lyvxnTqMs55Vls/az9GojXqML9D9vUh
-   +cQfKtBtJ8clVWvKeJP6pJaITD/mQVapwbHFSSOVCHG0kE1rh/0p+j5X0
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="270600511"
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="270600511"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 14:08:15 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,313,1635231600"; 
-   d="scan'208";a="520121337"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga007.jf.intel.com with ESMTP; 24 Jan 2022 14:08:08 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id BE110178; Tue, 25 Jan 2022 00:08:21 +0200 (EET)
-Date:   Tue, 25 Jan 2022 01:08:21 +0300
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org,
-        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, knsathya@kernel.org, pbonzini@redhat.com,
-        sdeep@vmware.com, seanjc@google.com, tony.luck@intel.com,
-        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 08/29] x86/tdx: Handle in-kernel MMIO
-Message-ID: <20220124220821.4bgf6i3qfhj6mrht@black.fi.intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
- <20220124150215.36893-9-kirill.shutemov@linux.intel.com>
- <20220124193008.gfaq5ppegx5nfomd@treble>
+        Mon, 24 Jan 2022 18:07:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1583277AbiAXWRb (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:17:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C8CC061392;
+        Mon, 24 Jan 2022 12:48:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6384B810A8;
+        Mon, 24 Jan 2022 20:48:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE51CC340E5;
+        Mon, 24 Jan 2022 20:48:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057316;
+        bh=7of+EHXBGl4nxCOkkheKVpwiRxEPsyfv3MBiRJmMuA8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=R+HriuUP5UFvQ2WwZoNn3VixX8eGbb0Eb5iuTvgfG7BBolOee8J+dwKz/f6XtlDla
+         6FMoFKV+5+QL0CMZXAJP17z815TgLQ1N1Vuf5bEFl/Ud+aNcNq9EJnXlKedox3KV6p
+         8KrFyU9cQAjZCpinMyOXuooZ0dpuyrywDWmoOUks=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.15 772/846] net/fsl: xgmac_mdio: Add workaround for erratum A-009885
+Date:   Mon, 24 Jan 2022 19:44:49 +0100
+Message-Id: <20220124184127.593412395@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124193008.gfaq5ppegx5nfomd@treble>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 11:30:08AM -0800, Josh Poimboeuf wrote:
-> On Mon, Jan 24, 2022 at 06:01:54PM +0300, Kirill A. Shutemov wrote:
-> > +static bool tdx_mmio(int size, bool write, unsigned long addr,
-> > +		     unsigned long *val)
-> > +{
-> > +	struct tdx_hypercall_output out;
-> > +	u64 err;
-> > +
-> > +	err = _tdx_hypercall(EXIT_REASON_EPT_VIOLATION, size, write,
-> > +			     addr, *val, &out);
-> > +	if (err)
-> > +		return true;
-> > +
-> > +	*val = out.r11;
-> > +	return false;
-> > +}
-> > +
-> > +static bool tdx_mmio_read(int size, unsigned long addr, unsigned long *val)
-> > +{
-> > +	return tdx_mmio(size, false, addr, val);
-> > +}
-> > +
-> > +static bool tdx_mmio_write(int size, unsigned long addr, unsigned long *val)
-> > +{
-> > +	return tdx_mmio(size, true, addr, val);
-> > +}
-> > +
-> > +static int tdx_handle_mmio(struct pt_regs *regs, struct ve_info *ve)
-> > +{
-> > +	char buffer[MAX_INSN_SIZE];
-> > +	unsigned long *reg, val = 0;
-> > +	struct insn insn = {};
-> > +	enum mmio_type mmio;
-> > +	int size;
-> > +	bool err;
-> > +
-> > +	if (copy_from_kernel_nofault(buffer, (void *)regs->ip, MAX_INSN_SIZE))
-> > +		return -EFAULT;
-> > +
-> > +	if (insn_decode(&insn, buffer, MAX_INSN_SIZE, INSN_MODE_64))
-> > +		return -EFAULT;
-> > +
-> > +	mmio = insn_decode_mmio(&insn, &size);
-> > +	if (WARN_ON_ONCE(mmio == MMIO_DECODE_FAILED))
-> > +		return -EFAULT;
-> > +
-> > +	if (mmio != MMIO_WRITE_IMM && mmio != MMIO_MOVS) {
-> > +		reg = insn_get_modrm_reg_ptr(&insn, regs);
-> > +		if (!reg)
-> > +			return -EFAULT;
-> > +	}
-> > +
-> > +	switch (mmio) {
-> > +	case MMIO_WRITE:
-> > +		memcpy(&val, reg, size);
-> > +		err = tdx_mmio_write(size, ve->gpa, &val);
-> > +		break;
-> 
-> The return code conventions are still all mismatched and confusing:
-> 
-> - Most tdx_handle_*() handlers return bool (success == true)
-> 
-> - tdx_handle_mmio() returns int (success > 0)
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-Right, all tdx_handle_* are consistent: success > 0.
+commit 6198c722019774d38018457a8bfb9ba3ed8c931e upstream.
 
-> - tdx_mmio*() helpers return bool (success == false)
+Once an MDIO read transaction is initiated, we must read back the data
+register within 16 MDC cycles after the transaction completes. Outside
+of this window, reads may return corrupt data.
 
-And what is wrong with that? Why do you mix functions that called in
-different contexts and expect them to have matching semantics?
+Therefore, disable local interrupts in the critical section, to
+maximize the probability that we can satisfy this requirement.
 
-> I still don't see any benefit in arbitrarily mixing three different
-> return conventions, none of which matches the typical kernel style for
-> returning errors, unless the goal is to confuse the reader and invite
-> bugs.
+Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/freescale/xgmac_mdio.c |   25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
-Okay, we have an disagreement here.
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -52,6 +52,7 @@ struct tgec_mdio_controller {
+ struct mdio_fsl_priv {
+ 	struct	tgec_mdio_controller __iomem *mdio_base;
+ 	bool	is_little_endian;
++	bool	has_a009885;
+ 	bool	has_a011043;
+ };
+ 
+@@ -187,10 +188,10 @@ static int xgmac_mdio_read(struct mii_bu
+ {
+ 	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
+ 	struct tgec_mdio_controller __iomem *regs = priv->mdio_base;
++	unsigned long flags;
+ 	uint16_t dev_addr;
+ 	uint32_t mdio_stat;
+ 	uint32_t mdio_ctl;
+-	uint16_t value;
+ 	int ret;
+ 	bool endian = priv->is_little_endian;
+ 
+@@ -222,12 +223,18 @@ static int xgmac_mdio_read(struct mii_bu
+ 			return ret;
+ 	}
+ 
++	if (priv->has_a009885)
++		/* Once the operation completes, i.e. MDIO_STAT_BSY clears, we
++		 * must read back the data register within 16 MDC cycles.
++		 */
++		local_irq_save(flags);
++
+ 	/* Initiate the read */
+ 	xgmac_write32(mdio_ctl | MDIO_CTL_READ, &regs->mdio_ctl, endian);
+ 
+ 	ret = xgmac_wait_until_done(&bus->dev, regs, endian);
+ 	if (ret)
+-		return ret;
++		goto irq_restore;
+ 
+ 	/* Return all Fs if nothing was there */
+ 	if ((xgmac_read32(&regs->mdio_stat, endian) & MDIO_STAT_RD_ER) &&
+@@ -235,13 +242,17 @@ static int xgmac_mdio_read(struct mii_bu
+ 		dev_dbg(&bus->dev,
+ 			"Error while reading PHY%d reg at %d.%hhu\n",
+ 			phy_id, dev_addr, regnum);
+-		return 0xffff;
++		ret = 0xffff;
++	} else {
++		ret = xgmac_read32(&regs->mdio_data, endian) & 0xffff;
++		dev_dbg(&bus->dev, "read %04x\n", ret);
+ 	}
+ 
+-	value = xgmac_read32(&regs->mdio_data, endian) & 0xffff;
+-	dev_dbg(&bus->dev, "read %04x\n", value);
++irq_restore:
++	if (priv->has_a009885)
++		local_irq_restore(flags);
+ 
+-	return value;
++	return ret;
+ }
+ 
+ static int xgmac_mdio_probe(struct platform_device *pdev)
+@@ -288,6 +299,8 @@ static int xgmac_mdio_probe(struct platf
+ 	priv->is_little_endian = device_property_read_bool(&pdev->dev,
+ 							   "little-endian");
+ 
++	priv->has_a009885 = device_property_read_bool(&pdev->dev,
++						      "fsl,erratum-a009885");
+ 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
+ 						      "fsl,erratum-a011043");
+ 
 
-I picked a way to communicate function result as I see best fits the
-situation. It is a judgement call.
 
-I will adjust code if maintainers see it differently from me. But until
-then I don't see anything wrong here.
-
-> There is precedent in traps.c for some handle_*() functions to return
-> bool (success == true), so if the goal is to align with that
-> semi-convention, that's ok.  But at the very least, please do it
-> consistently:
-> 
->   - change tdx_mmio*() to return true on success;
-> 
->   - change tdx_handle_mmio() to return bool, with 'len' passed as an
->     argument.
-
-Hard no.
-
-Returning a value via passed argument is the last resort for cases when
-more than one value has to be returned. In this case the function is
-perfectly capable to communicate result via single return value.
-
-I don't see a reason to complicate the code to satisfy some "typical
-kernel style".
-
-> Or, even better, just change them all to return 0 on success like 99+%
-> of error-returning kernel functions.
-
-Citation needed. 99+% looks like an overstatement to me.
-
--- 
- Kirill A. Shutemov
