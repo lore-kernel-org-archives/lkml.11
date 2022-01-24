@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A8AC41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A632C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423981AbiAYCi0 (ORCPT
+        id S3424009AbiAYCi3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:38:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53096 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353862AbiAXUcS (ORCPT
+        Mon, 24 Jan 2022 21:38:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385328AbiAXUcZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:32:18 -0500
+        Mon, 24 Jan 2022 15:32:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFB4C07A97D;
+        Mon, 24 Jan 2022 11:43:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 548E561506;
-        Mon, 24 Jan 2022 20:32:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 211CFC340E5;
-        Mon, 24 Jan 2022 20:32:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4310861553;
+        Mon, 24 Jan 2022 19:43:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21517C340E5;
+        Mon, 24 Jan 2022 19:43:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056336;
-        bh=zW8E6nDHYA+IOGgYE859eoZ7bTAfChWLdJJ/+NaK2gA=;
+        s=korg; t=1643053427;
+        bh=bk5v1u8Hg9MWexuPCgwEWZSSVhmQfiM7lztRzglm+zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qkgsN6ttcn7PxqqOuMtrcLj+MgKP6rrSLj7ncTGWwOmM9ZJbDZLTEnqQtfoVse0Pj
-         /Wt8LFiXGOEGSF2SXVCYrkiYmcEL6TLDJy5hQ3WdPzZsqiZwwHQB8xAykTgnORy6Gu
-         kS4opsbw4EtgfmmZdvIQCBclJesidHSrJdX6e8Dg=
+        b=nyPX1znAdYpyT2NccgFosXeAjQRt532Y/v3EtlzfBqYzHb6ZMjGFwweYSh3vIMvi0
+         g/Ru8+pSzM5uNs3bk+0E+q5BKim8gMtzKdfjmdWd2fi4GrSO0DAiKmjXCPcGNMdzlV
+         qrfqNx+R+h2IEm3+nHLZIHn3XDxzfU16+Yna5dBI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 433/846] powerpc/64s: Use EMIT_WARN_ENTRY for SRR debug warnings
-Date:   Mon, 24 Jan 2022 19:39:10 +0100
-Message-Id: <20220124184115.930393410@linuxfoundation.org>
+Subject: [PATCH 5.10 061/563] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
+Date:   Mon, 24 Jan 2022 19:37:06 +0100
+Message-Id: <20220124184026.529150093@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,79 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Benjamin Li <benl@squareup.com>
 
-[ Upstream commit fd1eaaaaa6864b5fb8f99880fcefb49760b8fe4e ]
+[ Upstream commit cfdf6b19e750f7de8ae71a26932f63b52e3bf74c ]
 
-When CONFIG_PPC_RFI_SRR_DEBUG=y we check the SRR values before returning
-from interrupts. This is done in asm using EMIT_BUG_ENTRY, and passing
-BUGFLAG_WARNING.
+The linear mapping between the BD rate field and the driver's 5GHz
+legacy rates table (wcn_5ghz_rates) does not only apply for the latter
+four rates -- it applies to all eight rates.
 
-However that fails to create an exception table entry for the warning,
-and so do_program_check() fails the exception table search and proceeds
-to call _exception(), resulting in an oops like:
-
-  Oops: Exception in kernel mode, sig: 5 [#1]
-  LE PAGE_SIZE=64K MMU=Radix SMP NR_CPUS=2048 NUMA pSeries
-  Modules linked in:
-  CPU: 2 PID: 1204 Comm: sigreturn_unali Tainted: P                  5.16.0-rc2-00194-g91ca3d4f77c5 #12
-  NIP:  c00000000000c5b0 LR: 0000000000000000 CTR: 0000000000000000
-  ...
-  NIP [c00000000000c5b0] system_call_common+0x150/0x268
-  LR [0000000000000000] 0x0
-  Call Trace:
-  [c00000000db73e10] [c00000000000c558] system_call_common+0xf8/0x268 (unreliable)
-  ...
-  Instruction dump:
-  7cc803a6 888d0931 2c240000 4082001c 38800000 988d0931 e8810170 e8a10178
-  7c9a03a6 7cbb03a6 7d7a02a6 e9810170 <7f0b6088> 7d7b02a6 e9810178 7f0b6088
-
-We should instead use EMIT_WARN_ENTRY, which creates an exception table
-entry for the warning, allowing the warning to be correctly recognised,
-and the code to resume after printing the warning.
-
-Note however that because this warning is buried deep in the interrupt
-return path, we are not able to recover from it (due to MSR_RI being
-clear), so we still end up in die() with an unrecoverable exception.
-
-Fixes: 59dc5bfca0cb ("powerpc/64s: avoid reloading (H)SRR registers if they are still valid")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211221135101.2085547-2-mpe@ellerman.id.au
+Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211104010548.1107405-3-benl@squareup.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/interrupt_64.S | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
-index 894588b2381e5..4b1ff94e67eb4 100644
---- a/arch/powerpc/kernel/interrupt_64.S
-+++ b/arch/powerpc/kernel/interrupt_64.S
-@@ -32,21 +32,21 @@ COMPAT_SYS_CALL_TABLE:
- 	ld	r12,_NIP(r1)
- 	clrrdi  r12,r12,2
- 100:	tdne	r11,r12
--	EMIT_BUG_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
-+	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
- 	mfspr	r11,SPRN_SRR1
- 	ld	r12,_MSR(r1)
- 100:	tdne	r11,r12
--	EMIT_BUG_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
-+	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
- 	.else
- 	mfspr	r11,SPRN_HSRR0
- 	ld	r12,_NIP(r1)
- 	clrrdi  r12,r12,2
- 100:	tdne	r11,r12
--	EMIT_BUG_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
-+	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
- 	mfspr	r11,SPRN_HSRR1
- 	ld	r12,_MSR(r1)
- 100:	tdne	r11,r12
--	EMIT_BUG_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
-+	EMIT_WARN_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
- 	.endif
- #endif
- .endm
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index f76de106570d2..f33e7228a1010 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -237,7 +237,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	const struct wcn36xx_rate *rate;
+ 	struct ieee80211_hdr *hdr;
+ 	struct wcn36xx_rx_bd *bd;
+-	struct ieee80211_supported_band *sband;
+ 	u16 fc, sn;
+ 
+ 	/*
+@@ -295,12 +294,11 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 		status.enc_flags = rate->encoding_flags;
+ 		status.bw = rate->bw;
+ 		status.rate_idx = rate->mcs_or_legacy_index;
+-		sband = wcn->hw->wiphy->bands[status.band];
+ 		status.nss = 1;
+ 
+ 		if (status.band == NL80211_BAND_5GHZ &&
+ 		    status.encoding == RX_ENC_LEGACY &&
+-		    status.rate_idx >= sband->n_bitrates) {
++		    status.rate_idx >= 4) {
+ 			/* no dsss rates in 5Ghz rates table */
+ 			status.rate_idx -= 4;
+ 		}
 -- 
 2.34.1
 
