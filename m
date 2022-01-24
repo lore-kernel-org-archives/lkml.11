@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55E89C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFA6C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352804AbiAXTbF (ORCPT
+        id S1352839AbiAXTbK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47070 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346355AbiAXTW6 (ORCPT
+        Mon, 24 Jan 2022 14:31:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49180 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346367AbiAXTXG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:58 -0500
+        Mon, 24 Jan 2022 14:23:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 160F2B8121B;
-        Mon, 24 Jan 2022 19:22:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CBA4C340E5;
-        Mon, 24 Jan 2022 19:22:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BEC9C61490;
+        Mon, 24 Jan 2022 19:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BECAC36AE3;
+        Mon, 24 Jan 2022 19:23:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052175;
-        bh=KMxJK1iIQOsIy0NuPpIiSoxPGHXz/J4x23TAqBxugmY=;
+        s=korg; t=1643052182;
+        bh=fqghv2tM9KQdZtwnpamw7ZoE6favq2oByT6WYmfaJKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u2qDPfA1umsqqPCqNi5+nJ6KvpMNECCRhev1vYRpSFhfPYMdxz/92PM4O5FK5Cxrz
-         JwlA4EtvfIPuKqzQgygKU/RQQFYalEkwLKIqzL84CdKbZ+2pOWv2ozeWhsMLBqniDo
-         rnr0BjlZrV5JuGm1sK50h0x2XbtpWFGIZ3E+q/Mo=
+        b=VOaSXvOxxv9voBj/zuy+k6rmOPU+tc98sbAO+R8u5Y6osuPSnQLYLRxFi0Wlz/85Y
+         RSHuP4sfm3wvWbzTMV0JYM91G7gtSPV5aK3W6csp7BNqfnmDnPyr378wrGiXp91RBj
+         rlXlDXH4GllLagTIVum6HJAl6tKj0xa0rkc+nnWk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 180/239] powerpc/cell: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:38 +0100
-Message-Id: <20220124183948.822127222@linuxfoundation.org>
+Subject: [PATCH 4.19 182/239] powerpc/watchdog: Fix missed watchdog reset due to memory ordering race
+Date:   Mon, 24 Jan 2022 19:43:40 +0100
+Message-Id: <20220124183948.881059269@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,55 +48,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
+[ Upstream commit 5dad4ba68a2483fc80d70b9dc90bbe16e1f27263 ]
 
-for_each_node_by_name performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+It is possible for all CPUs to miss the pending cpumask becoming clear,
+and then nobody resetting it, which will cause the lockup detector to
+stop working. It will eventually expire, but watchdog_smp_panic will
+avoid doing anything if the pending mask is clear and it will never be
+reset.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+Order the cpumask clear vs the subsequent test to close this race.
 
-// <smpl>
-@@
-expression e,e1;
-local idexpression n;
-@@
+Add an extra check for an empty pending mask when the watchdog fires and
+finds its bit still clear, to try to catch any other possible races or
+bugs here and keep the watchdog working. The extra test in
+arch_touch_nmi_watchdog is required to prevent the new warning from
+firing off.
 
- for_each_node_by_name(n, e1) {
-   ... when != of_node_put(n)
-       when != e = n
-(
-   return n;
-|
-+  of_node_put(n);
-?  return ...;
-)
-   ...
- }
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
+Debugged-by: Laurent Dufour <ldufour@linux.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
+Link: https://lore.kernel.org/r/20211110025056.2084347-2-npiggin@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/cell/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/powerpc/kernel/watchdog.c | 41 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
-index 12352a58072ab..d9c2c4cc60be1 100644
---- a/arch/powerpc/platforms/cell/iommu.c
-+++ b/arch/powerpc/platforms/cell/iommu.c
-@@ -1088,6 +1088,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
- 			if (hbase < dbase || (hend > (dbase + dsize))) {
- 				pr_debug("iommu: hash window doesn't fit in"
- 					 "real DMA window\n");
-+				of_node_put(np);
- 				return -1;
- 			}
+diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
+index af3c15a1d41eb..75b2a6c4db5a5 100644
+--- a/arch/powerpc/kernel/watchdog.c
++++ b/arch/powerpc/kernel/watchdog.c
+@@ -132,6 +132,10 @@ static void set_cpumask_stuck(const struct cpumask *cpumask, u64 tb)
+ {
+ 	cpumask_or(&wd_smp_cpus_stuck, &wd_smp_cpus_stuck, cpumask);
+ 	cpumask_andnot(&wd_smp_cpus_pending, &wd_smp_cpus_pending, cpumask);
++	/*
++	 * See wd_smp_clear_cpu_pending()
++	 */
++	smp_mb();
+ 	if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 		wd_smp_last_reset_tb = tb;
+ 		cpumask_andnot(&wd_smp_cpus_pending,
+@@ -217,13 +221,44 @@ static void wd_smp_clear_cpu_pending(int cpu, u64 tb)
+ 
+ 			cpumask_clear_cpu(cpu, &wd_smp_cpus_stuck);
+ 			wd_smp_unlock(&flags);
++		} else {
++			/*
++			 * The last CPU to clear pending should have reset the
++			 * watchdog so we generally should not find it empty
++			 * here if our CPU was clear. However it could happen
++			 * due to a rare race with another CPU taking the
++			 * last CPU out of the mask concurrently.
++			 *
++			 * We can't add a warning for it. But just in case
++			 * there is a problem with the watchdog that is causing
++			 * the mask to not be reset, try to kick it along here.
++			 */
++			if (unlikely(cpumask_empty(&wd_smp_cpus_pending)))
++				goto none_pending;
  		}
+ 		return;
+ 	}
++
+ 	cpumask_clear_cpu(cpu, &wd_smp_cpus_pending);
++
++	/*
++	 * Order the store to clear pending with the load(s) to check all
++	 * words in the pending mask to check they are all empty. This orders
++	 * with the same barrier on another CPU. This prevents two CPUs
++	 * clearing the last 2 pending bits, but neither seeing the other's
++	 * store when checking if the mask is empty, and missing an empty
++	 * mask, which ends with a false positive.
++	 */
++	smp_mb();
+ 	if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 		unsigned long flags;
+ 
++none_pending:
++		/*
++		 * Double check under lock because more than one CPU could see
++		 * a clear mask with the lockless check after clearing their
++		 * pending bits.
++		 */
+ 		wd_smp_lock(&flags);
+ 		if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 			wd_smp_last_reset_tb = tb;
+@@ -314,8 +349,12 @@ void arch_touch_nmi_watchdog(void)
+ {
+ 	unsigned long ticks = tb_ticks_per_usec * wd_timer_period_ms * 1000;
+ 	int cpu = smp_processor_id();
+-	u64 tb = get_tb();
++	u64 tb;
+ 
++	if (!cpumask_test_cpu(cpu, &watchdog_cpumask))
++		return;
++
++	tb = get_tb();
+ 	if (tb - per_cpu(wd_timer_tb, cpu) >= ticks) {
+ 		per_cpu(wd_timer_tb, cpu) = tb;
+ 		wd_smp_clear_cpu_pending(cpu, tb);
 -- 
 2.34.1
 
