@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00FB6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40D40C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350691AbiAXTZK (ORCPT
+        id S1350740AbiAXTZQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:25:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45302 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344024AbiAXTQK (ORCPT
+        Mon, 24 Jan 2022 14:25:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41586 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347230AbiAXTQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:16:10 -0500
+        Mon, 24 Jan 2022 14:16:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6271060918;
-        Mon, 24 Jan 2022 19:16:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F701C340E5;
-        Mon, 24 Jan 2022 19:16:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4FA7AB81215;
+        Mon, 24 Jan 2022 19:16:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE03C340E5;
+        Mon, 24 Jan 2022 19:16:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051769;
-        bh=R/8W69jPQrWexMmMn+5pYEBZEBte7tNLSs8/YEVRk5Q=;
+        s=korg; t=1643051798;
+        bh=zVPS0If2alR0wY66jaCmi13jFkq5TKN5ONOT0LACKHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qLjh70yvt5bJ/HuqpF8Gwy6+TuHHTQ9m3W4VweGsdbrD/KyM66Ike/FECks2jnaJY
-         LwbklB5ShgR2i63GWARqWeyU53am6AWhbvtycJXzUJ+0HQl4rDjqGKtxWiGdbQs+SD
-         TLjBF1ySLf8MZTe7ezH7Rz2L5aOWtFNwvbOF1fc0=
+        b=YASEoDadU6vvLznslZMO3XAFQ173UCyWIvO6vwGioGHorAkZWKDL0bImkUwCOX0ZB
+         4iRUeSOak+uYwbfY8uJXQ7WVLh8uqVr/1lsnzaGFv1QrO6ElW2zy/kbJnyY0+8YcsV
+         kEpiXVsQE066lqon4FfNGsN1yn9DKBQscGG/IpPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 082/239] ARM: dts: armada-38x: Add generic compatible to UART nodes
-Date:   Mon, 24 Jan 2022 19:42:00 +0100
-Message-Id: <20220124183945.730959014@linuxfoundation.org>
+Subject: [PATCH 4.19 090/239] fsl/fman: Check for null pointer after calling devm_ioremap
+Date:   Mon, 24 Jan 2022 19:42:08 +0100
+Message-Id: <20220124183945.978317598@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -49,46 +47,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Behún <kabel@kernel.org>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 62480772263ab6b52e758f2346c70a526abd1d28 ]
+[ Upstream commit d5a73ec96cc57cf67e51b12820fc2354e7ca46f8 ]
 
-Add generic compatible string "ns16550a" to serial port nodes of Armada
-38x.
+As the possible failure of the allocation, the devm_ioremap() may return
+NULL pointer.
+Take tgec_initialization() as an example.
+If allocation fails, the params->base_addr will be NULL pointer and will
+be assigned to tgec->regs in tgec_config().
+Then it will cause the dereference of NULL pointer in set_mac_address(),
+which is called by tgec_init().
+Therefore, it should be better to add the sanity check after the calling
+of the devm_ioremap().
 
-This makes it possible to use earlycon.
-
-Fixes: 0d3d96ab0059 ("ARM: mvebu: add Device Tree description of the Armada 380/385 SoCs")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: 3933961682a3 ("fsl/fman: Add FMan MAC driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/armada-38x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/freescale/fman/mac.c | 21 ++++++++++++++++-----
+ 1 file changed, 16 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/armada-38x.dtsi b/arch/arm/boot/dts/armada-38x.dtsi
-index 929459c427605..6f32f12332824 100644
---- a/arch/arm/boot/dts/armada-38x.dtsi
-+++ b/arch/arm/boot/dts/armada-38x.dtsi
-@@ -163,7 +163,7 @@
- 			};
+diff --git a/drivers/net/ethernet/freescale/fman/mac.c b/drivers/net/ethernet/freescale/fman/mac.c
+index a847b9c3b31a9..713abcd9371fa 100644
+--- a/drivers/net/ethernet/freescale/fman/mac.c
++++ b/drivers/net/ethernet/freescale/fman/mac.c
+@@ -94,14 +94,17 @@ static void mac_exception(void *handle, enum fman_mac_exceptions ex)
+ 		__func__, ex);
+ }
  
- 			uart0: serial@12000 {
--				compatible = "marvell,armada-38x-uart";
-+				compatible = "marvell,armada-38x-uart", "ns16550a";
- 				reg = <0x12000 0x100>;
- 				reg-shift = <2>;
- 				interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
-@@ -173,7 +173,7 @@
- 			};
+-static void set_fman_mac_params(struct mac_device *mac_dev,
+-				struct fman_mac_params *params)
++static int set_fman_mac_params(struct mac_device *mac_dev,
++			       struct fman_mac_params *params)
+ {
+ 	struct mac_priv_s *priv = mac_dev->priv;
  
- 			uart1: serial@12100 {
--				compatible = "marvell,armada-38x-uart";
-+				compatible = "marvell,armada-38x-uart", "ns16550a";
- 				reg = <0x12100 0x100>;
- 				reg-shift = <2>;
- 				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
+ 	params->base_addr = (typeof(params->base_addr))
+ 		devm_ioremap(priv->dev, mac_dev->res->start,
+ 			     resource_size(mac_dev->res));
++	if (!params->base_addr)
++		return -ENOMEM;
++
+ 	memcpy(&params->addr, mac_dev->addr, sizeof(mac_dev->addr));
+ 	params->max_speed	= priv->max_speed;
+ 	params->phy_if		= mac_dev->phy_if;
+@@ -112,6 +115,8 @@ static void set_fman_mac_params(struct mac_device *mac_dev,
+ 	params->event_cb	= mac_exception;
+ 	params->dev_id		= mac_dev;
+ 	params->internal_phy_node = priv->internal_phy_node;
++
++	return 0;
+ }
+ 
+ static int tgec_initialization(struct mac_device *mac_dev)
+@@ -123,7 +128,9 @@ static int tgec_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	mac_dev->fman_mac = tgec_config(&params);
+ 	if (!mac_dev->fman_mac) {
+@@ -169,7 +176,9 @@ static int dtsec_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	mac_dev->fman_mac = dtsec_config(&params);
+ 	if (!mac_dev->fman_mac) {
+@@ -218,7 +227,9 @@ static int memac_initialization(struct mac_device *mac_dev)
+ 
+ 	priv = mac_dev->priv;
+ 
+-	set_fman_mac_params(mac_dev, &params);
++	err = set_fman_mac_params(mac_dev, &params);
++	if (err)
++		goto _return;
+ 
+ 	if (priv->max_speed == SPEED_10000)
+ 		params.phy_if = PHY_INTERFACE_MODE_XGMII;
 -- 
 2.34.1
 
