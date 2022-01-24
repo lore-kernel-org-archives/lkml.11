@@ -2,89 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2E7C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC037C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365649AbiAXXv0 (ORCPT
+        id S2365689AbiAXXv3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383930AbiAXXGH (ORCPT
+        Mon, 24 Jan 2022 18:51:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29842 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1845207AbiAXXLo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:06:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D0BDC061A7F;
-        Mon, 24 Jan 2022 13:17:00 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 24 Jan 2022 18:11:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643065902;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+xq1dvb+auyrR+UeLJpXMeONNpkCtEYu5jUsqN8ZMlw=;
+        b=cwVVkXKmm5myp4R+HpJuRBRpJX/qHbBEQcp3KO3NSpntY1c7NWX3S7229L88Aei/B89UA2
+        bdzV3Ny4VXeewTSI31FDPH1iikwyNARN+/UI/Xsx0hzuKADKQ3cF/uVpLTPQ1F8lR4HY1H
+        0b14Cwh6Gb6OaSKB77yQsnMDAOC6MJ8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-220-ld2GHqSqO42Wyt0MthM2yA-1; Mon, 24 Jan 2022 18:11:39 -0500
+X-MC-Unique: ld2GHqSqO42Wyt0MthM2yA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39E61B81233;
-        Mon, 24 Jan 2022 21:16:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C29CC36AEB;
-        Mon, 24 Jan 2022 21:16:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059018;
-        bh=fLy9g1Dn9MLU9x6rBqmMs6F2pQoFUyKdCOxJNNtpLe0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=064UNFFXX07h4wih0LBtYG0dkbBkG56HW8i8jgCQVkXExmrhpFzpMKP90zyRf3Nis
-         k6UvIcFW4NNn65nk8jfNdb5ftXddsWah52b49iD8SaOF+i/xMdsyfFyc9hWFY/DU68
-         /DGAYXvUo3qMH2qGB9ZNS7FOY7kaZreDh+efmZN0=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0445/1039] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
-Date:   Mon, 24 Jan 2022 19:37:14 +0100
-Message-Id: <20220124184140.255356036@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 26F90835B47;
+        Mon, 24 Jan 2022 23:11:38 +0000 (UTC)
+Received: from [172.30.41.16] (unknown [10.2.18.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B49C5108B4;
+        Mon, 24 Jan 2022 23:11:37 +0000 (UTC)
+Subject: [PATCH] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     alex.williamson@redhat.com
+Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 24 Jan 2022 16:11:37 -0700
+Message-ID: <164306582968.3758255.15192949639574660648.stgit@omen>
+User-Agent: StGit/1.0-8-g6af9-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+Resolve build errors reported against UML build for undefined
+ioport_map() and ioport_unmap() functions.  Without this config
+option a device cannot have vfio_pci_core_device.has_vga set,
+so the existing function would always return -EINVAL anyway.
 
-[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
-
-snd_ctl_remove() has to be called with card->controls_rwsem held (when
-called after the card instantiation).  This patch add the missing
-rwsem calls around it.
-
-Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
-Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
+Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
 ---
- sound/core/jack.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/vfio/pci/vfio_pci_rdwr.c |    2 ++
+ include/linux/vfio_pci_core.h    |    9 +++++++++
+ 2 files changed, 11 insertions(+)
 
-diff --git a/sound/core/jack.c b/sound/core/jack.c
-index 537df1e98f8ac..d1e3055f2b6a5 100644
---- a/sound/core/jack.c
-+++ b/sound/core/jack.c
-@@ -62,10 +62,13 @@ static int snd_jack_dev_free(struct snd_device *device)
- 	struct snd_card *card = device->card;
- 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
+diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
+index 57d3b2cbbd8e..82ac1569deb0 100644
+--- a/drivers/vfio/pci/vfio_pci_rdwr.c
++++ b/drivers/vfio/pci/vfio_pci_rdwr.c
+@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 	return done;
+ }
  
-+	down_write(&card->controls_rwsem);
- 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
- 		list_del_init(&jack_kctl->list);
- 		snd_ctl_remove(card, jack_kctl->kctl);
- 	}
-+	up_write(&card->controls_rwsem);
-+
- 	if (jack->private_free)
- 		jack->private_free(jack);
++#ifdef CONFIG_VFIO_PCI_VGA
+ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite)
+ {
+@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
  
--- 
-2.34.1
-
+ 	return done;
+ }
++#endif
+ 
+ static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
+ 					bool test_mem)
+diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+index ef9a44b6cf5d..ae6f4838ab75 100644
+--- a/include/linux/vfio_pci_core.h
++++ b/include/linux/vfio_pci_core.h
+@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
+ extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
+ 
++#ifdef CONFIG_VFIO_PCI_VGA
+ extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
+ 			       size_t count, loff_t *ppos, bool iswrite);
++#else
++static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
++				      char __user *buf, size_t count,
++				      loff_t *ppos, bool iswrite)
++{
++	return -EINVAL;
++}
++#endif
+ 
+ extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
+ 			       uint64_t data, int count, int fd);
 
 
