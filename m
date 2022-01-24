@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FE5C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F981C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576849AbiAXV4f (ORCPT
+        id S1576916AbiAXV4o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:56:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38404 "EHLO
+        Mon, 24 Jan 2022 16:56:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40302 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378451AbiAXVRb (ORCPT
+        with ESMTP id S1449841AbiAXVRL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:17:31 -0500
+        Mon, 24 Jan 2022 16:17:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B574161320;
-        Mon, 24 Jan 2022 21:17:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D048C340E4;
-        Mon, 24 Jan 2022 21:17:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E24B861490;
+        Mon, 24 Jan 2022 21:17:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A84AAC340E5;
+        Mon, 24 Jan 2022 21:17:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059048;
-        bh=+JhNhfhX4CzHKo6zamglhaOW+gem5nuxs1xCVr/STrw=;
+        s=korg; t=1643059027;
+        bh=cDHcC41BeRDzRH5xuHhn9uCJHlJzt0RBPzFkknz6tko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sb3ptaBDq6E4OnMUQMJ++lRxS0o/iOIgFzjy71iMHv39PsitKBNC6Zx7VblUO5Z6l
-         j7454LWmHJrtps6LTXkBICMICE1wOeC1K9M0k/23Q+gRVCGBOxIcJ8zsk0GDbXKUBY
-         KhjfFGQT1UKhCaQULikkAZZyVqSgfoI2lr2t3Z6w=
+        b=m9guJUhWsNYGU7xOi3NNd+vSomI9I0wNqZVw7lHkbB1DynVzelN6w+yNNtmuFZumh
+         WGq8HzqxGlm0zsft8NEwZ4Wlq+jezjVuAoCHilHeRwOWVHPYuC6m8ZM5VyXxAfEpk1
+         AQbEbcIapnllkiPD0NrugGXmEiHFG/WtbBKJPyoI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Frank Rowand <frank.rowand@sony.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0488/1039] of: unittest: 64 bit dma address test requires arch support
-Date:   Mon, 24 Jan 2022 19:37:57 +0100
-Message-Id: <20220124184141.675082704@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0448/1039] ALSA: hda: Fix potential deadlock at codec unbinding
+Date:   Mon, 24 Jan 2022 19:37:17 +0100
+Message-Id: <20220124184140.351719161@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,38 +46,215 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Rowand <frank.rowand@sony.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 9fd4cf5d3571b27d746b8ead494a3f051485b679 ]
+[ Upstream commit 7206998f578d5553989bc01ea2e544b622e79539 ]
 
-If an architecture does not support 64 bit dma addresses then testing
-for an expected dma address >= 0x100000000 will fail.
+When a codec is unbound dynamically via sysfs while its stream is in
+use, we may face a potential deadlock at the proc remove or a UAF.
+This happens since the hda_pcm is managed by a linked list, as it
+handles the hda_pcm object release via kref.
 
-Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
-Signed-off-by: Frank Rowand <frank.rowand@sony.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20211212221852.233295-1-frowand.list@gmail.com
+When a PCM is opened at the unbinding time, the release of hda_pcm
+gets delayed and it ends up with the close of the PCM stream releasing
+the associated hda_pcm object of its own.  The hda_pcm destructor
+contains the PCM device release that includes the removal of procfs
+entries.  And, this removal has the sync of the close of all in-use
+files -- which would never finish because it's called from the PCM
+file descriptor itself, i.e. it's trying to shoot its foot.
+
+For addressing the deadlock above, this patch changes the way to
+manage and release the hda_pcm object.  The kref of hda_pcm is
+dropped, and instead a simple refcount is introduced in hda_codec for
+keeping the track of the active PCM streams, and at each PCM open and
+close, this refcount is adjusted accordingly.  At unbinding, the
+driver calls snd_device_disconnect() for each PCM stream, then
+synchronizes with the refcount finish, and finally releases the object
+resources.
+
+Fixes: bbbc7e8502c9 ("ALSA: hda - Allocate hda_pcm objects dynamically")
+Link: https://lore.kernel.org/r/20211116072459.18930-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/unittest.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ include/sound/hda_codec.h |  8 +++++---
+ sound/pci/hda/hda_bind.c  |  5 +++++
+ sound/pci/hda/hda_codec.c | 42 ++++++++++++++++++++++++---------------
+ sound/pci/hda/hda_local.h |  1 +
+ 4 files changed, 37 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index 02c5cd06ad19c..35af4fedc15de 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -942,8 +942,9 @@ static void __init of_unittest_parse_dma_ranges(void)
+diff --git a/include/sound/hda_codec.h b/include/sound/hda_codec.h
+index 0e45963bb767f..82d9daa178517 100644
+--- a/include/sound/hda_codec.h
++++ b/include/sound/hda_codec.h
+@@ -8,7 +8,7 @@
+ #ifndef __SOUND_HDA_CODEC_H
+ #define __SOUND_HDA_CODEC_H
+ 
+-#include <linux/kref.h>
++#include <linux/refcount.h>
+ #include <linux/mod_devicetable.h>
+ #include <sound/info.h>
+ #include <sound/control.h>
+@@ -166,8 +166,8 @@ struct hda_pcm {
+ 	bool own_chmap;		/* codec driver provides own channel maps */
+ 	/* private: */
+ 	struct hda_codec *codec;
+-	struct kref kref;
+ 	struct list_head list;
++	unsigned int disconnected:1;
+ };
+ 
+ /* codec information */
+@@ -187,6 +187,8 @@ struct hda_codec {
+ 
+ 	/* PCM to create, set by patch_ops.build_pcms callback */
+ 	struct list_head pcm_list_head;
++	refcount_t pcm_ref;
++	wait_queue_head_t remove_sleep;
+ 
+ 	/* codec specific info */
+ 	void *spec;
+@@ -420,7 +422,7 @@ void snd_hda_codec_cleanup_for_unbind(struct hda_codec *codec);
+ 
+ static inline void snd_hda_codec_pcm_get(struct hda_pcm *pcm)
  {
- 	of_unittest_dma_ranges_one("/testcase-data/address-tests/device@70000000",
- 		0x0, 0x20000000);
--	of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
--		0x100000000, 0x20000000);
-+	if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
-+		of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
-+			0x100000000, 0x20000000);
- 	of_unittest_dma_ranges_one("/testcase-data/address-tests/pci@90000000",
- 		0x80000000, 0x20000000);
+-	kref_get(&pcm->kref);
++	refcount_inc(&pcm->codec->pcm_ref);
  }
+ void snd_hda_codec_pcm_put(struct hda_pcm *pcm);
+ 
+diff --git a/sound/pci/hda/hda_bind.c b/sound/pci/hda/hda_bind.c
+index 1c8bffc3eec6e..7153bd53e1893 100644
+--- a/sound/pci/hda/hda_bind.c
++++ b/sound/pci/hda/hda_bind.c
+@@ -156,6 +156,11 @@ static int hda_codec_driver_remove(struct device *dev)
+ 		return codec->bus->core.ext_ops->hdev_detach(&codec->core);
+ 	}
+ 
++	refcount_dec(&codec->pcm_ref);
++	snd_hda_codec_disconnect_pcms(codec);
++	wait_event(codec->remove_sleep, !refcount_read(&codec->pcm_ref));
++	snd_power_sync_ref(codec->bus->card);
++
+ 	if (codec->patch_ops.free)
+ 		codec->patch_ops.free(codec);
+ 	snd_hda_codec_cleanup_for_unbind(codec);
+diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
+index eda70814369bd..7016b48227bf2 100644
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -703,20 +703,10 @@ get_hda_cvt_setup(struct hda_codec *codec, hda_nid_t nid)
+ /*
+  * PCM device
+  */
+-static void release_pcm(struct kref *kref)
+-{
+-	struct hda_pcm *pcm = container_of(kref, struct hda_pcm, kref);
+-
+-	if (pcm->pcm)
+-		snd_device_free(pcm->codec->card, pcm->pcm);
+-	clear_bit(pcm->device, pcm->codec->bus->pcm_dev_bits);
+-	kfree(pcm->name);
+-	kfree(pcm);
+-}
+-
+ void snd_hda_codec_pcm_put(struct hda_pcm *pcm)
+ {
+-	kref_put(&pcm->kref, release_pcm);
++	if (refcount_dec_and_test(&pcm->codec->pcm_ref))
++		wake_up(&pcm->codec->remove_sleep);
+ }
+ EXPORT_SYMBOL_GPL(snd_hda_codec_pcm_put);
+ 
+@@ -731,7 +721,6 @@ struct hda_pcm *snd_hda_codec_pcm_new(struct hda_codec *codec,
+ 		return NULL;
+ 
+ 	pcm->codec = codec;
+-	kref_init(&pcm->kref);
+ 	va_start(args, fmt);
+ 	pcm->name = kvasprintf(GFP_KERNEL, fmt, args);
+ 	va_end(args);
+@@ -741,6 +730,7 @@ struct hda_pcm *snd_hda_codec_pcm_new(struct hda_codec *codec,
+ 	}
+ 
+ 	list_add_tail(&pcm->list, &codec->pcm_list_head);
++	refcount_inc(&codec->pcm_ref);
+ 	return pcm;
+ }
+ EXPORT_SYMBOL_GPL(snd_hda_codec_pcm_new);
+@@ -748,15 +738,31 @@ EXPORT_SYMBOL_GPL(snd_hda_codec_pcm_new);
+ /*
+  * codec destructor
+  */
++void snd_hda_codec_disconnect_pcms(struct hda_codec *codec)
++{
++	struct hda_pcm *pcm;
++
++	list_for_each_entry(pcm, &codec->pcm_list_head, list) {
++		if (pcm->disconnected)
++			continue;
++		if (pcm->pcm)
++			snd_device_disconnect(codec->card, pcm->pcm);
++		snd_hda_codec_pcm_put(pcm);
++		pcm->disconnected = 1;
++	}
++}
++
+ static void codec_release_pcms(struct hda_codec *codec)
+ {
+ 	struct hda_pcm *pcm, *n;
+ 
+ 	list_for_each_entry_safe(pcm, n, &codec->pcm_list_head, list) {
+-		list_del_init(&pcm->list);
++		list_del(&pcm->list);
+ 		if (pcm->pcm)
+-			snd_device_disconnect(codec->card, pcm->pcm);
+-		snd_hda_codec_pcm_put(pcm);
++			snd_device_free(pcm->codec->card, pcm->pcm);
++		clear_bit(pcm->device, pcm->codec->bus->pcm_dev_bits);
++		kfree(pcm->name);
++		kfree(pcm);
+ 	}
+ }
+ 
+@@ -769,6 +775,7 @@ void snd_hda_codec_cleanup_for_unbind(struct hda_codec *codec)
+ 		codec->registered = 0;
+ 	}
+ 
++	snd_hda_codec_disconnect_pcms(codec);
+ 	cancel_delayed_work_sync(&codec->jackpoll_work);
+ 	if (!codec->in_freeing)
+ 		snd_hda_ctls_clear(codec);
+@@ -792,6 +799,7 @@ void snd_hda_codec_cleanup_for_unbind(struct hda_codec *codec)
+ 	remove_conn_list(codec);
+ 	snd_hdac_regmap_exit(&codec->core);
+ 	codec->configured = 0;
++	refcount_set(&codec->pcm_ref, 1); /* reset refcount */
+ }
+ EXPORT_SYMBOL_GPL(snd_hda_codec_cleanup_for_unbind);
+ 
+@@ -958,6 +966,8 @@ int snd_hda_codec_device_new(struct hda_bus *bus, struct snd_card *card,
+ 	snd_array_init(&codec->verbs, sizeof(struct hda_verb *), 8);
+ 	INIT_LIST_HEAD(&codec->conn_list);
+ 	INIT_LIST_HEAD(&codec->pcm_list_head);
++	refcount_set(&codec->pcm_ref, 1);
++	init_waitqueue_head(&codec->remove_sleep);
+ 
+ 	INIT_DELAYED_WORK(&codec->jackpoll_work, hda_jackpoll_work);
+ 	codec->depop_delay = -1;
+diff --git a/sound/pci/hda/hda_local.h b/sound/pci/hda/hda_local.h
+index d22c96eb2f8fb..8621f576446b8 100644
+--- a/sound/pci/hda/hda_local.h
++++ b/sound/pci/hda/hda_local.h
+@@ -137,6 +137,7 @@ int __snd_hda_add_vmaster(struct hda_codec *codec, char *name,
+ int snd_hda_codec_reset(struct hda_codec *codec);
+ void snd_hda_codec_register(struct hda_codec *codec);
+ void snd_hda_codec_cleanup_for_unbind(struct hda_codec *codec);
++void snd_hda_codec_disconnect_pcms(struct hda_codec *codec);
+ 
+ #define snd_hda_regmap_sync(codec)	snd_hdac_regmap_sync(&(codec)->core)
+ 
 -- 
 2.34.1
 
