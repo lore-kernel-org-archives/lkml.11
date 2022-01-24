@@ -2,94 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:09:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90414C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233645AbiAXKJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:09:48 -0500
-Received: from mga07.intel.com ([134.134.136.100]:25263 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229488AbiAXKJr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:09:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643018987; x=1674554987;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=mzGQhVQDgBYYPhcKKevgCjhvNgROu8zTRBpJZujDBHI=;
-  b=N8T0dnjElF/6sIEE9iYKSkGjC28hq0lx6DaPhIDOgLQUDUBHrjdQJOu8
-   b3FmR4I2crqmYBmxgXnIaMVA0AtIdUNb/JLeTP1Ek57T679qjB+kxbCu3
-   532EBrWjrMWllXrxrAh64b6nz07uhRRz81eoh5RDRr6SiZXiZ5htUO1Tm
-   MvOHEaVGjtARo8LVmORdVvnzRCQjmBGYwL+PHUlBHFbtEV2mjyYOswETy
-   bLY5T4edDYpR7Ohh5FVY6pZiJYxiBlUtEkUBdVTvQGbX6SCd+zvdb83jM
-   zdfKBNob+fV07Vd5wO83g80/OA7882271SPF4dU7JJ7kIZHjcvbaCe0Ht
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="309333158"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="309333158"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 02:09:31 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627443321"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 02:09:30 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBwHx-000IBI-G3; Mon, 24 Jan 2022 10:09:29 +0000
-Date:   Mon, 24 Jan 2022 18:09:02 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Atish Patra <atishp@rivosinc.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Palmer Dabbelt <palmer@rivosinc.com>,
-        Anup Patel <anup@brainfault.org>
-Subject: arch/riscv/kernel/cpu_ops_sbi.c:24:1: sparse: sparse: symbol
- '__pcpu_scope_boot_data' was not declared. Should it be static?
-Message-ID: <202201241842.sQ6Y0PbO-lkp@intel.com>
+        id S234273AbiAXKMS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:12:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbiAXKMQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:12:16 -0500
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC090C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 02:12:15 -0800 (PST)
+Received: by mail-lj1-x230.google.com with SMTP id n23so10318066ljg.1
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 02:12:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:references:in-reply-to:subject:date:message-id
+         :mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=00UDOHuVRkKKvQsjGUdxQd27cyZnJBr83FBriMmt9Gg=;
+        b=bxMUTKscmSqHPkI0/AOrgAGs+hcPCMv+jTqRAwARzGbfal0wTRrbtmQAfb5oIur3SQ
+         G+xTpHsNg9HTswIOMpCVpl5IQH6GjactMS685LLC4y4qQvhCG0x7iw7pAdqTtBwZIR+N
+         T/7MmCtwUmtNX5wIjSL1EN6CK9OwJNwUqmgxeuqIcmPFhAxwzTl8+r4rkU+4Oh0ZWmmJ
+         rOELz5uCkRo1PqCGZsLs9Bf40xeNYAHhY0C84kdToV+6M5NZL7idiVzGqRvFrW5rl4zT
+         kwkpjusn/17wFVw6qnk1MGhWHeAfb2Rj0ePmHv+vdr5oJWADAL3TvF1OAt00Fp8yapKh
+         tceQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:references:in-reply-to:subject:date
+         :message-id:mime-version:content-transfer-encoding:thread-index
+         :content-language;
+        bh=00UDOHuVRkKKvQsjGUdxQd27cyZnJBr83FBriMmt9Gg=;
+        b=Eb2uzaVQDkJA71KOOfGX6Y0atnC/NZ4YcQqJ6igSh+lpsPKpGWLdSsj/a2AWnUGTCV
+         M+NQPsO3zaywvjW0yleBEP/mtr1EMQwNauju3HUU5UgpdmutBlkwtMc+8QZ7vsmFNDXO
+         Oxr/Ac0Thrh5lo9A34kZgICUjA72I+qZJdz121Bo/PKfgAlNmCYlJ1qikkIg+/gHWdt/
+         j5mSBooIYDDNa1KuTD87EfeY5s3uWvZeWibZXnSMeduumA5/KGzVqGai9YueeYafDz0P
+         LkH3UeJ8z3xIQYCeuFWB7C3ZogRSNoWlGhNEn5uYwSUrl1wV10Q2mgQXPgdYzvKEGKDd
+         qdGw==
+X-Gm-Message-State: AOAM532882m7k0q20W+EVpEBKMNXobl1mZytl5QqrvCCw8SS5ttlGhGD
+        YgtAH7RG3MysqyyaDiqWXtY=
+X-Google-Smtp-Source: ABdhPJxfjS1VYnBLdfKECvD6iwAfMMAOkdH9CYrYxb2qOSDqEn/9khScfZRqL1SFqDOcd55h1xl3TA==
+X-Received: by 2002:a2e:8786:: with SMTP id n6mr10845274lji.166.1643019134022;
+        Mon, 24 Jan 2022 02:12:14 -0800 (PST)
+Received: from DESKTOPMNL9DDQ (88-115-161-74.elisa-laajakaista.fi. [88.115.161.74])
+        by smtp.gmail.com with ESMTPSA id m10sm1119339lfk.119.2022.01.24.02.12.13
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Jan 2022 02:12:13 -0800 (PST)
+From:   <zhi.wang.linux@gmail.com>
+To:     "'Christoph Hellwig'" <hch@lst.de>,
+        "'Wang, Zhi A'" <zhi.a.wang@intel.com>
+Cc:     <intel-gfx@lists.freedesktop.org>,
+        <intel-gvt-dev@lists.freedesktop.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-kernel@vger.kernel.org>,
+        "'Jason Gunthorpe'" <jgg@nvidia.com>,
+        "'Jani Nikula'" <jani.nikula@linux.intel.com>,
+        "'Joonas Lahtinen'" <joonas.lahtinen@linux.intel.com>,
+        "'Vivi, Rodrigo'" <rodrigo.vivi@intel.com>,
+        "'Zhenyu Wang'" <zhenyuw@linux.intel.com>,
+        "'Xu, Terrence'" <terrence.xu@intel.com>
+References: <20211129123832.105196-1-zhi.a.wang@intel.com> <20211130164622.GA15150@lst.de> <e183b95f-89d1-3a2f-27e2-82aa2b10e8fc@intel.com> <20220124094004.GA23537@lst.de>
+In-Reply-To: <20220124094004.GA23537@lst.de>
+Subject: RE: [PATCH v4 1/2] i915/gvt: Introduce the mmio_info_table.c to support VFIO new mdev API
+Date:   Mon, 24 Jan 2022 12:12:12 +0200
+Message-ID: <004201d8110a$db3ec9e0$91bc5da0$@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain;
+        charset="us-ascii"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHIPB7b9XYZUM7zLx+SfJYTBroPkAJO7v/TAoSMsnoBvpZ7zKxdDGRA
+Content-Language: en-us
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-commit: 9a2451f1866344d38b4a1dc20396e3a03954fcd7 RISC-V: Avoid using per cpu array for ordered booting
-date:   4 days ago
-config: riscv-allmodconfig (https://download.01.org/0day-ci/archive/20220124/202201241842.sQ6Y0PbO-lkp@intel.com/config)
-compiler: riscv64-linux-gcc (GCC) 11.2.0
-reproduce:
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9a2451f1866344d38b4a1dc20396e3a03954fcd7
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 9a2451f1866344d38b4a1dc20396e3a03954fcd7
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+Hi Christoph and Jason:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Have been talking with Raj. I am going to work on this series this week. 
 
+Thanks,
+Zhi.
 
-sparse warnings: (new ones prefixed by >>)
->> arch/riscv/kernel/cpu_ops_sbi.c:24:1: sparse: sparse: symbol '__pcpu_scope_boot_data' was not declared. Should it be static?
+-----Original Message-----
+From: Christoph Hellwig <hch@lst.de> 
+Sent: Monday, January 24, 2022 11:40 AM
+To: Wang, Zhi A <zhi.a.wang@intel.com>
+Cc: Christoph Hellwig <hch@lst.de>; Zhi Wang <zhi.wang.linux@gmail.com>;
+intel-gfx@lists.freedesktop.org; intel-gvt-dev@lists.freedesktop.org;
+dri-devel@lists.freedesktop.org; linux-kernel@vger.kernel.org; Jason
+Gunthorpe <jgg@nvidia.com>; Jani Nikula <jani.nikula@linux.intel.com>;
+Joonas Lahtinen <joonas.lahtinen@linux.intel.com>; Vivi, Rodrigo
+<rodrigo.vivi@intel.com>; Zhenyu Wang <zhenyuw@linux.intel.com>; Xu,
+Terrence <terrence.xu@intel.com>
+Subject: Re: [PATCH v4 1/2] i915/gvt: Introduce the mmio_info_table.c to
+support VFIO new mdev API
 
-vim +/__pcpu_scope_boot_data +24 arch/riscv/kernel/cpu_ops_sbi.c
+On Fri, Dec 17, 2021 at 08:52:53AM +0000, Wang, Zhi A wrote:
+> Sorry for the late reply as I am supporting the customers recently. I 
+> will refresh this after the christmas.
 
-    18	
-    19	/*
-    20	 * Ordered booting via HSM brings one cpu at a time. However, cpu hotplug can
-    21	 * be invoked from multiple threads in parallel. Define a per cpu data
-    22	 * to handle that.
-    23	 */
-  > 24	DEFINE_PER_CPU(struct sbi_hart_boot_data, boot_data);
-    25	
+Did you find some time to look into it?  Do you want some help?
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
