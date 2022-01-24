@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6E9EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FFA8C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839259AbiAXWuP (ORCPT
+        id S1839385AbiAXWud (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:50:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52656 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572973AbiAXVmy (ORCPT
+        Mon, 24 Jan 2022 17:50:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56308 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1572905AbiAXVmu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:54 -0500
+        Mon, 24 Jan 2022 16:42:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB417C0419DF;
+        Mon, 24 Jan 2022 12:31:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CDED1B81142;
-        Mon, 24 Jan 2022 21:42:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09DD3C340E4;
-        Mon, 24 Jan 2022 21:42:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AE9361382;
+        Mon, 24 Jan 2022 20:31:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332B7C340E5;
+        Mon, 24 Jan 2022 20:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060571;
-        bh=GQv7LOP06zbfKaH6OrGhewLZ8+JM8W6ZxwkO/Q4Zfm4=;
+        s=korg; t=1643056285;
+        bh=QGCFPH1WYvDgr9p4O+VQEVXKCX82xetHO6mmGWOWw2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fHU4htTiDmgIeuBeGBTeCJUnZEClcA7xJTWYzSL0nIMF06O4LWGk1KjoPi7c8dD1a
-         vHKVconUHZPWUhJc8qmOvPU809TSArwunqwRu+MSw+Zn+HPpOzkbn38D+v+/WubXE+
-         dpSLg6By+2qcbuyv3eLF67+qch1dVc5ZoT4azasI=
+        b=P8OKTXTqq57Z4X8yKl1SJMaa1d4FmCCdDD30VE+tEb03s6CWXzhYcka7cOugsV1OY
+         idq0wN7Y56vt9CPSyas/zzAQQmHJVzpC8HDEeilU40It4dEeIGpudhYqEMpLgEdvdX
+         3dwCQzd/qu1OoVbrEevzxT1bIJD6N6z5/9+VKXNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 0975/1039] net: axienet: increase default TX ring size to 128
-Date:   Mon, 24 Jan 2022 19:46:04 +0100
-Message-Id: <20220124184158.065796695@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 401/846] uio: uio_dmem_genirq: Catch the Exception
+Date:   Mon, 24 Jan 2022 19:38:38 +0100
+Message-Id: <20220124184114.788768037@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,35 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-commit 2d19c3fd80178160dd505ccd7fed1643831227a5 upstream.
+[ Upstream commit eec91694f927d1026974444eb6a3adccd4f1cbc2 ]
 
-With previous changes to make the driver handle the TX ring size more
-correctly, the default TX ring size of 64 appears to significantly
-bottleneck TX performance to around 600 Mbps on a 1 Gbps link on ZynqMP.
-Increasing this to 128 seems to bring performance up to near line rate and
-shouldn't cause excess bufferbloat (this driver doesn't yet support modern
-byte-based queue management).
+The return value of dma_set_coherent_mask() is not always 0.
+To catch the exception in case that dma is not support the mask.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 0a0c3b5a24bd ("Add new uio device for dynamic memory allocation")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Link: https://lore.kernel.org/r/20211204000326.1592687-1-jiasheng@iscas.ac.cn
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/uio/uio_dmem_genirq.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -41,7 +41,7 @@
- #include "xilinx_axienet.h"
+diff --git a/drivers/uio/uio_dmem_genirq.c b/drivers/uio/uio_dmem_genirq.c
+index 6b5cfa5b06733..1106f33764047 100644
+--- a/drivers/uio/uio_dmem_genirq.c
++++ b/drivers/uio/uio_dmem_genirq.c
+@@ -188,7 +188,11 @@ static int uio_dmem_genirq_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	}
  
- /* Descriptors defines for Tx and Rx DMA */
--#define TX_BD_NUM_DEFAULT		64
-+#define TX_BD_NUM_DEFAULT		128
- #define RX_BD_NUM_DEFAULT		1024
- #define TX_BD_NUM_MIN			(MAX_SKB_FRAGS + 1)
- #define TX_BD_NUM_MAX			4096
+-	dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
++	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
++	if (ret) {
++		dev_err(&pdev->dev, "DMA enable failed\n");
++		return ret;
++	}
+ 
+ 	priv->uioinfo = uioinfo;
+ 	spin_lock_init(&priv->lock);
+-- 
+2.34.1
+
 
 
