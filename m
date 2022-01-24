@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66C8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBA1C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423189AbiAYCdH (ORCPT
+        id S3423091AbiAYCcy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:33:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48630 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349338AbiAXUWn (ORCPT
+        Mon, 24 Jan 2022 21:32:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356111AbiAXUWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:43 -0500
+        Mon, 24 Jan 2022 15:22:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918AAC0417D1;
+        Mon, 24 Jan 2022 11:40:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A23D61232;
-        Mon, 24 Jan 2022 20:22:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7FBAC340E5;
-        Mon, 24 Jan 2022 20:22:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 39B88B81239;
+        Mon, 24 Jan 2022 19:40:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66C9FC340E7;
+        Mon, 24 Jan 2022 19:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055755;
-        bh=j9dt6hXW5l1S9dvtzJQJskZSb1b6kG2Bxkt0mnoPWbA=;
+        s=korg; t=1643053218;
+        bh=Nfhpuzi4irbRQN3E3HkAZc4HSOT9aiM10z8KebCFNVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ysktzoqN93yeKKOrHYRNh3/NN6oqGiYckCr4+QGIG+FUPBEMsRSKGoTqq+wD8fvQf
-         5cqVarfALSlpCXJcMbMcK4NySM44kpTGmeTRaX3z6bwkM2WsQa4xywC4e7VuyepgAw
-         CXOqD4HYzpHFHjGb1V1En6NM8ZHKohTq+GM38PqM=
+        b=i4k9PuQsRNigywDeO/YurS5pO1DBwUkuyuye5MIq3J6Fwduy28IGnv9rzjTDPEdcu
+         naJ2naVo4RmqsDbuCdfxvnWf5E3grSBUUNX2Mym1zSLO8A0ApDc9+nlPJjEhkeOqVU
+         dwFAe3S0jSJLGdB61f3w5YlDz5UhUOXi+qh6Rtsg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernelbot <kernel-bot@kylinos.cn>,
-        Jackie Liu <liuyun01@kylinos.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 222/846] drm/msm/dp: displayPort driver need algorithm rational
-Date:   Mon, 24 Jan 2022 19:35:39 +0100
-Message-Id: <20220124184108.573059964@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.4 281/320] scsi: core: Show SCMD_LAST in text form
+Date:   Mon, 24 Jan 2022 19:44:25 +0100
+Message-Id: <20220124184003.536800740@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jackie Liu <liuyun01@kylinos.cn>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 53d22794711ad630f40d59dd726bd260d77d585f ]
+commit 3369046e54ca8f82e0cb17740643da2d80d3cfa8 upstream.
 
-Let's select RATIONAL with dp driver. avoid like:
+The SCSI debugfs code supports showing information about pending commands,
+including translating SCSI command flags from numeric into text format.
+Also convert the SCMD_LAST flag from numeric into text form.
 
-[...]
-x86_64-linux-gnu-ld: drivers/gpu/drm/msm/dp/dp_catalog.o: in function `dp_catalog_ctrl_config_msa':
-dp_catalog.c:(.text+0x57e): undefined reference to `rational_best_approximation'
-
-Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
-Reported-by: kernelbot <kernel-bot@kylinos.cn>
-Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
-Link: https://lore.kernel.org/r/20211110070950.3355597-2-liu.yun@linux.dev
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211129194609.3466071-4-bvanassche@acm.org
+Fixes: 8930a6c20791 ("scsi: core: add support for request batching")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/msm/Kconfig | 1 +
+ drivers/scsi/scsi_debugfs.c |    1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
-index 3ddf739a6f9b8..c49b239231190 100644
---- a/drivers/gpu/drm/msm/Kconfig
-+++ b/drivers/gpu/drm/msm/Kconfig
-@@ -63,6 +63,7 @@ config DRM_MSM_HDMI_HDCP
- config DRM_MSM_DP
- 	bool "Enable DisplayPort support in MSM DRM driver"
- 	depends on DRM_MSM
-+	select RATIONAL
- 	default y
- 	help
- 	  Compile in support for DP driver in MSM DRM driver. DP external
--- 
-2.34.1
-
+--- a/drivers/scsi/scsi_debugfs.c
++++ b/drivers/scsi/scsi_debugfs.c
+@@ -10,6 +10,7 @@ static const char *const scsi_cmd_flags[
+ 	SCSI_CMD_FLAG_NAME(TAGGED),
+ 	SCSI_CMD_FLAG_NAME(UNCHECKED_ISA_DMA),
+ 	SCSI_CMD_FLAG_NAME(INITIALIZED),
++	SCSI_CMD_FLAG_NAME(LAST),
+ };
+ #undef SCSI_CMD_FLAG_NAME
+ 
 
 
