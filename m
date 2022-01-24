@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C93EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DED9C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354132AbiAXTgE (ORCPT
+        id S1354172AbiAXTgJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57134 "EHLO
+        Mon, 24 Jan 2022 14:36:09 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57230 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352185AbiAXT3t (ORCPT
+        with ESMTP id S1352248AbiAXT34 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:49 -0500
+        Mon, 24 Jan 2022 14:29:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96CEA6121F;
-        Mon, 24 Jan 2022 19:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC21C340E5;
-        Mon, 24 Jan 2022 19:29:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 766B1614A8;
+        Mon, 24 Jan 2022 19:29:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ADC1C340E5;
+        Mon, 24 Jan 2022 19:29:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052587;
-        bh=/VPIGVCi6Rg+PZ+mSK3jbNzMWjhnDYX74Ty8HuWxxy0=;
+        s=korg; t=1643052595;
+        bh=O/qVZZaNBQiKTU8XF9hX2SxNcvEqCW1/ktGfMh8W1do=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jY3AImKH2uiS5AriRHJkGLj7fpjOlpAipEUyvy3lg1ShZ088Bfs/oHqhB0gvXUtLj
-         iQwTZXPjmdghWPxRZWFiG7uJlXtZV+4OXu4YpNovgBniWqdcobesnCP6ZfpHbqUreG
-         0Vsv7gk9Bwf9NkHatGwV7MN8inru+7y8jDzTlYh8=
+        b=u7t4615pcgK+kytOpfJzkyLgirFBjQDV43Up3KDH74iONvFq8YDNLUzoxzX/oHZQV
+         +Qp5WfdcI0tsgx6uSTcfu8lDswwzVoHyY3DZN5MXz1QEHS6VL34mvWWAeBv47xN7f4
+         ceJ2KO9t+6B0tGcPm5BlVQjptVwsHicKu0+DhoMc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 109/320] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_get_str_desc
-Date:   Mon, 24 Jan 2022 19:41:33 +0100
-Message-Id: <20220124183957.423180733@linuxfoundation.org>
+        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 112/320] debugfs: lockdown: Allow reading debugfs files that are not world readable
+Date:   Mon, 24 Jan 2022 19:41:36 +0100
+Message-Id: <20220124183957.523671417@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,47 +46,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Michal Suchanek <msuchanek@suse.de>
 
-[ Upstream commit 0a94131d6920916ccb6a357037c535533af08819 ]
+[ Upstream commit 358fcf5ddbec4e6706405847d6a666f5933a6c25 ]
 
-The function performs a check on the hdev input parameters, however, it
-is used before the check.
+When the kernel is locked down the kernel allows reading only debugfs
+files with mode 444. Mode 400 is also valid but is not allowed.
 
-Initialize the udev variable after the sanity check to avoid a
-possible NULL pointer dereference.
+Make the 444 into a mask.
 
-Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
-Addresses-Coverity-ID: 1443827 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: 5496197f9b08 ("debugfs: Restrict debugfs when the kernel is locked down")
+Signed-off-by: Michal Suchanek <msuchanek@suse.de>
+Link: https://lore.kernel.org/r/20220104170505.10248-1-msuchanek@suse.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-uclogic-params.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/debugfs/file.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index 0afd368115891..1f3ea6c93ef44 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -65,7 +65,7 @@ static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
- 					__u8 idx, size_t len)
+diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
+index a32c5c7dcfd89..da87615ad69a7 100644
+--- a/fs/debugfs/file.c
++++ b/fs/debugfs/file.c
+@@ -146,7 +146,7 @@ static int debugfs_locked_down(struct inode *inode,
+ 			       struct file *filp,
+ 			       const struct file_operations *real_fops)
  {
- 	int rc;
--	struct usb_device *udev = hid_to_usb_dev(hdev);
-+	struct usb_device *udev;
- 	__u8 *buf = NULL;
- 
- 	/* Check arguments */
-@@ -74,6 +74,8 @@ static int uclogic_params_get_str_desc(__u8 **pbuf, struct hid_device *hdev,
- 		goto cleanup;
- 	}
- 
-+	udev = hid_to_usb_dev(hdev);
-+
- 	buf = kmalloc(len, GFP_KERNEL);
- 	if (buf == NULL) {
- 		rc = -ENOMEM;
+-	if ((inode->i_mode & 07777) == 0444 &&
++	if ((inode->i_mode & 07777 & ~0444) == 0 &&
+ 	    !(filp->f_mode & FMODE_WRITE) &&
+ 	    !real_fops->unlocked_ioctl &&
+ 	    !real_fops->compat_ioctl &&
 -- 
 2.34.1
 
