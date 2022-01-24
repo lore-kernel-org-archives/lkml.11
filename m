@@ -2,62 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD147C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3112C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245186AbiAXSR4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:17:56 -0500
-Received: from mail-co1nam11on2055.outbound.protection.outlook.com ([40.107.220.55]:26401
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        id S245210AbiAXSSB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:18:01 -0500
+Received: from mail-bn8nam12on2083.outbound.protection.outlook.com ([40.107.237.83]:44865
+        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S235979AbiAXSRx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S245172AbiAXSRx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:17:53 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M8ti58uCR6gfMCUvdVBq9ucN/fZ1bJocRZe0Bou+m15ukMUlInTp1lJTndyfPeCeKBSRy7zphkYnDYMQ9rLtfpNoPua9qGfEg8Po21agOyDFOmapdN52i5veDCyQIF7h2iUaMXf8Xk62BpKcS5fzTQt3qGJ3G+2GbiTc62128YMtTHZRj9MPpUtWuQTR+zpib7euKzL/fogPg8eX1HH/8gLRB4gKk2iuszy6L+Aqu/bLXSPtOkiArcmhx/m000a1m/FgFYg82pt7x3xH8D1hB3ykvyZ0wb+C1ECQhrCDQNRDn+ZbY8tsHMxt51zcbkxkk4R+oHeXzCL40qIfrTTLVw==
+ b=gostEVAH2DM7xJv2wzL0XjZlXC2JOqDPhBKwekWqj6W422uQps79q7QctxX6M7e7NtxwQzVIUO78M2j631uVRLHqaKiF4to/fuVD87dy28J5BoMYgvU18kZP1t2EjRoamlRmLWaXEfHSQ4N4mkT8i347Jl/LH0StNij2WRbp7Fxhq6UjZEtru3qyEJRDIjHHS4Z4RZggfKjcJOQnXTevdnGGF8IGb5HMI3kvNKKTIBC7JgnCq7eNfPo1w4KO4Z/cKM1akQ/bij1cJiaa7C7xoR5CdOnMqSu5m2udSWp1XOYd45aP0eJbXHV6+uWKX5P5E3i5xg9b2V4BZ2Eyy2mvmw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AFvtPRPnEp+41Zbi3/aZszS0oli6S3TWuL1J9gO87r4=;
- b=O1iuHhaXR4Uh+RRhwitNi7eq9a+nR/rBCWc30jISWjrTQkfGfoySEfdGF3jEKVaV2AhruDenhnC5/7gpeLEIOzOWyMke0DQBMn0dSNADyw4N/XhP/IQ8Jz6r/yXVqc9YjL/B7rv8Bteb9lDD8M6SI/gn2pVesiXndTRwBC5iClszsd/urLgT1rPm87+UQEK1zBrhWP1iKxnS6rYU1QCLH8kYipnhgl/vZUQBtspsyMtcw4ufgd8yrPqWBdMSj5DS42VXueYuw5owqpcKqmg5QbpGVm+LGvoHvfFaWskqX1Poc2LTmDtEA2mbb+XtNqIXOBhGFjtnZFrD1eMOs6Xc6A==
+ bh=zkVdGMLKC2SYT8bHfypRNDWu6RqXsLY86Q9yCVu6iK4=;
+ b=RWlJ+qZvyRBYNUaU5pmIWDSNW3/FQZl6g2dwcFaX4MjjC3XD2chWj+kHPUeEOhxsTaRg52hMqSm7jCnKMrAY/qlkhya36PrkpVl63Iv1ez+AhK1V4g9DCtwgFUNHIcY9XqyW5++aSLsKUlMc/svOB4krPsA86VePjtpObs6QcQDW8F1AOOx2Dfju0S+ryq50ufvTCJh9gTrlqeCbBgUEXm3k/BxyDqAaoMqH5Lp2U/omV8SUc55vdkQPHxuGOaRK2aZkSKWjR6MvejS3yS+HWghSTH4oVS/YZkna4DZYkzhS3aLmJuwZkHb0VZnRDKxOvaEMgXl0iZKKjjiN8OFQgg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=huawei.com smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AFvtPRPnEp+41Zbi3/aZszS0oli6S3TWuL1J9gO87r4=;
- b=HYjN56F4pVDUaKRRvPRCYhkyT1x6zTHV9O6RfRD4NpPtCaTfICimh5+IbzrNb48uUBv/tGDBFBf1D5s+HgfagijDZEO8L4NcRdfXPb9NJDW827Fev3UA47Y9CstSKNTX3ykkXk95PS3jAasjRGlv7lsLpogb6p3oWzDKH7oQEdacqUHX1zVo2pnIRv0e6QxF7NnH3dYyQFb4oPs1yKlP1UYc3i4mFeQRalPf9nYqFdztA9HLWzVJ6xe5BUlDm+MzekQbGfRNLO11c3K+uJCTJjHDpAzZupLL7L0M7peksDA0ImYzU5SDXRi3S6dP6C1md6Q1Vvo2EkBvzLbdNQpOqw==
-Received: from DS7PR03CA0104.namprd03.prod.outlook.com (2603:10b6:5:3b7::19)
- by BN7PR12MB2833.namprd12.prod.outlook.com (2603:10b6:408:27::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Mon, 24 Jan
- 2022 18:17:51 +0000
-Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:3b7:cafe::c3) by DS7PR03CA0104.outlook.office365.com
- (2603:10b6:5:3b7::19) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17 via Frontend
- Transport; Mon, 24 Jan 2022 18:17:51 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ bh=zkVdGMLKC2SYT8bHfypRNDWu6RqXsLY86Q9yCVu6iK4=;
+ b=aZJ02EAay1lmQaFtng85QhrAIa8YlO3PjkwZH8QYq32ZcHqYcUNh8CgeSCeYYlTnLiAxLfs10i8bbN7Wxixz2cw9yHSJ5zYFVNDIp3/zZa15HLTeN/CZv5w0u8yYv3PHCqvjVvwkqfaYuQ1ZCZkqUsH+8D5sLEu7JBBUHLDAVyh8V4OXdN3mbh8Z+YnHkSVTgO9Qsy9J150gWVTueeNXWBtrNaNwVJ6z9fpLaYGAE6MizY1k8qzDLFXhF8zfl1ULEy1q68fjT47gPWIH3+M1fXu0/mYbIqgjx4jKSwjPqrQb+E64gdH9ires2Eym2waQCwHbY9ThX5gRA/p/eCy2KA==
+Received: from DM5PR06CA0078.namprd06.prod.outlook.com (2603:10b6:3:4::16) by
+ DM5PR12MB1913.namprd12.prod.outlook.com (2603:10b6:3:10d::17) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4909.7; Mon, 24 Jan 2022 18:17:42 +0000
+Received: from DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:3:4:cafe::31) by DM5PR06CA0078.outlook.office365.com
+ (2603:10b6:3:4::16) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7 via Frontend
+ Transport; Mon, 24 Jan 2022 18:17:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT046.mail.protection.outlook.com (10.13.172.121) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ DM6NAM11FT060.mail.protection.outlook.com (10.13.173.63) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 18:17:50 +0000
+ 15.20.4909.7 via Frontend Transport; Mon, 24 Jan 2022 18:17:42 +0000
 Received: from drhqmail202.nvidia.com (10.126.190.181) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Mon, 24 Jan 2022 18:17:50 +0000
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.18; Mon, 24 Jan 2022 18:17:41 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
  drhqmail202.nvidia.com (10.126.190.181) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Mon, 24 Jan 2022 10:17:49 -0800
+ Mon, 24 Jan 2022 10:17:41 -0800
 Received: from nvidia-Inspiron-15-7510.nvidia.com (10.127.8.13) by
  mail.nvidia.com (10.126.190.180) with Microsoft SMTP Server id 15.2.986.9 via
- Frontend Transport; Mon, 24 Jan 2022 10:17:45 -0800
+ Frontend Transport; Mon, 24 Jan 2022 10:17:37 -0800
 From:   Abhishek Sahu <abhsahu@nvidia.com>
 To:     <kvm@vger.kernel.org>,
         Alex Williamson <alex.williamson@redhat.com>,
@@ -67,9 +66,9 @@ CC:     Max Gurtovoy <mgurtovoy@nvidia.com>,
         Zhen Lei <thunder.leizhen@huawei.com>,
         Jason Gunthorpe <jgg@nvidia.com>,
         <linux-kernel@vger.kernel.org>, Abhishek Sahu <abhsahu@nvidia.com>
-Subject: [RFC PATCH v2 3/5] vfio/pci: fix memory leak during D3hot to D0 tranistion
-Date:   Mon, 24 Jan 2022 23:47:24 +0530
-Message-ID: <20220124181726.19174-4-abhsahu@nvidia.com>
+Subject: [RFC PATCH v2 1/5] vfio/pci: register vfio-pci driver with runtime PM framework
+Date:   Mon, 24 Jan 2022 23:47:22 +0530
+Message-ID: <20220124181726.19174-2-abhsahu@nvidia.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220124181726.19174-1-abhsahu@nvidia.com>
 References: <20220124181726.19174-1-abhsahu@nvidia.com>
@@ -78,178 +77,324 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 353910cb-8374-471f-9426-08d9df65d526
-X-MS-TrafficTypeDiagnostic: BN7PR12MB2833:EE_
-X-Microsoft-Antispam-PRVS: <BN7PR12MB2833C0079D284ED0B64F0D34CC5E9@BN7PR12MB2833.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Office365-Filtering-Correlation-Id: 2f7c9dc4-5f45-4318-532c-08d9df65d013
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1913:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1913F15FC0247B8B7F71E4D9CC5E9@DM5PR12MB1913.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: E8gq5TRHkM8cyov4z3Iij87hxvYvQEoYhhCuk2vBgSdmQxuydcY3mTLde9Yw7Qq4Ka91+phIj6uq161EuP+zNDdU7mKXTiOk9vM21IWHFC1GS5yoVeXu9BnlhgXbmAZmamZVr2U2xvHdDIy5fVWnyu9JYeKl++O1S88bOboXFvJbXOxsOiJkkyI49/MlWyCwUEFDyM0oAYYsgDdNZH1skmaz1cpE/VKB2N5AAQeoaM09RrE8Yhpa1b0nzPto/dof9cb9VYfBhOGe2j1LmBC9Cwqa9rG3n9WsMRyTLrpdECdXX/jv1qbLziD8ppfNNkW8NDtBCWUookoIir6dywHQXCtJoUF1T8vraBiYKYl0yor8vt2s6uUBIOPvOUpvQNGQb27gH3ULF8GS4pDiC2IfetXY49DpEidoX4YP8/ri4DVNJ+Y/duAeTWzPYtzKR3w6MMCa/+3OXG5KeOu8bZ/Qq2iI0Um5f1o92+ddeNLmKbjKytLUwRgTc96ovcYHuUSq+13xDFFzghGLJtgZasGE1Ec/qPSwlrXn1xwUkp/h0DaYC6odtYIiBmx3Ex5T8Vbpj9PMdVyHbobeQHqIJYLrfemvU3eSuDjiTuGlpFlA8dDazcvkoA3PDrx1R+kPWerJZrJGrFod6Fi8OyJqXZuQTPlcH2bG8Uu4N0Yh1SNYT/Ph7TLnbR0V7YorE+5i6AyliB2UFUMk4LWQrg3QSfXxVeNRHkXnloQTxZiJKShmG91gbjYz+g6yOoSeF4BFy5wE4Au05SQris4ckbpltcMPcV4qkCNhX8PELQrTOzBMVM62vOMaNLHyJm3suUQMxxynYUP13Fz2sHIfZ7I5zpUDcA==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700004)(36860700001)(4326008)(1076003)(70206006)(6666004)(316002)(110136005)(54906003)(107886003)(47076005)(36756003)(8676002)(81166007)(2906002)(26005)(70586007)(336012)(82310400004)(83380400001)(2616005)(356005)(426003)(86362001)(8936002)(40460700003)(508600001)(186003)(7696005)(5660300002)(32563001)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: On2/JBp3l54X9QuKDHmHZXPt+UL6AI1iYy7XThbn0PLabdHkhl4gPD5egS7tRZZN2zRwkhRrlHk/Hh871/geS/30BdW2lKBW7eajfkELOfSJL6qDwsG2lodQfN5ywAlGlPd82cc+MLTirpd+6rMsagxKzstlTqdxGBkgl+qb8b1SbnPTva6Ve5rIl87QgRzvMzUmtz50lCN0tM1MzjDUtheFSUJOhPh+z0jxdBIm6CjSD3fC+VjkQ195hW1i/q0ZV29qFl9p7VkL0n2cC15CyOgx/veXMEl4e7nwdHEjDcWz5kUueWy7jlEYvSy+d4HqVsbYRNlxf8TqfpOkSksmHlHQNvgUFjXuh+a62uGwMloJQl+hgjU0EGkIWJ9QztrnYjrya4U6a1KiIHEZQpfu2EIHbBll0tXyUenONUtJQ1J26Ws3epaPMqSHgA/5aDjKvCVe8kQgSBAnu0E8HgJEd0DEy0gRDbTUfmy82DLAdZp0xNFxnhL2FgSsezBGEWKvZ6KLiBfUVmSQJkV27H26cmDAyHDonapmqf6SR8g+v/U8syIMc9l6Ugp9HJHZk8F7+ORmQMieUvEM1z7fGHCco7pbE+kK1zytg+IEfHzrsocSFx7cKQG/qK8pdaOftcRxflFwEZ0XGjSRGUR1u6VfjGBX9GbjpyYjiYwner2m0mVbN4/iWoguEw3g/mNk/CIMezOLJqUzWuhb/wUrScNHhdabRR+P/1iulU0L+xSS8g3fHxN8kPoiz5P5EXl78PnN4Tn3FU6WHyqXdwygAblPgEanuj4fS9pzTX1cdyb7SCg=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(46966006)(36840700001)(40470700004)(2616005)(6666004)(1076003)(5660300002)(110136005)(186003)(356005)(426003)(508600001)(36756003)(54906003)(8676002)(47076005)(107886003)(336012)(316002)(40460700003)(82310400004)(4326008)(36860700001)(81166007)(86362001)(2906002)(70586007)(7696005)(83380400001)(70206006)(26005)(8936002)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 18:17:50.9152
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 18:17:42.3223
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 353910cb-8374-471f-9426-08d9df65d526
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f7c9dc4-5f45-4318-532c-08d9df65d013
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT060.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR12MB2833
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1913
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If needs_pm_restore is set (PCI device does not have support for no
-soft reset), then the current PCI state will be saved during D0->D3hot
-transition and same will be restored back during D3hot->D0 transition.
-For saving the PCI state locally, pci_store_saved_state() is being
-used and the pci_load_and_free_saved_state() will free the allocated
-memory.
+Currently, there is very limited power management support
+available in the upstream vfio-pci driver. If there is no user of vfio-pci
+device, then the PCI device will be moved into D3Hot state by writing
+directly into PCI PM registers. This D3Hot state help in saving power
+but we can achieve zero power consumption if we go into the D3cold state.
+The D3cold state cannot be possible with native PCI PM. It requires
+interaction with platform firmware which is system-specific.
+To go into low power states (including D3cold), the runtime PM framework
+can be used which internally interacts with PCI and platform firmware and
+puts the device into the lowest possible D-States.
 
-But for reset related IOCTLs, vfio driver calls PCI reset related
-API's which will internally change the PCI power state back to D0. So,
-when the guest resumes, then it will get the current state as D0 and it
-will skip the call to vfio_pci_set_power_state() for changing the
-power state to D0 explicitly. In this case, the memory pointed by
-pm_save will never be freed.
+This patch registers vfio-pci driver with the runtime PM framework.
 
-Also, in malicious sequence, the state changing to D3hot followed by
-VFIO_DEVICE_RESET/VFIO_DEVICE_PCI_HOT_RESET can be run in loop and
-it can cause an OOM situation. This patch stores the power state locally
-and uses the same for comparing the current power state. For the
-places where D0 transition can happen, call vfio_pci_set_power_state()
-to transition to D0 state. Since the vfio power state is still D3hot,
-so this D0 transition will help in running the logic required
-from D3hot->D0 transition. Also, to prevent any miss during
-future development to detect this condition, this patch puts a
-check and frees the memory after printing warning.
+1. The PCI core framework takes care of most of the runtime PM
+   related things. For enabling the runtime PM, the PCI driver needs to
+   decrement the usage count and needs to register the runtime
+   suspend/resume callbacks. For vfio-pci based driver, these callback
+   routines can be stubbed in this patch since the vfio-pci driver
+   is not doing the PCI device initialization. All the config state
+   saving, and PCI power management related things will be done by
+   PCI core framework itself inside its runtime suspend/resume callbacks.
 
-This locally saved power state will help in subsequent patches
-also.
+2. Inside pci_reset_bus(), all the devices in bus/slot will be moved
+   out of D0 state. This state change to D0 can happen directly without
+   going through the runtime PM framework. So if runtime PM is enabled,
+   then pm_runtime_resume() makes the runtime state active. Since the PCI
+   device power state is already D0, so it should return early when it
+   tries to change the state with pci_set_power_state(). Then
+   pm_request_idle() can be used which will internally check for
+   device usage count and will move the device again into the low power
+   state.
+
+3. Inside vfio_pci_core_disable(), the device usage count always needs
+   to be decremented which was incremented in vfio_pci_core_enable().
+
+4. Since the runtime PM framework will provide the same functionality,
+   so directly writing into PCI PM config register can be replaced with
+   the use of runtime PM routines. Also, the use of runtime PM can help
+   us in more power saving.
+
+   In the systems which do not support D3Cold,
+
+   With the existing implementation:
+
+   // PCI device
+   # cat /sys/bus/pci/devices/0000\:01\:00.0/power_state
+   D3hot
+   // upstream bridge
+   # cat /sys/bus/pci/devices/0000\:00\:01.0/power_state
+   D0
+
+   With runtime PM:
+
+   // PCI device
+   # cat /sys/bus/pci/devices/0000\:01\:00.0/power_state
+   D3hot
+   // upstream bridge
+   # cat /sys/bus/pci/devices/0000\:00\:01.0/power_state
+   D3hot
+
+   So, with runtime PM, the upstream bridge or root port will also go
+   into lower power state which is not possible with existing
+   implementation.
+
+   In the systems which support D3Cold,
+
+   // PCI device
+   # cat /sys/bus/pci/devices/0000\:01\:00.0/power_state
+   D3hot
+   // upstream bridge
+   # cat /sys/bus/pci/devices/0000\:00\:01.0/power_state
+   D0
+
+   With runtime PM:
+
+   // PCI device
+   # cat /sys/bus/pci/devices/0000\:01\:00.0/power_state
+   D3cold
+   // upstream bridge
+   # cat /sys/bus/pci/devices/0000\:00\:01.0/power_state
+   D3cold
+
+   So, with runtime PM, both the PCI device and upstream bridge will
+   go into D3cold state.
+
+5. If 'disable_idle_d3' module parameter is set, then also the runtime
+   PM will be enabled, but in this case, the usage count should not be
+   decremented.
+
+6. vfio_pci_dev_set_try_reset() return value is unused now, so this
+   function return type can be changed to void.
 
 Signed-off-by: Abhishek Sahu <abhsahu@nvidia.com>
 ---
- drivers/vfio/pci/vfio_pci_core.c | 53 ++++++++++++++++++++++++++++++--
- include/linux/vfio_pci_core.h    |  1 +
- 2 files changed, 51 insertions(+), 3 deletions(-)
+ drivers/vfio/pci/vfio_pci.c      |  3 +
+ drivers/vfio/pci/vfio_pci_core.c | 95 +++++++++++++++++++++++---------
+ include/linux/vfio_pci_core.h    |  4 ++
+ 3 files changed, 75 insertions(+), 27 deletions(-)
 
+diff --git a/drivers/vfio/pci/vfio_pci.c b/drivers/vfio/pci/vfio_pci.c
+index a5ce92beb655..c8695baf3b54 100644
+--- a/drivers/vfio/pci/vfio_pci.c
++++ b/drivers/vfio/pci/vfio_pci.c
+@@ -193,6 +193,9 @@ static struct pci_driver vfio_pci_driver = {
+ 	.remove			= vfio_pci_remove,
+ 	.sriov_configure	= vfio_pci_sriov_configure,
+ 	.err_handler		= &vfio_pci_core_err_handlers,
++#if defined(CONFIG_PM)
++	.driver.pm              = &vfio_pci_core_pm_ops,
++#endif
+ };
+ 
+ static void __init vfio_pci_fill_ids(void)
 diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-index c6e4fe9088c3..ee2fb8af57fa 100644
+index f948e6cd2993..c6e4fe9088c3 100644
 --- a/drivers/vfio/pci/vfio_pci_core.c
 +++ b/drivers/vfio/pci/vfio_pci_core.c
-@@ -206,6 +206,14 @@ static void vfio_pci_probe_power_state(struct vfio_pci_core_device *vdev)
-  * restore when returned to D0.  Saved separately from pci_saved_state for use
-  * by PM capability emulation and separately from pci_dev internal saved state
-  * to avoid it being overwritten and consumed around other resets.
-+ *
-+ * There are few cases where the PCI power state can be changed to D0
-+ * without the involvement of this API. So, cache the power state locally
-+ * and call this API to update the D0 state. It will help in running the
-+ * logic that is needed for transitioning to the D0 state. For example,
-+ * if needs_pm_restore is set, then the PCI state will be saved locally.
-+ * The memory taken for saving this PCI state needs to be freed to
-+ * prevent memory leak.
-  */
- int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t state)
- {
-@@ -214,20 +222,34 @@ int vfio_pci_set_power_state(struct vfio_pci_core_device *vdev, pci_power_t stat
- 	int ret;
+@@ -152,7 +152,7 @@ static void vfio_pci_probe_mmaps(struct vfio_pci_core_device *vdev)
+ }
  
- 	if (vdev->needs_pm_restore) {
--		if (pdev->current_state < PCI_D3hot && state >= PCI_D3hot) {
-+		if (vdev->power_state < PCI_D3hot && state >= PCI_D3hot) {
- 			pci_save_state(pdev);
- 			needs_save = true;
- 		}
+ struct vfio_pci_group_info;
+-static bool vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set);
++static void vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set);
+ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+ 				      struct vfio_pci_group_info *groups);
  
--		if (pdev->current_state >= PCI_D3hot && state <= PCI_D0)
-+		if (vdev->power_state >= PCI_D3hot && state <= PCI_D0)
- 			needs_restore = true;
- 	}
+@@ -245,7 +245,11 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev)
+ 	u16 cmd;
+ 	u8 msix_pos;
  
- 	ret = pci_set_power_state(pdev, state);
+-	vfio_pci_set_power_state(vdev, PCI_D0);
++	if (!disable_idle_d3) {
++		ret = pm_runtime_resume_and_get(&pdev->dev);
++		if (ret < 0)
++			return ret;
++	}
  
- 	if (!ret) {
-+		vdev->power_state = pdev->current_state;
+ 	/* Don't allow our initial saved state to include busmaster */
+ 	pci_clear_master(pdev);
+@@ -405,8 +409,11 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
+ out:
+ 	pci_disable_device(pdev);
+ 
+-	if (!vfio_pci_dev_set_try_reset(vdev->vdev.dev_set) && !disable_idle_d3)
+-		vfio_pci_set_power_state(vdev, PCI_D3hot);
++	vfio_pci_dev_set_try_reset(vdev->vdev.dev_set);
 +
- 		/* D3 might be unsupported via quirk, skip unless in D3 */
--		if (needs_save && pdev->current_state >= PCI_D3hot) {
-+		if (needs_save && vdev->power_state >= PCI_D3hot) {
-+			/*
-+			 * If somehow, the vfio driver was not able to free the
-+			 * memory allocated in pm_save, then free the earlier
-+			 * memory first before overwriting pm_save to prevent
-+			 * memory leak.
-+			 */
-+			if (vdev->pm_save) {
-+				pci_warn(pdev,
-+					 "Overwriting saved PCI state pointer so freeing the earlier memory\n");
-+				kfree(vdev->pm_save);
-+			}
-+
- 			vdev->pm_save = pci_store_saved_state(pdev);
- 		} else if (needs_restore) {
- 			pci_load_and_free_saved_state(pdev, &vdev->pm_save);
-@@ -326,6 +348,14 @@ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev)
- 	/* For needs_reset */
- 	lockdep_assert_held(&vdev->vdev.dev_set->lock);
++	/* Put the pm-runtime usage counter acquired during enable */
++	if (!disable_idle_d3)
++		pm_runtime_put(&pdev->dev);
+ }
+ EXPORT_SYMBOL_GPL(vfio_pci_core_disable);
  
+@@ -1847,19 +1854,20 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
+ 
+ 	vfio_pci_probe_power_state(vdev);
+ 
+-	if (!disable_idle_d3) {
+-		/*
+-		 * pci-core sets the device power state to an unknown value at
+-		 * bootup and after being removed from a driver.  The only
+-		 * transition it allows from this unknown state is to D0, which
+-		 * typically happens when a driver calls pci_enable_device().
+-		 * We're not ready to enable the device yet, but we do want to
+-		 * be able to get to D3.  Therefore first do a D0 transition
+-		 * before going to D3.
+-		 */
+-		vfio_pci_set_power_state(vdev, PCI_D0);
+-		vfio_pci_set_power_state(vdev, PCI_D3hot);
+-	}
 +	/*
-+	 * If disable has been called while the power state is other than D0,
-+	 * then set the power state in vfio driver to D0. It will help
-+	 * in running the logic needed for D0 power state. The subsequent
-+	 * runtime PM API's will put the device into the low power state again.
++	 * pci-core sets the device power state to an unknown value at
++	 * bootup and after being removed from a driver.  The only
++	 * transition it allows from this unknown state is to D0, which
++	 * typically happens when a driver calls pci_enable_device().
++	 * We're not ready to enable the device yet, but we do want to
++	 * be able to get to D3.  Therefore first do a D0 transition
++	 * before enabling runtime PM.
 +	 */
 +	vfio_pci_set_power_state(vdev, PCI_D0);
++	pm_runtime_allow(&pdev->dev);
 +
- 	/* Stop the device from further DMA */
- 	pci_clear_master(pdev);
++	if (!disable_idle_d3)
++		pm_runtime_put(&pdev->dev);
  
-@@ -929,6 +959,15 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
+ 	ret = vfio_register_group_dev(&vdev->vdev);
+ 	if (ret)
+@@ -1868,7 +1876,9 @@ int vfio_pci_core_register_device(struct vfio_pci_core_device *vdev)
  
- 		vfio_pci_zap_and_down_write_memory_lock(vdev);
- 		ret = pci_try_reset_function(vdev->pdev);
+ out_power:
+ 	if (!disable_idle_d3)
+-		vfio_pci_set_power_state(vdev, PCI_D0);
++		pm_runtime_get_noresume(&pdev->dev);
 +
-+		/*
-+		 * If pci_try_reset_function() has been called while the power
-+		 * state is other than D0, then pci_try_reset_function() will
-+		 * internally set the device state to D0 without vfio driver
-+		 * interaction. Update the power state in vfio driver to perform
-+		 * the logic needed for D0 power state.
-+		 */
-+		vfio_pci_set_power_state(vdev, PCI_D0);
- 		up_write(&vdev->memory_lock);
++	pm_runtime_forbid(&pdev->dev);
+ out_vf:
+ 	vfio_pci_vf_uninit(vdev);
+ 	return ret;
+@@ -1887,7 +1897,9 @@ void vfio_pci_core_unregister_device(struct vfio_pci_core_device *vdev)
+ 	vfio_pci_vga_uninit(vdev);
  
- 		return ret;
-@@ -2071,6 +2110,14 @@ static int vfio_pci_dev_set_hot_reset(struct vfio_device_set *dev_set,
+ 	if (!disable_idle_d3)
+-		vfio_pci_set_power_state(vdev, PCI_D0);
++		pm_runtime_get_noresume(&pdev->dev);
++
++	pm_runtime_forbid(&pdev->dev);
+ }
+ EXPORT_SYMBOL_GPL(vfio_pci_core_unregister_device);
  
- err_undo:
+@@ -2093,33 +2105,62 @@ static bool vfio_pci_dev_set_needs_reset(struct vfio_device_set *dev_set)
+  *  - At least one of the affected devices is marked dirty via
+  *    needs_reset (such as by lack of FLR support)
+  * Then attempt to perform that bus or slot reset.
+- * Returns true if the dev_set was reset.
+  */
+-static bool vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
++static void vfio_pci_dev_set_try_reset(struct vfio_device_set *dev_set)
+ {
+ 	struct vfio_pci_core_device *cur;
+ 	struct pci_dev *pdev;
+ 	int ret;
+ 
+ 	if (!vfio_pci_dev_set_needs_reset(dev_set))
+-		return false;
++		return;
+ 
+ 	pdev = vfio_pci_dev_set_resettable(dev_set);
+ 	if (!pdev)
+-		return false;
++		return;
+ 
+ 	ret = pci_reset_bus(pdev);
+ 	if (ret)
+-		return false;
++		return;
+ 
  	list_for_each_entry(cur, &dev_set->device_list, vdev.dev_set_list) {
-+		/*
-+		 * If pci_reset_bus() has been called while the power
-+		 * state is other than D0, then pci_reset_bus() will
-+		 * internally set the device state to D0 without vfio driver
-+		 * interaction. Update the power state in vfio driver to perform
-+		 * the logic needed for D0 power state.
-+		 */
-+		vfio_pci_set_power_state(cur, PCI_D0);
- 		if (cur == cur_mem)
- 			is_mem = false;
- 		if (cur == cur_vma)
+ 		cur->needs_reset = false;
+-		if (!disable_idle_d3)
+-			vfio_pci_set_power_state(cur, PCI_D3hot);
++		if (!disable_idle_d3) {
++			/*
++			 * Inside pci_reset_bus(), all the devices in bus/slot
++			 * will be moved out of D0 state. This state change to
++			 * D0 can happen directly without going through the
++			 * runtime PM framework. pm_runtime_resume() will
++			 * help make the runtime state as active and then
++			 * pm_request_idle() can be used which will
++			 * internally check for device usage count and will
++			 * move the device again into the low power state.
++			 */
++			pm_runtime_resume(&pdev->dev);
++			pm_request_idle(&pdev->dev);
++		}
+ 	}
+-	return true;
+ }
+ 
++#ifdef CONFIG_PM
++static int vfio_pci_core_runtime_suspend(struct device *dev)
++{
++	return 0;
++}
++
++static int vfio_pci_core_runtime_resume(struct device *dev)
++{
++	return 0;
++}
++
++const struct dev_pm_ops vfio_pci_core_pm_ops = {
++	SET_RUNTIME_PM_OPS(vfio_pci_core_runtime_suspend,
++			   vfio_pci_core_runtime_resume,
++			   NULL)
++};
++EXPORT_SYMBOL_GPL(vfio_pci_core_pm_ops);
++#endif
++
+ void vfio_pci_core_set_params(bool is_nointxmask, bool is_disable_vga,
+ 			      bool is_disable_idle_d3)
+ {
 diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-index aafe09c9fa64..05db838e72cc 100644
+index ef9a44b6cf5d..aafe09c9fa64 100644
 --- a/include/linux/vfio_pci_core.h
 +++ b/include/linux/vfio_pci_core.h
-@@ -124,6 +124,7 @@ struct vfio_pci_core_device {
- 	bool			needs_reset;
- 	bool			nointx;
- 	bool			needs_pm_restore;
-+	pci_power_t		power_state;
- 	struct pci_saved_state	*pci_saved_state;
- 	struct pci_saved_state	*pm_save;
- 	int			ioeventfds_nr;
+@@ -231,6 +231,10 @@ int vfio_pci_core_enable(struct vfio_pci_core_device *vdev);
+ void vfio_pci_core_disable(struct vfio_pci_core_device *vdev);
+ void vfio_pci_core_finish_enable(struct vfio_pci_core_device *vdev);
+ 
++#ifdef CONFIG_PM
++extern const struct dev_pm_ops vfio_pci_core_pm_ops;
++#endif
++
+ static inline bool vfio_pci_is_vga(struct pci_dev *pdev)
+ {
+ 	return (pdev->class >> 8) == PCI_CLASS_DISPLAY_VGA;
 -- 
 2.17.1
 
