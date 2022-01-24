@@ -2,74 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D68B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:10:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F19C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244182AbiAXRKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:10:14 -0500
-Received: from foss.arm.com ([217.140.110.172]:41132 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244122AbiAXRKL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:10:11 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 765CD113E;
-        Mon, 24 Jan 2022 09:10:11 -0800 (PST)
-Received: from [192.168.99.12] (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DEE863F73B;
-        Mon, 24 Jan 2022 09:10:10 -0800 (PST)
-Message-ID: <5d9d0ead-f828-1e8a-b7cd-3ad50213c6bd@foss.arm.com>
-Date:   Mon, 24 Jan 2022 17:09:55 +0000
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 02/60] drm/arm/hdlcd: Add support for the nomodeset kernel
- parameter
-Content-Language: en-US
-To:     Javier Martinez Canillas <javierm@redhat.com>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
-Cc:     Liviu Dudau <liviu.dudau@arm.com>
-References: <20211215010008.2545520-1-javierm@redhat.com>
- <20211215010008.2545520-3-javierm@redhat.com>
-From:   Carsten Haitzler <carsten.haitzler@foss.arm.com>
-Organization: Arm Ltd.
-In-Reply-To: <20211215010008.2545520-3-javierm@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+        id S244201AbiAXRNG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:13:06 -0500
+Received: from mail.efficios.com ([167.114.26.124]:47534 "EHLO
+        mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241330AbiAXRND (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 12:13:03 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 85E4834510B;
+        Mon, 24 Jan 2022 12:13:02 -0500 (EST)
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id zLtCHEblF7-H; Mon, 24 Jan 2022 12:13:02 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.efficios.com (Postfix) with ESMTP id 0774F344CCA;
+        Mon, 24 Jan 2022 12:13:02 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 0774F344CCA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
+        s=default; t=1643044382;
+        bh=pwRIv4rPPqHaq4ss6KLwBKrB6pKid4L8cUtlJHoIJn0=;
+        h=From:To:Date:Message-Id;
+        b=Y6gGY37X5scSphKgS7ve01tm7PYjMtlO+WFAghqkA2+nh0TzELYi4VbXdWtD8Wf4S
+         BnxjQpk5CyB5IIcEHjNwzUgHQ1sIoAByjtQi9qP9d6+BvZCExTUSn1BVa/g0pYg8B1
+         031LIWFzhB3OaetlAU50AQvRxbZRH/K/OW9mFBkncFEQkxo2hjZ+v9sWLkazs2Eb0I
+         tE7bCNUcKQf0mqvs0DG01kTqb2FhzDNp1qQEHRTDeWZqO/HXHQig+s39xPOo3+Lk0J
+         KaAWqqWb6Fzswe1vfHlkaCH1bzmGm7oVgOMoF0gYVtqKJSuA4fMi+ACCPvw425dUDg
+         E4JyyHV3w/DVw==
+X-Virus-Scanned: amavisd-new at efficios.com
+Received: from mail.efficios.com ([127.0.0.1])
+        by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id wa59DO4LSHYQ; Mon, 24 Jan 2022 12:13:01 -0500 (EST)
+Received: from localhost.localdomain (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
+        by mail.efficios.com (Postfix) with ESMTPSA id A1BCF344CC9;
+        Mon, 24 Jan 2022 12:13:01 -0500 (EST)
+From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH 00/15] rseq uapi and selftest updates
+Date:   Mon, 24 Jan 2022 12:12:38 -0500
+Message-Id: <20220124171253.22072-1-mathieu.desnoyers@efficios.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Seems fine.
+Update the rseq selftests to adapt to the userspace ABI chosen by glibc
+(will be released in February 2022). Provide a fallback implementation
+to work with older glibc as well.
 
-Reviewed-by: Carsten Haitzler <carsten.haitzler@arm.com>
+Remove broken 32-bit little/big endian accessor fields in rseq uapi.
 
-On 12/15/21 00:59, Javier Martinez Canillas wrote:
-> According to disable Documentation/admin-guide/kernel-parameters.txt, this
-> parameter can be used to disable kernel modesetting.
-> 
-> DRM drivers will not perform display-mode changes or accelerated rendering
-> and only the systewm system framebuffer will be available if it was set-up.
-> 
-> But only a few DRM drivers currently check for nomodeset, make this driver
-> to also support the command line parameter.
-> 
-> Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
-> ---
-> 
->   drivers/gpu/drm/arm/hdlcd_drv.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/gpu/drm/arm/hdlcd_drv.c b/drivers/gpu/drm/arm/hdlcd_drv.c
-> index 479c2422a2e0..0939a64a9bd2 100644
-> --- a/drivers/gpu/drm/arm/hdlcd_drv.c
-> +++ b/drivers/gpu/drm/arm/hdlcd_drv.c
-> @@ -382,6 +382,9 @@ static int hdlcd_probe(struct platform_device *pdev)
->   	struct device_node *port;
->   	struct component_match *match = NULL;
->   
-> +	if (drm_firmware_drivers_only())
-> +		return -ENODEV;
-> +
->   	/* there is only one output port inside each device, find it */
->   	port = of_graph_get_remote_node(pdev->dev.of_node, 0, 0);
->   	if (!port)
+Integrate various fixes gathered from librseq, including work-around for
+known gcc and clang compiler bugs with asm goto.
+
+The uplift to glibc's userspace ABI means we can now use %fs/%gs segment
+selectors directly in the inline assembler for accesses to the rseq
+thread area on x86.
+
+Feedback is welcome,
+
+Thanks,
+
+Mathieu
+
+Mathieu Desnoyers (15):
+  selftests/rseq: introduce own copy of rseq uapi header
+  rseq: Remove broken uapi field layout on 32-bit little endian
+  selftests/rseq: Remove useless assignment to cpu variable
+  selftests/rseq: Remove volatile from __rseq_abi
+  selftests/rseq: Introduce rseq_get_abi() helper
+  selftests/rseq: Introduce thread pointer getters
+  selftests/rseq: Uplift rseq selftests for compatibility with
+    glibc-2.35
+  selftests/rseq: Fix ppc32: wrong rseq_cs 32-bit field pointer on big
+    endian
+  selftests/rseq: Fix ppc32 missing instruction selection "u" and "x"
+    for load/store
+  selftests/rseq: Fix ppc32 offsets by using long rather than off_t
+  selftests/rseq: Fix warnings about #if checks of undefined tokens
+  selftests/rseq: Remove arm/mips asm goto compiler work-around
+  selftests/rseq: Fix: work-around asm goto compiler bugs
+  selftests/rseq: x86-64: use %fs segment selector for accessing rseq
+    thread area
+  selftests/rseq: x86-32: use %gs segment selector for accessing rseq
+    thread area
+
+ include/uapi/linux/rseq.h                     |  17 +-
+ tools/testing/selftests/rseq/Makefile         |   2 +-
+ .../selftests/rseq/basic_percpu_ops_test.c    |   2 +-
+ tools/testing/selftests/rseq/compiler.h       |  30 +++
+ tools/testing/selftests/rseq/param_test.c     |   8 +-
+ tools/testing/selftests/rseq/rseq-abi.h       | 151 +++++++++++++
+ tools/testing/selftests/rseq/rseq-arm.h       | 110 +++++-----
+ tools/testing/selftests/rseq/rseq-arm64.h     |  79 +++++--
+ .../rseq/rseq-generic-thread-pointer.h        |  25 +++
+ tools/testing/selftests/rseq/rseq-mips.h      |  71 ++-----
+ .../selftests/rseq/rseq-ppc-thread-pointer.h  |  30 +++
+ tools/testing/selftests/rseq/rseq-ppc.h       | 128 +++++++----
+ tools/testing/selftests/rseq/rseq-s390.h      |  55 +++--
+ tools/testing/selftests/rseq/rseq-skip.h      |   2 +-
+ .../selftests/rseq/rseq-thread-pointer.h      |  19 ++
+ .../selftests/rseq/rseq-x86-thread-pointer.h  |  40 ++++
+ tools/testing/selftests/rseq/rseq-x86.h       | 200 ++++++++++++------
+ tools/testing/selftests/rseq/rseq.c           | 163 +++++++-------
+ tools/testing/selftests/rseq/rseq.h           |  29 ++-
+ 19 files changed, 793 insertions(+), 368 deletions(-)
+ create mode 100644 tools/testing/selftests/rseq/compiler.h
+ create mode 100644 tools/testing/selftests/rseq/rseq-abi.h
+ create mode 100644 tools/testing/selftests/rseq/rseq-generic-thread-pointer.h
+ create mode 100644 tools/testing/selftests/rseq/rseq-ppc-thread-pointer.h
+ create mode 100644 tools/testing/selftests/rseq/rseq-thread-pointer.h
+ create mode 100644 tools/testing/selftests/rseq/rseq-x86-thread-pointer.h
+
+-- 
+2.17.1
+
