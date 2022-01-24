@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9153EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:04:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 478FEC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:04:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841764AbiAXXAB (ORCPT
+        id S1841858AbiAXXAG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:00:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
+        Mon, 24 Jan 2022 18:00:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577007AbiAXV5J (ORCPT
+        with ESMTP id S1576938AbiAXV5C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:57:09 -0500
+        Mon, 24 Jan 2022 16:57:02 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 629F0C094272;
-        Mon, 24 Jan 2022 12:38:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FAFC038ADF;
+        Mon, 24 Jan 2022 12:38:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0252B61574;
-        Mon, 24 Jan 2022 20:38:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFD16C340EA;
-        Mon, 24 Jan 2022 20:38:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EDA961540;
+        Mon, 24 Jan 2022 20:38:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C85C340E7;
+        Mon, 24 Jan 2022 20:38:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056718;
-        bh=n5STwlI8aR1A8Yu0tQjeLMa+CdZhF5iB8+1SGg5i+O0=;
+        s=korg; t=1643056699;
+        bh=0NPR2GEkXmlKshR2DCdw5F1yXLjr3XEZ5JAnE8LMcEk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=maYodSCWrU1J1tKJm5ZZeFSOm7v4It60nqt1QY+eoJRq8ef9I20nxXz3PV8H6qjFk
-         so4+nlGjYOJ8qHM+XKVa9RJ3KcXbj6yLZ4tO+zSKLSqUi62EKEqXqpAd+pAHJRMnkl
-         cL9AZOL5pVtvJokMm9tO9cSdN27QVe5fzOe48i9A=
+        b=PBQoIgjdMN/u3oImnLMibSOZRbl3B7oXqGpCQgX5nNaqExcSVNUeH0YSChnMh5eQ/
+         KtjtzY28SNj7tZPW1CVs6sZKJqrFFCNOG5taAk0dAlRdyDckNwbzrvvA/l2SxAyGmO
+         UQymxBA/pzbxhC45Lk64/ibrSk8ceZExFd9oPNYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org,
+        syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 544/846] x86/mce: Mark mce_end() noinstr
-Date:   Mon, 24 Jan 2022 19:41:01 +0100
-Message-Id: <20220124184119.789585189@linuxfoundation.org>
+Subject: [PATCH 5.15 570/846] ath9k_htc: fix NULL pointer dereference at ath9k_htc_rxep()
+Date:   Mon, 24 Jan 2022 19:41:27 +0100
+Message-Id: <20220124184120.702213299@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,64 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
 
-[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
+[ Upstream commit b0ec7e55fce65f125bd1d7f02e2dc4de62abee34 ]
 
-It is called by the #MC handler which is noinstr.
+syzbot is reporting lockdep warning followed by kernel panic at
+ath9k_htc_rxep() [1], for ath9k_htc_rxep() depends on ath9k_rx_init()
+being already completed.
 
-Fixes
+Since ath9k_htc_rxep() is set by ath9k_htc_connect_svc(WMI_BEACON_SVC)
+ from ath9k_init_htc_services(), it is possible that ath9k_htc_rxep() is
+called via timer interrupt before ath9k_rx_init() from ath9k_init_device()
+is called.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
+Since we can't call ath9k_init_device() before ath9k_init_htc_services(),
+let's hold ath9k_htc_rxep() no-op until ath9k_rx_init() completes.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
+Link: https://syzkaller.appspot.com/bug?extid=4d2d56175b934b9a7bf9 [1]
+Reported-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc.h          | 1 +
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index c5a1022463bcc..c37a0bcf2744b 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1081,10 +1081,13 @@ static int mce_start(int *no_way_out)
-  * Synchronize between CPUs after main scanning loop.
-  * This invokes the bulk of the Monarch processing.
-  */
--static int mce_end(int order)
-+static noinstr int mce_end(int order)
- {
--	int ret = -1;
- 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
-+	int ret = -1;
-+
-+	/* Allow instrumentation around external facilities. */
-+	instrumentation_begin();
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 0a1634238e673..4f71e962279af 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -281,6 +281,7 @@ struct ath9k_htc_rxbuf {
+ struct ath9k_htc_rx {
+ 	struct list_head rxbuf;
+ 	spinlock_t rxbuflock;
++	bool initialized;
+ };
  
- 	if (!timeout)
- 		goto reset;
-@@ -1128,7 +1131,8 @@ static int mce_end(int order)
- 		/*
- 		 * Don't reset anything. That's done by the Monarch.
- 		 */
--		return 0;
-+		ret = 0;
-+		goto out;
+ #define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index 8e69e8989f6d3..e7a21eaf3a68d 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -1130,6 +1130,10 @@ void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
+ 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
+ 	unsigned long flags;
+ 
++	/* Check if ath9k_rx_init() completed. */
++	if (!data_race(priv->rx.initialized))
++		goto err;
++
+ 	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
+ 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
+ 		if (!tmp_buf->in_process) {
+@@ -1185,6 +1189,10 @@ int ath9k_rx_init(struct ath9k_htc_priv *priv)
+ 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
  	}
  
- 	/*
-@@ -1144,6 +1148,10 @@ reset:
- 	 * Let others run again.
- 	 */
- 	atomic_set(&mce_executing, 0);
++	/* Allow ath9k_htc_rxep() to operate. */
++	smp_wmb();
++	priv->rx.initialized = true;
 +
-+out:
-+	instrumentation_end();
-+
- 	return ret;
- }
+ 	return 0;
  
+ err:
 -- 
 2.34.1
 
