@@ -2,83 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E321C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A0FC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358835AbiAXTzz (ORCPT
+        id S1358952AbiAXT4E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:55:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37778 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355335AbiAXTkc (ORCPT
+        Mon, 24 Jan 2022 14:56:04 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:58142 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348231AbiAXTol (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:32 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A14F6135E;
-        Mon, 24 Jan 2022 19:40:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C863C340E5;
-        Mon, 24 Jan 2022 19:40:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053230;
-        bh=o4vXwjtGO5bckZbOzF25uhyLz3mbp8Clz6bUC0ZiGSE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gUpzveh7nC8uOE/NkthwF7fMpdZJWvJ6fslIRb5vFAZ6ho408ZQgGpsfn+nroDBL1
-         y5Cm8pneoEDB3GR1KD4YHNegtwTQ9z5BPLCq/SO/J7NEAQ+NW14VsAG6HNLgERRbay
-         zPtrCIm/PK5cSI7362awXwwrbzNM43QchJ6//Gq4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Patrick Doyle <pdoyle@irobot.com>,
-        Richard Weinberger <richard@nod.at>,
-        Yoshio Furuyama <ytc-mb-yfuruyama7@kioxia.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>
-Subject: [PATCH 5.4 319/320] mtd: nand: bbt: Fix corner case in bad block table handling
-Date:   Mon, 24 Jan 2022 19:45:03 +0100
-Message-Id: <20220124184004.787407516@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 14:44:41 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 5F1992113A;
+        Mon, 24 Jan 2022 19:44:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1643053479;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PALzt4viqppnbCTEd5JnoddSy6Y386bU+yI0jFXb2Xs=;
+        b=IcseyuDiG7EozSQCnSlNaIu0C8m1RyI7OuFmUHsOAWJWLqp41pauanI+rysneFWcm5CLBR
+        n7LPQF4ilqHydWcwaG6eVa1Qy64FHY/FhoTpzfBHzyn1QaqN5MDgMHpI4cGzjbyXkxCyDH
+        9MrEYU4J3b/joldDU/jitBydSALwLZo=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1643053479;
+        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
+         cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=PALzt4viqppnbCTEd5JnoddSy6Y386bU+yI0jFXb2Xs=;
+        b=fzuSFXyQjPmOXWqT/rGkeCcHwkWfuZUI8J6+pgGu3olwRTUa2sshOKH52RYgaMjfPNFRXV
+        3/b0X7L9No9PlVCA==
+Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
+        by relay2.suse.de (Postfix) with ESMTP id 51D7EA3B81;
+        Mon, 24 Jan 2022 19:44:39 +0000 (UTC)
+Received: by ds.suse.cz (Postfix, from userid 10065)
+        id 54796DA7A3; Mon, 24 Jan 2022 20:43:59 +0100 (CET)
+Date:   Mon, 24 Jan 2022 20:43:59 +0100
+From:   David Sterba <dsterba@suse.cz>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
+        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH] btrfs: scrub: Remove redundant initialization of
+ increment
+Message-ID: <20220124194359.GE14046@twin.jikos.cz>
+Reply-To: dsterba@suse.cz
+Mail-Followup-To: dsterba@suse.cz,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, clm@fb.com,
+        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
+References: <20220121114224.92247-1-jiapeng.chong@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121114224.92247-1-jiapeng.chong@linux.alibaba.com>
+User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Doyle, Patrick <pdoyle@irobot.com>
+On Fri, Jan 21, 2022 at 07:42:24PM +0800, Jiapeng Chong wrote:
+> increment is being initialized to map->stripe_len but this is never
+> read as increment is overwritten later on. Remove the redundant
+> initialization.
 
-commit fd0d8d85f7230052e638a56d1bfea170c488e6bc upstream.
+> 
+> Cleans up the following clang-analyzer warning:
+> 
+> fs/btrfs/scrub.c:3193:6: warning: Value stored to 'increment' during its
+> initialization is never read [clang-analyzer-deadcode.DeadStores].
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  fs/btrfs/scrub.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/fs/btrfs/scrub.c b/fs/btrfs/scrub.c
+> index 2e9a322773f2..38f5666eff14 100644
+> --- a/fs/btrfs/scrub.c
+> +++ b/fs/btrfs/scrub.c
+> @@ -3209,7 +3209,6 @@ static noinline_for_stack int scrub_stripe(struct scrub_ctx *sctx,
+>  	offset = 0;
+>  	nstripes = div64_u64(dev_extent_len, map->stripe_len);
+>  	mirror_num = 1;
+> -	increment = map->stripe_len;
 
-In the unlikely event that both blocks 10 and 11 are marked as bad (on a
-32 bit machine), then the process of marking block 10 as bad stomps on
-cached entry for block 11.  There are (of course) other examples.
-
-Signed-off-by: Patrick Doyle <pdoyle@irobot.com>
-Reviewed-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Yoshio Furuyama <ytc-mb-yfuruyama7@kioxia.com>
-[<miquel.raynal@bootlin.com>: Fixed the title]
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Frieder Schrempf <frieder.schrempf@kontron.de>
-Link: https://lore.kernel.org/linux-mtd/774a92693f311e7de01e5935e720a179fb1b2468.1616635406.git.ytc-mb-yfuruyama7@kioxia.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/mtd/nand/bbt.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
---- a/drivers/mtd/nand/bbt.c
-+++ b/drivers/mtd/nand/bbt.c
-@@ -123,7 +123,7 @@ int nanddev_bbt_set_block_status(struct
- 		unsigned int rbits = bits_per_block + offs - BITS_PER_LONG;
- 
- 		pos[1] &= ~GENMASK(rbits - 1, 0);
--		pos[1] |= val >> rbits;
-+		pos[1] |= val >> (bits_per_block - rbits);
- 	}
- 
- 	return 0;
-
-
+I'd rather remove the initialization at the declarataion, the other
+values are initialized here so it's all in one place. As is's a minor
+change I'll do that at commit time, no need to resend. Thanks.
