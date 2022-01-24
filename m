@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC26C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20941C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356900AbiAXW2w (ORCPT
+        id S1447726AbiAXW3A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54704 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455653AbiAXVfu (ORCPT
+        Mon, 24 Jan 2022 17:29:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455664AbiAXVfu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:35:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788C6C0BD10A;
+        Mon, 24 Jan 2022 12:22:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3644612D6;
-        Mon, 24 Jan 2022 21:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A71C340E4;
-        Mon, 24 Jan 2022 21:35:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F1D961008;
+        Mon, 24 Jan 2022 20:22:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF95C340E5;
+        Mon, 24 Jan 2022 20:22:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060149;
-        bh=c+uXVpEUnHmPsK3iUyPSRcXmijXiLM2c/xPdjDxUO1c=;
+        s=korg; t=1643055774;
+        bh=fxcUChu8wZsG+kDRiTO+SG2o6+LS8qKV+WZdXN75Qa8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TQPehGL/13D+lqZaEZLMCljDNvkN+5+JvfAqODoh49DAxAzdLShFzkDPlN2aNgJcC
-         pPtEHsu+fPfSjt5DaxbRyRb8GT7Li1Ez0/imZZp+pIqpN7e2a7zhry9PxgoLUCk4SW
-         LSHRF2VQ9V1h4cdz/ghGdGjrySMJDFghov7Gi4m4=
+        b=lEfC3++5yzaijz0X1mQmpzE7uRUGitk7IeyvHLF2GvloAQMQT4eTzCZ8tGez70Hwj
+         KdoMZ4AHP/VbogVqPTD6xOhx+6KBtKX47nzthVKoigYfzjy4EUbGqYUrQvckj3qjFU
+         N3s+j2Nof3GCLAPcoITXuSpa6jQunQz4PmfDW63o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Peng Fan <peng.fan@nxp.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: [PATCH 5.16 0855/1039] remoteproc: imx_rproc: Fix a resource leak in the remove function
-Date:   Mon, 24 Jan 2022 19:44:04 +0100
-Message-Id: <20220124184154.023924763@linuxfoundation.org>
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 254/846] drm/bridge: ti-sn65dsi86: Set max register for regmap
+Date:   Mon, 24 Jan 2022 19:36:11 +0100
+Message-Id: <20220124184109.706592593@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,36 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit 4da96175014be67c846fd274eace08066e525d75 upstream.
+[ Upstream commit 0b665d4af35837f0a0ae63135b84a3c187c1db3b ]
 
-'priv->workqueue' is destroyed in the error handling path of the probe but
-not in the remove function.
+Set the maximum register to 0xff so we can dump the registers for this
+device in debugfs.
 
-Add the missing call to release some resources.
-
-Cc: stable <stable@vger.kernel.org>
-Fixes: 2df7062002d0 ("remoteproc: imx_proc: enable virtio/mailbox")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Tested-by: Peng Fan <peng.fan@nxp.com>
-Link: https://lore.kernel.org/r/d28ca94a4031bd7297d47c2164e18885a5a6ec19.1634366546.git.christophe.jaillet@wanadoo.fr
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a095f15c00e2 ("drm/bridge: add support for sn65dsi86 bridge driver")
+Cc: Rob Clark <robdclark@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211215002529.382383-1-swboyd@chromium.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/remoteproc/imx_rproc.c |    1 +
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 1 +
  1 file changed, 1 insertion(+)
 
---- a/drivers/remoteproc/imx_rproc.c
-+++ b/drivers/remoteproc/imx_rproc.c
-@@ -804,6 +804,7 @@ static int imx_rproc_remove(struct platf
- 	clk_disable_unprepare(priv->clk);
- 	rproc_del(rproc);
- 	imx_rproc_free_mbox(rproc);
-+	destroy_workqueue(priv->workqueue);
- 	rproc_free(rproc);
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index 41d48a393e7f5..4d08246f930c3 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -188,6 +188,7 @@ static const struct regmap_config ti_sn65dsi86_regmap_config = {
+ 	.val_bits = 8,
+ 	.volatile_table = &ti_sn_bridge_volatile_table,
+ 	.cache_type = REGCACHE_NONE,
++	.max_register = 0xFF,
+ };
  
- 	return 0;
+ static void ti_sn65dsi86_write_u16(struct ti_sn65dsi86 *pdata,
+-- 
+2.34.1
+
 
 
