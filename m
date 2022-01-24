@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7379AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF3DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451113AbiAXVWJ (ORCPT
+        id S1451139AbiAXVWL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50756 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442284AbiAXUyP (ORCPT
+        Mon, 24 Jan 2022 16:22:11 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47814 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442338AbiAXUyX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:54:15 -0500
+        Mon, 24 Jan 2022 15:54:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA554B80FA1;
-        Mon, 24 Jan 2022 20:54:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02C7FC340E5;
-        Mon, 24 Jan 2022 20:54:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3EA76612FC;
+        Mon, 24 Jan 2022 20:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24C5CC36AFC;
+        Mon, 24 Jan 2022 20:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057647;
-        bh=TEw8/WP6YfHH4W4x2h4ZS/43zd1x6SlbIuZzOc87T74=;
+        s=korg; t=1643057659;
+        bh=2Z0SoDK/JxuIfkyoLIV6jWhnMDf/015SotV8T2bhKis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oTvuvPuJyUQ/hCLd/wAvOg61VliUAWclFCHWmy3a5uWaplz63dREBJ2F4lRWqYNOG
-         0MbT9vc5PqdOGn76P1Cv8GTjDOAS9V7ltKPIgCBpTijVwVLxTiOj6KJBql21R4y4Ln
-         +r8YzSZIzMyG/B5BSlHQm+zFRVMk6jp7VF2RCvDE=
+        b=id33mj44D/RM2OAY8dAhrs5XHboKjQJeFEj2VlGX/imbfi1h2dJ3LBcg8NkogIhCW
+         UoE6bl8CW45Y2SB78N+vwRk/gIaFLd0qMILHnoM6aGxdqBhrUKlb+4UHCV0zaF+EVG
+         13n8Jg+lmHjpFKyYqAR4HnYzureV013w+c/P/Scw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
-        Willy Tarreau <w@1wt.eu>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.16 0033/1039] tools/nolibc: fix incorrect truncation of exit code
-Date:   Mon, 24 Jan 2022 19:30:22 +0100
-Message-Id: <20220124184126.244465832@linuxfoundation.org>
+        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.16 0037/1039] ksmbd: fix guest connection failure with nautilus
+Date:   Mon, 24 Jan 2022 19:30:26 +0100
+Message-Id: <20220124184126.383266000@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,91 +46,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Namjae Jeon <linkinjeon@kernel.org>
 
-commit de0244ae40ae91145faaf164a4252347607c3711 upstream.
+commit ac090d9c90b087d6fb714e54b2a6dd1e6c373ed6 upstream.
 
-Ammar Faizi reported that our exit code handling is wrong. We truncate
-it to the lowest 8 bits but the syscall itself is expected to take a
-regular 32-bit signed integer, not an unsigned char. It's the kernel
-that later truncates it to the lowest 8 bits. The difference is visible
-in strace, where the program below used to show exit(255) instead of
-exit(-1):
+MS-SMB2 describe session sign like the following.
+Session.SigningRequired MUST be set to TRUE under the following conditions:
+ - If the SMB2_NEGOTIATE_SIGNING_REQUIRED bit is set in the SecurityMode
+   field of the client request.
+ - If the SMB2_SESSION_FLAG_IS_GUEST bit is not set in the SessionFlags
+   field and Session.IsAnonymous is FALSE and either Connection.ShouldSign
+   or global RequireMessageSigning is TRUE.
 
-  int main(void)
-  {
-        return -1;
-  }
+When trying guest account connection using nautilus, The login failure
+happened on session setup. ksmbd does not allow this connection
+when the user is a guest and the connection sign is set. Just do not set
+session sign instead of error response as described in the specification.
+And this change improves the guest connection in Nautilus.
 
-This patch applies the fix to all archs. x86_64, i386, arm64, armv7 and
-mips were all tested and confirmed to work fine now. Risc-v was not
-tested but the change is trivial and exactly the same as for other archs.
-
-Reported-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
-Cc: stable@vger.kernel.org
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
+Cc: stable@vger.kernel.org # v5.15+
+Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
+Signed-off-by: Steve French <stfrench@microsoft.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/include/nolibc/nolibc.h |   13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ fs/ksmbd/smb2pdu.c |   64 ++++++++++++++++++++++++-----------------------------
+ 1 file changed, 30 insertions(+), 34 deletions(-)
 
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -414,7 +414,7 @@ asm(".section .text\n"
-     "xor %ebp, %ebp\n"          // zero the stack frame
-     "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
-     "call main\n"               // main() returns the status code, we'll exit with it.
--    "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
-+    "mov %eax, %edi\n"          // retrieve exit code (32 bit)
-     "mov $60, %rax\n"           // NR_exit == 60
-     "syscall\n"                 // really exit
-     "hlt\n"                     // ensure it does not return
-@@ -602,9 +602,9 @@ asm(".section .text\n"
-     "push %ebx\n"               // support both regparm and plain stack modes
-     "push %eax\n"
-     "call main\n"               // main() returns the status code in %eax
--    "movzbl %al, %ebx\n"        // retrieve exit code from lower 8 bits
--    "movl   $1, %eax\n"         // NR_exit == 1
--    "int    $0x80\n"            // exit now
-+    "mov %eax, %ebx\n"          // retrieve exit code (32-bit int)
-+    "movl $1, %eax\n"           // NR_exit == 1
-+    "int $0x80\n"               // exit now
-     "hlt\n"                     // ensure it does not
-     "");
+--- a/fs/ksmbd/smb2pdu.c
++++ b/fs/ksmbd/smb2pdu.c
+@@ -1455,11 +1455,6 @@ static int ntlm_authenticate(struct ksmb
  
-@@ -788,7 +788,6 @@ asm(".section .text\n"
-     "and %r3, %r1, $-8\n"         // AAPCS : sp must be 8-byte aligned in the
-     "mov %sp, %r3\n"              //         callee, an bl doesn't push (lr=pc)
-     "bl main\n"                   // main() returns the status code, we'll exit with it.
--    "and %r0, %r0, $0xff\n"       // limit exit code to 8 bits
-     "movs r7, $1\n"               // NR_exit == 1
-     "svc $0x00\n"
-     "");
-@@ -985,7 +984,6 @@ asm(".section .text\n"
-     "add x2, x2, x1\n"            //           + argv
-     "and sp, x1, -16\n"           // sp must be 16-byte aligned in the callee
-     "bl main\n"                   // main() returns the status code, we'll exit with it.
--    "and x0, x0, 0xff\n"          // limit exit code to 8 bits
-     "mov x8, 93\n"                // NR_exit == 93
-     "svc #0\n"
-     "");
-@@ -1190,7 +1188,7 @@ asm(".section .text\n"
-     "addiu $sp,$sp,-16\n"         // the callee expects to save a0..a3 there!
-     "jal main\n"                  // main() returns the status code, we'll exit with it.
-     "nop\n"                       // delayed slot
--    "and $a0, $v0, 0xff\n"        // limit exit code to 8 bits
-+    "move $a0, $v0\n"             // retrieve 32-bit exit code from v0
-     "li $v0, 4001\n"              // NR_exit == 4001
-     "syscall\n"
-     ".end __start\n"
-@@ -1388,7 +1386,6 @@ asm(".section .text\n"
-     "add   a2,a2,a1\n"           //             + argv
-     "andi  sp,a1,-16\n"          // sp must be 16-byte aligned
-     "call  main\n"               // main() returns the status code, we'll exit with it.
--    "andi  a0, a0, 0xff\n"       // limit exit code to 8 bits
-     "li a7, 93\n"                // NR_exit == 93
-     "ecall\n"
-     "");
+ 	sess->user = user;
+ 	if (user_guest(sess->user)) {
+-		if (conn->sign) {
+-			ksmbd_debug(SMB, "Guest login not allowed when signing enabled\n");
+-			return -EPERM;
+-		}
+-
+ 		rsp->SessionFlags = SMB2_SESSION_FLAG_IS_GUEST_LE;
+ 	} else {
+ 		struct authenticate_message *authblob;
+@@ -1472,38 +1467,39 @@ static int ntlm_authenticate(struct ksmb
+ 			ksmbd_debug(SMB, "authentication failed\n");
+ 			return -EPERM;
+ 		}
++	}
+ 
+-		/*
+-		 * If session state is SMB2_SESSION_VALID, We can assume
+-		 * that it is reauthentication. And the user/password
+-		 * has been verified, so return it here.
+-		 */
+-		if (sess->state == SMB2_SESSION_VALID) {
+-			if (conn->binding)
+-				goto binding_session;
+-			return 0;
+-		}
++	/*
++	 * If session state is SMB2_SESSION_VALID, We can assume
++	 * that it is reauthentication. And the user/password
++	 * has been verified, so return it here.
++	 */
++	if (sess->state == SMB2_SESSION_VALID) {
++		if (conn->binding)
++			goto binding_session;
++		return 0;
++	}
+ 
+-		if ((conn->sign || server_conf.enforced_signing) ||
+-		    (req->SecurityMode & SMB2_NEGOTIATE_SIGNING_REQUIRED))
+-			sess->sign = true;
+-
+-		if (smb3_encryption_negotiated(conn) &&
+-		    !(req->Flags & SMB2_SESSION_REQ_FLAG_BINDING)) {
+-			rc = conn->ops->generate_encryptionkey(sess);
+-			if (rc) {
+-				ksmbd_debug(SMB,
+-					    "SMB3 encryption key generation failed\n");
+-				return -EINVAL;
+-			}
+-			sess->enc = true;
+-			rsp->SessionFlags = SMB2_SESSION_FLAG_ENCRYPT_DATA_LE;
+-			/*
+-			 * signing is disable if encryption is enable
+-			 * on this session
+-			 */
+-			sess->sign = false;
++	if ((rsp->SessionFlags != SMB2_SESSION_FLAG_IS_GUEST_LE &&
++	     (conn->sign || server_conf.enforced_signing)) ||
++	    (req->SecurityMode & SMB2_NEGOTIATE_SIGNING_REQUIRED))
++		sess->sign = true;
++
++	if (smb3_encryption_negotiated(conn) &&
++			!(req->Flags & SMB2_SESSION_REQ_FLAG_BINDING)) {
++		rc = conn->ops->generate_encryptionkey(sess);
++		if (rc) {
++			ksmbd_debug(SMB,
++					"SMB3 encryption key generation failed\n");
++			return -EINVAL;
+ 		}
++		sess->enc = true;
++		rsp->SessionFlags = SMB2_SESSION_FLAG_ENCRYPT_DATA_LE;
++		/*
++		 * signing is disable if encryption is enable
++		 * on this session
++		 */
++		sess->sign = false;
+ 	}
+ 
+ binding_session:
 
 
