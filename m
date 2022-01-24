@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50622C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC77C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450388AbiAXVUZ (ORCPT
+        id S1450485AbiAXVUj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:20:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441805AbiAXUvl (ORCPT
+        Mon, 24 Jan 2022 16:20:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43398 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1441850AbiAXUvp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB46DC054330;
-        Mon, 24 Jan 2022 11:58:33 -0800 (PST)
+        Mon, 24 Jan 2022 15:51:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 89869B810AF;
-        Mon, 24 Jan 2022 19:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2B58C340E5;
-        Mon, 24 Jan 2022 19:58:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D91D060916;
+        Mon, 24 Jan 2022 20:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42263C340E5;
+        Mon, 24 Jan 2022 20:51:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054311;
-        bh=hhcJmuN2kWlMk96NPFUrqTDWUoSgBnttal2l50VDvZ0=;
+        s=korg; t=1643057504;
+        bh=eXynGo+KjFto3C/Buumq3unNrllJ5PYHTL/A30vhd9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vq0TaAaNCBawkhTbvvp8KsOyLd+Y4m1fZcklpGGBp8/2xJr6V1nXscs5YIXmbcugn
-         rnfdNuoswE4d3J1r63BvZQjcqFcwAE7ak88qJFPXBD70jl7J70G/36Bf5ssy2n/vEK
-         8IgYmZh+yfGW7xyjn1HpuhxYHx69tm4NDc1vWZGc=
+        b=wpLWRq8TeDxN2qkX4MpWWpgfdnCdCi555bNszKrXPPDoTDejPK9fj5s7hlSHDgIE+
+         3DhTr/DrlsC+H9ZWj0ZYiehBmlMk1dZf3l67vjhgyGRTAnXlnvdy0TWrzXH950vFSA
+         /x+JKGrZzxosp9xbeaafac3I3iieLqynj40jxeJE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 347/563] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 24 Jan 2022 19:41:52 +0100
-Message-Id: <20220124184036.411665606@linuxfoundation.org>
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 835/846] net: cpsw: avoid alignment faults by taking NET_IP_ALIGN into account
+Date:   Mon, 24 Jan 2022 19:45:52 +0100
+Message-Id: <20220124184129.713976214@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,72 +49,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ard Biesheuvel <ardb@kernel.org>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+commit 1771afd47430f5e95c9c3a2e3a8a63e67402d3fe upstream.
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+Both versions of the CPSW driver declare a CPSW_HEADROOM_NA macro that
+takes NET_IP_ALIGN into account, but fail to use it appropriately when
+storing incoming packets in memory. This results in the IPv4 source and
+destination addresses to appear misaligned in memory, which causes
+aligment faults that need to be fixed up in software.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
+So let's switch from CPSW_HEADROOM to CPSW_HEADROOM_NA where needed.
+This gets rid of any alignment faults on the RX path on a Beaglebone
+White.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
+Cc: Grygorii Strashko <grygorii.strashko@ti.com>
+Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/ethernet/ti/cpsw.c      |    6 +++---
+ drivers/net/ethernet/ti/cpsw_new.c  |    6 +++---
+ drivers/net/ethernet/ti/cpsw_priv.c |    2 +-
+ 3 files changed, 7 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 81cc85a97eb20..922a7ea0cd24e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1739,6 +1739,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -349,7 +349,7 @@ static void cpsw_rx_handler(void *token,
+ 	struct cpsw_common	*cpsw = ndev_to_cpsw(xmeta->ndev);
+ 	int			pkt_size = cpsw->rx_packet_max;
+ 	int			ret = 0, port, ch = xmeta->ch;
+-	int			headroom = CPSW_HEADROOM;
++	int			headroom = CPSW_HEADROOM_NA;
+ 	struct net_device	*ndev = xmeta->ndev;
+ 	struct cpsw_priv	*priv;
+ 	struct page_pool	*pool;
+@@ -392,7 +392,7 @@ static void cpsw_rx_handler(void *token,
+ 	}
  
- 	lockdep_assert_held(&mvm->mutex);
+ 	if (priv->xdp_prog) {
+-		int headroom = CPSW_HEADROOM, size = len;
++		int size = len;
  
-@@ -1748,6 +1749,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
-+
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
- }
+ 		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
+ 		if (status & CPDMA_RX_VLAN_ENCAP) {
+@@ -442,7 +442,7 @@ requeue:
+ 	xmeta->ndev = ndev;
+ 	xmeta->ch = ch;
  
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
--- 
-2.34.1
-
+-	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
++	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
+ 	ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
+ 				       pkt_size, 0);
+ 	if (ret < 0) {
+--- a/drivers/net/ethernet/ti/cpsw_new.c
++++ b/drivers/net/ethernet/ti/cpsw_new.c
+@@ -283,7 +283,7 @@ static void cpsw_rx_handler(void *token,
+ {
+ 	struct page *new_page, *page = token;
+ 	void *pa = page_address(page);
+-	int headroom = CPSW_HEADROOM;
++	int headroom = CPSW_HEADROOM_NA;
+ 	struct cpsw_meta_xdp *xmeta;
+ 	struct cpsw_common *cpsw;
+ 	struct net_device *ndev;
+@@ -336,7 +336,7 @@ static void cpsw_rx_handler(void *token,
+ 	}
+ 
+ 	if (priv->xdp_prog) {
+-		int headroom = CPSW_HEADROOM, size = len;
++		int size = len;
+ 
+ 		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
+ 		if (status & CPDMA_RX_VLAN_ENCAP) {
+@@ -386,7 +386,7 @@ requeue:
+ 	xmeta->ndev = ndev;
+ 	xmeta->ch = ch;
+ 
+-	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
++	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
+ 	ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
+ 				       pkt_size, 0);
+ 	if (ret < 0) {
+--- a/drivers/net/ethernet/ti/cpsw_priv.c
++++ b/drivers/net/ethernet/ti/cpsw_priv.c
+@@ -1120,7 +1120,7 @@ int cpsw_fill_rx_channels(struct cpsw_pr
+ 			xmeta->ndev = priv->ndev;
+ 			xmeta->ch = ch;
+ 
+-			dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM;
++			dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM_NA;
+ 			ret = cpdma_chan_idle_submit_mapped(cpsw->rxv[ch].ch,
+ 							    page, dma,
+ 							    cpsw->rx_packet_max,
 
 
