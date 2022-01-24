@@ -2,123 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79BE0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C05C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343941AbiAXSwr (ORCPT
+        id S1343971AbiAXSwx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:52:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245688AbiAXSvZ (ORCPT
+        Mon, 24 Jan 2022 13:52:53 -0500
+Received: from mail-qk1-f174.google.com ([209.85.222.174]:46697 "EHLO
+        mail-qk1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343542AbiAXSux (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:51:25 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D935C0613E6;
-        Mon, 24 Jan 2022 10:51:17 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9068EB8121B;
-        Mon, 24 Jan 2022 18:51:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBCE1C340E5;
-        Mon, 24 Jan 2022 18:51:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050276;
-        bh=x0GDq5/TGahdJpi0k1BZhKdPLlEVphD7FM3LYcMZxcg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAD4+M46JYtUFi/fR0FiyNSnO/70mlGPHSF+QX8rebE24OWYfrHzYC4H7yHjtZBwI
-         zpL0iLXQsw16Q1HZZf7VtlTb7udnZs4LLeletq6cDakoysgf/cRTF0T2Rx7fB7DDx/
-         F+PysBrOotP1do6Jwe+gDW+3tOMqRm+UwZSMj/wo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 067/114] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 24 Jan 2022 19:42:42 +0100
-Message-Id: <20220124183929.170826912@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 13:50:53 -0500
+Received: by mail-qk1-f174.google.com with SMTP id 13so7050414qkd.13;
+        Mon, 24 Jan 2022 10:50:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZXczVih0FPrq5RMJMFbQoznMPhMuyGl4ivag5w/6yQo=;
+        b=qjEje+L9jxsTceVKPDo2TxHNl6tCrbp9WYTwAtiyqeMoL+1G2zzTzc7yF0JGn/PpSo
+         1lLFR/XXbWyerydGnFCpJ+JWgnjsWHJQrDm6kfTmFI/qVeSJo+5iTsEuySfej7mp4nuI
+         +U9caO2T0cD7H6uCwmIImAtFf14KjL6tbV9+rJW3GEgCLQK7ZTh3Awh2DFC91w8NR0Xz
+         SQJX4tbdpBkumHH9tUuMoIK3gkpAj+xnR/pTyh18aDCBgaoICHinOBfZdFroeCLcCkt9
+         grHO1PlrN03o4kLNd3VVjywA38oKaUlCKeOtFlBJ2xF9LH41sZ7MhZT2VoxZ4pcI55UJ
+         klBA==
+X-Gm-Message-State: AOAM530021Ph7bI9Mj6obfunjWxP5mpnjQOc5ZLESr2SUfxGM9o7Wzdb
+        pYJHKRyE4JDtJ/yVG/SbvfRLHjeCZ5GcRlAF+uI=
+X-Google-Smtp-Source: ABdhPJyvSheg1mf3030MstMWntKE0XdVdAcgmjD2HcaBTrQQzYxi/X9z158mcrejkOhrhki798xK1d2hjlGKYPLD3f4=
+X-Received: by 2002:ae9:f445:: with SMTP id z5mr2102446qkl.8.1643050252793;
+ Mon, 24 Jan 2022 10:50:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <1642851166-27096-1-git-send-email-akhilrajeev@nvidia.com> <CAHp75Ve-zYz27baJ9SV3wcyKS5iMnxFO61gGE2LXQPU_hTt+qw@mail.gmail.com>
+In-Reply-To: <CAHp75Ve-zYz27baJ9SV3wcyKS5iMnxFO61gGE2LXQPU_hTt+qw@mail.gmail.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Mon, 24 Jan 2022 19:50:37 +0100
+Message-ID: <CAJZ5v0guL4nk21gvvs2K9Ak6sjhDSzMvDQZJvmnq6Frsj3+7yA@mail.gmail.com>
+Subject: Re: [PATCH v4 0/3] Enable named interrupt smbus-alert for ACPI
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Akhil R <akhilrajeev@nvidia.com>,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Christian Koenig <christian.koenig@amd.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On Sat, Jan 22, 2022 at 1:06 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Sat, Jan 22, 2022 at 1:33 PM Akhil R <akhilrajeev@nvidia.com> wrote:
+> >
+> > I2C - SMBus core drivers use named interrupts to support smbus_alert.
+> > As named interrupts are not available for ACPI based systems, it was
+> > required to change the i2c bus controller driver if to use smbus alert.
+> > These patches provide option for named interrupts in ACPI and  make the
+> > implementation similar to DT. This will enable use of interrupt named
+> > 'smbus-alert' in ACPI as well which will be taken during i2c adapter
+> > register.
+>
+> I'm fine with the series,
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Maintainers can ask something else, though.
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+It looks good to me.
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+If no one else has concerns regarding it, I'll queue it up for 5.18.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/iwlwifi/mvm/mac80211.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
-
-diff --git a/drivers/net/wireless/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/iwlwifi/mvm/mac80211.c
-index ca498b1f1f568..6417fda88733c 100644
---- a/drivers/net/wireless/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/iwlwifi/mvm/mac80211.c
-@@ -1957,6 +1957,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1966,6 +1967,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
-+
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
- }
- 
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
--- 
-2.34.1
-
-
-
+> > v3->v4:
+> >   * Removed device_irq_get_byname()
+> >   * Updates in comments and document.
+> > v2->v3:
+> >   * Grammar/spelling corrections.
+> >   * Added description in function comments.
+> >   * Removed 'unlikely' from NULL check on 'name'
+> > v1->v2:
+> >   * Added firmware guide documentation for ACPI named interrupts
+> >   * Updates in function description comments
+> >
+> > Akhil R (3):
+> >   device property: Add fwnode_irq_get_byname
+> >   docs: firmware-guide: ACPI: Add named interrupt doc
+> >   i2c: smbus: Use device_*() functions instead of of_*()
+> >
+> >  Documentation/firmware-guide/acpi/enumeration.rst | 39 +++++++++++++++++++++++
+> >  drivers/base/property.c                           | 29 +++++++++++++++++
+> >  drivers/i2c/i2c-core-base.c                       |  2 +-
+> >  drivers/i2c/i2c-core-smbus.c                      | 10 +++---
+> >  drivers/i2c/i2c-smbus.c                           |  3 +-
+> >  include/linux/i2c-smbus.h                         |  6 ++--
+> >  include/linux/property.h                          |  1 +
+> >  7 files changed, 80 insertions(+), 10 deletions(-)
+> >
+> > --
+> > 2.7.4
+> >
+>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
