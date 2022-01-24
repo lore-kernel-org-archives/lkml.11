@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 219ACC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C99C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840017AbiAXWw0 (ORCPT
+        id S1840057AbiAXWwb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458067AbiAXVmo (ORCPT
+        Mon, 24 Jan 2022 17:52:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33532 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449799AbiAXVoO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A14BAC0419D6;
-        Mon, 24 Jan 2022 12:30:12 -0800 (PST)
+        Mon, 24 Jan 2022 16:44:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C683B811F9;
-        Mon, 24 Jan 2022 20:30:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78F1BC340E5;
-        Mon, 24 Jan 2022 20:30:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3916150C;
+        Mon, 24 Jan 2022 21:44:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917DAC340E4;
+        Mon, 24 Jan 2022 21:44:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056209;
-        bh=FaB0y9HIYPaqAi9q7owR1nZqkiO+ArzL+57wSpMcVoE=;
+        s=korg; t=1643060653;
+        bh=gR/N5qZK1VxOw5l/WNDdjtOvBhxoOw2tbdxKt3r7zlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bkQvpRbkcpPgH1fbQgJ4J09iIbgDbZQ3SE/qzB4gMiiStpAwtDViq9R+XlUneT9jJ
-         vzBG6PtZwd6kCtFmdwgE4QjBWE5zv7dBK+VtAiTVdurJiA13yB+nOJm9x/80BFD05/
-         /3bA425sSLA3LzDMU1DjV9H+ZYOCEp+ZKKPomY3w=
+        b=qcGtQNoYQcPKqwVNPPpe3ZIUfnxUiLWYn3k94JDKag518QBpyZb9dIHYvPya5mnhK
+         H2uG6PMyj3n2Oh1MJtqtdyrNT4COBZtwOohxz4VL32MjMhZNOGEnjJt3YsPMO7a+BR
+         4ofIDk/P2a3gcS7qC1gHFYijCUwwHNTjEdnIpDnI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 408/846] powerpc/powermac: Add additional missing lockdep_register_key()
-Date:   Mon, 24 Jan 2022 19:38:45 +0100
-Message-Id: <20220124184115.038576142@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 1020/1039] net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices
+Date:   Mon, 24 Jan 2022 19:46:49 +0100
+Message-Id: <20220124184159.586360232@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,53 +48,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Claudiu Beznea <claudiu.beznea@microchip.com>
 
-[ Upstream commit b149d5d45ac9171ed699a256f026c8ebef901112 ]
+commit f1131b9c23fb4a3540a774828ff49f421619f902 upstream.
 
-Commit df1f679d19ed ("powerpc/powermac: Add missing
-lockdep_register_key()") fixed a problem that was causing a WARNING.
+On a setup with KSZ9131 and MACB drivers it happens on suspend path, from
+time to time, that the PHY interrupt arrives after PHY and MACB were
+suspended (PHY via genphy_suspend(), MACB via macb_suspend()). In this
+case the phy_read() at the beginning of kszphy_handle_interrupt() will
+fail (as MACB driver is suspended at this time) leading to phy_error()
+being called and a stack trace being displayed on console. To solve this
+.suspend/.resume functions for all KSZ devices implementing
+.handle_interrupt were replaced with kszphy_suspend()/kszphy_resume()
+which disable/enable interrupt before/after calling
+genphy_suspend()/genphy_resume().
 
-There are two other places in the same file with the same problem
-originating from commit 9e607f72748d ("i2c_powermac: shut up lockdep
-warning").
+The fix has been adapted for all KSZ devices which implements
+.handle_interrupt but it has been tested only on KSZ9131.
 
-Add missing lockdep_register_key()
-
-Fixes: 9e607f72748d ("i2c_powermac: shut up lockdep warning")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Depends-on: df1f679d19ed ("powerpc/powermac: Add missing lockdep_register_key()")
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=200055
-Link: https://lore.kernel.org/r/2c7e421874e21b2fb87813d768cf662f630c2ad4.1638984999.git.christophe.leroy@csgroup.eu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 59ca4e58b917 ("net: phy: micrel: implement generic .handle_interrupt() callback")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/platforms/powermac/low_i2c.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/phy/micrel.c |   36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
-index f77a59b5c2e1a..09bfe4b8f25aa 100644
---- a/arch/powerpc/platforms/powermac/low_i2c.c
-+++ b/arch/powerpc/platforms/powermac/low_i2c.c
-@@ -810,6 +810,7 @@ static void __init pmu_i2c_probe(void)
- 		bus->hostdata = bus + 1;
- 		bus->xfer = pmu_i2c_xfer;
- 		mutex_init(&bus->mutex);
-+		lockdep_register_key(&bus->lock_key);
- 		lockdep_set_class(&bus->mutex, &bus->lock_key);
- 		bus->flags = pmac_i2c_multibus;
- 		list_add(&bus->link, &pmac_i2c_busses);
-@@ -933,6 +934,7 @@ static void __init smu_i2c_probe(void)
- 		bus->hostdata = bus + 1;
- 		bus->xfer = smu_i2c_xfer;
- 		mutex_init(&bus->mutex);
-+		lockdep_register_key(&bus->lock_key);
- 		lockdep_set_class(&bus->mutex, &bus->lock_key);
- 		bus->flags = 0;
- 		list_add(&bus->link, &pmac_i2c_busses);
--- 
-2.34.1
-
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1630,8 +1630,8 @@ static struct phy_driver ksphy_driver[]
+ 	.config_init	= kszphy_config_init,
+ 	.config_intr	= kszphy_config_intr,
+ 	.handle_interrupt = kszphy_handle_interrupt,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8021,
+ 	.phy_id_mask	= 0x00ffffff,
+@@ -1645,8 +1645,8 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8031,
+ 	.phy_id_mask	= 0x00ffffff,
+@@ -1660,8 +1660,8 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8041,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+@@ -1692,8 +1692,8 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.name		= "Micrel KSZ8051",
+ 	/* PHY_BASIC_FEATURES */
+@@ -1706,8 +1706,8 @@ static struct phy_driver ksphy_driver[]
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+ 	.match_phy_device = ksz8051_match_phy_device,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8001,
+ 	.name		= "Micrel KSZ8001 or KS8721",
+@@ -1721,8 +1721,8 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8081,
+ 	.name		= "Micrel KSZ8081 or KSZ8091",
+@@ -1752,8 +1752,8 @@ static struct phy_driver ksphy_driver[]
+ 	.config_init	= ksz8061_config_init,
+ 	.config_intr	= kszphy_config_intr,
+ 	.handle_interrupt = kszphy_handle_interrupt,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ9021,
+ 	.phy_id_mask	= 0x000ffffe,
+@@ -1768,8 +1768,8 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ 	.read_mmd	= genphy_read_mmd_unsupported,
+ 	.write_mmd	= genphy_write_mmd_unsupported,
+ }, {
+@@ -1787,7 +1787,7 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
++	.suspend	= kszphy_suspend,
+ 	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_LAN8814,
+@@ -1829,7 +1829,7 @@ static struct phy_driver ksphy_driver[]
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
++	.suspend	= kszphy_suspend,
+ 	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8873MLL,
 
 
