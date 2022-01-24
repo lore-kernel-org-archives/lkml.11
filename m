@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F83C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABFEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:42:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347807AbiAXTmb (ORCPT
+        id S1346154AbiAXTmj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:42:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55684 "EHLO
+        Mon, 24 Jan 2022 14:42:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55624 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353059AbiAXTcg (ORCPT
+        with ESMTP id S1352225AbiAXTce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:32:36 -0500
+        Mon, 24 Jan 2022 14:32:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5995FB81239;
-        Mon, 24 Jan 2022 19:32:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B1E8C340E5;
-        Mon, 24 Jan 2022 19:32:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 32B45B8122F;
+        Mon, 24 Jan 2022 19:32:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65705C340E5;
+        Mon, 24 Jan 2022 19:32:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052754;
-        bh=1AC9kSNkKHKjHLUFTivSrUAlNSvN3ie5d3LvlLeVE9I=;
+        s=korg; t=1643052747;
+        bh=DAO4tYwqdARcTANi8ZVt/gONjK/k/ESqgOqBbagLP1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oX05IkfEkRBuVElkLlbE7OtBMIVYEqVqyjDz+l3PRLsOpUIPYBC5rESWmGec7FmOu
-         bu1B75JQ1UN0dAothxx6PcaKxgVMt829fC/nDVR1UlwVoGnoZp7gyUUKvjVYEVG1yD
-         BG0PGRs40N9gfL6eFwfAEPJvhjyb6JPXW8KYF5Ow=
+        b=WgXw+SSDsuHknmkbFyi5Mr1T7qLubIW7S1AaLkSBVQUVJUNO8AcjApBKQW5M56Uas
+         KowftTt+h273oK+K+6Uqke6Zo3KtfjlPOQR2lb/1ZlPgPgsKUmB2qWj5L5R2wIQ20m
+         1nVnFc+po7czqQGE+tmQj+FsLHtY4PNOmHt/CaRY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 162/320] HID: apple: Do not reset quirks when the Fn key is not found
-Date:   Mon, 24 Jan 2022 19:42:26 +0100
-Message-Id: <20220124183959.157100886@linuxfoundation.org>
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 160/320] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 24 Jan 2022 19:42:24 +0100
+Message-Id: <20220124183959.083332678@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,33 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-[ Upstream commit a5fe7864d8ada170f19cc47d176bf8260ffb4263 ]
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-When a keyboard without a function key is detected, instead of removing
-all quirks, remove only the APPLE_HAS_FN quirk.
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
+
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
+
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-apple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 07df64daf7dae..efce31d035ef5 100644
---- a/drivers/hid/hid-apple.c
-+++ b/drivers/hid/hid-apple.c
-@@ -389,7 +389,7 @@ static int apple_input_configured(struct hid_device *hdev,
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index 3f5c21f7f9905..2bea33b41553b 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
  
- 	if ((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) {
- 		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
--		asc->quirks = 0;
-+		asc->quirks &= ~APPLE_HAS_FN;
- 	}
+-	return 0;
++	return stream_open(inode, file);
+ }
  
- 	return 0;
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -1156,7 +1156,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
 -- 
 2.34.1
 
