@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A0AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:02:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED9DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:02:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353050AbiAXUCG (ORCPT
+        id S1344715AbiAXUCO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:02:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34570 "EHLO
+        Mon, 24 Jan 2022 15:02:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34374 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354648AbiAXTg5 (ORCPT
+        with ESMTP id S1354368AbiAXTge (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:36:57 -0500
+        Mon, 24 Jan 2022 14:36:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9ED0D614DA;
-        Mon, 24 Jan 2022 19:36:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A507C340E5;
-        Mon, 24 Jan 2022 19:36:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AD0D960917;
+        Mon, 24 Jan 2022 19:36:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92376C340E5;
+        Mon, 24 Jan 2022 19:36:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053016;
-        bh=FYe4UVnzYe2hrRUNg/CIzkMESrbopJBXhiXreviRkXM=;
+        s=korg; t=1643052993;
+        bh=cnN5xt6O7qL5pb9YX1Cpeo6wCDkG1nZj0Zoq4vNviYg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gTSI4QUXZuWz/KJXvqsSWmZjMiOL90u6I6NmppcCuk9K+vc5hnd+SYR12HlGoya77
-         RNP2RTHWri8WerEpwIITf9SESWJY9FYKepnU6EsdXrnWt8Hm0eP9txNoFE69leJKsA
-         /LChZdcWFOX1OhGCaMtV+lHlpEiB7XW2/w2Vw3Zc=
+        b=QfvE2lFWj4zW5TnyK1EiJYxH89US52rTRoCPs+D1Uu3wkC/0/fzOnG2wMRQqnuDcl
+         TnYy4o069AF2x5nRnrubgo97SG4YuAI/4WygmjFdoedh3JmKMjXGPTv1GcY9YKSv9p
+         gfizCogelMShngAawKvHsrs8cpJ4JgMOcCHlqVHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Petr Cvachoucek <cvachoucek@gmail.com>,
-        Richard Weinberger <richard@nod.at>
-Subject: [PATCH 5.4 249/320] ubifs: Error path in ubifs_remount_rw() seems to wrongly free write buffers
-Date:   Mon, 24 Jan 2022 19:43:53 +0100
-Message-Id: <20220124184002.460673837@linuxfoundation.org>
+        stable@vger.kernel.org, Sudeep Holla <sudeep.holla@arm.com>,
+        Bob Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 207/320] ACPICA: Fix wrong interpretation of PCC address
+Date:   Mon, 24 Jan 2022 19:43:11 +0100
+Message-Id: <20220124184000.674578975@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,105 +48,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Petr Cvachoucek <cvachoucek@gmail.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
 
-commit 3fea4d9d160186617ff40490ae01f4f4f36b28ff upstream.
+[ Upstream commit 9a3b8655db1ada31c82189ae13f40eb25da48c35 ]
 
-it seems freeing the write buffers in the error path of the
-ubifs_remount_rw() is wrong. It leads later to a kernel oops like this:
+ACPICA commit 41be6afacfdaec2dba3a5ed368736babc2a7aa5c
 
-[10016.431274] UBIFS (ubi0:0): start fixing up free space
-[10090.810042] UBIFS (ubi0:0): free space fixup complete
-[10090.814623] UBIFS error (ubi0:0 pid 512): ubifs_remount_fs: cannot
-spawn "ubifs_bgt0_0", error -4
-[10101.915108] UBIFS (ubi0:0): background thread "ubifs_bgt0_0" started,
-PID 517
-[10105.275498] Unable to handle kernel NULL pointer dereference at
-virtual address 0000000000000030
-[10105.284352] Mem abort info:
-[10105.287160]   ESR = 0x96000006
-[10105.290252]   EC = 0x25: DABT (current EL), IL = 32 bits
-[10105.295592]   SET = 0, FnV = 0
-[10105.298652]   EA = 0, S1PTW = 0
-[10105.301848] Data abort info:
-[10105.304723]   ISV = 0, ISS = 0x00000006
-[10105.308573]   CM = 0, WnR = 0
-[10105.311564] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000f03d1000
-[10105.318034] [0000000000000030] pgd=00000000f6cee003,
-pud=00000000f4884003, pmd=0000000000000000
-[10105.326783] Internal error: Oops: 96000006 [#1] PREEMPT SMP
-[10105.332355] Modules linked in: ath10k_pci ath10k_core ath mac80211
-libarc4 cfg80211 nvme nvme_core cryptodev(O)
-[10105.342468] CPU: 3 PID: 518 Comm: touch Tainted: G           O
-5.4.3 #1
-[10105.349517] Hardware name: HYPEX CPU (DT)
-[10105.353525] pstate: 40000005 (nZcv daif -PAN -UAO)
-[10105.358324] pc : atomic64_try_cmpxchg_acquire.constprop.22+0x8/0x34
-[10105.364596] lr : mutex_lock+0x1c/0x34
-[10105.368253] sp : ffff000075633aa0
-[10105.371563] x29: ffff000075633aa0 x28: 0000000000000001
-[10105.376874] x27: ffff000076fa80c8 x26: 0000000000000004
-[10105.382185] x25: 0000000000000030 x24: 0000000000000000
-[10105.387495] x23: 0000000000000000 x22: 0000000000000038
-[10105.392807] x21: 000000000000000c x20: ffff000076fa80c8
-[10105.398119] x19: ffff000076fa8000 x18: 0000000000000000
-[10105.403429] x17: 0000000000000000 x16: 0000000000000000
-[10105.408741] x15: 0000000000000000 x14: fefefefefefefeff
-[10105.414052] x13: 0000000000000000 x12: 0000000000000fe0
-[10105.419364] x11: 0000000000000fe0 x10: ffff000076709020
-[10105.424675] x9 : 0000000000000000 x8 : 00000000000000a0
-[10105.429986] x7 : ffff000076fa80f4 x6 : 0000000000000030
-[10105.435297] x5 : 0000000000000000 x4 : 0000000000000000
-[10105.440609] x3 : 0000000000000000 x2 : ffff00006f276040
-[10105.445920] x1 : ffff000075633ab8 x0 : 0000000000000030
-[10105.451232] Call trace:
-[10105.453676]  atomic64_try_cmpxchg_acquire.constprop.22+0x8/0x34
-[10105.459600]  ubifs_garbage_collect+0xb4/0x334
-[10105.463956]  ubifs_budget_space+0x398/0x458
-[10105.468139]  ubifs_create+0x50/0x180
-[10105.471712]  path_openat+0x6a0/0x9b0
-[10105.475284]  do_filp_open+0x34/0x7c
-[10105.478771]  do_sys_open+0x78/0xe4
-[10105.482170]  __arm64_sys_openat+0x1c/0x24
-[10105.486180]  el0_svc_handler+0x84/0xc8
-[10105.489928]  el0_svc+0x8/0xc
-[10105.492808] Code: 52800013 17fffffb d2800003 f9800011 (c85ffc05)
-[10105.498903] ---[ end trace 46b721d93267a586 ]---
+With the PCC Opregion in the firmware and we are hitting below kernel crash:
 
-To reproduce the problem:
+-->8
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+ Workqueue: pm pm_runtime_work
+ pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : __memcpy+0x54/0x260
+ lr : acpi_ex_write_data_to_field+0xb8/0x194
+ Call trace:
+  __memcpy+0x54/0x260
+  acpi_ex_store_object_to_node+0xa4/0x1d4
+  acpi_ex_store+0x44/0x164
+  acpi_ex_opcode_1A_1T_1R+0x25c/0x508
+  acpi_ds_exec_end_op+0x1b4/0x44c
+  acpi_ps_parse_loop+0x3a8/0x614
+  acpi_ps_parse_aml+0x90/0x2f4
+  acpi_ps_execute_method+0x11c/0x19c
+  acpi_ns_evaluate+0x1ec/0x2b0
+  acpi_evaluate_object+0x170/0x2b0
+  acpi_device_set_power+0x118/0x310
+  acpi_dev_suspend+0xd4/0x180
+  acpi_subsys_runtime_suspend+0x28/0x38
+  __rpm_callback+0x74/0x328
+  rpm_suspend+0x2d8/0x624
+  pm_runtime_work+0xa4/0xb8
+  process_one_work+0x194/0x25c
+  worker_thread+0x260/0x49c
+  kthread+0x14c/0x30c
+  ret_from_fork+0x10/0x20
+ Code: f9000006 f81f80a7 d65f03c0 361000c2 (b9400026)
+ ---[ end trace 24d8a032fa77b68a ]---
 
-1. Filesystem initially mounted read-only, free space fixup flag set.
+The reason for the crash is that the PCC channel index passed via region.address
+in acpi_ex_store_object_to_node is interpreted as the channel subtype
+incorrectly.
 
-2. mount -o remount,rw <mountpoint>
+Assuming the PCC op_region support is not used by any other type, let us
+remove the subtype check as the AML has no access to the subtype information.
+Once we remove it, the kernel crash disappears and correctly complains about
+missing PCC Opregion handler.
 
-3. it takes some time (free space fixup running)
-    ... try to terminate running mount by CTRL-C
-    ... does not respond, only after free space fixup is complete
-    ... then "ubifs_remount_fs: cannot spawn "ubifs_bgt0_0", error -4"
+ACPI Error: No handler for Region [PFRM] ((____ptrval____)) [PCC] (20210730/evregion-130)
+ACPI Error: Region PCC (ID=10) has no handler (20210730/exfldio-261)
+ACPI Error: Aborting method \_SB.ETH0._PS3 due to previous error (AE_NOT_EXIST) (20210730/psparse-531)
 
-4. mount -o remount,rw <mountpoint>
-    ... now finished instantly (fixup already done).
-
-5. Create file or just unmount the filesystem and we get the oops.
-
-Cc: <stable@vger.kernel.org>
-Fixes: b50b9f408502 ("UBIFS: do not free write-buffers when in R/O mode")
-Signed-off-by: Petr Cvachoucek <cvachoucek@gmail.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://github.com/acpica/acpica/commit/41be6afa
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ubifs/super.c |    1 -
- 1 file changed, 1 deletion(-)
+ drivers/acpi/acpica/exfield.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
---- a/fs/ubifs/super.c
-+++ b/fs/ubifs/super.c
-@@ -1835,7 +1835,6 @@ out:
- 		kthread_stop(c->bgt);
- 		c->bgt = NULL;
- 	}
--	free_wbufs(c);
- 	kfree(c->write_reserve_buf);
- 	c->write_reserve_buf = NULL;
- 	vfree(c->ileb_buf);
+diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
+index d3d2dbfba680c..cd3debefe990d 100644
+--- a/drivers/acpi/acpica/exfield.c
++++ b/drivers/acpi/acpica/exfield.c
+@@ -320,12 +320,7 @@ acpi_ex_write_data_to_field(union acpi_operand_object *source_desc,
+ 		       obj_desc->field.base_byte_offset,
+ 		       source_desc->buffer.pointer, data_length);
+ 
+-		if ((obj_desc->field.region_obj->region.address ==
+-		     PCC_MASTER_SUBSPACE
+-		     && MASTER_SUBSPACE_COMMAND(obj_desc->field.
+-						base_byte_offset))
+-		    || GENERIC_SUBSPACE_COMMAND(obj_desc->field.
+-						base_byte_offset)) {
++		if (MASTER_SUBSPACE_COMMAND(obj_desc->field.base_byte_offset)) {
+ 
+ 			/* Perform the write */
+ 
+-- 
+2.34.1
+
 
 
