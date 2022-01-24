@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E091CC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C28F2C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846386AbiAXXPu (ORCPT
+        id S1846667AbiAXXQl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:15:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37664 "EHLO
+        Mon, 24 Jan 2022 18:16:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584691AbiAXWVd (ORCPT
+        with ESMTP id S1583236AbiAXWR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C111AC041883;
-        Mon, 24 Jan 2022 12:52:55 -0800 (PST)
+        Mon, 24 Jan 2022 17:17:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D417C061390;
+        Mon, 24 Jan 2022 12:48:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6190F611F9;
-        Mon, 24 Jan 2022 20:52:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F3CDC340EA;
-        Mon, 24 Jan 2022 20:52:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A345DB810A8;
+        Mon, 24 Jan 2022 20:48:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C402BC340E5;
+        Mon, 24 Jan 2022 20:48:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057574;
-        bh=jfuQ8/SSqqyyt5xvg642+GN2e1J3uMhRUlEhGKuxvSs=;
+        s=korg; t=1643057313;
+        bh=O9UZ6orK0i01+YGguOA8n40pLZzoN4UWhLL+LLIUQ+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sbYd6o4OTYEelV+sjCyH77yhzhsV5Sv9M6aQcgzAXs3QohWNE8pNTCOy3++9xm/DD
-         xdmJc176xvEXfS0q0IHLbmlRY4SHy+EIlBqAoTGJRKkAv3nlAPW0ZwAWEKB31MsgU/
-         y6k33IMzrPRjRBLUtNd+OyuyIScK2sKSVatvMUBw=
+        b=QTuT5t5/mJnULA8fWv0TZvHU+UtIkzWEP22/z8OpqO3z5H+zyKtWq1wYY3+kYzkUu
+         NJs8Qw25hhoaNE+0s2DVxqO8JwuFBmPeNKAQJTyXyCvuc99JeNojoUiqowv8/ULe5F
+         K1djdxVCjsLl+MC8SF31xYGu2gmsfQbNn/QZXHJc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
-        Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.16 0011/1039] f2fs: fix to do sanity check in is_alive()
-Date:   Mon, 24 Jan 2022 19:30:00 +0100
-Message-Id: <20220124184125.525171284@linuxfoundation.org>
+        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
+        Eran Ben Elisha <eranbe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [PATCH 5.15 754/846] Revert "net/mlx5: Add retry mechanism to the command entry index allocation"
+Date:   Mon, 24 Jan 2022 19:44:31 +0100
+Message-Id: <20220124184126.984714868@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,34 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Moshe Shemesh <moshe@nvidia.com>
 
-commit 77900c45ee5cd5da63bd4d818a41dbdf367e81cd upstream.
+commit 4f6626b0e140867fd6d5a2e9d4ceaef97f10f46a upstream.
 
-In fuzzed image, SSA table may indicate that a data block belongs to
-invalid node, which node ID is out-of-range (0, 1, 2 or max_nid), in
-order to avoid migrating inconsistent data in such corrupted image,
-let's do sanity check anyway before data block migration.
+This reverts commit 410bd754cd73c4a2ac3856d9a03d7b08f9c906bf.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+The reverted commit had added a retry mechanism to the command entry
+index allocation. The previous patch ensures that there is a free
+command entry index once the command work handler holds the command
+semaphore. Thus the retry mechanism is not needed.
+
+Fixes: 410bd754cd73 ("net/mlx5: Add retry mechanism to the command entry index allocation")
+Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
+Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/gc.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   21 +--------------------
+ 1 file changed, 1 insertion(+), 20 deletions(-)
 
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -1026,6 +1026,9 @@ static bool is_alive(struct f2fs_sb_info
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
- 	}
+--- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+@@ -899,25 +899,6 @@ static bool opcode_allowed(struct mlx5_c
+ 	return cmd->allowed_opcode == opcode;
+ }
  
-+	if (f2fs_check_nid_range(sbi, dni->ino))
-+		return false;
-+
- 	*nofs = ofs_of_node(node_page);
- 	source_blkaddr = data_blkaddr(NULL, node_page, ofs_in_node);
- 	f2fs_put_page(node_page, 1);
+-static int cmd_alloc_index_retry(struct mlx5_cmd *cmd)
+-{
+-	unsigned long alloc_end = jiffies + msecs_to_jiffies(1000);
+-	int idx;
+-
+-retry:
+-	idx = cmd_alloc_index(cmd);
+-	if (idx < 0 && time_before(jiffies, alloc_end)) {
+-		/* Index allocation can fail on heavy load of commands. This is a temporary
+-		 * situation as the current command already holds the semaphore, meaning that
+-		 * another command completion is being handled and it is expected to release
+-		 * the entry index soon.
+-		 */
+-		cpu_relax();
+-		goto retry;
+-	}
+-	return idx;
+-}
+-
+ bool mlx5_cmd_is_down(struct mlx5_core_dev *dev)
+ {
+ 	return pci_channel_offline(dev->pdev) ||
+@@ -942,7 +923,7 @@ static void cmd_work_handler(struct work
+ 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
+ 	down(sem);
+ 	if (!ent->page_queue) {
+-		alloc_ret = cmd_alloc_index_retry(cmd);
++		alloc_ret = cmd_alloc_index(cmd);
+ 		if (alloc_ret < 0) {
+ 			mlx5_core_err_rl(dev, "failed to allocate command entry\n");
+ 			if (ent->callback) {
 
 
