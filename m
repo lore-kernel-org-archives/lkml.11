@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C8AC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366019AbiAXXwJ (ORCPT
+        id S2366038AbiAXXwM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49608 "EHLO
+        Mon, 24 Jan 2022 18:52:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845355AbiAXXMI (ORCPT
+        with ESMTP id S1354678AbiAXW4K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:12:08 -0500
+        Mon, 24 Jan 2022 17:56:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04DEC067A44;
-        Mon, 24 Jan 2022 13:19:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEE0FC055AAB;
+        Mon, 24 Jan 2022 13:11:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4FC7761469;
-        Mon, 24 Jan 2022 21:19:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29807C340E5;
-        Mon, 24 Jan 2022 21:19:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7346F6141C;
+        Mon, 24 Jan 2022 21:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5024DC340E5;
+        Mon, 24 Jan 2022 21:11:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059141;
-        bh=QGCFPH1WYvDgr9p4O+VQEVXKCX82xetHO6mmGWOWw2M=;
+        s=korg; t=1643058673;
+        bh=MR0DDHmEUnRhfhkZtXdtcXdk3sQQ2ZdHmzsTEcDQPNw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=swGStBzQ+zlmn9eToWmrcllx0TqZ2ZFgOQxv14PT+sPSTDzOCB2aDbEOhSzpf8FlN
-         uOG0nd7gWda3gmmoMblf62BvdTeui2hmoYOvAdcuxNHRoyHFvDGcxXzje7Kww7Jjlg
-         vf7/qwMWchZk+D0ROlZSXCfbUVMd7/GfZSrZYHHM=
+        b=gjXCB/wkjjsm/soO9GkVM5v4pys5Ie/C50DMxeyUihlJ5WgFbQg5bRbh6Ck+aO1++
+         P8yFGFpN8YY688vH8YpzbSt1KDE4xkRaSgBFwAxtgwFcxsUUTTfknDlTgxZcS8netI
+         OzabdorQcoyoL21PlXK326g3hRuTiYN2xKHRzAoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0474/1039] uio: uio_dmem_genirq: Catch the Exception
-Date:   Mon, 24 Jan 2022 19:37:43 +0100
-Message-Id: <20220124184141.205188392@linuxfoundation.org>
+Subject: [PATCH 5.16 0364/1039] ACPI: scan: Create platform device for BCM4752 and LNV4752 ACPI nodes
+Date:   Mon, 24 Jan 2022 19:35:53 +0100
+Message-Id: <20220124184137.521769259@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,39 +50,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit eec91694f927d1026974444eb6a3adccd4f1cbc2 ]
+[ Upstream commit f85196bdd5a50da74670250564740fc852b3c239 ]
 
-The return value of dma_set_coherent_mask() is not always 0.
-To catch the exception in case that dma is not support the mask.
+BCM4752 and LNV4752 ACPI nodes describe a Broadcom 4752 GPS module
+attached to an UART of the system.
 
-Fixes: 0a0c3b5a24bd ("Add new uio device for dynamic memory allocation")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20211204000326.1592687-1-jiasheng@iscas.ac.cn
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The GPS modules talk a custom protocol which only works with a closed-
+source Android gpsd daemon which knows this protocol.
+
+The ACPI nodes also describe GPIOs to turn the GPS on/off these are
+handled by the net/rfkill/rfkill-gpio.c code. This handling predates the
+addition of enumeration of ACPI instantiated serdevs to the kernel and
+was broken by that addition, because the ACPI scan code now no longer
+instantiates platform_device-s for these nodes.
+
+Rename the i2c_multi_instantiate_ids HID list to ignore_serial_bus_ids
+and add the BCM4752 and LNV4752 HIDs, so that rfkill-gpio gets
+a platform_device to bind to again; and so that a tty cdev for gpsd
+gets created for these.
+
+Fixes: e361d1f85855 ("ACPI / scan: Fix enumeration for special UART devices")
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/uio/uio_dmem_genirq.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/acpi/scan.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/uio/uio_dmem_genirq.c b/drivers/uio/uio_dmem_genirq.c
-index 6b5cfa5b06733..1106f33764047 100644
---- a/drivers/uio/uio_dmem_genirq.c
-+++ b/drivers/uio/uio_dmem_genirq.c
-@@ -188,7 +188,11 @@ static int uio_dmem_genirq_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 	}
+diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+index 2c80765670bc7..25d9f04f19959 100644
+--- a/drivers/acpi/scan.c
++++ b/drivers/acpi/scan.c
+@@ -1695,6 +1695,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ {
+ 	struct list_head resource_list;
+ 	bool is_serial_bus_slave = false;
++	static const struct acpi_device_id ignore_serial_bus_ids[] = {
+ 	/*
+ 	 * These devices have multiple I2cSerialBus resources and an i2c-client
+ 	 * must be instantiated for each, each with its own i2c_device_id.
+@@ -1703,11 +1704,18 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	 * drivers/platform/x86/i2c-multi-instantiate.c driver, which knows
+ 	 * which i2c_device_id to use for each resource.
+ 	 */
+-	static const struct acpi_device_id i2c_multi_instantiate_ids[] = {
+ 		{"BSG1160", },
+ 		{"BSG2150", },
+ 		{"INT33FE", },
+ 		{"INT3515", },
++	/*
++	 * HIDs of device with an UartSerialBusV2 resource for which userspace
++	 * expects a regular tty cdev to be created (instead of the in kernel
++	 * serdev) and which have a kernel driver which expects a platform_dev
++	 * such as the rfkill-gpio driver.
++	 */
++		{"BCM4752", },
++		{"LNV4752", },
+ 		{}
+ 	};
  
--	dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
-+	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
-+	if (ret) {
-+		dev_err(&pdev->dev, "DMA enable failed\n");
-+		return ret;
-+	}
+@@ -1721,8 +1729,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+ 	     fwnode_property_present(&device->fwnode, "baud")))
+ 		return true;
  
- 	priv->uioinfo = uioinfo;
- 	spin_lock_init(&priv->lock);
+-	/* Instantiate a pdev for the i2c-multi-instantiate drv to bind to */
+-	if (!acpi_match_device_ids(device, i2c_multi_instantiate_ids))
++	if (!acpi_match_device_ids(device, ignore_serial_bus_ids))
+ 		return false;
+ 
+ 	INIT_LIST_HEAD(&resource_list);
 -- 
 2.34.1
 
