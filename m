@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 478FEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66FB5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:04:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1841858AbiAXXAG (ORCPT
+        id S1841962AbiAXXA1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:00:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
+        Mon, 24 Jan 2022 18:00:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576938AbiAXV5C (ORCPT
+        with ESMTP id S1577773AbiAXWBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:57:02 -0500
+        Mon, 24 Jan 2022 17:01:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90FAFC038ADF;
-        Mon, 24 Jan 2022 12:38:20 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB367C02B8FA;
+        Mon, 24 Jan 2022 12:40:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EDA961540;
-        Mon, 24 Jan 2022 20:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5C85C340E7;
-        Mon, 24 Jan 2022 20:38:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B39861507;
+        Mon, 24 Jan 2022 20:40:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 690D5C340E5;
+        Mon, 24 Jan 2022 20:40:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056699;
-        bh=0NPR2GEkXmlKshR2DCdw5F1yXLjr3XEZ5JAnE8LMcEk=;
+        s=korg; t=1643056818;
+        bh=TmhTFttc8Wf3beYe9Qj83vMhnXvOXEgoEjdWci6e82c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PBQoIgjdMN/u3oImnLMibSOZRbl3B7oXqGpCQgX5nNaqExcSVNUeH0YSChnMh5eQ/
-         KtjtzY28SNj7tZPW1CVs6sZKJqrFFCNOG5taAk0dAlRdyDckNwbzrvvA/l2SxAyGmO
-         UQymxBA/pzbxhC45Lk64/ibrSk8ceZExFd9oPNYI=
+        b=sCuelulV5zhIirrpaCpawDWgRGxa06M8Nl3ZeddF0Qj8orT6/NDxgYS3qrAtwKrJA
+         cysFheCmvrMGW6lFI8DKA3zOOAx12llSqGLBOtbjMo3/wRh2PbvVx/B4sW0BmW8dYq
+         fl8qbh7INES6AX+QYAwnH4jLkfxAPp5YOqfIwP24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Avraham Stern <avraham.stern@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 570/846] ath9k_htc: fix NULL pointer dereference at ath9k_htc_rxep()
-Date:   Mon, 24 Jan 2022 19:41:27 +0100
-Message-Id: <20220124184120.702213299@linuxfoundation.org>
+Subject: [PATCH 5.15 578/846] iwlwifi: mvm: fix AUX ROC removal
+Date:   Mon, 24 Jan 2022 19:41:35 +0100
+Message-Id: <20220124184120.976171915@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,72 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+From: Avraham Stern <avraham.stern@intel.com>
 
-[ Upstream commit b0ec7e55fce65f125bd1d7f02e2dc4de62abee34 ]
+[ Upstream commit f0337cb48f3bf5f0bbccc985d8a0a8c4aa4934b7 ]
 
-syzbot is reporting lockdep warning followed by kernel panic at
-ath9k_htc_rxep() [1], for ath9k_htc_rxep() depends on ath9k_rx_init()
-being already completed.
+When IWL_UCODE_TLV_CAPA_SESSION_PROT_CMD is set, removing a time event
+always tries to cancel session protection. However, AUX ROC does
+not use session protection so it was never removed. As a result,
+if the driver tries to allocate another AUX ROC event right after
+cancelling the first one, it will fail with a warning.
+In addition, the time event data passed to iwl_mvm_remove_aux_roc_te()
+is incorrect. Fix it.
 
-Since ath9k_htc_rxep() is set by ath9k_htc_connect_svc(WMI_BEACON_SVC)
- from ath9k_init_htc_services(), it is possible that ath9k_htc_rxep() is
-called via timer interrupt before ath9k_rx_init() from ath9k_init_device()
-is called.
-
-Since we can't call ath9k_init_device() before ath9k_init_htc_services(),
-let's hold ath9k_htc_rxep() no-op until ath9k_rx_init() completes.
-
-Link: https://syzkaller.appspot.com/bug?extid=4d2d56175b934b9a7bf9 [1]
-Reported-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Tested-by: syzbot <syzbot+4d2d56175b934b9a7bf9@syzkaller.appspotmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/2b88f416-b2cb-7a18-d688-951e6dc3fe92@i-love.sakura.ne.jp
+Signed-off-by: Avraham Stern <avraham.stern@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211219132536.915e1f69f062.Id837e917f1c2beaca7c1eb33333d622548918a76@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/htc.h          | 1 +
- drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 8 ++++++++
- 2 files changed, 9 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
-index 0a1634238e673..4f71e962279af 100644
---- a/drivers/net/wireless/ath/ath9k/htc.h
-+++ b/drivers/net/wireless/ath/ath9k/htc.h
-@@ -281,6 +281,7 @@ struct ath9k_htc_rxbuf {
- struct ath9k_htc_rx {
- 	struct list_head rxbuf;
- 	spinlock_t rxbuflock;
-+	bool initialized;
- };
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index b8c645b9880fc..ab06dcda1462a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -696,11 +696,14 @@ static bool __iwl_mvm_remove_time_event(struct iwl_mvm *mvm,
+ 	iwl_mvm_te_clear_data(mvm, te_data);
+ 	spin_unlock_bh(&mvm->time_event_lock);
  
- #define ATH9K_HTC_TX_CLEANUP_INTERVAL 50 /* ms */
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-index 8e69e8989f6d3..e7a21eaf3a68d 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
-@@ -1130,6 +1130,10 @@ void ath9k_htc_rxep(void *drv_priv, struct sk_buff *skb,
- 	struct ath9k_htc_rxbuf *rxbuf = NULL, *tmp_buf = NULL;
- 	unsigned long flags;
+-	/* When session protection is supported, the te_data->id field
++	/* When session protection is used, the te_data->id field
+ 	 * is reused to save session protection's configuration.
++	 * For AUX ROC, HOT_SPOT_CMD is used and the te_data->id field is set
++	 * to HOT_SPOT_CMD.
+ 	 */
+ 	if (fw_has_capa(&mvm->fw->ucode_capa,
+-			IWL_UCODE_TLV_CAPA_SESSION_PROT_CMD)) {
++			IWL_UCODE_TLV_CAPA_SESSION_PROT_CMD) &&
++	    id != HOT_SPOT_CMD) {
+ 		if (mvmvif && id < SESSION_PROTECT_CONF_MAX_ID) {
+ 			/* Session protection is still ongoing. Cancel it */
+ 			iwl_mvm_cancel_session_protection(mvm, mvmvif, id);
+@@ -1036,7 +1039,7 @@ void iwl_mvm_stop_roc(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
+ 			iwl_mvm_p2p_roc_finished(mvm);
+ 		} else {
+ 			iwl_mvm_remove_aux_roc_te(mvm, mvmvif,
+-						  &mvmvif->time_event_data);
++						  &mvmvif->hs_time_event_data);
+ 			iwl_mvm_roc_finished(mvm);
+ 		}
  
-+	/* Check if ath9k_rx_init() completed. */
-+	if (!data_race(priv->rx.initialized))
-+		goto err;
-+
- 	spin_lock_irqsave(&priv->rx.rxbuflock, flags);
- 	list_for_each_entry(tmp_buf, &priv->rx.rxbuf, list) {
- 		if (!tmp_buf->in_process) {
-@@ -1185,6 +1189,10 @@ int ath9k_rx_init(struct ath9k_htc_priv *priv)
- 		list_add_tail(&rxbuf->list, &priv->rx.rxbuf);
- 	}
- 
-+	/* Allow ath9k_htc_rxep() to operate. */
-+	smp_wmb();
-+	priv->rx.initialized = true;
-+
- 	return 0;
- 
- err:
 -- 
 2.34.1
 
