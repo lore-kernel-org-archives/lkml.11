@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8649C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 269B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238294AbiAXTIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:08:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60634 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344711AbiAXTB4 (ORCPT
+        id S1346787AbiAXTIP (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:08:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58958 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344722AbiAXTCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:01:56 -0500
+        Mon, 24 Jan 2022 14:02:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCD260918;
-        Mon, 24 Jan 2022 19:01:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF714C340E5;
-        Mon, 24 Jan 2022 19:01:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE2E8B8123F;
+        Mon, 24 Jan 2022 19:01:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E5DC340E5;
+        Mon, 24 Jan 2022 19:01:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050914;
-        bh=fPduRhDomwXOHZBVoIJNXQf0d40yj/fwjhlZgy8WlxQ=;
+        s=korg; t=1643050917;
+        bh=HiMokRcWVrkWobPHLR9Q0PWQ6ThwoWIl6UQONrxaaJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=waP01q/7BUrsTkSsnR8Zd4EqY6HBcBRY9UyzWJWMZqlSSpHX7zWG0m93tZXx+Akh4
-         uiLKB7xK1vw1GG4AyfCE43xj/iqzdmDJGlRCskGYSG/zI/MJlWlsGmwVkkZf+m27Jk
-         40GEXcFNEdcEKlIC+zSvqSTuzGyjGKm68lZCm0Zg=
+        b=Idna65wm5caU5zLWG2RQ4s1u1fQci000oWjIEWhFHFOpwbUL1rQ3E2chFr/kNQtFM
+         pHpKSVerWno8JUpMfM1tsmIxE1eYNEaAAaDy29RTFMYRBehzRqL4nauWxPOIz7uPE1
+         +UDSIhZaFu3YbgVFbDdnz/5IF1MHHkjZeYV490zk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: [PATCH 4.9 120/157] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
-Date:   Mon, 24 Jan 2022 19:43:30 +0100
-Message-Id: <20220124183936.584785900@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>
+Subject: [PATCH 4.9 121/157] drm/etnaviv: limit submit sizes
+Date:   Mon, 24 Jan 2022 19:43:31 +0100
+Message-Id: <20220124183936.614611281@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -45,40 +47,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
+commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
 
-With the introduction of 6GHz channels the scan guard timeout should
-be adjusted to account for the following extreme case:
+Currently we allow rediculous amounts of kernel memory being allocated
+via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
+some reasonable limits in to fix this.
 
-- All 6GHz channels are scanned passively: 58 channels.
-- The scan is fragmented with the following parameters: 3 fragments,
-  95 TUs suspend time, 44 TUs maximal out of channel time.
-
-The above would result with scan time of more than 24 seconds. Thus,
-set the timeout to 30 seconds.
+The commandstream size is limited to 64KB, which was already a soft limit
+on older kernels after which the kernel only took submits on a best effort
+base, so there is no userspace that tries to submit commandstreams larger
+than this. Even if the whole commandstream is a single incrementing address
+load, the size limit also limits the number of potential relocs and
+referenced buffers to slightly under 64K, so use the same limit for those
+arguments. The performance monitoring infrastructure currently supports
+less than 50 performance counter signals, so limiting them to 128 on a
+single submit seems like a reasonably future-proof number for now. This
+number can be bumped if needed without breaking the interface.
 
 Cc: stable@vger.kernel.org
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1260,7 +1260,7 @@ static int iwl_mvm_check_running_scans(s
- 	return -EIO;
- }
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
+@@ -325,6 +325,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
+ 		return -EINVAL;
+ 	}
  
--#define SCAN_TIMEOUT 20000
-+#define SCAN_TIMEOUT 30000
- 
- void iwl_mvm_scan_timeout_wk(struct work_struct *work)
- {
++	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
++	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
++		DRM_ERROR("submit arguments out of size limits\n");
++		return -EINVAL;
++	}
++
+ 	/*
+ 	 * Copy the command submission and bo array to kernel space in
+ 	 * one go, and do this outside of any locks.
 
 
