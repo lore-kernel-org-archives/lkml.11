@@ -2,189 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDCB4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 903A8C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577007AbiAXXEn (ORCPT
+        id S1842488AbiAXXB5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:04:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
+        Mon, 24 Jan 2022 18:01:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577039AbiAXWJK (ORCPT
+        with ESMTP id S1457394AbiAXVzE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:09:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E783AC045935;
-        Mon, 24 Jan 2022 12:43:04 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6BE82B815A3;
-        Mon, 24 Jan 2022 20:43:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99716C36AE2;
-        Mon, 24 Jan 2022 20:43:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056982;
-        bh=jiEayLoAhWbKjVa/Q5aV7n37t1JTQNM25s13nAD9tQ0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YbYlSo06Bqb7k10g7o4lL8rt37IGs2j1ti4k4mnS0dQu/s0s7NKGctNiK36V/WLRY
-         MvSZSIe5PbUIFDF93a6n6SeRukxC15y+RXFn04I91BA1xlJzBPh1qV7FZh/hZP2HsB
-         QmgGdR15mzmlAW5uexpz5JdY7J61wjd5ivwaY0KQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        David Ahern <dsahern@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 664/846] seg6: export get_srh() for ICMP handling
-Date:   Mon, 24 Jan 2022 19:43:01 +0100
-Message-Id: <20220124184123.974917128@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 16:55:04 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2E34C07E296
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:36:03 -0800 (PST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643056560;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZkeR8sx1uJfYl5V+1hDn7Z+OR1HYkHbw79HjnsAp4QY=;
+        b=nkPJpLA2yOi+yzdNLC/2FWxejeY1zVZkgybDhWNcCuaClcSm2bzt7VcV1MQvPYNqFSo4+Q
+        WHwstVrTl643QT6MMv2QwtlaHQ2QmQUyVTOX0A5i+DLaM0QGE/hv87T5+M9VjRhmijVtvs
+        mud10TcJ3WSiYPn0nSuSprneTlnF/PRe/QB6adeMkUmsWnmel/Ig8eO53OIIH8ZrRvc8W7
+        5l1g8VRInKtciwBJEh0eV8qVpDD4jfWXXCHTsS6Jt3B0iPNU2lurEpfjlNCv30gyTiIDlR
+        vBV8TAKvfJcZ6G99jgEuC0BxiV0Da5jFhMfB7VozCkSDOqizG5z5xp5/oVk3Jg==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643056560;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZkeR8sx1uJfYl5V+1hDn7Z+OR1HYkHbw79HjnsAp4QY=;
+        b=h4ZLp5bKuVRuCYbVfeAOg6IS9CjOLBsFAmTC0ad9+KDBLUtxmYqHYPptNWjZhlF6uk2VLc
+        bdMceZqau2ihH1BQ==
+To:     Fenghua Yu <fenghua.yu@intel.com>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+In-Reply-To: <87ee4w6g1n.ffs@tglx>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com> <87ee4w6g1n.ffs@tglx>
+Date:   Mon, 24 Jan 2022 21:36:00 +0100
+Message-ID: <87bl006fdb.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrew Lunn <andrew@lunn.ch>
+On Mon, Jan 24 2022 at 21:21, Thomas Gleixner wrote:
+>
+> Hrm. This is odd.
+>
+>> +/* Associate a PASID with an mm_struct: */
+>> +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
+>> +{
+>> +	mm->pasid = pasid;
+>> +}
+>
+> This does not get anything. It sets the allocated PASID in the mm. The
+> refcount on the PASID was already taken by the allocation. So this
+> should be mm_pasid_set() or mm_pasid_install(), right?
 
-[ Upstream commit fa55a7d745de2d10489295b0674a403e2a5d490d ]
+And as a result of all this ioasid_get() is now left without users...
 
-An ICMP error message can contain in its message body part of an IPv6
-packet which invoked the error. Such a packet might contain a segment
-router header. Export get_srh() so the ICMP code can make use of it.
+Thanks,
 
-Since his changes the scope of the function from local to global, add
-the seg6_ prefix to keep the namespace clean. And move it into seg6.c
-so it is always available, not just when IPV6_SEG6_LWTUNNEL is
-enabled.
-
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Reviewed-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- include/net/seg6.h    |  1 +
- net/ipv6/seg6.c       | 29 +++++++++++++++++++++++++++++
- net/ipv6/seg6_local.c | 33 ++-------------------------------
- 3 files changed, 32 insertions(+), 31 deletions(-)
-
-diff --git a/include/net/seg6.h b/include/net/seg6.h
-index 9d19c15e8545c..a6f25983670aa 100644
---- a/include/net/seg6.h
-+++ b/include/net/seg6.h
-@@ -58,6 +58,7 @@ extern int seg6_local_init(void);
- extern void seg6_local_exit(void);
- 
- extern bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len, bool reduced);
-+extern struct ipv6_sr_hdr *seg6_get_srh(struct sk_buff *skb, int flags);
- extern int seg6_do_srh_encap(struct sk_buff *skb, struct ipv6_sr_hdr *osrh,
- 			     int proto);
- extern int seg6_do_srh_inline(struct sk_buff *skb, struct ipv6_sr_hdr *osrh);
-diff --git a/net/ipv6/seg6.c b/net/ipv6/seg6.c
-index e412817fba2f3..0718529088930 100644
---- a/net/ipv6/seg6.c
-+++ b/net/ipv6/seg6.c
-@@ -75,6 +75,35 @@ bool seg6_validate_srh(struct ipv6_sr_hdr *srh, int len, bool reduced)
- 	return true;
- }
- 
-+struct ipv6_sr_hdr *seg6_get_srh(struct sk_buff *skb, int flags)
-+{
-+	struct ipv6_sr_hdr *srh;
-+	int len, srhoff = 0;
-+
-+	if (ipv6_find_hdr(skb, &srhoff, IPPROTO_ROUTING, NULL, &flags) < 0)
-+		return NULL;
-+
-+	if (!pskb_may_pull(skb, srhoff + sizeof(*srh)))
-+		return NULL;
-+
-+	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
-+
-+	len = (srh->hdrlen + 1) << 3;
-+
-+	if (!pskb_may_pull(skb, srhoff + len))
-+		return NULL;
-+
-+	/* note that pskb_may_pull may change pointers in header;
-+	 * for this reason it is necessary to reload them when needed.
-+	 */
-+	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
-+
-+	if (!seg6_validate_srh(srh, len, true))
-+		return NULL;
-+
-+	return srh;
-+}
-+
- static struct genl_family seg6_genl_family;
- 
- static const struct nla_policy seg6_genl_policy[SEG6_ATTR_MAX + 1] = {
-diff --git a/net/ipv6/seg6_local.c b/net/ipv6/seg6_local.c
-index 2dc40b3f373ef..ef88489c71f52 100644
---- a/net/ipv6/seg6_local.c
-+++ b/net/ipv6/seg6_local.c
-@@ -150,40 +150,11 @@ static struct seg6_local_lwt *seg6_local_lwtunnel(struct lwtunnel_state *lwt)
- 	return (struct seg6_local_lwt *)lwt->data;
- }
- 
--static struct ipv6_sr_hdr *get_srh(struct sk_buff *skb, int flags)
--{
--	struct ipv6_sr_hdr *srh;
--	int len, srhoff = 0;
--
--	if (ipv6_find_hdr(skb, &srhoff, IPPROTO_ROUTING, NULL, &flags) < 0)
--		return NULL;
--
--	if (!pskb_may_pull(skb, srhoff + sizeof(*srh)))
--		return NULL;
--
--	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
--
--	len = (srh->hdrlen + 1) << 3;
--
--	if (!pskb_may_pull(skb, srhoff + len))
--		return NULL;
--
--	/* note that pskb_may_pull may change pointers in header;
--	 * for this reason it is necessary to reload them when needed.
--	 */
--	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
--
--	if (!seg6_validate_srh(srh, len, true))
--		return NULL;
--
--	return srh;
--}
--
- static struct ipv6_sr_hdr *get_and_validate_srh(struct sk_buff *skb)
- {
- 	struct ipv6_sr_hdr *srh;
- 
--	srh = get_srh(skb, IP6_FH_F_SKIP_RH);
-+	srh = seg6_get_srh(skb, IP6_FH_F_SKIP_RH);
- 	if (!srh)
- 		return NULL;
- 
-@@ -200,7 +171,7 @@ static bool decap_and_validate(struct sk_buff *skb, int proto)
- 	struct ipv6_sr_hdr *srh;
- 	unsigned int off = 0;
- 
--	srh = get_srh(skb, 0);
-+	srh = seg6_get_srh(skb, 0);
- 	if (srh && srh->segments_left > 0)
- 		return false;
- 
--- 
-2.34.1
-
-
-
+        tglx
