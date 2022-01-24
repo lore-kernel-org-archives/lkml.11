@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0476C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EE3C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378542AbiAYC2N (ORCPT
+        id S1378504AbiAYC2I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:28:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50364 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354217AbiAXUIA (ORCPT
+        Mon, 24 Jan 2022 21:28:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34440 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378629AbiAXUHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:08:00 -0500
+        Mon, 24 Jan 2022 15:07:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2E47B811F9;
-        Mon, 24 Jan 2022 20:07:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9471C340E5;
-        Mon, 24 Jan 2022 20:07:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8800B6090A;
+        Mon, 24 Jan 2022 20:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B854C340E5;
+        Mon, 24 Jan 2022 20:07:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054877;
-        bh=j8QhFAcoP5YnbewakrrigomulAjYONylTaD5Y1/NRwM=;
+        s=korg; t=1643054868;
+        bh=GQv7LOP06zbfKaH6OrGhewLZ8+JM8W6ZxwkO/Q4Zfm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WQCo2Gbyu8LFHzJekqXo92mNjvb61C1Qidw7wCqsb5MyE9ZzYQhD+KjfNIDLBHfEu
-         DFG/JWRqusWn9S6pY5fm28ALw+st2GzMRzeKuXpX/EGXsHtVgKBVxDao6GPgvqBp8x
-         8WtsGzBJkz8lsetxvxvgiaYqJ2WV/W9kJDnWQBsA=
+        b=OW8jFAgzf/kTe1HPIdzdFH6keHlRT2VqPKxbbaultnEbeQHcJU38FHfE5vhclgm+s
+         1VW5k/76FQrahODvi72rjryRQKI/+IBqifDmHVxJN1WlXFTG5JWzDIJ3Gz7oekY/Ja
+         DYe0iznXdJW3vkIDOHWQBr3YwuO/EgoKrPyK1vV4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Amelie Delaunay <amelie.delaunay@foss.st.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.10 500/563] dmaengine: stm32-mdma: fix STM32_MDMA_CTBR_TSEL_MASK
-Date:   Mon, 24 Jan 2022 19:44:25 +0100
-Message-Id: <20220124184041.745777054@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 528/563] net: axienet: increase default TX ring size to 128
+Date:   Mon, 24 Jan 2022 19:44:53 +0100
+Message-Id: <20220124184042.690096383@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,31 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amelie Delaunay <amelie.delaunay@foss.st.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit e7f110889a87307fb0fed408a5dee1707796ca04 upstream.
+commit 2d19c3fd80178160dd505ccd7fed1643831227a5 upstream.
 
-This patch fixes STM32_MDMA_CTBR_TSEL_MASK, which is [5:0], not [7:0].
+With previous changes to make the driver handle the TX ring size more
+correctly, the default TX ring size of 64 appears to significantly
+bottleneck TX performance to around 600 Mbps on a 1 Gbps link on ZynqMP.
+Increasing this to 128 seems to bring performance up to near line rate and
+shouldn't cause excess bufferbloat (this driver doesn't yet support modern
+byte-based queue management).
 
-Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
-Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
-Link: https://lore.kernel.org/r/20211220165827.1238097-1-amelie.delaunay@foss.st.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/stm32-mdma.c |    2 +-
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/dma/stm32-mdma.c
-+++ b/drivers/dma/stm32-mdma.c
-@@ -184,7 +184,7 @@
- #define STM32_MDMA_CTBR(x)		(0x68 + 0x40 * (x))
- #define STM32_MDMA_CTBR_DBUS		BIT(17)
- #define STM32_MDMA_CTBR_SBUS		BIT(16)
--#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(7, 0)
-+#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(5, 0)
- #define STM32_MDMA_CTBR_TSEL(n)		STM32_MDMA_SET(n, \
- 						      STM32_MDMA_CTBR_TSEL_MASK)
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -41,7 +41,7 @@
+ #include "xilinx_axienet.h"
  
+ /* Descriptors defines for Tx and Rx DMA */
+-#define TX_BD_NUM_DEFAULT		64
++#define TX_BD_NUM_DEFAULT		128
+ #define RX_BD_NUM_DEFAULT		1024
+ #define TX_BD_NUM_MIN			(MAX_SKB_FRAGS + 1)
+ #define TX_BD_NUM_MAX			4096
 
 
