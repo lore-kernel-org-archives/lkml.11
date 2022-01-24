@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDFEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F458C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384505AbiAXXOz (ORCPT
+        id S1845017AbiAXXLC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:14:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
+        Mon, 24 Jan 2022 18:11:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584553AbiAXWVY (ORCPT
+        with ESMTP id S1356206AbiAXWRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD04C0424D3;
-        Mon, 24 Jan 2022 12:50:29 -0800 (PST)
+        Mon, 24 Jan 2022 17:17:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4799C04A2D7;
+        Mon, 24 Jan 2022 12:45:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BFFC611CD;
-        Mon, 24 Jan 2022 20:50:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D30A3C340E5;
-        Mon, 24 Jan 2022 20:50:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79D4EB81061;
+        Mon, 24 Jan 2022 20:45:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFAADC340E5;
+        Mon, 24 Jan 2022 20:45:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057428;
-        bh=EmwCPnertVcmjrR8Moco0fRBdrq7Suz3ieik5+sjYIs=;
+        s=korg; t=1643057139;
+        bh=dzVoloKPV8iehEkPtMjgCkWs6t5GNeQ2ByyoDuIQLb0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKr8Ow3AjbNcH6oVSH0+/PXcyuhKYSw2cP+ELL61f0d1BCQVZS4B/iUv//t66/w8D
-         yKGLaYoZMd1FidK6wn8CUy/9tm3eS6J0/vzMZfhfS26GGp1oN9UgAaqon6Nx9euOCv
-         8cfVjkjPdyohpjDJ7K1FISXir6VXK9oihF9HFVBE=
+        b=sQwFvkZzt36ZqrGYeEWruCovWAvpSDGcR/WCj89Vhov11SAFN2hpNj9snX3iNqGPD
+         pljsPQ0hBMQxnajmGmIQ56pEHsndWRv+sf3pyefYpIqqJgXFxAF8eKkpwvd2Y1W4lO
+         F6KIluNjdk17Tyg4iOB1LNA6QYPLHoUErkUmQz4w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: [PATCH 5.15 809/846] iwlwifi: fix Bz NMI behaviour
-Date:   Mon, 24 Jan 2022 19:45:26 +0100
-Message-Id: <20220124184128.831861285@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
+        Theodore Tso <tytso@mit.edu>,
+        syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
+Subject: [PATCH 5.15 713/846] ext4: make sure to reset inode lockdep class when quota enabling fails
+Date:   Mon, 24 Jan 2022 19:43:50 +0100
+Message-Id: <20220124184125.622910378@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,52 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Jan Kara <jack@suse.cz>
 
-commit fdfde0cb79264f88992e72b5a056a3a3284fcaad upstream.
+commit 4013d47a5307fdb5c13370b5392498b00fedd274 upstream.
 
-Contrary to what was stated before, the hardware hasn't changed
-the bits here yet. In any case, the new CSR is also directly
-(lower 16 bits) connected to UREG_DOORBELL_TO_ISR6, so if it
-still changes the changes would be there. Adjust the code and
-comments accordingly.
+When we succeed in enabling some quota type but fail to enable another
+one with quota feature, we correctly disable all enabled quota types.
+However we forget to reset i_data_sem lockdep class. When the inode gets
+freed and reused, it will inherit this lockdep class (i_data_sem is
+initialized only when a slab is created) and thus eventually lockdep
+barfs about possible deadlocks.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Fixes: 6c0795f1a524 ("iwlwifi: implement Bz NMI behaviour")
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210090244.75b6207536e3.I7d170a48a9096e6b7269c3a9f447c326f929b171@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Reported-and-tested-by: syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
+Signed-off-by: Jan Kara <jack@suse.cz>
+Cc: stable@kernel.org
+Link: https://lore.kernel.org/r/20211007155336.12493-3-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-csr.h |    5 +++--
- drivers/net/wireless/intel/iwlwifi/iwl-io.c  |    2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ fs/ext4/super.c |   13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
---- a/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
-@@ -104,9 +104,10 @@
- /* GIO Chicken Bits (PCI Express bus link power management) */
- #define CSR_GIO_CHICKEN_BITS    (CSR_BASE+0x100)
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -6352,8 +6352,19 @@ int ext4_enable_quotas(struct super_bloc
+ 					"Failed to enable quota tracking "
+ 					"(type=%d, err=%d). Please run "
+ 					"e2fsck to fix.", type, err);
+-				for (type--; type >= 0; type--)
++				for (type--; type >= 0; type--) {
++					struct inode *inode;
++
++					inode = sb_dqopt(sb)->files[type];
++					if (inode)
++						inode = igrab(inode);
+ 					dquot_quota_off(sb, type);
++					if (inode) {
++						lockdep_set_quota_inode(inode,
++							I_DATA_SEM_NORMAL);
++						iput(inode);
++					}
++				}
  
--/* Doorbell NMI (since Bz) */
-+/* Doorbell - since Bz
-+ * connected to UREG_DOORBELL_TO_ISR6 (lower 16 bits only)
-+ */
- #define CSR_DOORBELL_VECTOR	(CSR_BASE + 0x130)
--#define CSR_DOORBELL_VECTOR_NMI	BIT(1)
- 
- /* host chicken bits */
- #define CSR_HOST_CHICKEN	(CSR_BASE + 0x204)
---- a/drivers/net/wireless/intel/iwlwifi/iwl-io.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-io.c
-@@ -218,7 +218,7 @@ void iwl_force_nmi(struct iwl_trans *tra
- 				    UREG_DOORBELL_TO_ISR6_NMI_BIT);
- 	else
- 		iwl_write32(trans, CSR_DOORBELL_VECTOR,
--			    CSR_DOORBELL_VECTOR_NMI);
-+			    UREG_DOORBELL_TO_ISR6_NMI_BIT);
- }
- IWL_EXPORT_SYMBOL(iwl_force_nmi);
- 
+ 				return err;
+ 			}
 
 
