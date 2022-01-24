@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A21C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CAC9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345375AbiAXTJN (ORCPT
+        id S1346971AbiAXTJT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:09:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59542 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345162AbiAXTCt (ORCPT
+        Mon, 24 Jan 2022 14:09:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33282 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343934AbiAXTC5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:49 -0500
+        Mon, 24 Jan 2022 14:02:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DDCCEB8122F;
-        Mon, 24 Jan 2022 19:02:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8B0C340E5;
-        Mon, 24 Jan 2022 19:02:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8354A6090C;
+        Mon, 24 Jan 2022 19:02:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57C7FC340E5;
+        Mon, 24 Jan 2022 19:02:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050966;
-        bh=iQYLBwzLMi48bseQjprm7HaXg8owdAOoP16c2+NUHWs=;
+        s=korg; t=1643050976;
+        bh=dxUf+U6Z7K+kw5Lnyb3mdDP9kwZPt1I3PrYQHepooz4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DC115jhZyzdXOYOacuYls6ZnGf+gfSLh/IlDgECaVEnkrRvfiLebjuFtjyWYoXx8X
-         t90rvPYTyPC9jW9OklBtaEBGJMn2Yvez1cFeDRW+e6JTapGh/PLT039Sag6QNHzCi7
-         QtTwdv8rtfKbVfGzOcvkQk4bMv5YZ1ZHRpUJyw0U=
+        b=HZFvdtilGcnlTX5X4fqgZ0VUXS1J1aBasEYQkKPDGUL9DtYQCyToMmSucrFqOhjIV
+         7jPNuVcfxK6qnzL9ctQoNGzyncwd6S4a26UcVT+ik4oOjv5+e4uPR6zqowfqwK2yif
+         DUg99cbmms0UzT4iDToFn617PcQ0yU67RxAVunbE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.14 012/186] media: uvcvideo: fix division by zero at stream start
-Date:   Mon, 24 Jan 2022 19:41:27 +0100
-Message-Id: <20220124183937.507289946@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>
+Subject: [PATCH 4.14 015/186] Bluetooth: fix init and cleanup of sco_conn.timeout_work
+Date:   Mon, 24 Jan 2022 19:41:30 +0100
+Message-Id: <20220124183937.598856978@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,43 +48,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
 
-commit 8aa637bf6d70d2fb2ad4d708d8b9dd02b1c095df upstream.
+commit 49d8a5606428ca0962d09050a5af81461ff90fbb upstream.
 
-Add the missing bulk-endpoint max-packet sanity check to
-uvc_video_start_transfer() to avoid division by zero in
-uvc_alloc_urb_buffers() in case a malicious device has broken
-descriptors (or when doing descriptor fuzz testing).
+Before freeing struct sco_conn, all delayed timeout work should be
+cancelled. Otherwise, sco_sock_timeout could potentially use the
+sco_conn after it has been freed.
 
-Note that USB core will reject URBs submitted for endpoints with zero
-wMaxPacketSize but that drivers doing packet-size calculations still
-need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
-endpoint descriptors with maxpacket=0")).
+Additionally, sco_conn.timeout_work should be initialized when the
+connection is allocated, not when the channel is added. This is
+because an sco_conn can create channels with multiple sockets over its
+lifetime, which happens if sockets are released but the connection
+isn't deleted.
 
-Fixes: c0efd232929c ("V4L/DVB (8145a): USB Video Class driver")
-Cc: stable@vger.kernel.org      # 2.6.26
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: ba316be1b6a0 ("Bluetooth: schedule SCO timeouts with delayed_work")
+Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+[OP: adjusted context for 4.14]
+Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/uvc/uvc_video.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ net/bluetooth/sco.c |    9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
---- a/drivers/media/usb/uvc/uvc_video.c
-+++ b/drivers/media/usb/uvc/uvc_video.c
-@@ -1711,6 +1711,10 @@ static int uvc_init_video(struct uvc_str
- 		if (ep == NULL)
- 			return -EIO;
+--- a/net/bluetooth/sco.c
++++ b/net/bluetooth/sco.c
+@@ -133,6 +133,7 @@ static struct sco_conn *sco_conn_add(str
+ 		return NULL;
  
-+		/* Reject broken descriptors. */
-+		if (usb_endpoint_maxp(&ep->desc) == 0)
-+			return -EIO;
-+
- 		ret = uvc_init_video_bulk(stream, ep, gfp_flags);
+ 	spin_lock_init(&conn->lock);
++	INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
+ 
+ 	hcon->sco_data = conn;
+ 	conn->hcon = hcon;
+@@ -196,11 +197,11 @@ static void sco_conn_del(struct hci_conn
+ 		sco_chan_del(sk, err);
+ 		bh_unlock_sock(sk);
+ 		sock_put(sk);
+-
+-		/* Ensure no more work items will run before freeing conn. */
+-		cancel_delayed_work_sync(&conn->timeout_work);
  	}
  
++	/* Ensure no more work items will run before freeing conn. */
++	cancel_delayed_work_sync(&conn->timeout_work);
++
+ 	hcon->sco_data = NULL;
+ 	kfree(conn);
+ }
+@@ -213,8 +214,6 @@ static void __sco_chan_add(struct sco_co
+ 	sco_pi(sk)->conn = conn;
+ 	conn->sk = sk;
+ 
+-	INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
+-
+ 	if (parent)
+ 		bt_accept_enqueue(parent, sk, true);
+ }
 
 
