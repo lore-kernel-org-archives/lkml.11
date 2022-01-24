@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A914BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:18:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77204C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376678AbiAXVSx (ORCPT
+        id S1377572AbiAXVTE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:18:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49066 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392216AbiAXUuo (ORCPT
+        Mon, 24 Jan 2022 16:19:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44026 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392091AbiAXUu0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:50:44 -0500
+        Mon, 24 Jan 2022 15:50:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6A7CB80FA1;
-        Mon, 24 Jan 2022 20:50:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3B1DC340E5;
-        Mon, 24 Jan 2022 20:50:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE86960B1A;
+        Mon, 24 Jan 2022 20:50:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0ABBC340E5;
+        Mon, 24 Jan 2022 20:50:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057440;
-        bh=DthYjh+AUf6U0msGHmNsk3EuOaLtsWRn1QyFhfakDLQ=;
+        s=korg; t=1643057425;
+        bh=q67Yuv2lFh5A7efPX2bOzffmmlUvGKImDLhXNGY13OQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qqqBd78sVRldpQK0tCHLCAVupfWLsdgUxJFT4kU3+/jAzCD61O6rOHjKkmyPwSX/x
-         r0rv1zPS+SmIMXU6QXxvWoXMk/qRL0q1zFBbzvOSf2f4n0Di0aeldcIvnCi0noScpu
-         ujzwV12d1PFH432vDT/Rx1RJCud6/nEMu8Ilz5fk=
+        b=x17V3IUP4VZYAcaTuXmsM+HMdPzUr9yXCZAPbfDR2wBnd7QZbIr/Hr8+g7LKaGRJ8
+         hNDANS41acXLU4U2Zx7QjuNosvDKE7p4ZhVBIuCDTXBA19+0WHRqGhzefheBbf4QWz
+         w/wdGaADpcxnC3759Bdh4gYi5whjO5UvYz4G79tM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.15 813/846] libcxgb: Dont accidentally set RTO_ONLINK in cxgb_find_route()
-Date:   Mon, 24 Jan 2022 19:45:30 +0100
-Message-Id: <20220124184128.961530722@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 808/846] netns: add schedule point in ops_exit_list()
+Date:   Mon, 24 Jan 2022 19:45:25 +0100
+Message-Id: <20220124184128.801450579@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,44 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit a915deaa9abe4fb3a440312c954253a6a733608e upstream.
+commit 2836615aa22de55b8fca5e32fe1b27a67cda625e upstream.
 
-Mask the ECN bits before calling ip_route_output_ports(). The tos
-variable might be passed directly from an IPv4 header, so it may have
-the last ECN bit set. This interferes with the route lookup process as
-ip_route_output_key_hash() interpretes this bit specially (to restrict
-the route scope).
+When under stress, cleanup_net() can have to dismantle
+netns in big numbers. ops_exit_list() currently calls
+many helpers [1] that have no schedule point, and we can
+end up with soft lockups, particularly on hosts
+with many cpus.
 
-Found by code inspection, compile tested only.
+Even for moderate amount of netns processed by cleanup_net()
+this patch avoids latency spikes.
 
-Fixes: 804c2f3e36ef ("libcxgb,iw_cxgb4,cxgbit: add cxgb_find_route()")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+[1] Some of these helpers like fib_sync_up() and fib_sync_down_dev()
+are very slow because net/ipv4/fib_semantics.c uses host-wide hash tables,
+and ifindex is used as the only input of two hash functions.
+    ifindexes tend to be the same for all netns (lo.ifindex==1 per instance)
+    This will be fixed in a separate patch.
+
+Fixes: 72ad937abd0a ("net: Add support for batching network namespace cleanups")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Eric W. Biederman <ebiederm@xmission.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/core/net_namespace.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
-+++ b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
-@@ -32,6 +32,7 @@
- 
- #include <linux/tcp.h>
- #include <linux/ipv6.h>
-+#include <net/inet_ecn.h>
- #include <net/route.h>
- #include <net/ip6_route.h>
- 
-@@ -99,7 +100,7 @@ cxgb_find_route(struct cxgb4_lld_info *l
- 
- 	rt = ip_route_output_ports(&init_net, &fl4, NULL, peer_ip, local_ip,
- 				   peer_port, local_port, IPPROTO_TCP,
--				   tos, 0);
-+				   tos & ~INET_ECN_MASK, 0);
- 	if (IS_ERR(rt))
- 		return NULL;
- 	n = dst_neigh_lookup(&rt->dst, &peer_ip);
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -164,8 +164,10 @@ static void ops_exit_list(const struct p
+ {
+ 	struct net *net;
+ 	if (ops->exit) {
+-		list_for_each_entry(net, net_exit_list, exit_list)
++		list_for_each_entry(net, net_exit_list, exit_list) {
+ 			ops->exit(net);
++			cond_resched();
++		}
+ 	}
+ 	if (ops->exit_batch)
+ 		ops->exit_batch(net_exit_list);
 
 
