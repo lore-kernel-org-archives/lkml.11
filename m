@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3D75C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CAC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851286AbiAXXcT (ORCPT
+        id S1851304AbiAXXcU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:32:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41908 "EHLO
+        Mon, 24 Jan 2022 18:32:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836502AbiAXWjk (ORCPT
+        with ESMTP id S1836484AbiAXWjg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:39:40 -0500
+        Mon, 24 Jan 2022 17:39:36 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58D35C05487B;
-        Mon, 24 Jan 2022 13:02:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B40C054870;
+        Mon, 24 Jan 2022 13:00:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1FF8DB81057;
-        Mon, 24 Jan 2022 21:02:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43410C340E5;
-        Mon, 24 Jan 2022 21:02:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1DC9B80FA1;
+        Mon, 24 Jan 2022 21:00:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5FE3C340E5;
+        Mon, 24 Jan 2022 21:00:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058142;
-        bh=bCeEhGuG5ikUYPFJUmhaGVS1E5RTYSCU4SD7VpkViHs=;
+        s=korg; t=1643058054;
+        bh=MkNJ0R11zL6n7hF6vlIkD+vGmpNLfrFTWV3DUt/AYkk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EMmMU0O/o/nxPIbqAKYMsYj9DgMDX5MdLuKrj6zaWatfUV8xcV95c3tUp5zposPTg
-         PlZUy3rvhSzGDBVeMDQ3pIeTzxNLSlzoBXLJDj2A0KF5FBQqv6Stz32OgtF95Zd3VV
-         LwoTkt7Q54ZTPKueXuKUc21oFYjw/DIwVDv0bofw=
+        b=cRgLAbuc26JFrl1fLWfK7k1ABfkSR6VjAxOp4EKcKaTa+pglcA1e6PO5HoAmnoq41
+         3mFkUZ8lBXvs/faqMtrqLVil/5plnuuj6f3y25w1xKHPZI7TwsnijtGIIwJR+dW+yM
+         GLjdwoG9arZZaYYCfqVS3FmBZIDL3AwL7mZE+12k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Thara Gopinath <thara.gopinath@linaro.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Matthias Kaehlcke <mka@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0161/1039] crypto: qce - fix uaf on qce_skcipher_register_one
-Date:   Mon, 24 Jan 2022 19:32:30 +0100
-Message-Id: <20220124184130.616224478@linuxfoundation.org>
+Subject: [PATCH 5.16 0167/1039] cpufreq: qcom-hw: Fix probable nested interrupt handling
+Date:   Mon, 24 Jan 2022 19:32:36 +0100
+Message-Id: <20220124184130.833736034@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,37 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
 
-[ Upstream commit e9c195aaeed1b45c9012adbe29dedb6031e85aa8 ]
+[ Upstream commit e0e27c3d4e20dab861566f1c348ae44e4b498630 ]
 
-Pointer alg points to sub field of tmpl, it
-is dereferenced after tmpl is freed. Fix
-this by accessing alg before free tmpl.
+Re-enabling an interrupt from its own interrupt handler may cause
+an interrupt storm, if there is a pending interrupt and because its
+handling is disabled due to already done entrance into the handler
+above in the stack.
 
-Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Also, apparently it is improper to lock a mutex in an interrupt contex.
+
+Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
+Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/qce/skcipher.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/cpufreq/qcom-cpufreq-hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/qce/skcipher.c b/drivers/crypto/qce/skcipher.c
-index 8ff10928f581d..3d27cd5210ef5 100644
---- a/drivers/crypto/qce/skcipher.c
-+++ b/drivers/crypto/qce/skcipher.c
-@@ -484,8 +484,8 @@ static int qce_skcipher_register_one(const struct qce_skcipher_def *def,
+diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
+index 0138b2ec406dc..35d93361fda1a 100644
+--- a/drivers/cpufreq/qcom-cpufreq-hw.c
++++ b/drivers/cpufreq/qcom-cpufreq-hw.c
+@@ -343,9 +343,9 @@ static irqreturn_t qcom_lmh_dcvs_handle_irq(int irq, void *data)
  
- 	ret = crypto_register_skcipher(alg);
- 	if (ret) {
--		kfree(tmpl);
- 		dev_err(qce->dev, "%s registration failed\n", alg->base.cra_name);
-+		kfree(tmpl);
- 		return ret;
- 	}
+ 	/* Disable interrupt and enable polling */
+ 	disable_irq_nosync(c_data->throttle_irq);
+-	qcom_lmh_dcvs_notify(c_data);
++	schedule_delayed_work(&c_data->throttle_work, 0);
  
+-	return 0;
++	return IRQ_HANDLED;
+ }
+ 
+ static const struct qcom_cpufreq_soc_data qcom_soc_data = {
 -- 
 2.34.1
 
