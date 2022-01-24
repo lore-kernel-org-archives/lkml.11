@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49393C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 509DCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450432AbiAXVUa (ORCPT
+        id S1450572AbiAXVU4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:20:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43504 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441878AbiAXUvs (ORCPT
+        Mon, 24 Jan 2022 16:20:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49382 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1441794AbiAXUvk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:48 -0500
+        Mon, 24 Jan 2022 15:51:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCC436091C;
-        Mon, 24 Jan 2022 20:51:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A2AAC340E5;
-        Mon, 24 Jan 2022 20:51:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 529FAB811A9;
+        Mon, 24 Jan 2022 20:51:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E13EC340E5;
+        Mon, 24 Jan 2022 20:51:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057507;
-        bh=E8N01BRn+ZSoMWY1IVzzlzEZ8SnabB6tW00fO7KDffU=;
+        s=korg; t=1643057498;
+        bh=uyerVO+UteF3ZIZcetYXxzLHy9BxVQRYWe9gb8chIxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tgbLG2AWXDil7q8OwwCldyyBm7K/8WNf3PwLDBEypoMrVWUTmNpYSlWmsJZ2FhnRb
-         ixvaFuco4menxURH8VDPTL90k1vm14EfH6N0UBKEuueNICWZTkoqhgBWHqZSbcc5hX
-         ztOpF17x5BheAACcDCTBdmfk4ZIKLsQMvzLa+QPc=
+        b=odWbh/BvnBsJiErCThK6d6v/d9dnpd1p4JMgPqfZ8pYCnlF4+JdoCAv5Vwdgaw6rn
+         ca7/Nt9oPtLeBJmAW53lTxTsQvc6L2zmagw4a0IzH7LgJecyICCmnzXaPqsw+2PosQ
+         18O0N3ffcqv/MdgGZWFKnj3cPOBdFGvgxfhyc4HQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 836/846] net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices
-Date:   Mon, 24 Jan 2022 19:45:53 +0100
-Message-Id: <20220124184129.751977334@linuxfoundation.org>
+Subject: [PATCH 5.15 833/846] net: ocelot: Fix the call to switchdev_bridge_port_offload
+Date:   Mon, 24 Jan 2022 19:45:50 +0100
+Message-Id: <20220124184129.650789861@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,140 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Claudiu Beznea <claudiu.beznea@microchip.com>
+From: Horatiu Vultur <horatiu.vultur@microchip.com>
 
-commit f1131b9c23fb4a3540a774828ff49f421619f902 upstream.
+commit c0b7f7d7e0ad44f35745c01964b3fa2833e298cb upstream.
 
-On a setup with KSZ9131 and MACB drivers it happens on suspend path, from
-time to time, that the PHY interrupt arrives after PHY and MACB were
-suspended (PHY via genphy_suspend(), MACB via macb_suspend()). In this
-case the phy_read() at the beginning of kszphy_handle_interrupt() will
-fail (as MACB driver is suspended at this time) leading to phy_error()
-being called and a stack trace being displayed on console. To solve this
-.suspend/.resume functions for all KSZ devices implementing
-.handle_interrupt were replaced with kszphy_suspend()/kszphy_resume()
-which disable/enable interrupt before/after calling
-genphy_suspend()/genphy_resume().
+In the blamed commit, the call to the function
+switchdev_bridge_port_offload was passing the wrong argument for
+atomic_nb. It was ocelot_netdevice_nb instead of ocelot_swtchdev_nb.
+This patch fixes this issue.
 
-The fix has been adapted for all KSZ devices which implements
-.handle_interrupt but it has been tested only on KSZ9131.
-
-Fixes: 59ca4e58b917 ("net: phy: micrel: implement generic .handle_interrupt() callback")
-Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Fixes: 4e51bf44a03af6 ("net: bridge: move the switchdev object replay helpers to "push" mode")
+Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/phy/micrel.c |   36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_net.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -1547,8 +1547,8 @@ static struct phy_driver ksphy_driver[]
- 	.config_init	= kszphy_config_init,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ8021,
- 	.phy_id_mask	= 0x00ffffff,
-@@ -1562,8 +1562,8 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ8031,
- 	.phy_id_mask	= 0x00ffffff,
-@@ -1577,8 +1577,8 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ8041,
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
-@@ -1609,8 +1609,8 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.name		= "Micrel KSZ8051",
- 	/* PHY_BASIC_FEATURES */
-@@ -1623,8 +1623,8 @@ static struct phy_driver ksphy_driver[]
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
- 	.match_phy_device = ksz8051_match_phy_device,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ8001,
- 	.name		= "Micrel KSZ8001 or KS8721",
-@@ -1638,8 +1638,8 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ8081,
- 	.name		= "Micrel KSZ8081 or KSZ8091",
-@@ -1669,8 +1669,8 @@ static struct phy_driver ksphy_driver[]
- 	.config_init	= ksz8061_config_init,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ9021,
- 	.phy_id_mask	= 0x000ffffe,
-@@ -1685,8 +1685,8 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- 	.read_mmd	= genphy_read_mmd_unsupported,
- 	.write_mmd	= genphy_write_mmd_unsupported,
- }, {
-@@ -1704,7 +1704,7 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
-+	.suspend	= kszphy_suspend,
- 	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_LAN8814,
-@@ -1732,7 +1732,7 @@ static struct phy_driver ksphy_driver[]
- 	.get_sset_count = kszphy_get_sset_count,
- 	.get_strings	= kszphy_get_strings,
- 	.get_stats	= kszphy_get_stats,
--	.suspend	= genphy_suspend,
-+	.suspend	= kszphy_suspend,
- 	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ8873MLL,
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -1168,7 +1168,7 @@ static int ocelot_netdevice_bridge_join(
+ 	ocelot_port_bridge_join(ocelot, port, bridge);
+ 
+ 	err = switchdev_bridge_port_offload(brport_dev, dev, priv,
+-					    &ocelot_netdevice_nb,
++					    &ocelot_switchdev_nb,
+ 					    &ocelot_switchdev_blocking_nb,
+ 					    false, extack);
+ 	if (err)
+@@ -1182,7 +1182,7 @@ static int ocelot_netdevice_bridge_join(
+ 
+ err_switchdev_sync:
+ 	switchdev_bridge_port_unoffload(brport_dev, priv,
+-					&ocelot_netdevice_nb,
++					&ocelot_switchdev_nb,
+ 					&ocelot_switchdev_blocking_nb);
+ err_switchdev_offload:
+ 	ocelot_port_bridge_leave(ocelot, port, bridge);
+@@ -1195,7 +1195,7 @@ static void ocelot_netdevice_pre_bridge_
+ 	struct ocelot_port_private *priv = netdev_priv(dev);
+ 
+ 	switchdev_bridge_port_unoffload(brport_dev, priv,
+-					&ocelot_netdevice_nb,
++					&ocelot_switchdev_nb,
+ 					&ocelot_switchdev_blocking_nb);
+ }
+ 
 
 
