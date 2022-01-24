@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E447C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AD17C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390307AbiAXUpF (ORCPT
+        id S1389903AbiAXUoo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:45:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60524 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354983AbiAXUXD (ORCPT
+        Mon, 24 Jan 2022 15:44:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51508 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382495AbiAXUZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:03 -0500
+        Mon, 24 Jan 2022 15:25:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE3CAB811FB;
-        Mon, 24 Jan 2022 20:23:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 188A9C340E5;
-        Mon, 24 Jan 2022 20:22:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D928A61382;
+        Mon, 24 Jan 2022 20:25:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B210AC340E5;
+        Mon, 24 Jan 2022 20:25:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055780;
-        bh=2/G4H/z6ZjT0mBnaR+ViTzd1dhM7FMwdV/1uFN7ooNs=;
+        s=korg; t=1643055948;
+        bh=7DICeP7dnUYHT+NLnmghG3OMqLh6wkc1OgzolyJEbeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WyiVb0qwaqqoAg7DpDf7ugOyNGYr8ObSIvHPX+NOeh86p53IDQmLgahoKG3O0Cuad
-         nMNkxq8f182Alf2HkD/RHxLDghhErkPiujnvDCSYNguwcGwyyKQUyl2yHrAd6+BnYu
-         g+NVcu4rK+w6xTKHw0x412jfHisf8umzHVLW6ycM=
+        b=VtEk6vC0nHnHTLs4S2Dgr230I0XnI6M1DdV9LoCJT+V33mY4T0S9+hfoRXE5hrhKq
+         9hV5QtczVxXcqgcNanL5qWdMMdyGLZ2Q18GKn3zuSESM5K33sRaAT4nTPS+U9hiyyl
+         IciIX0hiMocl7mJYaj9JF/miJGf2MZL2LVv2VlKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 264/846] arm64: dts: marvell: cn9130: enable CP0 GPIO controllers
-Date:   Mon, 24 Jan 2022 19:36:21 +0100
-Message-Id: <20220124184110.038261727@linuxfoundation.org>
+Subject: [PATCH 5.15 292/846] software node: fix wrong node passed to find nargs_prop
+Date:   Mon, 24 Jan 2022 19:36:49 +0100
+Message-Id: <20220124184111.003587646@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,44 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Clément Léger <clement.leger@bootlin.com>
 
-[ Upstream commit 0734f8311ce72c9041e5142769eff2083889c172 ]
+[ Upstream commit c5fc5ba8b6b7bebc05e45036a33405b4c5036c2f ]
 
-CN9130 has a built-in CP115 which has 2 GPIO controllers, but unlike in
-Armada 7k and 8k both are left disabled by the SoC DTSI.
+nargs_prop refers to a property located in the reference that is found
+within the nargs property. Use the correct reference node in call to
+property_entry_read_int_array() to retrieve the correct nargs value.
 
-This first of all makes no sense as they are always present due to being
-SoC built-in and its an issue as boards like CN9130-CRB use the CPO GPIO2
-pins for regulators and SD card support without enabling them first.
-
-So, enable both of them like Armada 7k and 8k do.
-
-Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
-
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: b06184acf751 ("software node: Add software_node_get_reference_args()")
+Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Daniel Scally <djrscally@gmail.com>
+Acked-by: Heikki Krogerus <heikki.krogerus@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/cn9130.dtsi | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/base/swnode.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-index 71769ac7f0585..327b04134134f 100644
---- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
-+++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-@@ -42,3 +42,11 @@
- #undef CP11X_PCIE0_BASE
- #undef CP11X_PCIE1_BASE
- #undef CP11X_PCIE2_BASE
-+
-+&cp0_gpio1 {
-+	status = "okay";
-+};
-+
-+&cp0_gpio2 {
-+	status = "okay";
-+};
+diff --git a/drivers/base/swnode.c b/drivers/base/swnode.c
+index c46f6a8e14d23..3ba1232ce8451 100644
+--- a/drivers/base/swnode.c
++++ b/drivers/base/swnode.c
+@@ -535,7 +535,7 @@ software_node_get_reference_args(const struct fwnode_handle *fwnode,
+ 		return -ENOENT;
+ 
+ 	if (nargs_prop) {
+-		error = property_entry_read_int_array(swnode->node->properties,
++		error = property_entry_read_int_array(ref->node->properties,
+ 						      nargs_prop, sizeof(u32),
+ 						      &nargs_prop_val, 1);
+ 		if (error)
 -- 
 2.34.1
 
