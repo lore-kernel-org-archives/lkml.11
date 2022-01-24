@@ -2,26 +2,30 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9322C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:04:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35448C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244915AbiAXSEI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:04:08 -0500
-Received: from out2.migadu.com ([188.165.223.204]:13103 "EHLO out2.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235769AbiAXSEF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S244921AbiAXSEK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:04:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60114 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241754AbiAXSEF (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:04:05 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 594D0C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:04:05 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643047444;
+        t=1643047443;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=yIiooJ7Br0briWEQqZ6uPYrewTQt0yFaU3FLKd4NjuQ=;
-        b=eV2kpwR8xJFcM9Sl9WgGTW1GyXnj5qihypWFh4otrwjMzPW6EgMyoLvbRozNqNB3B591up
-        y6lIiFHxnDXiOOaMJmL1wPHK4IrO3UXm0c5KMD2FNNNVtYlOxCIaZDtllz6bDRB1eeO8nD
-        l/OGODSVkzQZX5g+F1Cv9ilY4I4R5eo=
+        bh=S5E8BX4t2WOGndjQQ7xLiyrqvsQHzLaEF763pxkUAQ8=;
+        b=kLmRezKuM11MDtsE1TpCxecTN/RV8oqE70/f0WX53dTir1+qa94QpDPJLCimkB9ePGV57A
+        3MXtGDvAzP7WfW28/bKSDn1uqjGbTczs+DwFuu/aHvskQ2BKOj57p8SmO/GZiufeUkbmag
+        zTmWy8BZ5L+e4bU/XHqfjgoSQ1/TQVs=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -39,9 +43,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Evgenii Stepanov <eugenis@google.com>,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v6 13/39] kasan, page_alloc: move kernel_init_free_pages in post_alloc_hook
-Date:   Mon, 24 Jan 2022 19:02:21 +0100
-Message-Id: <a7a76456501eb37ddf9fca6529cee9555e59cdb1.1643047180.git.andreyknvl@google.com>
+Subject: [PATCH v6 12/39] kasan, page_alloc: move SetPageSkipKASanPoison in post_alloc_hook
+Date:   Mon, 24 Jan 2022 19:02:20 +0100
+Message-Id: <7214c1698b754ccfaa44a792113c95cc1f807c48.1643047180.git.andreyknvl@google.com>
 In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
 References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -54,45 +58,50 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Pull the kernel_init_free_pages() call in post_alloc_hook() out of the
+Pull the SetPageSkipKASanPoison() call in post_alloc_hook() out of the
 big if clause for better code readability. This also allows for more
-simplifications in the following patch.
+simplifications in the following patches.
 
-This patch does no functional changes.
+Also turn the kasan_has_integrated_init() check into the proper
+kasan_hw_tags_enabled() one. These checks evaluate to the same value,
+but logically skipping kasan poisoning has nothing to do with
+integrated init.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Reviewed-by: Alexander Potapenko <glider@google.com>
+
 ---
- mm/page_alloc.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+
+Changes v3->v4:
+- Use proper kasan_hw_tags_enabled() check instead of
+  IS_ENABLED(CONFIG_KASAN_HW_TAGS).
+---
+ mm/page_alloc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index c51d637cdab3..2784bd478942 100644
+index b3959327e06c..c51d637cdab3 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -2435,14 +2435,18 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+@@ -2435,9 +2435,6 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
  		init = false;
  	}
  	if (kasan_has_integrated_init()) {
--		if (!init_tags)
-+		if (!init_tags) {
- 			kasan_unpoison_pages(page, order, init);
-+
-+			/* Note that memory is already initialized by KASAN. */
-+			init = false;
-+		}
- 	} else {
- 		kasan_unpoison_pages(page, order, init);
+-		if (gfp_flags & __GFP_SKIP_KASAN_POISON)
+-			SetPageSkipKASanPoison(page);
 -
--		if (init)
--			kernel_init_free_pages(page, 1 << order);
+ 		if (!init_tags)
+ 			kasan_unpoison_pages(page, order, init);
+ 	} else {
+@@ -2446,6 +2443,9 @@ inline void post_alloc_hook(struct page *page, unsigned int order,
+ 		if (init)
+ 			kernel_init_free_pages(page, 1 << order);
  	}
-+	/* If memory is still not initialized, do it now. */
-+	if (init)
-+		kernel_init_free_pages(page, 1 << order);
- 	/* Propagate __GFP_SKIP_KASAN_POISON to page flags. */
- 	if (kasan_hw_tags_enabled() && (gfp_flags & __GFP_SKIP_KASAN_POISON))
- 		SetPageSkipKASanPoison(page);
++	/* Propagate __GFP_SKIP_KASAN_POISON to page flags. */
++	if (kasan_hw_tags_enabled() && (gfp_flags & __GFP_SKIP_KASAN_POISON))
++		SetPageSkipKASanPoison(page);
+ 
+ 	set_page_owner(page, order, gfp_flags);
+ 	page_table_check_alloc(page, order);
 -- 
 2.25.1
 
