@@ -2,42 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B26AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9628DC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587503AbiAXW2e (ORCPT
+        id S1587571AbiAXW2o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54276 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455265AbiAXVfF (ORCPT
+        Mon, 24 Jan 2022 17:28:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455569AbiAXVfk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:05 -0500
+        Mon, 24 Jan 2022 16:35:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F30C05A186;
+        Mon, 24 Jan 2022 12:22:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 587EF614CB;
-        Mon, 24 Jan 2022 21:35:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CD02C340E4;
-        Mon, 24 Jan 2022 21:35:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8B6ECB8122D;
+        Mon, 24 Jan 2022 20:22:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8DD7C340E7;
+        Mon, 24 Jan 2022 20:22:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060103;
-        bh=fKi7ZwPG8n0+BGVYMxk00IA52PoG1YjyUx5UZx1Vb/o=;
+        s=korg; t=1643055746;
+        bh=kOahFSvEW43v6s3fzF/seoeZFzaSHPDFkEhMXFiTIMQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CyfW4dx0pc5FES4nKvQR4mnD3JTTXE2D/wa0BIue+FuRULxdHE3FOkN6pXuD+7+Vw
-         /suHcanx2ZVWRcsH96PN7M2jTmIxt/8fCvpKYhFg6gJcD+Fv3TfiOuu9n9Z+Tg3VuB
-         AxpAIdfIaG6ahWQaXUc0JgDYNxfxInXXSNcQb1fE=
+        b=wmsPccyqcWxMyDRXCgMtVB9K1001TSoMPV+mpZ/oLNB655FyAqSgbVWL70hAtkE/R
+         tuoOUUCZ/iN9rOiDtacCnlScVks2bKjDex9rdOJnGeQpHrtNCQ230tFgq0Gw9WG05W
+         hSuduQfpchjWGWO2sf/KOJZwx1AlzHC1uXu2ieXk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Patrick Williams <patrick@stwcx.xyz>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.16 0841/1039] tpm: fix NPE on probe for missing device
-Date:   Mon, 24 Jan 2022 19:43:50 +0100
-Message-Id: <20220124184153.564796737@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Steev Klimaszewski <steev@kali.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 251/846] arm64: dts: qcom: c630: Fix soundcard setup
+Date:   Mon, 24 Jan 2022 19:36:08 +0100
+Message-Id: <20220124184109.603304599@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,58 +52,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Williams <patrick@stwcx.xyz>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-commit 84cc69589700b90a4c8d27b481a51fce8cca6051 upstream.
+[ Upstream commit c02b360ca67ebeb9de07b47b2fe53f964c2561d1 ]
 
-When using the tpm_tis-spi driver on a system missing the physical TPM,
-a null pointer exception was observed.
+Currently Soundcard has 1 rx device for headset and SoundWire Speaker Playback.
 
-    [    0.938677] Unable to handle kernel NULL pointer dereference at virtual address 00000004
-    [    0.939020] pgd = 10c753cb
-    [    0.939237] [00000004] *pgd=00000000
-    [    0.939808] Internal error: Oops: 5 [#1] SMP ARM
-    [    0.940157] CPU: 0 PID: 48 Comm: kworker/u4:1 Not tainted 5.15.10-dd1e40c #1
-    [    0.940364] Hardware name: Generic DT based system
-    [    0.940601] Workqueue: events_unbound async_run_entry_fn
-    [    0.941048] PC is at tpm_tis_remove+0x28/0xb4
-    [    0.941196] LR is at tpm_tis_core_init+0x170/0x6ac
+This setup has issues, ex if we try to play on headset the audio stream is
+also sent to SoundWire Speakers and we will hear sound in both headsets and speakers.
 
-This is due to an attempt in 'tpm_tis_remove' to use the drvdata, which
-was not initialized in 'tpm_tis_core_init' prior to the first error.
+Make a separate device for Speakers and Headset so that the streams are
+different and handled properly.
 
-Move the initialization of drvdata earlier so 'tpm_tis_remove' has
-access to it.
-
-Signed-off-by: Patrick Williams <patrick@stwcx.xyz>
-Fixes: 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent queries")
-Cc: stable@vger.kernel.org
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 45021d35fcb2 ("arm64: dts: qcom: c630: Enable audio support")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Tested-by: Steev Klimaszewski <steev@kali.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211209175342.20386-2-srinivas.kandagatla@linaro.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ .../boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -950,6 +950,8 @@ int tpm_tis_core_init(struct device *dev
- 	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
- 	priv->phy_ops = phy_ops;
- 
-+	dev_set_drvdata(&chip->dev, priv);
+diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+index 2ba23aa582a18..617a634ac9051 100644
+--- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
++++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+@@ -518,6 +518,10 @@
+ 	dai@1 {
+ 		reg = <1>;
+ 	};
 +
- 	rc = tpm_tis_read32(priv, TPM_DID_VID(0), &vendor);
- 	if (rc < 0)
- 		return rc;
-@@ -962,8 +964,6 @@ int tpm_tis_core_init(struct device *dev
- 		priv->timeout_max = TIS_TIMEOUT_MAX_ATML;
- 	}
++	dai@2 {
++		reg = <2>;
++	};
+ };
  
--	dev_set_drvdata(&chip->dev, priv);
--
- 	if (is_bsw()) {
- 		priv->ilb_base_addr = ioremap(INTEL_LEGACY_BLK_BASE_ADDR,
- 					ILB_REMAP_SIZE);
+ &sound {
+@@ -530,6 +534,7 @@
+ 		"SpkrLeft IN", "SPK1 OUT",
+ 		"SpkrRight IN", "SPK2 OUT",
+ 		"MM_DL1",  "MultiMedia1 Playback",
++		"MM_DL3",  "MultiMedia3 Playback",
+ 		"MultiMedia2 Capture", "MM_UL2";
+ 
+ 	mm1-dai-link {
+@@ -546,6 +551,13 @@
+ 		};
+ 	};
+ 
++	mm3-dai-link {
++		link-name = "MultiMedia3";
++		cpu {
++			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA3>;
++		};
++	};
++
+ 	slim-dai-link {
+ 		link-name = "SLIM Playback";
+ 		cpu {
+@@ -575,6 +587,21 @@
+ 			sound-dai = <&wcd9340 1>;
+ 		};
+ 	};
++
++	slim-wcd-dai-link {
++		link-name = "SLIM WCD Playback";
++		cpu {
++			sound-dai = <&q6afedai SLIMBUS_1_RX>;
++		};
++
++		platform {
++			sound-dai = <&q6routing>;
++		};
++
++		codec {
++			sound-dai =  <&wcd9340 2>;
++		};
++	};
+ };
+ 
+ &tlmm {
+-- 
+2.34.1
+
 
 
