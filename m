@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8B4C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3ECDC4707F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413131AbiAYAi2 (ORCPT
+        id S3413210AbiAYAih (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:38:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59174 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354330AbiAXVHG (ORCPT
+        Mon, 24 Jan 2022 19:38:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2364657AbiAXXsq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:07:06 -0500
+        Mon, 24 Jan 2022 18:48:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18C8C0419C3;
+        Mon, 24 Jan 2022 13:43:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C30B7B8105C;
-        Mon, 24 Jan 2022 21:07:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D308EC340E5;
-        Mon, 24 Jan 2022 21:07:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F2406150C;
+        Mon, 24 Jan 2022 21:43:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E9E8C340E4;
+        Mon, 24 Jan 2022 21:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058423;
-        bh=ZTyiFhQJN4fI0ohqFr2xGTdcTomL+FISSSU8k9rBfuk=;
+        s=korg; t=1643060631;
+        bh=CebMge8ZokDceHnQirwT/xJla2PRMXWsgU00AcpgTGk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sn76BkUr7b3v3qs36ZCZdh8d/ix7VC4wsUKL4SmEhD+yciE8m3LzI60mb/Nqb8GzN
-         dJOOZDr8EfItfLUsAbYi/QhHdLSf88mCiSNk+vaABv37mvYLC/9J6dNInu0Vup/nYD
-         9+jAk4Di3Z18rbporIDUhNC41utHDXI5L+vy3bZ4=
+        b=qvtm+dGydx3j/ulWAcEoK0XwN+Q6aqBUwniOFcPPyM91r3cxBS0AMJKlRHd8h96Vp
+         tDNVFJzeJCWPAcu68l5jdIhjPbvirMPB6qtr+VVMKZL+u6bJHbH/OSjr9i+OwDKe+o
+         yw8fj/ftf5vhsRXOfSi0oSpPzv+IKfzT2qvkNoKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Will Deacon <will@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0284/1039] perf/arm-cmn: Fix CPU hotplug unregistration
-Date:   Mon, 24 Jan 2022 19:34:33 +0100
-Message-Id: <20220124184134.829380525@linuxfoundation.org>
+        stable@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 0979/1039] mctp: test: zero out sockaddr
+Date:   Mon, 24 Jan 2022 19:46:08 +0100
+Message-Id: <20220124184158.194479211@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,50 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robin Murphy <robin.murphy@arm.com>
+From: Matt Johnston <matt@codeconstruct.com.au>
 
-[ Upstream commit 56c7c6eaf3eb8ac1ec40d56096c0f2b27250da5f ]
+commit 284a4d94e8e74fbd731ee67e29196656ca823423 upstream.
 
-Attempting to migrate the PMU context after we've unregistered the PMU
-device, or especially if we never successfully registered it in the
-first place, is a woefully bad idea. It's also fundamentally pointless
-anyway. Make sure to unregister an instance from the hotplug handler
-*without* invoking the teardown callback.
+MCTP now requires that padding bytes are zero.
 
-Fixes: 0ba64770a2f2 ("perf: Add Arm CMN-600 PMU driver")
-Signed-off-by: Robin Murphy <robin.murphy@arm.com>
-Link: https://lore.kernel.org/r/2c221d745544774e4b07583b65b5d4d94f7e0fe4.1638530442.git.robin.murphy@arm.com
-Signed-off-by: Will Deacon <will@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
+Fixes: 1e4b50f06d97 ("mctp: handle the struct sockaddr_mctp padding fields")
+Link: https://lore.kernel.org/r/20220110021806.2343023-1-matt@codeconstruct.com.au
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/perf/arm-cmn.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/mctp/test/route-test.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/perf/arm-cmn.c b/drivers/perf/arm-cmn.c
-index bc3cba5f8c5dc..400eb7f579dce 100644
---- a/drivers/perf/arm-cmn.c
-+++ b/drivers/perf/arm-cmn.c
-@@ -1561,7 +1561,8 @@ static int arm_cmn_probe(struct platform_device *pdev)
- 
- 	err = perf_pmu_register(&cmn->pmu, name, -1);
- 	if (err)
--		cpuhp_state_remove_instance(arm_cmn_hp_state, &cmn->cpuhp_node);
-+		cpuhp_state_remove_instance_nocalls(arm_cmn_hp_state, &cmn->cpuhp_node);
-+
- 	return err;
- }
- 
-@@ -1572,7 +1573,7 @@ static int arm_cmn_remove(struct platform_device *pdev)
- 	writel_relaxed(0, cmn->dtc[0].base + CMN_DT_DTC_CTL);
- 
- 	perf_pmu_unregister(&cmn->pmu);
--	cpuhp_state_remove_instance(arm_cmn_hp_state, &cmn->cpuhp_node);
-+	cpuhp_state_remove_instance_nocalls(arm_cmn_hp_state, &cmn->cpuhp_node);
- 	return 0;
- }
- 
--- 
-2.34.1
-
+--- a/net/mctp/test/route-test.c
++++ b/net/mctp/test/route-test.c
+@@ -285,7 +285,7 @@ static void __mctp_route_test_init(struc
+ 				   struct mctp_test_route **rtp,
+ 				   struct socket **sockp)
+ {
+-	struct sockaddr_mctp addr;
++	struct sockaddr_mctp addr = {0};
+ 	struct mctp_test_route *rt;
+ 	struct mctp_test_dev *dev;
+ 	struct socket *sock;
 
 
