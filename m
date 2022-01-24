@@ -2,42 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFF6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 713CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347487AbiAXT6n (ORCPT
+        id S1350818AbiAXT6s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:58:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39434 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235030AbiAXTl6 (ORCPT
+        Mon, 24 Jan 2022 14:58:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55130 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348327AbiAXTmf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:58 -0500
+        Mon, 24 Jan 2022 14:42:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D47C08EE18;
+        Mon, 24 Jan 2022 11:21:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 07DDB61531;
-        Mon, 24 Jan 2022 19:41:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EE5C340E5;
-        Mon, 24 Jan 2022 19:41:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75845B8122C;
+        Mon, 24 Jan 2022 19:21:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43AD6C340E5;
+        Mon, 24 Jan 2022 19:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053316;
-        bh=R3SYvAKMvIzdD7gfCpbP1XBCEPkDA2vnynlCBsHNGkE=;
+        s=korg; t=1643052104;
+        bh=Qf6XnIzeElSZlaTPE0+w9iFReX52uTDmquC2axMPOMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rkZK7Zcf3WQ8VeGS05zSWVUQIAMb8aHPCg6Q5bYhxklt9jSki9TEdaOIBa6GXbLEF
-         n7ZJqK+GzntK9ROiBxG36wi67Md6mrt7Pmc6wkWx9BFQf+v+zsYAUsGth58MriSZ8t
-         xGJ2lUZZGQ6Dy0ylekSkmHFr55zJIAZ/AB8+ztw0=
+        b=i+WPU0dbfQrbRnhMiu/hj6m6DNwT6T9VWWAFpwFNptCCKk7tzTOHJz6f9PO4DMbVY
+         yuGCqupcO9CJgz5OfOjS7AYPsZk/8Xm8FlW6v2BrPBDzGZKVV9Ca+OvJeVb+vF49HH
+         +ruPDdUHTJ8pVS2zEgQb3uo+snutG197hTSjtUcI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.10 025/563] media: dib0700: fix undefined behavior in tuner shutdown
-Date:   Mon, 24 Jan 2022 19:36:30 +0100
-Message-Id: <20220124184025.297665168@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 191/239] MIPS: Octeon: Fix build errors using clang
+Date:   Mon, 24 Jan 2022 19:43:49 +0100
+Message-Id: <20220124183949.188145353@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,51 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Kuron <michael.kuron@gmail.com>
+From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
-commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
+[ Upstream commit 95339b70677dc6f9a2d669c4716058e71b8dc1c7 ]
 
-This fixes a problem where closing the tuner would leave it in a state
-where it would not tune to any channel when reopened. This problem was
-discovered as part of https://github.com/hselasky/webcamd/issues/16.
+A large number of the following errors is reported when compiling
+with clang:
 
-Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
-behavior. The driver still worked in practice as the overflow would in
-most environments result in 0, which rendered the line a no-op. When
-running the driver as part of webcamd however, the overflow could lead
-to 0xff due to optimizations by the compiler, which would, in the end,
-improperly shut down the tuner.
+  cvmx-bootinfo.h:326:3: error: adding 'int' to a string does not append to the string [-Werror,-Wstring-plus-int]
+                  ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_NULL)
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
+          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
+                         ~~~^~~~
+  cvmx-bootinfo.h:326:3: note: use array indexing to silence this warning
+  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
+          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
+                          ^
 
-The bug is a regression introduced in the commit referenced below. The
-present patch causes identical behavior to before that commit for
-adap->id equal to 0 or 1. The driver does not contain support for
-dib0700 devices with more adapters, assuming such even exist.
+Follow the prompts to use the address operator '&' to fix this error.
 
-Tests have been performed with the Xbox One Digital TV Tuner on amd64.
-Not all dib0700 devices are expected to be affected by the regression;
-this code path is only taken by those with incorrect endpoint numbers.
-
-Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
-
-Cc: stable@vger.kernel.org
-Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
-Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
- 1 file changed, 2 deletions(-)
+ arch/mips/include/asm/octeon/cvmx-bootinfo.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/media/usb/dvb-usb/dib0700_core.c
-+++ b/drivers/media/usb/dvb-usb/dib0700_core.c
-@@ -618,8 +618,6 @@ int dib0700_streaming_ctrl(struct dvb_us
- 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
- 		if (onoff)
- 			st->channel_state |=	1 << (adap->id);
--		else
--			st->channel_state |=	1 << ~(adap->id);
- 	} else {
- 		if (onoff)
- 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
+diff --git a/arch/mips/include/asm/octeon/cvmx-bootinfo.h b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
+index 62787765575ef..ce6e5fddce0bf 100644
+--- a/arch/mips/include/asm/octeon/cvmx-bootinfo.h
++++ b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
+@@ -315,7 +315,7 @@ enum cvmx_chip_types_enum {
+ 
+ /* Functions to return string based on type */
+ #define ENUM_BRD_TYPE_CASE(x) \
+-	case x: return(#x + 16);	/* Skip CVMX_BOARD_TYPE_ */
++	case x: return (&#x[16]);	/* Skip CVMX_BOARD_TYPE_ */
+ static inline const char *cvmx_board_type_to_string(enum
+ 						    cvmx_board_types_enum type)
+ {
+@@ -404,7 +404,7 @@ static inline const char *cvmx_board_type_to_string(enum
+ }
+ 
+ #define ENUM_CHIP_TYPE_CASE(x) \
+-	case x: return(#x + 15);	/* Skip CVMX_CHIP_TYPE */
++	case x: return (&#x[15]);	/* Skip CVMX_CHIP_TYPE */
+ static inline const char *cvmx_chip_type_to_string(enum
+ 						   cvmx_chip_types_enum type)
+ {
+-- 
+2.34.1
+
 
 
