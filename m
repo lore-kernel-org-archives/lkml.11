@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 560E2C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC2D6C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1579514AbiAXWFu (ORCPT
+        id S1579544AbiAXWFz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:05:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40378 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451683AbiAXVXV (ORCPT
+        Mon, 24 Jan 2022 17:05:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51530 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1451799AbiAXVXg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:21 -0500
+        Mon, 24 Jan 2022 16:23:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46451C09B060;
+        Mon, 24 Jan 2022 12:17:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14973B812A5;
-        Mon, 24 Jan 2022 21:23:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CABFC340E4;
-        Mon, 24 Jan 2022 21:23:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA3CF61497;
+        Mon, 24 Jan 2022 20:17:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAB5BC340E8;
+        Mon, 24 Jan 2022 20:17:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059398;
-        bh=AXo2SKIfBrFl+rOiVbbS6B5EIC7YCr/SvPrUDVh/G4E=;
+        s=korg; t=1643055463;
+        bh=ckyorOORVsIp70Q+mkMHGOBzftHyZMq+cQA994k0QLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gNk40HvlRwkbemebPbUe1fIVVztT8DPR/kxwCVbMwTEJF4WtpMKEMNSxxoJhygzcM
-         4yCp4vCO8ijXQrSvSKPzGXz6aGUm+D3ORZaUJcHq6fjn4BRqcbwSVRH6ajObM+vT2A
-         dGQZG16nIX/ErapTrJFvsIt7ui6vmJdXRTX8Rvt0=
+        b=Ig7ub3xRW0Gel/f17JUAIQB80Phg5755om/lEaAyQM9vcfeByQGB8Ueg4/Pnhu3JM
+         IaP7GPJOeJ49dvvo0Swhmzv37J7/V6Ug57BMr+IPE5rsw7jKCUjYL+0aE+LALZqiAJ
+         8AmxnKdNsVG/zFcTH5/WA2Tsg1MepNlh+AiVXsVI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Adam Ward <Adam.Ward.opensource@diasemi.com>,
-        Mark Brown <broonie@kernel.org>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0602/1039] regulator: da9121: Prevent current limit change when enabled
-Date:   Mon, 24 Jan 2022 19:39:51 +0100
-Message-Id: <20220124184145.573533146@linuxfoundation.org>
+Subject: [PATCH 5.15 160/846] media: i2c: imx274: fix s_frame_interval runtime resume not requested
+Date:   Mon, 24 Jan 2022 19:34:37 +0100
+Message-Id: <20220124184106.503558732@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,37 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ward <Adam.Ward.opensource@diasemi.com>
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-[ Upstream commit 24f0853228f3b98f1ef08d5824376c69bb8124d2 ]
+[ Upstream commit da653498c20ba5b185214d8ae43b4e8e9594f520 ]
 
-Prevent changing current limit when enabled as a precaution against
-possibile instability due to tight integration with switching cycle
+pm_runtime_resume_and_get should be called when the s_frame_interval
+is called.
 
-Signed-off-by: Adam Ward <Adam.Ward.opensource@diasemi.com>
-Link: https://lore.kernel.org/r/52ee682476004a1736c1e0293358987319c1c415.1638223185.git.Adam.Ward.opensource@diasemi.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+The driver will try to access device registers to configure VMAX, coarse
+time and exposure.
+
+Currently if the runtime is not resumed, this fails:
+ # media-ctl -d /dev/media0 --set-v4l2 '"IMX274 1-001a":0[fmt:SRGGB10_1X10/3840x2
+160@1/10]'
+
+IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 3840x2160, goodness 0
+IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 1920x1080, goodness -3000
+IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 1280x720, goodness -4000
+IMX274 1-001a: imx274_binning_goodness: ask 3840x2160, size 1280x540, goodness -4180
+IMX274 1-001a: __imx274_change_compose: selected 1x1 binning
+IMX274 1-001a: imx274_set_frame_interval: input frame interval = 1 / 10
+IMX274 1-001a: imx274_read_mbreg : addr 0x300e, val=0x1 (2 bytes)
+IMX274 1-001a: imx274_set_frame_interval : register SVR = 1
+IMX274 1-001a: imx274_read_mbreg : addr 0x30f6, val=0x6a8 (2 bytes)
+IMX274 1-001a: imx274_set_frame_interval : register HMAX = 1704
+IMX274 1-001a: imx274_set_frame_length : input length = 2112
+IMX274 1-001a: imx274_write_mbreg : i2c bulk write failed, 30f8 = 884 (3 bytes)
+IMX274 1-001a: imx274_set_frame_length error = -121
+IMX274 1-001a: imx274_set_frame_interval error = -121
+Unable to setup formats: Remote I/O error (121)
+
+The device is not resumed thus the remote I/O error.
+
+Setting the frame interval works at streaming time, because
+pm_runtime_resume_and_get is called at s_stream time before sensor setup.
+The failure happens when only the s_frame_interval is called separately
+independently on streaming time.
+
+Fixes: ad97bc37426c ("media: i2c: imx274: Add IMX274 power on and off sequence")
+Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/da9121-regulator.c | 5 +++++
+ drivers/media/i2c/imx274.c | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
-index e669250902580..0a4fd449c27d1 100644
---- a/drivers/regulator/da9121-regulator.c
-+++ b/drivers/regulator/da9121-regulator.c
-@@ -253,6 +253,11 @@ static int da9121_set_current_limit(struct regulator_dev *rdev,
- 		goto error;
- 	}
+diff --git a/drivers/media/i2c/imx274.c b/drivers/media/i2c/imx274.c
+index 0dce92872176d..4d9b64c61f603 100644
+--- a/drivers/media/i2c/imx274.c
++++ b/drivers/media/i2c/imx274.c
+@@ -1367,6 +1367,10 @@ static int imx274_s_frame_interval(struct v4l2_subdev *sd,
+ 	int min, max, def;
+ 	int ret;
  
-+	if (rdev->desc->ops->is_enabled(rdev)) {
-+		ret = -EBUSY;
-+		goto error;
-+	}
++	ret = pm_runtime_resume_and_get(&imx274->client->dev);
++	if (ret < 0)
++		return ret;
 +
- 	ret = da9121_ceiling_selector(rdev, min_ua, max_ua, &sel);
- 	if (ret < 0)
- 		goto error;
+ 	mutex_lock(&imx274->lock);
+ 	ret = imx274_set_frame_interval(imx274, fi->interval);
+ 
+@@ -1398,6 +1402,7 @@ static int imx274_s_frame_interval(struct v4l2_subdev *sd,
+ 
+ unlock:
+ 	mutex_unlock(&imx274->lock);
++	pm_runtime_put(&imx274->client->dev);
+ 
+ 	return ret;
+ }
 -- 
 2.34.1
 
