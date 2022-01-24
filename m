@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEA0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97018C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352159AbiAXT3o (ORCPT
+        id S1352203AbiAXT3w (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349159AbiAXTUX (ORCPT
+        Mon, 24 Jan 2022 14:29:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43854 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346786AbiAXTQ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:20:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA375C02B8D0;
-        Mon, 24 Jan 2022 11:07:39 -0800 (PST)
+        Mon, 24 Jan 2022 14:16:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FC57B811FC;
-        Mon, 24 Jan 2022 19:07:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D0E8C340E5;
-        Mon, 24 Jan 2022 19:07:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43A6E61320;
+        Mon, 24 Jan 2022 19:16:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19921C340E7;
+        Mon, 24 Jan 2022 19:16:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051258;
-        bh=0ierq2hC0x5LeWSevBtfA0k91FVROzcHK/4VaadK2lE=;
+        s=korg; t=1643051788;
+        bh=EmSmdj2VP4v+XjAGMC1f/EnmITY0uUNRs0WMJ0+ywm4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=159D2yPGt7T19DHIDFY1oSc6eoeM83+9T/ZZ4XrqMCnzxvpELMCUD+9hixXFB8h2Q
-         lmaKI1cJzaZV9w1V6S51TKDFBnPg3y39rw5dxbMuKx2xop3AJARqssa7fUVkw0XTPB
-         L7wPaPr5g9NdvDdirBu4KQ4+HVoVguCkkg6WoK6A=
+        b=MUdkSmN7OUnMb11iGzNLTWmSg/UZWETPVtorcEmIRrBgXzp2r2TRfQBi4SbQtHbp2
+         9W5Y4B4MYtHDKxOt/7CKyUns7/X5P69Y2ZH8w6KGrWEC70RwvfKntYLQKV4sE0fV0C
+         td3E+ZCJpViD+DsWMEXMFa9RyGhAj6+3mZxQS8T0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, rkardell@mida.se,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
+        syzbot <syzkaller@googlegroups.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 103/186] media: m920x: dont use stack on USB reads
-Date:   Mon, 24 Jan 2022 19:42:58 +0100
-Message-Id: <20220124183940.427295823@linuxfoundation.org>
+Subject: [PATCH 4.19 088/239] ppp: ensure minimum packet size in ppp_write()
+Date:   Mon, 24 Jan 2022 19:42:06 +0100
+Message-Id: <20220124183945.918547329@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +50,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit 44073187990d5629804ce0627525f6ea5cfef171 ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+It seems pretty clear ppp layer assumed user space
+would always be kind to provide enough data
+in their write() to a ppp device.
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
+This patch makes sure user provides at least
+2 bytes.
 
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+It adds PPP_PROTO_LEN macro that could replace
+in net-next many occurrences of hard-coded 2 value.
+
+I replaced only one occurrence to ease backports
+to stable kernels.
+
+The bug manifests in the following report:
+
+BUG: KMSAN: uninit-value in ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
+ ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
+ __ppp_xmit_process+0x23e/0x4b0 drivers/net/ppp/ppp_generic.c:1640
+ ppp_xmit_process+0x1fe/0x480 drivers/net/ppp/ppp_generic.c:1661
+ ppp_write+0x5cb/0x5e0 drivers/net/ppp/ppp_generic.c:513
+ do_iter_write+0xb0c/0x1500 fs/read_write.c:853
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Uninit was created at:
+ slab_post_alloc_hook mm/slab.h:524 [inline]
+ slab_alloc_node mm/slub.c:3251 [inline]
+ __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
+ kmalloc_reserve net/core/skbuff.c:354 [inline]
+ __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
+ alloc_skb include/linux/skbuff.h:1126 [inline]
+ ppp_write+0x11d/0x5e0 drivers/net/ppp/ppp_generic.c:501
+ do_iter_write+0xb0c/0x1500 fs/read_write.c:853
+ vfs_writev fs/read_write.c:924 [inline]
+ do_writev+0x645/0xe00 fs/read_write.c:967
+ __do_sys_writev fs/read_write.c:1040 [inline]
+ __se_sys_writev fs/read_write.c:1037 [inline]
+ __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
+ do_syscall_x64 arch/x86/entry/common.c:51 [inline]
+ do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Paul Mackerras <paulus@samba.org>
+Cc: linux-ppp@vger.kernel.org
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Acked-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/ppp/ppp_generic.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index 32081c2ce0da8..8a43e2415686a 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -280,6 +280,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
-+
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -287,9 +294,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
+index dc9de8731c564..3f335b57d5cde 100644
+--- a/drivers/net/ppp/ppp_generic.c
++++ b/drivers/net/ppp/ppp_generic.c
+@@ -73,6 +73,8 @@
+ #define MPHDRLEN	6	/* multilink protocol header length */
+ #define MPHDRLEN_SSN	4	/* ditto with short sequence numbers */
  
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
++#define PPP_PROTO_LEN	2
 +
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
+ /*
+  * An instance of /dev/ppp can be associated with either a ppp
+  * interface unit or a ppp channel.  In both cases, file->private_data
+@@ -502,6 +504,9 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
+ 
+ 	if (!pf)
+ 		return -ENXIO;
++	/* All PPP packets should start with the 2-byte protocol */
++	if (count < PPP_PROTO_LEN)
++		return -EINVAL;
+ 	ret = -ENOMEM;
+ 	skb = alloc_skb(count + pf->hdrlen, GFP_KERNEL);
+ 	if (!skb)
+@@ -1550,7 +1555,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
+ 	}
+ 
+ 	++ppp->stats64.tx_packets;
+-	ppp->stats64.tx_bytes += skb->len - 2;
++	ppp->stats64.tx_bytes += skb->len - PPP_PROTO_LEN;
+ 
+ 	switch (proto) {
+ 	case PPP_IP:
 -- 
 2.34.1
 
