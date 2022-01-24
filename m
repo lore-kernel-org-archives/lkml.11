@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1850EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7625FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348285AbiAXU2L (ORCPT
+        id S1384131AbiAXU2z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49166 "EHLO
+        Mon, 24 Jan 2022 15:28:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49536 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378055AbiAXUGO (ORCPT
+        with ESMTP id S1378242AbiAXUGk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:06:14 -0500
+        Mon, 24 Jan 2022 15:06:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 674E4B81229;
-        Mon, 24 Jan 2022 20:06:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8BF61C340E5;
-        Mon, 24 Jan 2022 20:06:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 45D59B8122F;
+        Mon, 24 Jan 2022 20:06:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEA4C340E5;
+        Mon, 24 Jan 2022 20:06:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054771;
-        bh=O/8B47WCHt/7NggE2om+s/HBijeVuMCAcR01gd/vuYs=;
+        s=korg; t=1643054798;
+        bh=U2lQl/MZ0d0+YaTq1QYVKR854nG4+BKuzrVJGOnA0c4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DTFGqyhWIyMP4Hzzev7ieGnuBGdVYFD3vUUrrYzBgK10so0Gs/ypEpPkUCZ8k0kdF
-         L64GZEcssYkSIOPOtx91tzogZ9EEMx27RTd9JM79wntejNa1yGxyP8nFH3lV40Xz8b
-         svCzF8E2wRS6cKFywlSEW8M6ycJtbmODWDMgfD5A=
+        b=RmT19GfgKaPgmPtCOFkOKaFMAHxxmPBEcguIMka1TY2W89ONlxjMNAfKUYKoZRMUe
+         mUN50MOdSTzMyexuQPGXY9Foprc0XO9msEz2a/ZS/xhfL1N8ANTkupCtIrMWs2/FHP
+         FvD1o0QeAahHUfHGChi8el6LuWl8vnl6z5+g2Wng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.10 464/563] PCI: pci-bridge-emul: Properly mark reserved PCIe bits in PCI config space
-Date:   Mon, 24 Jan 2022 19:43:49 +0100
-Message-Id: <20220124184040.507268441@linuxfoundation.org>
+        syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>
+Subject: [PATCH 5.10 507/563] xdp: check prog type before updating BPF link
+Date:   Mon, 24 Jan 2022 19:44:32 +0100
+Message-Id: <20220124184042.004368957@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,53 +49,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Toke Høiland-Jørgensen <toke@redhat.com>
 
-commit 7b067ac63a5730d2fae18399fed7e45f23d36912 upstream.
+commit 382778edc8262b7535f00523e9eb22edba1b9816 upstream.
 
-Some bits in PCI config space are reserved when device is PCIe. Properly
-define behavior of PCI registers for PCIe emulated bridge and ensure that
-it would not be possible change these reserved bits.
+The bpf_xdp_link_update() function didn't check the program type before
+updating the program, which made it possible to install any program type as
+an XDP program, which is obviously not good. Syzbot managed to trigger this
+by swapping in an LWT program on the XDP hook which would crash in a helper
+call.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-3-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
+Fix this by adding a check and bailing out if the types don't match.
+
+Fixes: 026a4c28e1db ("bpf, xdp: Implement LINK_UPDATE for BPF XDP link")
+Reported-by: syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/r/20220107221115.326171-1-toke@redhat.com
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci-bridge-emul.c |   21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ net/core/dev.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -295,6 +295,27 @@ int pci_bridge_emul_init(struct pci_brid
- 			kfree(bridge->pci_regs_behavior);
- 			return -ENOMEM;
- 		}
-+		/* These bits are applicable only for PCI and reserved on PCIe */
-+		bridge->pci_regs_behavior[PCI_CACHE_LINE_SIZE / 4].ro &=
-+			~GENMASK(15, 8);
-+		bridge->pci_regs_behavior[PCI_COMMAND / 4].ro &=
-+			~((PCI_COMMAND_SPECIAL | PCI_COMMAND_INVALIDATE |
-+			   PCI_COMMAND_VGA_PALETTE | PCI_COMMAND_WAIT |
-+			   PCI_COMMAND_FAST_BACK) |
-+			  (PCI_STATUS_66MHZ | PCI_STATUS_FAST_BACK |
-+			   PCI_STATUS_DEVSEL_MASK) << 16);
-+		bridge->pci_regs_behavior[PCI_PRIMARY_BUS / 4].ro &=
-+			~GENMASK(31, 24);
-+		bridge->pci_regs_behavior[PCI_IO_BASE / 4].ro &=
-+			~((PCI_STATUS_66MHZ | PCI_STATUS_FAST_BACK |
-+			   PCI_STATUS_DEVSEL_MASK) << 16);
-+		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].rw &=
-+			~((PCI_BRIDGE_CTL_MASTER_ABORT |
-+			   BIT(8) | BIT(9) | BIT(11)) << 16);
-+		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].ro &=
-+			~((PCI_BRIDGE_CTL_FAST_BACK) << 16);
-+		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].w1c &=
-+			~(BIT(10) << 16);
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9339,6 +9339,12 @@ static int bpf_xdp_link_update(struct bp
+ 		goto out_unlock;
  	}
- 
- 	if (flags & PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR) {
+ 	old_prog = link->prog;
++	if (old_prog->type != new_prog->type ||
++	    old_prog->expected_attach_type != new_prog->expected_attach_type) {
++		err = -EINVAL;
++		goto out_unlock;
++	}
++
+ 	if (old_prog == new_prog) {
+ 		/* no-op, don't disturb drivers */
+ 		bpf_prog_put(new_prog);
 
 
