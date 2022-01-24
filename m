@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 905D5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE9EC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352164AbiAXUs5 (ORCPT
+        id S1391870AbiAXUtG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:48:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33322 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381903AbiAXUYv (ORCPT
+        Mon, 24 Jan 2022 15:49:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48710 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381837AbiAXUYr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:24:51 -0500
+        Mon, 24 Jan 2022 15:24:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FBA7B8122D;
-        Mon, 24 Jan 2022 20:24:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8A64C340E5;
-        Mon, 24 Jan 2022 20:24:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E177461232;
+        Mon, 24 Jan 2022 20:24:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C38C340E5;
+        Mon, 24 Jan 2022 20:24:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055889;
-        bh=2BQlgnQsNwEwfMzcRqMA7YHREraPyfZU8xrRYkLHLTU=;
+        s=korg; t=1643055886;
+        bh=2/YtUJlhdhKj2+PYmbTkGubem1KTGQtxJkKwLbVF/MI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yRiNHgldUO/VVSXDFHA06Y2Yji+DGCYi5sNDFrB/e8tvjkWf9oovMkgGDeFQDcjNK
-         +VA4agv0GB7D8Qtx1tcYcwV6mUyLXsME7w9nSRr7UNxHl2y/5fh8GU3z3yzBTQazHT
-         Mah8KcEaZjJgoBIY+/9ioorcCYqgIEBDz/n8AWks=
+        b=oBr0dAMk4YT6ZAWcdBzuZ6Nwg+koq+bEU6ndspDlP1bdIWGfWAv4CGdd8NfbSzEHW
+         00KyR14TNLOssl6g+L/wMDdvmFCkGC7La1PE5hTBiogEr8L1XXTJ8cEqMUBQ7ObNbw
+         X+8X0/Agzqf6nUKR4XbF+zIKfbwZWcSsxWgrdfbM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 300/846] serial: 8250_bcm7271: Propagate error codes from brcmuart_probe()
-Date:   Mon, 24 Jan 2022 19:36:57 +0100
-Message-Id: <20220124184111.259530397@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 299/846] io_uring: remove double poll on poll update
+Date:   Mon, 24 Jan 2022 19:36:56 +0100
+Message-Id: <20220124184111.228757894@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,67 +46,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit c195438f1e84de8fa46b4f5264d12379bee6e9a1 ]
+[ Upstream commit e840b4baf3cfb37e2ead4f649a45bb78178677ff ]
 
-In case of failures brcmuart_probe() always returned -ENODEV, this
-isn't correct for example platform_get_irq_byname() may return
--EPROBE_DEFER to handle such cases propagate error codes in
-brcmuart_probe() in case of failures.
+Before updating a poll request we should remove it from poll queues,
+including the double poll entry.
 
-Fixes: 41a469482de25 ("serial: 8250: Add new 8250-core based Broadcom STB driver")
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20211224142917.6966-4-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b69de288e913 ("io_uring: allow events and user_data update of running poll requests")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/ac39e7f80152613603b8a6cc29a2b6063ac2434f.1639605189.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_bcm7271.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ fs/io_uring.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/8250/8250_bcm7271.c b/drivers/tty/serial/8250/8250_bcm7271.c
-index 5163d60756b73..0877cf24f7de0 100644
---- a/drivers/tty/serial/8250/8250_bcm7271.c
-+++ b/drivers/tty/serial/8250/8250_bcm7271.c
-@@ -1076,14 +1076,18 @@ static int brcmuart_probe(struct platform_device *pdev)
- 		priv->rx_bufs = dma_alloc_coherent(dev,
- 						   priv->rx_size,
- 						   &priv->rx_addr, GFP_KERNEL);
--		if (!priv->rx_bufs)
-+		if (!priv->rx_bufs) {
-+			ret = -EINVAL;
- 			goto err;
-+		}
- 		priv->tx_size = UART_XMIT_SIZE;
- 		priv->tx_buf = dma_alloc_coherent(dev,
- 						  priv->tx_size,
- 						  &priv->tx_addr, GFP_KERNEL);
--		if (!priv->tx_buf)
-+		if (!priv->tx_buf) {
-+			ret = -EINVAL;
- 			goto err;
-+		}
- 	}
- 
- 	ret = serial8250_register_8250_port(&up);
-@@ -1097,6 +1101,7 @@ static int brcmuart_probe(struct platform_device *pdev)
- 	if (priv->dma_enabled) {
- 		dma_irq = platform_get_irq_byname(pdev,  "dma");
- 		if (dma_irq < 0) {
-+			ret = dma_irq;
- 			dev_err(dev, "no IRQ resource info\n");
- 			goto err1;
- 		}
-@@ -1116,7 +1121,7 @@ err1:
- err:
- 	brcmuart_free_bufs(dev, priv);
- 	brcmuart_arbitration(priv, 0);
--	return -ENODEV;
-+	return ret;
- }
- 
- static int brcmuart_remove(struct platform_device *pdev)
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 0006fc7479ca3..ecffeddf90c68 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5925,6 +5925,7 @@ static int io_poll_update(struct io_kiocb *req, unsigned int issue_flags)
+ 	 * update those. For multishot, if we're racing with completion, just
+ 	 * let completion re-add it.
+ 	 */
++	io_poll_remove_double(preq);
+ 	completing = !__io_poll_remove_one(preq, &preq->poll, false);
+ 	if (completing && (preq->poll.events & EPOLLONESHOT)) {
+ 		ret = -EALREADY;
 -- 
 2.34.1
 
