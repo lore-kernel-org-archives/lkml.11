@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD88C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0037DC35296
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448626AbiAXVNL (ORCPT
+        id S1448147AbiAXVMF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:13:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40476 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387920AbiAXUhe (ORCPT
+        Mon, 24 Jan 2022 16:12:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40618 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390399AbiAXUpS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:34 -0500
+        Mon, 24 Jan 2022 15:45:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8744CB8105C;
-        Mon, 24 Jan 2022 20:37:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A33C340E5;
-        Mon, 24 Jan 2022 20:37:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 28DCF60C13;
+        Mon, 24 Jan 2022 20:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C131C340E5;
+        Mon, 24 Jan 2022 20:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056652;
-        bh=rYM9exfV6ZPmhtkluUdEqD0mCu5N6+8LDBYWPagDUt8=;
+        s=korg; t=1643057117;
+        bh=YcFsUeslYa8xYA7haRFrlwUsZXiclWBMo3itOg4vcr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M23UC0dh7+yDWSz2hpgkAuClHtj83X+3YxwEd3LtMS5FneeOZcACmM3pCxhsLFs+B
-         HA35pZffIva9qDzZ9eun6pnwBvwZBI0W1kynT8hVKH+M7YAFHOefKdUyrlSX4IWrEB
-         DcyEa8OFRCXqBJZ64sgTLLjJngOhapdssn1OfDUg=
+        b=hdVrYnzUZSmIl9D9nQP48Q5L8SW2IA5A9KSlRWFRzJaPUawng5wz2c0GeyHoQ0A6i
+         DkwBeNM9GKLbHniFXO75jVagbNp+rVJseZt6UBZEiMG1bmJNtSm524gd4j/4mcflVm
+         ACk2gkRU+i4I1vyV/VS00K0OLKIMhdhCZlS34Iqk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 556/846] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
-Date:   Mon, 24 Jan 2022 19:41:13 +0100
-Message-Id: <20220124184120.199049720@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 707/846] PCI: pci-bridge-emul: Set PCI_STATUS_CAP_LIST for PCIe device
+Date:   Mon, 24 Jan 2022 19:43:44 +0100
+Message-Id: <20220124184125.431779033@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,57 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
+commit 3be9d243b21724d49b65043d4520d688b6040b36 upstream.
 
-The mmc core takes a specific path to support initializing of a
-non-standard SDIO card. This is triggered by looking for the card-quirk,
-MMC_QUIRK_NONSTD_SDIO.
+Since all PCI Express device Functions are required to implement the PCI
+Express Capability structure, Capabilities List bit in PCI Status Register
+must be hardwired to 1b. Capabilities Pointer register (which is already
+set by pci-bride-emul.c driver) is valid only when Capabilities List is set
+to 1b.
 
-In mmc_sdio_init_card() this gets rather messy, as it causes the code to
-bail out earlier, compared to the usual path. This leads to that the OCR
-doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
-been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
-assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
-
-To make the behaviour consistent, let's instead rely on the core to save
-the OCR in card->ocr during initialization.
-
-Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211124155944.1290-7-pali@kernel.org
+Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/sdio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pci/pci-bridge-emul.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 68edf7a615be5..5447c47157aa5 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -708,6 +708,8 @@ try_again:
- 	if (host->ops->init_card)
- 		host->ops->init_card(host, card);
+--- a/drivers/pci/pci-bridge-emul.c
++++ b/drivers/pci/pci-bridge-emul.c
+@@ -296,6 +296,7 @@ int pci_bridge_emul_init(struct pci_brid
  
-+	card->ocr = ocr_card;
-+
- 	/*
- 	 * If the host and card support UHS-I mode request the card
- 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
-@@ -820,7 +822,7 @@ try_again:
- 			goto mismatch;
- 		}
- 	}
--	card->ocr = ocr_card;
-+
- 	mmc_fixup_device(card, sdio_fixup_methods);
- 
- 	if (card->type == MMC_TYPE_SD_COMBO) {
--- 
-2.34.1
-
+ 	if (bridge->has_pcie) {
+ 		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
++		bridge->conf.status |= cpu_to_le16(PCI_STATUS_CAP_LIST);
+ 		bridge->pcie_conf.cap_id = PCI_CAP_ID_EXP;
+ 		bridge->pcie_conf.cap |= cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4);
+ 		bridge->pcie_cap_regs_behavior =
 
 
