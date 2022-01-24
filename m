@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF681C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:19:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA6BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231466AbiAXTTW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:19:22 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36936 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347384AbiAXTKV (ORCPT
+        id S234522AbiAXTT0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:19:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39938 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347443AbiAXTKb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:10:21 -0500
+        Mon, 24 Jan 2022 14:10:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCC9EB8122A;
-        Mon, 24 Jan 2022 19:10:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C1E6C340E7;
-        Mon, 24 Jan 2022 19:10:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05CDA60010;
+        Mon, 24 Jan 2022 19:10:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 049F7C340E5;
+        Mon, 24 Jan 2022 19:10:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051418;
-        bh=WGNVpAlelXoXa7YIBX5GGnhU0Tj3kAZDb3k7l8hJze8=;
+        s=korg; t=1643051430;
+        bh=vwRGDU4N4TbEApmcUFKQ4hpx5acenT08Vv9AbCWceh8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mpmGC/LKDX1fylYeEfjq2Xz92WX7JuNvWp/KXj9ei2+FmfdCq1tZTOy+MuX5wcYyL
-         6k1Rj7Amm7dR+iWTxQt465nP3XPJSgJ+mOhMeEzhFfVypBDhhWfJgHukGaK1X+gR/o
-         mgmC+tTEuX2H3yusdxdbL93iOL35IntI4mZmrdnk=
+        b=RowIxncB1llFSMkT8R7ZE3fgtuZEodIKyhfeluIQiHgzf4aHHKJsIT9J0X8Y3D3ig
+         NShOgfD1SdWvFfE09BFCDO9y/sctknW0DnHghNfRALEVTzjTowD+v4y+kkeQTDAB9N
+         TGKri1CfGFX6x+yfNDzbHGduNXXs8UVU5p+o8Eqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Lukas Czerner <lczerner@redhat.com>, stable@kernel.org
-Subject: [PATCH 4.14 156/186] ext4: dont use the orphan list when migrating an inode
-Date:   Mon, 24 Jan 2022 19:43:51 +0100
-Message-Id: <20220124183942.116336411@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 4.14 160/186] Documentation: refer to config RANDOMIZE_BASE for kernel address-space randomization
+Date:   Mon, 24 Jan 2022 19:43:55 +0100
+Message-Id: <20220124183942.243699561@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -45,83 +45,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055 upstream.
+commit 82ca67321f55a8d1da6ac3ed611da3c32818bb37 upstream.
 
-We probably want to remove the indirect block to extents migration
-feature after a deprecation window, but until then, let's fix a
-potential data loss problem caused by the fact that we put the
-tmp_inode on the orphan list.  In the unlikely case where we crash and
-do a journal recovery, the data blocks belonging to the inode being
-migrated are also represented in the tmp_inode on the orphan list ---
-and so its data blocks will get marked unallocated, and available for
-reuse.
+The config RANDOMIZE_SLAB does not exist, the authors probably intended to
+refer to the config RANDOMIZE_BASE, which provides kernel address-space
+randomization. They probably just confused SLAB with BASE (these two
+four-letter words coincidentally share three common letters), as they also
+point out the config SLAB_FREELIST_RANDOM as further randomization within
+the same sentence.
 
-Instead, stop putting the tmp_inode on the oprhan list.  So in the
-case where we crash while migrating the inode, we'll leak an inode,
-which is not a disaster.  It will be easily fixed the next time we run
-fsck, and it's better than potentially having blocks getting claimed
-by two different files, and losing data as a result.
+Fix the reference of the config for kernel address-space randomization to
+the config that provides that.
 
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Lukas Czerner <lczerner@redhat.com>
-Cc: stable@kernel.org
+Fixes: 6e88559470f5 ("Documentation: Add section about CPU vulnerabilities for Spectre")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/r/20211230171940.27558-1-lukas.bulwahn@gmail.com
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/migrate.c |   19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ Documentation/admin-guide/hw-vuln/spectre.rst |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -462,12 +462,12 @@ int ext4_ext_migrate(struct inode *inode
- 	percpu_down_write(&sbi->s_writepages_rwsem);
+--- a/Documentation/admin-guide/hw-vuln/spectre.rst
++++ b/Documentation/admin-guide/hw-vuln/spectre.rst
+@@ -468,7 +468,7 @@ Spectre variant 2
+    before invoking any firmware code to prevent Spectre variant 2 exploits
+    using the firmware.
  
- 	/*
--	 * Worst case we can touch the allocation bitmaps, a bgd
--	 * block, and a block to link in the orphan list.  We do need
--	 * need to worry about credits for modifying the quota inode.
-+	 * Worst case we can touch the allocation bitmaps and a block
-+	 * group descriptor block.  We do need need to worry about
-+	 * credits for modifying the quota inode.
- 	 */
- 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE,
--		4 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
-+		3 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
+-   Using kernel address space randomization (CONFIG_RANDOMIZE_SLAB=y
++   Using kernel address space randomization (CONFIG_RANDOMIZE_BASE=y
+    and CONFIG_SLAB_FREELIST_RANDOM=y in the kernel configuration) makes
+    attacks on the kernel generally more difficult.
  
- 	if (IS_ERR(handle)) {
- 		retval = PTR_ERR(handle);
-@@ -488,10 +488,6 @@ int ext4_ext_migrate(struct inode *inode
- 	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
- 	 * is so that the metadata blocks will have the correct checksum after
- 	 * the migration.
--	 *
--	 * Note however that, if a crash occurs during the migration process,
--	 * the recovery process is broken because the tmp_inode checksums will
--	 * be wrong and the orphans cleanup will fail.
- 	 */
- 	ei = EXT4_I(inode);
- 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
-@@ -503,7 +499,6 @@ int ext4_ext_migrate(struct inode *inode
- 	clear_nlink(tmp_inode);
- 
- 	ext4_ext_tree_init(handle, tmp_inode);
--	ext4_orphan_add(handle, tmp_inode);
- 	ext4_journal_stop(handle);
- 
- 	/*
-@@ -528,12 +523,6 @@ int ext4_ext_migrate(struct inode *inode
- 
- 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
- 	if (IS_ERR(handle)) {
--		/*
--		 * It is impossible to update on-disk structures without
--		 * a handle, so just rollback in-core changes and live other
--		 * work to orphan_list_cleanup()
--		 */
--		ext4_orphan_del(NULL, tmp_inode);
- 		retval = PTR_ERR(handle);
- 		goto out_tmp_inode;
- 	}
 
 
