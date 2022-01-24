@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4249CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D45FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345248AbiAXTIy (ORCPT
+        id S1345313AbiAXTJC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:08:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59288 "EHLO
+        Mon, 24 Jan 2022 14:09:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57424 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345003AbiAXTCb (ORCPT
+        with ESMTP id S1344292AbiAXTBh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:31 -0500
+        Mon, 24 Jan 2022 14:01:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A3A1B8122C;
-        Mon, 24 Jan 2022 19:02:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36388C340E7;
-        Mon, 24 Jan 2022 19:02:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16B2AB8124C;
+        Mon, 24 Jan 2022 19:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B1DEC36AE3;
+        Mon, 24 Jan 2022 19:01:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050948;
-        bh=QaK4PqTesDZysa0f8zUBvmQkPai+vOO0lmowdkVMUL0=;
+        s=korg; t=1643050894;
+        bh=/WuAenPvtHoOYxe2cLjzMTFFnpRHp7Hh7oLwX6A9/98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o2Eb4J0eLdwaZfd2Ns5P2lNx43B5GVA9lI7+2eUYpl6e4ceeM3kcG8tPsEAHQRYhJ
-         hOHUwAvOZRELv3FaNi3Jso6S1NWQVlu9GVnY0OXZEm0bCuOsaE3yFFC+tgJFotAM0T
-         gpy8UCjn4UnI6ANhW66vxygr5EVkStSfMT2yVFUc=
+        b=VEAExKlJK+BY8HbC0FnodvMf8jWneI4MD0q3Lh71/s2VY7c3ghZLS8ys8OKgAHLXa
+         UNndaEtCOYLHyR8FG6M3MNf3YP4dh9+dVPtaBT6PO5f1meY0JHfrBXgg527N8uRDeM
+         YR3JkVMbIMr/dQcB8UlhNwHd1KWBfa6oOWCTkzrI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Stevens <stevensd@google.com>, 3pvd@google.com,
-        Jann Horn <jannh@google.com>, Jason Gunthorpe <jgg@ziepe.ca>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 155/157] KVM: do not assume PTE is writable after follow_pfn
-Date:   Mon, 24 Jan 2022 19:44:05 +0100
-Message-Id: <20220124183937.673291168@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.9 145/157] lib82596: Fix IRQ check in sni_82596_probe
+Date:   Mon, 24 Jan 2022 19:43:55 +0100
+Message-Id: <20220124183937.364307472@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,91 +46,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Bonzini <pbonzini@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit bd2fae8da794b55bf2ac02632da3a151b10e664c upstream.
+commit 99218cbf81bf21355a3de61cd46a706d36e900e6 upstream.
 
-In order to convert an HVA to a PFN, KVM usually tries to use
-the get_user_pages family of functinso.  This however is not
-possible for VM_IO vmas; in that case, KVM instead uses follow_pfn.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-In doing this however KVM loses the information on whether the
-PFN is writable.  That is usually not a problem because the main
-use of VM_IO vmas with KVM is for BARs in PCI device assignment,
-however it is a bug.  To fix it, use follow_pte and check pte_write
-while under the protection of the PTE lock.  The information can
-be used to fail hva_to_pfn_remapped or passed back to the
-caller via *writable.
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Usage of follow_pfn was introduced in commit add6a0cd1c5b ("KVM: MMU: try to fix
-up page faults before giving up", 2016-07-05); however, even older version
-have the same issue, all the way back to commit 2e2e3738af33 ("KVM:
-Handle vma regions with no backing page", 2008-07-20), as they also did
-not check whether the PFN was writable.
+Fix the check of return value to catch errors correctly.
 
-Fixes: 2e2e3738af33 ("KVM: Handle vma regions with no backing page")
-Reported-by: David Stevens <stevensd@google.com>
-Cc: 3pvd@google.com
-Cc: Jann Horn <jannh@google.com>
-Cc: Jason Gunthorpe <jgg@ziepe.ca>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-[OP: backport to 4.19, adjust follow_pte() -> follow_pte_pmd()]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-[bwh: Backport to 4.9: follow_pte_pmd() does not take start or end
- parameters]
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Fixes: 115978859272 ("i825xx: Move the Intel 82586/82593/82596 based drivers")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- virt/kvm/kvm_main.c |   15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/i825xx/sni_82596.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1519,9 +1519,11 @@ static int hva_to_pfn_remapped(struct vm
- 			       kvm_pfn_t *p_pfn)
- {
- 	unsigned long pfn;
-+	pte_t *ptep;
-+	spinlock_t *ptl;
- 	int r;
+--- a/drivers/net/ethernet/i825xx/sni_82596.c
++++ b/drivers/net/ethernet/i825xx/sni_82596.c
+@@ -122,9 +122,10 @@ static int sni_82596_probe(struct platfo
+ 	netdevice->dev_addr[5] = readb(eth_addr + 0x06);
+ 	iounmap(eth_addr);
  
--	r = follow_pfn(vma, addr, &pfn);
-+	r = follow_pte_pmd(vma->vm_mm, addr, &ptep, NULL, &ptl);
- 	if (r) {
- 		/*
- 		 * get_user_pages fails for VM_IO and VM_PFNMAP vmas and does
-@@ -1536,14 +1538,19 @@ static int hva_to_pfn_remapped(struct vm
- 		if (r)
- 			return r;
- 
--		r = follow_pfn(vma, addr, &pfn);
-+		r = follow_pte_pmd(vma->vm_mm, addr, &ptep, NULL, &ptl);
- 		if (r)
- 			return r;
-+	}
- 
-+	if (write_fault && !pte_write(*ptep)) {
-+		pfn = KVM_PFN_ERR_RO_FAULT;
-+		goto out;
+-	if (!netdevice->irq) {
++	if (netdevice->irq < 0) {
+ 		printk(KERN_ERR "%s: IRQ not found for i82596 at 0x%lx\n",
+ 			__FILE__, netdevice->base_addr);
++		retval = netdevice->irq;
+ 		goto probe_failed;
  	}
  
- 	if (writable)
--		*writable = true;
-+		*writable = pte_write(*ptep);
-+	pfn = pte_pfn(*ptep);
- 
- 	/*
- 	 * Get a reference here because callers of *hva_to_pfn* and
-@@ -1558,6 +1565,8 @@ static int hva_to_pfn_remapped(struct vm
- 	 */ 
- 	kvm_get_pfn(pfn);
- 
-+out:
-+	pte_unmap_unlock(ptep, ptl);
- 	*p_pfn = pfn;
- 	return 0;
- }
 
 
