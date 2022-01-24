@@ -2,51 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 619E1C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C83FC4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410619AbiAYA3j (ORCPT
+        id S3410701AbiAYA3s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54404 "EHLO
+        Mon, 24 Jan 2022 19:29:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455588AbiAXVfl (ORCPT
+        with ESMTP id S2363495AbiAXXoo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71388C05A18C;
-        Mon, 24 Jan 2022 12:22:39 -0800 (PST)
+        Mon, 24 Jan 2022 18:44:44 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17864C0FE687;
+        Mon, 24 Jan 2022 13:39:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 103D06091A;
-        Mon, 24 Jan 2022 20:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E75BDC340E5;
-        Mon, 24 Jan 2022 20:22:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D41FBB8121C;
+        Mon, 24 Jan 2022 21:39:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3EBAC340E4;
+        Mon, 24 Jan 2022 21:39:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055758;
-        bh=JBWxrTbYq5/vugCZArNJ5V02e0/pViZqPOffIdrvTGM=;
+        s=korg; t=1643060360;
+        bh=cg2dTilaFyJIJO06u5dnZECifYEUV5gg6BwU7cPzgHE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hcqBJlPnnLqeUp4jLTTv3QwZ6sElrUXSETp0Jf7PN5jjSiX1BNzmruuLIkpAun764
-         UjyYrRGgczgrbj0RXiaWrEdydNch1eL06Ol7ceiSqOam1reai0OEekxaADNKeYDTLz
-         IWDXIH37z16FscoZXd+5DoEL8i+8cwd8Za+IPWT4=
+        b=Zg7GN0UHCrQlsEqRSOHlv4qjZHLxyi2ec757OTfymuRcm30t4efvYEkaFVfCVLJ36
+         LGAsjQU2NHvStXwQCUG8s+M41ptqtuiO6+PtQL1zT3zkduUhNDKzWDjpR8BEC4elwc
+         c7MuUIHwPQdCioQZsy7eXcBzTwXaWk7ckuL/MSzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 223/846] rcu/exp: Mark current CPU as exp-QS in IPI loop second pass
-Date:   Mon, 24 Jan 2022 19:35:40 +0100
-Message-Id: <20220124184108.619065865@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.16 0922/1039] scsi: ufs: ufs-mediatek: Fix error checking in ufs_mtk_init_va09_pwr_ctrl()
+Date:   Mon, 24 Jan 2022 19:45:11 +0100
+Message-Id: <20220124184156.293502487@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -55,61 +49,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 81f6d49cce2d2fe507e3fddcc4a6db021d9c2e7b ]
+commit 3ba880a12df5aa4488c18281701b5b1bc3d4531a upstream.
 
-Expedited RCU grace periods invoke sync_rcu_exp_select_node_cpus(), which
-takes two passes over the leaf rcu_node structure's CPUs.  The first
-pass gathers up the current CPU and CPUs that are in dynticks idle mode.
-The workqueue will report a quiescent state on their behalf later.
-The second pass sends IPIs to the rest of the CPUs, but excludes the
-current CPU, incorrectly assuming it has been included in the first
-pass's list of CPUs.
+The function regulator_get() returns an error pointer. Use IS_ERR() to
+validate the return value.
 
-Unfortunately the current CPU may have changed between the first and
-second pass, due to the fact that the various rcu_node structures'
-->lock fields have been dropped, thus momentarily enabling preemption.
-This means that if the second pass's CPU was not on the first pass's
-list, it will be ignored completely.  There will be no IPI sent to
-it, and there will be no reporting of quiescent states on its behalf.
-Unfortunately, the expedited grace period will nevertheless be waiting
-for that CPU to report a quiescent state, but with that CPU having no
-reason to believe that such a report is needed.
-
-The result will be an expedited grace period stall.
-
-Fix this by no longer excluding the current CPU from consideration during
-the second pass.
-
-Fixes: b9ad4d6ed18e ("rcu: Avoid self-IPI in sync_rcu_exp_select_node_cpus()")
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Uladzislau Rezki <urezki@gmail.com>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Josh Triplett <josh@joshtriplett.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211222070930.9449-1-linmq006@gmail.com
+Fixes: cf137b3ea49a ("scsi: ufs-mediatek: Support VA09 regulator operations")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/rcu/tree_exp.h | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/scsi/ufs/ufs-mediatek.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 454b516ea566e..16f94118ca34b 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -387,6 +387,7 @@ retry_ipi:
- 			continue;
- 		}
- 		if (get_cpu() == cpu) {
-+			mask_ofl_test |= mask;
- 			put_cpu();
- 			continue;
- 		}
--- 
-2.34.1
-
+--- a/drivers/scsi/ufs/ufs-mediatek.c
++++ b/drivers/scsi/ufs/ufs-mediatek.c
+@@ -557,7 +557,7 @@ static void ufs_mtk_init_va09_pwr_ctrl(s
+ 	struct ufs_mtk_host *host = ufshcd_get_variant(hba);
+ 
+ 	host->reg_va09 = regulator_get(hba->dev, "va09");
+-	if (!host->reg_va09)
++	if (IS_ERR(host->reg_va09))
+ 		dev_info(hba->dev, "failed to get va09");
+ 	else
+ 		host->caps |= UFS_MTK_CAP_VA09_PWR_CTRL;
 
 
