@@ -2,97 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F562C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9532C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbiAXNOF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:14:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47260 "EHLO
+        id S234861AbiAXNOL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:14:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239609AbiAXNNw (ORCPT
+        with ESMTP id S229833AbiAXNOJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:13:52 -0500
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF12C061759;
-        Mon, 24 Jan 2022 05:13:51 -0800 (PST)
-Received: by mail-pj1-x1031.google.com with SMTP id g9-20020a17090a67c900b001b4f1d71e4fso16847465pjm.4;
-        Mon, 24 Jan 2022 05:13:51 -0800 (PST)
+        Mon, 24 Jan 2022 08:14:09 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26752C06173B;
+        Mon, 24 Jan 2022 05:14:09 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id s5so21228090ejx.2;
+        Mon, 24 Jan 2022 05:14:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SuD6sheATFuuLSHiFeUeKDBZFiRvmZlnh/SZkdpgISc=;
-        b=HseGslMxsGF82e3iqYEkb4BTLD/csJH/OgIC5HFuberMikfaDQOBTrzYNNfB9JqlID
-         PB1W2Er3/n2BtnIE9hoLUnmJK+ekPrk0GeIKaajV+aQxT0XgQbqBPKQI3um1na8nW7A4
-         97LKHB62w1blgmzSOLCCKY0dZ5KbHF3hjmbJYY9rK3GN1Jsf5yYnlNRmhFAdtYFVyA5t
-         Zf2dlVnwmV3UqH+Fm6ljGcUt4cWXwHhmbf22cbLq+LSBnr6/ltR3v/Qv76gdi+IGmNwB
-         NWiBubid9GCZ7Jj+WuqllkZzPRvWEvoG27ygtu7UscpbcKZrjmAlE4DxD75APjQeQ7so
-         Iq4A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ztKNOXqsYnv3mPaTYSeul9OsaQPxd0GOtreezP6Z464=;
+        b=aPh/ZfB2WE0ftAvP8aWmco8HHjLOoDhNR3oMdB+XduNWJT+Pb9Fe5BCkReL1NFg/Fh
+         JOCkEPQuB1QHe0mHdqSNUQyh9LQdoKkeDxYqVwcEl3/pHqVQMTOfAjAtC0mE2k8fS0cc
+         9VmbsV/P0mbP0Yu/rU352tLgwI7pR/9/CorK7bun+nG831CBceCrCgKv3OJV92g3swaD
+         5pYg9RON8NgbwR3vPwQMNe6f9s2jBD4i7EG8YmcxvbsNrtLaDOXkAiBX7HGrqa/53ler
+         kM9GLlcodBN+1caT+FlUHpIl7kvsftCIiYqW+SR7NRKHJH5r5Ygi2bT1YPEaAeXNHjn5
+         berw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SuD6sheATFuuLSHiFeUeKDBZFiRvmZlnh/SZkdpgISc=;
-        b=LXBAbigrIwkXPEkQ6eQaonlVmUxGk1tsWslBNWu7OSARoD96YOy2YF+9B7Gu9QCfKM
-         u7Gja+sBAGtYMdZPEgZxqKYJp/LG3BDQNKmS1XfMZ4Ntx6Rm8P02TjJPQog5Q9/yIqeo
-         LNK9nOw3vIfg0/ZT0BMwBaD4ow8CoEGecTmJdUzv57Tm2Wi1ldyp7CJkvFMzVirOEeLe
-         iuO0S3Qy447a2WeGPZlD3ThaBaJqg1qIv8DhRi6Hw/k9KO5rVC40PlvAOG/bDmQ3SsQX
-         UEK99Zcw26KO28akIKKLru1MniCKlkUor6Rfn4Gj8q3/iDNBdUI42NblDI296HavTlOT
-         PHrg==
-X-Gm-Message-State: AOAM530c6w4sLJEyitHnI1VjWSJtYeaL1WmroAHIUojkcjtjmjyEYSyA
-        Q1Exn6VEUhOA+yqVnENebetd997yTeXswWZl
-X-Google-Smtp-Source: ABdhPJxEQElMBY55AeZqCVCOFNii4gh3iaEeL/1pcOCdIZGIJkSOZaqbehpCnljKH3rlYpKmeh3YVA==
-X-Received: by 2002:a17:903:32c1:b0:14b:2d82:c05a with SMTP id i1-20020a17090332c100b0014b2d82c05amr10179670plr.55.1643030031319;
-        Mon, 24 Jan 2022 05:13:51 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id kk17sm4819342pjb.21.2022.01.24.05.13.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 05:13:51 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] power: supply: ab8500: Fix memory leak in ab8500_fg_sysfs_init
-Date:   Mon, 24 Jan 2022 13:13:46 +0000
-Message-Id: <20220124131346.12571-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ztKNOXqsYnv3mPaTYSeul9OsaQPxd0GOtreezP6Z464=;
+        b=lKzDCCTmNaaVpqnLnqXR7HFLOkWMFAMeouTTjBF7mZsSV+I3Ei2V2bzfbehxKSuacS
+         6OnXn/AWnKZ5gZ9y6VEKSHTlNy2SamQw+ZIwc9ulWKhD4+4V9hJYIguQLlS1cXOkq4Z6
+         hMTt1KiHUvGkfvqZc5Ch/Hdku+OIlUxtdNzdE4yGC+V7GwJ/2uwjunRvIv4WpHGBdSr9
+         oLB68d2QCIaRnQbbmGapeOK6K4TKAXBpzqbz9o3pqjIhIDjTG4rsfVv+Hnw4ddYfV2mg
+         E+d8oJi5MtLbodjyV0t5isuVmaWwu3RdarehmPw0c2X6DvLsKpY7acVr42da0Ipny7QC
+         l/LA==
+X-Gm-Message-State: AOAM531YdzS4IXfIRNISAEzmhL8DyzMJiWeqrsQCjo64EA7ZCe+IyU/+
+        njcI/qBIqqh1/4sGu7L1jUy7UN1IY9EFpC+NL+c=
+X-Google-Smtp-Source: ABdhPJxRDinQzNxBVqaPGOj/MDn6x4KGc725mg+vlfvFCsrzWIV0MhxBOK7suP+mIq/TsjD4HeYXjfjYlCLesFV29xQ=
+X-Received: by 2002:a17:906:3004:: with SMTP id 4mr11940180ejz.579.1643030047686;
+ Mon, 24 Jan 2022 05:14:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn> <20220124093912.2429190-5-Qing-wu.Li@leica-geosystems.com.cn>
+In-Reply-To: <20220124093912.2429190-5-Qing-wu.Li@leica-geosystems.com.cn>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 24 Jan 2022 15:12:27 +0200
+Message-ID: <CAHp75Vc9Ef4uZR505yRGm1vzMiZUEBp0Hdc9qs=BbiAwwEqLyw@mail.gmail.com>
+Subject: Re: [PATCH V1 4/6] iio: accel: sca3300: Add support for SCL3300
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()：
+On Mon, Jan 24, 2022 at 11:39 AM LI Qingwu
+<Qing-wu.Li@leica-geosystems.com.cn> wrote:
+>
+> Add support for Murata SCL3300, a 3-axis MEMS inclination.
+> same as SCA3300, it has accel and temperature output.
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+accelerometer
 
-Fix memory leak by calling kobject_put().
+> Datasheet link:
+> www.murata.com/en-us/products/sensor/inclinometer/overview/lineup/scl3300
+>
 
-Fixes: 8c0984e5a753 ("power: move power supply drivers to power/supply")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- drivers/power/supply/ab8500_fg.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+Make this a Datasheet: tag (change name and drop blank line(s) in the
+tag block).
 
-diff --git a/drivers/power/supply/ab8500_fg.c b/drivers/power/supply/ab8500_fg.c
-index 05fe9724ba50..57799a8079d4 100644
---- a/drivers/power/supply/ab8500_fg.c
-+++ b/drivers/power/supply/ab8500_fg.c
-@@ -2545,8 +2545,10 @@ static int ab8500_fg_sysfs_init(struct ab8500_fg *di)
- 	ret = kobject_init_and_add(&di->fg_kobject,
- 		&ab8500_fg_ktype,
- 		NULL, "battery");
--	if (ret < 0)
-+	if (ret < 0) {
-+		kobject_put(&di->fg_kobject);
- 		dev_err(di->dev, "failed to create sysfs entry\n");
-+	}
- 
- 	return ret;
- }
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+
+...
+
+> @@ -68,7 +68,6 @@ static const struct iio_enum sca3300_op_mode_enum = {
+>         .get = sca3300_get_op_mode,
+>         .set = sca3300_set_op_mode,
+>  };
+> -
+
+Stray change.
+
+...
+
+> +};
+> +
+> +
+
+One blank line is enough.
+
+...
+
+>  static const int sca3300_accel_scale[CHIP_CNT][OP_MOD_CNT][2] = {
+>         [CHIP_SCA3300] = {{0, 370}, {0, 741}, {0, 185}, {0, 185}},
+> +       [CHIP_SCL3300] = {{0, 167}, {0, 333}, {0, 83}, {0, 83}}
+
++ Comma.
+
+>  };
+
+...
+
+> +                       /*SCL3300 freq.tied to accel scale, not allowed to set separately.*/
+
+Missed spaces.
+
+...
+
+>         struct sca3300_data *data = iio_priv(indio_dev);
+> -
+
+This even checkpatch should complain of, besides being a stray change.
+
+>         switch (mask) {
+
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
