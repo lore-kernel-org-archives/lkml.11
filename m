@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E167C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 213BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453519AbiAXVaR (ORCPT
+        id S1453548AbiAXVaT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:30:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54160 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443770AbiAXU7H (ORCPT
+        Mon, 24 Jan 2022 16:30:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443056AbiAXU7O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:59:07 -0500
+        Mon, 24 Jan 2022 15:59:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E7CC04D625;
+        Mon, 24 Jan 2022 12:01:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9D10B81057;
-        Mon, 24 Jan 2022 20:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE3BC340E5;
-        Mon, 24 Jan 2022 20:59:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2FD1BB8123A;
+        Mon, 24 Jan 2022 20:01:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F1B2C340E5;
+        Mon, 24 Jan 2022 20:01:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057944;
-        bh=GEUWqZa4Mds9xpkPoeSkjkmS/DNRRSRnYjCMluj7qrE=;
+        s=korg; t=1643054477;
+        bh=RKSEmNaXGd0qqSaJBIwGtQiobulqLStSBkj1kyOlIzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YfEEV+jhElUuQ6XTgLJ7fnb4lTvM5h60mGcEXvb7GIEf1+zYrzCt14uQmqrd77eSi
-         PtCZSTQCYhAC5jFaIDPb1l3bsj4HGpIaznTyNRviX7D4cklm6L+SH1wK+HonDY/BXZ
-         edQtSyFQx5fmUMrd+ZAMUJKT7T5c68lgGdxWZnu8=
+        b=d5Rlr3Q7rf37Au/zHqCOVvn21ytUMqcNfO+pR+tm88aJPb0WZXrHgpROQRKX+jKX8
+         J+3w11LnBSykm/Ubz0wz8+YSFevfBK1gpI4Y/Q4wxnMZrSYMTUruM7sDsMxNlyYZko
+         Be4cE9LYJeqHxgZXUA8UZtF00+XlrE+46UniE33U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0131/1039] media: em28xx: fix memory leak in em28xx_init_dev
-Date:   Mon, 24 Jan 2022 19:32:00 +0100
-Message-Id: <20220124184129.565373621@linuxfoundation.org>
+        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Lukas Wunner <lukas@wunner.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 403/563] serial: pl010: Drop CR register reset on set_termios
+Date:   Mon, 24 Jan 2022 19:42:48 +0100
+Message-Id: <20220124184038.386658409@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,79 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
+[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
 
-In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
-to deallocate the media_dev allocated in the em28xx_media_device_init.
+pl010_set_termios() briefly resets the CR register to zero.
 
-Fix this by adding em28xx_unregister_media_device to free media_dev.
+Where does this register write come from?
 
-BTW, this patch is tested in my local syzkaller instance, and it can
-prevent the memory leak from occurring again.
+The PL010 driver's IRQ handler ambauart_int() originally modified the CR
+register without holding the port spinlock.  ambauart_set_termios() also
+modified that register.  To prevent concurrent read-modify-writes by the
+IRQ handler and to prevent transmission while changing baudrate,
+ambauart_set_termios() had to disable interrupts.  That is achieved by
+writing zero to the CR register.
 
-CC: Pavel Skripkin <paskripkin@gmail.com>
-Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+However in 2004 the PL010 driver was amended to acquire the port
+spinlock in the IRQ handler, obviating the need to disable interrupts in
+->set_termios():
+https://git.kernel.org/history/history/c/157c0342e591
+
+That rendered the CR register write obsolete.  Drop it.
+
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/tty/serial/amba-pl010.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index b207f34af5c6f..b451ce3cb169a 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -3630,8 +3630,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+index 3284f34e9dfe1..75d61e038a775 100644
+--- a/drivers/tty/serial/amba-pl010.c
++++ b/drivers/tty/serial/amba-pl010.c
+@@ -448,14 +448,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & CREAD) == 0)
+ 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
  
- 	if (dev->is_audio_only) {
- 		retval = em28xx_audio_setup(dev);
--		if (retval)
--			return -ENODEV;
-+		if (retval) {
-+			retval = -ENODEV;
-+			goto err_deinit_media;
-+		}
- 		em28xx_init_extension(dev);
+-	/* first, disable everything */
+ 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
  
- 		return 0;
-@@ -3650,7 +3652,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 		dev_err(&dev->intf->dev,
- 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
- 		       __func__, retval);
--		return retval;
-+		goto err_deinit_media;
- 	}
+ 	if (UART_ENABLE_MS(port, termios->c_cflag))
+ 		old_cr |= UART010_CR_MSIE;
  
- 	/* register i2c bus 1 */
-@@ -3666,9 +3668,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 				"%s: em28xx_i2c_register bus 1 - error [%d]!\n",
- 				__func__, retval);
- 
--			em28xx_i2c_unregister(dev, 0);
+-	writel(0, uap->port.membase + UART010_CR);
 -
--			return retval;
-+			goto err_unreg_i2c;
- 		}
- 	}
- 
-@@ -3676,6 +3676,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 	em28xx_card_setup(dev);
- 
- 	return 0;
-+
-+err_unreg_i2c:
-+	em28xx_i2c_unregister(dev, 0);
-+err_deinit_media:
-+	em28xx_unregister_media_device(dev);
-+	return retval;
- }
- 
- static int em28xx_duplicate_dev(struct em28xx *dev)
+ 	/* Set baud rate */
+ 	quot -= 1;
+ 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
 -- 
 2.34.1
 
