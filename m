@@ -2,122 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E55C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8352BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348447AbiAXT2i (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:28:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49500 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348651AbiAXTTX (ORCPT
+        id S236666AbiAXT2n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:28:43 -0500
+Received: from m228-4.mailgun.net ([159.135.228.4]:44881 "EHLO
+        m228-4.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348712AbiAXTTi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:19:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75CBC02B8CB;
-        Mon, 24 Jan 2022 11:07:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F2CDB81236;
-        Mon, 24 Jan 2022 19:07:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48929C340E5;
-        Mon, 24 Jan 2022 19:07:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051254;
-        bh=YeXAOZqsXJopt9g24xu3z88wjjco8btdyftcUw/InUg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rXFEViF9KwCrP66jovUtKLBE0mRdnZrCenfYzddrXsQK4Io5GXJWDfEjGznep1zeY
-         PiudWPgFT8j5xyuWXQskCRrF7qujax+75cJnXCzb4xcUpESdW7TFT3XZFdEXKbxWMA
-         4jPr0eKpNxSMAe6FutvjXlPNq/JG8ispSDIIrHTA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 102/186] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:42:57 +0100
-Message-Id: <20220124183940.395935956@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 14:19:38 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=michaelkloos.com; q=dns/txt;
+ s=k1; t=1643051978; h=Content-Transfer-Encoding: Content-Type:
+ In-Reply-To: From: References: Cc: To: Subject: MIME-Version: Date:
+ Message-ID: Sender; bh=RTodLktL3fNAjheW8U0upEQdJu2uLplUIyzBCEj09YA=; b=cF05KFg5tyH8uIlazoZiHqScEu8+sbt3Zq7skpmpqfiuevXd5HMfQjsCb4hhzy4LKhsK/XnJ
+ /4L9Js2zS2vkl8CHK9LcLbKoKTHeMMa2HYzkuZlktp3C8+TcrcXJHlyKhPVI+Lvy9cL8KCkm
+ BoCMbU78FAgQHfQMZS4NzHb1K5Y=
+X-Mailgun-Sending-Ip: 159.135.228.4
+X-Mailgun-Sid: WyI5NjYzNiIsICJsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnIiwgIjQ4Y2MwIl0=
+Received: from drop1.michaelkloos.com (drop1.michaelkloos.com
+ [67.205.190.89]) by smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
+ 61eefbb98a34df816bef9458 (version=TLS1.3, cipher=TLS_AES_128_GCM_SHA256);
+ Mon, 24 Jan 2022 19:19:21 GMT
+Sender: michael@michaelkloos.com
+Received: from [192.168.0.104] (cpe-173-88-115-50.columbus.res.rr.com [173.88.115.50])
+        by drop1.michaelkloos.com (Postfix) with ESMTPSA id 661DA40266;
+        Mon, 24 Jan 2022 19:19:20 +0000 (UTC)
+Message-ID: <fdbf6e1c-6ed1-bb82-1a56-f7188de7f83f@michaelkloos.com>
+Date:   Mon, 24 Jan 2022 14:19:18 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] Fixed: Misaligned memory access. Fixed pointer
+ comparison.
+Content-Language: en-US
+To:     David Laight <David.Laight@ACULAB.COM>,
+        "paul.walmsley@sifive.com" <paul.walmsley@sifive.com>,
+        "palmer@dabbelt.com" <palmer@dabbelt.com>,
+        "aou@eecs.berkeley.edu" <aou@eecs.berkeley.edu>
+Cc:     "linux-riscv@lists.infradead.org" <linux-riscv@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220123034518.3717116-1-michael@michaelkloos.com>
+ <4fa1c4bbf27242cf9835dde0abdc89d5@AcuMS.aculab.com>
+From:   "Michael T. Kloos" <michael@michaelkloos.com>
+In-Reply-To: <4fa1c4bbf27242cf9835dde0abdc89d5@AcuMS.aculab.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+> That may not be true.
+> On x86 the cost of misaligned accesses only just measurable.
+> It isn't even one clock per cache line for reads (eg ipcsum).
+I know that the Intel manuals still recommend alignment on x86.  I
+haven't tried to measure performance differences yet.
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+I think the issue here is that RISC-V is designed as a modular
+architecture.  Unlike x86, we don't know that misaligned accesses
+will or will not be supported.  I will grant you that if they are
+supported by hardware, it will probably be faster to let the hardware
+natively take care of it.  However, if the hardware doesn't support
+it, the kernel won't be compatible with that hardware.
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+Now this could be worked around by having the firmware emulate it.
+This is not specified in the RISC-V SBI spec.  So depending on this
+would mean that the Linux kernel needs additional support from the
+firmware than the bare SBI specifies.  The counter argument for this
+is that it is a hardware implementation detail and that the firmware
+should therefore handle the translation.  This is already the case
+for the time CSRs where the CSRs are implemented in memory rather
+than as CSRs.  However I don't think that this can be considered 
+the same thing as memory accesses, which in my opinion, are a much
+more common and primitive operation.  The RISC-V Privileged spec
+also lists the time CSRs with the associated CSR addresses.
+The CSRs provide needed special functionality that can not be
+achieved without specific driver support for alternative
+implementations.  I would consider memory accesses and the stuff
+controlled by CSRs to be in very different categories.  Memory 
+accesses are considered a basic part of a program, listed in the
+base rv32i implementation specs.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
+Firmware emulation would also be dramatically slower.  We are
+talking about trapping the exception, saving context, determining
+cause, checking permissions, emulating behavior, restoring context,
+and finally returning from the trap.  I would be strongly opposed to
+requiring this for misaligned memory accesses where the hardware
+doesn't support it.  It is likely that we are already dealing with
+slower, less capable hardware in that case anyway.  So I would not
+recommend adding the additional overhead.
 
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
+If people are strongly in favor of allowing native handing of
+misaligned memory accesses, a possible compromise is the addition
+of a CONFIG option such as "Allow Kernel Misaligned Memory Access",
+probably under the "Platform Type" section in menuconfig.  This
+could be enabled for hardware which supported it, turning on
+alternative code-paths that didn't care about alignment, allowing
+the hardware or firmware to handle it as needed.  I would
+recommend, at least until RISC-V hardware matures, this CONFIG
+option default to disabled.
 
-Fix this bug by adding a check of saa7146_vv_init().
+Anyone who has feedback on this, please let me know.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+> If the performance of misaligned copies ever matters it is probably
+> better to use:
+> 	*dst++ = src[0] >> n | src[1] << (64 - n);
+> for the body of the misaligned loop.
+> You can always read the aligned src[] even if outside the buffer.
+> So the only difficult part is writing the odd bytes
+> and getting 'n' and the direction of the shifts right!
+I had considered this.  I wondered if it would really be faster due
+to the additional instructions required on each iteration and avoided
+shifts due to the possible use of a barrel shifter vs a clocked shift
+register in hardware.  But you are probably correct.  It would
+probably still be faster.  Using that instead would also greatly
+simplify my code since I wouldn't need a bunch of different loops
+for each level of granularity.  I would just do it at the native
+XLEN size.  I'll start working on this change.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
+	Michael
 
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
+On 1/24/22 04:21, David Laight wrote:
 
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index cb71653a66694..908de2f768441 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -366,10 +366,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
- 
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
--- 
-2.34.1
-
-
-
+> From: michael@michaelkloos.com
+>> Sent: 23 January 2022 03:45
+>>
+>> Rewrote the riscv memmove() assembly implementation.  The
+>> previous implementation did not check memory alignment and it
+>> compared 2 pointers with a signed comparison.  The misaligned
+>> memory access would cause the kernel to crash on systems that
+>> did not emulate it in firmware and did not support it in hardware.
+>> Firmware emulation is slow and may not exist.  Additionally,
+>> hardware support may not exist and would likely still run slower
+>> than aligned accesses even if it did.
+> That may not be true.
+> On x86 the cost of misaligned accesses only just measurable.
+> It isn't even one clock per cache line for reads (eg ipcsum).
+>
+>> The RISC-V spec does not
+>> guarantee that support for misaligned memory accesses will exist.
+>> It should not be depended on.
+>>
+>> This patch now checks for the maximum granularity of co-alignment
+>> between the pointers and copies them with that, using single-byte
+>> copy for any unaligned data at their terminations.  It also now uses
+>> unsigned comparison for the pointers.
+> If the performance of misaligned copies ever matters it is probably
+> better to use:
+> 	*dst++ = src[0] >> n | src[1] << (64 - n);
+> for the body of the misaligned loop.
+> You can always read the aligned src[] even if outside the buffer.
+> So the only difficult part is writing the odd bytes
+> and getting 'n' and the direction of the shifts right!
+>
+> 	David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
+>
