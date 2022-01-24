@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCE8C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 478C1C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850944AbiAXXbW (ORCPT
+        id S1850878AbiAXXbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:31:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32770 "EHLO
+        Mon, 24 Jan 2022 18:31:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579217AbiAXWFM (ORCPT
+        with ESMTP id S1835803AbiAXWhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:05:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86CFC04590D;
-        Mon, 24 Jan 2022 12:42:21 -0800 (PST)
+        Mon, 24 Jan 2022 17:37:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE18C054844;
+        Mon, 24 Jan 2022 12:59:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F76DB8122A;
-        Mon, 24 Jan 2022 20:42:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55D26C340E5;
-        Mon, 24 Jan 2022 20:42:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E01761355;
+        Mon, 24 Jan 2022 20:59:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3196EC340E5;
+        Mon, 24 Jan 2022 20:59:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056938;
-        bh=Py0Utb8K/TKDOXRe9hLUxo0KxcgvtJEQobvTI9y/7YQ=;
+        s=korg; t=1643057947;
+        bh=RxIigBhFTeZ+GtzDVEchnUoTO75Wyk7sQHW98SGKpKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lR78Kk7arsWpcvrybCtCYStB1AMCmUqLzpTMCKxvvyzyXLW04KszrS0HY9K3pwJrS
-         QihQc0hl3UR12Iu9uFt3OybUU5T6nLoDMdZhf5b4VZesTnd6XngR+jfU6swd1/aI3G
-         DpfQ2cHyVWjfQxKAN+Wmb0QUv/9WVohlA/egiSyQ=
+        b=Ik06TuR3iEiaYNl9Yt+iGYlz3qaiCnxnl7splqYDFuM9TbL63KUKTOyXxvZIM30P2
+         Jx9pW0oWBfGZe1UDdt0Q9BVTWe833lrTe65aOnbSEViD2qARMzPNbGF95K1qTRI7/N
+         wyVL90yDGsV2VcECCqmYOK6tuLmWsbsj9lMIE0kk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 616/846] net/mlx5e: Unblock setting vid 0 for VF in case PF isnt eswitch manager
-Date:   Mon, 24 Jan 2022 19:42:13 +0100
-Message-Id: <20220124184122.296054536@linuxfoundation.org>
+Subject: [PATCH 5.16 0132/1039] media: aspeed: Update signal status immediately to ensure sane hw state
+Date:   Mon, 24 Jan 2022 19:32:01 +0100
+Message-Id: <20220124184129.596914928@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +52,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Jammy Huang <jammy_huang@aspeedtech.com>
 
-[ Upstream commit 7846665d3504812acaebf920d1141851379a7f37 ]
+[ Upstream commit af6d1bde395cac174ee71adcd3fa43f6435c7206 ]
 
-When using libvirt to passthrough VF to VM it will always set the VF vlan
-to 0 even if user didn’t request it, this will cause libvirt to fail to
-boot in case the PF isn't eswitch owner.
+If res-chg, VE_INTERRUPT_MODE_DETECT_WD irq will be raised. But
+v4l2_input_status won't be updated to no-signal immediately until
+aspeed_video_get_resolution() in aspeed_video_resolution_work().
 
-Example of such case is the DPU host PF which isn't eswitch manager, so
-any attempt to passthrough VF of it using libvirt will fail.
+During the period of time, aspeed_video_start_frame() could be called
+because it doesn't know signal becomes unstable now. If it goes with
+aspeed_video_init_regs() of aspeed_video_irq_res_change()
+simultaneously, it will mess up hw state.
 
-Fix it by not returning error in case set VF vlan is called with vid 0.
+To fix this problem, v4l2_input_status is updated to no-signal
+immediately for VE_INTERRUPT_MODE_DETECT_WD irq.
 
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/aspeed-video.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
-index df277a6cddc0b..0c4c743ca31e1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
-@@ -431,7 +431,7 @@ int mlx5_eswitch_set_vport_vlan(struct mlx5_eswitch *esw,
- 	int err = 0;
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 136383ad0e97c..7a24daf7165a4 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -595,6 +595,8 @@ static void aspeed_video_irq_res_change(struct aspeed_video *video, ulong delay)
+ 	set_bit(VIDEO_RES_CHANGE, &video->flags);
+ 	clear_bit(VIDEO_FRAME_INPRG, &video->flags);
  
- 	if (!mlx5_esw_allowed(esw))
--		return -EPERM;
-+		return vlan ? -EPERM : 0;
++	video->v4l2_input_status = V4L2_IN_ST_NO_SIGNAL;
++
+ 	aspeed_video_off(video);
+ 	aspeed_video_bufs_done(video, VB2_BUF_STATE_ERROR);
  
- 	if (vlan || qos)
- 		set_flags = SET_VLAN_STRIP | SET_VLAN_INSERT;
+@@ -1375,7 +1377,6 @@ static void aspeed_video_resolution_work(struct work_struct *work)
+ 	struct delayed_work *dwork = to_delayed_work(work);
+ 	struct aspeed_video *video = container_of(dwork, struct aspeed_video,
+ 						  res_work);
+-	u32 input_status = video->v4l2_input_status;
+ 
+ 	aspeed_video_on(video);
+ 
+@@ -1388,8 +1389,7 @@ static void aspeed_video_resolution_work(struct work_struct *work)
+ 	aspeed_video_get_resolution(video);
+ 
+ 	if (video->detected_timings.width != video->active_timings.width ||
+-	    video->detected_timings.height != video->active_timings.height ||
+-	    input_status != video->v4l2_input_status) {
++	    video->detected_timings.height != video->active_timings.height) {
+ 		static const struct v4l2_event ev = {
+ 			.type = V4L2_EVENT_SOURCE_CHANGE,
+ 			.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION,
 -- 
 2.34.1
 
