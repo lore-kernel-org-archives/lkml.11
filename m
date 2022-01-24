@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFFDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F6EC4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838564AbiAXWqu (ORCPT
+        id S1838653AbiAXWrD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357691AbiAXVhM (ORCPT
+        Mon, 24 Jan 2022 17:47:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55434 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351335AbiAXVhL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE198C0BD119;
-        Mon, 24 Jan 2022 12:23:13 -0800 (PST)
+        Mon, 24 Jan 2022 16:37:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B39661500;
-        Mon, 24 Jan 2022 20:23:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F9F5C340E5;
-        Mon, 24 Jan 2022 20:23:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C6EC614CB;
+        Mon, 24 Jan 2022 21:37:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77EC7C340E4;
+        Mon, 24 Jan 2022 21:37:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055793;
-        bh=dkmUFr49CybcD04y+WFJD6jn5JBcCH1bqnANrKf9inE=;
+        s=korg; t=1643060228;
+        bh=6NOPhziuYypkTM6BA48wy+IPkpY4HrxLprlwRYabKag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PAgZLXzdSRPUQvCiJaQmptN+6LaVBFzZMGEIN8mM1RM3XUUa6dQiqbDPBxyxYLC9S
-         0vb6SxcfnDSZ18m+LYDmgHA/bsYxNP38nCUhi5ic69ES413AlF/gk/mqybpZJmpZy6
-         Otjohw0Q+gpfBLLIrBjWJvxEIjK7frt8R5Z/Mnnk=
+        b=2s8EQ5tDgKINW0xkfXCgv9EKE5NzrGTUKVIFw5i1C5cHEwUA0RD6dIIGznK0XgddG
+         mlBZOw/k1z2hRLL6wv9zZhwECQK03C+mEA9VxPAZeZlv1liMm7xip3YVPFdT4G/I6J
+         3IXKt3hs2VsfOy17KRRxJNMcPh7y/7ezcbXmV1To=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        rtl8821cerfe2 <rtl8821cerfe2@protonmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 268/846] rtw88: add quirk to disable pci caps on HP 250 G7 Notebook PC
-Date:   Mon, 24 Jan 2022 19:36:25 +0100
-Message-Id: <20220124184110.179156305@linuxfoundation.org>
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.16 0881/1039] xfrm: fix dflt policy check when there is no policy configured
+Date:   Mon, 24 Jan 2022 19:44:30 +0100
+Message-Id: <20220124184154.909528381@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,44 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit c81edb8dddaa36c4defa26240cc19127f147283f ]
+commit ec3bb890817e4398f2d46e12e2e205495b116be9 upstream.
 
-8821CE causes random freezes on HP 250 G7 Notebook PC. Add a quirk
-to disable pci ASPM capability.
+When there is no policy configured on the system, the default policy is
+checked in xfrm_route_forward. However, it was done with the wrong
+direction (XFRM_POLICY_FWD instead of XFRM_POLICY_OUT).
+The default policy for XFRM_POLICY_FWD was checked just before, with a call
+to xfrm[46]_policy_check().
 
-Reported-by: rtl8821cerfe2 <rtl8821cerfe2@protonmail.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211119052437.8671-1-pkshih@realtek.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+CC: stable@vger.kernel.org
+Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/realtek/rtw88/pci.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ include/net/xfrm.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index a7a6ebfaa203c..3b367c9085eba 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -1738,6 +1738,15 @@ static const struct dmi_system_id rtw88_pci_quirks[] = {
- 		},
- 		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
- 	},
-+	{
-+		.callback = disable_pci_caps,
-+		.ident = "HP HP 250 G7 Notebook PC",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
-+			DMI_MATCH(DMI_PRODUCT_NAME, "HP 250 G7 Notebook PC"),
-+		},
-+		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
-+	},
- 	{}
- };
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1167,7 +1167,7 @@ static inline int xfrm_route_forward(str
+ {
+ 	struct net *net = dev_net(skb->dev);
  
--- 
-2.34.1
-
+-	if (xfrm_default_allow(net, XFRM_POLICY_FWD))
++	if (xfrm_default_allow(net, XFRM_POLICY_OUT))
+ 		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
+ 			(skb_dst(skb)->flags & DST_NOXFRM) ||
+ 			__xfrm_route_forward(skb, family);
 
 
