@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E4D4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366350AbiAXXwl (ORCPT
+        id S2366367AbiAXXwo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
+        Mon, 24 Jan 2022 18:52:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845840AbiAXXNm (ORCPT
+        with ESMTP id S1845911AbiAXXNz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:13:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E6CC067A67;
-        Mon, 24 Jan 2022 13:19:36 -0800 (PST)
+        Mon, 24 Jan 2022 18:13:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C482C067A71;
+        Mon, 24 Jan 2022 13:19:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DF9B4614BC;
-        Mon, 24 Jan 2022 21:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC714C340E4;
-        Mon, 24 Jan 2022 21:19:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECA06B80FA1;
+        Mon, 24 Jan 2022 21:19:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A26C340E4;
+        Mon, 24 Jan 2022 21:19:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059175;
-        bh=uDbfPJ73HUWqhPHuTRXhY7UbI0yEEfy4ihntlu9sniM=;
+        s=korg; t=1643059196;
+        bh=4oYtsRdFJt3wVgx1zVbt/5z4Ff6BZH8Q/KvrbYGrPQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ne6N91lVdJ+FKqVi76IqA/+o+2xZ4VABOU5IcDx9e6kkL+vruqxziXi3giVXZmmuK
-         TPyl6yBXtzFDOwKoBT/F7LHxhr5waw1EBb6e/DMMoCW84hwSIvUni3pLXnTxPnQZm8
-         YEP7MFwNAaMRP4vkaczSsnfb30cxprNVtO9Am7eY=
+        b=ytk/ZkDHJDbflDRDf2bJqNcFzit6MO/bEePrWIzkrmq+o0tSSGo4eE+wSQYldBVfX
+         aAyfZ398kfEMEOUSf1vg989oK+JD6y0SfEvxdRKhDVnFLdWdzYv7YIwPU5ENTKSgxj
+         p7BxQ+HO1bpB1OEmMfA+i6vzm3k0q8rtgnZ5hBts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
-        Stephen Boyd <sboyd@kernel.org>,
+        stable@vger.kernel.org, Jassi Brar <jassisinghbrar@gmail.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Jassi Brar <jaswinder.singh@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0529/1039] clk: bm1880: remove kfrees on static allocations
-Date:   Mon, 24 Jan 2022 19:38:38 +0100
-Message-Id: <20220124184143.068195143@linuxfoundation.org>
+Subject: [PATCH 5.16 0535/1039] mailbox: pcc: Avoid using the uninitialized variable dev
+Date:   Mon, 24 Jan 2022 19:38:44 +0100
+Message-Id: <20220124184143.265198128@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,82 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+From: Sudeep Holla <sudeep.holla@arm.com>
 
-[ Upstream commit c861c1be3897845313a0df47804b1db37c7052e1 ]
+[ Upstream commit 960c4056aadcf61983f8eaac159927a052f8cf01 ]
 
-bm1880_clk_unregister_pll & bm1880_clk_unregister_div both try to
-free statically allocated variables, so remove those kfrees.
+Smatch static checker warns:
 
-For example, if we take L703 kfree(div_hw):
-- div_hw is a bm1880_div_hw_clock pointer
-- in bm1880_clk_register_plls this is pointed to an element of arg1:
-  struct bm1880_div_hw_clock *clks
-- in the probe, where bm1880_clk_register_plls is called arg1 is
-  bm1880_div_clks, defined on L371:
-  static struct bm1880_div_hw_clock bm1880_div_clks[]
+  |  drivers/mailbox/pcc.c:292 pcc_mbox_request_channel()
+  |  error: uninitialized symbol 'dev'.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Fixes: 1ab4601da55b ("clk: Add common clock driver for BM1880 SoC")
-Link: https://lore.kernel.org/r/20211223154244.1024062-1-conor.dooley@microchip.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Fix the same by using pr_err instead of dev_err as the variable 'dev'
+is uninitialized at that stage.
+
+Fixes: ce028702ddbc ("mailbox: pcc: Move bulk of PCCT parsing into pcc_mbox_probe")
+Cc: Jassi Brar <jassisinghbrar@gmail.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
+Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/clk-bm1880.c | 20 ++------------------
- 1 file changed, 2 insertions(+), 18 deletions(-)
+ drivers/mailbox/pcc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/clk-bm1880.c b/drivers/clk/clk-bm1880.c
-index e6d6599d310a1..fad78a22218e8 100644
---- a/drivers/clk/clk-bm1880.c
-+++ b/drivers/clk/clk-bm1880.c
-@@ -522,14 +522,6 @@ static struct clk_hw *bm1880_clk_register_pll(struct bm1880_pll_hw_clock *pll_cl
- 	return hw;
- }
- 
--static void bm1880_clk_unregister_pll(struct clk_hw *hw)
--{
--	struct bm1880_pll_hw_clock *pll_hw = to_bm1880_pll_clk(hw);
--
--	clk_hw_unregister(hw);
--	kfree(pll_hw);
--}
--
- static int bm1880_clk_register_plls(struct bm1880_pll_hw_clock *clks,
- 				    int num_clks,
- 				    struct bm1880_clock_data *data)
-@@ -555,7 +547,7 @@ static int bm1880_clk_register_plls(struct bm1880_pll_hw_clock *clks,
- 
- err_clk:
- 	while (i--)
--		bm1880_clk_unregister_pll(data->hw_data.hws[clks[i].pll.id]);
-+		clk_hw_unregister(data->hw_data.hws[clks[i].pll.id]);
- 
- 	return PTR_ERR(hw);
- }
-@@ -695,14 +687,6 @@ static struct clk_hw *bm1880_clk_register_div(struct bm1880_div_hw_clock *div_cl
- 	return hw;
- }
- 
--static void bm1880_clk_unregister_div(struct clk_hw *hw)
--{
--	struct bm1880_div_hw_clock *div_hw = to_bm1880_div_clk(hw);
--
--	clk_hw_unregister(hw);
--	kfree(div_hw);
--}
--
- static int bm1880_clk_register_divs(struct bm1880_div_hw_clock *clks,
- 				    int num_clks,
- 				    struct bm1880_clock_data *data)
-@@ -729,7 +713,7 @@ static int bm1880_clk_register_divs(struct bm1880_div_hw_clock *clks,
- 
- err_clk:
- 	while (i--)
--		bm1880_clk_unregister_div(data->hw_data.hws[clks[i].div.id]);
-+		clk_hw_unregister(data->hw_data.hws[clks[i].div.id]);
- 
- 	return PTR_ERR(hw);
- }
+diff --git a/drivers/mailbox/pcc.c b/drivers/mailbox/pcc.c
+index 887a3704c12ec..e0a1ab3861f0d 100644
+--- a/drivers/mailbox/pcc.c
++++ b/drivers/mailbox/pcc.c
+@@ -289,7 +289,7 @@ pcc_mbox_request_channel(struct mbox_client *cl, int subspace_id)
+ 	pchan = chan_info + subspace_id;
+ 	chan = pchan->chan.mchan;
+ 	if (IS_ERR(chan) || chan->cl) {
+-		dev_err(dev, "Channel not found for idx: %d\n", subspace_id);
++		pr_err("Channel not found for idx: %d\n", subspace_id);
+ 		return ERR_PTR(-EBUSY);
+ 	}
+ 	dev = chan->mbox->dev;
 -- 
 2.34.1
 
