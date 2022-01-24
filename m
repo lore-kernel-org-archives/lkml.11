@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50068C3526E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82132C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:17:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352584AbiAXVQp (ORCPT
+        id S1449781AbiAXVRB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:16:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43910 "EHLO
+        Mon, 24 Jan 2022 16:17:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43976 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392005AbiAXUuO (ORCPT
+        with ESMTP id S1392046AbiAXUuU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:50:14 -0500
+        Mon, 24 Jan 2022 15:50:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6DBC60C41;
-        Mon, 24 Jan 2022 20:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AE71C340E5;
-        Mon, 24 Jan 2022 20:50:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA50160C39;
+        Mon, 24 Jan 2022 20:50:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFA97C340E5;
+        Mon, 24 Jan 2022 20:50:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057413;
-        bh=Gl0jy4PB5R5wa6o52whfL1Em2AKbbEFdXHfbPfhrtME=;
+        s=korg; t=1643057419;
+        bh=EtWA7L7BqdpMoJktY/5B7XDbMJPG7DdHQWCd5GNvgoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yN+G4nPELe+jkSEmjxDGwGscQ4xVy4eyEZD8AStvoOFCPjYPCOhEM2bS+UsMJUsrP
-         +ygghXa2BuN1LDzqul0emArPxtSl4tQoRg4VrVi+rfYkyRnjGPyJPJkm1+j9CRF7QG
-         WEv6SDryoog6usWxqZjRCF+SSl6FxVXuPOaKJ/bA=
+        b=NymyGXlv0H4tCYr1C77KT2o76vAhXqrw1Sc5CCOFErtu5jMf2dIUvEbtva1z0f89l
+         w85dLjn3hF3jioWUbL8yr25ouyU51d5yR6g5nJ2HqiWeAzlVuTCclTNPX3k4WZL5pI
+         oO/GxYSZVWSj0TRqQ7wkHqgHBl3mCET4qAxjoVzY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.15 805/846] virtio_ring: mark ring unused on error
-Date:   Mon, 24 Jan 2022 19:45:22 +0100
-Message-Id: <20220124184128.705167203@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+Subject: [PATCH 5.15 789/846] gpio: idt3243x: Fix IRQ check in idt_gpio_probe
+Date:   Mon, 24 Jan 2022 19:45:06 +0100
+Message-Id: <20220124184128.183129646@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,38 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael S. Tsirkin <mst@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 1861ba626ae9b98136f3e504208cdef6b29cd3ec upstream.
+commit 30fee1d7462a446ade399c0819717a830cbdca69 upstream.
 
-A recently added error path does not mark ring unused when exiting on
-OOM, which will lead to BUG on the next entry in debug builds.
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-TODO: refactor code so we have START_USE and END_USE in the same function.
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Fixes: fc6d70f40b3d ("virtio_ring: check desc == NULL when using indirect with packed")
-Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
-Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Fix the check of return value to catch errors correctly.
+
+Fixes: 4195926aedca ("gpio: Add support for IDT 79RC3243x GPIO controller")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/virtio/virtio_ring.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpio/gpio-idt3243x.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/virtio/virtio_ring.c
-+++ b/drivers/virtio/virtio_ring.c
-@@ -1197,8 +1197,10 @@ static inline int virtqueue_add_packed(s
- 	if (virtqueue_use_indirect(_vq, total_sg)) {
- 		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
- 						    in_sgs, data, gfp);
--		if (err != -ENOMEM)
-+		if (err != -ENOMEM) {
-+			END_USE(vq);
- 			return err;
-+		}
+--- a/drivers/gpio/gpio-idt3243x.c
++++ b/drivers/gpio/gpio-idt3243x.c
+@@ -164,8 +164,8 @@ static int idt_gpio_probe(struct platfor
+ 			return PTR_ERR(ctrl->pic);
  
- 		/* fall back on direct */
- 	}
+ 		parent_irq = platform_get_irq(pdev, 0);
+-		if (!parent_irq)
+-			return -EINVAL;
++		if (parent_irq < 0)
++			return parent_irq;
+ 
+ 		girq = &ctrl->gc.irq;
+ 		girq->chip = &idt_gpio_irqchip;
 
 
