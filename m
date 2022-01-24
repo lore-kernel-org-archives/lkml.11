@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D1FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67B9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1312566AbiAYCn0 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:43:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387488AbiAXUgw (ORCPT
+        id S236473AbiAYCn7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:43:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60962 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387511AbiAXUgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:52 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87A9AC061796;
-        Mon, 24 Jan 2022 11:49:43 -0800 (PST)
+        Mon, 24 Jan 2022 15:36:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4F6F4B811F9;
-        Mon, 24 Jan 2022 19:49:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 766B8C340E5;
-        Mon, 24 Jan 2022 19:49:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D44361546;
+        Mon, 24 Jan 2022 20:36:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D811C340E5;
+        Mon, 24 Jan 2022 20:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053781;
-        bh=ipc7IAl6/w4aJnjz2NcJSJkZF0EoOSK7yODQSB9i+8k=;
+        s=korg; t=1643056612;
+        bh=AzZzTaPLBytSIFpEEogcfchQ2/fux3GJjwxbAzq4ws8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WDs71H1Uvvk2ECfvxaTmYQ+xYe24cC6J7gpDmey41bITqFKwSDACfjyzTHdgPBVao
-         8hYJED8IdtU8PIcV1T6bppJt3rI/A4t+Ie4rZwXqBUK7Tnj7m4RXhOX+EGBy3rxXKk
-         C+87Os4UiTDmdCzF5tckbB9/gxNjwKFueSxNnDyI=
+        b=rjZxGvOd1ZXemvcsA8o2yQ/Jc9CZuY4IpThSb/e1wnnyChXqek1zsSZoELyQ9Glks
+         EFlY6MPvkVrE4Qk0VguoLvHtYqcy/4QnTgKI2D6teY0xBpMS3NzJc53noGY332bSJD
+         tHaTMoB80UpHtSnr74ZBJY5jNJ1RBsPc+ClVAMdI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Schlabbach <robert_s@gmx.net>,
+        stable@vger.kernel.org,
+        Mansur Alisha Shaik <mansur@codeaurora.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 143/563] media: si2157: Fix "warm" tuner state detection
-Date:   Mon, 24 Jan 2022 19:38:28 +0100
-Message-Id: <20220124184029.349318252@linuxfoundation.org>
+Subject: [PATCH 5.15 509/846] media: venus: avoid calling core_clk_setrate() concurrently during concurrent video sessions
+Date:   Mon, 24 Jan 2022 19:40:26 +0100
+Message-Id: <20220124184118.583654172@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,59 +48,207 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Schlabbach <robert_s@gmx.net>
+From: Mansur Alisha Shaik <mansur@codeaurora.org>
 
-[ Upstream commit a6441ea29cb2c9314654e093a1cd8020b9b851c8 ]
+[ Upstream commit 91f2b7d269e5c885c38c7ffa261f5276bd42f907 ]
 
-Commit e955f959ac52 ("media: si2157: Better check for running tuner in
-init") completely broke the "warm" tuner detection of the si2157 driver
-due to a simple endian error: The Si2157 CRYSTAL_TRIM property code is
-0x0402 and needs to be transmitted LSB first. However, it was inserted
-MSB first, causing the warm detection to always fail and spam the kernel
-log with tuner initialization messages each time the DVB frontend
-device was closed and reopened:
+In existing implementation, core_clk_setrate() is getting called
+concurrently in concurrent video sessions. Before the previous call to
+core_clk_setrate returns, new call to core_clk_setrate is invoked from
+another video session running concurrently. This results in latest
+calculated frequency being set (higher/lower) instead of actual frequency
+required for that video session. It also results in stability crashes
+mention below. These resources are specific to video core, hence keeping
+under core lock would ensure that they are estimated for all running video
+sessions and called once for the video core.
 
-[  312.215682] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  312.264334] si2157 16-0060: firmware version: 3.0.5
-[  342.248593] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  342.295743] si2157 16-0060: firmware version: 3.0.5
-[  372.328574] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  372.385035] si2157 16-0060: firmware version: 3.0.5
+Crash logs:
 
-Also, the reinitializations were observed disturb _other_ tuners on
-multi-tuner cards such as the Hauppauge WinTV-QuadHD, leading to missed
-or errored packets when one of the other DVB frontend devices on that
-card was opened.
+[    1.900089] WARNING: CPU: 4 PID: 1 at drivers/opp/debugfs.c:33 opp_debug_remove_one+0x2c/0x48
+[    1.908493] Modules linked in:
+[    1.911524] CPU: 4 PID: 1 Comm: swapper/0 Not tainted 5.10.67 #35 f8edb8c30cf2dd6838495dd9ef9be47af7f5f60c
+[    1.921036] Hardware name: Qualcomm Technologies, Inc. sc7280 IDP SKU2 platform (DT)
+[    1.928673] pstate: 60800009 (nZCv daif -PAN +UAO -TCO BTYPE=--)
+[    1.934608] pc : opp_debug_remove_one+0x2c/0x48
+[    1.939080] lr : opp_debug_remove_one+0x2c/0x48
+[    1.943560] sp : ffffffc011d7b7f0
+[    1.946836] pmr_save: 000000e0
+[    1.949854] x29: ffffffc011d7b7f0 x28: ffffffc010733bbc
+[    1.955104] x27: ffffffc010733ba8 x26: ffffff8083cedd00
+[    1.960355] x25: 0000000000000001 x24: 0000000000000000
+[    1.965603] x23: ffffff8083cc2878 x22: ffffff8083ceb900
+[    1.970852] x21: ffffff8083ceb910 x20: ffffff8083cc2800
+[    1.976101] x19: ffffff8083ceb900 x18: 00000000ffff0a10
+[    1.981352] x17: ffffff80837a5620 x16: 00000000000000ec
+[    1.986601] x15: ffffffc010519ad4 x14: 0000000000000003
+[    1.991849] x13: 0000000000000004 x12: 0000000000000001
+[    1.997100] x11: c0000000ffffdfff x10: 00000000ffffffff
+[    2.002348] x9 : d2627c580300dc00 x8 : d2627c580300dc00
+[    2.007596] x7 : 0720072007200720 x6 : ffffff80802ecf00
+[    2.012845] x5 : 0000000000190004 x4 : 0000000000000000
+[    2.018094] x3 : ffffffc011d7b478 x2 : ffffffc011d7b480
+[    2.023343] x1 : 00000000ffffdfff x0 : 0000000000000017
+[    2.028594] Call trace:
+[    2.031022]  opp_debug_remove_one+0x2c/0x48
+[    2.035160]  dev_pm_opp_put+0x94/0xb0
+[    2.038780]  _opp_remove_all+0x7c/0xc8
+[    2.042486]  _opp_remove_all_static+0x54/0x7c
+[    2.046796]  dev_pm_opp_remove_table+0x74/0x98
+[    2.051183]  devm_pm_opp_of_table_release+0x18/0x24
+[    2.056001]  devm_action_release+0x1c/0x28
+[    2.060053]  release_nodes+0x23c/0x2b8
+[    2.063760]  devres_release_group+0xcc/0xd0
+[    2.067900]  component_bind+0xac/0x168
+[    2.071608]  component_bind_all+0x98/0x124
+[    2.075664]  msm_drm_bind+0x1e8/0x678
+[    2.079287]  try_to_bring_up_master+0x60/0x134
+[    2.083674]  component_master_add_with_match+0xd8/0x120
+[    2.088834]  msm_pdev_probe+0x20c/0x2a0
+[    2.092629]  platform_drv_probe+0x9c/0xbc
+[    2.096598]  really_probe+0x11c/0x46c
+[    2.100217]  driver_probe_device+0x8c/0xf0
+[    2.104270]  device_driver_attach+0x54/0x78
+[    2.108407]  __driver_attach+0x48/0x148
+[    2.112201]  bus_for_each_dev+0x88/0xd4
+[    2.115998]  driver_attach+0x2c/0x38
+[    2.119534]  bus_add_driver+0x10c/0x200
+[    2.123330]  driver_register+0x6c/0x104
+[    2.127122]  __platform_driver_register+0x4c/0x58
+[    2.131767]  msm_drm_register+0x6c/0x70
+[    2.135560]  do_one_initcall+0x64/0x23c
+[    2.139357]  do_initcall_level+0xac/0x15c
+[    2.143321]  do_initcalls+0x5c/0x9c
+[    2.146778]  do_basic_setup+0x2c/0x38
+[    2.150401]  kernel_init_freeable+0xf8/0x15c
+[    2.154622]  kernel_init+0x1c/0x11c
+[    2.158079]  ret_from_fork+0x10/0x30
+[    2.161615] ---[ end trace a2cc45a0f784b212 ]---
 
-Fix the order of the property code bytes to make the warm detection work
-again, also reducing the tuner initialization message in the kernel log
-to once per power-on, as well as fixing the interference with other
-tuners.
+[    2.166272] Removing OPP: 300000000
 
-Link: https://lore.kernel.org/linux-media/trinity-2a86eb9d-6264-4387-95e1-ba7b79a4050f-1638392923493@3c-app-gmx-bap03
-
-Fixes: e955f959ac52 ("media: si2157: Better check for running tuner in init")
-Reported-by: Robert Schlabbach <robert_s@gmx.net>
-Signed-off-by: Robert Schlabbach <robert_s@gmx.net>
+Signed-off-by: Mansur Alisha Shaik <mansur@codeaurora.org>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/tuners/si2157.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../media/platform/qcom/venus/pm_helpers.c    | 28 +++++++++----------
+ 1 file changed, 14 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/media/tuners/si2157.c b/drivers/media/tuners/si2157.c
-index fefb2625f6558..75ddf7ed1faff 100644
---- a/drivers/media/tuners/si2157.c
-+++ b/drivers/media/tuners/si2157.c
-@@ -90,7 +90,7 @@ static int si2157_init(struct dvb_frontend *fe)
- 	dev_dbg(&client->dev, "\n");
+diff --git a/drivers/media/platform/qcom/venus/pm_helpers.c b/drivers/media/platform/qcom/venus/pm_helpers.c
+index d382872bc8a08..a591dd315ebcc 100644
+--- a/drivers/media/platform/qcom/venus/pm_helpers.c
++++ b/drivers/media/platform/qcom/venus/pm_helpers.c
+@@ -163,14 +163,12 @@ static u32 load_per_type(struct venus_core *core, u32 session_type)
+ 	struct venus_inst *inst = NULL;
+ 	u32 mbs_per_sec = 0;
  
- 	/* Try to get Xtal trim property, to verify tuner still running */
--	memcpy(cmd.args, "\x15\x00\x04\x02", 4);
-+	memcpy(cmd.args, "\x15\x00\x02\x04", 4);
- 	cmd.wlen = 4;
- 	cmd.rlen = 4;
- 	ret = si2157_cmd_execute(client, &cmd);
+-	mutex_lock(&core->lock);
+ 	list_for_each_entry(inst, &core->instances, list) {
+ 		if (inst->session_type != session_type)
+ 			continue;
+ 
+ 		mbs_per_sec += load_per_instance(inst);
+ 	}
+-	mutex_unlock(&core->lock);
+ 
+ 	return mbs_per_sec;
+ }
+@@ -219,14 +217,12 @@ static int load_scale_bw(struct venus_core *core)
+ 	struct venus_inst *inst = NULL;
+ 	u32 mbs_per_sec, avg, peak, total_avg = 0, total_peak = 0;
+ 
+-	mutex_lock(&core->lock);
+ 	list_for_each_entry(inst, &core->instances, list) {
+ 		mbs_per_sec = load_per_instance(inst);
+ 		mbs_to_bw(inst, mbs_per_sec, &avg, &peak);
+ 		total_avg += avg;
+ 		total_peak += peak;
+ 	}
+-	mutex_unlock(&core->lock);
+ 
+ 	/*
+ 	 * keep minimum bandwidth vote for "video-mem" path,
+@@ -253,8 +249,9 @@ static int load_scale_v1(struct venus_inst *inst)
+ 	struct device *dev = core->dev;
+ 	u32 mbs_per_sec;
+ 	unsigned int i;
+-	int ret;
++	int ret = 0;
+ 
++	mutex_lock(&core->lock);
+ 	mbs_per_sec = load_per_type(core, VIDC_SESSION_TYPE_ENC) +
+ 		      load_per_type(core, VIDC_SESSION_TYPE_DEC);
+ 
+@@ -279,17 +276,19 @@ set_freq:
+ 	if (ret) {
+ 		dev_err(dev, "failed to set clock rate %lu (%d)\n",
+ 			freq, ret);
+-		return ret;
++		goto exit;
+ 	}
+ 
+ 	ret = load_scale_bw(core);
+ 	if (ret) {
+ 		dev_err(dev, "failed to set bandwidth (%d)\n",
+ 			ret);
+-		return ret;
++		goto exit;
+ 	}
+ 
+-	return 0;
++exit:
++	mutex_unlock(&core->lock);
++	return ret;
+ }
+ 
+ static int core_get_v1(struct venus_core *core)
+@@ -1116,13 +1115,13 @@ static int load_scale_v4(struct venus_inst *inst)
+ 	struct device *dev = core->dev;
+ 	unsigned long freq = 0, freq_core1 = 0, freq_core2 = 0;
+ 	unsigned long filled_len = 0;
+-	int i, ret;
++	int i, ret = 0;
+ 
+ 	for (i = 0; i < inst->num_input_bufs; i++)
+ 		filled_len = max(filled_len, inst->payloads[i]);
+ 
+ 	if (inst->session_type == VIDC_SESSION_TYPE_DEC && !filled_len)
+-		return 0;
++		return ret;
+ 
+ 	freq = calculate_inst_freq(inst, filled_len);
+ 	inst->clk_data.freq = freq;
+@@ -1138,7 +1137,6 @@ static int load_scale_v4(struct venus_inst *inst)
+ 			freq_core2 += inst->clk_data.freq;
+ 		}
+ 	}
+-	mutex_unlock(&core->lock);
+ 
+ 	freq = max(freq_core1, freq_core2);
+ 
+@@ -1162,17 +1160,19 @@ set_freq:
+ 	if (ret) {
+ 		dev_err(dev, "failed to set clock rate %lu (%d)\n",
+ 			freq, ret);
+-		return ret;
++		goto exit;
+ 	}
+ 
+ 	ret = load_scale_bw(core);
+ 	if (ret) {
+ 		dev_err(dev, "failed to set bandwidth (%d)\n",
+ 			ret);
+-		return ret;
++		goto exit;
+ 	}
+ 
+-	return 0;
++exit:
++	mutex_unlock(&core->lock);
++	return ret;
+ }
+ 
+ static const struct venus_pm_ops pm_ops_v4 = {
 -- 
 2.34.1
 
