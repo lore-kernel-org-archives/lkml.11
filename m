@@ -2,114 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A377C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72158C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851364AbiAXXcd (ORCPT
+        id S2359462AbiAXXch (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:32:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33720 "EHLO
+        Mon, 24 Jan 2022 18:32:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579204AbiAXWFM (ORCPT
+        with ESMTP id S1456647AbiAXWjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:05:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7267BC045902;
-        Mon, 24 Jan 2022 12:42:18 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9D8CB8122A;
-        Mon, 24 Jan 2022 20:42:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24F2DC340E7;
-        Mon, 24 Jan 2022 20:42:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056935;
-        bh=TvWm8VA0FL0gbTrcAIrjiYnHCBn+7z1eGZmV+NVBhVA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WG6/3vWeJOS83lXSK6BaFWTxzhjO3gCWfBa3kFz5K/feAHL+PBhHEZzqYsMATBp2d
-         yQnLqKxHBxYWTMYR2HvMba4KsiShSuu8AN52q+tBJXgLRH6JPCQPS56J7pZCxlHV1k
-         9pOcCRWSn2y6KswoZbaK/KE16QmJWtIHKyqqZyWQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maher Sanalla <msanalla@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 615/846] net/mlx5: Update log_max_qp value to FW max capability
-Date:   Mon, 24 Jan 2022 19:42:12 +0100
-Message-Id: <20220124184122.258580071@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 17:39:52 -0500
+Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EA02C04D61D
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:04:20 -0800 (PST)
+Received: by mail-ot1-x331.google.com with SMTP id s6-20020a0568301e0600b0059ea5472c98so8270024otr.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:04:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=JYiLYol9mvWoC/k9SlBNW3f4S6peoi+xmexnQLDaAHc=;
+        b=HsuuTxhscaoAqtQaDrdwBqOr+pYZMN4w2SA8Q7gzbGeDVQlpfcRDDYbqoI1eGaw4HH
+         tqzC8Rw8Wq9AFXlLETHFjUOJ/Kd57+8avtXJcdQl+Zk2xnWWSjvNGfjrKmB1mjc9h3G/
+         J51AFEegRcmcOXWbI+rmYoSKJy7YCRzp/zMxE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=JYiLYol9mvWoC/k9SlBNW3f4S6peoi+xmexnQLDaAHc=;
+        b=V5JuFevwKvfVhdY0gN82jg4/VfrRxiGjzO8mW9Eoz9h7/g4Il3EXFC9ESIWSA/X++L
+         8d9rBCDOO/oF0pPDhlmAsEmWsohSWw9tUoANh6U3f209NYSUu1DkvFBje5q4Q6yzsV1d
+         XHDowfBhtrEl2V040tn5CNJblXczGJCRAXnNtAv8EDoGssnRsZK0FVtV4qElbnnnG1+K
+         cTh3qE1QQk6jBS8GmdQz8gnP5/Qf5Gw0rFqZAznjB2qdGlVMicwgDYNP4papy/ZPBFJt
+         nvwzYbQ2CEUiLuP94JIpK6Ocda8eabyDZ+OS7+zcI34YAc3InAC4xj8BdApwXUTsOelH
+         RJfQ==
+X-Gm-Message-State: AOAM532tokHHmFaROLCnAXDPQ98+8VqfeZCZcBfc42iBRU/IxuyRuqB1
+        zVmJ2TlsqXb5GiLQVPYPOHeIPoZunAMF5DMS514NPA==
+X-Google-Smtp-Source: ABdhPJzWss7XOnvh73u3Bx1WcknT+UoYuzDwWnibDZtvmdSPqZExl7hcfY2zpEl1b5NjqqKETJt01WEhiJ/eialMpxs=
+X-Received: by 2002:a05:6830:30ba:: with SMTP id g26mr6213128ots.159.1643058259360;
+ Mon, 24 Jan 2022 13:04:19 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 24 Jan 2022 13:04:18 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1643057170-10413-1-git-send-email-quic_khsieh@quicinc.com>
+References: <1643057170-10413-1-git-send-email-quic_khsieh@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 24 Jan 2022 13:04:18 -0800
+Message-ID: <CAE-0n53nFcMzuKfqVRac6PRTkoPrftXL+uVK56ZQsHVWHmivkQ@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/dp: always add fail-safe mode into connector mode list
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, robdclark@gmail.com, sean@poorly.run,
+        vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, aravindh@codeaurora.org,
+        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maher Sanalla <msanalla@nvidia.com>
+Quoting Kuogee Hsieh (2022-01-24 12:46:10)
+> Some of DP link compliant test expects to return fail-safe mode
+> if prefer detailed timing mode can not be supported by mainlink's
+> lane and rate after link training. Therefore add fail-safe mode
+> into connector mode list as backup mode. This patch fixes test
+> case 4.2.2.1.
+>
+> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
 
-[ Upstream commit f79a609ea6bf54ad2d2c24e4de4524288b221666 ]
+Any Fixes tag? I also wonder why this isn't pushed into the DP core code
+somehow. Wouldn't every device need to add a 640x480 mode by default?
 
-log_max_qp in driver's default profile #2 was set to 18, but FW actually
-supports 17 at the most - a situation that led to the concerning print
-when the driver is loaded:
-"log_max_qp value in current profile is 18, changing to HCA capabaility
-limit (17)"
-
-The expected behavior from mlx5_profile #2 is to match the maximum FW
-capability in regards to log_max_qp. Thus, log_max_qp in profile #2 is
-initialized to a defined static value (0xff) - which basically means that
-when loading this profile, log_max_qp value  will be what the currently
-installed FW supports at most.
-
-Signed-off-by: Maher Sanalla <msanalla@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/mellanox/mlx5/core/main.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 92b01858d7f3e..29b7297a836a5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -97,6 +97,8 @@ enum {
- 	MLX5_ATOMIC_REQ_MODE_HOST_ENDIANNESS = 0x1,
- };
- 
-+#define LOG_MAX_SUPPORTED_QPS 0xff
-+
- static struct mlx5_profile profile[] = {
- 	[0] = {
- 		.mask           = 0,
-@@ -108,7 +110,7 @@ static struct mlx5_profile profile[] = {
- 	[2] = {
- 		.mask		= MLX5_PROF_MASK_QP_SIZE |
- 				  MLX5_PROF_MASK_MR_CACHE,
--		.log_max_qp	= 18,
-+		.log_max_qp	= LOG_MAX_SUPPORTED_QPS,
- 		.mr_cache[0]	= {
- 			.size	= 500,
- 			.limit	= 250
-@@ -513,7 +515,9 @@ static int handle_hca_cap(struct mlx5_core_dev *dev, void *set_ctx)
- 		 to_fw_pkey_sz(dev, 128));
- 
- 	/* Check log_max_qp from HCA caps to set in current profile */
--	if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
-+	if (prof->log_max_qp == LOG_MAX_SUPPORTED_QPS) {
-+		prof->log_max_qp = MLX5_CAP_GEN_MAX(dev, log_max_qp);
-+	} else if (MLX5_CAP_GEN_MAX(dev, log_max_qp) < prof->log_max_qp) {
- 		mlx5_core_warn(dev, "log_max_qp value in current profile is %d, changing it to HCA capability limit (%d)\n",
- 			       prof->log_max_qp,
- 			       MLX5_CAP_GEN_MAX(dev, log_max_qp));
--- 
-2.34.1
-
-
-
+> ---
+>  drivers/gpu/drm/msm/dp/dp_panel.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/gpu/drm/msm/dp/dp_panel.c b/drivers/gpu/drm/msm/dp/dp_panel.c
+> index 3b02922..7743b45 100644
+> --- a/drivers/gpu/drm/msm/dp/dp_panel.c
+> +++ b/drivers/gpu/drm/msm/dp/dp_panel.c
+> @@ -221,6 +221,11 @@ int dp_panel_read_sink_caps(struct dp_panel *dp_panel,
+>                 if (drm_add_modes_noedid(connector, 640, 480))
+>                         drm_set_preferred_mode(connector, 640, 480);
+>                 mutex_unlock(&connector->dev->mode_config.mutex);
+> +       } else {
+> +               /* always add fail-safe mode as backup mode */
+> +               mutex_lock(&connector->dev->mode_config.mutex);
+> +               drm_add_modes_noedid(connector, 640, 480);
+> +               mutex_unlock(&connector->dev->mode_config.mutex);
+>         }
+>
+>         if (panel->aux_cfg_update_done) {
+> --
+> The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+> a Linux Foundation Collaborative Project
+>
