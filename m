@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10007C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2108EC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354158AbiAXTsA (ORCPT
+        id S1356968AbiAXTsC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:48:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58860 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349723AbiAXTho (ORCPT
+        Mon, 24 Jan 2022 14:48:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35464 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346088AbiAXTiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:37:44 -0500
+        Mon, 24 Jan 2022 14:38:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 189ABB8121C;
-        Mon, 24 Jan 2022 19:37:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F5CAC340E5;
-        Mon, 24 Jan 2022 19:37:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A9CB6135E;
+        Mon, 24 Jan 2022 19:38:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEC48C340E5;
+        Mon, 24 Jan 2022 19:38:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053061;
-        bh=gvwNwUL2uzlUhdpiHJOTQEv4OnE/kqW5SjOPiiqcIDI=;
+        s=korg; t=1643053082;
+        bh=WrPbiVsHL3R4O3QuRUsnYj8sP4lCgmZ79KNdHnoSs5w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=izp9fJBeCiTso3o57AIVNTnTZPlu3thMaFxTI/4in5HL5PBkc/dDjnXy7gWey8X7s
-         dtp+18TtSiq9pglijoHILVBH7pElMA6oRk+NWZZKV0o2THsepPiHoUHEfOC94LX+lX
-         aoZFD90hKVDfpQVM8zsHoNR880Mn6q/BN0mp7Ns0=
+        b=QROLokJm7FXJWaYjjnKEWjcZlhUKIzPLVO8RzrL4881U3pJYiMp9UXRYeS8clYhit
+         pMrdLeG0qQ3gds+hS+UZAumUch/jcNv5hH4Ayo97rIDWqS+kBKgHQ2AoJ2i5Gj7Dwl
+         ctO9ILS95+gSC4EfFxAU5A5giZJW/EHr1gC/PsEQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.4 263/320] PCI: pci-bridge-emul: Set PCI_STATUS_CAP_LIST for PCIe device
-Date:   Mon, 24 Jan 2022 19:44:07 +0100
-Message-Id: <20220124184002.931227601@linuxfoundation.org>
+        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.4 269/320] ext4: make sure quota gets properly shutdown on error
+Date:   Mon, 24 Jan 2022 19:44:13 +0100
+Message-Id: <20220124184003.131541828@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,35 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Jan Kara <jack@suse.cz>
 
-commit 3be9d243b21724d49b65043d4520d688b6040b36 upstream.
+commit 15fc69bbbbbc8c72e5f6cc4e1be0f51283c5448e upstream.
 
-Since all PCI Express device Functions are required to implement the PCI
-Express Capability structure, Capabilities List bit in PCI Status Register
-must be hardwired to 1b. Capabilities Pointer register (which is already
-set by pci-bride-emul.c driver) is valid only when Capabilities List is set
-to 1b.
+When we hit an error when enabling quotas and setting inode flags, we do
+not properly shutdown quota subsystem despite returning error from
+Q_QUOTAON quotactl. This can lead to some odd situations like kernel
+using quota file while it is still writeable for userspace. Make sure we
+properly cleanup the quota subsystem in case of error.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-7-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
+Signed-off-by: Jan Kara <jack@suse.cz>
+Cc: stable@kernel.org
+Link: https://lore.kernel.org/r/20211007155336.12493-2-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/pci-bridge-emul.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/ext4/super.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -287,6 +287,7 @@ int pci_bridge_emul_init(struct pci_brid
+--- a/fs/ext4/super.c
++++ b/fs/ext4/super.c
+@@ -5912,10 +5912,7 @@ static int ext4_quota_on(struct super_bl
  
- 	if (bridge->has_pcie) {
- 		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
-+		bridge->conf.status |= cpu_to_le16(PCI_STATUS_CAP_LIST);
- 		bridge->pcie_conf.cap_id = PCI_CAP_ID_EXP;
- 		bridge->pcie_conf.cap |= cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4);
- 		bridge->pcie_cap_regs_behavior =
+ 	lockdep_set_quota_inode(path->dentry->d_inode, I_DATA_SEM_QUOTA);
+ 	err = dquot_quota_on(sb, type, format_id, path);
+-	if (err) {
+-		lockdep_set_quota_inode(path->dentry->d_inode,
+-					     I_DATA_SEM_NORMAL);
+-	} else {
++	if (!err) {
+ 		struct inode *inode = d_inode(path->dentry);
+ 		handle_t *handle;
+ 
+@@ -5935,7 +5932,12 @@ static int ext4_quota_on(struct super_bl
+ 		ext4_journal_stop(handle);
+ 	unlock_inode:
+ 		inode_unlock(inode);
++		if (err)
++			dquot_quota_off(sb, type);
+ 	}
++	if (err)
++		lockdep_set_quota_inode(path->dentry->d_inode,
++					     I_DATA_SEM_NORMAL);
+ 	return err;
+ }
+ 
 
 
