@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E8C3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:08:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BE00C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844290AbiAXXIT (ORCPT
+        id S1456529AbiAXXIf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:08:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36668 "EHLO
+        Mon, 24 Jan 2022 18:08:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583210AbiAXWRZ (ORCPT
+        with ESMTP id S1583216AbiAXWRZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:17:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B66FC04A2E9;
-        Mon, 24 Jan 2022 12:46:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8BCC0617BE;
+        Mon, 24 Jan 2022 12:47:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CC8960C19;
-        Mon, 24 Jan 2022 20:46:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2E9DC340EA;
-        Mon, 24 Jan 2022 20:46:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A4B760B03;
+        Mon, 24 Jan 2022 20:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38993C340E5;
+        Mon, 24 Jan 2022 20:47:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057188;
-        bh=Kg6lB8gyFX7ICKo3+KWCWKtc2SOVkFcVpBWAYHfLIk4=;
+        s=korg; t=1643057270;
+        bh=gQFqGG9/fSj/hQQshBDiTsv+zM3FhzzYSeDeoKFtb3U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1/b7EIYw0Vi/U5eVfMV1EeKE/pYikdt4EC9uKoUpLObBm64NvXzXtl9FcrT3B4l86
-         Q+Ovz0pe6I6xszoZLmPfPnpUxxzJsE2kDa+ZcoYBAdfsbw9W91zIVKjiDTm5zkLCAp
-         RTD/JS4he6Sd6rnuQZdJNmIdmaFB7OzFrdr/aNgg=
+        b=Xy9G2aojKhhmzeGYtPJijJCxT4IuUUXX5wsCxN0qSLROndrwJk0+QFwdHc8CCKkxX
+         n+lUJRp7bl+lXVMyLyThOOqDitjCzMnhuhujNlzKFbek/Wj2D/WkmQ/qovDk3yY4ty
+         mbzH4Uj4jt6rrw3pnmKMzSNRTEcG7C/06zykmKW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julius Werner <jwerner@chromium.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.15 731/846] firmware: Update Kconfig help text for Google firmware
-Date:   Mon, 24 Jan 2022 19:44:08 +0100
-Message-Id: <20220124184126.213154884@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Yi <yi.zhang@huawei.com>,
+        Theodore Tso <tytso@mit.edu>
+Subject: [PATCH 5.15 724/846] ext4: fix an use-after-free issue about data=journal writeback mode
+Date:   Mon, 24 Jan 2022 19:44:01 +0100
+Message-Id: <20220124184125.981411471@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,40 +49,129 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Zhang Yi <yi.zhang@huawei.com>
 
-commit d185a3466f0cd5af8f1c5c782c53bc0e6f2e7136 upstream.
+commit 5c48a7df91499e371ef725895b2e2d21a126e227 upstream.
 
-The help text for GOOGLE_FIRMWARE states that it should only be
-enabled when building a kernel for Google's own servers.  However,
-many of the drivers dependent on it are also useful on Chromebooks or
-on any platform using coreboot.
+Our syzkaller report an use-after-free issue that accessing the freed
+buffer_head on the writeback page in __ext4_journalled_writepage(). The
+problem is that if there was a truncate racing with the data=journalled
+writeback procedure, the writeback length could become zero and
+bget_one() refuse to get buffer_head's refcount, then the truncate
+procedure release buffer once we drop page lock, finally, the last
+ext4_walk_page_buffers() trigger the use-after-free problem.
 
-Update the help text to reflect this double duty.
+sync                               truncate
+ext4_sync_file()
+ file_write_and_wait_range()
+                                   ext4_setattr(0)
+                                    inode->i_size = 0
+  ext4_writepage()
+   len = 0
+   __ext4_journalled_writepage()
+    page_bufs = page_buffers(page)
+    ext4_walk_page_buffers(bget_one) <- does not get refcount
+                                    do_invalidatepage()
+                                      free_buffer_head()
+    ext4_walk_page_buffers(page_bufs) <- trigger use-after-free
 
-Fixes: d384d6f43d1e ("firmware: google memconsole: Add coreboot support")
-Reviewed-by: Julius Werner <jwerner@chromium.org>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Link: https://lore.kernel.org/r/20180618225540.GD14131@decadent.org.uk
+After commit bdf96838aea6 ("ext4: fix race between truncate and
+__ext4_journalled_writepage()"), we have already handled the racing
+case, so the bget_one() and bput_one() are not needed. So this patch
+simply remove these hunk, and recheck the i_size to make it safe.
+
+Fixes: bdf96838aea6 ("ext4: fix race between truncate and __ext4_journalled_writepage()")
+Signed-off-by: Zhang Yi <yi.zhang@huawei.com>
+Cc: stable@vger.kernel.org
+Link: https://lore.kernel.org/r/20211225090937.712867-1-yi.zhang@huawei.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/google/Kconfig |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ fs/ext4/inode.c |   37 ++++++++++---------------------------
+ 1 file changed, 10 insertions(+), 27 deletions(-)
 
---- a/drivers/firmware/google/Kconfig
-+++ b/drivers/firmware/google/Kconfig
-@@ -3,9 +3,9 @@ menuconfig GOOGLE_FIRMWARE
- 	bool "Google Firmware Drivers"
- 	default n
- 	help
--	  These firmware drivers are used by Google's servers.  They are
--	  only useful if you are working directly on one of their
--	  proprietary servers.  If in doubt, say "N".
-+	  These firmware drivers are used by Google servers,
-+	  Chromebooks and other devices using coreboot firmware.
-+	  If in doubt, say "N".
+--- a/fs/ext4/inode.c
++++ b/fs/ext4/inode.c
+@@ -1845,30 +1845,16 @@ int ext4_da_get_block_prep(struct inode
+ 	return 0;
+ }
  
- if GOOGLE_FIRMWARE
+-static int bget_one(handle_t *handle, struct inode *inode,
+-		    struct buffer_head *bh)
+-{
+-	get_bh(bh);
+-	return 0;
+-}
+-
+-static int bput_one(handle_t *handle, struct inode *inode,
+-		    struct buffer_head *bh)
+-{
+-	put_bh(bh);
+-	return 0;
+-}
+-
+ static int __ext4_journalled_writepage(struct page *page,
+ 				       unsigned int len)
+ {
+ 	struct address_space *mapping = page->mapping;
+ 	struct inode *inode = mapping->host;
+-	struct buffer_head *page_bufs = NULL;
+ 	handle_t *handle = NULL;
+ 	int ret = 0, err = 0;
+ 	int inline_data = ext4_has_inline_data(inode);
+ 	struct buffer_head *inode_bh = NULL;
++	loff_t size;
  
+ 	ClearPageChecked(page);
+ 
+@@ -1878,14 +1864,6 @@ static int __ext4_journalled_writepage(s
+ 		inode_bh = ext4_journalled_write_inline_data(inode, len, page);
+ 		if (inode_bh == NULL)
+ 			goto out;
+-	} else {
+-		page_bufs = page_buffers(page);
+-		if (!page_bufs) {
+-			BUG();
+-			goto out;
+-		}
+-		ext4_walk_page_buffers(handle, inode, page_bufs, 0, len,
+-				       NULL, bget_one);
+ 	}
+ 	/*
+ 	 * We need to release the page lock before we start the
+@@ -1906,7 +1884,8 @@ static int __ext4_journalled_writepage(s
+ 
+ 	lock_page(page);
+ 	put_page(page);
+-	if (page->mapping != mapping) {
++	size = i_size_read(inode);
++	if (page->mapping != mapping || page_offset(page) > size) {
+ 		/* The page got truncated from under us */
+ 		ext4_journal_stop(handle);
+ 		ret = 0;
+@@ -1916,6 +1895,13 @@ static int __ext4_journalled_writepage(s
+ 	if (inline_data) {
+ 		ret = ext4_mark_inode_dirty(handle, inode);
+ 	} else {
++		struct buffer_head *page_bufs = page_buffers(page);
++
++		if (page->index == size >> PAGE_SHIFT)
++			len = size & ~PAGE_MASK;
++		else
++			len = PAGE_SIZE;
++
+ 		ret = ext4_walk_page_buffers(handle, inode, page_bufs, 0, len,
+ 					     NULL, do_journal_get_write_access);
+ 
+@@ -1936,9 +1922,6 @@ static int __ext4_journalled_writepage(s
+ out:
+ 	unlock_page(page);
+ out_no_pagelock:
+-	if (!inline_data && page_bufs)
+-		ext4_walk_page_buffers(NULL, inode, page_bufs, 0, len,
+-				       NULL, bput_one);
+ 	brelse(inode_bh);
+ 	return ret;
+ }
 
 
