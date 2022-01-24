@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1DECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D3B6C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580675AbiAXWKY (ORCPT
+        id S1580781AbiAXWKo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:10:24 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36376 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378019AbiAXVNb (ORCPT
+        Mon, 24 Jan 2022 17:10:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392603AbiAXVZE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:13:31 -0500
+        Mon, 24 Jan 2022 16:25:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DBBC0A1CE1;
+        Mon, 24 Jan 2022 12:17:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9A8EB612E9;
-        Mon, 24 Jan 2022 21:13:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 772ECC340E5;
-        Mon, 24 Jan 2022 21:13:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FA26B81218;
+        Mon, 24 Jan 2022 20:17:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3683AC340E5;
+        Mon, 24 Jan 2022 20:17:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058810;
-        bh=ObGeEL6bLEFy2KfaLCY2uZ88GlwKe9NyM/Hl85xrRt8=;
+        s=korg; t=1643055475;
+        bh=nrm7rzQt+bEfcXNOC2UtprzTZTJ/W4x2M3YozFDzuaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=suAke3QIJ6haimopMAVTicPT7i+N+/nf7EQtruESc+Qx6qStXsc8997JZuHg4vxDN
-         KuIwmAxeoe7CuRCYvq2o5P2rGGQbk0REEGICjzTZ6NE1zNMK8M2k6G5NsXf0UoV5ry
-         7G28HmDXoDw1goB8RKiejM8bKADeR4ug/2gNB4gY=
+        b=MsbLgwL1c1kF0RaeN3mNqd8Ax5Kr89hmcnlGNfx3a76IR/FjRiIrB5/d0ak9aONkI
+         SX7YSLFbFqYePT5HyPfA1l4ZX/Rz+iTf6NQslI/baosJsYnbnfVKzl8RQ35FoK2ZKE
+         6d6Na2hnpvTIhlRM5iWAEHaSN4hdvC8mpzNtpdL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kris Van Hees <kris.van.hees@oracle.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0376/1039] bpf: Fix verifier support for validation of async callbacks
-Date:   Mon, 24 Jan 2022 19:36:05 +0100
-Message-Id: <20220124184137.947897959@linuxfoundation.org>
+Subject: [PATCH 5.15 164/846] media: imx-pxp: Initialize the spinlock prior to using it
+Date:   Mon, 24 Jan 2022 19:34:41 +0100
+Message-Id: <20220124184106.636485808@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,53 +52,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kris Van Hees <kris.van.hees@oracle.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit a5bebc4f00dee47113eed48098c68e88b5ba70e8 ]
+[ Upstream commit ed2f97ad4b21072f849cf4ae6645d1f2b1d3f550 ]
 
-Commit bfc6bb74e4f1 ("bpf: Implement verifier support for validation of async callbacks.")
-added support for BPF_FUNC_timer_set_callback to
-the __check_func_call() function.  The test in __check_func_call() is
-flaweed because it can mis-interpret a regular BPF-to-BPF pseudo-call
-as a BPF_FUNC_timer_set_callback callback call.
+After devm_request_threaded_irq() is called there is a chance that an
+interrupt may occur before the spinlock is initialized, which will trigger
+a kernel oops.
 
-Consider the conditional in the code:
+To prevent that, move the initialization of the spinlock prior to
+requesting the interrupts.
 
-	if (insn->code == (BPF_JMP | BPF_CALL) &&
-	    insn->imm == BPF_FUNC_timer_set_callback) {
-
-The BPF_FUNC_timer_set_callback has value 170.  This means that if you
-have a BPF program that contains a pseudo-call with an instruction delta
-of 170, this conditional will be found to be true by the verifier, and
-it will interpret the pseudo-call as a callback.  This leads to a mess
-with the verification of the program because it makes the wrong
-assumptions about the nature of this call.
-
-Solution: include an explicit check to ensure that insn->src_reg == 0.
-This ensures that calls cannot be mis-interpreted as an async callback
-call.
-
-Fixes: bfc6bb74e4f1 ("bpf: Implement verifier support for validation of async callbacks.")
-Signed-off-by: Kris Van Hees <kris.van.hees@oracle.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220105210150.GH1559@oracle.com
+Fixes: 51abcf7fdb70 ("media: imx-pxp: add i.MX Pixel Pipeline driver")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/verifier.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/platform/imx-pxp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 45d5e71cd64e6..d48000b90eb8a 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -5965,6 +5965,7 @@ static int __check_func_call(struct bpf_verifier_env *env, struct bpf_insn *insn
+diff --git a/drivers/media/platform/imx-pxp.c b/drivers/media/platform/imx-pxp.c
+index 4321edc0c23d9..8e9c6fee75a48 100644
+--- a/drivers/media/platform/imx-pxp.c
++++ b/drivers/media/platform/imx-pxp.c
+@@ -1661,6 +1661,8 @@ static int pxp_probe(struct platform_device *pdev)
+ 	if (irq < 0)
+ 		return irq;
+ 
++	spin_lock_init(&dev->irqlock);
++
+ 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL, pxp_irq_handler,
+ 			IRQF_ONESHOT, dev_name(&pdev->dev), dev);
+ 	if (ret < 0) {
+@@ -1678,8 +1680,6 @@ static int pxp_probe(struct platform_device *pdev)
+ 		goto err_clk;
  	}
  
- 	if (insn->code == (BPF_JMP | BPF_CALL) &&
-+	    insn->src_reg == 0 &&
- 	    insn->imm == BPF_FUNC_timer_set_callback) {
- 		struct bpf_verifier_state *async_cb;
- 
+-	spin_lock_init(&dev->irqlock);
+-
+ 	ret = v4l2_device_register(&pdev->dev, &dev->v4l2_dev);
+ 	if (ret)
+ 		goto err_clk;
 -- 
 2.34.1
 
