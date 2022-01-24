@@ -2,197 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECE44C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89299C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365564AbiAXXvQ (ORCPT
+        id S2365581AbiAXXvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:16 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:40897 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384119AbiAXXHz (ORCPT
+        Mon, 24 Jan 2022 18:51:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1843807AbiAXXGY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:07:55 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        Mon, 24 Jan 2022 18:06:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4BCC06E038;
+        Mon, 24 Jan 2022 13:17:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjQck0KgCz4yNv;
-        Tue, 25 Jan 2022 10:07:50 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643065671;
-        bh=gSrXkPNnk0YehCYf9GLjrCcWKdM0QjZqaSwXfjinxuQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZYc85MqQ96gQk3kYj6ZEspKNyK/7PIOCFRicMYvonFlRKxhdsCsU56HOTlm329JrF
-         Wkn6wCbztF3IVE/6iDZZ5dIBNg3jXf0FrBys6phv4kYGEvO63fRx+7TBRhCGCQvyoh
-         P4ESGWSPR1nmpJFEJYrpWTgAb3tzkF8e9I4LCbJpU86HaumPYWw96VAopReZUq3KG5
-         ht+TJYXOC4TmH4s3fCuSqBAXTYG7kApeinbuzlac7XD9m9elvcU1Hte+DX2AIUcrY8
-         t+MQyc/s+cp4/r/0e4kcH0hhgq8ECBMNwgu4vzo0CJWdE7L9byr4xfPSoR7epuq+vr
-         iy7jq7Dg75n2g==
-Date:   Tue, 25 Jan 2022 10:07:48 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Intel Graphics <intel-gfx@lists.freedesktop.org>,
-        DRI <dri-devel@lists.freedesktop.org>
-Cc:     Jani Nikula <jani.nikula@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
-Subject: linux-next: manual merge of the drm-intel-gt tree with the
- drm-intel tree
-Message-ID: <20220125100748.16b29ea9@canb.auug.org.au>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C07DA614F5;
+        Mon, 24 Jan 2022 21:17:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9BC7C340E4;
+        Mon, 24 Jan 2022 21:17:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643059036;
+        bh=GSpa0T2zR5nR7t2XEWNXHM0JnhWayGNeHrauchlvb2g=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=0fY1sI4UlPS5//AukobzXcdfyx3DdCbsi4m6B3yIZ6gQaU30UC/luJVJPnlbIiiEt
+         4V4mBner5AZbfTudAhRuLKD5Ud6pKATC3C4WccpWGka34nD5dTTnhrFmdITgO+HvCK
+         NawdW0D2zvZLajQIGqn24uHYNUpIVHDUlYMhb888=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
+        Mark Zhang <markzhang@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0484/1039] RDMA/core: Let ib_find_gid() continue search even after empty entry
+Date:   Mon, 24 Jan 2022 19:37:53 +0100
+Message-Id: <20220124184141.543595123@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/.X3blEqMQKfAGNPOMCSmikx";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/.X3blEqMQKfAGNPOMCSmikx
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+From: Avihai Horon <avihaih@nvidia.com>
 
-Hi all,
+[ Upstream commit 483d805191a23191f8294bbf9b4e94836f5d92e4 ]
 
-Today's linux-next merge of the drm-intel-gt tree got a conflict in:
+Currently, ib_find_gid() will stop searching after encountering the first
+empty GID table entry. This behavior is wrong since neither IB nor RoCE
+spec enforce tightly packed GID tables.
 
-  drivers/gpu/drm/i915/i915_drv.h
+For example, when a valid GID entry exists at index N, and if a GID entry
+is empty at index N-1, ib_find_gid() will fail to find the valid entry.
 
-between commit:
+Fix it by making ib_find_gid() continue searching even after encountering
+missing entries.
 
-  2ef97818d3aa ("drm/i915: split out i915_gem_evict.h from i915_drv.h")
-
-from the drm-intel tree and commit:
-
-  7e00897be8bf ("drm/i915: Add object locking to i915_gem_evict_for_node an=
-d i915_gem_evict_something, v2.")
-
-from the drm-intel-gt tree.
-
-I fixed it up (I used the former and adde the following merge fix patch)
-and can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 09:44:44 +1100
-Subject: [PATCH] merge fix for "drm/i915: split out i915_gem_evict.h from i=
-915_drv.h"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Fixes: 5eb620c81ce3 ("IB/core: Add helpers for uncached GID and P_Key searches")
+Link: https://lore.kernel.org/r/e55d331b96cecfc2cf19803d16e7109ea966882d.1639055490.git.leonro@nvidia.com
+Signed-off-by: Avihai Horon <avihaih@nvidia.com>
+Reviewed-by: Mark Zhang <markzhang@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/i915/i915_gem_evict.h | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/gpu/drm/i915/i915_gem_evict.h b/drivers/gpu/drm/i915/i=
-915_gem_evict.h
-index d4478b6ad11b..bd6e78abd530 100644
---- a/drivers/gpu/drm/i915/i915_gem_evict.h
-+++ b/drivers/gpu/drm/i915/i915_gem_evict.h
-@@ -12,11 +12,13 @@ struct drm_mm_node;
- struct i915_address_space;
-=20
- int __must_check i915_gem_evict_something(struct i915_address_space *vm,
-+					  struct i915_gem_ww_ctx *ww,
- 					  u64 min_size, u64 alignment,
- 					  unsigned long color,
- 					  u64 start, u64 end,
- 					  unsigned flags);
- int __must_check i915_gem_evict_for_node(struct i915_address_space *vm,
-+					 struct i915_gem_ww_ctx *ww,
- 					 struct drm_mm_node *node,
- 					 unsigned int flags);
- int i915_gem_evict_vm(struct i915_address_space *vm);
---=20
-2.34.1
-
-But then I also needed due to commit:
-
-  6945c53bc712 ("drm/i915: Add locking to i915_gem_evict_vm(), v3.")
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 09:51:55 +1100
-Subject: [PATCH] extra merge fix for "drm/i915: split out i915_gem_evict.h =
-from i915_drv.h"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/gpu/drm/i915/i915_gem_evict.h | 3 ++-
+ drivers/infiniband/core/device.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/i915_gem_evict.h b/drivers/gpu/drm/i915/i=
-915_gem_evict.h
-index bd6e78abd530..b7f8e9435b2c 100644
---- a/drivers/gpu/drm/i915/i915_gem_evict.h
-+++ b/drivers/gpu/drm/i915/i915_gem_evict.h
-@@ -21,6 +21,7 @@ int __must_check i915_gem_evict_for_node(struct i915_addr=
-ess_space *vm,
- 					 struct i915_gem_ww_ctx *ww,
- 					 struct drm_mm_node *node,
- 					 unsigned int flags);
--int i915_gem_evict_vm(struct i915_address_space *vm);
-+int i915_gem_evict_vm(struct i915_address_space *vm,
-+		      struct i915_gem_ww_ctx *ww);
-=20
- #endif /* __I915_GEM_EVICT_H__ */
---=20
+diff --git a/drivers/infiniband/core/device.c b/drivers/infiniband/core/device.c
+index 22a4adda7981d..a311df07b1bdb 100644
+--- a/drivers/infiniband/core/device.c
++++ b/drivers/infiniband/core/device.c
+@@ -2461,7 +2461,8 @@ int ib_find_gid(struct ib_device *device, union ib_gid *gid,
+ 		     ++i) {
+ 			ret = rdma_query_gid(device, port, i, &tmp_gid);
+ 			if (ret)
+-				return ret;
++				continue;
++
+ 			if (!memcmp(&tmp_gid, gid, sizeof *gid)) {
+ 				*port_num = port;
+ 				if (index)
+-- 
 2.34.1
 
-And then this due to commit
 
-  e849f7e70860 ("drm/i915: Call i915_gem_evict_vm in vm_fault_gtt to preven=
-t new ENOSPC errors, v2.")
-(and the above commit)
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 10:02:16 +1100
-Subject: [PATCH] extra 2 merge fix for "drm/i915: split out i915_gem_evict.=
-h from i915_drv.h"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/gpu/drm/i915/gem/i915_gem_mman.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_mman.c b/drivers/gpu/drm/i91=
-5/gem/i915_gem_mman.c
-index 4afad1604a6a..a69787999d09 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_mman.c
-@@ -21,6 +21,7 @@
- #include "i915_trace.h"
- #include "i915_user_extensions.h"
- #include "i915_gem_ttm.h"
-+#include "i915_gem_evict.h"
- #include "i915_vma.h"
-=20
- static inline bool
---=20
-2.34.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/.X3blEqMQKfAGNPOMCSmikx
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvMUQACgkQAVBC80lX
-0GzvCwf9FWUy7E0d12GF/oput5FtDHOwD+gXZobQ3fZiMEP6KSAwbhZiIYqS5xtu
-fDqJoA+h0FWMW9A4yjXAiTLvNkT4eUT5Hie7UAXo736MXifY6G/zNlugPCq+fklj
-eL8rInbENMk2CA+AgqwatbI31JY8Y1oDb+V2X3Han88r81yBj9RzYhIoDg3EwzIG
-TOsYs4ZGuVH77h+l6CHnw0o2rGRpvkHHRgrEbdHqtgauQtgZ4dpL0d5WznTxV8HF
-Zm2lygZeUTfzu4gSnrrmyY3VRtCKEXeD3w04TYAtDdzPa11h3e3mdeabiXWJlxYT
-o4AV8NP8DYlgih9PY+U77QaQdfaG4w==
-=Y/b3
------END PGP SIGNATURE-----
-
---Sig_/.X3blEqMQKfAGNPOMCSmikx--
