@@ -2,91 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94894C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7749FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343666AbiAXSwZ (ORCPT
+        id S1343676AbiAXSwb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:52:25 -0500
-Received: from mail-vk1-f176.google.com ([209.85.221.176]:46770 "EHLO
-        mail-vk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343626AbiAXSvM (ORCPT
+        Mon, 24 Jan 2022 13:52:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343628AbiAXSvM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:51:12 -0500
-Received: by mail-vk1-f176.google.com with SMTP id z15so7553837vkp.13;
-        Mon, 24 Jan 2022 10:51:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8n04RRQ8nE0niJsTycmRfUY892P4sQ+KhPXgYoCzt8o=;
-        b=7MLIGWq94Ge3rxjwb2jdRs5bhcDTpVVVyXWDRPmoKU1cu/J193IVv5t1ofIN4hTIbG
-         xgATFTnMfNFYKUimOuXbvU7XHHC8JVileTih0Xt0o1sef2p4nuUrOktaZw110rQMMZ80
-         46o1G9n6njd95o6/Bv5hS4kPSYVpr7F4cS1YT/mWQN/d9mtSQDjdbHWy4RpV4DIsnGG1
-         60zsTzZp3cC1T+56IbWUnTMDsPwORqDdDAqjpZh0xNjU8rGY7TKxufEynEwQUze8Y5iD
-         mzSSsuJkpk54XJFqwu8JK5Kv7eYlN/zi/Lq/0WNc5qvbwaWptjVig/ENW8FRBabrZ9JJ
-         KxqQ==
-X-Gm-Message-State: AOAM5325bPXUNxtiSiBUmouae62+Ma4I8iTT+yiTo7YIgjTSDDb7gabu
-        ymtDsot3fBI+oZGGX0IeeWNj9Wjl/H351A==
-X-Google-Smtp-Source: ABdhPJwVhHjTNewS5EYqEjs8Eoxsq/6qMT6hcOYHUMuC+1I6MzQhZHdxsVc5P2D85vzYmRegJ3TAqw==
-X-Received: by 2002:a1f:56c2:: with SMTP id k185mr6760810vkb.19.1643050271469;
-        Mon, 24 Jan 2022 10:51:11 -0800 (PST)
-Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com. [209.85.222.43])
-        by smtp.gmail.com with ESMTPSA id h189sm3049636vka.52.2022.01.24.10.51.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 10:51:10 -0800 (PST)
-Received: by mail-ua1-f43.google.com with SMTP id c36so32780051uae.13;
-        Mon, 24 Jan 2022 10:51:10 -0800 (PST)
-X-Received: by 2002:a9f:3d89:: with SMTP id c9mr6321567uai.78.1643050270149;
- Mon, 24 Jan 2022 10:51:10 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789BFC0617BA;
+        Mon, 24 Jan 2022 10:50:55 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 157B4614DF;
+        Mon, 24 Jan 2022 18:50:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBFD1C340E5;
+        Mon, 24 Jan 2022 18:50:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643050254;
+        bh=U6RKr9vFK/7T1bwk178thgThkYtuoXo3nEgOP/hosJw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gCAq9dj3PVUxaNfvvK8rmzYXVAOr4Vfy9Wk6aeIEL2WENtGf4MFaGfWb8GZWkM+U2
+         0DDQv69WR4xoEDzhBJ9Pe3fTD9lCtalCW+EyydOz0GSPE+WMmCuweKW848FkJ/Mxhz
+         z+Hq/7HYrX2mMN0iCFaNFmuqBcrNfyFapbuLnX2c=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 060/114] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 24 Jan 2022 19:42:35 +0100
+Message-Id: <20220124183928.957319424@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
+References: <20220124183927.095545464@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <YeG8ydoJNWWkGrTb@ls3530> <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
- <87bl0amc6s.fsf@x1.stackframe.org> <20220118103323.4bae3a7d@eldfell>
- <20220118095352.xsb6fqacw4p276c5@sirius.home.kraxel.org> <CAMuHMdWV+-+Jr7HggbfH_GEDcdep4pJLiMG+15jxBvQ91BCS0w@mail.gmail.com>
- <CAKMK7uEOFg3z2btFERQ5XBQ7hqex6bXCb9X=SdwCjeLfX_SdFw@mail.gmail.com>
- <CAMuHMdVjv1+UNeXkCBE+80tdtLuNg=5d6N12hNLgJdaS-jxERg@mail.gmail.com> <CAKMK7uEwDdaR7kDVi9Oah0w8qFEoAywp_wj2eH7DtttVD2L00A@mail.gmail.com>
-In-Reply-To: <CAKMK7uEwDdaR7kDVi9Oah0w8qFEoAywp_wj2eH7DtttVD2L00A@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 24 Jan 2022 19:50:58 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdUyHEExOCtH-hKh0HmZzadmfZaR=vAVYJkTvphfzs3Xiw@mail.gmail.com>
-Message-ID: <CAMuHMdUyHEExOCtH-hKh0HmZzadmfZaR=vAVYJkTvphfzs3Xiw@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Gerd Hoffmann <kraxel@redhat.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sven Schnelle <svens@stackframe.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-On Thu, Jan 20, 2022 at 1:33 PM Daniel Vetter <daniel@ffwll.ch> wrote:
-> But reading code&docs is too hard I guess, safer to assume it's just
-> broken and not supported.
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-I confirm there's lots of documentation (and even more code ;-),
-which is always great!
-But both are intimidating to me, and most of the documentation covers
-features I'm not interested in, as they're only applicable to fancy
-modern truecolor 3D-capable multi-buffer and multi-head hardware, while
-what I am looking for is usually not documented.  E.g. I had a hard
-time to discover how color look-up tables work (gamma_{store,size}!),
-as this is not covered in https://docs.kernel.org/gpu/index.html,
-and none of the tinydrm drivers support CLUT modes.
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-Gr{oetje,eeting}s,
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
 
-                        Geert
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index 390e592358e63..7af4d05dabeaa 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -541,7 +541,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -882,7 +882,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
+-- 
+2.34.1
+
+
+
