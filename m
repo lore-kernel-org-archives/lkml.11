@@ -2,149 +2,147 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B76FEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6AB9C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3415634AbiAYC4v (ORCPT
+        id S1316351AbiAYC5F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:56:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3413946AbiAYAl3 (ORCPT
+        Mon, 24 Jan 2022 21:57:05 -0500
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:60353 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S3414335AbiAYAot (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:41:29 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD73EC054308
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:26:06 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id v67so9702596oie.9
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:26:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0f9IE0661xn75d7FB58FYRPdONZNDHV3u2RCDMrfPKY=;
-        b=EWlkmAb7Ul4Ffei88oljh0OwBQEwXbmzrxbR/cnGeD2jWgIqm1x1KwqYS68Rgb1UpZ
-         8zCdBgfypwTTgPupSEvLCx3qBU/5wIdCu8uixoRm8q2AEZmXjd3B7gB9VuwFN8RHdlsr
-         +JESdkZq/QKiaKYrgnN9u/fAlBCXT6PgYz1QcN/9md4yVQkf2His7KOOIeVIHpIbFvRD
-         nQ9kDegKOZznR6QXRAT4Xir/RNdEaQ1sDDIHclh15BDAs8QtnqLk5V7CohXfp235MqQZ
-         rDbU9ZZomLnuc9j+1cWayOUsbH0JqZtSXGiOFBVxNfEDodifeOk/127iUu8AvkpbVWA2
-         cXvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0f9IE0661xn75d7FB58FYRPdONZNDHV3u2RCDMrfPKY=;
-        b=V/mHhims+vfzGl3yex+AHlEmiqRDabQxOcGZ7S4nuGvo6wOcBB5asEUSz3QzsWY6zv
-         h6mzj+w+Q+oG/AXy0b25ccEYkZOxlHS7yyzlGhYB6Llg/yyqDcv86PwKdOCqbJxV7X+H
-         U78UokFNN5bZ05WOPI/U4gF5lzzwqyz4c/ICXQTlRkrLTm0zyKc0cI7hY52zYQnR03G9
-         ZLbIpiXyl0QX+9giZGBm9eq5CsdopIab4TFGGyICaNTY4AwL69Wvc8cLtf2dTkkqqN8g
-         wAbjuCxch3c+dv7SS2HR5HWUSeL4fYlW2lS8pROGcbmdIAl+8y7asFCiKmje00gIGiyo
-         Kh/g==
-X-Gm-Message-State: AOAM532M/G4uA1tkdrBEqyKvFAbeqsm3+QFaIfcsm7b844xUvlayBgYS
-        bT6mXtLZ/gHov+yatATf2jnAgQ==
-X-Google-Smtp-Source: ABdhPJxXbqFIHTkb9LGW/rQzTM3c48C2VAmE9h9yQupw4WHAdviB6jCOJ4HVxKbwi1TqoSS6qMzF4w==
-X-Received: by 2002:a54:460a:: with SMTP id p10mr3214270oip.163.1643063166131;
-        Mon, 24 Jan 2022 14:26:06 -0800 (PST)
-Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
-        by smtp.gmail.com with ESMTPSA id w191sm3496715oiw.42.2022.01.24.14.26.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 14:26:05 -0800 (PST)
-Date:   Mon, 24 Jan 2022 14:26:34 -0800
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Anjelique Melendez <quic_amelende@quicinc.com>,
-        dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        collinsd@codeaurora.org, skakit@codeaurora.org
-Subject: Re: [PATCH 3/3] input: misc: pm8941-pwrkey: avoid potential null
- pointer dereference
-Message-ID: <Ye8nmnQ3F4QcTIJs@ripper>
-References: <20220120204132.17875-1-quic_amelende@quicinc.com>
- <20220120204132.17875-4-quic_amelende@quicinc.com>
- <YenpwnE3WrIEAOlm@ripper>
- <e2015c19-b73b-39a7-ba73-708b2c4552c7@quicinc.com>
- <CAE-0n50+1OU2yt2gihHHCEn-cE-CZuqa_U9W=xWCuYeCQdzExw@mail.gmail.com>
+        Mon, 24 Jan 2022 19:44:49 -0500
+Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 8BAC1580389;
+        Mon, 24 Jan 2022 19:44:48 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute1.internal (MEProxy); Mon, 24 Jan 2022 19:44:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=turner.link; h=
+        cc:cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; bh=Hg+/kJzRpMwyU8RBBG9lM29Q4G3SCNyE5PQExK
+        Qjrjg=; b=BqhV2/LX+jA/ib0C3suNSFwh8doiJauUSvPVxk+uBbNEorrAZbP1iR
+        5gNpFk2LgQ7cLfef4t7YtlVJSeAE1tg7pNCtVRYvd5IfU96XR2wTMxWkt5EgqN5O
+        xbZYT20AVlZSDY6PPGchtxHvVVZxZh+6cPw4ahe/8gK2gmshQA7Rb5oAruoy5iD9
+        0lpJlFpQzx8xBboXOi81OZfCQl5D2CoNFJMi4EUzEbEORp5XHpGY1Ae0zEJQFMcG
+        irXojU99SQzfbYshiyxeHeKgyKApQLq43HdA+0p7iRoIL+aYSMhIDLLINo475C4T
+        JiMKE71bQGkV8LTe7hWUbRgrjFnaiyOg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=Hg+/kJzRpMwyU8RBB
+        G9lM29Q4G3SCNyE5PQExKQjrjg=; b=NnF9YKvTgV+/CzqonPrhH6bqt2WlJ4u/V
+        0e5EIJr4hxAwC9+fPKCyjMjLQFL7qrbjxjXFIPrdrUTGfM7J6s3SHwnq67rYY35f
+        AAdyTDYdeqWTj4LCnd+TZ70KSgKLAVdSglmbXgwa+ajA6n/uUMX1EpFmSlYkwj/D
+        w8Xjd3ybbGdoY1DGBiQn2dxoQV8DpbD0T3IQ2uw6cxeFgp9p/TCwyaO+BhzpE0mF
+        LxR/XD6IxXdjTGUUAozzYQknbIZf0gvWcm4ExzybZRggNr/xbIys/rnbBcng0jOh
+        pyPxkrjIS0E8x1ywdW+MBOVpvlDmppAIOE3MijQ16LRpMyXnYn9Yw==
+X-ME-Sender: <xms:_0fvYQ-EfYy1x8ckLKQOASpfF1f8VG1P-YWrZzzpxTHBK9WYhNxFsA>
+    <xme:_0fvYYvQ4J3beV2uRjLa31Bh_ODGeg6dL4-lMaqx4Up28gOo3QlSTswv6YiD-Vtpg
+    IJHUY5k-MA4iSAy4w>
+X-ME-Received: <xmr:_0fvYWAFmvUzQxh0iBiGiqD4fBbfMq3-4nNy1vMXlMHn1BXiEot-KL-OXqPk>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvdekgddvhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpehfhffvufffjgfkgggtsehttdertddttddtnecuhfhrohhmpeflrghmvghsucfv
+    uhhrnhgvrhcuoehlihhnuhigkhgvrhhnvghlrdhfohhsshesughmrghrtgdqnhhonhgvrd
+    htuhhrnhgvrhdrlhhinhhkqeenucggtffrrghtthgvrhhnpeetvdefudehieeufefghfdv
+    teeitddtvefhieetuefhleevudevtddtfffggffgteenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehlihhnuhigkhgvrhhnvghlrdhfohhsshes
+    ughmrghrtgdqnhhonhgvrdhtuhhrnhgvrhdrlhhinhhk
+X-ME-Proxy: <xmx:AEjvYQf2y2zGcFgoCWUciNn9b9e2Ec0Y-WL5xhNm2ABYSv_7GMV4IA>
+    <xmx:AEjvYVPPma5oQKL6quJ8Jk66URimEX_lrvguofqERLdCMTYsPQQsZQ>
+    <xmx:AEjvYal0LCNI_T_XPDgs4DgaDQO3NOORXHUTsx1RGMbZkpFy197sug>
+    <xmx:AEjvYbv6u5vmUwQ8EAKjckw9E1-Hpdolaz4WyHTPJldFQw-3yZxqSQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 24 Jan 2022 19:44:47 -0500 (EST)
+References: <87ee57c8fu.fsf@turner.link>
+ <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+ <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
+ <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info>
+ <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
+ <87czkk1pmt.fsf@dmarc-none.turner.link>
+ <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87sftfqwlx.fsf@dmarc-none.turner.link>
+ <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
+From:   James Turner <linuxkernel.foss@dmarc-none.turner.link>
+To:     "Lazar, Lijo" <Lijo.Lazar@amd.com>
+Cc:     Alex Deucher <alexdeucher@gmail.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>
+Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
+ PCI-passed-through to Windows VM
+Date:   Mon, 24 Jan 2022 18:58:10 -0500
+In-reply-to: <BYAPR12MB4614E2CFEDDDEAABBAB986A0975E9@BYAPR12MB4614.namprd12.prod.outlook.com>
+Message-ID: <87ee4wprsx.fsf@turner.link>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAE-0n50+1OU2yt2gihHHCEn-cE-CZuqa_U9W=xWCuYeCQdzExw@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu 20 Jan 20:18 PST 2022, Stephen Boyd wrote:
+Hi Lijo,
 
-> Quoting Anjelique Melendez (2022-01-20 16:25:26)
-> >
-> > On 1/20/2022 3:01 PM, Bjorn Andersson wrote:
-> > > On Thu 20 Jan 12:41 PST 2022, Anjelique Melendez wrote:
-> > >
-> > >> From: David Collins <collinsd@codeaurora.org>
-> > >>
-> > >> Add a null check for the pwrkey->data pointer after it is assigned
-> > >> in pm8941_pwrkey_probe().  This avoids a potential null pointer
-> > >> dereference when pwrkey->data->has_pon_pbs is accessed later in
-> > >> the probe function.
-> > >>
-> > >> Change-Id: I589c4851e544d79a1863fd110b32a0b45ac03caf
-> > >> Signed-off-by: David Collins <collinsd@codeaurora.org>
-> > >> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
-> > >> ---
-> > >>  drivers/input/misc/pm8941-pwrkey.c | 4 ++++
-> > >>  1 file changed, 4 insertions(+)
-> > >>
-> > >> diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
-> > >> index 0ce00736e695..ac08ed025802 100644
-> > >> --- a/drivers/input/misc/pm8941-pwrkey.c
-> > >> +++ b/drivers/input/misc/pm8941-pwrkey.c
-> > >> @@ -263,6 +263,10 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
-> > >>
-> > >>      pwrkey->dev = &pdev->dev;
-> > >>      pwrkey->data = of_device_get_match_data(&pdev->dev);
-> > >> +    if (!pwrkey->data) {
-> > > The only way this can happen is if you add a new compatible and forget
-> > > to specify data and when that happens you will get a print in the log
-> > > somewhere, which once you realize that you don't have your pwrkey you
-> > > might be able to find among all the other prints.
-> > >
-> > > If you instead don't NULL check this pointer you will get a large splat
-> > > in the log, with callstack and all, immediately hinting you that
-> > > pwrkey->data is NULL.
-> > >
-> > >
-> > > In other words, there's already a print, a much larger print and I don't
-> > > think there's value in handling this mistake gracefully.
-> > >
-> > > Regards,
-> > > Bjorn
-> >
-> >
-> > We would like to the null pointer check in place to avoid static analysis
-> >
-> > warnings that can be easily fixed.
-> >
-> 
-> Many drivers check that their device_get_match_data() returns a valid
-> pointer. I'd like to see that API used in addition to checking the
-> return value for NULL so that we can keep the static analysis tools
-> happy. Yes it's an impossible case assuming the driver writer didn't
-> mess up but it shuts SA up and we don't really have a better solution
-> to tell tools that device_get_match_data() can't return NULL.
+> Not able to relate to how it affects gfx/mem DPM alone. Unless Alex
+> has other ideas, would you be able to enable drm debug messages and
+> share the log?
 
-I'm not saying that device_get_match_data() can't return NULL, I'm
-saying that in the very specific cases that it would return NULL it's
-useful to have a kernel panic - as that's a much faster way to figure
-out that something is wrong.
+Sure, I'm happy to provide drm debug messages. Enabling everything
+(0x1ff) generates *a lot* of log messages, though. Is there a smaller
+subset that would be useful? Fwiw, I don't see much in the full drm logs
+about the AMD GPU anyway; it's mostly about the Intel GPU.
 
-And as a timely coincidence I tried to introduce such a check last week,
-for a case where the cause of the dereference issue definitely wasn't
-obvious to me and Greg among others told me that it's wrong:
+All the messages in the system log containing "01:00" or "1002:6981" are
+identical between the two versions.
 
-https://lore.kernel.org/linux-arm-msm/20220118185612.2067031-2-bjorn.andersson@linaro.org/
+I've posted below the only places in the logs which contain "amd". The
+commit with the issue (f9b7f3703ff9) has a few drm log messages from
+amdgpu which are not present in the logs for f1688bd69ec4.
 
 
-And just to be clear, I don't care about this case in particular, but I
-fear that we have a lot of SA warnings to shut up throughout the kernel.
+# f1688bd69ec4 ("drm/amd/amdgpu:save psp ring wptr to avoid attack")
 
-Regards,
-Bjorn
+[drm] amdgpu kernel modesetting enabled.
+vga_switcheroo: detected switching method \_SB_.PCI0.GFX0.ATPX handle
+ATPX version 1, functions 0x00000033
+amdgpu: CRAT table not found
+amdgpu: Virtual CRAT table created for CPU
+amdgpu: Topology: Add CPU node
+
+
+# f9b7f3703ff9 ("drm/amdgpu/acpi: make ATPX/ATCS structures global (v2)")
+
+[drm] amdgpu kernel modesetting enabled.
+vga_switcheroo: detected switching method \_SB_.PCI0.GFX0.ATPX handle
+ATPX version 1, functions 0x00000033
+[drm:amdgpu_atif_pci_probe_handle.isra.0 [amdgpu]] Found ATIF handle \_SB_.PCI0.GFX0.ATIF
+[drm:amdgpu_atif_pci_probe_handle.isra.0 [amdgpu]] ATIF version 1
+[drm:amdgpu_acpi_detect [amdgpu]] SYSTEM_PARAMS: mask = 0x6, flags = 0x7
+[drm:amdgpu_acpi_detect [amdgpu]] Notification enabled, command code = 0xd9
+amdgpu: CRAT table not found
+amdgpu: Virtual CRAT table created for CPU
+amdgpu: Topology: Add CPU node
+
+
+Other things I'm willing to try if they'd be useful:
+
+- I could update to the 21.Q4 Radeon Pro driver in the Windows VM. (The
+  21.Q3 driver is currently installed.)
+
+- I could set up a Linux guest VM with PCI passthrough to compare to the
+  Windows VM and obtain more debugging information.
+
+- I could build a kernel with a patch applied, e.g. to disable some of
+  the changes in f9b7f3703ff9.
+
+James
