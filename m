@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C84DCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D92E9C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347996AbiAXTOl (ORCPT
+        id S1348047AbiAXTOq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:14:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35822 "EHLO
+        Mon, 24 Jan 2022 14:14:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35890 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345431AbiAXTFv (ORCPT
+        with ESMTP id S237220AbiAXTFz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:51 -0500
+        Mon, 24 Jan 2022 14:05:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 898C060915;
-        Mon, 24 Jan 2022 19:05:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59D29C340E8;
-        Mon, 24 Jan 2022 19:05:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A3D37611ED;
+        Mon, 24 Jan 2022 19:05:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6370EC340EB;
+        Mon, 24 Jan 2022 19:05:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051150;
-        bh=GI8rViXqs2bdhiSwCmv3aNUVUSabK0VoZcqOpoSJ5sQ=;
+        s=korg; t=1643051153;
+        bh=NCBCmpJAkW1jJaAwf+XUd1Y5ZBMcBU0xFh2pR28EVag=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DprSpOEfUqe0sWrAnSRpWK5Lo4kOmPcwOsJbn2axPHKKnUUYh7sOpmgshEM8HFuy4
-         tcfubf/NqN+JYYX+q19Abg8FfugmiSuSx/VsIajztV6waro6mZvrPGYH5xuCGrZzgS
-         E3qvipRKgUITwVjvok2o6evCNnuL3JJ7Ap/icR7s=
+        b=UgyXhRY6LC8KuY8P2guoOFmchF/Qhdh/5hbBEkcovaRZe0Q0ajMOtZRQkbhQ0lTEG
+         2peVIkTZcoh/dcmJVu/qDbG0khLI3G5pgfk/2Md9cxBKpWepjv0J/CKZQMGmhHA3It
+         Fh6JtDJ/rOxWoNNoTLCLLdXZiBGgdpVQfA1x/FdU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 069/186] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
-Date:   Mon, 24 Jan 2022 19:42:24 +0100
-Message-Id: <20220124183939.346173866@linuxfoundation.org>
+Subject: [PATCH 4.14 039/186] media: dmxdev: fix UAF when dvb_register_device() fails
+Date:   Mon, 24 Jan 2022 19:41:54 +0100
+Message-Id: <20220124183938.383795085@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -46,40 +48,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
+[ Upstream commit ab599eb11882f834951c436cc080c3455ba32b9b ]
 
-snd_ctl_remove() has to be called with card->controls_rwsem held (when
-called after the card instantiation).  This patch add the missing
-rwsem calls around it.
+I got a use-after-free report:
 
-Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
-Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+dvbdev: dvb_register_device: failed to create device dvb1.dvr0 (-12)
+...
+==================================================================
+BUG: KASAN: use-after-free in dvb_dmxdev_release+0xce/0x2f0
+...
+Call Trace:
+ dump_stack_lvl+0x6c/0x8b
+ print_address_description.constprop.0+0x48/0x70
+ kasan_report.cold+0x82/0xdb
+ __asan_load4+0x6b/0x90
+ dvb_dmxdev_release+0xce/0x2f0
+...
+Allocated by task 7666:
+ kasan_save_stack+0x23/0x50
+ __kasan_kmalloc+0x83/0xa0
+ kmem_cache_alloc_trace+0x22e/0x470
+ dvb_register_device+0x12f/0x980
+ dvb_dmxdev_init+0x1f3/0x230
+...
+Freed by task 7666:
+ kasan_save_stack+0x23/0x50
+ kasan_set_track+0x20/0x30
+ kasan_set_free_info+0x24/0x40
+ __kasan_slab_free+0xf2/0x130
+ kfree+0xd1/0x5c0
+ dvb_register_device.cold+0x1ac/0x1fa
+ dvb_dmxdev_init+0x1f3/0x230
+...
+
+When dvb_register_device() in dvb_dmxdev_init() fails, dvb_dmxdev_init()
+does not return a failure, and the memory pointed to by dvbdev or
+dvr_dvbdev is invalid at this point. If they are used subsequently, it
+will result in UFA or null-ptr-deref.
+
+If dvb_register_device() in dvb_dmxdev_init() fails, fix the bug by making
+dvb_dmxdev_init() return an error as well.
+
+Link: https://lore.kernel.org/linux-media/20211015085741.1203283-1-wanghai38@huawei.com
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/jack.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/media/dvb-core/dmxdev.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/sound/core/jack.c b/sound/core/jack.c
-index 5ddf81f091fa9..36cfe1c54109d 100644
---- a/sound/core/jack.c
-+++ b/sound/core/jack.c
-@@ -68,10 +68,13 @@ static int snd_jack_dev_free(struct snd_device *device)
- 	struct snd_card *card = device->card;
- 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
+diff --git a/drivers/media/dvb-core/dmxdev.c b/drivers/media/dvb-core/dmxdev.c
+index 51009b2718a3e..ab9c4dba2a695 100644
+--- a/drivers/media/dvb-core/dmxdev.c
++++ b/drivers/media/dvb-core/dmxdev.c
+@@ -1209,7 +1209,7 @@ static const struct dvb_device dvbdev_dvr = {
+ };
+ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
+ {
+-	int i;
++	int i, ret;
  
-+	down_write(&card->controls_rwsem);
- 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
- 		list_del_init(&jack_kctl->list);
- 		snd_ctl_remove(card, jack_kctl->kctl);
+ 	if (dmxdev->demux->open(dmxdev->demux) < 0)
+ 		return -EUSERS;
+@@ -1227,14 +1227,26 @@ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
+ 					    DMXDEV_STATE_FREE);
  	}
-+	up_write(&card->controls_rwsem);
-+
- 	if (jack->private_free)
- 		jack->private_free(jack);
  
+-	dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
++	ret = dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
+ 			    DVB_DEVICE_DEMUX, dmxdev->filternum);
+-	dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
++	if (ret < 0)
++		goto err_register_dvbdev;
++
++	ret = dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
+ 			    dmxdev, DVB_DEVICE_DVR, dmxdev->filternum);
++	if (ret < 0)
++		goto err_register_dvr_dvbdev;
+ 
+ 	dvb_ringbuffer_init(&dmxdev->dvr_buffer, NULL, 8192);
+ 
+ 	return 0;
++
++err_register_dvr_dvbdev:
++	dvb_unregister_device(dmxdev->dvbdev);
++err_register_dvbdev:
++	vfree(dmxdev->filter);
++	dmxdev->filter = NULL;
++	return ret;
+ }
+ 
+ EXPORT_SYMBOL(dvb_dmxdev_init);
 -- 
 2.34.1
 
