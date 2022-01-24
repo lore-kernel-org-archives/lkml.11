@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 714A7C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0C51C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449415AbiAXV2b (ORCPT
+        id S1376953AbiAXV2j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:28:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55514 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444715AbiAXVBW (ORCPT
+        Mon, 24 Jan 2022 16:28:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49988 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444684AbiAXVBR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:01:22 -0500
+        Mon, 24 Jan 2022 16:01:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79F1FB80FA3;
-        Mon, 24 Jan 2022 21:01:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F8E5C340E5;
-        Mon, 24 Jan 2022 21:01:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B67FF60907;
+        Mon, 24 Jan 2022 21:01:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95834C340E5;
+        Mon, 24 Jan 2022 21:01:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058079;
-        bh=QA8+oOIsCW4SEIRGEnJ6v+finhlrCS8bNEytK881OKw=;
+        s=korg; t=1643058076;
+        bh=hcR7x/2ZV51OMl9iVloZAl/i91VC0EVwFhKJbq5L9UI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RD1D1JegVhp8qeCr0zIYTs60MzjsvDZj8piRkzbndsQHT1WHRdKFMI+j7iaDhrJnd
-         jg7XkQL8BPDAdiShNudVgbgVb0J1lZxcjpNEm4KEljMyVd/+GLBeQr5JoeHZSAZ0tm
-         ADuU+s769atr/pFVSloJN3XCL/9DfT5xzDhdcjlg=
+        b=lBTZk2uPppCYUN5jIrnauGejT+sNaNFpyOcmYa9EDEgpQajyMR1SAnMtbs2RdiqOB
+         csTecTgv/0Frvo8cxjbiWKLqC04PLJ1jj8lTItbwfHzeCypCHNOLqL05Fqu7XU5OpR
+         djFIPSAkCB/Ke3B2k5nABlkmGfGfW/Cx4wBMk1vI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfgang Ocker <weo@reccoware.de>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        stable@vger.kernel.org,
+        Giovanni Cabiddu <giovanni.cabiddu@intel.com>,
+        Marco Chiappero <marco.chiappero@intel.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0157/1039] crypto: atmel-aes - Reestablish the correct tfm context at dequeue
-Date:   Mon, 24 Jan 2022 19:32:26 +0100
-Message-Id: <20220124184130.453484468@linuxfoundation.org>
+Subject: [PATCH 5.16 0174/1039] crypto: qat - fix undetected PFVF timeout in ACK loop
+Date:   Mon, 24 Jan 2022 19:32:43 +0100
+Message-Id: <20220124184131.103592156@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,74 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
 
-[ Upstream commit 6d48de655917a9d782953eba65de4e3db593ddf0 ]
+[ Upstream commit 5002200b4fedd7e90e4fbc2e5c42a4b3351df814 ]
 
-In case there were more requests from different tfms in the crypto
-queue, only the context of the last initialized tfm was considered.
+If the remote function did not ACK the reception of a message, the
+function __adf_iov_putmsg() could detect it as a collision.
 
-Fixes: ec2088b66f7a ("crypto: atmel-aes - Allocate aes dev at tfm init time")
-Reported-by: Wolfgang Ocker <weo@reccoware.de>
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+This was due to the fact that the collision and the timeout checks after
+the ACK loop were in the wrong order. The timeout must be checked at the
+end of the loop, so fix by swapping the order of the two checks.
+
+Fixes: 9b768e8a3909 ("crypto: qat - detect PFVF collision after ACK")
+Signed-off-by: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
+Co-developed-by: Marco Chiappero <marco.chiappero@intel.com>
+Signed-off-by: Marco Chiappero <marco.chiappero@intel.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/atmel-aes.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/crypto/qat/qat_common/adf_pf2vf_msg.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/crypto/atmel-aes.c b/drivers/crypto/atmel-aes.c
-index 9391ccc03382d..fe05584031914 100644
---- a/drivers/crypto/atmel-aes.c
-+++ b/drivers/crypto/atmel-aes.c
-@@ -960,6 +960,7 @@ static int atmel_aes_handle_queue(struct atmel_aes_dev *dd,
- 	ctx = crypto_tfm_ctx(areq->tfm);
+diff --git a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+index 59860bdaedb69..99ee17c3d06bf 100644
+--- a/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
++++ b/drivers/crypto/qat/qat_common/adf_pf2vf_msg.c
+@@ -107,6 +107,12 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
+ 		val = ADF_CSR_RD(pmisc_bar_addr, pf2vf_offset);
+ 	} while ((val & int_bit) && (count++ < ADF_PFVF_MSG_ACK_MAX_RETRY));
  
- 	dd->areq = areq;
-+	dd->ctx = ctx;
- 	start_async = (areq != new_areq);
- 	dd->is_async = start_async;
++	if (val & int_bit) {
++		dev_dbg(&GET_DEV(accel_dev), "ACK not received from remote\n");
++		val &= ~int_bit;
++		ret = -EIO;
++	}
++
+ 	if (val != msg) {
+ 		dev_dbg(&GET_DEV(accel_dev),
+ 			"Collision - PFVF CSR overwritten by remote function\n");
+@@ -114,12 +120,6 @@ static int __adf_iov_putmsg(struct adf_accel_dev *accel_dev, u32 msg, u8 vf_nr)
+ 		goto out;
+ 	}
  
-@@ -1274,7 +1275,6 @@ static int atmel_aes_init_tfm(struct crypto_skcipher *tfm)
- 
- 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_start;
- 
- 	return 0;
-@@ -1291,7 +1291,6 @@ static int atmel_aes_ctr_init_tfm(struct crypto_skcipher *tfm)
- 
- 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_ctr_start;
- 
- 	return 0;
-@@ -1783,7 +1782,6 @@ static int atmel_aes_gcm_init(struct crypto_aead *tfm)
- 
- 	crypto_aead_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_gcm_start;
- 
- 	return 0;
-@@ -1927,7 +1925,6 @@ static int atmel_aes_xts_init_tfm(struct crypto_skcipher *tfm)
- 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx) +
- 				    crypto_skcipher_reqsize(ctx->fallback_tfm));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_xts_start;
- 
- 	return 0;
-@@ -2154,7 +2151,6 @@ static int atmel_aes_authenc_init_tfm(struct crypto_aead *tfm,
- 	crypto_aead_set_reqsize(tfm, (sizeof(struct atmel_aes_authenc_reqctx) +
- 				      auth_reqsize));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_authenc_start;
- 
- 	return 0;
+-	if (val & int_bit) {
+-		dev_dbg(&GET_DEV(accel_dev), "ACK not received from remote\n");
+-		val &= ~int_bit;
+-		ret = -EIO;
+-	}
+-
+ 	/* Finished with the PFVF CSR; relinquish it and leave msg in CSR */
+ 	ADF_CSR_WR(pmisc_bar_addr, pf2vf_offset, val & ~local_in_use_mask);
+ out:
 -- 
 2.34.1
 
