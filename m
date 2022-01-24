@@ -2,225 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D877BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:23:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC7AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:23:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237744AbiAXOXL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:23:11 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:58464 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233777AbiAXOXJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:23:09 -0500
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20OEHn9d024040;
-        Mon, 24 Jan 2022 14:23:09 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=3Gi2hLt+bNgz5tm+Bi1697AiriDVx9I1AVurtmodAV4=;
- b=oZQoeoVlYFzq6XEK3fSHVHJWUNlQC49I0yWF/ZCSzZKNwv1IOvOKKqGQipdSMV73zCyj
- GbnH8NmQqqnEhdCpTPJvq9oz5+lA+j35oEV4tkEQ7gUN5cJwynogzAwz8EYCAaeq3F7b
- jnnE8a4MTmEnrGymQNb0M4n56yFblyScZCvmiv4GokS3orwPbaaDFbARqI5fRpF06n/f
- xzQxYGpk7r2hs5XEaw5VVo1MkgQ92zW7z+VCMis7K5eSBycVO8IVXOnnXgGXEM7Hpx/i
- YoKHmnLG3D4vN0g79CDxRr7lL9FCIFCK++IiL+cKl/cImjbCBsPwsr1+CIcXi0sJRPw2 Hg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dsuwab4yc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 14:23:09 +0000
-Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20OEHwvX025092;
-        Mon, 24 Jan 2022 14:23:08 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dsuwab4xd-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 14:23:08 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20OEIFDY030997;
-        Mon, 24 Jan 2022 14:23:06 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma06ams.nl.ibm.com with ESMTP id 3dr96j5a84-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 14:23:06 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20OEN2vL45875592
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 24 Jan 2022 14:23:02 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 74E0252051;
-        Mon, 24 Jan 2022 14:23:02 +0000 (GMT)
-Received: from [9.171.67.78] (unknown [9.171.67.78])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 6C67652052;
-        Mon, 24 Jan 2022 14:23:01 +0000 (GMT)
-Message-ID: <7125d611-5440-09ae-429a-7a087dd77868@linux.ibm.com>
-Date:   Mon, 24 Jan 2022 15:24:51 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 17/30] KVM: s390: mechanism to enable guest zPCI
- Interpretation
+        id S237781AbiAXOXO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:23:14 -0500
+Received: from mail-mw2nam12on2063.outbound.protection.outlook.com ([40.107.244.63]:49099
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233777AbiAXOXM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 09:23:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Y1pCJOFJ3KDR1aB4uhnPez/KR1On7+L2zuXAqzNnmM9QzvPO/KXJsLWvD7djl1GADratn07IUyWVGByXizVWG0Ba8Pu9zjP3hoabd9QMQu5OffycUTrDhMIvQdZyaIdCg9YPd8xz3u4UtFB2TsVlrxt6T/wR/Uozz9BFOGx0DGAZEqRnOafUq8VXtKyJDpBgk/+E5YrggfU5LA+tuylhV7JhQYkKUjO7v9bGcyYgdq0ieVdRXHPpsrtYoMGHbLKj/BR58A2zSbfbQR0tzRQPNuc0H9fb3otT6WNe8/OwU2TEbeXB9z7Ou9HZyIeMqZPm/xgDKND618JVP7dXfqYZIA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=gYtfSUSnGpli56zwWbfySqDQFpEYJkejph1Yaizkfxc=;
+ b=VeUk5a8sBoDSDzOih1pSDni1znWPVLw7TqUkKbfr0wNE0QJQLq8LzaxAWPZ8QkBT05fx0/zEtyh2mCWvhp8TSQJiB+fjgTCiAiv9o8WJjqmhGvd9cyjIVk7SgWpkhZnq/6ezgZe6+huJBCcM/PQSjBZI4QA0l7Il7Qbu9NJrsw4swemTVs7UywzLjoCXAz7po7TJ4vGIMSmGwdROWlhUXC1y3kttjtJrc8sDtC2jBnmGPFYnOPy8L+s9bN2Pt5wuSpKJ3uqwfWIump+U/eSclRy8tXpNu69nzmoGX7H0okClMrcFR9EXcDWoQnq8a0MtI2QNmZamEydR5rytFDIjRw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=gYtfSUSnGpli56zwWbfySqDQFpEYJkejph1Yaizkfxc=;
+ b=qJXQStmkmW0qx15dyxy+DNYIHJnIqk16Vr+XnFOIY1zaoD3qiTAenVrpsIJdiHvxhPqhMtzBJzYLvdY474Y/kvWyoizfbu+/h+NZ+K4sDtOHjirBFonptgNiYNDRFkl8x2y+IMf2mMgTWOOPhtzTfL5wbt8beh5naNd+GWi2ohI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from BYAPR12MB4614.namprd12.prod.outlook.com (2603:10b6:a03:a6::22)
+ by CH0PR12MB5059.namprd12.prod.outlook.com (2603:10b6:610:e2::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Mon, 24 Jan
+ 2022 14:23:10 +0000
+Received: from BYAPR12MB4614.namprd12.prod.outlook.com
+ ([fe80::b07d:3a18:d06d:cb0b]) by BYAPR12MB4614.namprd12.prod.outlook.com
+ ([fe80::b07d:3a18:d06d:cb0b%4]) with mapi id 15.20.4909.017; Mon, 24 Jan 2022
+ 14:23:10 +0000
+Message-ID: <9beb041b-b757-311c-5ea1-1b9fa1d63074@amd.com>
+Date:   Mon, 24 Jan 2022 19:52:49 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH] drm/amd/pm: set min,max to 0 if there is no
+ get_dpm_ultimate_freq function
 Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-18-mjrosato@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220114203145.242984-18-mjrosato@linux.ibm.com>
+To:     trix@redhat.com, evan.quan@amd.com, alexander.deucher@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, nathan@kernel.org, ndesaulniers@google.com,
+        darren.powell@amd.com, guchun.chen@amd.com,
+        Arunpravin.PaneerSelvam@amd.com, andrey.grodzovsky@amd.com
+Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+References: <20220124135259.1057828-1-trix@redhat.com>
+From:   "Lazar, Lijo" <lijo.lazar@amd.com>
+In-Reply-To: <20220124135259.1057828-1-trix@redhat.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 69c1T2xJGaRDDGl2HI-Ja3HIsCn4C4Ic
-X-Proofpoint-GUID: 4JjUKej3LRprS32yTqfFsSkk-vnLuGGj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-24_07,2022-01-24_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- mlxlogscore=999 suspectscore=0 adultscore=0 spamscore=0 malwarescore=0
- phishscore=0 mlxscore=0 impostorscore=0 clxscore=1015 bulkscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201240094
+X-ClientProxiedBy: PN3PR01CA0110.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:96::7) To BYAPR12MB4614.namprd12.prod.outlook.com
+ (2603:10b6:a03:a6::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2dca88c4-015f-4ca3-56c5-08d9df450c36
+X-MS-TrafficTypeDiagnostic: CH0PR12MB5059:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR12MB5059814B034827D9792158C2975E9@CH0PR12MB5059.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:462;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gkP0XgXtSqVzY+xwfMBvnbLVfRyfoMym+z48WJtd/5/Stv9HHNvVOvvRCtO8oeEShJJgUJRu6EK9A8UofEHHx8lQvTZmeMIg8S1r86qT4VxcYRzgl+zHuqqp2kGvXJPvRY/zuYDkQr3fgr47cEbU+QGXtYfpts1383odBKRQsjACB8KaxEHz/VDmyq1xTpAFbHrTpp0X2cU0g3dQsgiJfXV/FglDzxvRqzFISwzy//t9fqRVGffU3/g8InDRkzrTvyt4y8H087XMx5/WetzPSAQA5dVkiq7Nr43Fhp+dEiH5Bvo70+QIG4EnLp8ChQqVp5/BAZoidFGobZwuCHbWl2F19VHvf5nbfShjZBzK6GUV1xGaTg0VHzrn1ZiarAWp8spb/3Hh2Lz4Kcel1i4OpgBv7Ps3gIXqexNU8i4WQk7xUE4Kh4AxVGcLv9PsQtxOLsg0ucI4CBocCwhNCzVFaRDv2GKofsKFdXJm14lkUQc2OB1WutBHaMxwAFN33598vwEoIoHHhoG1eK3q1w6biY5Od+xDpdehLQx0DL+S9BoynqL8IQTOihnSID6jBNgmyN308Dv4ZkwzWIJeP9iDli4RJTTh4xv1XOtKD5ucHS1lZ7QsedztZoX3sGLb9ZX/zKnbLDCxN0Ktbze98NP4ITgZkYrekoJoupDo1hI/H3NI7uNOqNJjXSQEwFe5YDUU+lHIRaZ97M52PP6QWhFM00gFzu1kUuioyUZn9owz7Bot7jHgUnr9OcacNQhZ8bk3t3TdZfBiAB6IVFb0WStyXQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR12MB4614.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(316002)(36756003)(508600001)(83380400001)(4326008)(38100700002)(921005)(2616005)(8676002)(31686004)(6636002)(66556008)(2906002)(66476007)(6666004)(5660300002)(86362001)(31696002)(8936002)(53546011)(26005)(66946007)(6506007)(6486002)(6512007)(186003)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MEVPM0dXOVJ3UnUyeTlFcWFpckdnRURZbVJzWHJmN2E2cEsxZDJONm56MGRN?=
+ =?utf-8?B?OXRpcVEyOTZYbWhWZzUxY1FpM1JZcHZKMlBTTDdDVHRSTm1WMVYydmhvNFhy?=
+ =?utf-8?B?RjUwTFo5R3BuSU1kemx0MVovRm0zdGNEeitMamtGQzNmQ1lSajlNcnNDb1F5?=
+ =?utf-8?B?T2FQenBtRE5hdnBYNFBkdi9ka09JRk5PYUxQTld3NTZWNGZDTllkTGNiOVJR?=
+ =?utf-8?B?VDN3cEZtTU0xeExOVTMwMmFuWldPcmFCU2pUME1NeVUyVXBFZE1oWVpVb2p4?=
+ =?utf-8?B?c3RBOHlUUEQ0VEdLQlQzdjQxNnp2dTE2L2VWSFcreHN0dnNoU1JVcTV4SS9C?=
+ =?utf-8?B?UlNWODhidytOVXdpV3QzaG0zQnFWbGN1elJOSk5FWldDVlZBeVhneVNlQlN5?=
+ =?utf-8?B?N0VDa3ZsWUdOeVBDMG5iMW9UTStaSWh0Q1FNUENnUFd5YVpQWFBwbitjblY1?=
+ =?utf-8?B?L3JRVE1EU21VS280SWp6eFpBdzFobXN2cURwUWo3Tms4VkZhT3JCS2ZTWjN2?=
+ =?utf-8?B?cjJjS0hlUzBpS1JMUHVSZyt2MVEzQ1g5Z3ZEcUtNYWJqTFhQb3FTM2lGQkZo?=
+ =?utf-8?B?ZnZXZmprNUNmSDNyWmtxa04ydWxWbHZVL2ltUEZkVEZZcGFuOWIzRG5ldGpL?=
+ =?utf-8?B?TkVuVGsvWTgwUWZXMEZsWTFhbC9aRUpnNUFkcXZiZnY1SURpc1B0c2k4VVAr?=
+ =?utf-8?B?WjZaVEROQlFVSmJRbDFYMlI0TURsZk9LdjhvQ04wekVWb095QjBXY3ViSWQ5?=
+ =?utf-8?B?RHFrU3FkbFEwbFhud2JTVWg4RGI2UDVWYWhGMTEwRWlPaitlemxjVFYzbmts?=
+ =?utf-8?B?UmxoT2R4NHRrcjhocWF3Q05pdzVBYVA2azdveWo0QTl6RWZ0NDJ1NmZIZ3BX?=
+ =?utf-8?B?TEM2S3E4Mm5teUR1cXUzSnJ1aEYwcU9Pd3dPUFZQQUlLYUdkaFRmbDNMdEpm?=
+ =?utf-8?B?U3h6WDdieXBGcFJ3RDZDaHV4QzlDb2F6RGFkT0V4Z0N1bUVUdHRNTEY3aks3?=
+ =?utf-8?B?YW1HNlJJS0c0VVVWZ2ZlN2F1T2ZqZytLTVF6T095ZzA1YlhwQzVKc3hGcFN4?=
+ =?utf-8?B?QWl4UUxndE44Vm5KdUR0US9MRFZCR05ZcFh3bGxYb3Jhbk1OTGZScGhUYU5T?=
+ =?utf-8?B?YStzc08vejRmU1IzN3NKUFZsT3prdW0wZlFtaHpoKzJIdXpDMS9BMC9vYStx?=
+ =?utf-8?B?cHdIbzlCVXFrS3AyM1l4NDBDSUJLYnN2NzNrVHYzYkN6OTc2eGRyUjh6UVNq?=
+ =?utf-8?B?NGZibGE1V2lVeFlNT3cyWkF6dTlEMHQwSzQ4OW9rbGdMOTNsZmtxeUJ1cmFN?=
+ =?utf-8?B?eHhaTFl4Tk82YVpwdk5henhtSFM4MVFBd0hXd0pkK0FxQk9Lb0swQndseDVo?=
+ =?utf-8?B?cEQ5SFlscno1Q1p0RWROYW1kUEZtaG5ZRjZMdXBJek9zeFJLTUdMeEJweTBx?=
+ =?utf-8?B?RVMzOGVuSzlLcTNNdkhvWWdROS9CNG8xY0VsSW5uUnV5MjNKRGFna2NuazhB?=
+ =?utf-8?B?dC9FYlN3bWo3WTRWNWhXdzhUcWNxZkdQMGJGMy9mYUllMFRSeitRa3hja1hC?=
+ =?utf-8?B?NU9CS1BzTG9mZ2VCa01YeHVtMG9LajJldmErQUoyS1FsL1R5enNqd21vTTFo?=
+ =?utf-8?B?UVlydVZQbW5zVUtmN3BPSlY4MHZwcitTN3Avd2ZWSFRvWTdzaG9vZ2FIL1dM?=
+ =?utf-8?B?YnJXUnUyczNFUTF6R3MyTVRicXhjVTBJTU9BSE52UWZ1UmV4Tmw1U0x3dDZY?=
+ =?utf-8?B?UVZnVU0vL1loU3M3Z282dElBTHZpcWFRTDVTaTBJS1hqd3cvT3JJNHFzV0ht?=
+ =?utf-8?B?eHNFUlF3SmVoWloxamowbVZaR29vZlI2eEQzbjlkQWplQkQwczZ6blNSMEtG?=
+ =?utf-8?B?ZHJDUkhud3NtTGFFSVd5cFpVeTcxamZYaGorditOcnh3TUxXaWQreStHK3Z3?=
+ =?utf-8?B?cWxWdmJva3M4YlVTaG9pL0paUlFNQ0IvQWo0NWt4NmdtNXhyaFhsVWx0M2hL?=
+ =?utf-8?B?aW56WnZaMzMxWEhFZGR5SU16U0RaOW45eGpGQmhrVUFXaVVSTHk1RkNHeXkv?=
+ =?utf-8?B?S1UxQzlyeitocm1iVlF5UmpXQUpuR1NubnF5V3JQME9TaXppQ1UvNjB6UkFD?=
+ =?utf-8?Q?ZE+I=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2dca88c4-015f-4ca3-56c5-08d9df450c36
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR12MB4614.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 14:23:10.3698
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: GFxQ8sGxT0x6tEAuvASp/Y9vZM5T50iMTNO21OZe+czXaR/TE1EYNSxu/45cG7DK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5059
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 1/14/22 21:31, Matthew Rosato wrote:
-> The guest must have access to certain facilities in order to allow
-> interpretive execution of zPCI instructions and adapter event
-> notifications.  However, there are some cases where a guest might
-> disable interpretation -- provide a mechanism via which we can defer
-> enabling the associated zPCI interpretation facilities until the guest
-> indicates it wishes to use them.
+On 1/24/2022 7:22 PM, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
 > 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> clang static analysis reports this represenative problem
+> amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
+>          return clk_freq * 100;
+>                 ~~~~~~~~ ^
+> 
+> If there is no get_dpm_ultimate_freq function,
+> smu_get_dpm_freq_range returns success without setting the
+> output min,max parameters.  Because this is an extern function,
+> set the min,max to 0 when there is no get_dpm_ultimate_freq.
+> 
+> Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
+> Signed-off-by: Tom Rix <trix@redhat.com>
 > ---
->   arch/s390/include/asm/kvm_host.h |  4 ++++
->   arch/s390/kvm/kvm-s390.c         | 40 ++++++++++++++++++++++++++++++++
->   arch/s390/kvm/kvm-s390.h         | 10 ++++++++
->   3 files changed, 54 insertions(+)
+>   drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 8 +++++++-
+>   1 file changed, 7 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/s390/include/asm/kvm_host.h b/arch/s390/include/asm/kvm_host.h
-> index 3f147b8d050b..38982c1de413 100644
-> --- a/arch/s390/include/asm/kvm_host.h
-> +++ b/arch/s390/include/asm/kvm_host.h
-> @@ -252,7 +252,10 @@ struct kvm_s390_sie_block {
->   #define ECB2_IEP	0x20
->   #define ECB2_PFMFI	0x08
->   #define ECB2_ESCA	0x04
-> +#define ECB2_ZPCI_LSI	0x02
->   	__u8    ecb2;                   /* 0x0062 */
-> +#define ECB3_AISI	0x20
-> +#define ECB3_AISII	0x10
->   #define ECB3_DEA 0x08
->   #define ECB3_AES 0x04
->   #define ECB3_RI  0x01
-> @@ -938,6 +941,7 @@ struct kvm_arch{
->   	int use_cmma;
->   	int use_pfmfi;
->   	int use_skf;
-> +	int use_zpci_interp;
->   	int user_cpu_state_ctrl;
->   	int user_sigp;
->   	int user_stsi;
-> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-> index ab8b56deed11..b6c32fc3b272 100644
-> --- a/arch/s390/kvm/kvm-s390.c
-> +++ b/arch/s390/kvm/kvm-s390.c
-> @@ -1029,6 +1029,44 @@ static int kvm_s390_vm_set_crypto(struct kvm *kvm, struct kvm_device_attr *attr)
->   	return 0;
->   }
+> diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+> index 5ace30434e603..35fbe51f52eaa 100644
+> --- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+> +++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+> @@ -121,11 +121,17 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
+>   	if (!min && !max)
+>   		return -EINVAL;
 >   
-> +static void kvm_s390_vcpu_pci_setup(struct kvm_vcpu *vcpu)
-> +{
-> +	/* Only set the ECB bits after guest requests zPCI interpretation */
-> +	if (!vcpu->kvm->arch.use_zpci_interp)
-> +		return;
-> +
-> +	vcpu->arch.sie_block->ecb2 |= ECB2_ZPCI_LSI;
-> +	vcpu->arch.sie_block->ecb3 |= ECB3_AISII + ECB3_AISI;
+> -	if (smu->ppt_funcs->get_dpm_ultimate_freq)
+> +	if (smu->ppt_funcs->get_dpm_ultimate_freq) {
+>   		ret = smu->ppt_funcs->get_dpm_ultimate_freq(smu,
+>   							    clk_type,
+>   							    min,
+>   							    max);
+> +	} else {
 
-As far as I understood, the interpretation is only possible if a gisa 
-designation is associated with the PCI function via CLP enable.
+return -ENOTSUPP; would be more appropriate.
 
-Why do we setup the SIE ECB only when the guest requests for 
-interpretation and not systematically in vcpu_setup?
+Thanks,
+Lijo
 
-If ECB2_ZPCI_LSI, ECB3_AISII or ECB3_AISI have an effect when the gisa 
-designation is not specified shouldn't we have a way to clear these bits?
-
-> +}
-> +
-> +void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm)
-> +{
-> +	struct kvm_vcpu *vcpu;
-> +	int i;
-> +
-> +	/*
-> +	 * If host is configured for PCI and the necessary facilities are
-> +	 * available, turn on interpretation for the life of this guest
-> +	 */
-> +	if (!IS_ENABLED(CONFIG_PCI) || !sclp.has_zpci_lsi || !sclp.has_aisii ||
-> +	    !sclp.has_aeni || !sclp.has_aisi)
-> +		return;
-> +
-> +	mutex_lock(&kvm->lock);
-> +
-> +	kvm->arch.use_zpci_interp = 1;
-> +
-> +	kvm_s390_vcpu_block_all(kvm);
-> +
-> +	kvm_for_each_vcpu(i, vcpu, kvm) {
-> +		kvm_s390_vcpu_pci_setup(vcpu);
-> +		kvm_s390_sync_request(KVM_REQ_VSIE_RESTART, vcpu);
+> +		if (min)
+> +			*min = 0;
+> +		if (max)
+> +			*max = 0;
 > +	}
-> +
-> +	kvm_s390_vcpu_unblock_all(kvm);
-> +	mutex_unlock(&kvm->lock);
-> +}
-> +
->   static void kvm_s390_sync_request_broadcast(struct kvm *kvm, int req)
->   {
->   	int cx;
-> @@ -3282,6 +3320,8 @@ static int kvm_s390_vcpu_setup(struct kvm_vcpu *vcpu)
 >   
->   	kvm_s390_vcpu_crypto_setup(vcpu);
->   
-> +	kvm_s390_vcpu_pci_setup(vcpu);
-> +
->   	mutex_lock(&vcpu->kvm->lock);
->   	if (kvm_s390_pv_is_protected(vcpu->kvm)) {
->   		rc = kvm_s390_pv_create_cpu(vcpu, &uvrc, &uvrrc);
-> diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
-> index c07a050d757d..a2eccb8b977e 100644
-> --- a/arch/s390/kvm/kvm-s390.h
-> +++ b/arch/s390/kvm/kvm-s390.h
-> @@ -481,6 +481,16 @@ void kvm_s390_reinject_machine_check(struct kvm_vcpu *vcpu,
->    */
->   void kvm_s390_vcpu_crypto_reset_all(struct kvm *kvm);
->   
-> +/**
-> + * kvm_s390_vcpu_pci_enable_interp
-> + *
-> + * Set the associated PCI attributes for each vcpu to allow for zPCI Load/Store
-> + * interpretation as well as adapter interruption forwarding.
-> + *
-> + * @kvm: the KVM guest
-> + */
-> +void kvm_s390_vcpu_pci_enable_interp(struct kvm *kvm);
-> +
->   /**
->    * diag9c_forwarding_hz
->    *
+>   	return ret;
+>   }
 > 
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
