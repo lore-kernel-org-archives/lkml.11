@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C866C41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BF7C3526D
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374277AbiAYAQk (ORCPT
+        id S2374212AbiAYAQ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:16:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53364 "EHLO
+        Mon, 24 Jan 2022 19:16:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383050AbiAXX2E (ORCPT
+        with ESMTP id S1382466AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:04 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3B0DC01D7EC;
-        Mon, 24 Jan 2022 13:31:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C19C01D7ED;
+        Mon, 24 Jan 2022 13:31:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4AD71B8122A;
-        Mon, 24 Jan 2022 21:31:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A88C340E4;
-        Mon, 24 Jan 2022 21:30:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20BD5B8122A;
+        Mon, 24 Jan 2022 21:31:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFE4C340E4;
+        Mon, 24 Jan 2022 21:31:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059860;
-        bh=9aUcXT3IAkm0wq9zoAJHhvROrGWTCBthzqq60iNgH8g=;
+        s=korg; t=1643059865;
+        bh=f3jC77ynaSTB8B4PFcxF+om2SUl/1JBzStOOMLauPeU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CeQyGaISh2khsOeIiZXuAz4/KnypXx++/PLwgmGMlommWrLPTIx4Lcv4vMCD/7vnJ
-         urLBio6qi9tajkZ9g5IHsUCYJtbNbTOG4y8MNNcFsdUvFq/NfZIQGAdg3hnG+EtlLF
-         N6AKNazmOKq83djYHnmsAqAKOHuAqdso0aahNdw4=
+        b=jAa9fZ1MrMleXpEQU29xqnxt1FkF4bR8Y0tk92DaYDi2XgyvVsfpjgU1SVf5mPMro
+         vGA3j8KAgNk7+Ey69GP/kBfwbMg7go/z3A8uGItiZmJhrDpJs0Qo/PNTm0kD3Dmoeh
+         j/44CT4YbtpB7Rsq1PGMzxS90mDsLjpoIQNQARyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0757/1039] MIPS: Loongson64: Use three arguments for slti
-Date:   Mon, 24 Jan 2022 19:42:26 +0100
-Message-Id: <20220124184150.779947895@linuxfoundation.org>
+Subject: [PATCH 5.16 0728/1039] scripts: sphinx-pre-install: Fix ctex support on Debian
+Date:   Mon, 24 Jan 2022 19:41:57 +0100
+Message-Id: <20220124184149.801920838@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,60 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit f2c6c22fa83ab2577619009057b3ebcb5305bb03 ]
+[ Upstream commit 87d6576ddf8ac25f36597bc93ca17f6628289c16 ]
 
-LLVM's integrated assembler does not support 'slti <reg>, <imm>':
+The name of the package with ctexhook.sty is different on
+Debian/Ubuntu.
 
-<instantiation>:16:12: error: invalid operand for instruction
- slti $12, (0x6300 | 0x0008)
-           ^
-arch/mips/kernel/head.S:86:2: note: while in macro instantiation
- kernel_entry_setup # cpu specific setup
- ^
-<instantiation>:16:12: error: invalid operand for instruction
- slti $12, (0x6300 | 0x0008)
-           ^
-arch/mips/kernel/head.S:150:2: note: while in macro instantiation
- smp_slave_setup
- ^
-
-To increase compatibility with LLVM's integrated assembler, use the full
-form of 'slti <reg>, <reg>, <imm>', which matches the rest of
-arch/mips/. This does not result in any change for GNU as.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1526
-Reported-by: Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reported-by: Akira Yokosawa <akiyks@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Tested-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/63882425609a2820fac78f5e94620abeb7ed5f6f.1641429634.git.mchehab@kernel.org
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/mach-loongson64/kernel-entry-init.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/sphinx-pre-install | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h b/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
-index 13373c5144f89..efb41b3519747 100644
---- a/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
-+++ b/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
-@@ -32,7 +32,7 @@
- 	nop
- 	/* Loongson-3A R2/R3 */
- 	andi	t0, (PRID_IMP_MASK | PRID_REV_MASK)
--	slti	t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
-+	slti	t0, t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
- 	bnez	t0, 2f
- 	nop
- 1:
-@@ -63,7 +63,7 @@
- 	nop
- 	/* Loongson-3A R2/R3 */
- 	andi	t0, (PRID_IMP_MASK | PRID_REV_MASK)
--	slti	t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
-+	slti	t0, t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
- 	bnez	t0, 2f
- 	nop
- 1:
+diff --git a/scripts/sphinx-pre-install b/scripts/sphinx-pre-install
+index 288e86a9d1e58..61a79ce705ccf 100755
+--- a/scripts/sphinx-pre-install
++++ b/scripts/sphinx-pre-install
+@@ -369,6 +369,9 @@ sub give_debian_hints()
+ 	);
+ 
+ 	if ($pdf) {
++		check_missing_file(["/usr/share/texlive/texmf-dist/tex/latex/ctex/ctexhook.sty"],
++				   "texlive-lang-chinese", 2);
++
+ 		check_missing_file(["/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
+ 				   "fonts-dejavu", 2);
+ 
 -- 
 2.34.1
 
