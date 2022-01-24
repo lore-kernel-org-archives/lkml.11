@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1492C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE858C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355902AbiAXUSW (ORCPT
+        id S1359865AbiAXUSb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:18:22 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57754 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237325AbiAXUBP (ORCPT
+        Mon, 24 Jan 2022 15:18:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376355AbiAXUBb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:15 -0500
+        Mon, 24 Jan 2022 15:01:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D26CBC055AB8;
+        Mon, 24 Jan 2022 11:28:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 502156130A;
-        Mon, 24 Jan 2022 20:01:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2762CC36AFC;
-        Mon, 24 Jan 2022 20:01:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A6D2B811F9;
+        Mon, 24 Jan 2022 19:28:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98D1BC340E5;
+        Mon, 24 Jan 2022 19:28:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054474;
-        bh=oxD4SZxbk/IfGdi8uub6L4h5OJsot3+ZJKCvxuH8tI8=;
+        s=korg; t=1643052524;
+        bh=yIwPMOuMtW3hepi44yX+nWOd3v69Bk/KG7AjPaytj0o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Orj4BpxmUTGD9q9NAzzfw8567ARnugOzCwzCXFVZzatpCxh5wOl6wtKidzTeN0p16
-         SZh1FPKLAiHoZTkzctSFmCJzjKf6LSMcvadgyLiDbFs8ybV5SJIqcL5FkcZ2ylEUvH
-         CbXpSsU335OFUd5z3FH6e95VWqLRemzVme2D2tR0=
+        b=NoImzNL4ceY496bR3mNdzs6EvbubgY+GTIFsuZS9M/NpTqkhKH0fFzVLWrR/1bCZJ
+         pHdmrEvlJ2v7M9HRURNyL/1jXke5qLKiVVyT6rc/MGyfNasLcqBPzf+LhP/SOdciWo
+         bbf3L9Zl6VC+lScN4Ewys9zYfM9OI2aZ9xm32c9A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 402/563] regulator: qcom_smd: Align probe function with rpmh-regulator
-Date:   Mon, 24 Jan 2022 19:42:47 +0100
-Message-Id: <20220124184038.345900414@linuxfoundation.org>
+Subject: [PATCH 5.4 087/320] drm/bridge: ti-sn65dsi86: Set max register for regmap
+Date:   Mon, 24 Jan 2022 19:41:11 +0100
+Message-Id: <20220124183956.698481483@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,169 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
+[ Upstream commit 0b665d4af35837f0a0ae63135b84a3c187c1db3b ]
 
-The RPMh regulator driver is much newer and gets more attention, which in
-consequence makes it do a few things better. Update qcom_smd-regulator's
-probe function to mimic what rpmh-regulator does to address a couple of
-issues:
+Set the maximum register to 0xff so we can dump the registers for this
+device in debugfs.
 
-- Probe defer now works correctly, before it used to, well,
-  kinda just die.. This fixes reliable probing on (at least) PM8994,
-  because Linux apparently cannot deal with supply map dependencies yet..
-
-- Regulator data is now matched more sanely: regulator data is matched
-  against each individual regulator node name and throwing an -EINVAL if
-  data is missing, instead of just assuming everything is fine and
-  iterating over all subsequent array members.
-
-- status = "disabled" will now work for disabling individual regulators in
-  DT. Previously it didn't seem to do much if anything at all.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: a095f15c00e2 ("drm/bridge: add support for sn65dsi86 bridge driver")
+Cc: Rob Clark <robdclark@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211215002529.382383-1-swboyd@chromium.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
- 1 file changed, 70 insertions(+), 30 deletions(-)
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index bb944ee5fe3b1..03e146e98abd5 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -9,6 +9,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/driver.h>
-+#include <linux/regulator/of_regulator.h>
- #include <linux/soc/qcom/smd-rpm.h>
- 
- struct qcom_rpm_reg {
-@@ -1107,52 +1108,91 @@ static const struct of_device_id rpm_of_match[] = {
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index f1de4bb6558ca..dbb4a374cb646 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -115,6 +115,7 @@ static const struct regmap_config ti_sn_bridge_regmap_config = {
+ 	.val_bits = 8,
+ 	.volatile_table = &ti_sn_bridge_volatile_table,
+ 	.cache_type = REGCACHE_NONE,
++	.max_register = 0xFF,
  };
- MODULE_DEVICE_TABLE(of, rpm_of_match);
  
--static int rpm_reg_probe(struct platform_device *pdev)
-+/**
-+ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
-+ * @vreg:		Pointer to the individual qcom_smd-regulator resource
-+ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
-+ * @node:		Pointer to the individual qcom_smd-regulator resource
-+ *			device node
-+ * @rpm:		Pointer to the rpm bus node
-+ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
-+ *			resources defined for the top level PMIC device
-+ *
-+ * Return: 0 on success, errno on failure
-+ */
-+static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
-+				   struct device_node *node, struct qcom_smd_rpm *rpm,
-+				   const struct rpm_regulator_data *pmic_rpm_data)
- {
--	const struct rpm_regulator_data *reg;
--	const struct of_device_id *match;
--	struct regulator_config config = { };
-+	struct regulator_config config = {};
-+	const struct rpm_regulator_data *rpm_data;
- 	struct regulator_dev *rdev;
-+	int ret;
-+
-+	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
-+		if (of_node_name_eq(node, rpm_data->name))
-+			break;
-+
-+	if (!rpm_data->name) {
-+		dev_err(dev, "Unknown regulator %pOFn\n", node);
-+		return -EINVAL;
-+	}
-+
-+	vreg->dev	= dev;
-+	vreg->rpm	= rpm;
-+	vreg->type	= rpm_data->type;
-+	vreg->id	= rpm_data->id;
-+
-+	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
-+	vreg->desc.name = rpm_data->name;
-+	vreg->desc.supply_name = rpm_data->supply;
-+	vreg->desc.owner = THIS_MODULE;
-+	vreg->desc.type = REGULATOR_VOLTAGE;
-+	vreg->desc.of_match = rpm_data->name;
-+
-+	config.dev		= dev;
-+	config.of_node		= node;
-+	config.driver_data	= vreg;
-+
-+	rdev = devm_regulator_register(dev, &vreg->desc, &config);
-+	if (IS_ERR(rdev)) {
-+		ret = PTR_ERR(rdev);
-+		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int rpm_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct rpm_regulator_data *vreg_data;
-+	struct device_node *node;
- 	struct qcom_rpm_reg *vreg;
- 	struct qcom_smd_rpm *rpm;
-+	int ret;
- 
- 	rpm = dev_get_drvdata(pdev->dev.parent);
- 	if (!rpm) {
--		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
-+		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
- 		return -ENODEV;
- 	}
- 
--	match = of_match_device(rpm_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "failed to match device\n");
-+	vreg_data = of_device_get_match_data(dev);
-+	if (!vreg_data)
- 		return -ENODEV;
--	}
- 
--	for (reg = match->data; reg->name; reg++) {
-+	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
- 		if (!vreg)
- 			return -ENOMEM;
- 
--		vreg->dev = &pdev->dev;
--		vreg->type = reg->type;
--		vreg->id = reg->id;
--		vreg->rpm = rpm;
--
--		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
--
--		vreg->desc.id = -1;
--		vreg->desc.owner = THIS_MODULE;
--		vreg->desc.type = REGULATOR_VOLTAGE;
--		vreg->desc.name = reg->name;
--		vreg->desc.supply_name = reg->supply;
--		vreg->desc.of_match = reg->name;
--
--		config.dev = &pdev->dev;
--		config.driver_data = vreg;
--		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
--		if (IS_ERR(rdev)) {
--			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
--			return PTR_ERR(rdev);
-+		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
-+
-+		if (ret < 0) {
-+			of_node_put(node);
-+			return ret;
- 		}
- 	}
- 
+ static void ti_sn_bridge_write_u16(struct ti_sn_bridge *pdata,
 -- 
 2.34.1
 
