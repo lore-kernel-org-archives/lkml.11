@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6609CC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5507C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381933AbiAXUY4 (ORCPT
+        id S1356749AbiAXUYi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:24:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        Mon, 24 Jan 2022 15:24:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377240AbiAXUFL (ORCPT
+        with ESMTP id S1350049AbiAXTv3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:05:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3B2C08E803;
-        Mon, 24 Jan 2022 11:30:43 -0800 (PST)
+        Mon, 24 Jan 2022 14:51:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F7EC041885;
+        Mon, 24 Jan 2022 11:24:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D835BB8121B;
-        Mon, 24 Jan 2022 19:30:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A99C340E5;
-        Mon, 24 Jan 2022 19:30:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA1D46131E;
+        Mon, 24 Jan 2022 19:24:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEEC2C340E7;
+        Mon, 24 Jan 2022 19:24:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052640;
-        bh=1hDgkUT07j19aBXT2Go+t8wv9L8LkMKR1sBjhqc3N+M=;
+        s=korg; t=1643052266;
+        bh=GwsqnG/gu0747YUbSDPjrOYQDrFTjAXab4YSsPoCaww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwMcz/yoYwUWyH328nkwD+ufLwE/mpI/7hhweH8Yyai+8r5//Guhzixq5sk6FdEwN
-         7Hl5v8a2XBj9EzF68Y0Sj0cp5FMcFIXE5rM6FscU9ifA8gw0rZAUdMt9Enr+4gRaZ9
-         wL3TppVgR/vA7VEfe6/FQgjbUBvpw1vUmNjUt1kw=
+        b=pyrDEpS+ttu1t6NRGuIE27BFNXfrKVYPFIF2wPbczqvB5lze1n5EcwN28/3BCDIfN
+         mFgbBr3F/qJgTMG7+OzTh89FSH47no2iFfM0M1LvU6vN9x6xOFdCUC4trLuFIu0GE+
+         Kk95s9iRqrz5N9nbTeeuM/HrkoZTFf8FFHJ2MFlY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 125/320] ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
-Date:   Mon, 24 Jan 2022 19:41:49 +0100
-Message-Id: <20220124183957.929170787@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.19 217/239] dmaengine: stm32-mdma: fix STM32_MDMA_CTBR_TSEL_MASK
+Date:   Mon, 24 Jan 2022 19:44:15 +0100
+Message-Id: <20220124183950.008557386@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +50,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Amelie Delaunay <amelie.delaunay@foss.st.com>
 
-[ Upstream commit 80bd64af75b4bb11c0329bc66c35da2ddfb66d88 ]
+commit e7f110889a87307fb0fed408a5dee1707796ca04 upstream.
 
-snd_ctl_remove() has to be called with card->controls_rwsem held (when
-called after the card instantiation).  This patch add the missing
-rwsem calls around it.
+This patch fixes STM32_MDMA_CTBR_TSEL_MASK, which is [5:0], not [7:0].
 
-Fixes: d13bd412dce2 ("ALSA: hda - Manage kcontrol lists")
-Link: https://lore.kernel.org/r/20211116071314.15065-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: a4ffb13c8946 ("dmaengine: Add STM32 MDMA driver")
+Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+Link: https://lore.kernel.org/r/20211220165827.1238097-1-amelie.delaunay@foss.st.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_codec.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/dma/stm32-mdma.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
-index 326f95ce5ceb1..c8847de8388f0 100644
---- a/sound/pci/hda/hda_codec.c
-+++ b/sound/pci/hda/hda_codec.c
-@@ -1721,8 +1721,11 @@ void snd_hda_ctls_clear(struct hda_codec *codec)
- {
- 	int i;
- 	struct hda_nid_item *items = codec->mixers.list;
-+
-+	down_write(&codec->card->controls_rwsem);
- 	for (i = 0; i < codec->mixers.used; i++)
- 		snd_ctl_remove(codec->card, items[i].kctl);
-+	up_write(&codec->card->controls_rwsem);
- 	snd_array_free(&codec->mixers);
- 	snd_array_free(&codec->nids);
- }
--- 
-2.34.1
-
+--- a/drivers/dma/stm32-mdma.c
++++ b/drivers/dma/stm32-mdma.c
+@@ -194,7 +194,7 @@
+ #define STM32_MDMA_CTBR(x)		(0x68 + 0x40 * (x))
+ #define STM32_MDMA_CTBR_DBUS		BIT(17)
+ #define STM32_MDMA_CTBR_SBUS		BIT(16)
+-#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(7, 0)
++#define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(5, 0)
+ #define STM32_MDMA_CTBR_TSEL(n)		STM32_MDMA_SET(n, \
+ 						      STM32_MDMA_CTBR_TSEL_MASK)
+ 
 
 
