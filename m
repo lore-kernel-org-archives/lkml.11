@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65EFEC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC01C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838608AbiAXWqy (ORCPT
+        id S1838685AbiAXWrH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357731AbiAXVhM (ORCPT
+        Mon, 24 Jan 2022 17:47:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48390 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349372AbiAXVhK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:12 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 436B7C0604FC;
-        Mon, 24 Jan 2022 12:23:20 -0800 (PST)
+        Mon, 24 Jan 2022 16:37:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D5E11614EC;
-        Mon, 24 Jan 2022 20:23:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC0BAC340E5;
-        Mon, 24 Jan 2022 20:23:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 55ADBB811A9;
+        Mon, 24 Jan 2022 21:37:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC4CC340E4;
+        Mon, 24 Jan 2022 21:37:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055799;
-        bh=e8XSjosMnT+AVvfXTWREU5HrdWjIpTnD5X6dAIMx0uQ=;
+        s=korg; t=1643060226;
+        bh=bO33B91w8GdPLiN34Gv8tmv6269wB+3MTPbgMjpdAfc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dv8NuYBbk0R+NeLUh9TxxQJkt/lolYKZ5tT3REhtDmMwIVK+IuVzI955pU6AygiDJ
-         WalxeoO2EfR6XZiGiGOHWkOEr0IYUxAlNuPojIeK3osN6+dV+T0+T9Rhe85fXTap0S
-         iDZ8J2cXWcLR21TZWiHKlRNwPZ56jQ7caMriSxmA=
+        b=eY+3F2vHOjLYwVc+nox2cFZhesR5D435CZYk+sAKZpWsXwxQI1OrvnEea39/Lv0mm
+         T+Ryi4/BjxV9Peg9vbkyKYHhxGo7H2zBvbu/ftCLVb3pivAJjiLkfsos+KgbyUt4uD
+         6pRypY0zEbyWkvffZwRyFm230vb9LKgo1DycVp0I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 270/846] iwlwifi: mvm: fix 32-bit build in FTM
-Date:   Mon, 24 Jan 2022 19:36:27 +0100
-Message-Id: <20220124184110.240654842@linuxfoundation.org>
+        stable@vger.kernel.org, Ghalem Boudour <ghalem.boudour@6wind.com>,
+        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH 5.16 0880/1039] xfrm: fix policy lookup for ipv6 gre packets
+Date:   Mon, 24 Jan 2022 19:44:29 +0100
+Message-Id: <20220124184154.879723129@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +47,100 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Ghalem Boudour <ghalem.boudour@6wind.com>
 
-[ Upstream commit 8b0f92549f2c2458200935c12a2e2a6e80234cf5 ]
+commit bcf141b2eb551b3477b24997ebc09c65f117a803 upstream.
 
-On a 32-bit build, the division here needs to be done
-using do_div(), otherwise the compiler will try to call
-a function that doesn't exist, thus failing to build.
+On egress side, xfrm lookup is called from __gre6_xmit() with the
+fl6_gre_key field not initialized leading to policies selectors check
+failure. Consequently, gre packets are sent without encryption.
 
-Fixes: b68bd2e3143a ("iwlwifi: mvm: Add FTM initiator RTT smoothing logic")
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219111352.e56cbf614a4d.Ib98004ccd2c7a55fd883a8ea7eebd810f406dec6@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+On ingress side, INET6_PROTO_NOPOLICY was set, thus packets were not
+checked against xfrm policies. Like for egress side, fl6_gre_key should be
+correctly set, this is now done in decode_session6().
+
+Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
+Cc: stable@vger.kernel.org
+Signed-off-by: Ghalem Boudour <ghalem.boudour@6wind.com>
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv6/ip6_gre.c     |    5 ++++-
+ net/xfrm/xfrm_policy.c |   21 +++++++++++++++++++++
+ 2 files changed, 25 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-index 03e5bf5cb9094..c7fee6a2f7fd4 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-@@ -1054,7 +1054,8 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
- 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
- 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
+--- a/net/ipv6/ip6_gre.c
++++ b/net/ipv6/ip6_gre.c
+@@ -755,6 +755,7 @@ static netdev_tx_t __gre6_xmit(struct sk
+ 		fl6->daddr = key->u.ipv6.dst;
+ 		fl6->flowlabel = key->label;
+ 		fl6->flowi6_uid = sock_net_uid(dev_net(dev), NULL);
++		fl6->fl6_gre_key = tunnel_id_to_key32(key->tun_id);
  
--	rtt_avg = (alpha * rtt + (100 - alpha) * resp->rtt_avg) / 100;
-+	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
-+	do_div(rtt_avg, 100);
+ 		dsfield = key->tos;
+ 		flags = key->tun_flags &
+@@ -990,6 +991,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit
+ 		fl6.daddr = key->u.ipv6.dst;
+ 		fl6.flowlabel = key->label;
+ 		fl6.flowi6_uid = sock_net_uid(dev_net(dev), NULL);
++		fl6.fl6_gre_key = tunnel_id_to_key32(key->tun_id);
  
- 	IWL_DEBUG_INFO(mvm,
- 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
--- 
-2.34.1
-
+ 		dsfield = key->tos;
+ 		if (!(tun_info->key.tun_flags & TUNNEL_ERSPAN_OPT))
+@@ -1098,6 +1100,7 @@ static void ip6gre_tnl_link_config_commo
+ 	fl6->flowi6_oif = p->link;
+ 	fl6->flowlabel = 0;
+ 	fl6->flowi6_proto = IPPROTO_GRE;
++	fl6->fl6_gre_key = t->parms.o_key;
+ 
+ 	if (!(p->flags&IP6_TNL_F_USE_ORIG_TCLASS))
+ 		fl6->flowlabel |= IPV6_TCLASS_MASK & p->flowinfo;
+@@ -1544,7 +1547,7 @@ static void ip6gre_fb_tunnel_init(struct
+ static struct inet6_protocol ip6gre_protocol __read_mostly = {
+ 	.handler     = gre_rcv,
+ 	.err_handler = ip6gre_err,
+-	.flags       = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
++	.flags       = INET6_PROTO_FINAL,
+ };
+ 
+ static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -33,6 +33,7 @@
+ #include <net/flow.h>
+ #include <net/xfrm.h>
+ #include <net/ip.h>
++#include <net/gre.h>
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+ #include <net/mip6.h>
+ #endif
+@@ -3422,6 +3423,26 @@ decode_session6(struct sk_buff *skb, str
+ 			}
+ 			fl6->flowi6_proto = nexthdr;
+ 			return;
++		case IPPROTO_GRE:
++			if (!onlyproto &&
++			    (nh + offset + 12 < skb->data ||
++			     pskb_may_pull(skb, nh + offset + 12 - skb->data))) {
++				struct gre_base_hdr *gre_hdr;
++				__be32 *gre_key;
++
++				nh = skb_network_header(skb);
++				gre_hdr = (struct gre_base_hdr *)(nh + offset);
++				gre_key = (__be32 *)(gre_hdr + 1);
++
++				if (gre_hdr->flags & GRE_KEY) {
++					if (gre_hdr->flags & GRE_CSUM)
++						gre_key++;
++					fl6->fl6_gre_key = *gre_key;
++				}
++			}
++			fl6->flowi6_proto = nexthdr;
++			return;
++
+ #if IS_ENABLED(CONFIG_IPV6_MIP6)
+ 		case IPPROTO_MH:
+ 			offset += ipv6_optlen(exthdr);
 
 
