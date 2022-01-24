@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE7AC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355391AbiAXTlK (ORCPT
+        id S1345947AbiAXTlY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:41:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352027AbiAXT30 (ORCPT
+        Mon, 24 Jan 2022 14:41:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57448 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353662AbiAXTfK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38412C029818;
-        Mon, 24 Jan 2022 11:13:49 -0800 (PST)
+        Mon, 24 Jan 2022 14:35:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 004A5B81232;
-        Mon, 24 Jan 2022 19:13:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A0CDC340E5;
-        Mon, 24 Jan 2022 19:13:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8B81B811FC;
+        Mon, 24 Jan 2022 19:35:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E698CC340E5;
+        Mon, 24 Jan 2022 19:35:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051626;
-        bh=jSDtslNoiyB+pHNp5QUV4hVr5+6MybxkHTQSJuJJGVw=;
+        s=korg; t=1643052907;
+        bh=kd999wTU3fAGULJUDrGvKzHoIuOBNt+L72OBcGIqlCE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ArxbN4MQVuQRuaUhLQpWVC1dLDrsakYCVpkyiyPQ1KEbDFYnVx5elxuWBQuvzy98l
-         1lG0EM5HauvHXTqWbW8OAhpDN5CTSyD/1HSc1ca0W8BKJBoyJidfjMJGf6CuUsbYCO
-         gh9+h55DVCYQpfb/ryONdZ6wVK3mVVbfz9xWNnNs=
+        b=IOC9Kxhlo0nc8qtXGuGVx3nPfqpsJgYwXINNi1Feghn0kb+dB5xSiVhV42mO7dicX
+         BI5AnwOlVUFfZ8G0lHf85UswEgllMEQkM/0dQYlSSDiG0m9EzhRQPPTX/6Uni7AIzB
+         /74z6NAwqWO+4Vi0jzc6SdKpsCXcYwCo2rpPSmGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.19 034/239] media: cpia2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:12 +0100
-Message-Id: <20220124183944.217550140@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 213/320] net: mdio: Demote probed message to debug print
+Date:   Mon, 24 Jan 2022 19:43:17 +0100
+Message-Id: <20220124184000.880534322@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +48,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-commit 10729be03327f53258cb196362015ad5c6eabe02 upstream.
+[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+On systems with large numbers of MDIO bus/muxes the message indicating
+that a given MDIO bus has been successfully probed is repeated for as
+many buses we have, which can eat up substantial boot time for no
+reason, demote to a debug print.
 
-Fixes: ab33d5071de7 ("V4L/DVB (3376): Add cpia2 camera support")
-Cc: stable@vger.kernel.org      # 2.6.17
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/cpia2/cpia2_usb.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/phy/mdio_bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/media/usb/cpia2/cpia2_usb.c
-+++ b/drivers/media/usb/cpia2/cpia2_usb.c
-@@ -559,7 +559,7 @@ static int write_packet(struct usb_devic
- 			       0,	/* index */
- 			       buf,	/* buffer */
- 			       size,
--			       HZ);
-+			       1000);
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index bec73f0640d03..b0a439248ff69 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -433,7 +433,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
  
- 	kfree(buf);
- 	return ret;
-@@ -591,7 +591,7 @@ static int read_packet(struct usb_device
- 			       0,	/* index */
- 			       buf,	/* buffer */
- 			       size,
--			       HZ);
-+			       1000);
+ 	bus->state = MDIOBUS_REGISTERED;
+-	pr_info("%s: probed\n", bus->name);
++	dev_dbg(&bus->dev, "probed\n");
+ 	return 0;
  
- 	if (ret >= 0)
- 		memcpy(registers, buf, size);
+ error:
+-- 
+2.34.1
+
 
 
