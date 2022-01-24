@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF9ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:03:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26291C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345270AbiAXTDK (ORCPT
+        id S1343720AbiAXTDP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:03:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56022 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245690AbiAXS6L (ORCPT
+        Mon, 24 Jan 2022 14:03:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344710AbiAXS65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:58:11 -0500
+        Mon, 24 Jan 2022 13:58:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A61C06124C;
+        Mon, 24 Jan 2022 10:56:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 603B9B8123F;
-        Mon, 24 Jan 2022 18:58:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82A27C340E8;
-        Mon, 24 Jan 2022 18:58:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C22D1B8122F;
+        Mon, 24 Jan 2022 18:56:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C6DC340E7;
+        Mon, 24 Jan 2022 18:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050689;
-        bh=agoNMi90ZhC246six2voGL/6IHiCf2B0eTOKT3NbzG8=;
+        s=korg; t=1643050574;
+        bh=XjFCQMtChNzQu+/wivrPl0tpf7DCbKXansZw5loAbeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SqKRrne+5bqTus4Kir9dfosYya4d0CUQdQKxW144aOjcijm1ufg8odO7XNLvarew3
-         +a8q6Xuv/f+Jx5OM/XDkIMpF8916kpmaodFGaQlxL8bWTrvwcxIFyTSLTE/5hnaGkb
-         B+7k3d89SIqeP7+vKhKjUl57MdHeiKofjhi2qvvA=
+        b=hMmzBOZ9Z2UfJk79nwr4opRE8jqstYwFAzPrYgmxOyQ6sV5w2YD1WB3HYQh/020sP
+         WV7J/UH6rDa3xXAu11Hf7TJjd09UBLkM1n0Je3wlGqrzq6dQcoUZgvg8DXD4mNy4mP
+         yLSw/tpFz9POxGq6n2QfVfFG7+bq0esGpl6Am8hM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org,
-        syzbot <syzkaller@googlegroups.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 049/157] ppp: ensure minimum packet size in ppp_write()
-Date:   Mon, 24 Jan 2022 19:42:19 +0100
-Message-Id: <20220124183934.347808204@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 4.9 013/157] HID: uhid: Fix worker destroying device without any protection
+Date:   Mon, 24 Jan 2022 19:41:43 +0100
+Message-Id: <20220124183933.213789762@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -50,104 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Jann Horn <jannh@google.com>
 
-[ Upstream commit 44073187990d5629804ce0627525f6ea5cfef171 ]
+commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
 
-It seems pretty clear ppp layer assumed user space
-would always be kind to provide enough data
-in their write() to a ppp device.
+uhid has to run hid_add_device() from workqueue context while allowing
+parallel use of the userspace API (which is protected with ->devlock).
+But hid_add_device() can fail. Currently, that is handled by immediately
+destroying the associated HID device, without using ->devlock - but if
+there are concurrent requests from userspace, that's wrong and leads to
+NULL dereferences and/or memory corruption (via use-after-free).
 
-This patch makes sure user provides at least
-2 bytes.
+Fix it by leaving the HID device as-is in the worker. We can clean it up
+later, either in the UHID_DESTROY command handler or in the ->release()
+handler.
 
-It adds PPP_PROTO_LEN macro that could replace
-in net-next many occurrences of hard-coded 2 value.
-
-I replaced only one occurrence to ease backports
-to stable kernels.
-
-The bug manifests in the following report:
-
-BUG: KMSAN: uninit-value in ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
- ppp_send_frame+0x28d/0x27c0 drivers/net/ppp/ppp_generic.c:1740
- __ppp_xmit_process+0x23e/0x4b0 drivers/net/ppp/ppp_generic.c:1640
- ppp_xmit_process+0x1fe/0x480 drivers/net/ppp/ppp_generic.c:1661
- ppp_write+0x5cb/0x5e0 drivers/net/ppp/ppp_generic.c:513
- do_iter_write+0xb0c/0x1500 fs/read_write.c:853
- vfs_writev fs/read_write.c:924 [inline]
- do_writev+0x645/0xe00 fs/read_write.c:967
- __do_sys_writev fs/read_write.c:1040 [inline]
- __se_sys_writev fs/read_write.c:1037 [inline]
- __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Uninit was created at:
- slab_post_alloc_hook mm/slab.h:524 [inline]
- slab_alloc_node mm/slub.c:3251 [inline]
- __kmalloc_node_track_caller+0xe0c/0x1510 mm/slub.c:4974
- kmalloc_reserve net/core/skbuff.c:354 [inline]
- __alloc_skb+0x545/0xf90 net/core/skbuff.c:426
- alloc_skb include/linux/skbuff.h:1126 [inline]
- ppp_write+0x11d/0x5e0 drivers/net/ppp/ppp_generic.c:501
- do_iter_write+0xb0c/0x1500 fs/read_write.c:853
- vfs_writev fs/read_write.c:924 [inline]
- do_writev+0x645/0xe00 fs/read_write.c:967
- __do_sys_writev fs/read_write.c:1040 [inline]
- __se_sys_writev fs/read_write.c:1037 [inline]
- __x64_sys_writev+0xe5/0x120 fs/read_write.c:1037
- do_syscall_x64 arch/x86/entry/common.c:51 [inline]
- do_syscall_64+0x54/0xd0 arch/x86/entry/common.c:82
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Paul Mackerras <paulus@samba.org>
-Cc: linux-ppp@vger.kernel.org
-Reported-by: syzbot <syzkaller@googlegroups.com>
-Acked-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ppp/ppp_generic.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index 0a29844676f92..6287d2ad77c6d 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -71,6 +71,8 @@
- #define MPHDRLEN	6	/* multilink protocol header length */
- #define MPHDRLEN_SSN	4	/* ditto with short sequence numbers */
+--- a/drivers/hid/uhid.c
++++ b/drivers/hid/uhid.c
+@@ -33,11 +33,22 @@
  
-+#define PPP_PROTO_LEN	2
+ struct uhid_device {
+ 	struct mutex devlock;
 +
- /*
-  * An instance of /dev/ppp can be associated with either a ppp
-  * interface unit or a ppp channel.  In both cases, file->private_data
-@@ -500,6 +502,9 @@ static ssize_t ppp_write(struct file *file, const char __user *buf,
++	/* This flag tracks whether the HID device is usable for commands from
++	 * userspace. The flag is already set before hid_add_device(), which
++	 * runs in workqueue context, to allow hid_add_device() to communicate
++	 * with userspace.
++	 * However, if hid_add_device() fails, the flag is cleared without
++	 * holding devlock.
++	 * We guarantee that if @running changes from true to false while you're
++	 * holding @devlock, it's still fine to access @hid.
++	 */
+ 	bool running;
  
- 	if (!pf)
- 		return -ENXIO;
-+	/* All PPP packets should start with the 2-byte protocol */
-+	if (count < PPP_PROTO_LEN)
-+		return -EINVAL;
- 	ret = -ENOMEM;
- 	skb = alloc_skb(count + pf->hdrlen, GFP_KERNEL);
- 	if (!skb)
-@@ -1563,7 +1568,7 @@ ppp_send_frame(struct ppp *ppp, struct sk_buff *skb)
+ 	__u8 *rd_data;
+ 	uint rd_size;
+ 
++	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
+ 	struct hid_device *hid;
+ 	struct uhid_event input_buf;
+ 
+@@ -68,9 +79,18 @@ static void uhid_device_add_worker(struc
+ 	if (ret) {
+ 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
+ 
+-		hid_destroy_device(uhid->hid);
+-		uhid->hid = NULL;
++		/* We used to call hid_destroy_device() here, but that's really
++		 * messy to get right because we have to coordinate with
++		 * concurrent writes from userspace that might be in the middle
++		 * of using uhid->hid.
++		 * Just leave uhid->hid as-is for now, and clean it up when
++		 * userspace tries to close or reinitialize the uhid instance.
++		 *
++		 * However, we do have to clear the ->running flag and do a
++		 * wakeup to make sure userspace knows that the device is gone.
++		 */
+ 		uhid->running = false;
++		wake_up_interruptible(&uhid->report_wait);
  	}
+ }
  
- 	++ppp->stats64.tx_packets;
--	ppp->stats64.tx_bytes += skb->len - 2;
-+	ppp->stats64.tx_bytes += skb->len - PPP_PROTO_LEN;
+@@ -479,7 +499,7 @@ static int uhid_dev_create2(struct uhid_
+ 	void *rd_data;
+ 	int ret;
  
- 	switch (proto) {
- 	case PPP_IP:
--- 
-2.34.1
-
+-	if (uhid->running)
++	if (uhid->hid)
+ 		return -EALREADY;
+ 
+ 	rd_size = ev->u.create2.rd_size;
+@@ -560,7 +580,7 @@ static int uhid_dev_create(struct uhid_d
+ 
+ static int uhid_dev_destroy(struct uhid_device *uhid)
+ {
+-	if (!uhid->running)
++	if (!uhid->hid)
+ 		return -EINVAL;
+ 
+ 	uhid->running = false;
+@@ -569,6 +589,7 @@ static int uhid_dev_destroy(struct uhid_
+ 	cancel_work_sync(&uhid->worker);
+ 
+ 	hid_destroy_device(uhid->hid);
++	uhid->hid = NULL;
+ 	kfree(uhid->rd_data);
+ 
+ 	return 0;
 
 
