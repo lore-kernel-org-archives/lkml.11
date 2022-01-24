@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43EBCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00647C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344601AbiAXTBn (ORCPT
+        id S1344660AbiAXTBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:01:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56694 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241958AbiAXS5i (ORCPT
+        Mon, 24 Jan 2022 14:01:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55618 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343518AbiAXS5t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:38 -0500
+        Mon, 24 Jan 2022 13:57:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E024961541;
-        Mon, 24 Jan 2022 18:57:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7EB2C340E5;
-        Mon, 24 Jan 2022 18:57:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09CC5B8121C;
+        Mon, 24 Jan 2022 18:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DF25C340E5;
+        Mon, 24 Jan 2022 18:57:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050657;
-        bh=nfkrZ9vQdQXDle1iSPGaPmUkloG2VzjbMbrmFoaNN7s=;
+        s=korg; t=1643050666;
+        bh=8HhqhLYUtzscszQjAX1dCUydahnbhPvnAe7pYo2zT+Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LVNNRTFko74Fecs90MgWg52TCXeTV5ZfkPqSCuIb5b4Gbxh+htAkCOh01Ibfx5NZ2
-         Pjzwvjj8TDt1AWgytrZdUvyaNAf1XmnD9esRwmFRhrMqFGakjp9CLT9vgm8dE6bQkT
-         Z67fV0Cn8LeFnE49lVo94CEdGt6tr2RmJWpbyTjo=
+        b=zYd5Bvls/YEUFsQUt3AK+YZrMqvsifYgAWqP3YEYKCLIIZBjl4Xt7C61vzSbRDL/M
+         oLKHITcHGOKlILK4sbbiO6O1BEnAFq0ysFNhfpczQLBMmfBHlco6mQU0PvSoMhjX/g
+         cKc7gFFq2NROdJo5N++c8yGJ8FRG2NksbP72HjHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Schlabbach <robert_s@gmx.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 044/157] media: si2157: Fix "warm" tuner state detection
-Date:   Mon, 24 Jan 2022 19:42:14 +0100
-Message-Id: <20220124183934.191880514@linuxfoundation.org>
+Subject: [PATCH 4.9 073/157] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 24 Jan 2022 19:42:43 +0100
+Message-Id: <20220124183935.107317641@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,59 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Schlabbach <robert_s@gmx.net>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit a6441ea29cb2c9314654e093a1cd8020b9b851c8 ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-Commit e955f959ac52 ("media: si2157: Better check for running tuner in
-init") completely broke the "warm" tuner detection of the si2157 driver
-due to a simple endian error: The Si2157 CRYSTAL_TRIM property code is
-0x0402 and needs to be transmitted LSB first. However, it was inserted
-MSB first, causing the warm detection to always fail and spam the kernel
-log with tuner initialization messages each time the DVB frontend
-device was closed and reopened:
+Fault injection test report debugfs entry leak as follows:
 
-[  312.215682] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  312.264334] si2157 16-0060: firmware version: 3.0.5
-[  342.248593] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  342.295743] si2157 16-0060: firmware version: 3.0.5
-[  372.328574] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  372.385035] si2157 16-0060: firmware version: 3.0.5
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
 
-Also, the reinitializations were observed disturb _other_ tuners on
-multi-tuner cards such as the Hauppauge WinTV-QuadHD, leading to missed
-or errored packets when one of the other DVB frontend devices on that
-card was opened.
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
 
-Fix the order of the property code bytes to make the warm detection work
-again, also reducing the tuner initialization message in the kernel log
-to once per power-on, as well as fixing the interference with other
-tuners.
+Add the remove debugfs code to fix it.
 
-Link: https://lore.kernel.org/linux-media/trinity-2a86eb9d-6264-4387-95e1-ba7b79a4050f-1638392923493@3c-app-gmx-bap03
-
-Fixes: e955f959ac52 ("media: si2157: Better check for running tuner in init")
-Reported-by: Robert Schlabbach <robert_s@gmx.net>
-Signed-off-by: Robert Schlabbach <robert_s@gmx.net>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/tuners/si2157.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/tuners/si2157.c b/drivers/media/tuners/si2157.c
-index 72a47da0db2ae..e56837414e2c7 100644
---- a/drivers/media/tuners/si2157.c
-+++ b/drivers/media/tuners/si2157.c
-@@ -89,7 +89,7 @@ static int si2157_init(struct dvb_frontend *fe)
- 	dev_dbg(&client->dev, "\n");
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index b43f31203a430..40e6e5feb1e06 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3148,6 +3148,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
- 	/* Try to get Xtal trim property, to verify tuner still running */
--	memcpy(cmd.args, "\x15\x00\x04\x02", 4);
-+	memcpy(cmd.args, "\x15\x00\x02\x04", 4);
- 	cmd.wlen = 4;
- 	cmd.rlen = 4;
- 	ret = si2157_cmd_execute(client, &cmd);
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
