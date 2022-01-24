@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4FCEC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C02FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387716AbiAXUhI (ORCPT
+        id S1387832AbiAXUhX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:37:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34050 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379733AbiAXUMU (ORCPT
+        Mon, 24 Jan 2022 15:37:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55578 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379844AbiAXUPM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA824C061748;
-        Mon, 24 Jan 2022 11:33:59 -0800 (PST)
+        Mon, 24 Jan 2022 15:15:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 79D8D61504;
-        Mon, 24 Jan 2022 19:33:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E50CC340E5;
-        Mon, 24 Jan 2022 19:33:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 190EEB81218;
+        Mon, 24 Jan 2022 20:15:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20621C340E5;
+        Mon, 24 Jan 2022 20:15:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052838;
-        bh=brX5qYXObnA5ZMaKED0orH5yXmiH2X/NMgB9WdDLijI=;
+        s=korg; t=1643055309;
+        bh=WrCqZQRVcjEqYKrOwStT6HL75yR/zqNeI3M2IfBMBcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ICI2DdHMbZitXUrT0tZBuQ1R94iOoTakWjRNny/dE/CjCodtxQ4+x4ehR2HfEk42o
-         OtGg1jzxj8mGvvay5iFIgrw6FoZzNwQy817S4xQ4YV37a/PdfssguubRwB5lQ5mDB/
-         dJY96oyvNnyXb3VCzSlXK9IUYHVTaI8c+0NK+YPU=
+        b=0oXK0Dks5o/UTRomQV7qjT3PG3xyMNehpO5J+bPu9hCG+dxz2F5fLTmwH6MMdNkUq
+         fbI9m6jssJq4Jn5jLhER6+6Ix5+uQz0OV/8g6LLDL7SLyUlEGHqZcpeJznIeU1cldL
+         bW3TvbqeQN7zeslgZMomoNT420qroA+7N8nKgQ/0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Young <sean@mess.org>,
+        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 190/320] media: igorplugusb: receiver overflow should be reported
-Date:   Mon, 24 Jan 2022 19:42:54 +0100
-Message-Id: <20220124184000.102346977@linuxfoundation.org>
+Subject: [PATCH 5.15 108/846] media: atomisp: add missing media_device_cleanup() in atomisp_unregister_entities()
+Date:   Mon, 24 Jan 2022 19:33:45 +0100
+Message-Id: <20220124184104.708373363@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,37 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
+[ Upstream commit ce3015b7212e96db426d0c36f80fd159c91155d1 ]
 
-Without this, some IR will be missing mid-stream and we might decode
-something which never really occurred.
+After the commit 9832e155f1ed ("[media] media-device: split media
+initialization and registration"), calling media_device_cleanup()
+is needed it seems. However, currently it is missing for the module
+unload path.
 
-Signed-off-by: Sean Young <sean@mess.org>
+Note that for the probe failure path, it is already added in
+atomisp_register_entities().
+
+This patch adds the missing call of media_device_cleanup() in
+atomisp_unregister_entities().
+
+Fixes: a49d25364dfb ("staging/atomisp: Add support for the Intel IPU v2")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/igorplugusb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/staging/media/atomisp/pci/atomisp_v4l2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
-index b981f7290c1b2..1e8276040ea5b 100644
---- a/drivers/media/rc/igorplugusb.c
-+++ b/drivers/media/rc/igorplugusb.c
-@@ -64,9 +64,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
- 	if (start >= len) {
- 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
- 	} else {
--		if (overflow > 0)
-+		if (overflow > 0) {
- 			dev_warn(ir->dev, "receive overflow, at least %u lost",
- 								overflow);
-+			ir_raw_event_reset(ir->rc);
-+		}
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+index 1e324f1f656e5..0511c454e769d 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+@@ -1182,6 +1182,7 @@ static void atomisp_unregister_entities(struct atomisp_device *isp)
  
- 		do {
- 			rawir.duration = ir->buf_in[i] * 85333;
+ 	v4l2_device_unregister(&isp->v4l2_dev);
+ 	media_device_unregister(&isp->media_dev);
++	media_device_cleanup(&isp->media_dev);
+ }
+ 
+ static int atomisp_register_entities(struct atomisp_device *isp)
 -- 
 2.34.1
 
