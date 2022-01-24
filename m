@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DA0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA5C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1586837AbiAXW1Y (ORCPT
+        id S1586885AbiAXW12 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:27:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445275AbiAXVHP (ORCPT
+        Mon, 24 Jan 2022 17:27:28 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45328 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454428AbiAXVci (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:07:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF8B6C0680A2;
-        Mon, 24 Jan 2022 12:07:42 -0800 (PST)
+        Mon, 24 Jan 2022 16:32:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E0E96090A;
-        Mon, 24 Jan 2022 20:07:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C048C340E5;
-        Mon, 24 Jan 2022 20:07:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0A1B0B80CCF;
+        Mon, 24 Jan 2022 21:32:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11AD8C340E4;
+        Mon, 24 Jan 2022 21:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054861;
-        bh=EjBx6VLc9soLrs83ucHSAMI+i/H49AZLt1t7DcmUv5c=;
+        s=korg; t=1643059956;
+        bh=UMz2txwKo30Dyf7QnStl7t4dAxLp9RmLZ4ZsAfzY8d8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PgZVgII2gyzAB5LA6IDlCYoJ6FvN79V54S3xe2IgGsttIZEpPw4Yemi120X4ZN3P8
-         knR+XsZvqwNiTlF15wB8V8TZ8YoR+wApNkJZzm78hADoTY/UiPFuPcebdVYpVpU8Tr
-         +xq2DTNOwZRPfZ5eBvp6RKcWv/d+yXRxxdQKFsTM=
+        b=BW+JJHWkvjjwrIo9qMOMbmthLsfS//AexhoedBtm+KjWIjhhclNM4BCG/0cnzjVEp
+         Gabisi7o3EoDcHEm3VVYWkphj3hwvXfcP30EbblGvM/ODe28IqUp2TsWNP9Q0Oj90L
+         8EdahUkErKbbnufRsU9Jhho7nJusLc6PPTaFnxn0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 526/563] net: axienet: fix number of TX ring slots for available check
-Date:   Mon, 24 Jan 2022 19:44:51 +0100
-Message-Id: <20220124184042.624814989@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0790/1039] KVM: VMX: Read Posted Interrupt "control" exactly once per loop iteration
+Date:   Mon, 24 Jan 2022 19:42:59 +0100
+Message-Id: <20220124184151.851685870@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit aba57a823d2985a2cc8c74a2535f3a88e68d9424 upstream.
+[ Upstream commit cfb0e1306a3790eb055ebf7cdb7b0ee8a23e9b6e ]
 
-The check for the number of available TX ring slots was off by 1 since a
-slot is required for the skb header as well as each fragment. This could
-result in overwriting a TX ring slot that was still in use.
+Use READ_ONCE() when loading the posted interrupt descriptor control
+field to ensure "old" and "new" have the same base value.  If the
+compiler emits separate loads, and loads into "new" before "old", KVM
+could theoretically drop the ON bit if it were set between the loads.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 28b835d60fcc ("KVM: Update Posted-Interrupts Descriptor when vCPU is preempted")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20211009021236.4122790-27-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/x86/kvm/vmx/posted_intr.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -747,7 +747,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 	num_frag = skb_shinfo(skb)->nr_frags;
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+diff --git a/arch/x86/kvm/vmx/posted_intr.c b/arch/x86/kvm/vmx/posted_intr.c
+index 696ad48ab5daa..46fb83d6a286e 100644
+--- a/arch/x86/kvm/vmx/posted_intr.c
++++ b/arch/x86/kvm/vmx/posted_intr.c
+@@ -51,7 +51,7 @@ void vmx_vcpu_pi_load(struct kvm_vcpu *vcpu, int cpu)
  
--	if (axienet_check_tx_bd_space(lp, num_frag)) {
-+	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
- 		if (netif_queue_stopped(ndev))
- 			return NETDEV_TX_BUSY;
+ 	/* The full case.  */
+ 	do {
+-		old.control = new.control = pi_desc->control;
++		old.control = new.control = READ_ONCE(pi_desc->control);
  
-@@ -757,7 +757,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 		smp_mb();
+ 		dest = cpu_physical_id(cpu);
  
- 		/* Space might have just been freed - check again */
--		if (axienet_check_tx_bd_space(lp, num_frag))
-+		if (axienet_check_tx_bd_space(lp, num_frag + 1))
- 			return NETDEV_TX_BUSY;
+@@ -104,7 +104,7 @@ static void __pi_post_block(struct kvm_vcpu *vcpu)
+ 	unsigned int dest;
  
- 		netif_wake_queue(ndev);
+ 	do {
+-		old.control = new.control = pi_desc->control;
++		old.control = new.control = READ_ONCE(pi_desc->control);
+ 		WARN(old.nv != POSTED_INTR_WAKEUP_VECTOR,
+ 		     "Wakeup handler not enabled while the VCPU is blocked\n");
+ 
+@@ -163,7 +163,7 @@ int pi_pre_block(struct kvm_vcpu *vcpu)
+ 	}
+ 
+ 	do {
+-		old.control = new.control = pi_desc->control;
++		old.control = new.control = READ_ONCE(pi_desc->control);
+ 
+ 		WARN((pi_desc->sn == 1),
+ 		     "Warning: SN field of posted-interrupts "
+-- 
+2.34.1
+
 
 
