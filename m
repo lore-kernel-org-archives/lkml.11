@@ -2,181 +2,206 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1DC5C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 895BEC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315574AbiAYCxt (ORCPT
+        id S1315647AbiAYCx4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:53:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36198 "EHLO
+        Mon, 24 Jan 2022 21:53:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2374224AbiAYAQc (ORCPT
+        with ESMTP id S2374233AbiAYAQe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:16:32 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0DFDC038AF1
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:01:41 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id E1DB41F438F5
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643061700;
-        bh=Aho1tR4hmf+9rCfrJot4fBHsOTXqSf7FX4Duswh2g2E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c0sPGnx59UbDM0j9YK830cyRBXWpZpelPvzc/PkIkz0U9CLcoLwmedLjofkTecKRC
-         nzDyqZ3CONtZEveFqKq3F22m5OC0TJctHgC2T7JBmHtzv4NA2aDwGU3GmWAWKjY6uh
-         KBDk0hTeN8l0sac1F0Wk8KX+TP5Hoi1epLwDiBrGdu0kSNk0BIsjnYAgPUamfBuTmI
-         g1bQ6PMM+0pKnqiyBiqXAKmk0okbn7cNyfsQtkRNS+THApXH+Qa+qnZD+wfLAbaOR+
-         DhibbQ8yelG8n8j8P9jaSnf5Ye/6yDgxFA45R3viE+yPPPODP2nrdR6HPoN0CGHiNK
-         THTRQ8w1KdCQQ==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Detlev Casanova <detlev.casanova@collabora.com>
-Subject: [PATCH v3 2/9] regulator: rpi-panel: Handle I2C errors/timing to the Atmel
-Date:   Mon, 24 Jan 2022 17:01:22 -0500
-Message-Id: <20220124220129.158891-3-detlev.casanova@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124220129.158891-1-detlev.casanova@collabora.com>
-References: <20220124220129.158891-1-detlev.casanova@collabora.com>
+        Mon, 24 Jan 2022 19:16:34 -0500
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A674C038AF4;
+        Mon, 24 Jan 2022 14:02:28 -0800 (PST)
+Received: by mail-lj1-x233.google.com with SMTP id t9so2153981lji.12;
+        Mon, 24 Jan 2022 14:02:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:references:from
+         :in-reply-to:content-transfer-encoding;
+        bh=LA2Dp3HJ+xwYPvctInS9E+uCracwEfra/4AQRc/q/i0=;
+        b=BQOMDC29L23HCp50plS0yQ/NcRC/zrbZlKyPEP7hOhInoYBVaeZUH24Z7ujpjPSKCU
+         4d5+qyxQ4LX6diCvvQces0kuZXo6fg6qQu3yt0NTGH5DDu43/fuNDgAlvVsOXYzLXdMz
+         vCSGclw87g/DJtyWWcd36nAyxixpmm5bnG47Pd51uQUDkTJAcNmoz4Ih9/JgpuGBbKpQ
+         bFbgHBVgTYJAwrFnAAhhi25ez03beYnFLteivm/JrW3hVnn0bumg7OsK9xtb1QN7wuEw
+         GyY1qY4Ykg8cKArvTqWuwpZfEEFVHUuatG7sJOlp39E74OlqYrFS1yflC+tz1X+usu85
+         kPMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:references:from:in-reply-to:content-transfer-encoding;
+        bh=LA2Dp3HJ+xwYPvctInS9E+uCracwEfra/4AQRc/q/i0=;
+        b=nGczH3isvQChteDchdxjSnoKQFbi5rCDaAFMKXjoRTRfuwV0NQ3Y5KF6LBQKpJs6Kz
+         Ay+WaeRbRQXPJ1n2bQ5Nc8bWfY7BqXFrhnpJoUWN92MXzjp7CWoCoO4u7gRhzh4igo3B
+         IN2MG8EJTAL5SGMLOR8rUBhB3NRWntnI1AKwhDFaSQs5qwB688JXPiLhswOB5GzQ8IXI
+         Hto4dYQ8y9seNjM8lFjppDuZ5DRXC1+efqBtQjlkSmEZ+HLe21lPTcnZxBfA4KOju3UO
+         RKTjh9ZBPige4e7K/btzZ9HNu7uPeMoHtz5ggluaD18Z8vvWF9OG0OheMZ0qdTq1027C
+         tl+g==
+X-Gm-Message-State: AOAM530eIXzcYqz06ola3AEQ+aDfDVE+iK7nBPXxVfUFtlUWYZjNUcHT
+        rxDABgjaGdEGLdfS3Qr03S4=
+X-Google-Smtp-Source: ABdhPJz7SiTWwM1H+y+TuRStbc/VlWAwhfC2TW8BWRBWGehkS9emEkYvDVPTtYW7cM/ER4AfOJWU/Q==
+X-Received: by 2002:a2e:a4c6:: with SMTP id p6mr6750783ljm.20.1643061746303;
+        Mon, 24 Jan 2022 14:02:26 -0800 (PST)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id m21sm101912ljh.137.2022.01.24.14.02.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 14:02:25 -0800 (PST)
+Message-ID: <a823e730-853d-901b-1b9f-937e1ec76444@gmail.com>
+Date:   Mon, 24 Jan 2022 23:02:24 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [RFC PATCH 1/2] dt-bindings: mtd: partitions: Document new
+ dynamic-partitions node
+To:     Ansuel Smith <ansuelsmth@gmail.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-mtd@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220120202615.28076-1-ansuelsmth@gmail.com>
+ <20220120202615.28076-2-ansuelsmth@gmail.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <20220120202615.28076-2-ansuelsmth@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+On 20.01.2022 21:26, Ansuel Smith wrote:
+> Document new dynamic-partitions node used to provide an of node for
+> partition registred at runtime by parsers. This is required for nvmem
+> system to declare and detect nvmem-cells.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>   .../mtd/partitions/dynamic-partitions.yaml    | 59 +++++++++++++++++++
+>   1 file changed, 59 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.yaml b/Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.yaml
+> new file mode 100644
+> index 000000000000..7528e49f2d7e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.yaml
+> @@ -0,0 +1,59 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/mtd/partitions/dynamic-partitions.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Dynamic partitions
+> +
+> +description: |
+> +  This binding can be used on platforms which have partitions registered at
+> +  runtime by parsers or partition table present on the flash. Example are
+> +  partitions declared from smem parser or cmdlinepart. This will create an
+> +  of node for these dynamic partition where systems like Nvmem can get a
+> +  reference to register nvmem-cells.
+> +
+> +  The partition table should be a node named "dynamic-partitions".
+> +  Partitions are then defined as subnodes. Only the label is required
+> +  as any other data will be taken from the parser.
+> +
+> +maintainers:
+> +  - Ansuel Smith <ansuelsmth@gmail.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: dynamic-partitions
+> +
+> +patternProperties:
+> +  "@[0-9a-f]+$":
+> +    $ref: "partition.yaml#"
+> +
+> +additionalProperties: true
+> +
+> +examples:
+> +  - |
+> +    partitions {
+> +        compatible = "qcom,smem";
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +    };
+> +
+> +    dynamic-partitions {
+> +      compatible = "dynamic-partitions";
+> +
+> +      art: art {
+> +        label = "0:art";
+> +        read-only;
+> +        compatible = "nvmem-cells";
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +
+> +        macaddr_art_0: macaddr@0 {
+> +          reg = <0x0 0x6>;
+> +        };
+> +
+> +        macaddr_art_6: macaddr@6 {
+> +          reg = <0x6 0x6>;
+> +        };
+> +      };
+> +    };
 
-The Atmel is doing some things in the I2C ISR, during which
-period it will not respond to further commands. This is
-particularly true of the POWERON command.
+First of all: I fully support such a feature. I need it for Broadom
+platforms that use "brcm,bcm947xx-cfe-partitions" dynamic partitions.
+In my case bootloader partition is created dynamically (it doesn't have
+const offset and size). It contains NVMEM data however that needs to be
+described in DT.
 
-Increase delays appropriately, and retry should I2C errors be
-reported.
+This binding however looks loose and confusing to me.
 
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Signed-off-by: Detlev Casanova <detlev.casanova@collabora.com>
----
- .../regulator/rpi-panel-attiny-regulator.c    | 56 +++++++++++++++----
- 1 file changed, 46 insertions(+), 10 deletions(-)
+First of all did you really mean to use "qcom,smem"? My first guess is
+you meant "qcom,smem-part".
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index 370b9ae363dd..00fb69efcfa2 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -37,11 +37,24 @@ static const struct regmap_config attiny_regmap_config = {
- static int attiny_lcd_power_enable(struct regulator_dev *rdev)
- {
- 	unsigned int data;
-+	int ret, i;
- 
- 	regmap_write(rdev->regmap, REG_POWERON, 1);
-+	msleep(80);
-+
- 	/* Wait for nPWRDWN to go low to indicate poweron is done. */
--	regmap_read_poll_timeout(rdev->regmap, REG_PORTB, data,
--					data & BIT(0), 10, 1000000);
-+	for (i = 0; i < 20; i++) {
-+		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+		if (!ret) {
-+			if (data & BIT(0))
-+				break;
-+		}
-+		usleep_range(10000, 12000);
-+	}
-+	usleep_range(10000, 12000);
-+
-+	if (ret)
-+		pr_err("%s: regmap_read_poll_timeout failed %d\n", __func__, ret);
- 
- 	/* Default to the same orientation as the closed source
- 	 * firmware used for the panel.  Runtime rotation
-@@ -57,23 +70,34 @@ static int attiny_lcd_power_disable(struct regulator_dev *rdev)
- {
- 	regmap_write(rdev->regmap, REG_PWM, 0);
- 	regmap_write(rdev->regmap, REG_POWERON, 0);
--	udelay(1);
-+	msleep(30);
- 	return 0;
- }
- 
- static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
- {
- 	unsigned int data;
--	int ret;
-+	int ret, i;
- 
--	ret = regmap_read(rdev->regmap, REG_POWERON, &data);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(rdev->regmap, REG_POWERON, &data);
-+		if (!ret)
-+			break;
-+		usleep_range(10000, 12000);
-+	}
- 	if (ret < 0)
- 		return ret;
- 
- 	if (!(data & BIT(0)))
- 		return 0;
- 
--	ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(rdev->regmap, REG_PORTB, &data);
-+		if (!ret)
-+			break;
-+		usleep_range(10000, 12000);
-+	}
-+
- 	if (ret < 0)
- 		return ret;
- 
-@@ -103,20 +127,32 @@ static int attiny_update_status(struct backlight_device *bl)
- {
- 	struct regmap *regmap = bl_get_data(bl);
- 	int brightness = bl->props.brightness;
-+	int ret, i;
- 
- 	if (bl->props.power != FB_BLANK_UNBLANK ||
- 	    bl->props.fb_blank != FB_BLANK_UNBLANK)
- 		brightness = 0;
- 
--	return regmap_write(regmap, REG_PWM, brightness);
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_write(regmap, REG_PWM, brightness);
-+		if (!ret)
-+			break;
-+	}
-+
-+	return ret;
- }
- 
- static int attiny_get_brightness(struct backlight_device *bl)
- {
- 	struct regmap *regmap = bl_get_data(bl);
--	int ret, brightness;
-+	int ret, brightness, i;
-+
-+	for (i = 0; i < 10; i++) {
-+		ret = regmap_read(regmap, REG_PWM, &brightness);
-+		if (!ret)
-+			break;
-+	}
- 
--	ret = regmap_read(regmap, REG_PWM, &brightness);
- 	if (ret)
- 		return ret;
- 
-@@ -166,7 +202,7 @@ static int attiny_i2c_probe(struct i2c_client *i2c,
- 	}
- 
- 	regmap_write(regmap, REG_POWERON, 0);
--	mdelay(1);
-+	msleep(30);
- 
- 	config.dev = &i2c->dev;
- 	config.regmap = regmap;
--- 
-2.34.1
+Secondly can't we have partitions defined just as subnodes of the
+partitions { ... }; node?
 
+
+I think sth like below would make more sense:
+
+partitions {
+     compatible = "qcom,smem-part";
+
+     art {
+         label = "0:art";
+         read-only;
+         compatible = "nvmem-cells";
+         #address-cells = <1>;
+         #size-cells = <1>;
+
+         macaddr_art_0: macaddr@0 {
+             reg = <0x0 0x6>;
+         };
+
+         macaddr_art_6: macaddr@6 {
+             reg = <0x6 0x6>;
+         };
+     };
+};
+
+
+Then I could also reuse that for something like:
+
+partitions {
+     compatible = "brcm,bcm947xx-cfe-partitions";
+
+     partition-0 {
+         compatible = "nvmem-cells";
+         label = "boot";
+
+         #address-cells = <1>;
+         #size-cells = <1>;
+
+         mac: macaddr@0 {
+             reg = <0x100 0x6>;
+         };
+     }
+};
