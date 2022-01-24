@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E07C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2236EC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350829AbiAXTZY (ORCPT
+        id S1350717AbiAXTZO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:25:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42402 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347914AbiAXTRM (ORCPT
+        Mon, 24 Jan 2022 14:25:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45504 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343689AbiAXTQX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:17:12 -0500
+        Mon, 24 Jan 2022 14:16:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A50D3B81232;
-        Mon, 24 Jan 2022 19:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE194C340E5;
-        Mon, 24 Jan 2022 19:17:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EF7A56131E;
+        Mon, 24 Jan 2022 19:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE33C340E5;
+        Mon, 24 Jan 2022 19:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051829;
-        bh=ZpzskAMDsXMc0AdS51AL/fglH6GoxgYxnHsplx/d8gI=;
+        s=korg; t=1643051782;
+        bh=FFc92ucDMk1pQ5zu/eaB0zb0C06jywc23rLv9Ce6chs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jdPtLMtqs51dOTWw01SqFOXfxozffEuMRpty9oRC/jx5Zw1/wGAOhEMYAk1vFROJ/
-         JgMZ+b5veHGPlHiuGAPAx7kziYBE0+DEVVE8vW36X4NsvjSHHQUlSDhso8XN1p4imy
-         YaDuVH2+8jPmNrFpe1NrCHkT1LTJPUpnllsppCjo=
+        b=qAd2QmHKvqEZpJU+pt0u5MOMHeDsu4St9UlWL3O5/rgdU95VelllKkqsYTubYQcCC
+         MgHJ3H1q+2PMQYUKzRqki1cM6SS4Pjrc0L08UJlvhQYOODE8p5SPNpN7IrIfHuufTz
+         zYcd2wQlXZxsVd4Rc38QPDWobERZYWVyRLUR6Hn0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 073/239] xfrm: fix a small bug in xfrm_sa_len()
-Date:   Mon, 24 Jan 2022 19:41:51 +0100
-Message-Id: <20220124183945.447070797@linuxfoundation.org>
+Subject: [PATCH 4.19 086/239] pcmcia: rsrc_nonstatic: Fix a NULL pointer dereference in nonstatic_find_mem_region()
+Date:   Mon, 24 Jan 2022 19:42:04 +0100
+Message-Id: <20220124183945.853766473@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,36 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 7770a39d7c63faec6c4f33666d49a8cb664d0482 ]
+[ Upstream commit 977d2e7c63c3d04d07ba340b39987742e3241554 ]
 
-copy_user_offload() will actually push a struct struct xfrm_user_offload,
-which is different than (struct xfrm_state *)->xso
-(struct xfrm_state_offload)
+In nonstatic_find_mem_region(), pcmcia_make_resource() is assigned to
+res and used in pci_bus_alloc_resource(). There a dereference of res
+in pci_bus_alloc_resource(), which could lead to a NULL pointer
+dereference on failure of pcmcia_make_resource().
 
-Fixes: d77e38e612a01 ("xfrm: Add an IPsec hardware offloading API")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fix this bug by adding a check of res.
+
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_PCCARD_NONSTATIC=y show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 49b1153adfe1 ("pcmcia: move all pcmcia_resource_ops providers into one module")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/pcmcia/rsrc_nonstatic.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index f94abe1fdd58f..87932f6ad9d75 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -2813,7 +2813,7 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
- 	if (x->props.extra_flags)
- 		l += nla_total_size(sizeof(x->props.extra_flags));
- 	if (x->xso.dev)
--		 l += nla_total_size(sizeof(x->xso));
-+		 l += nla_total_size(sizeof(struct xfrm_user_offload));
- 	if (x->props.smark.v | x->props.smark.m) {
- 		l += nla_total_size(sizeof(x->props.smark.v));
- 		l += nla_total_size(sizeof(x->props.smark.m));
+diff --git a/drivers/pcmcia/rsrc_nonstatic.c b/drivers/pcmcia/rsrc_nonstatic.c
+index 5cb29d6951df2..123420cac6b54 100644
+--- a/drivers/pcmcia/rsrc_nonstatic.c
++++ b/drivers/pcmcia/rsrc_nonstatic.c
+@@ -815,6 +815,9 @@ static struct resource *nonstatic_find_mem_region(u_long base, u_long num,
+ 	unsigned long min, max;
+ 	int ret, i, j;
+ 
++	if (!res)
++		return NULL;
++
+ 	low = low || !(s->features & SS_CAP_PAGE_REGS);
+ 
+ 	data.mask = align - 1;
 -- 
 2.34.1
 
