@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07584C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFF6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351856AbiAXT6b (ORCPT
+        id S1347487AbiAXT6n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:58:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239566AbiAXT0Z (ORCPT
+        Mon, 24 Jan 2022 14:58:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39434 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235030AbiAXTl6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:26:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552BAC034610;
-        Mon, 24 Jan 2022 11:12:20 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E83836124F;
-        Mon, 24 Jan 2022 19:12:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA8CDC340E5;
-        Mon, 24 Jan 2022 19:12:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 07DDB61531;
+        Mon, 24 Jan 2022 19:41:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EE5C340E5;
+        Mon, 24 Jan 2022 19:41:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051539;
-        bh=M1h1ylrbaY8zqTnpxtxKlP/Przg1xO3AgcgaBoGjoBo=;
+        s=korg; t=1643053316;
+        bh=R3SYvAKMvIzdD7gfCpbP1XBCEPkDA2vnynlCBsHNGkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E66Jg5OVMO2mSG47DctMg1PcdnyIxCFXIffw4JAC3KVrd6UEVMnChexQpISX9ZlIh
-         RcPyMtOX7p+8vhjNYLhhPE31ERA0Lmi1wXgZ8cedZ1S20BxrzLdZz4vIBUvJ9W/5dd
-         CBE7CYg+GewhCi10gS9NlU6aF5wJlbaJb8SHrXp4=
+        b=rkZK7Zcf3WQ8VeGS05zSWVUQIAMb8aHPCg6Q5bYhxklt9jSki9TEdaOIBa6GXbLEF
+         n7ZJqK+GzntK9ROiBxG36wi67Md6mrt7Pmc6wkWx9BFQf+v+zsYAUsGth58MriSZ8t
+         xGJ2lUZZGQ6Dy0ylekSkmHFr55zJIAZ/AB8+ztw0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.14 177/186] bcmgenet: add WOL IRQ check
-Date:   Mon, 24 Jan 2022 19:44:12 +0100
-Message-Id: <20220124183942.805887072@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.10 025/563] media: dib0700: fix undefined behavior in tuner shutdown
+Date:   Mon, 24 Jan 2022 19:36:30 +0100
+Message-Id: <20220124184025.297665168@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Michael Kuron <michael.kuron@gmail.com>
 
-commit 9deb48b53e7f4056c2eaa2dc2ee3338df619e4f6 upstream.
+commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
 
-The driver neglects to check the result of platform_get_irq_optional()'s
-call and blithely passes the negative error codes to devm_request_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL.
-Stop calling devm_request_irq() with the invalid IRQ #s.
+This fixes a problem where closing the tuner would leave it in a state
+where it would not tune to any channel when reopened. This problem was
+discovered as part of https://github.com/hselasky/webcamd/issues/16.
 
-Fixes: 8562056f267d ("net: bcmgenet: request Wake-on-LAN interrupt")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
+behavior. The driver still worked in practice as the overflow would in
+most environments result in 0, which rendered the line a no-op. When
+running the driver as part of webcamd however, the overflow could lead
+to 0xff due to optimizations by the compiler, which would, in the end,
+improperly shut down the tuner.
+
+The bug is a regression introduced in the commit referenced below. The
+present patch causes identical behavior to before that commit for
+adap->id equal to 0 or 1. The driver does not contain support for
+dib0700 devices with more adapters, assuming such even exist.
+
+Tests have been performed with the Xbox One Digital TV Tuner on amd64.
+Not all dib0700 devices are expected to be affected by the regression;
+this code path is only taken by those with incorrect endpoint numbers.
+
+Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
+
+Cc: stable@vger.kernel.org
+Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
+Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -3519,10 +3519,12 @@ static int bcmgenet_probe(struct platfor
- 
- 	/* Request the WOL interrupt and advertise suspend if available */
- 	priv->wol_irq_disabled = true;
--	err = devm_request_irq(&pdev->dev, priv->wol_irq, bcmgenet_wol_isr, 0,
--			       dev->name, priv);
--	if (!err)
--		device_set_wakeup_capable(&pdev->dev, 1);
-+	if (priv->wol_irq > 0) {
-+		err = devm_request_irq(&pdev->dev, priv->wol_irq,
-+				       bcmgenet_wol_isr, 0, dev->name, priv);
-+		if (!err)
-+			device_set_wakeup_capable(&pdev->dev, 1);
-+	}
- 
- 	/* Set the needed headroom to account for any possible
- 	 * features enabling/disabling at runtime
+--- a/drivers/media/usb/dvb-usb/dib0700_core.c
++++ b/drivers/media/usb/dvb-usb/dib0700_core.c
+@@ -618,8 +618,6 @@ int dib0700_streaming_ctrl(struct dvb_us
+ 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->id);
+-		else
+-			st->channel_state |=	1 << ~(adap->id);
+ 	} else {
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
 
 
