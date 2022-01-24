@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECBB6C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 839DDC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380460AbiAXUQW (ORCPT
+        id S1380642AbiAXUQj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58624 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352132AbiAXT5K (ORCPT
+        Mon, 24 Jan 2022 15:16:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42774 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245216AbiAXT6W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:10 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1915C047CCC;
-        Mon, 24 Jan 2022 11:27:38 -0800 (PST)
+        Mon, 24 Jan 2022 14:58:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51A7261489;
-        Mon, 24 Jan 2022 19:27:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30CD5C340E5;
-        Mon, 24 Jan 2022 19:27:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CF86B811F9;
+        Mon, 24 Jan 2022 19:58:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F10AC36AEB;
+        Mon, 24 Jan 2022 19:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052457;
-        bh=tCpkJdo/lVhf/9FgRTea5S8mpKM/e4FwMDtYImGTn0k=;
+        s=korg; t=1643054298;
+        bh=qDhR74ah9joXahceyFh9WO/6szkMtojGpRt+7xDLEdM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EaFy3bWH26c/tYxvVmdMe4mRrDjAc9l1Dj7cCiqIaLsZ5P84ENm6BFtGaCF7Hih3c
-         vSzuDTSsqr3DEpVpWlxbNsUKCEpvqJPqTvXI1VXD2oCQKwpsw8W/kYqiGak231WWnC
-         xXNchRwQvppQfF2/dWdxudjS9aG39r4betxmd05c=
+        b=P0/EHm9o5X2igDsYwgKZ/QNcG5/pVIn2Farmc7d2o+QjSkHnwhNk+rSGtgA+Aw+WG
+         5z00aryneVgdqTGzN7FnglUlOPhXihJ18ed0Rq/rIncQgwcypjXnLxcwbtBtgBY+vh
+         zFplSCtfaYLWKy51kglZMB29BSKSJW+QKxMF1t/4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Chen-Yu Tsai <wenst@chromium.org>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 5.4 033/320] drm/rockchip: dsi: Reconfigure hardware on resume()
-Date:   Mon, 24 Jan 2022 19:40:17 +0100
-Message-Id: <20220124183954.879107046@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 343/563] media: rcar-vin: Update format alignment constraints
+Date:   Mon, 24 Jan 2022 19:41:48 +0100
+Message-Id: <20220124184036.289671836@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,112 +50,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
 
-commit e584cdc1549932f87a2707b56bc588cfac5d89e0 upstream.
+[ Upstream commit da6911f330d40cfe115a37249e47643eff555e82 ]
 
-Since commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
-LCDC mux to bind()"), we perform most HW configuration in the bind()
-function. This configuration may be lost on suspend/resume, so we
-need to call it again. That may lead to errors like this after system
-suspend/resume:
+This change fixes two issues with the size constraints for buffers.
 
-  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
-  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
+- There is no width alignment constraint for RGB formats. Prior to this
+  change they were treated as YUV and as a result were more restricted
+  than needed. Add a new check to differentiate between the two.
 
-Tested on Acer Chromebook Tab 10 (RK3399 Gru-Scarlet).
+- The minimum width and height supported is 5x2, not 2x4, this is an
+  artifact from the driver's soc-camera days. Fix this incorrect
+  assumption.
 
-Note that early mailing list versions of this driver borrowed Rockchip's
-downstream/BSP solution, to do HW configuration in mode_set() (which
-*is* called at the appropriate pre-enable() times), but that was
-discarded along the way. I've avoided that still, because mode_set()
-documentation doesn't suggest this kind of purpose as far as I can tell.
-
-Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.2.I4e9d93aadb00b1ffc7d506e3186a25492bf0b732@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+ drivers/media/platform/rcar-vin/rcar-v4l2.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-+++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-@@ -231,6 +231,8 @@ struct dw_mipi_dsi_rockchip {
- 	struct dw_mipi_dsi *dmd;
- 	const struct rockchip_dw_dsi_chip_data *cdata;
- 	struct dw_mipi_dsi_plat_data pdata;
-+
-+	bool dsi_bound;
- };
- 
- struct dphy_pll_parameter_map {
-@@ -821,6 +823,8 @@ static int dw_mipi_dsi_rockchip_bind(str
- 		goto out_pm_runtime;
+diff --git a/drivers/media/platform/rcar-vin/rcar-v4l2.c b/drivers/media/platform/rcar-vin/rcar-v4l2.c
+index 3e7a3ae2a6b97..0bbe6f9f92062 100644
+--- a/drivers/media/platform/rcar-vin/rcar-v4l2.c
++++ b/drivers/media/platform/rcar-vin/rcar-v4l2.c
+@@ -175,20 +175,27 @@ static void rvin_format_align(struct rvin_dev *vin, struct v4l2_pix_format *pix)
+ 		break;
  	}
  
-+	dsi->dsi_bound = true;
-+
- 	return 0;
+-	/* HW limit width to a multiple of 32 (2^5) for NV12/16 else 2 (2^1) */
++	/* Hardware limits width alignment based on format. */
+ 	switch (pix->pixelformat) {
++	/* Multiple of 32 (2^5) for NV12/16. */
+ 	case V4L2_PIX_FMT_NV12:
+ 	case V4L2_PIX_FMT_NV16:
+ 		walign = 5;
+ 		break;
+-	default:
++	/* Multiple of 2 (2^1) for YUV. */
++	case V4L2_PIX_FMT_YUYV:
++	case V4L2_PIX_FMT_UYVY:
+ 		walign = 1;
+ 		break;
++	/* No multiple for RGB. */
++	default:
++		walign = 0;
++		break;
+ 	}
  
- out_pm_runtime:
-@@ -840,6 +844,8 @@ static void dw_mipi_dsi_rockchip_unbind(
- 	if (dsi->is_slave)
- 		return;
+ 	/* Limit to VIN capabilities */
+-	v4l_bound_align_image(&pix->width, 2, vin->info->max_width, walign,
+-			      &pix->height, 4, vin->info->max_height, 2, 0);
++	v4l_bound_align_image(&pix->width, 5, vin->info->max_width, walign,
++			      &pix->height, 2, vin->info->max_height, 0, 0);
  
-+	dsi->dsi_bound = false;
-+
- 	dw_mipi_dsi_unbind(dsi->dmd);
- 
- 	clk_disable_unprepare(dsi->pllref_clk);
-@@ -904,6 +910,36 @@ static const struct dw_mipi_dsi_host_ops
- 	.detach = dw_mipi_dsi_rockchip_host_detach,
- };
- 
-+static int __maybe_unused dw_mipi_dsi_rockchip_resume(struct device *dev)
-+{
-+	struct dw_mipi_dsi_rockchip *dsi = dev_get_drvdata(dev);
-+	int ret;
-+
-+	/*
-+	 * Re-configure DSI state, if we were previously initialized. We need
-+	 * to do this before rockchip_drm_drv tries to re-enable() any panels.
-+	 */
-+	if (dsi->dsi_bound) {
-+		ret = clk_prepare_enable(dsi->grf_clk);
-+		if (ret) {
-+			DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
-+			return ret;
-+		}
-+
-+		dw_mipi_dsi_rockchip_config(dsi);
-+		if (dsi->slave)
-+			dw_mipi_dsi_rockchip_config(dsi->slave);
-+
-+		clk_disable_unprepare(dsi->grf_clk);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops dw_mipi_dsi_rockchip_pm_ops = {
-+	SET_LATE_SYSTEM_SLEEP_PM_OPS(NULL, dw_mipi_dsi_rockchip_resume)
-+};
-+
- static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -1089,6 +1125,7 @@ struct platform_driver dw_mipi_dsi_rockc
- 	.remove		= dw_mipi_dsi_rockchip_remove,
- 	.driver		= {
- 		.of_match_table = dw_mipi_dsi_rockchip_dt_ids,
-+		.pm	= &dw_mipi_dsi_rockchip_pm_ops,
- 		.name	= "dw-mipi-dsi-rockchip",
- 	},
- };
+ 	pix->bytesperline = rvin_format_bytesperline(vin, pix);
+ 	pix->sizeimage = rvin_format_sizeimage(pix);
+-- 
+2.34.1
+
 
 
