@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06664C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1AEDC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356741AbiAXXeI (ORCPT
+        id S1386180AbiAXXeZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:34:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41868 "EHLO
+        Mon, 24 Jan 2022 18:34:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1837266AbiAXWnh (ORCPT
+        with ESMTP id S1838147AbiAXWp5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:43:37 -0500
+        Mon, 24 Jan 2022 17:45:57 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2573BC06B5B3;
-        Mon, 24 Jan 2022 13:05:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75209C058C85;
+        Mon, 24 Jan 2022 13:06:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2A1DB812A4;
-        Mon, 24 Jan 2022 21:05:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C774C340E5;
-        Mon, 24 Jan 2022 21:05:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CD03B81188;
+        Mon, 24 Jan 2022 21:06:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F6B7C340E7;
+        Mon, 24 Jan 2022 21:06:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058327;
-        bh=600Hk523HnsrfpbtHaU+cy1D3C+NbPHA0zIhJYZR4X4=;
+        s=korg; t=1643058392;
+        bh=Im0F7TeBzMVqLpyKF0wuta0Ts2zCgNoPJI3BvjCBY7M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W/aQrUEW++ieWvYbgzy7sLoOLBK7IgPwr0NmLiOLi79Caq7W67fEplGND2UCxF0//
-         p5zwvndYwqlBYs/CXm7h+5SEmzq53f8fuigknZOcdGB4vQSHxCeqAas5HHpaBkvFur
-         deAvd2hnxejESX9HSU0IGG9gggdTIKQQPc0CtUUk=
+        b=PhwSalTul+K2/x85M2gQLqwQal/tWUV+NJBWjJtusaDX9dId9AY9Yw19AZFsxVPxc
+         /8vQpRliXZiyBQPrU2YSiORsqiNS6fnduCsJ/jr3z5XxeLffCvSofobxxcNsShX969
+         ogO+D9ny4bvluqMZxQhZZpwjPdLymNHjqmLBx0aQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Pratyush Yadav <p.yadav@ti.com>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0253/1039] mtd: spi-nor: Fix mtd size for s3an flashes
-Date:   Mon, 24 Jan 2022 19:34:02 +0100
-Message-Id: <20220124184133.828118858@linuxfoundation.org>
+Subject: [PATCH 5.16 0275/1039] crypto: stm32/cryp - fix lrw chaining mode
+Date:   Mon, 24 Jan 2022 19:34:24 +0100
+Message-Id: <20220124184134.532045141@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,42 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit f656b419d41aabafb6b526abc3988dfbf2e5c1ba ]
+[ Upstream commit fa97dc2d48b476ea98199d808d3248d285987e99 ]
 
-As it was before the blamed commit, s3an_nor_scan() was called
-after mtd size was set with params->size, and it overwrote the mtd
-size value with '8 * nor->page_size * nor->info->n_sectors' when
-XSR_PAGESIZE was set. With the introduction of
-s3an_post_sfdp_fixups(), we missed to update the mtd size for the
-s3an flashes. Fix the mtd size by updating both nor->params->size,
-(which will update the mtd_info size later on) and nor->mtd.size
-(which is used in spi_nor_set_addr_width()).
+This fixes the lrw autotest if lrw uses the CRYP as the AES block cipher
+provider (as ecb(aes)). At end of request, CRYP should not update the IV
+in case of ECB chaining mode. Indeed the ECB chaining mode never uses
+the IV, but the software LRW chaining mode uses the IV field as
+a counter and due to the (unexpected) update done by CRYP while the AES
+block process, the counter get a wrong value when the IV overflow.
 
-Fixes: 641edddb4f43 ("mtd: spi-nor: Add s3an_post_sfdp_fixups()")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
-Link: https://lore.kernel.org/r/20211207140254.87681-2-tudor.ambarus@microchip.com
+Fixes: 5f49f18d27cd ("crypto: stm32/cryp - update to return iv_out")
+
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/spi-nor/xilinx.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/crypto/stm32/stm32-cryp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mtd/spi-nor/xilinx.c b/drivers/mtd/spi-nor/xilinx.c
-index 0658e47564bac..0ac1d681e84d5 100644
---- a/drivers/mtd/spi-nor/xilinx.c
-+++ b/drivers/mtd/spi-nor/xilinx.c
-@@ -69,7 +69,8 @@ static int xilinx_nor_setup(struct spi_nor *nor,
- 		page_size = (nor->params->page_size == 264) ? 256 : 512;
- 		nor->params->page_size = page_size;
- 		nor->mtd.writebufsize = page_size;
--		nor->mtd.size = 8 * page_size * nor->info->n_sectors;
-+		nor->params->size = 8 * page_size * nor->info->n_sectors;
-+		nor->mtd.size = nor->params->size;
- 		nor->mtd.erasesize = 8 * page_size;
- 	} else {
- 		/* Flash in Default addressing mode */
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index 061db567908ae..9943836a5c25c 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -644,7 +644,7 @@ static void stm32_cryp_finish_req(struct stm32_cryp *cryp, int err)
+ 		/* Phase 4 : output tag */
+ 		err = stm32_cryp_read_auth_tag(cryp);
+ 
+-	if (!err && (!(is_gcm(cryp) || is_ccm(cryp))))
++	if (!err && (!(is_gcm(cryp) || is_ccm(cryp) || is_ecb(cryp))))
+ 		stm32_cryp_get_iv(cryp);
+ 
+ 	if (cryp->sgs_copied) {
 -- 
 2.34.1
 
