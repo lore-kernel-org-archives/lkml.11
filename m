@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB6C4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17597C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410788AbiAYAaX (ORCPT
+        id S3410845AbiAYAab (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:30:23 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52794 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454509AbiAXVdB (ORCPT
+        Mon, 24 Jan 2022 19:30:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44990 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454296AbiAXVcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:01 -0500
+        Mon, 24 Jan 2022 16:32:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED07F614F1;
-        Mon, 24 Jan 2022 21:33:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCD73C340E4;
-        Mon, 24 Jan 2022 21:32:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4CBDB81243;
+        Mon, 24 Jan 2022 21:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7B0EC340E5;
+        Mon, 24 Jan 2022 21:32:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059980;
-        bh=/4ymQkPm05sQ9np1VxxhcptsSvkId83WEA1PyJ18I4Y=;
+        s=korg; t=1643059929;
+        bh=fXl+KhFkFNVvhrHdnsaC4Mi8oIwGhOlNMCYqYf9MWAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VQwHHWl0iRP9zfSQijm/Q/MEcCm18FwZaX/aOrnAXij4D6MCqLTOGI0Bc8D406zFo
-         G2wqn2dhugrf2T5eeQjg4rNDJHWhPSXVv5ul+wVlohKL8D1LL6ZGrxl9uP/QBJMVAV
-         AcZ85WSjgY8Di8OVuP0+yywfzYfIjpdd9cED6YGM=
+        b=W39tyQoXMDCNKjzUemHzN0lfVs5toboe4putFKZIOkm7drpJiN26tcEH/KF8umoJL
+         UyMCPElxLtjOUSSRSzF1R3jZZW1OE+U0HUJFPLtkjYyezVGKcd7Zax0lRYOZBs1r7e
+         fjU7+SuNjLLD5lSNiqkS+ARhnyFPdXu1J4hgRwH0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        stable@vger.kernel.org, Qizhong Cheng <qizhong.cheng@mediatek.com>,
+        Jianjun Wang <jianjun.wang@mediatek.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Tzung-Bi Shih <tzungbi@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0766/1039] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-Date:   Mon, 24 Jan 2022 19:42:35 +0100
-Message-Id: <20220124184151.064536602@linuxfoundation.org>
+Subject: [PATCH 5.16 0782/1039] PCI: mediatek-gen3: Disable DVFSRC voltage request
+Date:   Mon, 24 Jan 2022 19:42:51 +0100
+Message-Id: <20220124184151.571970380@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,42 +50,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+From: Jianjun Wang <jianjun.wang@mediatek.com>
 
-[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
+[ Upstream commit ab344fd43f2958726d17d651c0cb692c67dca382 ]
 
-The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
-It's better to have same data type in struct dw_scl_sda_cfg as well.
+When the DVFSRC (dynamic voltage and frequency scaling resource collector)
+feature is not implemented, the PCIe hardware will assert a voltage request
+signal when exit from the L1 PM Substates to request a specific Vcore
+voltage, but cannot receive the voltage ready signal, which will cause
+the link to fail to exit the L1 PM Substates.
 
-Reported-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Disable DVFSRC voltage request by default, we need to find a common way to
+enable it in the future.
+
+Link: https://lore.kernel.org/r/20211015063602.29058-1-jianjun.wang@mediatek.com
+Fixes: d3bf75b579b9 ("PCI: mediatek-gen3: Add MediaTek Gen3 driver for MT8192")
+Tested-by: Qizhong Cheng <qizhong.cheng@mediatek.com>
+Signed-off-by: Jianjun Wang <jianjun.wang@mediatek.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Tzung-Bi Shih <tzungbi@google.com>
+Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/pci/controller/pcie-mediatek-gen3.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
-index 0f409a4c2da0d..5b45941bcbddc 100644
---- a/drivers/i2c/busses/i2c-designware-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
-@@ -39,10 +39,10 @@ enum dw_pci_ctl_id_t {
- };
+diff --git a/drivers/pci/controller/pcie-mediatek-gen3.c b/drivers/pci/controller/pcie-mediatek-gen3.c
+index 17c59b0d6978b..21207df680ccf 100644
+--- a/drivers/pci/controller/pcie-mediatek-gen3.c
++++ b/drivers/pci/controller/pcie-mediatek-gen3.c
+@@ -79,6 +79,9 @@
+ #define PCIE_ICMD_PM_REG		0x198
+ #define PCIE_TURN_OFF_LINK		BIT(4)
  
- struct dw_scl_sda_cfg {
--	u32 ss_hcnt;
--	u32 fs_hcnt;
--	u32 ss_lcnt;
--	u32 fs_lcnt;
-+	u16 ss_hcnt;
-+	u16 fs_hcnt;
-+	u16 ss_lcnt;
-+	u16 fs_lcnt;
- 	u32 sda_hold;
- };
++#define PCIE_MISC_CTRL_REG		0x348
++#define PCIE_DISABLE_DVFSRC_VLT_REQ	BIT(1)
++
+ #define PCIE_TRANS_TABLE_BASE_REG	0x800
+ #define PCIE_ATR_SRC_ADDR_MSB_OFFSET	0x4
+ #define PCIE_ATR_TRSL_ADDR_LSB_OFFSET	0x8
+@@ -297,6 +300,11 @@ static int mtk_pcie_startup_port(struct mtk_pcie_port *port)
+ 	val &= ~PCIE_INTX_ENABLE;
+ 	writel_relaxed(val, port->base + PCIE_INT_ENABLE_REG);
  
++	/* Disable DVFSRC voltage request */
++	val = readl_relaxed(port->base + PCIE_MISC_CTRL_REG);
++	val |= PCIE_DISABLE_DVFSRC_VLT_REQ;
++	writel_relaxed(val, port->base + PCIE_MISC_CTRL_REG);
++
+ 	/* Assert all reset signals */
+ 	val = readl_relaxed(port->base + PCIE_RST_CTRL_REG);
+ 	val |= PCIE_MAC_RSTB | PCIE_PHY_RSTB | PCIE_BRG_RSTB | PCIE_PE_RSTB;
 -- 
 2.34.1
 
