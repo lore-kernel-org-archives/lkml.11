@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A632C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E4FEC3526D
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3424009AbiAYCi3 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:38:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38960 "EHLO
+        id S234666AbiAYCmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:42:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385328AbiAXUcZ (ORCPT
+        with ESMTP id S1356738AbiAXUce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:32:25 -0500
+        Mon, 24 Jan 2022 15:32:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEFB4C07A97D;
-        Mon, 24 Jan 2022 11:43:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E33F9C07E5FF;
+        Mon, 24 Jan 2022 11:44:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4310861553;
-        Mon, 24 Jan 2022 19:43:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21517C340E5;
-        Mon, 24 Jan 2022 19:43:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FCDD6131E;
+        Mon, 24 Jan 2022 19:44:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B22FC340E5;
+        Mon, 24 Jan 2022 19:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053427;
-        bh=bk5v1u8Hg9MWexuPCgwEWZSSVhmQfiM7lztRzglm+zo=;
+        s=korg; t=1643053446;
+        bh=3FxDnd5tdF3uG58BoU/HCrS2q0GC+iXbM6f0zyUjWJM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nyPX1znAdYpyT2NccgFosXeAjQRt532Y/v3EtlzfBqYzHb6ZMjGFwweYSh3vIMvi0
-         g/Ru8+pSzM5uNs3bk+0E+q5BKim8gMtzKdfjmdWd2fi4GrSO0DAiKmjXCPcGNMdzlV
-         qrfqNx+R+h2IEm3+nHLZIHn3XDxzfU16+Yna5dBI=
+        b=Z0OO7gRHPku2WuFIeJ6uI49TU335lnRs11KvnaTiSxE9yvcabTRm9TKeueXMwJMdv
+         IOCiPxna8Huis2su7vCgps4y//kD03tnNKkbHsjv7oVGj3jVRHx0qCsjpQ5unr+fGa
+         R5E6AFKxCfDBce/vzj2aTZaO22bM/uXfn6lo055Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 061/563] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
-Date:   Mon, 24 Jan 2022 19:37:06 +0100
-Message-Id: <20220124184026.529150093@linuxfoundation.org>
+Subject: [PATCH 5.10 066/563] media: atomisp: fix punit_ddr_dvfs_enable() argument for mrfld_power up case
+Date:   Mon, 24 Jan 2022 19:37:11 +0100
+Message-Id: <20220124184026.696478758@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,50 +49,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Li <benl@squareup.com>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit cfdf6b19e750f7de8ae71a26932f63b52e3bf74c ]
+[ Upstream commit 5bfbf65fcca7325e4d89d289b3c286e11220e386 ]
 
-The linear mapping between the BD rate field and the driver's 5GHz
-legacy rates table (wcn_5ghz_rates) does not only apply for the latter
-four rates -- it applies to all eight rates.
+When comparing with intel-aero atomisp [1], it looks like
+punit_ddr_dvfs_enable() should take `false` as an argument on mrfld_power
+up case.
 
-Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
-Signed-off-by: Benjamin Li <benl@squareup.com>
-Tested-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211104010548.1107405-3-benl@squareup.com
+Code from the intel-aero kernel [1]:
+
+        int atomisp_mrfld_power_down(struct atomisp_device *isp)
+        {
+        [...]
+		/*WA:Enable DVFS*/
+		if (IS_CHT)
+			punit_ddr_dvfs_enable(true);
+
+        int atomisp_mrfld_power_up(struct atomisp_device *isp)
+        {
+        [...]
+		/*WA for PUNIT, if DVFS enabled, ISP timeout observed*/
+		if (IS_CHT)
+			punit_ddr_dvfs_enable(false);
+
+This patch fixes the inverted argument as per the intel-aero code, as
+well as its comment. While here, fix space issues for comments in
+atomisp_mrfld_power().
+
+Note that it does not seem to be possible to unify the up/down cases for
+punit_ddr_dvfs_enable(), i.e., we can't do something like the following:
+
+        if (IS_CHT)
+		punit_ddr_dvfs_enable(!enable);
+
+because according to the intel-aero code [1], the DVFS is disabled
+before "writing 0x0 to ISPSSPM0 bit[1:0]" and the DVFS is enabled after
+"writing 0x3 to ISPSSPM0 bit[1:0]".
+
+[1] https://github.com/intel-aero/linux-kernel/blob/a1b673258feb915268377275130c5c5df0eafc82/drivers/media/pci/atomisp/atomisp_driver/atomisp_v4l2.c#L431-L514
+
+Fixes: 0f441fd70b1e ("media: atomisp: simplify the power down/up code")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/txrx.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/staging/media/atomisp/pci/atomisp_v4l2.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index f76de106570d2..f33e7228a1010 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -237,7 +237,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 	const struct wcn36xx_rate *rate;
- 	struct ieee80211_hdr *hdr;
- 	struct wcn36xx_rx_bd *bd;
--	struct ieee80211_supported_band *sband;
- 	u16 fc, sn;
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+index d35506f643609..687e94e8b6ce5 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+@@ -711,15 +711,15 @@ static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
+ 
+ 	dev_dbg(isp->dev, "IUNIT power-%s.\n", enable ? "on" : "off");
+ 
+-	/*WA:Enable DVFS*/
++	/* WA for P-Unit, if DVFS enabled, ISP timeout observed */
+ 	if (IS_CHT && enable)
+-		punit_ddr_dvfs_enable(true);
++		punit_ddr_dvfs_enable(false);
  
  	/*
-@@ -295,12 +294,11 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 		status.enc_flags = rate->encoding_flags;
- 		status.bw = rate->bw;
- 		status.rate_idx = rate->mcs_or_legacy_index;
--		sband = wcn->hw->wiphy->bands[status.band];
- 		status.nss = 1;
+ 	 * FIXME:WA for ECS28A, with this sleep, CTS
+ 	 * android.hardware.camera2.cts.CameraDeviceTest#testCameraDeviceAbort
+ 	 * PASS, no impact on other platforms
+-	*/
++	 */
+ 	if (IS_BYT && enable)
+ 		msleep(10);
  
- 		if (status.band == NL80211_BAND_5GHZ &&
- 		    status.encoding == RX_ENC_LEGACY &&
--		    status.rate_idx >= sband->n_bitrates) {
-+		    status.rate_idx >= 4) {
- 			/* no dsss rates in 5Ghz rates table */
- 			status.rate_idx -= 4;
- 		}
+@@ -727,7 +727,7 @@ static int atomisp_mrfld_power(struct atomisp_device *isp, bool enable)
+ 	iosf_mbi_modify(BT_MBI_UNIT_PMC, MBI_REG_READ, MRFLD_ISPSSPM0,
+ 			val, MRFLD_ISPSSPM0_ISPSSC_MASK);
+ 
+-	/*WA:Enable DVFS*/
++	/* WA:Enable DVFS */
+ 	if (IS_CHT && !enable)
+ 		punit_ddr_dvfs_enable(true);
+ 
 -- 
 2.34.1
 
