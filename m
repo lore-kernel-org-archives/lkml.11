@@ -2,191 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FBC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 11:20:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EECC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 11:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237343AbiAXLUm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 06:20:42 -0500
-Received: from mga04.intel.com ([192.55.52.120]:6204 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237305AbiAXLUl (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 06:20:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643023240; x=1674559240;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=z5+zKDyv2t6O/MjLljgEyWIANm+BRD/wDU22TyFSZvw=;
-  b=bv8Fw8xLuxmSY2ZrKUlHYL/vLauG7MlHiu7RjkSbBbcimuIx1/q/Se3Y
-   SfGgtNjUDfnmCTa3n0Rp2tPxfXVaD1uLh9iwtyY9qJtc/rOAd+2XDbmU1
-   QiI1PyaQKVIADU+Ti8EFhp74tv08xugeNG6Nz+EkLeu9aD2oAsn4KhLC1
-   srbyXG1nYsHoHEgINAuG7mgbVjGEJsbW/jYWzFSX9ipNUdQXMVwhLz9h9
-   uCNg//FjdhOCz56E004aaIwzWVCA6eYHxNRaCNZBS8alghvJeZ+lHhzD2
-   l+ZMrgXQvMa0YCHCxsnv0DLfe9zG327hDCrxeC3wfNIWUllO09DLWgV2V
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="244856743"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="244856743"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 03:20:40 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="580334598"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 24 Jan 2022 03:20:38 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBxOn-000IEl-EG; Mon, 24 Jan 2022 11:20:37 +0000
-Date:   Mon, 24 Jan 2022 19:20:27 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     ratnesh-r1 <me.ratnesh682@gmail.com>
-Cc:     kbuild-all@lists.01.org, me.ratnesh682@gmail.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <christian@brauner.io>,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: android: ashmem: Declared file operation with
- const keyword
-Message-ID: <202201241907.69JG769L-lkp@intel.com>
-References: <1643008187-75859-1-git-send-email-me.ratnesh682@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1643008187-75859-1-git-send-email-me.ratnesh682@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S237414AbiAXLWs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 06:22:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237370AbiAXLWq (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 06:22:46 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 269D6C06173D
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 03:22:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8144601B6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EAC4C340E4;
+        Mon, 24 Jan 2022 11:22:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643023365;
+        bh=VyxG/pwigPCS1qtw6sFfWpjbd3AUsqzfq85f5XpVJPQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pmFQjW6p+07glUnG9xEvwNEf+uCjFCDiE1T6IqmluPemYBfL1eWRr389FQCX1B3yB
+         jvyimsSo9JRz6TXCqLzxM5KrkmLy7E0fEXUB6xsWPIugBx4sD1TlcEOHDqEeUDcIb9
+         /EpCzcOtcP4fo1oC2Lfv+nDnzmhfXlSKmMaoTntedv8oYLGIwzKOxUnb0X9AENR5Zt
+         Pa3NZ6FORyx9Op/G/yUyxcKihbzxCyz5vnr0w22IwuNoi0huAdmF3JkdThNCO+C4gu
+         N9VlevOlUESsFxLSdCIaWHtxdv+r/Di3yBhT2lcMV+sVxHcN365/77O/5Vh+Fh7Igj
+         8EpEC+RbH2/eA==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nBxQo-002Mnd-Ti; Mon, 24 Jan 2022 11:22:42 +0000
+Date:   Mon, 24 Jan 2022 11:22:42 +0000
+Message-ID: <87bl018jjx.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     John Garry <john.garry@huawei.com>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        chenxiang <chenxiang66@hisilicon.com>,
+        Shameer Kolothum <shameerali.kolothum.thodi@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "liuqi (BA)" <liuqi115@huawei.com>
+Subject: Re: PCI MSI issue for maxcpus=1
+In-Reply-To: <5f529b4e-1f6c-5a7d-236c-09ebe3a7db29@huawei.com>
+References: <78615d08-1764-c895-f3b7-bfddfbcbdfb9@huawei.com>
+        <87a6g8vp8k.wl-maz@kernel.org>
+        <19d55cdf-9ef7-e4a3-5ae5-0970f0d7751b@huawei.com>
+        <87v8yjyjc0.wl-maz@kernel.org>
+        <87k0ey9122.wl-maz@kernel.org>
+        <5f529b4e-1f6c-5a7d-236c-09ebe3a7db29@huawei.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: john.garry@huawei.com, tglx@linutronix.de, chenxiang66@hisilicon.com, shameerali.kolothum.thodi@huawei.com, linux-kernel@vger.kernel.org, liuqi115@huawei.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi ratnesh-r1,
+On Mon, 17 Jan 2022 11:59:58 +0000,
+John Garry <john.garry@huawei.com> wrote:
+> 
+> On 17/01/2022 09:14, Marc Zyngier wrote:
+> >> I guess that for managed interrupts, it shouldn't matter, as these
+> >> interrupts should only be used when the relevant CPUs come online.
+> >> 
+> >> Would something like below help? Totally untested, as I don't have a
+> >> Multi-MSI capable device that I can plug in a GICv3 system (maybe I
+> >> should teach that to a virtio device...).
+> 
+> JFYI, NVMe PCI uses the same API (pci_alloc_irq_vectors_affinity()),
+> but does not suffer from this issue - for maxcpus=1 the driver looks
+> to only want 1x vector
+> 
+> > Actually, if the CPU online status doesn't matter for managed affinity
+> > interrupts, then the correct fix is this:
+> > 
+> > diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+> > index d25b7a864bbb..af4e72a6be63 100644
+> > --- a/drivers/irqchip/irq-gic-v3-its.c
+> > +++ b/drivers/irqchip/irq-gic-v3-its.c
+> > @@ -1624,7 +1624,7 @@ static int its_select_cpu(struct irq_data *d,
+> >     		cpu = cpumask_pick_least_loaded(d, tmpmask);
+> >   	} else {
+> > -		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
+> > +		cpumask_copy(tmpmask, irq_data_get_affinity_mask(d));
+> >     		/* If we cannot cross sockets, limit the search to
+> > that node */
+> >   		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
+> 
+> That produces a warn:
+> 
+> [ 7.833025] ------------[ cut here ]------------
+> [ 7.837634] WARNING: CPU: 0 PID: 44 at
+> drivers/irqchip/irq-gic-v3-its.c:298 valid_col+0x14/0x24
+> [ 7.846324] Modules linked in:
+> [ 7.849368] CPU: 0 PID: 44 Comm: kworker/0:3 Not tainted 5.16.0-dirty #119
+> [ 7.856230] Hardware name: Huawei D06 /D06, BIOS Hisilicon D06 UEFI
+> RC0 - V1.16.01 03/15/2019
+> [ 7.864740] Workqueue: events work_for_cpu_fn
+> [ 7.869088] pstate: 804000c9 (Nzcv daIF +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [ 7.876037] pc : valid_col+0x14/0x24
+> [ 7.879600] lr : its_build_mapti_cmd+0x84/0x90
 
-Thank you for the patch! Yet something to improve:
+Ah, of course. the CPU hasn't booted yet, so its collection isn't
+mapped. I was hoping that the core code would keep the interrupt in
+shutdown state, but it doesn't seem to be the case...
 
-[auto build test ERROR on staging/staging-testing]
+> Apart from this, I assume that if another cpu comes online later in
+> the affinity mask I would figure that we want to target the irq to
+> that cpu (which I think we would not do here).
 
-url:    https://github.com/0day-ci/linux/commits/ratnesh-r1/staging-android-ashmem-Declared-file-operation-with-const-keyword/20220124-151116
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git fa783154524a71ab74e293cd8251155e5971952b
-config: x86_64-randconfig-a002-20220124 (https://download.01.org/0day-ci/archive/20220124/202201241907.69JG769L-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce (this is a W=1 build):
-        # https://github.com/0day-ci/linux/commit/c24fe2afe4abdf6436628abd13a0109ec420f373
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review ratnesh-r1/staging-android-ashmem-Declared-file-operation-with-const-keyword/20220124-151116
-        git checkout c24fe2afe4abdf6436628abd13a0109ec420f373
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+That's probably also something that should come from core code, as
+we're not really in a position to decide this in the ITS driver.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+	M.
 
-All errors (new ones prefixed by >>):
-
-   drivers/staging/android/ashmem.c: In function 'ashmem_mmap':
->> drivers/staging/android/ashmem.c:431:16: error: assignment of read-only variable 'vmfile_fops'
-     431 |    vmfile_fops = *vmfile->f_op;
-         |                ^
->> drivers/staging/android/ashmem.c:432:21: error: assignment of member 'mmap' in read-only object
-     432 |    vmfile_fops.mmap = ashmem_vmfile_mmap;
-         |                     ^
->> drivers/staging/android/ashmem.c:433:34: error: assignment of member 'get_unmapped_area' in read-only object
-     433 |    vmfile_fops.get_unmapped_area =
-         |                                  ^
-
-
-vim +/vmfile_fops +431 drivers/staging/android/ashmem.c
-
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  377  
-11980c2ac4ccfa Robert Love        2011-12-20  378  static int ashmem_mmap(struct file *file, struct vm_area_struct *vma)
-11980c2ac4ccfa Robert Love        2011-12-20  379  {
-c24fe2afe4abdf ratnesh-r1         2022-01-23  380  	static const struct file_operations vmfile_fops;
-11980c2ac4ccfa Robert Love        2011-12-20  381  	struct ashmem_area *asma = file->private_data;
-11980c2ac4ccfa Robert Love        2011-12-20  382  	int ret = 0;
-11980c2ac4ccfa Robert Love        2011-12-20  383  
-11980c2ac4ccfa Robert Love        2011-12-20  384  	mutex_lock(&ashmem_mutex);
-11980c2ac4ccfa Robert Love        2011-12-20  385  
-11980c2ac4ccfa Robert Love        2011-12-20  386  	/* user needs to SET_SIZE before mapping */
-59848d6aded59a Alistair Strachan  2018-06-19  387  	if (!asma->size) {
-11980c2ac4ccfa Robert Love        2011-12-20  388  		ret = -EINVAL;
-11980c2ac4ccfa Robert Love        2011-12-20  389  		goto out;
-11980c2ac4ccfa Robert Love        2011-12-20  390  	}
-11980c2ac4ccfa Robert Love        2011-12-20  391  
-8632c614565d0c Alistair Strachan  2018-06-19  392  	/* requested mapping size larger than object size */
-8632c614565d0c Alistair Strachan  2018-06-19  393  	if (vma->vm_end - vma->vm_start > PAGE_ALIGN(asma->size)) {
-11980c2ac4ccfa Robert Love        2011-12-20  394  		ret = -EINVAL;
-11980c2ac4ccfa Robert Love        2011-12-20  395  		goto out;
-11980c2ac4ccfa Robert Love        2011-12-20  396  	}
-11980c2ac4ccfa Robert Love        2011-12-20  397  
-11980c2ac4ccfa Robert Love        2011-12-20  398  	/* requested protection bits must match our allowed protection mask */
-59848d6aded59a Alistair Strachan  2018-06-19  399  	if ((vma->vm_flags & ~calc_vm_prot_bits(asma->prot_mask, 0)) &
-59848d6aded59a Alistair Strachan  2018-06-19  400  	    calc_vm_prot_bits(PROT_MASK, 0)) {
-11980c2ac4ccfa Robert Love        2011-12-20  401  		ret = -EPERM;
-11980c2ac4ccfa Robert Love        2011-12-20  402  		goto out;
-11980c2ac4ccfa Robert Love        2011-12-20  403  	}
-56f76fc68492af Arve Hjønnevåg     2011-12-20  404  	vma->vm_flags &= ~calc_vm_may_flags(~asma->prot_mask);
-11980c2ac4ccfa Robert Love        2011-12-20  405  
-11980c2ac4ccfa Robert Love        2011-12-20  406  	if (!asma->file) {
-11980c2ac4ccfa Robert Love        2011-12-20  407  		char *name = ASHMEM_NAME_DEF;
-11980c2ac4ccfa Robert Love        2011-12-20  408  		struct file *vmfile;
-3e338d3c95c735 Suren Baghdasaryan 2020-07-30  409  		struct inode *inode;
-11980c2ac4ccfa Robert Love        2011-12-20  410  
-11980c2ac4ccfa Robert Love        2011-12-20  411  		if (asma->name[ASHMEM_NAME_PREFIX_LEN] != '\0')
-11980c2ac4ccfa Robert Love        2011-12-20  412  			name = asma->name;
-11980c2ac4ccfa Robert Love        2011-12-20  413  
-11980c2ac4ccfa Robert Love        2011-12-20  414  		/* ... and allocate the backing shmem file */
-11980c2ac4ccfa Robert Love        2011-12-20  415  		vmfile = shmem_file_setup(name, asma->size, vma->vm_flags);
-7f44cb0ba88b40 Viresh Kumar       2015-07-31  416  		if (IS_ERR(vmfile)) {
-11980c2ac4ccfa Robert Love        2011-12-20  417  			ret = PTR_ERR(vmfile);
-11980c2ac4ccfa Robert Love        2011-12-20  418  			goto out;
-11980c2ac4ccfa Robert Love        2011-12-20  419  		}
-97fbfef6bd5978 Shuxiao Zhang      2017-04-06  420  		vmfile->f_mode |= FMODE_LSEEK;
-3e338d3c95c735 Suren Baghdasaryan 2020-07-30  421  		inode = file_inode(vmfile);
-3e338d3c95c735 Suren Baghdasaryan 2020-07-30  422  		lockdep_set_class(&inode->i_rwsem, &backing_shmem_inode_class);
-11980c2ac4ccfa Robert Love        2011-12-20  423  		asma->file = vmfile;
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  424  		/*
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  425  		 * override mmap operation of the vmfile so that it can't be
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  426  		 * remapped which would lead to creation of a new vma with no
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  427  		 * asma permission checks. Have to override get_unmapped_area
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  428  		 * as well to prevent VM_BUG_ON check for f_ops modification.
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  429  		 */
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  430  		if (!vmfile_fops.mmap) {
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27 @431  			vmfile_fops = *vmfile->f_op;
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27 @432  			vmfile_fops.mmap = ashmem_vmfile_mmap;
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27 @433  			vmfile_fops.get_unmapped_area =
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  434  					ashmem_vmfile_get_unmapped_area;
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  435  		}
-6d67b0290b4b84 Suren Baghdasaryan 2020-01-27  436  		vmfile->f_op = &vmfile_fops;
-11980c2ac4ccfa Robert Love        2011-12-20  437  	}
-11980c2ac4ccfa Robert Love        2011-12-20  438  	get_file(asma->file);
-11980c2ac4ccfa Robert Love        2011-12-20  439  
-11980c2ac4ccfa Robert Love        2011-12-20  440  	/*
-11980c2ac4ccfa Robert Love        2011-12-20  441  	 * XXX - Reworked to use shmem_zero_setup() instead of
-11980c2ac4ccfa Robert Love        2011-12-20  442  	 * shmem_set_file while we're in staging. -jstultz
-11980c2ac4ccfa Robert Love        2011-12-20  443  	 */
-11980c2ac4ccfa Robert Love        2011-12-20  444  	if (vma->vm_flags & VM_SHARED) {
-11980c2ac4ccfa Robert Love        2011-12-20  445  		ret = shmem_zero_setup(vma);
-11980c2ac4ccfa Robert Love        2011-12-20  446  		if (ret) {
-11980c2ac4ccfa Robert Love        2011-12-20  447  			fput(asma->file);
-11980c2ac4ccfa Robert Love        2011-12-20  448  			goto out;
-11980c2ac4ccfa Robert Love        2011-12-20  449  		}
-44960f2a7b63e2 John Stultz        2018-07-31  450  	} else {
-44960f2a7b63e2 John Stultz        2018-07-31  451  		vma_set_anonymous(vma);
-11980c2ac4ccfa Robert Love        2011-12-20  452  	}
-11980c2ac4ccfa Robert Love        2011-12-20  453  
-295992fb815e79 Christian König    2020-09-14  454  	vma_set_file(vma, asma->file);
-295992fb815e79 Christian König    2020-09-14  455  	/* XXX: merge this with the get_file() above if possible */
-295992fb815e79 Christian König    2020-09-14  456  	fput(asma->file);
-11980c2ac4ccfa Robert Love        2011-12-20  457  
-11980c2ac4ccfa Robert Love        2011-12-20  458  out:
-11980c2ac4ccfa Robert Love        2011-12-20  459  	mutex_unlock(&ashmem_mutex);
-11980c2ac4ccfa Robert Love        2011-12-20  460  	return ret;
-11980c2ac4ccfa Robert Love        2011-12-20  461  }
-11980c2ac4ccfa Robert Love        2011-12-20  462  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+Without deviation from the norm, progress is not possible.
