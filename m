@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0EE3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C164BC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378504AbiAYC2I (ORCPT
+        id S3421834AbiAYC3F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:28:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34440 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378629AbiAXUHt (ORCPT
+        Mon, 24 Jan 2022 21:29:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378673AbiAXUIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:07:49 -0500
+        Mon, 24 Jan 2022 15:08:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237E6C06E008;
+        Mon, 24 Jan 2022 11:32:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8800B6090A;
-        Mon, 24 Jan 2022 20:07:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B854C340E5;
-        Mon, 24 Jan 2022 20:07:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D31C3B8123F;
+        Mon, 24 Jan 2022 19:32:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5B0AC340E5;
+        Mon, 24 Jan 2022 19:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054868;
-        bh=GQv7LOP06zbfKaH6OrGhewLZ8+JM8W6ZxwkO/Q4Zfm4=;
+        s=korg; t=1643052766;
+        bh=Gb94Y9YdDnwpA1Wh+iUdsiCmxH8BNG5gik8azrh+w1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OW8jFAgzf/kTe1HPIdzdFH6keHlRT2VqPKxbbaultnEbeQHcJU38FHfE5vhclgm+s
-         1VW5k/76FQrahODvi72rjryRQKI/+IBqifDmHVxJN1WlXFTG5JWzDIJ3Gz7oekY/Ja
-         DYe0iznXdJW3vkIDOHWQBr3YwuO/EgoKrPyK1vV4=
+        b=j2wXPH8583Oy+VUK88KQa8dd4S91TzXeDwhzaInji46X68HEXRXvgLbvkngNRlQ8M
+         PB/umJlRJjbeIL+hcS+ONRBLvCJj+f1FRMufuqw5KRemY5xGn/BHhe/joTVmCYmrRb
+         J2Z/kRHVnPmtjNyRqiOM7MRFxoDUgye7xB5xqgF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 528/563] net: axienet: increase default TX ring size to 128
-Date:   Mon, 24 Jan 2022 19:44:53 +0100
-Message-Id: <20220124184042.690096383@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Hector Martin <marcan@marcan.st>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 134/320] iommu/io-pgtable-arm: Fix table descriptor paddr formatting
+Date:   Mon, 24 Jan 2022 19:41:58 +0100
+Message-Id: <20220124183958.221993907@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,35 +50,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Hector Martin <marcan@marcan.st>
 
-commit 2d19c3fd80178160dd505ccd7fed1643831227a5 upstream.
+[ Upstream commit 9abe2ac834851a7d0b0756e295cf7a292c45ca53 ]
 
-With previous changes to make the driver handle the TX ring size more
-correctly, the default TX ring size of 64 appears to significantly
-bottleneck TX performance to around 600 Mbps on a 1 Gbps link on ZynqMP.
-Increasing this to 128 seems to bring performance up to near line rate and
-shouldn't cause excess bufferbloat (this driver doesn't yet support modern
-byte-based queue management).
+Table descriptors were being installed without properly formatting the
+address using paddr_to_iopte, which does not match up with the
+iopte_deref in __arm_lpae_map. This is incorrect for the LPAE pte
+format, as it does not handle the high bits properly.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This was found on Apple T6000 DARTs, which require a new pte format
+(different shift); adding support for that to
+paddr_to_iopte/iopte_to_paddr caused it to break badly, as even <48-bit
+addresses would end up incorrect in that case.
+
+Fixes: 6c89928ff7a0 ("iommu/io-pgtable-arm: Support 52-bit physical address")
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Link: https://lore.kernel.org/r/20211120031343.88034-1-marcan@marcan.st
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/io-pgtable-arm.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -41,7 +41,7 @@
- #include "xilinx_axienet.h"
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index ca51036aa53c7..975237ca03267 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -351,11 +351,12 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+ 					     arm_lpae_iopte *ptep,
+ 					     arm_lpae_iopte curr,
+-					     struct io_pgtable_cfg *cfg)
++					     struct arm_lpae_io_pgtable *data)
+ {
+ 	arm_lpae_iopte old, new;
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
  
- /* Descriptors defines for Tx and Rx DMA */
--#define TX_BD_NUM_DEFAULT		64
-+#define TX_BD_NUM_DEFAULT		128
- #define RX_BD_NUM_DEFAULT		1024
- #define TX_BD_NUM_MIN			(MAX_SKB_FRAGS + 1)
- #define TX_BD_NUM_MAX			4096
+-	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
++	new = paddr_to_iopte(__pa(table), data) | ARM_LPAE_PTE_TYPE_TABLE;
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_LPAE_PTE_NSTABLE;
+ 
+@@ -406,7 +407,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ 		if (!cptep)
+ 			return -ENOMEM;
+ 
+-		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
++		pte = arm_lpae_install_table(cptep, ptep, 0, data);
+ 		if (pte)
+ 			__arm_lpae_free_pages(cptep, tblsz, cfg);
+ 	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
+@@ -575,7 +576,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i]);
+ 	}
+ 
+-	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
++	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
+ 	if (pte != blk_pte) {
+ 		__arm_lpae_free_pages(tablep, tablesz, cfg);
+ 		/*
+-- 
+2.34.1
+
 
 
