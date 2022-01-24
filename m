@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 061FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69E55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582403AbiAXWS5 (ORCPT
+        id S1583562AbiAXWTL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:18:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:45652 "EHLO
+        Mon, 24 Jan 2022 17:19:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33262 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454033AbiAXVbd (ORCPT
+        with ESMTP id S1447576AbiAXVLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:31:33 -0500
+        Mon, 24 Jan 2022 16:11:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFA31B81233;
-        Mon, 24 Jan 2022 21:31:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D55DC340E4;
-        Mon, 24 Jan 2022 21:31:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7AB6DB80CCF;
+        Mon, 24 Jan 2022 21:10:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96285C340E5;
+        Mon, 24 Jan 2022 21:10:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059886;
-        bh=SCgLEX0Kh7icKYxXAHJBDyBvz8vlCwfQ+JaNq8HYN6I=;
+        s=korg; t=1643058658;
+        bh=wAh/haiJ/v7tO3dGBFHipa7wk5ZBATtCVmv/QRDmjlo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SOhF7xS8wJxYAkrWC+6q6qMya6VLFnqVYIcbQ4ExHb8lzKNq1C8svLNm+j2fb10/y
-         4mWaVgiUkdXV6IooQ9oGC/uTPTdwJ/YlP9djBD/8zD7cbpdEd6/6PESB1lctCpJ0+M
-         SfaxRg6WlLx/Hrq6ccwla8rsR5+9UUGlWUFmu+JE=
+        b=ZHBm5h7DyYvZtj1ubjO+D64krLdqm1y28c4KqGf8L3FHfFcIdaST4FM8BawavJF6/
+         G5Bnmj28niCIGBbDmUik/v6hKB2UXjWnthYWtwSeBKWmFNRadMXTOXh35Tv1D+DBwr
+         5kUt/4mlQVn6tZTDZQl6AQZlBQ2evnrfUW2UoWng=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0760/1039] powerpc: handle kdump appropriately with crash_kexec_post_notifiers option
-Date:   Mon, 24 Jan 2022 19:42:29 +0100
-Message-Id: <20220124184150.870815207@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Begunkov <asml.silence@gmail.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0360/1039] io_uring: remove double poll on poll update
+Date:   Mon, 24 Jan 2022 19:35:49 +0100
+Message-Id: <20220124184137.379491661@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,73 +46,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
+From: Pavel Begunkov <asml.silence@gmail.com>
 
-[ Upstream commit 219572d2fc4135b5ce65c735d881787d48b10e71 ]
+[ Upstream commit e840b4baf3cfb37e2ead4f649a45bb78178677ff ]
 
-Kdump can be triggered after panic_notifers since commit f06e5153f4ae2
-("kernel/panic.c: add "crash_kexec_post_notifiers" option for kdump
-after panic_notifers") introduced crash_kexec_post_notifiers option.
-But using this option would mean smp_send_stop(), that marks all other
-CPUs as offline, gets called before kdump is triggered. As a result,
-kdump routines fail to save other CPUs' registers. To fix this, kdump
-friendly crash_smp_send_stop() function was introduced with kernel
-commit 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump
-friendly version in panic path"). Override this kdump friendly weak
-function to handle crash_kexec_post_notifiers option appropriately
-on powerpc.
+Before updating a poll request we should remove it from poll queues,
+including the double poll entry.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-[Fixed signature of crash_stop_this_cpu() - reported by lkp@intel.com]
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211207103719.91117-1-hbathini@linux.ibm.com
+Fixes: b69de288e913 ("io_uring: allow events and user_data update of running poll requests")
+Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
+Link: https://lore.kernel.org/r/ac39e7f80152613603b8a6cc29a2b6063ac2434f.1639605189.git.asml.silence@gmail.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/smp.c | 30 ++++++++++++++++++++++++++++++
- 1 file changed, 30 insertions(+)
+ fs/io_uring.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
-index aee3a7119f977..7201fdcf02f1c 100644
---- a/arch/powerpc/kernel/smp.c
-+++ b/arch/powerpc/kernel/smp.c
-@@ -620,6 +620,36 @@ void crash_send_ipi(void (*crash_ipi_callback)(struct pt_regs *))
- }
- #endif
- 
-+#ifdef CONFIG_NMI_IPI
-+static void crash_stop_this_cpu(struct pt_regs *regs)
-+#else
-+static void crash_stop_this_cpu(void *dummy)
-+#endif
-+{
-+	/*
-+	 * Just busy wait here and avoid marking CPU as offline to ensure
-+	 * register data is captured appropriately.
-+	 */
-+	while (1)
-+		cpu_relax();
-+}
-+
-+void crash_smp_send_stop(void)
-+{
-+	static bool stopped = false;
-+
-+	if (stopped)
-+		return;
-+
-+	stopped = true;
-+
-+#ifdef CONFIG_NMI_IPI
-+	smp_send_nmi_ipi(NMI_IPI_ALL_OTHERS, crash_stop_this_cpu, 1000000);
-+#else
-+	smp_call_function(crash_stop_this_cpu, NULL, 0);
-+#endif /* CONFIG_NMI_IPI */
-+}
-+
- #ifdef CONFIG_NMI_IPI
- static void nmi_stop_this_cpu(struct pt_regs *regs)
- {
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index fb2a0cb4aaf83..72496f424c155 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -5928,6 +5928,7 @@ static int io_poll_update(struct io_kiocb *req, unsigned int issue_flags)
+ 	 * update those. For multishot, if we're racing with completion, just
+ 	 * let completion re-add it.
+ 	 */
++	io_poll_remove_double(preq);
+ 	completing = !__io_poll_remove_one(preq, &preq->poll, false);
+ 	if (completing && (preq->poll.events & EPOLLONESHOT)) {
+ 		ret = -EALREADY;
 -- 
 2.34.1
 
