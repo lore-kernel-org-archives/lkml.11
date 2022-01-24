@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C709C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55AD5C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354014AbiAXTfp (ORCPT
+        id S1353991AbiAXTfn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
+        Mon, 24 Jan 2022 14:35:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351890AbiAXT27 (ORCPT
+        with ESMTP id S1351864AbiAXT25 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:28:59 -0500
+        Mon, 24 Jan 2022 14:28:57 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812A9C06135D;
-        Mon, 24 Jan 2022 11:13:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A4DCC08E823;
+        Mon, 24 Jan 2022 11:13:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E61E612FE;
-        Mon, 24 Jan 2022 19:13:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF521C340E5;
-        Mon, 24 Jan 2022 19:13:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE923612FC;
+        Mon, 24 Jan 2022 19:13:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C0C7C36AE9;
+        Mon, 24 Jan 2022 19:13:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051592;
-        bh=INA086hqSWtwfZHOLhkrFU+jwIwMPMlerwTlFpXtk6s=;
+        s=korg; t=1643051586;
+        bh=Q+MxbbWQVajUN34Ta0HIEmYAyo52hSUK/g2MXOMUHZo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cmwWFpd+kmDXHOCvXIMIr5kG6DsVr0pQ916pnxuTed46HY1KhuIXc4GY5q/UyH5yZ
-         tT3tWwTAIqySAyrZopS5inct2xjFgxB2HHVWaAslH9wXtaltGweLVMw8AqckkjJPxn
-         P+pkPsKC3q3+QPfrxsDeQJeh2rqN7M/FPfVfT8W0=
+        b=iXpH7K3X4uK64A1s3YkMSG0lMdXyJ0J7DUCS1z3rrZBOCCFzTPCZGj14f3SR41DTM
+         A1kdrP0l+cNNd0xz7N3VpjAqfMs9Amvbx6fKajWZbmTS6Z8p4LQqI6rCCk5p0ksLQA
+         oGrEGlHTwvdNSMCGiqFzN+asD1N+Qig5G0R905vo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
         Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 4.19 024/239] HID: wacom: Ignore the confidence flag when a touch is removed
-Date:   Mon, 24 Jan 2022 19:41:02 +0100
-Message-Id: <20220124183943.888440598@linuxfoundation.org>
+Subject: [PATCH 4.19 022/239] HID: uhid: Fix worker destroying device without any protection
+Date:   Mon, 24 Jan 2022 19:41:00 +0100
+Message-Id: <20220124183943.826952634@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -50,80 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Jann Horn <jannh@google.com>
 
-commit df03e9bd6d4806619b4cdc91a3d7695818a8e2b7 upstream.
+commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
 
-AES hardware may internally re-classify a contact that it thought was
-intentional as a palm. Intentional contacts are reported as "down" with
-the confidence bit set. When this re-classification occurs, however, the
-state transitions to "up" with the confidence bit cleared. This kind of
-transition appears to be legal according to Microsoft docs, but we do
-not handle it correctly. Because the confidence bit is clear, we don't
-call `wacom_wac_finger_slot` and update userspace. This causes hung
-touches that confuse userspace and interfere with pen arbitration.
+uhid has to run hid_add_device() from workqueue context while allowing
+parallel use of the userspace API (which is protected with ->devlock).
+But hid_add_device() can fail. Currently, that is handled by immediately
+destroying the associated HID device, without using ->devlock - but if
+there are concurrent requests from userspace, that's wrong and leads to
+NULL dereferences and/or memory corruption (via use-after-free).
 
-This commit adds a special case to ignore the confidence flag if a contact
-is reported as removed. This ensures we do not leave a hung touch if one
-of these re-classification events occured. Ideally we'd have some way to
-also let userspace know that the touch has been re-classified as a palm
-and needs to be canceled, but that's not possible right now :)
+Fix it by leaving the HID device as-is in the worker. We can clean it up
+later, either in the UHID_DESTROY command handler or in the ->release()
+handler.
 
-Link: https://github.com/linuxwacom/input-wacom/issues/288
-Fixes: 7fb0413baa7f (HID: wacom: Use "Confidence" flag to prevent reporting invalid contacts)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Cc: stable@vger.kernel.org
+Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
+Signed-off-by: Jann Horn <jannh@google.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_wac.c |   29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2529,6 +2529,24 @@ static void wacom_wac_finger_slot(struct
+--- a/drivers/hid/uhid.c
++++ b/drivers/hid/uhid.c
+@@ -31,11 +31,22 @@
+ 
+ struct uhid_device {
+ 	struct mutex devlock;
++
++	/* This flag tracks whether the HID device is usable for commands from
++	 * userspace. The flag is already set before hid_add_device(), which
++	 * runs in workqueue context, to allow hid_add_device() to communicate
++	 * with userspace.
++	 * However, if hid_add_device() fails, the flag is cleared without
++	 * holding devlock.
++	 * We guarantee that if @running changes from true to false while you're
++	 * holding @devlock, it's still fine to access @hid.
++	 */
+ 	bool running;
+ 
+ 	__u8 *rd_data;
+ 	uint rd_size;
+ 
++	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
+ 	struct hid_device *hid;
+ 	struct uhid_event input_buf;
+ 
+@@ -66,9 +77,18 @@ static void uhid_device_add_worker(struc
+ 	if (ret) {
+ 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
+ 
+-		hid_destroy_device(uhid->hid);
+-		uhid->hid = NULL;
++		/* We used to call hid_destroy_device() here, but that's really
++		 * messy to get right because we have to coordinate with
++		 * concurrent writes from userspace that might be in the middle
++		 * of using uhid->hid.
++		 * Just leave uhid->hid as-is for now, and clean it up when
++		 * userspace tries to close or reinitialize the uhid instance.
++		 *
++		 * However, we do have to clear the ->running flag and do a
++		 * wakeup to make sure userspace knows that the device is gone.
++		 */
+ 		uhid->running = false;
++		wake_up_interruptible(&uhid->report_wait);
  	}
  }
  
-+static bool wacom_wac_slot_is_active(struct input_dev *dev, int key)
-+{
-+	struct input_mt *mt = dev->mt;
-+	struct input_mt_slot *s;
-+
-+	if (!mt)
-+		return false;
-+
-+	for (s = mt->slots; s != mt->slots + mt->num_slots; s++) {
-+		if (s->key == key &&
-+			input_mt_get_value(s, ABS_MT_TRACKING_ID) >= 0) {
-+			return true;
-+		}
-+	}
-+
-+	return false;
-+}
-+
- static void wacom_wac_finger_event(struct hid_device *hdev,
- 		struct hid_field *field, struct hid_usage *usage, __s32 value)
+@@ -477,7 +497,7 @@ static int uhid_dev_create2(struct uhid_
+ 	void *rd_data;
+ 	int ret;
+ 
+-	if (uhid->running)
++	if (uhid->hid)
+ 		return -EALREADY;
+ 
+ 	rd_size = ev->u.create2.rd_size;
+@@ -559,7 +579,7 @@ static int uhid_dev_create(struct uhid_d
+ 
+ static int uhid_dev_destroy(struct uhid_device *uhid)
  {
-@@ -2571,9 +2589,14 @@ static void wacom_wac_finger_event(struc
+-	if (!uhid->running)
++	if (!uhid->hid)
+ 		return -EINVAL;
  
+ 	uhid->running = false;
+@@ -568,6 +588,7 @@ static int uhid_dev_destroy(struct uhid_
+ 	cancel_work_sync(&uhid->worker);
  
- 	if (usage->usage_index + 1 == field->report_count) {
--		if (equivalent_usage == wacom_wac->hid_data.last_slot_field &&
--		    wacom_wac->hid_data.confidence)
--			wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
-+		if (equivalent_usage == wacom_wac->hid_data.last_slot_field) {
-+			bool touch_removed = wacom_wac_slot_is_active(wacom_wac->touch_input,
-+				wacom_wac->hid_data.id) && !wacom_wac->hid_data.tipswitch;
-+
-+			if (wacom_wac->hid_data.confidence || touch_removed) {
-+				wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
-+			}
-+		}
- 	}
- }
+ 	hid_destroy_device(uhid->hid);
++	uhid->hid = NULL;
+ 	kfree(uhid->rd_data);
  
+ 	return 0;
 
 
