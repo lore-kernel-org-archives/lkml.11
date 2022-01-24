@@ -2,45 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83FF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F457C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412719AbiAYAhk (ORCPT
+        id S3412769AbiAYAho (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:37:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        Mon, 24 Jan 2022 19:37:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2366202AbiAXXwa (ORCPT
+        with ESMTP id S2364547AbiAXXsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:52:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE79C07A95E;
-        Mon, 24 Jan 2022 13:45:12 -0800 (PST)
+        Mon, 24 Jan 2022 18:48:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6061FC07E320;
+        Mon, 24 Jan 2022 13:43:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E75A612E5;
-        Mon, 24 Jan 2022 21:45:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75912C340E4;
-        Mon, 24 Jan 2022 21:45:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27E91B8119E;
+        Mon, 24 Jan 2022 21:43:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F60DC340E4;
+        Mon, 24 Jan 2022 21:43:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060712;
-        bh=SOfb4C2ObNwB0Fx6quXOL5rM5gjVI3KB+Of+5+kXXrI=;
+        s=korg; t=1643060606;
+        bh=d5sDqEx7QCzukP98QrCD6x9n7LBmYQ6aePoyYZryyVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BOWLDC0dZFBqo8zIK/cI1QityxP0Kxts4s1oqV6aCqo4Ue/Jzhknodkr6ha1dudeq
-         kjYpZstZe8ryned15u9NfzTS0C1lmc+6u6f3ErulOwLPRaub5bUXj/QklLpqIfhnYT
-         YI0k0vpDaUPiI47ONFLjBl4dOlXZWHSYcqP1Sg0k=
+        b=A8ucc/uqrMxuzrKhFNiXJ5YsKSE6soMtwCNbR1o7ry2/+SUDMir+L8udNk7kvfY6v
+         zrqdCyIE2mXRsAPJ0Lvs5Y4xcv7CfnznVCifqrCGjkw2He1qmUEUU1kUZwaFdJacJ4
+         EzHJAkOEpzf/zVvxYNSLCSBlXMUsRPwRI1V6hjrc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH 5.16 1038/1039] ASoC: SOF: sof-audio: setup sched widgets during pipeline complete step
-Date:   Mon, 24 Jan 2022 19:47:07 +0100
-Message-Id: <20220124184200.174533144@linuxfoundation.org>
+        stable@vger.kernel.org, Ian Rogers <irogers@google.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Andi Kleen <ak@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Stephane Eranian <eranian@google.com>
+Subject: [PATCH 5.16 1003/1039] perf test: Enable system wide for metricgroups test
+Date:   Mon, 24 Jan 2022 19:46:32 +0100
+Message-Id: <20220124184159.008232832@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,78 +56,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+From: Ian Rogers <irogers@google.com>
 
-commit 01429183f479c54c1b5d15453a8ce574ea43e525 upstream.
+commit 0046686da0ef692a6381260c3aa44291187eafc9 upstream.
 
-Older firmware prior to ABI 3.19 has a dependency where the scheduler
-widgets need to be setup last. Moving the call to sof_widget_setup()
-before the pipeline_complete() call also helps remove the need for the
-'reverse' direction when walking through the widget list - this was
-only working because of the topology macros but the topology does not
-require any order.
+Uncore events as group leaders fail in per-thread mode causing exit
+errors. Enable system-wide for metricgroup testing. This fixes the HPC
+metric group when tested on skylakex.
 
-Fixes: 5fcdbb2d45df ("ASoC: SOF: Add support for dynamic pipelines")
-Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-Signed-off-by: Kai Vehmanen <kai.vehmanen@linux.intel.com>
-Link: https://lore.kernel.org/r/20211123171606.129350-1-kai.vehmanen@linux.intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 4a87dea9e60fe100 ("perf test: Workload test of metric and metricgroups")
+Signed-off-by: Ian Rogers <irogers@google.com>
+Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Andi Kleen <ak@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Stephane Eranian <eranian@google.com>
+Link: https://lore.kernel.org/r/20211223183948.3423989-1-irogers@google.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/sof/sof-audio.c |   19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ tools/perf/tests/shell/stat_all_metricgroups.sh |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/sound/soc/sof/sof-audio.c
-+++ b/sound/soc/sof/sof-audio.c
-@@ -596,16 +596,25 @@ const struct sof_ipc_pipe_new *snd_sof_p
+--- a/tools/perf/tests/shell/stat_all_metricgroups.sh
++++ b/tools/perf/tests/shell/stat_all_metricgroups.sh
+@@ -6,7 +6,7 @@ set -e
  
- int sof_set_up_pipelines(struct snd_sof_dev *sdev, bool verify)
- {
-+	struct sof_ipc_fw_version *v = &sdev->fw_ready.version;
- 	struct snd_sof_widget *swidget;
- 	struct snd_sof_route *sroute;
- 	int ret;
+ for m in $(perf list --raw-dump metricgroups); do
+   echo "Testing $m"
+-  perf stat -M "$m" true
++  perf stat -M "$m" -a true
+ done
  
- 	/* restore pipeline components */
--	list_for_each_entry_reverse(swidget, &sdev->widget_list, list) {
-+	list_for_each_entry(swidget, &sdev->widget_list, list) {
- 		/* only set up the widgets belonging to static pipelines */
- 		if (!verify && swidget->dynamic_pipeline_widget)
- 			continue;
- 
-+		/*
-+		 * For older firmware, skip scheduler widgets in this loop,
-+		 * sof_widget_setup() will be called in the 'complete pipeline' loop
-+		 */
-+		if (v->abi_version < SOF_ABI_VER(3, 19, 0) &&
-+		    swidget->id == snd_soc_dapm_scheduler)
-+			continue;
-+
- 		/* update DAI config. The IPC will be sent in sof_widget_setup() */
- 		if (WIDGET_IS_DAI(swidget->id)) {
- 			struct snd_sof_dai *dai = swidget->private;
-@@ -653,6 +662,12 @@ int sof_set_up_pipelines(struct snd_sof_
- 			if (!verify && swidget->dynamic_pipeline_widget)
- 				continue;
- 
-+			if (v->abi_version < SOF_ABI_VER(3, 19, 0)) {
-+				ret = sof_widget_setup(sdev, swidget);
-+				if (ret < 0)
-+					return ret;
-+			}
-+
- 			swidget->complete =
- 				snd_sof_complete_pipeline(sdev, swidget);
- 			break;
-@@ -681,7 +696,7 @@ int sof_tear_down_pipelines(struct snd_s
- 	 * sroute->setup because during suspend all streams are suspended and during topology
- 	 * loading the sound card unavailable to open PCMs.
- 	 */
--	list_for_each_entry_reverse(swidget, &sdev->widget_list, list) {
-+	list_for_each_entry(swidget, &sdev->widget_list, list) {
- 		if (swidget->dynamic_pipeline_widget)
- 			continue;
- 
+ exit 0
 
 
