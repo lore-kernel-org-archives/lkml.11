@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 637D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82812C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349780AbiAXTVS (ORCPT
+        id S1344470AbiAXTWB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:21:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347546AbiAXTNQ (ORCPT
+        Mon, 24 Jan 2022 14:22:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43500 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344337AbiAXTOD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBF0C08EAD7;
-        Mon, 24 Jan 2022 11:04:39 -0800 (PST)
+        Mon, 24 Jan 2022 14:14:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EBD0AB8122C;
-        Mon, 24 Jan 2022 19:04:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C43C340E5;
-        Mon, 24 Jan 2022 19:04:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F147960BB9;
+        Mon, 24 Jan 2022 19:14:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E208C36AE3;
+        Mon, 24 Jan 2022 19:14:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051075;
-        bh=0HIcbNe44vpoX7J0z4B6yzMybdVKFNuIc5+ehR4MREA=;
+        s=korg; t=1643051642;
+        bh=28t1sweoB4qHEe4T76xab8j4fhECdC4c7ySIQE2cgDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dqe0YPy2/nNvs/0MSNjx/pstIJMp3UtuJM7xeCHBFmksPhavbDIpddy7qkd4YnvBp
-         lnTPk9C/73HKAVHJCewEl6z+skuz6Y344rFCFjHYNagsRB4RC1l5v6JNMVg/PkF8Uv
-         lYugf+yg7B0vsY8ihCaT0qgwbZExs0bFtcQ4p27Q=
+        b=e+Qtbu8CBTTVxA0q10fGAzfb0SBEGFvIeukKCD1wdr+1rf4KFD6N3RX/xzcvCG7Ed
+         lZ28s0mwFnEoZbBc4aXuhWlLW48urr2GGiV7sSeiwDzLR7bc0VQ8sq2pA0Y512BEhL
+         mnvkiVbHPHvn0Z4IUvnYrf/cs4KrX//okKdw/Tt8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 047/186] drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()
-Date:   Mon, 24 Jan 2022 19:42:02 +0100
-Message-Id: <20220124183938.643797389@linuxfoundation.org>
+        Brian Silverman <brian.silverman@bluerivertech.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.19 008/239] can: gs_usb: gs_can_start_xmit(): zero-initialize hf->{flags,reserved}
+Date:   Mon, 24 Jan 2022 19:40:46 +0100
+Message-Id: <20220124183943.377652679@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,118 +47,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Brian Silverman <brian.silverman@bluerivertech.com>
 
-[ Upstream commit ab50cb9df8896b39aae65c537a30de2c79c19735 ]
+commit 89d58aebe14a365c25ba6645414afdbf4e41cea4 upstream.
 
-In radeon_driver_open_kms(), radeon_vm_bo_add() is assigned to
-vm->ib_bo_va and passes and used in radeon_vm_bo_set_addr(). In
-radeon_vm_bo_set_addr(), there is a dereference of vm->ib_bo_va,
-which could lead to a NULL pointer dereference on failure of
-radeon_vm_bo_add().
+No information is deliberately sent in hf->flags in host -> device
+communications, but the open-source candleLight firmware echoes it
+back, which can result in the GS_CAN_FLAG_OVERFLOW flag being set and
+generating spurious ERRORFRAMEs.
 
-Fix this bug by adding a check of vm->ib_bo_va.
+While there also initialize the reserved member with 0.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_DRM_RADEON=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: cc9e67e3d700 ("drm/radeon: fix VM IB handling")
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d08e973a77d1 ("can: gs_usb: Added support for the GS_USB CAN devices")
+Link: https://lore.kernel.org/all/20220106002952.25883-1-brian.silverman@bluerivertech.com
+Link: https://github.com/candle-usb/candleLight_fw/issues/87
+Cc: stable@vger.kernel.org
+Signed-off-by: Brian Silverman <brian.silverman@bluerivertech.com>
+[mkl: initialize the reserved member, too]
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/radeon/radeon_kms.c | 36 ++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 16 deletions(-)
+ drivers/net/can/usb/gs_usb.c |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
-index 4973bd241aec3..fb292b9f3d402 100644
---- a/drivers/gpu/drm/radeon/radeon_kms.c
-+++ b/drivers/gpu/drm/radeon/radeon_kms.c
-@@ -655,6 +655,8 @@ void radeon_driver_lastclose_kms(struct drm_device *dev)
- int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
- {
- 	struct radeon_device *rdev = dev->dev_private;
-+	struct radeon_fpriv *fpriv;
-+	struct radeon_vm *vm;
- 	int r;
+--- a/drivers/net/can/usb/gs_usb.c
++++ b/drivers/net/can/usb/gs_usb.c
+@@ -515,6 +515,8 @@ static netdev_tx_t gs_can_start_xmit(str
  
- 	file_priv->driver_priv = NULL;
-@@ -667,8 +669,6 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
+ 	hf->echo_id = idx;
+ 	hf->channel = dev->channel;
++	hf->flags = 0;
++	hf->reserved = 0;
  
- 	/* new gpu have virtual address space support */
- 	if (rdev->family >= CHIP_CAYMAN) {
--		struct radeon_fpriv *fpriv;
--		struct radeon_vm *vm;
+ 	cf = (struct can_frame *)skb->data;
  
- 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
- 		if (unlikely(!fpriv)) {
-@@ -679,35 +679,39 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
- 		if (rdev->accel_working) {
- 			vm = &fpriv->vm;
- 			r = radeon_vm_init(rdev, vm);
--			if (r) {
--				kfree(fpriv);
--				goto out_suspend;
--			}
-+			if (r)
-+				goto out_fpriv;
- 
- 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
--			if (r) {
--				radeon_vm_fini(rdev, vm);
--				kfree(fpriv);
--				goto out_suspend;
--			}
-+			if (r)
-+				goto out_vm_fini;
- 
- 			/* map the ib pool buffer read only into
- 			 * virtual address space */
- 			vm->ib_bo_va = radeon_vm_bo_add(rdev, vm,
- 							rdev->ring_tmp_bo.bo);
-+			if (!vm->ib_bo_va) {
-+				r = -ENOMEM;
-+				goto out_vm_fini;
-+			}
-+
- 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
- 						  RADEON_VA_IB_OFFSET,
- 						  RADEON_VM_PAGE_READABLE |
- 						  RADEON_VM_PAGE_SNOOPED);
--			if (r) {
--				radeon_vm_fini(rdev, vm);
--				kfree(fpriv);
--				goto out_suspend;
--			}
-+			if (r)
-+				goto out_vm_fini;
- 		}
- 		file_priv->driver_priv = fpriv;
- 	}
- 
-+	if (!r)
-+		goto out_suspend;
-+
-+out_vm_fini:
-+	radeon_vm_fini(rdev, vm);
-+out_fpriv:
-+	kfree(fpriv);
- out_suspend:
- 	pm_runtime_mark_last_busy(dev->dev);
- 	pm_runtime_put_autosuspend(dev->dev);
--- 
-2.34.1
-
 
 
