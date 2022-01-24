@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB4CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FF43C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851140AbiAXXcD (ORCPT
+        id S1851155AbiAXXcF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:32:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41894 "EHLO
+        Mon, 24 Jan 2022 18:32:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836497AbiAXWjh (ORCPT
+        with ESMTP id S1836496AbiAXWjh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:39:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19BE0C054878;
-        Mon, 24 Jan 2022 13:02:08 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54C76C054875;
+        Mon, 24 Jan 2022 13:01:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ADE086136A;
-        Mon, 24 Jan 2022 21:02:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F6DBC340E7;
-        Mon, 24 Jan 2022 21:02:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1327BB81057;
+        Mon, 24 Jan 2022 21:01:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308A8C340E5;
+        Mon, 24 Jan 2022 21:01:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058127;
-        bh=RQ5Ca9+CytE6FpXfdzRkzs6Fgfx0IT5jkMAAFnh6LJY=;
+        s=korg; t=1643058112;
+        bh=3dX7I10Z+FMajBYHYlk7zmc2W2l3aPSNYjfvSrxzmw0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XyvmvvLes6ARkkVJW8Qvt/rbI+eovfZJy3Die87KQt8FYVxSSST7fqHfxH9n5cbSf
-         lbzAoA2OLjFCqEvKdHF42h/tdkm3YyxrQY4NpQoDz+6I9LtXGgwfRRGzXbVKh2Izz7
-         EPmWq4WHa1ACdn2/Cex9h4Cp4rFdBp1R7suMPpZM=
+        b=QlMHGj5LqkTOMZq+nuB4FeXq+0uzFGwQHgOll4B3XmBZin2jD0d2r7fuqcNHkdOhj
+         DVVwZ1sSORhuEY0O4ZU+oFclgPTG/drzHkpEiuIQ1aV2yUGJfrBwqt/SUhHZJEsQC/
+         iz4AnIKqoRLvyq+pzk+Tpa03StgrXoUWoRBK9fL0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Daniele Alessandrelli <daniele.alessandrelli@intel.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0187/1039] media: i2c: ov8865: Fix lockdep error
-Date:   Mon, 24 Jan 2022 19:32:56 +0100
-Message-Id: <20220124184131.586323555@linuxfoundation.org>
+Subject: [PATCH 5.16 0158/1039] crypto: keembay-ocs-ecc - Fix error return code in kmb_ocs_ecc_probe()
+Date:   Mon, 24 Jan 2022 19:32:27 +0100
+Message-Id: <20220124184130.493179134@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,47 +52,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 6e1c9bc9ae96e57bcd8807174f2c0f44f9ef7938 ]
+[ Upstream commit 94ad2d19a97efdb603a21fcad0625f466f1cdd0f ]
 
-ov8865_state_init() calls ov8865_state_mipi_configure() which uses
-__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
-is also sensor->ctrls.handler.lock) must be locked before calling
-ov8865_state_init().
+Fix to return negative error code -ENOMEM from the error handling
+case instead of 0, as done elsewhere in this function.
 
-Note ov8865_state_mipi_configure() is also used in other places where
-the lock is already held so it cannot be changed itself.
-
-This fixes the following lockdep kernel WARN:
-
-[   13.233421] WARNING: CPU: 0 PID: 8 at drivers/media/v4l2-core/v4l2-ctrls-api.c:833 __v4l2_ctrl_s_ctrl+0x4d/0x60 [videodev]
-...
-[   13.234063] Call Trace:
-[   13.234074]  ov8865_state_configure+0x98b/0xc00 [ov8865]
-[   13.234095]  ov8865_probe+0x4b1/0x54c [ov8865]
-[   13.234117]  i2c_device_probe+0x13c/0x2d0
-
-Fixes: 11c0d8fdccc5 ("media: i2c: Add support for the OV8865 image sensor")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: c9f608c38009 ("crypto: keembay-ocs-ecc - Add Keem Bay OCS ECC Driver")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Reviewed-by: Daniele Alessandrelli <daniele.alessandrelli@intel.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov8865.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/crypto/keembay/keembay-ocs-ecc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/media/i2c/ov8865.c
-+++ b/drivers/media/i2c/ov8865.c
-@@ -2893,7 +2893,9 @@ static int ov8865_probe(struct i2c_clien
- 	if (ret)
- 		goto error_mutex;
+diff --git a/drivers/crypto/keembay/keembay-ocs-ecc.c b/drivers/crypto/keembay/keembay-ocs-ecc.c
+index 679e6ae295e0b..5d0785d3f1b55 100644
+--- a/drivers/crypto/keembay/keembay-ocs-ecc.c
++++ b/drivers/crypto/keembay/keembay-ocs-ecc.c
+@@ -930,6 +930,7 @@ static int kmb_ocs_ecc_probe(struct platform_device *pdev)
+ 	ecc_dev->engine = crypto_engine_alloc_init(dev, 1);
+ 	if (!ecc_dev->engine) {
+ 		dev_err(dev, "Could not allocate crypto engine\n");
++		rc = -ENOMEM;
+ 		goto list_del;
+ 	}
  
-+	mutex_lock(&sensor->mutex);
- 	ret = ov8865_state_init(sensor);
-+	mutex_unlock(&sensor->mutex);
- 	if (ret)
- 		goto error_ctrls;
- 
+-- 
+2.34.1
+
 
 
