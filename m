@@ -2,176 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A170C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 298DAC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358820AbiAYEir (ORCPT
+        id S1388246AbiAYEiz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:38:47 -0500
-Received: from gandalf.ozlabs.org ([150.107.74.76]:43541 "EHLO
-        gandalf.ozlabs.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582875AbiAYDYo (ORCPT
+        Mon, 24 Jan 2022 23:38:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50370 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3418555AbiAYDY7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:24:44 -0500
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjXJt6sSLz4y5t;
-        Tue, 25 Jan 2022 14:24:30 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1643081072;
-        bh=TZLUgeha3UgBWPULciAx47PKJ6+EbX+2P4quvRb1h0A=;
-        h=Date:From:To:Cc:Subject:From;
-        b=JycxqdgrDBIoyBIIuF3vGU7CKvzcMMt9NxDdTyBWSQTc76vX0dw3tkedjBNxSyf9V
-         vOO2UJ3Z5I2TXaaXGZYDiyJrjjHdpdbpx4goHkm0pHw7jppQfht8YsJjTenNPr59+p
-         C1mrAz2mTIOiSYPALLMlHIXAejz0hlwm+/BWjAahTQb93AAaKFskiNKT1BP5M+1Dhn
-         EdFRh6T0qIjYevipxAcgNhnIcLSSgo6xC9TdqlVvdbOdq/8iCFyuXxE+6Su6N5pJgN
-         FREp5uvhkM2A1/5graxMbIU8XuTxd/+Ewjv/cLnCKy4dItO1nyL0Ey1seVXDziv7n7
-         8Au4nV94Xx4Xw==
-Date:   Tue, 25 Jan 2022 14:24:30 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        "Bryant G. Ly" <bryantly@linux.vnet.ibm.com>,
-        Michael Cyr <mikecyr@linux.vnet.ibm.com>,
-        Nicholas Bellinger <nab@linux-iscsi.org>,
-        Steven Royer <seroyer@linux.vnet.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.vnet.ibm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build failure after merge of the kspp tree
-Message-ID: <20220125142430.75c3160e@canb.auug.org.au>
+        Mon, 24 Jan 2022 22:24:59 -0500
+Received: from mail-ot1-x32b.google.com (mail-ot1-x32b.google.com [IPv6:2607:f8b0:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4430EC058CA8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:50:49 -0800 (PST)
+Received: by mail-ot1-x32b.google.com with SMTP id l64-20020a9d1b46000000b005983a0a8aaaso24375340otl.3
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:50:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=PtqrHf0yIm4rhTcrPnNb9htroYp3oCFjuET72eP4bEg=;
+        b=MtvSDul2MqyVPeBjE/g5ny8qv43GKzh5Zzh1OBD7sqUE4HHpCl4yTos8VBDSJ5F1cM
+         4mX9P94pIJF3VgNu3QRBLbXx7LdLnK7o66sU3mpnbGIhNb04zj8/Qol7lWIaq0WBcChW
+         RZtNwXLHjDfF27vr54Sb3dJdT4caoZXCtnD66VvsbDlK5AnW6KFTbECe23JM/4tVug0Y
+         vb242iMbx1GfSKRpaWt2KGWuR2YSd+zN6WsV8As81HaL82vA/BLAZWK1Us6AMRFlXrDr
+         3TQd2rfm9idHMpN5f5VJ0TvjLbK5QjD7aYFqbUSi4W0DCWsvaNj9Fk9md7jPBblikum4
+         xbYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=PtqrHf0yIm4rhTcrPnNb9htroYp3oCFjuET72eP4bEg=;
+        b=lnPC97HkmncQLT3wlWYBizI9tAiXyYcs5cO2mBacrsh0v549KEdzizawDPFPpxZ7Z3
+         OQC8Sa63Y4JWakL6Vzl9a/4e/Bxl9xuS+fWw0wjvzjCVHyDMhQpTrINWZxpveWCfrb+2
+         g9H2iY7kaq+QkBXahHdAl0Ia0I3tioDXOMcomweGKKb5bywwMGkKPqthaKYaHYTBU4JA
+         OZsU618DmzHdrtUPcUetBlJFtF4j9yZpRzX/ChWHVr1JsJRClmaHgR5mW1hnP4X3O9B4
+         p3av6odCRPfUKn6O87ew+JRWx/Z+TYJxg/c1o6hxWnmgqIXzI/Sb8+7JI6JB2PL6N3gu
+         Gajg==
+X-Gm-Message-State: AOAM530EFS+AN0xufmE315YcZzF74jCcM5BBpXhZM98ruvn5Ux/71ywj
+        5yi5cwN1ZbSJY09Phx7Kxd9+qg==
+X-Google-Smtp-Source: ABdhPJyB45kVnFKre7voatLM55kjnn1OciVJYBGVaOn1d1Lxqn8m8Dji3FWoSZx6BMhl4jrU5VsvqA==
+X-Received: by 2002:a05:6830:4110:: with SMTP id w16mr13104510ott.66.1643064648609;
+        Mon, 24 Jan 2022 14:50:48 -0800 (PST)
+Received: from [192.168.17.16] ([189.219.72.83])
+        by smtp.gmail.com with ESMTPSA id t2sm6003500otp.71.2022.01.24.14.50.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 14:50:48 -0800 (PST)
+Message-ID: <374e9357-35eb-3555-3fe5-7b72c3a77a39@linaro.org>
+Date:   Mon, 24 Jan 2022 16:50:45 -0600
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/a1p_bkazwN8LurQiv3XEc_x";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 5.15 000/846] 5.15.17-rc1 review
+Content-Language: en-US
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org
+Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
+        stable@vger.kernel.org
+References: <20220124184100.867127425@linuxfoundation.org>
+From:   =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---Sig_/a1p_bkazwN8LurQiv3XEc_x
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Hello!
 
-Hi all,
+On 1/24/22 12:31, Greg Kroah-Hartman wrote:
+> This is the start of the stable review cycle for the 5.15.17 release.
+> There are 846 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
+> 
+> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
+> Anything received after that time might be too late.
+> 
+> The whole patch series can be found in one patch at:
+> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.17-rc1.gz
+> or in the git tree and branch at:
+> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
+> and the diffstat can be found below.
+> 
+> thanks,
+> 
+> greg k-h
 
-After merging the kspp tree, today's linux-next build (powerpc
-allyesconfig) failed like this:
+Regressions detected on arm, arm64, i386, x86.
 
+This is one from arm64:
+   /builds/linux/arch/arm64/mm/extable.c: In function 'fixup_exception':
+   /builds/linux/arch/arm64/mm/extable.c:17:13: error: implicit declaration of function 'in_bpf_jit' [-Werror=implicit-function-declaration]
+      17 |         if (in_bpf_jit(regs))
+         |             ^~~~~~~~~~
+   cc1: some warnings being treated as errors
+   make[3]: *** [/builds/linux/scripts/Makefile.build:277: arch/arm64/mm/extable.o] Error 1
 
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c: In function 'ibmvscsis_send_messa=
-ges':
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1934:44: error: array subscript 's=
-truct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long =
-long unsigned int[1]'} [-Werror=3Darray-bounds]
- 1934 |                                         crq->valid =3D VALID_CMD_RE=
-SP_EL;
-      |                                            ^~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing '=
-msg_hi'
- 1875 |         u64 msg_hi =3D 0;
-      |             ^~~~~~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1935:44: error: array subscript 's=
-truct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long =
-long unsigned int[1]'} [-Werror=3Darray-bounds]
- 1935 |                                         crq->format =3D cmd->rsp.fo=
-rmat;
-      |                                            ^~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing '=
-msg_hi'
- 1875 |         u64 msg_hi =3D 0;
-      |             ^~~~~~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1938:52: error: array subscript 's=
-truct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long =
-long unsigned int[1]'} [-Werror=3Darray-bounds]
- 1938 |                                                 crq->status =3D VIO=
-SRP_ADAPTER_FAIL;
-      |                                                    ^~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing '=
-msg_hi'
- 1875 |         u64 msg_hi =3D 0;
-      |             ^~~~~~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1940:44: error: array subscript 's=
-truct viosrp_crq[0]' is partly outside array bounds of 'u64[1]' {aka 'long =
-long unsigned int[1]'} [-Werror=3Darray-bounds]
- 1940 |                                         crq->IU_length =3D cpu_to_b=
-e16(cmd->rsp.len);
-      |                                            ^~
-drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c:1875:13: note: while referencing '=
-msg_hi'
- 1875 |         u64 msg_hi =3D 0;
-      |             ^~~~~~
+This is another one, in Perf (arm, arm64, i386, x86):
+   libbpf.c: In function 'bpf_object__elf_collect':
+   libbpf.c:3038:31: error: invalid type argument of '->' (have 'GElf_Shdr' {aka 'Elf64_Shdr'})
+    3038 |                         if (sh->sh_type != SHT_PROGBITS)
+         |                               ^~
+   libbpf.c:3042:31: error: invalid type argument of '->' (have 'GElf_Shdr' {aka 'Elf64_Shdr'})
+    3042 |                         if (sh->sh_type != SHT_PROGBITS)
+         |                               ^~
+   make[4]: *** [/builds/linux/tools/build/Makefile.build:97: /home/tuxbuild/.cache/tuxmake/builds/current/staticobjs/libbpf.o] Error 1
 
-Exposed by commit
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-  4ba545781e20 ("Makefile: Enable -Warray-bounds")
+Greetings!
 
-Probably introduced by commit
-
-  88a678bbc34c ("ibmvscsis: Initial commit of IBM VSCSI Tgt Driver")
-
-I applied the following hack for now:
-
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 25 Jan 2022 14:18:36 +1100
-Subject: [PATCH] scsi: hack for building with -Warray-bounds
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c b/drivers/scsi/ibmvsc=
-si_tgt/ibmvscsi_tgt.c
-index 61f06f6885a5..89fcf98c61c3 100644
---- a/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-+++ b/drivers/scsi/ibmvscsi_tgt/ibmvscsi_tgt.c
-@@ -1872,11 +1872,11 @@ static void srp_snd_msg_failed(struct scsi_info *vs=
-csi, long rc)
-  */
- static void ibmvscsis_send_messages(struct scsi_info *vscsi)
- {
--	u64 msg_hi =3D 0;
-+	u64 msg_hi[2] =3D { };
- 	/* note do not attempt to access the IU_data_ptr with this pointer
- 	 * it is not valid
- 	 */
--	struct viosrp_crq *crq =3D (struct viosrp_crq *)&msg_hi;
-+	struct viosrp_crq *crq =3D (struct viosrp_crq *)msg_hi;
- 	struct ibmvscsis_cmd *cmd, *nxt;
- 	long rc =3D ADAPT_SUCCESS;
- 	bool retry =3D false;
-@@ -1940,7 +1940,7 @@ static void ibmvscsis_send_messages(struct scsi_info =
-*vscsi)
- 					crq->IU_length =3D cpu_to_be16(cmd->rsp.len);
-=20
- 					rc =3D h_send_crq(vscsi->dma_dev->unit_address,
--							be64_to_cpu(msg_hi),
-+							be64_to_cpu(msg_hi[0]),
- 							be64_to_cpu(cmd->rsp.tag));
-=20
- 					dev_dbg(&vscsi->dev, "send_messages: cmd %p, tag 0x%llx, rc %ld\n",
---=20
-2.34.1
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/a1p_bkazwN8LurQiv3XEc_x
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvbW4ACgkQAVBC80lX
-0GzvMQf/QRhiXVaYaZG2uTo539upkz90dUyYzgIla+hvXu2Ncl+aKbJzDbudgtu0
-YyA1qYpwLN+F3L6W0klBFB9b+b7Na6YG+RBiYuI48qK4BXRXmdGbHbRptwL+QJup
-Z13twPX7Ip3ppDXjhY6s+8BDwmaPZ8BQ8lW2EkFeQCp0I+fmCNpKPH32vqdVUgMu
-cK4jOYk0VurL5miS83sDphMUS9etbCgOIla8k81VYR7Grr+Vk6aiJBz0gRNv2pZj
-3B3456eZyd0t7dRnBfuIFhS0jd7AiRRRT24dyQ6OQKeU/5dXx8usPxUK3WwykQJH
-oiqF8T/tDlLggKd81lALspKc4Uk7ig==
-=AWTT
------END PGP SIGNATURE-----
-
---Sig_/a1p_bkazwN8LurQiv3XEc_x--
+Daniel Díaz
+daniel.diaz@linaro.org
