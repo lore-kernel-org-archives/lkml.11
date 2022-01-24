@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 469A6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68C65C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:14:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346646AbiAXTOU (ORCPT
+        id S1345632AbiAXTOX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:14:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46118 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346272AbiAXTFP (ORCPT
+        Mon, 24 Jan 2022 14:14:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35414 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346377AbiAXTF0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90EA2C0613F0;
-        Mon, 24 Jan 2022 11:01:03 -0800 (PST)
+        Mon, 24 Jan 2022 14:05:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59D0AB8123A;
-        Mon, 24 Jan 2022 19:01:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A1FEC340EA;
-        Mon, 24 Jan 2022 19:01:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D93C561209;
+        Mon, 24 Jan 2022 19:05:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9D80C340E5;
+        Mon, 24 Jan 2022 19:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050861;
-        bh=MAeeJZOxqn6EdjZ+yLTH/ZYr2Om5f/r9frQ/yzaDLFI=;
+        s=korg; t=1643051125;
+        bh=gZSDVsfYlsAxlWnp9Aw1egp1OcnEtoIW76K3GdYQkMs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EcnbjoBdne6VWiGRW+dtQPPyMv20XLvMPB50APa4SBwSrgJaQfZY3vgmWvm5lc7YS
-         3LvdWeovlWvaotVnCFXcTrcOnTR8pe3qAvqWRt1gY3k8eRHCWPcZsjWsZnqkAkO4gO
-         NUM8IlG0enuhAH0XQXHt1dop3AKkII7arnyZRvPI=
+        b=C8lRPpTZj4+xKjJdTGyLOb0WSLc8QcmPbbu7pTLTQYN5q+RET4TnRyQqxnBd35CWv
+         27EmZ35PhV/LwcU/z6fdW483mQczgDSCPq0k1j6bpmCC7nY00Eu0QWVPvMimfZS5mC
+         WYLh+jW6WzPlt8JO6YoHF2JaxE84SS6QlyFp1LnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.9 135/157] net: axienet: fix number of TX ring slots for available check
-Date:   Mon, 24 Jan 2022 19:43:45 +0100
-Message-Id: <20220124183937.059128872@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 062/186] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
+Date:   Mon, 24 Jan 2022 19:42:17 +0100
+Message-Id: <20220124183939.117977615@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,41 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit aba57a823d2985a2cc8c74a2535f3a88e68d9424 upstream.
+[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
 
-The check for the number of available TX ring slots was off by 1 since a
-slot is required for the skb header as well as each fragment. This could
-result in overwriting a TX ring slot that was still in use.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for meson_spifc_probe.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/spi/spi-meson-spifc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -680,7 +680,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 	num_frag = skb_shinfo(skb)->nr_frags;
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
- 
--	if (axienet_check_tx_bd_space(lp, num_frag)) {
-+	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
- 		if (netif_queue_stopped(ndev))
- 			return NETDEV_TX_BUSY;
- 
-@@ -690,7 +690,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 		smp_mb();
- 
- 		/* Space might have just been freed - check again */
--		if (axienet_check_tx_bd_space(lp, num_frag))
-+		if (axienet_check_tx_bd_space(lp, num_frag + 1))
- 			return NETDEV_TX_BUSY;
- 
- 		netif_wake_queue(ndev);
+diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
+index 616566e793c62..28975b6f054fa 100644
+--- a/drivers/spi/spi-meson-spifc.c
++++ b/drivers/spi/spi-meson-spifc.c
+@@ -357,6 +357,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
+ 	return 0;
+ out_clk:
+ 	clk_disable_unprepare(spifc->clk);
++	pm_runtime_disable(spifc->dev);
+ out_err:
+ 	spi_master_put(master);
+ 	return ret;
+-- 
+2.34.1
+
 
 
