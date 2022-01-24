@@ -2,58 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B7AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE728C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575627AbiAXVwH (ORCPT
+        id S1575689AbiAXVwQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447375AbiAXVTH (ORCPT
+        Mon, 24 Jan 2022 16:52:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42788 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450081AbiAXVTo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64526C06F8D5;
-        Mon, 24 Jan 2022 12:13:21 -0800 (PST)
+        Mon, 24 Jan 2022 16:19:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06376B811FB;
-        Mon, 24 Jan 2022 20:13:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F28B8C340E5;
-        Mon, 24 Jan 2022 20:13:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EC9F661469;
+        Mon, 24 Jan 2022 21:19:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9EEBC340E4;
+        Mon, 24 Jan 2022 21:19:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055199;
-        bh=zPh5p7FABxi5Q4+sOjWICwvNeN9fXrty6gLPGE1tFdI=;
+        s=korg; t=1643059181;
+        bh=jq3qAwfolb3vJnwEB5So1WRHousxwOrTd3MkQgUiNl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dKV1DcMo8Oc+z3+VrGF1SG8jPgr614sXP4CskWahtgIZ9bYP6QC84ep+gGwOOnwcs
-         h8qeIahjcCdSHGytCElI+UGXpDSpCU0zEoNDw5P9KIbOyGYFl8zhxI9vmy8Dfc6hON
-         hjrf36hNiLA/UN4o131FnKOHYvkG54de1kNi6wVY=
+        b=qFOYP4WEMMAkzzx8m2oqlUi9RN1M4MjMTcH3c72v7edAKVQnbedS49WEZorGf3JPd
+         PES7c2zjuCQ5LNsKp2coKvCgcjlB3m0s4mw0aqxpqy2V6fjHVPxDts1G47TR0RRp3M
+         MRFlbqy6+H84NsVF/rIgjx+t8yutunYVprssKTwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Borislav Petkov <bp@alien8.de>, Christoph Hellwig <hch@lst.de>,
-        David Hildenbrand <david@redhat.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 072/846] mm/page_alloc.c: do not warn allocation failure on zone DMA if no managed pages
-Date:   Mon, 24 Jan 2022 19:33:09 +0100
-Message-Id: <20220124184103.464688090@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Baruch Siach <baruch@tkos.co.il>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0530/1039] of: base: Fix phandle argument length mismatch error message
+Date:   Mon, 24 Jan 2022 19:38:39 +0100
+Message-Id: <20220124184143.098307142@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -62,98 +47,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baoquan He <bhe@redhat.com>
+From: Baruch Siach <baruch@tkos.co.il>
 
-commit c4dc63f0032c77464fbd4e7a6afc22fa6913c4a7 upstream.
+[ Upstream commit 94a4950a4acff39b5847cc1fee4f65e160813493 ]
 
-In kdump kernel of x86_64, page allocation failure is observed:
+The cell_count field of of_phandle_iterator is the number of cells we
+expect in the phandle arguments list when cells_name is missing. The
+error message should show the number of cells we actually see.
 
- kworker/u2:2: page allocation failure: order:0, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
- CPU: 0 PID: 55 Comm: kworker/u2:2 Not tainted 5.16.0-rc4+ #5
- Hardware name: AMD Dinar/Dinar, BIOS RDN1505B 06/05/2013
- Workqueue: events_unbound async_run_entry_fn
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x48/0x5e
-  warn_alloc.cold+0x72/0xd6
-  __alloc_pages_slowpath.constprop.0+0xc69/0xcd0
-  __alloc_pages+0x1df/0x210
-  new_slab+0x389/0x4d0
-  ___slab_alloc+0x58f/0x770
-  __slab_alloc.constprop.0+0x4a/0x80
-  kmem_cache_alloc_trace+0x24b/0x2c0
-  sr_probe+0x1db/0x620
-  ......
-  device_add+0x405/0x920
-  ......
-  __scsi_add_device+0xe5/0x100
-  ata_scsi_scan_host+0x97/0x1d0
-  async_run_entry_fn+0x30/0x130
-  process_one_work+0x1e8/0x3c0
-  worker_thread+0x50/0x3b0
-  ? rescuer_thread+0x350/0x350
-  kthread+0x16b/0x190
-  ? set_kthread_struct+0x40/0x40
-  ret_from_fork+0x22/0x30
-  </TASK>
- Mem-Info:
- ......
-
-The above failure happened when calling kmalloc() to allocate buffer with
-GFP_DMA.  It requests to allocate slab page from DMA zone while no managed
-pages at all in there.
-
- sr_probe()
- --> get_capabilities()
-     --> buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-
-Because in the current kernel, dma-kmalloc will be created as long as
-CONFIG_ZONE_DMA is enabled.  However, kdump kernel of x86_64 doesn't have
-managed pages on DMA zone since commit 6f599d84231f ("x86/kdump: Always
-reserve the low 1M when the crashkernel option is specified").  The
-failure can be always reproduced.
-
-For now, let's mute the warning of allocation failure if requesting pages
-from DMA zone while no managed pages.
-
-[akpm@linux-foundation.org: fix warning]
-
-Link: https://lkml.kernel.org/r/20211223094435.248523-4-bhe@redhat.com
-Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
-Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: Pekka Enberg <penberg@kernel.org>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: af3be70a3211 ("of: Improve of_phandle_iterator_next() error message")
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Baruch Siach <baruch@tkos.co.il>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/96519ac55be90a63fa44afe01480c30d08535465.1640881913.git.baruch@tkos.co.il
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_alloc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/of/base.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -4210,7 +4210,9 @@ void warn_alloc(gfp_t gfp_mask, nodemask
- 	va_list args;
- 	static DEFINE_RATELIMIT_STATE(nopage_rs, 10*HZ, 1);
- 
--	if ((gfp_mask & __GFP_NOWARN) || !__ratelimit(&nopage_rs))
-+	if ((gfp_mask & __GFP_NOWARN) ||
-+	     !__ratelimit(&nopage_rs) ||
-+	     ((gfp_mask & __GFP_DMA) && !has_managed_dma()))
- 		return;
- 
- 	va_start(args, fmt);
+diff --git a/drivers/of/base.c b/drivers/of/base.c
+index 61de453b885cb..81b956ab2348e 100644
+--- a/drivers/of/base.c
++++ b/drivers/of/base.c
+@@ -1349,9 +1349,9 @@ int of_phandle_iterator_next(struct of_phandle_iterator *it)
+ 		 * property data length
+ 		 */
+ 		if (it->cur + count > it->list_end) {
+-			pr_err("%pOF: %s = %d found %d\n",
++			pr_err("%pOF: %s = %d found %td\n",
+ 			       it->parent, it->cells_name,
+-			       count, it->cell_count);
++			       count, it->list_end - it->cur);
+ 			goto err;
+ 		}
+ 	}
+-- 
+2.34.1
+
 
 
