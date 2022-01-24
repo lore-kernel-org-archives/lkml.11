@@ -2,173 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB58C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7984EC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315443AbiAYCxZ (ORCPT
+        id S1315479AbiAYCxa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:53:25 -0500
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:41253 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2370182AbiAYADy (ORCPT
+        Mon, 24 Jan 2022 21:53:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387506AbiAYAE7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:03:54 -0500
-Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6F7365C0062;
-        Mon, 24 Jan 2022 19:03:53 -0500 (EST)
-Received: from imap44 ([10.202.2.94])
-  by compute4.internal (MEProxy); Mon, 24 Jan 2022 19:03:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=flygoat.com; h=
-        cc:cc:content-transfer-encoding:content-type:date:date:from:from
-        :in-reply-to:in-reply-to:message-id:mime-version:references
-        :reply-to:sender:subject:subject:to:to; s=fm1; bh=xrVlhzn9aqAvyt
-        XYY/7c6YYYVRGhNM6WvivtbLM07nw=; b=iq7pi02PS8sL3wMUrWNyF5p7h24mDK
-        sM3thbyjTfoF7TylAYssOVXZtD9s+jCqJ0TwGcUTBTEHbmCJtTzqeh0ZC7PGZdnC
-        DnvYqeLd13a5LAWuX15LfuI3UAEyCfpLWDZokM1cXwVr1grQiM/pPVZ+hK9Nq1we
-        miFX4xyrtWqIYb/xhy9xnTs5ZnZqcBdxOuA9bO3gxhjAeuSwvb+RzDyTfuv22Cny
-        Jx4wt3qz5Df1pHMIfkK4UH6kwVMuBXc3hEJ2RThHzpUC8eCEZxWcOfB7kQ5XYmXZ
-        hp6F19TgshFiN/QqifsCsc0g/eKlYYxRno1UCJbqcG15SlVJRJIn2OWQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding
-        :content-type:date:date:from:from:in-reply-to:in-reply-to
-        :message-id:mime-version:references:reply-to:sender:subject
-        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=xrVlhzn9aqAvytXYY/7c6YYYVRGhNM6WvivtbLM07
-        nw=; b=aN0JG3UjJA56Pt3PMsJFofak4UiP4GBcbYFIt+naPgqfyYg/s4cPGtPyo
-        YnNhdaT7JclRWvreVn2Jf+JudWggWln8T/T3X4sZu0scOCtI1bnTQDIZbJTzS072
-        7Jl9ntDcFEyKkWfnFP6brtx+WDW7l6MLYG6d1gLckM9r9venKRZj5iz1oBAAE8e5
-        JBQWDCOYI93f7AvVQxjl+YhqXMySbTs0UbAVy4ARvsmYcHMXTU3mb1XMIYI7vmp2
-        sWc4XfmI9pVaIgXxuLGMQKk9b40UWuFCbHU4ym6vQNBDaGfDF5Sv2036QrToO+Zl
-        OeJYPtp/VUvb2bnuA5JJ3QfFNqUhA==
-X-ME-Sender: <xms:aT7vYQy7RALPBf3IQRAxeZXGRB5ziOOcPbJybZbHOBS7jhK2O94REQ>
-    <xme:aT7vYUSIVtYt8J3NH4EyjNQYvD3oRGuVIZ-rwanFt7S_ytctiUACJZ3Eq_UHzxRU7
-    jr6ZMV1HxN-J8f-hXY>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvdekgdduiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvufgtgfesthhqredtreerjeenucfhrhhomhepfdflihgr
-    gihunhcujggrnhhgfdcuoehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhmqe
-    enucggtffrrghtthgvrhhnpeefteegkeevfeethffgudehgedvueduvdeifedvvdelhfef
-    heekteefueektdefjeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrih
-    hlfhhrohhmpehjihgrgihunhdrhigrnhhgsehflhihghhorghtrdgtohhm
-X-ME-Proxy: <xmx:aT7vYSV1VY_-rDLXexeWyX8qYkX78SD2hCk_PvuHn80ggXwsQMEfvg>
-    <xmx:aT7vYeiKoSdInKeM3dd12OH62u5k8MciwxOfivc5lGWbKXlJaxYSKQ>
-    <xmx:aT7vYSBZuHwpGZxH-MRl3r5m0Ei-Xc5gicij4-B48qOGw0VG9PZNZg>
-    <xmx:aT7vYV_ro25vKsYJago2ixa0Ls4DLvaiunrlEiYT-WB6Mf6u_VamDw>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 154A5FA0AA6; Mon, 24 Jan 2022 19:03:53 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4585-ga9d9773056-fm-20220113.001-ga9d97730
-Mime-Version: 1.0
-Message-Id: <c88b0d87-b238-4889-b033-226bed85bb01@www.fastmail.com>
-In-Reply-To: <CAKwvOd=4QBW5uFLM7zbHfG+5499tT_zqBTaZQgzqegmuq_5+MQ@mail.gmail.com>
-References: <20220120214001.1879469-1-nathan@kernel.org>
- <CAKwvOd=4QBW5uFLM7zbHfG+5499tT_zqBTaZQgzqegmuq_5+MQ@mail.gmail.com>
-Date:   Tue, 25 Jan 2022 00:03:32 +0000
-From:   "Jiaxun Yang" <jiaxun.yang@flygoat.com>
-To:     "Nick Desaulniers" <ndesaulniers@google.com>,
-        "Nathan Chancellor" <nathan@kernel.org>,
-        "Thomas Bogendoerfer" <tsbogend@alpha.franken.de>
-Cc:     "Huacai Chen" <chenhuacai@kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Subject: Re: [PATCH 1/2] MIPS: Loongson64: Clean up use of cc-ifversion
-Content-Type: text/plain;charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Mon, 24 Jan 2022 19:04:59 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D223DC10FB1A
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:50:16 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id n8so12407223lfq.4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:50:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OGMPavFiygsyRUvP6iJHreifdhTfnFs8KzTgqM4LQXE=;
+        b=hHNFgGgpW1yZ1w3yidJ34MJlAwrfsR1lTv2j8pjJOimmG76AEX2nqrZgl12L1c2EjT
+         pUXl5fJZL52pNzq6q9l2kdXzPi1VwipLre4QSLIvXamsR28pncmewCxcyiyy/6snPrcw
+         MwZCDsjudVnfJyWF7UtVsZGai9O0RQi1zC7aH8CLCfHHcuJojcS/pXSWLJyDFybg6mV9
+         qW91v9PSr7mwaE8Y9WsVwjEp6SJz/l/3Zp+eKu5XGzD6r4RS1yZvmiHhoenEqJvfLJAR
+         BoWPA5dvK0QDl6tg0qrC/8YSBCha1070ecMkBJokjd1b1X7uetupIvFBhoPYhlw9JEjn
+         hbbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OGMPavFiygsyRUvP6iJHreifdhTfnFs8KzTgqM4LQXE=;
+        b=m9n6f+rA4vfAH1s3BWxrGwJZh+2vi0JaNVqUTPHHZSS4JM/f9+nVS8E+PrJJbGidPR
+         QWsfmxQ7m03m0XLjgBgejymJT4TRfGaEx3G7Xxb5Pjo8Y29OFuIQHjdNHSTRja/mvd25
+         Q29gBSsvCQlhTTDo42EvrgKQU+Zxt4C2WxnprGJ+hPSEr5oepIeaL28/iIqf28Lo0pOF
+         N0dvCFjitQjrXTGARpqwFiMEbosAhiW55OUMwJ0afxzVt0w3qVnuUGan0XfcPJAammQK
+         praIIenET/Si4PI9hsYGqyhjvf5NfjpcuCFD4PMdhaIyarFZsNiZBbbrFmI+bo2uP809
+         rvnQ==
+X-Gm-Message-State: AOAM532KHaHLDgznFfBcwH667DTKJFDlucR8EkR6vQiKFQEMtjG74xra
+        JcbzDyPctu9jb0N5JI4V00GxuI3/jRTSUc/fOL+jnQ==
+X-Google-Smtp-Source: ABdhPJzuUMYTwxoD6Be0fgMi8vjGomcIgc/33qufgHrwjBHGO7+ZPBh2d6fqFcJfjL6sG98DFQ8nsvt7hnR1jFZtn1E=
+X-Received: by 2002:a19:ad02:: with SMTP id t2mr14282474lfc.82.1643061014920;
+ Mon, 24 Jan 2022 13:50:14 -0800 (PST)
+MIME-Version: 1.0
+References: <202201200359.lTk9zHg4-lkp@intel.com> <39230575-13ea-7384-71bc-2aac1fa2edb8@intel.com>
+In-Reply-To: <39230575-13ea-7384-71bc-2aac1fa2edb8@intel.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jan 2022 13:50:02 -0800
+Message-ID: <CAKwvOd=NVZs7bfz-OTnhPmk4xZfmJq6zQzJaEtaX4AO0N7Pi9A@mail.gmail.com>
+Subject: Re: arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory after
+ it is freed [clang-analyzer-unix.Malloc]
+To:     Nikita Shubin <nikita.shubin@maquefel.me>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        kernel test robot <yujie.liu@intel.com>,
+        Nathan Huckleberry <nhuck@google.com>,
+        Philip Li <philip.li@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-=E5=9C=A82022=E5=B9=B41=E6=9C=8824=E6=97=A5=E4=B8=80=E6=9C=88 =E4=B8=8B=E5=
-=8D=888:31=EF=BC=8CNick Desaulniers=E5=86=99=E9=81=93=EF=BC=9A
-> On Thu, Jan 20, 2022 at 1:40 PM Nathan Chancellor <nathan@kernel.org> =
-wrote:
->>
->> This Makefile checks that GCC is 4.9 or newer, which is redundant aft=
-er
->> commit 76ae847497bc ("Documentation: raise minimum supported version =
-of
->> GCC to 5.1"), so cc-option can be removed.
->>
->> Clang does not support -march=3Dloongson3a so it needs to continue to=
- use
->> -march=3Dmips64r2, along with binutils less than 2.25, so check that =
-both
->> GCC and binutils 2.25 or newer are being used before using
->> -march=3Dloongson3a. These flags do not need to be checked with cc-op=
-tion
->> anymore because all GCC versions support -march=3Dloongson3a and
->> -march=3Dmips64r2 and all clang versions support -march=3Dmips64r2.
->>
->> Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+On Wed, Jan 19, 2022 at 5:46 PM kernel test robot <yujie.liu@intel.com> wrote:
 >
-> Thanks for the patch. I wonder why `_MIPS_ISA` only seems to be set at
-> all for `-march=3Dloongson3a` AFAICT, though that question is orthogon=
-al
-> to this patch. Perhaps the Loongson or MIPS maintainers know more?
-> Otherwise seems like most uses of _MIPS_ISA can either be deleted or
-> simplified now.
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   1d1df41c5a33359a00e919d54eaebfb789711fdc
+> commit: 9645ccc7bd7a16cd73c3be9dee70cd702b03be37 ep93xx: clock: convert in-place to COMMON_CLK
+> date:   3 months ago
+> config: arm-randconfig-c002-20220118 (https://download.01.org/0day-ci/archive/20220120/202201200359.lTk9zHg4-lkp@intel.com/config)
+> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
+> reproduce (this is a W=1 build):
+>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>          chmod +x ~/bin/make.cross
+>          # install arm cross compiling tool for clang build
+>          # apt-get install binutils-arm-linux-gnueabi
+>          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9645ccc7bd7a16cd73c3be9dee70cd702b03be37
+>          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>          git fetch --no-tags linus master
+>          git checkout 9645ccc7bd7a16cd73c3be9dee70cd702b03be37
+>          # save the config file to linux build tree
+>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer
 
-This is because earlier GCC mistakenly set loongson3a to MIPS64 not MIPS=
-64R2.
-
-But given that it's earlier than the minimal requirement GCC of kernel t=
-oday, I think it should be safe to just move the whole logic.
-
-Thanks.
+Hey! This check finally caught something that looks legit! Cool to see
+0day bot running clang-analyzer, too!
+Nikita, can you PTAL?
 
 >
-> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
->
->> ---
->>  arch/mips/loongson64/Platform | 13 +++----------
->>  1 file changed, 3 insertions(+), 10 deletions(-)
->>
->> diff --git a/arch/mips/loongson64/Platform b/arch/mips/loongson64/Pla=
-tform
->> index 3e660d6d3c2b..981d3abc150e 100644
->> --- a/arch/mips/loongson64/Platform
->> +++ b/arch/mips/loongson64/Platform
->> @@ -12,17 +12,10 @@ cflags-$(CONFIG_CPU_LOONGSON64)     +=3D -Wa,--tr=
-ap
->>  # by GAS.  The cc-option can't probe for this behaviour so -march=3D=
-loongson3a
->>  # can't easily be used safely within the kbuild framework.
->>  #
->> -ifeq ($(call cc-ifversion, -ge, 0409, y), y)
->> -  ifeq ($(call ld-ifversion, -ge, 22500, y), y)
->> -    cflags-$(CONFIG_CPU_LOONGSON64)  +=3D \
->> -      $(call cc-option,-march=3Dloongson3a -U_MIPS_ISA -D_MIPS_ISA=3D=
-_MIPS_ISA_MIPS64)
->> -  else
->> -    cflags-$(CONFIG_CPU_LOONGSON64)  +=3D \
->> -      $(call cc-option,-march=3Dmips64r2,-mips64r2 -U_MIPS_ISA -D_MI=
-PS_ISA=3D_MIPS_ISA_MIPS64)
->> -  endif
->> +ifeq ($(CONFIG_CC_IS_GCC)$(call ld-ifversion, -ge, 22500, y), yy)
->> +  cflags-$(CONFIG_CPU_LOONGSON64) +=3D -march=3Dloongson3a -U_MIPS_I=
-SA -D_MIPS_ISA=3D_MIPS_ISA_MIPS64
->>  else
->> -    cflags-$(CONFIG_CPU_LOONGSON64)  +=3D \
->> -      $(call cc-option,-march=3Dmips64r2,-mips64r2 -U_MIPS_ISA -D_MI=
-PS_ISA=3D_MIPS_ISA_MIPS64)
->> +  cflags-$(CONFIG_CPU_LOONGSON64) +=3D -march=3Dmips64r2
->>  endif
->>
->>  # Some -march=3D flags enable MMI instructions, and GCC complains ab=
-out that
->>
->> base-commit: 2c271fe77d52a0555161926c232cd5bc07178b39
->> --
->> 2.34.1
->>
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 >
 >
-> --=20
-> Thanks,
-> ~Nick Desaulniers
+> clang-analyzer warnings: (new ones prefixed by >>)
+>
+>  >> arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
+>             return &psc->hw;
+>             ^
+>     arch/arm/mach-ep93xx/clock.c:151:2: note: Taking true branch
+>             if (IS_ERR(clk))
+>             ^
+>     arch/arm/mach-ep93xx/clock.c:152:3: note: Memory is released
+>                     kfree(psc);
+>                     ^~~~~~~~~~
+>     arch/arm/mach-ep93xx/clock.c:154:2: note: Use of memory after it is freed
+>             return &psc->hw;
+>             ^      ~~~~~~~~
+>  >> arch/arm/mach-ep93xx/clock.c:484:2: warning: Value stored to 'hw' is never read [clang-analyzer-deadcode.DeadStores]
+>             hw = clk_hw_register_fixed_factor(NULL, "uart", "xtali", 0, 1, clk_uart_div);
+>             ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>  >> arch/arm/mach-ep93xx/clock.c:612:2: warning: Value stored to 'hw' is never read [clang-analyzer-deadcode.DeadStores]
+>             hw = clk_hw_register_fixed_factor(NULL, "usb_clk", "pll2", 0, 1, clk_usb_div);
+>             ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>
+> vim +154 arch/arm/mach-ep93xx/clock.c
+>
+> ff05c0330b9880 Hartley Sweeten 2009-05-07  125
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  126  static struct clk_hw *ep93xx_clk_register_gate(const char *name,
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  127                                      const char *parent_name,
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  128                                      void __iomem *reg,
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  129                                      u8 bit_idx)
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  130  {
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  131          struct clk_init_data init;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  132          struct clk_psc *psc;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  133          struct clk *clk;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  134
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  135          psc = kzalloc(sizeof(*psc), GFP_KERNEL);
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  136          if (!psc)
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  137                  return ERR_PTR(-ENOMEM);
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  138
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  139          init.name = name;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  140          init.ops = &clk_ep93xx_gate_ops;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  141          init.flags = CLK_SET_RATE_PARENT;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  142          init.parent_names = (parent_name ? &parent_name : NULL);
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  143          init.num_parents = (parent_name ? 1 : 0);
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  144
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  145          psc->reg = reg;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  146          psc->bit_idx = bit_idx;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  147          psc->hw.init = &init;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  148          psc->lock = &clk_lock;
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  149
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  150          clk = clk_register(NULL, &psc->hw);
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  151          if (IS_ERR(clk))
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  152                  kfree(psc);
 
---=20
-- Jiaxun
+probably should `return ERR_CAST(clk);` ?
+
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  153
+> 9645ccc7bd7a16 Nikita Shubin   2021-10-18 @154          return &psc->hw;
+> ff05c0330b9880 Hartley Sweeten 2009-05-07  155  }
+> ff05c0330b9880 Hartley Sweeten 2009-05-07  156
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+
+
+-- 
+Thanks,
+~Nick Desaulniers
