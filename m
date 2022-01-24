@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A89CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0847FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348826AbiAXUXf (ORCPT
+        id S1345775AbiAXUXi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:23:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359871AbiAXUBJ (ORCPT
+        Mon, 24 Jan 2022 15:23:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60596 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376878AbiAXUES (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 039C2C055A9B;
-        Mon, 24 Jan 2022 11:28:30 -0800 (PST)
+        Mon, 24 Jan 2022 15:04:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 839FB60917;
-        Mon, 24 Jan 2022 19:28:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6185CC340E8;
-        Mon, 24 Jan 2022 19:28:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A495611CD;
+        Mon, 24 Jan 2022 20:04:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61E8FC340E7;
+        Mon, 24 Jan 2022 20:04:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052509;
-        bh=hazNcpa85LKHtize4WzzuyjDhfQX2MzPxLFQYOF7I9I=;
+        s=korg; t=1643054656;
+        bh=IvIQaEZt2ffRaMJJrLZuUpbFT8T8VG/ahiVl4TyEc7g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q53UTEcAn/blL6RqQFGl5QqEudgClKrBOHSCby2R95fiPXOBcOIOXecTZlcJiNJ+H
-         BrawiiD2IDz2+VJ6bM1UYLIHHGR4Grd6hvpj+gkgODBTsosvXVbte0SUONhxKb1GFF
-         WO0YNHNQnzybe7GqYl2LcI01OAlmafPmqwcAzJMY=
+        b=j3mRs8GUiwWC6VDVYhxMtwxFCHgELilDZ6qA9IJF/CUo9l8qzyM6b0WhSVRqO5vZw
+         WSFIz9bbwbBrRsH8WT0vwqiuBAGCq8KaM+hYtA58nFTtcEtSnsbYckqZ7hhCCV4OTr
+         vatnzB2yCJRT2njGVGGExHitiQhPB8xGTTvS352Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Steven Maddox <s.maddox@lantizia.me.uk>,
-        Christian Lamparter <chunkeey@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 082/320] ARM: dts: gemini: NAS4220-B: fis-index-block with 128 KiB sectors
-Date:   Mon, 24 Jan 2022 19:41:06 +0100
-Message-Id: <20220124183956.534259323@linuxfoundation.org>
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 5.10 459/563] powerpc/64s/radix: Fix huge vmap false positive
+Date:   Mon, 24 Jan 2022 19:43:44 +0100
+Message-Id: <20220124184040.330083950@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,65 +46,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Lamparter <chunkeey@gmail.com>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit 4754eab7e5a78bdefe7a960c5c260c95ebbb5fa6 ]
+commit 467ba14e1660b52a2f9338b484704c461bd23019 upstream.
 
-Steven Maddox reported in the OpenWrt bugzilla, that his
-RaidSonic IB-NAS4220-B was no longer booting with the new
-OpenWrt 21.02 (uses linux 5.10's device-tree). However, it was
-working with the previous OpenWrt 19.07 series (uses 4.14).
+pmd_huge() is defined to false when HUGETLB_PAGE is not configured, but
+the vmap code still installs huge PMDs. This leads to false bad PMD
+errors when vunmapping because it is not seen as a huge PTE, and the bad
+PMD check catches it. The end result may not be much more serious than
+some bad pmd warning messages, because the pmd_none_or_clear_bad() does
+what we wanted and clears the huge PTE anyway.
 
-|[    5.548038] No RedBoot partition table detected in 30000000.flash
-|[    5.618553] Searching for RedBoot partition table in 30000000.flash at offset 0x0
-|[    5.739093] No RedBoot partition table detected in 30000000.flash
-|...
-|[    7.039504] Waiting for root device /dev/mtdblock3...
+Fix this by checking pmd_is_leaf(), which checks for a PTE regardless of
+config options. The whole huge/large/leaf stuff is a tangled mess but
+that's kernel-wide and not something we can improve much in arch/powerpc
+code.
 
-The provided bootlog shows that the RedBoot partition parser was
-looking for the partition table "at offset 0x0". Which is strange
-since the comment in the device-tree says it should be at 0xfe0000.
+pmd_page(), pud_page(), etc., called by vmalloc_to_page() on huge vmaps
+can similarly trigger a false VM_BUG_ON when CONFIG_HUGETLB_PAGE=n, so
+those checks are adjusted. The checks were added by commit d6eacedd1f0e
+("powerpc/book3s: Use config independent helpers for page table walk"),
+while implementing a similar fix for other page table walking functions.
 
-Further digging on the internet led to a review site that took
-some useful PCB pictures of their review unit back in February 2009.
-Their picture shows a Spansion S29GL128N11TFI01 flash chip.
-
->From Spansion's Datasheet:
-"S29GL128N: One hundred twenty-eight 64 Kword (128 Kbyte) sectors"
-Steven also provided a "cat /sys/class/mtd/mtd0/erasesize" from his
-unit: "131072".
-
-With the 128 KiB Sector/Erasesize in mind. This patch changes the
-fis-index-block property to (0xfe0000 / 0x20000) = 0x7f.
-
-Fixes: b5a923f8c739 ("ARM: dts: gemini: Switch to redboot partition parsing")
-Reported-by: Steven Maddox <s.maddox@lantizia.me.uk>
-Signed-off-by: Christian Lamparter <chunkeey@gmail.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Tested-by: Steven Maddox <s.maddox@lantizia.me.uk>
-Link: https://lore.kernel.org/r/20211206004334.4169408-1-linus.walleij@linaro.org'
-Bugzilla: https://bugs.openwrt.org/index.php?do=details&task_id=4137
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d909f9109c30 ("powerpc/64s/radix: Enable HAVE_ARCH_HUGE_VMAP")
+Cc: stable@vger.kernel.org # v5.3+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211216103342.609192-1-npiggin@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/gemini-nas4220b.dts | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/mm/book3s64/radix_pgtable.c |    4 ++--
+ arch/powerpc/mm/pgtable_64.c             |   14 +++++++++++---
+ 2 files changed, 13 insertions(+), 5 deletions(-)
 
-diff --git a/arch/arm/boot/dts/gemini-nas4220b.dts b/arch/arm/boot/dts/gemini-nas4220b.dts
-index e1020e07e1366..60cec653ac7c6 100644
---- a/arch/arm/boot/dts/gemini-nas4220b.dts
-+++ b/arch/arm/boot/dts/gemini-nas4220b.dts
-@@ -84,7 +84,7 @@
- 			partitions {
- 				compatible = "redboot-fis";
- 				/* Eraseblock at 0xfe0000 */
--				fis-index-block = <0x1fc>;
-+				fis-index-block = <0x7f>;
- 			};
- 		};
+--- a/arch/powerpc/mm/book3s64/radix_pgtable.c
++++ b/arch/powerpc/mm/book3s64/radix_pgtable.c
+@@ -1152,7 +1152,7 @@ int pud_set_huge(pud_t *pud, phys_addr_t
  
--- 
-2.34.1
-
+ int pud_clear_huge(pud_t *pud)
+ {
+-	if (pud_huge(*pud)) {
++	if (pud_is_leaf(*pud)) {
+ 		pud_clear(pud);
+ 		return 1;
+ 	}
+@@ -1199,7 +1199,7 @@ int pmd_set_huge(pmd_t *pmd, phys_addr_t
+ 
+ int pmd_clear_huge(pmd_t *pmd)
+ {
+-	if (pmd_huge(*pmd)) {
++	if (pmd_is_leaf(*pmd)) {
+ 		pmd_clear(pmd);
+ 		return 1;
+ 	}
+--- a/arch/powerpc/mm/pgtable_64.c
++++ b/arch/powerpc/mm/pgtable_64.c
+@@ -102,7 +102,8 @@ EXPORT_SYMBOL(__pte_frag_size_shift);
+ struct page *p4d_page(p4d_t p4d)
+ {
+ 	if (p4d_is_leaf(p4d)) {
+-		VM_WARN_ON(!p4d_huge(p4d));
++		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
++			VM_WARN_ON(!p4d_huge(p4d));
+ 		return pte_page(p4d_pte(p4d));
+ 	}
+ 	return virt_to_page(p4d_page_vaddr(p4d));
+@@ -112,7 +113,8 @@ struct page *p4d_page(p4d_t p4d)
+ struct page *pud_page(pud_t pud)
+ {
+ 	if (pud_is_leaf(pud)) {
+-		VM_WARN_ON(!pud_huge(pud));
++		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
++			VM_WARN_ON(!pud_huge(pud));
+ 		return pte_page(pud_pte(pud));
+ 	}
+ 	return virt_to_page(pud_page_vaddr(pud));
+@@ -125,7 +127,13 @@ struct page *pud_page(pud_t pud)
+ struct page *pmd_page(pmd_t pmd)
+ {
+ 	if (pmd_is_leaf(pmd)) {
+-		VM_WARN_ON(!(pmd_large(pmd) || pmd_huge(pmd)));
++		/*
++		 * vmalloc_to_page may be called on any vmap address (not only
++		 * vmalloc), and it uses pmd_page() etc., when huge vmap is
++		 * enabled so these checks can't be used.
++		 */
++		if (!IS_ENABLED(CONFIG_HAVE_ARCH_HUGE_VMAP))
++			VM_WARN_ON(!(pmd_large(pmd) || pmd_huge(pmd)));
+ 		return pte_page(pmd_pte(pmd));
+ 	}
+ 	return virt_to_page(pmd_page_vaddr(pmd));
 
 
