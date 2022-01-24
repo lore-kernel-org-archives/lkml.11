@@ -2,123 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F01C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6156CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376727AbiAXUDq (ORCPT
+        id S1353100AbiAXUDw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:03:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36884 "EHLO
+        Mon, 24 Jan 2022 15:03:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36996 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356340AbiAXTp7 (ORCPT
+        with ESMTP id S1356415AbiAXTqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:45:59 -0500
+        Mon, 24 Jan 2022 14:46:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2C9ABB811F3;
-        Mon, 24 Jan 2022 19:45:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86615C340E5;
-        Mon, 24 Jan 2022 19:45:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053554;
-        bh=IWzOIoTZw/gXMYGd/lGaAkXkX9/htrEeJ4WV3BjbluY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FenG9DDybWxt4X8JpEkhNByIdDHMiElalxLlHiabwrXU45/MibAqg38eiO2tdyRAb
-         bvDtXCKmMvby+/DVCSwQPYOJm9xo6q3c026yOxsAkXOJpYitmKCTtiDYobNboiOvub
-         CdrE07qX30YlQjQ/SU8VJKcb2YQkvtLBsN4xkUjI=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anilkumar Kolli <akolli@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 102/563] ath11k: Use host CE parameters for CE interrupts configuration
-Date:   Mon, 24 Jan 2022 19:37:47 +0100
-Message-Id: <20220124184027.926264230@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E598B8121C;
+        Mon, 24 Jan 2022 19:46:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB7EC340E7;
+        Mon, 24 Jan 2022 19:46:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643053567;
+        bh=gJlHbxnMW0wTSxm4hKs/P78n5KAVQuBy0pzkZMpkAGQ=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=pBLf/juVpsFO6ypTkWqRMy7awwXjZ8Rw3n3NDnpqdQKeMJ2cgvfQLL0GpUqvtulR+
+         bmo/qL875hJXqkr81U3qQrQyZ5F5D8Jyzdc5HuVrYZyuTlaU1tRRH075D6tlF9Z7yu
+         vsY/HEQSCUklTYdk89aYoyEc7/7AcqfhvgEJk6fBGMHQMkIkc3yUqVOreEUWcwq0+j
+         QJjAbkykYxXP2DL9/i1fPlNuezzba0ip2ANz3M3yC8Bc/07GKj4wGg9z5l+Fo9JiLZ
+         6rAjcIZjA9t0P2KKfQ5Ni3rLGfv9fm3mDEPQGkLcOzqJR2FtIeiFs+i2iVeep0n3+7
+         WBkVgCU05PHgw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220124162442.29497-3-tdas@codeaurora.org>
+References: <20220124162442.29497-1-tdas@codeaurora.org> <20220124162442.29497-3-tdas@codeaurora.org>
+Subject: Re: [PATCH v3 2/2] clk: qcom: lpass: Add support for LPASS clock controller for SC7280
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
+        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh@kernel.org, robh+dt@kernel.org,
+        Taniya Das <tdas@codeaurora.org>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Taniya Das <tdas@codeaurora.org>
+Date:   Mon, 24 Jan 2022 11:46:05 -0800
+User-Agent: alot/0.10
+Message-Id: <20220124194607.BCB7EC340E7@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anilkumar Kolli <akolli@codeaurora.org>
+Quoting Taniya Das (2022-01-24 08:24:42)
+> diff --git a/drivers/clk/qcom/lpasscorecc-sc7280.c b/drivers/clk/qcom/lpa=
+sscorecc-sc7280.c
+> new file mode 100644
+> index 000000000000..3ac62ea5767e
+> --- /dev/null
+> +++ b/drivers/clk/qcom/lpasscorecc-sc7280.c
+> @@ -0,0 +1,430 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
+> + */
+> +
+> +#include <linux/clk-provider.h>
+> +#include <linux/err.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of.h>
 
-[ Upstream commit b689f091aafd1a874b2f88137934276ab0fca480 ]
+Is the of.h include used?
 
-CE interrupt configuration uses host ce parameters to assign/free
-interrupts. Use host ce parameters to enable/disable interrupts.
-This patch fixes below BUG,
+> +#include <linux/pm_clock.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/regmap.h>
+> +
+> +#include <dt-bindings/clock/qcom,lpasscorecc-sc7280.h>
+> +
+> +#include "clk-alpha-pll.h"
+> +#include "clk-branch.h"
+> +#include "clk-rcg.h"
+> +#include "clk-regmap.h"
+> +#include "clk-regmap-divider.h"
+> +#include "common.h"
+> +#include "gdsc.h"
+> +
+[...]
+> +
+> +static struct regmap_config lpass_core_cc_sc7280_regmap_config =3D {
+> +       .reg_bits =3D 32,
+> +       .reg_stride =3D 4,
+> +       .val_bits =3D 32,
+> +       .fast_io =3D true,
 
-BUG: KASAN: global-out-of-bounds in 0xffffffbffdfb035c at addr
-ffffffbffde6eeac
- Read of size 4 by task kworker/u8:2/132
- Address belongs to variable ath11k_core_qmi_firmware_ready+0x1b0/0x5bc [ath11k]
-
-OOB is due to ath11k_ahb_ce_irqs_enable() iterates ce_count(which is 12)
-times and accessing 12th element in target_ce_config
-(which has only 11 elements) from ath11k_ahb_ce_irq_enable().
-
-With this change host ce configs are used to enable/disable interrupts.
-
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-00471-QCAHKSWPL_SILICONZ-1
-
-Fixes: 967c1d1131fa ("ath11k: move target ce configs to hw_params")
-Signed-off-by: Anilkumar Kolli <akolli@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1637249558-12793-1-git-send-email-akolli@codeaurora.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath11k/ahb.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 430723c64adce..e8cca58e18ffc 100644
---- a/drivers/net/wireless/ath/ath11k/ahb.c
-+++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -206,13 +206,13 @@ static void ath11k_ahb_clearbit32(struct ath11k_base *ab, u8 bit, u32 offset)
- 
- static void ath11k_ahb_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
- {
--	const struct ce_pipe_config *ce_config;
-+	const struct ce_attr *ce_attr;
- 
--	ce_config = &ab->hw_params.target_ce_config[ce_id];
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_OUT)
-+	ce_attr = &ab->hw_params.host_ce_config[ce_id];
-+	if (ce_attr->src_nentries)
- 		ath11k_ahb_setbit32(ab, ce_id, CE_HOST_IE_ADDRESS);
- 
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_IN) {
-+	if (ce_attr->dest_nentries) {
- 		ath11k_ahb_setbit32(ab, ce_id, CE_HOST_IE_2_ADDRESS);
- 		ath11k_ahb_setbit32(ab, ce_id + CE_HOST_IE_3_SHIFT,
- 				    CE_HOST_IE_3_ADDRESS);
-@@ -221,13 +221,13 @@ static void ath11k_ahb_ce_irq_enable(struct ath11k_base *ab, u16 ce_id)
- 
- static void ath11k_ahb_ce_irq_disable(struct ath11k_base *ab, u16 ce_id)
- {
--	const struct ce_pipe_config *ce_config;
-+	const struct ce_attr *ce_attr;
- 
--	ce_config = &ab->hw_params.target_ce_config[ce_id];
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_OUT)
-+	ce_attr = &ab->hw_params.host_ce_config[ce_id];
-+	if (ce_attr->src_nentries)
- 		ath11k_ahb_clearbit32(ab, ce_id, CE_HOST_IE_ADDRESS);
- 
--	if (__le32_to_cpu(ce_config->pipedir) & PIPEDIR_IN) {
-+	if (ce_attr->dest_nentries) {
- 		ath11k_ahb_clearbit32(ab, ce_id, CE_HOST_IE_2_ADDRESS);
- 		ath11k_ahb_clearbit32(ab, ce_id + CE_HOST_IE_3_SHIFT,
- 				      CE_HOST_IE_3_ADDRESS);
--- 
-2.34.1
-
-
-
+What's the max_register? Please set it so that debugfs works.
