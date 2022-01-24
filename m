@@ -2,175 +2,195 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D12E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DDDAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:29:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238399AbiAXO1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:27:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29733 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238282AbiAXO1u (ORCPT
+        id S238480AbiAXO3C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:29:02 -0500
+Received: from mailout4.samsung.com ([203.254.224.34]:47552 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231199AbiAXO27 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:27:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643034469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=9k340GVErxn1t0TlYLSwG/7hBEZLmvh82s//i58t0Cw=;
-        b=JmDwuV2i44ZbMwHg7rP+EGP5cgY1rga1+qJG59N/ztg71v4DklaIrYEFtYYxxizbkgyT+o
-        76OtFLVB+ymVG1B5HZm1wYTTcGtoo+xrw2OsiadIxl7P4XbRhBdA6tyntmwc7B5yD42lOv
-        Z8MWmeiYKYz7W9EmkbbBGBRb5RwSp60=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-618-f6gny0V_Pru0EfehTHChmw-1; Mon, 24 Jan 2022 09:27:48 -0500
-X-MC-Unique: f6gny0V_Pru0EfehTHChmw-1
-Received: by mail-ed1-f72.google.com with SMTP id j10-20020a05640211ca00b003ff0e234fdfso13271106edw.0
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 06:27:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9k340GVErxn1t0TlYLSwG/7hBEZLmvh82s//i58t0Cw=;
-        b=IDBp5Njd/QXtFhHAoZQvPreCDbx80Y13hYIKGoF8OnQwZEMlPWvlL2D0MGRxpKP5eX
-         CSWeNEVA6ELhv8vtxZA3z5XR2QrVKCTjdOWQ8j/nG4esK6qsJ37cCGnl6FtZ4iNC/k7t
-         aebJnj8z/mSQeS6IZ2Ez4yguQcm75iqWLY2b68MUh1zCDbmMkSBN1cTMi63FxdZm6vmr
-         P7dSqkoSPFuwok4a5B9shjJ94LwW/XUzWehpqt4XAxwsMsTWzcsRLlJWsKTtowgU9phG
-         1GIKm6NgSPsoeKOeI64PovWjR8v9odBHxcP+xtXTBaPpa8lUdbEze3G22LzuLN+jhIp1
-         fePA==
-X-Gm-Message-State: AOAM531cJuRXVpwSlIVPhFDWMOoG1wRAuUf4Ac3XUIqybwi652hU+AhL
-        jucUMy45s8UHMBbI9dFRMF5N0+DA+1foeiINXujnhMId5FXBe78cPHYj7YGcH+HHbM6aZyEp/JJ
-        9RFPxLidcyW4Vh91MDNG8vX/1
-X-Received: by 2002:a17:906:4998:: with SMTP id p24mr12189407eju.131.1643034467140;
-        Mon, 24 Jan 2022 06:27:47 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyWOurFSSeIeQAhUSKWF98C8kAh7B+QNdoDL7iJF6pF9xcHVzODXrWVBS416HHEpJ35NfukTw==
-X-Received: by 2002:a17:906:4998:: with SMTP id p24mr12189392eju.131.1643034466892;
-        Mon, 24 Jan 2022 06:27:46 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id zm17sm3390653ejb.213.2022.01.24.06.27.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 06:27:46 -0800 (PST)
-Message-ID: <ca28b3eb-c06d-f8e3-c930-95da631e9a93@redhat.com>
-Date:   Mon, 24 Jan 2022 15:27:45 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 2/2] i2c: designware: Add AMD PSP I2C bus support
-Content-Language: en-US
-To:     =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Raul E Rangel <rrangel@chromium.org>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
-        mario.limonciello@amd.com
-References: <20220120001621.705352-1-jsd@semihalf.com>
- <20220120001621.705352-3-jsd@semihalf.com>
- <a6e0fc62-4a2e-cd2b-557f-5e86088aeeb7@redhat.com>
- <CAOtMz3NcMZsCMO+15wzzwvF44PqRmem1eP-rCbb+dCiaWiGKzA@mail.gmail.com>
- <b30a212f-643d-c85d-6301-d92ee0adf098@redhat.com>
- <CAOtMz3Om=R-mFbi-PRkB4zwO_j1Dc4QRH-Z0HDCk_XwWif7Pog@mail.gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <CAOtMz3Om=R-mFbi-PRkB4zwO_j1Dc4QRH-Z0HDCk_XwWif7Pog@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Mon, 24 Jan 2022 09:28:59 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220124142857epoutp04998ab6f08d5d98161c0e44b8063a9c34~NOzTlRXOr2053720537epoutp04W
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:28:57 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220124142857epoutp04998ab6f08d5d98161c0e44b8063a9c34~NOzTlRXOr2053720537epoutp04W
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1643034537;
+        bh=zvqXmhfJv9oPDwsqSeEPwarbwPgiaKdElKpBH1a75iw=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=bf6nwojvLAdanKC4XqAApY1CvZn9yi59uvmp29NF4dlWDmo/d6dSAj8QbQp6R6Hya
+         nuz1XWT4EQbhrZ6GTSCC1yS2GrqHSh73BVsDQtVS5E363yKOJe/4hDVO8S7LhrfbCF
+         LHtA9j7vnQT6wlAAZhWRH2e960U6jbZFzROual6Q=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20220124142856epcas5p155f540b1eb172bc0c27b2412387e6a5b~NOzS_sVAw1531415314epcas5p1c;
+        Mon, 24 Jan 2022 14:28:56 +0000 (GMT)
+Received: from epsmges5p2new.samsung.com (unknown [182.195.38.183]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4JjC5v28BNz4x9Px; Mon, 24 Jan
+        2022 14:28:51 +0000 (GMT)
+Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        F7.4D.46822.546BEE16; Mon, 24 Jan 2022 23:23:01 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220124142850epcas5p2f82243b87386b3d49a9302c87e015d6b~NOzNftIyL1077210772epcas5p2D;
+        Mon, 24 Jan 2022 14:28:50 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220124142850epsmtrp130d430356c45f010fefd6944622afc5d~NOzNeA1eG2824028240epsmtrp1l;
+        Mon, 24 Jan 2022 14:28:50 +0000 (GMT)
+X-AuditID: b6c32a4a-dfbff7000000b6e6-df-61eeb6453c75
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A8.AB.08738.2A7BEE16; Mon, 24 Jan 2022 23:28:50 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220124142848epsmtip15c1ccd3f647764a2e144c42813c91e00~NOzLVFEpk1062110621epsmtip1j;
+        Mon, 24 Jan 2022 14:28:48 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        s.nawrocki@samsung.com, linux-samsung-soc@vger.kernel.org,
+        pankaj.dubey@samsung.com, sboyd@kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH v5 00/16] Add support for Tesla Full Self-Driving (FSD) SoC
+Date:   Mon, 24 Jan 2022 19:46:28 +0530
+Message-Id: <20220124141644.71052-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpmk+LIzCtJLcpLzFFi42LZdlhTXdd127tEg6eLbCwezNvGZvF30jF2
+        i/fLehgt5h85x2qx8e0PJospf5YzWWx6fI3V4mPPPVaLy7vmsFnMOL+PyeLU9c9sFou2fmG3
+        aN17hN3i8Jt2Vot/1zayWDy+/ofNQcBjzbw1jB6/f01i9JjV0MvmsWlVJ5vHnWt72Dw2L6n3
+        uHKiidWjb8sqRo/Pm+QCOKOybTJSE1NSixRS85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPIS
+        c1NtlVx8AnTdMnOA3lBSKEvMKQUKBSQWFyvp29kU5ZeWpCpk5BeX2CqlFqTkFJgU6BUn5haX
+        5qXr5aWWWBkaGBiZAhUmZGdcmnKaseCNXMXti69YGxj/iHcxcnJICJhI3Dr3mhXEFhLYzShx
+        eV9IFyMXkP2JUeLN/1fMEM5nRon/U46xw3Tc/DORDSKxi1Hi7q03UO0tTBKLjziB2GwC2hJ3
+        p29hArFFBNwkbjR2MIE0MAu8YpK4/m81UDcHh7CAt8SfN4IgNSwCqhLXzzSCzeEVsJG4dm0b
+        M8QyeYnVGw6AXSEhMJVDYsH2M1BXuEi0zrsJZQtLvDq+BcqWknjZ38YOMl9CIFuiZ5cxRLhG
+        Yum8YywQtr3EgStzWEBKmAU0Jdbv0gcJMwvwSfT+fsIE0ckr0dEmBFGtKtH87ipUp7TExO5u
+        VogSD4lv21kgHo+VOHX6IPMERplZCDMXMDKuYpRMLSjOTU8tNi0wyksth0dMcn7uJkZwatTy
+        2sH48MEHvUOMTByMhxglOJiVRHirUt4lCvGmJFZWpRblxxeV5qQWH2I0BQbSRGYp0eR8YHLO
+        K4k3NLE0MDEzMzOxNDYzVBLnPZ2+IVFIID2xJDU7NbUgtQimj4mDU6qBafmT50+ZukU3fEmP
+        +LrYSu7uW/NZbzWSVlw9ejcnbtIj5rPzm1mM/8f7PuBhbtwuKlGgGauTp+Ohmq925nLINn6B
+        T4IOE1XYTJo2OAhfPFG/dWfZ9c934uf8uvP9yuU9DRn6a8yM0qSmrZMT/n7x8q/LSx9fmxv3
+        xOJlHbvdVgXLxlK53MMfCgp0VVZI91x2dCydbuX+4cqB5RctZtcIvb2goNHzsykylyG84usy
+        xWAv4V0h56+V1p45rS8oED+T1dfR/c92he8pOU/u7+7caFw7LXD95tlfLD9MqAuOWxs+ITtO
+        snu2f/sm7Wlq3TvyhNabfO470sPw7INSf/itSNVt3PPXNKT72R2U/9/zW4mlOCPRUIu5qDgR
+        ANnmJ/kWBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrPLMWRmVeSWpSXmKPExsWy7bCSnO6i7e8SDQ791rN4MG8bm8XfScfY
+        Ld4v62G0mH/kHKvFxrc/mCym/FnOZLHp8TVWi48991gtLu+aw2Yx4/w+JotT1z+zWSza+oXd
+        onXvEXaLw2/aWS3+XdvIYvH4+h82BwGPNfPWMHr8/jWJ0WNWQy+bx6ZVnWwed67tYfPYvKTe
+        48qJJlaPvi2rGD0+b5IL4IzisklJzcksSy3St0vgyrg05TRjwRu5itsXX7E2MP4R72Lk5JAQ
+        MJG4+WciWxcjF4eQwA5GiRsPF7BCJKQlrm+cwA5hC0us/PecHaKoiUli+eHjLCAJNgFtibvT
+        tzCB2CICHhJt/+4xgxQxC/xiktj39wZjFyMHh7CAt8SfN4IgNSwCqhLXzzSCLeAVsJG4dm0b
+        M8QCeYnVGw4wT2DkWcDIsIpRMrWgODc9t9iwwCgvtVyvODG3uDQvXS85P3cTIziMtbR2MO5Z
+        9UHvECMTB+MhRgkOZiUR3qqUd4lCvCmJlVWpRfnxRaU5qcWHGKU5WJTEeS90nYwXEkhPLEnN
+        Tk0tSC2CyTJxcEo1MJ2a+t9x5uR1Kem//xt91nP17p3+7anxz+2dgs/W6K241Kvmp8rVdd/u
+        760mx8XPGkt1Vvz7ePHbttzwWvUpksGHDZJmTrRafE0jJHjvhO0ys2Jal/2f9nLKFIca9WfG
+        D+5kTzne6aH6tFzoSUcty5PKX1ruT+XnpEmatMgrq0jNchWYejbLg0Npsv5S1rZnr3bt2Hnk
+        m6Cn7aa6wLcJBgs/vFJYGVX9ZeqZnjnzn6c9MdJNUl5a8vKENkdM8MGkz9c8bjY1Jpnv435X
+        ySzmZOjkl/f3xClZ0+0r54o+UIlwKryomrMsPZO39qt389nTciuinngfvpW3btW8aRslfzQb
+        za9nUL4rsbSy+nvtPk8lluKMREMt5qLiRAB05XSG0gIAAA==
+X-CMS-MailID: 20220124142850epcas5p2f82243b87386b3d49a9302c87e015d6b
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220124142850epcas5p2f82243b87386b3d49a9302c87e015d6b
+References: <CGME20220124142850epcas5p2f82243b87386b3d49a9302c87e015d6b@epcas5p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Adds basic support for the Tesla Full Self-Driving (FSD)
+SoC. This SoC contains three clusters of four Cortex-A72 CPUs,
+as well as several IPs.
 
-On 1/24/22 13:35, Jan Dąbroś wrote:
-> pt., 21 sty 2022 o 11:32 Hans de Goede <hdegoede@redhat.com> napisał(a):
->>
->> Hi Jan,
->>
->> On 1/21/22 10:59, Jan Dąbroś wrote:
+Patches 1 to 9 provide support for the clock controller
+(which is designed similarly to Exynos SoCs).
 
-<snip>
+The remaining changes provide pinmux support, initial device tree support.
 
->>>> Also I don't think you are allowed to use the bus_locking code
->>>> like this. The i2c bus-locking code is intended to deal with
->>>> busses which have muxes in them, where the mux must be set
->>>> to the right branch of the bus to reach the client and then
->>>> not be changed during the transfer to that client.
->>>>
->>>> So i2c-client drivers are never supposed to directly call
->>>> the bus-locking functions.
->>>
->>> I think you are not correct here. There are examples of i2c-clients
->>> which are using i2c bus_locking for the purpose of locking adapter for
->>> the bunch of i2c transactions.
->>>
->>> As an example let's take drivers/char/tpm/tpm_tis_i2c_cr50.c. It
->>> operates in write-wait-read model and there is i2c_lock_bus() call
->>> used to ensure that bus won't be released -
->>> https://github.com/torvalds/linux/blob/master/drivers/char/tpm/tpm_tis_i2c_cr50.c#L202.
->>>
->>> Similar model is followed in drivers/char/tpm/tpm_i2c_infineon.c and
->>> couple of other i2c-client drivers.
->>
->> Ah I see, interesting (live and learn).
->>
->> But this is then combined with using the special __i2c_transfer()
->> function for the actual i2c reads/writes, since using the regular
->> i2c_transfer() function after already taking the lock would deadlock.
-> 
-> Correct. In other words, if i2c-client wants to block the bus/adapter
-> for more than one transaction it must use some special methods. This
-> isn't changed with my patchset. If one is using "normal"
-> i2c_transfer(), we should be on the safe side, nothing will change
-> from the i2c-client point of view. The same if one is using
-> __i2c_transfer().
-> 
->>
->> There is a similar unlocked raw __i2c_smbus_xfer(), but as the
->> comment in include/linux/i2c.h above the locked i2c_smbus_xfer() says:
->>
->> /* This is the very generalized SMBus access routine. You probably do not
->>    want to use this, though; one of the functions below may be much easier,
->>    and probably just as fast.
->>    Note that we use i2c_adapter here, because you do not need a specific
->>    smbus adapter to call this function. */
->> s32 i2c_smbus_xfer(...);
->>
->> So in this case a driver cannot use the usual
->> i2c_smbus_read_byte/word/byte_data/word_data() helpers and
->> the same for writes. Also using an i2c_regmap (which is used
->> in a ton of places like PMIC drivers) will not work this way.
-> 
-> Right, however this behavior is not altered by my patch. I just wanted
-> to ensure that drivers which are already using i2c bus_locking will
-> still work as expected.
+- Changes since v4
+* fixed 'make dtbs_check' warnings on patch 14/16
 
-Ah I see, I thought that maybe you wanted to add extra i2c bus-locking
-calls to some drivers which don't have them yet to ensure that the
-AMD PSP semaphore would be hold over multiple transfers in
-drivers which don't do this yet.
+- Changes since v3
+* Addressed Stefen's review comments on patch 14/16
+* Fixed kernel test robot warning on patch 04/16
+* rebsaed this series on Krzysztof's pinmux new binding schema work [1]
 
->> So yes you can use i2c_bus_lock() for this; but only if all the
->> drivers where you want to do that limit themselves to
->> __i2c_transfer() and __i2c_smbus_xfer() calls and/or are
->> rewritten to only use those.
-> 
-> My goal is to not modify current behavior, that is - we don't need to
-> modify clients' drivers and extra quirks applied by amdpsp semaphore
-> will be "transparent" for them. IOW, switch from generic
-> i2c-designware to i2c-designware-amdpsp should be invisible from the
-> i2c bus perspective for i2c-clients.
+- Changes since v2
+* Addressed Krzysztof's and Stephen's review comments
+* Added Reviewed-by and Acked-by tags
+* Rebased on next-20220120
 
-Ok, I believe everything is fine as is then. My worries where about
-extending the i2c bus-locking to more drivers, but if there are no
-plans for that then everything is good.
+- Changes since v1
+* fixed make dt_binding_check error as pointed by Rob
+* Addressed Krzysztof's and Rob's review comments
+* Added Reviewed-by and Acked-by tags
+* Dropped SPI, MCT and ADC from this series (to be posted in small sets)
 
-Regards,
+NOTE: These patches are based on Krzysztof's pinmux for-next branch
+commit 832ae134ccc1 ("pinctrl: samsung: add support for Exynos850 and ExynosAutov9 wake-ups") 
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/pinctrl/samsung.git/log/?h=for-next
 
-Hans
+
+Alim Akhtar (16):
+  dt-bindings: add vendor prefix for Tesla
+  dt-bindings: clock: Add bindings definitions for FSD CMU blocks
+  dt-bindings: clock: Document FSD CMU bindings
+  clk: samsung: fsd: Add initial clock support
+  clk: samsung: fsd: Add cmu_peric block clock information
+  clk: samsung: fsd: Add cmu_fsys0 clock information
+  clk: samsung: fsd: Add cmu_fsys1 clock information
+  clk: samsung: fsd: Add cmu_imem block clock information
+  clk: samsung: fsd: Add cmu_mfc block clock information
+  clk: samsung: fsd: Add cam_csi block clock information
+  dt-bindings: pinctrl: samsung: Add compatible for Tesla FSD SoC
+  pinctrl: samsung: add FSD SoC specific data
+  dt-bindings: arm: add Tesla FSD ARM SoC
+  arm64: dts: fsd: Add initial device tree support
+  arm64: dts: fsd: Add initial pinctrl support
+  arm64: defconfig: Enable Tesla FSD SoC
+
+ .../devicetree/bindings/arm/tesla.yaml        |   27 +
+ .../bindings/clock/tesla,fsd-clock.yaml       |  198 ++
+ .../bindings/pinctrl/samsung,pinctrl.yaml     |    1 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    8 +
+ arch/arm64/Kconfig.platforms                  |    6 +
+ arch/arm64/boot/dts/Makefile                  |    1 +
+ arch/arm64/boot/dts/tesla/Makefile            |    3 +
+ arch/arm64/boot/dts/tesla/fsd-evb.dts         |   39 +
+ arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi    |  335 +++
+ arch/arm64/boot/dts/tesla/fsd.dtsi            |  674 ++++++
+ arch/arm64/configs/defconfig                  |    1 +
+ drivers/clk/samsung/Kconfig                   |    8 +
+ drivers/clk/samsung/Makefile                  |    1 +
+ drivers/clk/samsung/clk-fsd.c                 | 1803 +++++++++++++++++
+ drivers/clk/samsung/clk-pll.c                 |    1 +
+ drivers/clk/samsung/clk-pll.h                 |    1 +
+ .../pinctrl/samsung/pinctrl-exynos-arm64.c    |   71 +
+ drivers/pinctrl/samsung/pinctrl-samsung.c     |    2 +
+ drivers/pinctrl/samsung/pinctrl-samsung.h     |    1 +
+ include/dt-bindings/clock/fsd-clk.h           |  150 ++
+ 21 files changed, 3333 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/tesla.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+ create mode 100644 arch/arm64/boot/dts/tesla/Makefile
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd-evb.dts
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd.dtsi
+ create mode 100644 drivers/clk/samsung/clk-fsd.c
+ create mode 100644 include/dt-bindings/clock/fsd-clk.h
+
+
+base-commit: 832ae134ccc1c78a2f5ec81b7010dd24c3c49535
+-- 
+2.25.1
 
