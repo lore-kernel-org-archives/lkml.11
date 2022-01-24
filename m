@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B36ABC4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16241C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360555AbiAXXhA (ORCPT
+        id S2360570AbiAXXhB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:37:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45716 "EHLO
+        Mon, 24 Jan 2022 18:37:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345140AbiAXWzp (ORCPT
+        with ESMTP id S1382645AbiAXW4E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:55:45 -0500
+        Mon, 24 Jan 2022 17:56:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F096C0680B7;
-        Mon, 24 Jan 2022 13:09:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21B3C055AA4;
+        Mon, 24 Jan 2022 13:10:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D1AB6146A;
-        Mon, 24 Jan 2022 21:09:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24586C340E5;
-        Mon, 24 Jan 2022 21:09:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35C5F6141C;
+        Mon, 24 Jan 2022 21:10:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 140B8C340E5;
+        Mon, 24 Jan 2022 21:10:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058590;
-        bh=Jqatb1L8yQjhbQy9UNMVpIvmVrX+KciqGzLn7FtNWoA=;
+        s=korg; t=1643058654;
+        bh=LMcJzmhZ16w/aeOwg1sAK9yzJhMtOiwmj70gGTRHMjY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wjjAEDhMZU9NJJsPELHsE9+FQoAzHs39eJU7wJwSEDo/oV7smopqVGpCxogjpAaG4
-         b/zSYjgNPrR24a+a37BkgR2A3dYTgkRYz/me1cqn3EJoM8AtogFagCGmoaH4nZdNlz
-         3BOHXRxyPdaSAxGeyhtODuCTn9hCdzFVgIh9ke4k=
+        b=XB44q84o9gU3n3jXu1cyh7205M5nbcsfMxhVkilSFqp1sRjK33oUCwAxuHsmHwYbG
+         /g4A7Zew7PyJTT8awptb2wLEf6Oz9deCQ32/uwaVy2+9A3yF5ynd+TE6PHNo+l+Zon
+         7q2+F8t5tuX5AECsFXrFTjd7S5ePxKrdhq+PerwY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0305/1039] arm64: dts: marvell: cn9130: add GPIO and SPI aliases
-Date:   Mon, 24 Jan 2022 19:34:54 +0100
-Message-Id: <20220124184135.564908526@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Zixun <zhang133010@icloud.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0359/1039] x86/mce/inject: Avoid out-of-bounds write when setting flags
+Date:   Mon, 24 Jan 2022 19:35:48 +0100
+Message-Id: <20220124184137.348537290@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,46 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Marko <robert.marko@sartura.hr>
+From: Zhang Zixun <zhang133010@icloud.com>
 
-[ Upstream commit effd42600b987c1e95f946b14fefc1c7639e7439 ]
+[ Upstream commit de768416b203ac84e02a757b782a32efb388476f ]
 
-CN9130 has one CP115 built in, which like the CP110 has 2 GPIO and 2 SPI
-controllers built-in.
+A contrived zero-length write, for example, by using write(2):
 
-However, unlike the Armada 7k and 8k the SoC DTSI doesn't add the required
-aliases as both the Orion SPI driver and MVEBU GPIO drivers require the
-aliases to be present.
+  ...
+  ret = write(fd, str, 0);
+  ...
 
-So add the required aliases for GPIO and SPI controllers.
+to the "flags" file causes:
 
-Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
+  BUG: KASAN: stack-out-of-bounds in flags_write
+  Write of size 1 at addr ffff888019be7ddf by task writefile/3787
 
-Signed-off-by: Robert Marko <robert.marko@sartura.hr>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+  CPU: 4 PID: 3787 Comm: writefile Not tainted 5.16.0-rc7+ #12
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+
+due to accessing buf one char before its start.
+
+Prevent such out-of-bounds access.
+
+  [ bp: Productize into a proper patch. Link below is the next best
+    thing because the original mail didn't get archived on lore. ]
+
+Fixes: 0451d14d0561 ("EDAC, mce_amd_inj: Modify flags attribute to use string arguments")
+Signed-off-by: Zhang Zixun <zhang133010@icloud.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/linux-edac/YcnePfF1OOqoQwrX@zn.tnic/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/marvell/cn9130.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/x86/kernel/cpu/mce/inject.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-index a2b7e5ec979d3..71769ac7f0585 100644
---- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
-+++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
-@@ -11,6 +11,13 @@
- 	model = "Marvell Armada CN9130 SoC";
- 	compatible = "marvell,cn9130", "marvell,armada-ap807-quad",
- 		     "marvell,armada-ap807";
-+
-+	aliases {
-+		gpio1 = &cp0_gpio1;
-+		gpio2 = &cp0_gpio2;
-+		spi1 = &cp0_spi0;
-+		spi2 = &cp0_spi1;
-+	};
- };
+diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
+index 0bfc14041bbb4..b63b548497c14 100644
+--- a/arch/x86/kernel/cpu/mce/inject.c
++++ b/arch/x86/kernel/cpu/mce/inject.c
+@@ -350,7 +350,7 @@ static ssize_t flags_write(struct file *filp, const char __user *ubuf,
+ 	char buf[MAX_FLAG_OPT_SIZE], *__buf;
+ 	int err;
  
- /*
+-	if (cnt > MAX_FLAG_OPT_SIZE)
++	if (!cnt || cnt > MAX_FLAG_OPT_SIZE)
+ 		return -EINVAL;
+ 
+ 	if (copy_from_user(&buf, ubuf, cnt))
 -- 
 2.34.1
 
