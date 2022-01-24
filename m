@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA431C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB74C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575705AbiAXVwT (ORCPT
+        id S1575730AbiAXVwZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41166 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450097AbiAXVTp (ORCPT
+        Mon, 24 Jan 2022 16:52:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450151AbiAXVTu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:45 -0500
+        Mon, 24 Jan 2022 16:19:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57E36C06F8FA;
+        Mon, 24 Jan 2022 12:14:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E9A160C60;
-        Mon, 24 Jan 2022 21:19:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB62EC340E4;
-        Mon, 24 Jan 2022 21:19:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBD066136F;
+        Mon, 24 Jan 2022 20:14:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC5E8C340E5;
+        Mon, 24 Jan 2022 20:13:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059184;
-        bh=xjuXw+oaZke5wdTWzdveNvRQbUT4Qxd8QENQw3Rl7Co=;
+        s=korg; t=1643055240;
+        bh=nLAh1WwS4fr/AUWaPNjL/z4wUxnfEXp/q678GyhCGxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qUP/ftJS2ZNHPRRFXMo5KdErx7r1dgzrc813Sb0iKj8qvNEJCKrKmIVu4+bm2+PbW
-         sh1qHMCw7N/wnaR+n9ZTqwGzde6oE6bHpV1lj1hB2twfM4BRgWCP/ke50SWeTj+iho
-         wAtHM8r1t6HC46nKiIaRt8lB55+QSS6nVg+W1WK4=
+        b=xWESEjb7M6nR+sQk9RKokRf/1h1hsNvNrfTxNJlQ6Bwl6v6uEnOSS/X0W3QRAkwH9
+         amOiD8RMxAe2ZvaQcvPtshrnN2Kw4r3R5Z2VuU0xN1eGz8w3oYT9KztDlvPmsvNxIQ
+         28Nml+OhwMZJdb4msqQmV1HMMtBmsxw0QG+ai70A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mike Rapoport <rppt@kernel.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Quentin Perret <qperret@google.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0531/1039] of/fdt: Dont worry about non-memory region overlap for no-map
-Date:   Mon, 24 Jan 2022 19:38:40 +0100
-Message-Id: <20220124184143.137270584@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 087/846] clk: bcm-2835: Pick the closest clock rate
+Date:   Mon, 24 Jan 2022 19:33:24 +0100
+Message-Id: <20220124184103.987362267@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,89 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit da17d6905d29ddcdc04b2fdc37ed8cf1e8437cc8 ]
+[ Upstream commit 5517357a4733d7cf7c17fc79d0530cfa47add372 ]
 
-In commit 8a5a75e5e9e5 ("of/fdt: Make sure no-map does not remove
-already reserved regions") we returned -EBUSY when trying to mark
-regions as no-map when they intersect with reserved memory. The goal was
-to find bad no-map reserved memory DT nodes that would unmap the kernel
-text/data sections.
+The driver currently tries to pick the closest rate that is lower than
+the rate being requested.
 
-The problem is the reserved memory check will still trigger if the DT
-has a /memreserve/ that completely subsumes the no-map memory carveouts
-in the reserved memory node _and_ that region is also not part of the
-memory reg property. For example in sc7180.dtsi we have the following
-reserved-memory and memory node:
+This causes an issue with clk_set_min_rate() since it actively checks
+for the rounded rate to be above the minimum that was just set.
 
-      memory@80000000 {
-          /* We expect the bootloader to fill in the size */
-          reg = <0 0x80000000 0 0>;
-      };
+Let's change the logic a bit to pick the closest rate to the requested
+rate, no matter if it's actually higher or lower.
 
-      smem_mem: memory@80900000 {
-              reg = <0x0 0x80900000 0x0 0x200000>;
-              no-map;
-      };
-
-and the memreserve filled in by the bootloader is
-
-      /memreserve/ 0x80800000 0x400000;
-
-while the /memory node is transformed into
-
-      memory@80000000 {
-          /* The bootloader fills in the size, and adds another region */
-          reg = <0 0x80000000 0 0x00800000>,
-                <0 0x80c00000 0 0x7f200000>;
-      };
-
-The smem region is doubly reserved via /memreserve/ and by not being
-part of the /memory reg property. This leads to the following warning
-printed at boot.
-
- OF: fdt: Reserved memory: failed to reserve memory for node 'memory@80900000': base 0x0000000080900000, size 2 MiB
-
-Otherwise nothing really goes wrong because the smem region is not going
-to be mapped by the kernel's direct linear mapping given that it isn't
-part of the memory node. Therefore, let's only consider this to be a
-problem if we're trying to mark a region as no-map and it is actually
-memory that we're intending to keep out of the kernel's direct mapping
-but it's already been reserved.
-
-Acked-by: Mike Rapoport <rppt@kernel.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Nicolas Boichat <drinkcat@chromium.org>
-Cc: Quentin Perret <qperret@google.com>
-Cc: Jan Kiszka <jan.kiszka@siemens.com>
-Fixes: 8a5a75e5e9e5 ("of/fdt: Make sure no-map does not remove already reserved regions")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20220107194233.2793146-1-swboyd@chromium.org
+Fixes: 6d18b8adbe67 ("clk: bcm2835: Support for clock parent selection")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-2-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/fdt.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/clk/bcm/clk-bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 65af475dfa950..7e868e5995b7e 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -482,9 +482,11 @@ static int __init early_init_dt_reserve_memory_arch(phys_addr_t base,
- 	if (nomap) {
- 		/*
- 		 * If the memory is already reserved (by another region), we
--		 * should not allow it to be marked nomap.
-+		 * should not allow it to be marked nomap, but don't worry
-+		 * if the region isn't memory as it won't be mapped.
- 		 */
--		if (memblock_is_region_reserved(base, size))
-+		if (memblock_overlaps_region(&memblock.memory, base, size) &&
-+		    memblock_is_region_reserved(base, size))
- 			return -EBUSY;
- 
- 		return memblock_mark_nomap(base, size);
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index a254512965eb8..bf97b2b2a63f8 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -1216,7 +1216,7 @@ static int bcm2835_clock_determine_rate(struct clk_hw *hw,
+ 		rate = bcm2835_clock_choose_div_and_prate(hw, i, req->rate,
+ 							  &div, &prate,
+ 							  &avgrate);
+-		if (rate > best_rate && rate <= req->rate) {
++		if (abs(req->rate - rate) < abs(req->rate - best_rate)) {
+ 			best_parent = parent;
+ 			best_prate = prate;
+ 			best_rate = rate;
 -- 
 2.34.1
 
