@@ -2,153 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87E94C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:59:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB26C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:00:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237687AbiAXN7z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:59:55 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30112 "EHLO
+        id S237761AbiAXOAN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:00:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:21299 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237643AbiAXN7r (ORCPT
+        by vger.kernel.org with ESMTP id S237854AbiAXOAK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:59:47 -0500
+        Mon, 24 Jan 2022 09:00:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643032786;
+        s=mimecast20190719; t=1643032810;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=qwdt38c71LuRfMSTFCZBXvK1kWOIFl6aKokcJctMaAY=;
-        b=dIF2a93L0JPg9ph4sRJHbss+sAEthpqAEfzAw8WYG91cS3zIZ7qGJZO2m3gGXxCHxXIUPt
-        Ctt8jbPWRerptp9I3qaqRt+IMM/b17kree3xBWCcEwJY6IcWxy01bV2+AqZ3iI5JOF+L5K
-        +vJzMjru/8Pun7/DC2TLDJ9JVTN+RCk=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=SPUOW8uGzOaBnPqkdCVGj414reOKu6Qs0f5WCNo4Sjg=;
+        b=VeX2BIHrsSdtIb07/HHm+MJaPWm7mDegYcke6xTnQQZLhiT3U8Eqi+0ag1KKFd/OQrNxvM
+        Q72tCbwlG3uFkCfo5mceomtpbWo1HdxNCMUgbu62+78wTG8oniCVOPhrLEgdLSe7I0hWWP
+        jC8+tYWLS+v2dwyzkxkhd2Exc8tIeHM=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-10-wEa5CxBANt2ra5d-YXmIXA-1; Mon, 24 Jan 2022 08:59:43 -0500
-X-MC-Unique: wEa5CxBANt2ra5d-YXmIXA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 698F8100C664;
-        Mon, 24 Jan 2022 13:59:40 +0000 (UTC)
-Received: from localhost (ovpn-12-40.pek2.redhat.com [10.72.12.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 572E3798B5;
-        Mon, 24 Jan 2022 13:59:10 +0000 (UTC)
-Date:   Mon, 24 Jan 2022 21:59:02 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        HATAYAMA Daisuke <d.hatayama@jp.fujitsu.com>,
-        Petr Mladek <pmladek@suse.com>, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org, dyoung@redhat.com,
-        linux-doc@vger.kernel.org, vgoyal@redhat.com,
-        stern@rowland.harvard.edu, akpm@linux-foundation.org,
-        andriy.shevchenko@linux.intel.com, corbet@lwn.net,
-        halves@canonical.com, kernel@gpiccoli.net,
-        Will Deacon <will@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juergen Gross <jgross@suse.com>, mikelley@microsoft.com
-Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
-Message-ID: <20220124135902.GB8305@MiWiFi-R3L-srv>
-References: <20220108153451.195121-1-gpiccoli@igalia.com>
- <Yel8WQiBn/HNQN83@alley>
- <ccd9332e-2917-3020-3590-447fa660ff56@igalia.com>
- <20220122105514.GA18258@MiWiFi-R3L-srv>
- <20220123220711.44f1484c9b510eea8cda9c47@kernel.org>
+ us-mta-584-4P1rSw53OUWDZaZwHiWBVw-1; Mon, 24 Jan 2022 09:00:08 -0500
+X-MC-Unique: 4P1rSw53OUWDZaZwHiWBVw-1
+Received: by mail-ed1-f71.google.com with SMTP id h21-20020aa7c955000000b0040390b2bfc5so13138443edt.15
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 06:00:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SPUOW8uGzOaBnPqkdCVGj414reOKu6Qs0f5WCNo4Sjg=;
+        b=zQrJMPUPHyHCJcdULM6PRfrpseoi09TEN0/on273HHNfaRC5u2s9YCuWEMegoMhKhZ
+         IdxaLsLVhQrG69gaBBOvg0s0JiFEnHM5eWDgZyQMXTeF/AP8EPilhbD18gqKhSn8FlRu
+         gnTvybU63pIBma1zwUl7jVvqJcxVY7/LmHXTNwv+xBhs2XsUzOr1GCKdhwitkaJux8DG
+         nCYc68AITDhvJpBxIuOtapQTc0SpGloDj+uNODdm3r7qUY4+xRijXTfbw08ENm/Q4wg4
+         p9+Q17C3L/kGLlCXs0pBZmgmNEl1HVpnov3hIYmEAXxVN0SrAY5emOKuuFh1SRNNDuCt
+         jm+Q==
+X-Gm-Message-State: AOAM531uLB50n4TwjBGKSFcGmn2CA92mpdXYrGmgEBIrPnkbLFjgRJs1
+        zv/pxjDKInJF4szfRdcQIJ1FAK/5lPqxiBw5umxvPQ52RHup+4KYbza1tGc5YiHNqg8l5E0APCG
+        T4ddCWwknENNYbIb4nUMqaAER
+X-Received: by 2002:aa7:c941:: with SMTP id h1mr16027027edt.319.1643032806982;
+        Mon, 24 Jan 2022 06:00:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJza2S2Z2pNL/ZTCfC3bDTrVnvqz7iFrBysOjazndMzlCP6B/quM7sFTr3eiAnJp2HFdpgNA6Q==
+X-Received: by 2002:aa7:c941:: with SMTP id h1mr16027001edt.319.1643032806779;
+        Mon, 24 Jan 2022 06:00:06 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id dc24sm4894716ejb.201.2022.01.24.06.00.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 06:00:06 -0800 (PST)
+Message-ID: <f4ddcedc-4a81-4f4e-f3f4-8388120a0776@redhat.com>
+Date:   Mon, 24 Jan 2022 15:00:05 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220123220711.44f1484c9b510eea8cda9c47@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] KVM: x86/cpuid: Exclude unpermitted xfeatures sizes at
+ KVM_GET_SUPPORTED_CPUID
+Content-Language: en-US
+To:     Like Xu <like.xu.linux@gmail.com>
+Cc:     Tian Kevin <kevin.tian@intel.com>,
+        Jim Mattson <jmattson@google.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220124080251.60558-1-likexu@tencent.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220124080251.60558-1-likexu@tencent.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/23/22 at 10:07pm, Masami Hiramatsu wrote:
-> On Sat, 22 Jan 2022 18:55:14 +0800
-> Baoquan He <bhe@redhat.com> wrote:
-> 
-> > On 01/21/22 at 05:31pm, Guilherme G. Piccoli wrote:
-> > ......
-> > > > IMHO, the right solution is to split the callbacks into 2 or more
-> > > > notifier list. Then we might rework panic() to do:
-> > > > 
-> > > > void panic(void)
-> > > > {
-> > > > 	[...]
-> > > > 
-> > > > 	/* stop watchdogs + extra info */
-> > > > 	atomic_notifier_call_chain(&panic_disable_watchdogs_notifier_list, 0, buf);
-> > > > 	atomic_notifier_call_chain(&panic_info_notifier_list, 0, buf);
-> > > > 	panic_print_sys_info();
-> > > > 
-> > > > 	/* crash_kexec + kmsg_dump in configurable order */
-> > > > 	if (!_crash_kexec_post_kmsg_dump) {
-> > > > 		__crash_kexec(NULL);
-> > > > 		smp_send_stop();
-> > > > 	} else {
-> > > > 		crash_smp_send_stop();
-> > > > 	}
-> > > > 
-> > > > 	kmsg_dump();
-> > > > 	if (_crash_kexec_post_kmsg_dump)
-> > > > 		__crash_kexec(NULL);
-> > > > 
-> > > > 	/* infinite loop or reboot */
-> > > > 	atomic_notifier_call_chain(&panic_hypervisor_notifier_list, 0, buf);
-> > > > 	atomic_notifier_call_chain(&panic_rest_notifier_list, 0, buf);
-> > > > 
-> > > > 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
-> > > > [...] 
-> > > > Two notifier lists might be enough in the above scenario. I would call
-> > > > them:
-> > > > 
-> > > > 	panic_pre_dump_notifier_list
-> > > > 	panic_post_dump_notifier_list
-> > > > 
-> > > > 
-> > > > It is a real solution that will help everyone. It is more complicated now
-> > > > but it will makes things much easier in the long term. And it might be done
-> > > > step by step:
-> > > > 
-> > > >      1. introduce the two notifier lists
-> > > >      2. convert all users: one by one
-> > > >      3. remove the original notifier list when there is no user
-> > > 
-> > > That's a great idea! I'm into it, if we have a consensus. The thing that
-> > > scares me most here is that this is a big change and consumes time to
-> > > implement - I'd not risk such time if somebody is really against that.
-> > > So, let's see more opinions, maybe the kdump maintainers have good input.
-> > 
-> > I am fine with it. As long as thing is made clear, glad to see code is
-> > refactored to be more understandable and improved. Earlier, during several
-> > rounds of discussion between you and Petr, seveal pitfalls have been
-> > pointed out and avoided.
-> > 
-> > Meanwhile, I would suggest Masa and HATAYAMA to help give input about
-> > panic_notifier usage and refactory. AFAIK, they contributed code and use
-> > panic_notifier in their product or environment a lot, that will be very
-> > helpful to get the first hand information from them.
-> > 
-> > Hi Masa, HATAYANA,
-> > 
-> > Any comment on this? (Please ignore this if it's not in your care.)
-> 
-> No, that looks good idea to me. BTW, the 'dump' in the new notifieers
-> means both kmsg_dump and crash dump, right?
+On 1/24/22 09:02, Like Xu wrote:
+>   	case 0xd: {
+> -		u64 guest_perm = xstate_get_guest_group_perm();
+> +		u64 supported_xcr0 = supported_xcr0 & xstate_get_guest_group_perm();
+>   
+> -		entry->eax &= supported_xcr0 & guest_perm;
+> +		entry->eax &= supported_xcr0;
+>   		entry->ebx = xstate_required_size(supported_xcr0, false);
+>   		entry->ecx = entry->ebx;
+> -		entry->edx &= (supported_xcr0 & guest_perm) >> 32;
+> +		entry->edx &= supported_xcr0 >> 32;
+>   		if (!supported_xcr0)
+>   			break;
+>   
 
-Thanks for quick response, Masa.
+No, please don't use this kind of shadowing.  I'm not even sure it
+works, and one would have to read the C standard or look at the
+disassembly to be sure.  Perhaps this instead could be an idea:
 
-I guess it's crash dump, namely kdump.
+diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+index 3dcd58a138a9..03deb51d8d18 100644
+--- a/arch/x86/kvm/cpuid.c
++++ b/arch/x86/kvm/cpuid.c
+@@ -887,13 +887,14 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+  		}
+  		break;
+  	case 0xd: {
+-		u64 supported_xcr0 = supported_xcr0 & xstate_get_guest_group_perm();
++		u64 permitted_xcr0 = supported_xcr0 & xstate_get_guest_group_perm();
+  
+-		entry->eax &= supported_xcr0;
+-		entry->ebx = xstate_required_size(supported_xcr0, false);
++#define supported_xcr0 DO_NOT_USE_ME
++		entry->eax &= permitted_xcr0;
++		entry->ebx = xstate_required_size(permitted_xcr0, false);
+  		entry->ecx = entry->ebx;
+-		entry->edx &= supported_xcr0 >> 32;
+-		if (!supported_xcr0)
++		entry->edx &= permitted_xcr0 >> 32;
++		if (!permitted_xcr0)
+  			break;
+  
+  		entry = do_host_cpuid(array, function, 1);
+@@ -902,7 +903,7 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+  
+  		cpuid_entry_override(entry, CPUID_D_1_EAX);
+  		if (entry->eax & (F(XSAVES)|F(XSAVEC)))
+-			entry->ebx = xstate_required_size(supported_xcr0 | supported_xss,
++			entry->ebx = xstate_required_size(permitted_xcr0 | supported_xss,
+  							  true);
+  		else {
+  			WARN_ON_ONCE(supported_xss != 0);
+@@ -913,7 +914,7 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+  
+  		for (i = 2; i < 64; ++i) {
+  			bool s_state;
+-			if (supported_xcr0 & BIT_ULL(i))
++			if (permitted_xcr0 & BIT_ULL(i))
+  				s_state = false;
+  			else if (supported_xss & BIT_ULL(i))
+  				s_state = true;
+@@ -942,6 +943,7 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array *array, u32 function)
+  			entry->edx = 0;
+  		}
+  		break;
++#undef supported_xcr0
+  	}
+  	case 0x12:
+  		/* Intel SGX */
 
-About pre_dump, if the dump is crash dump, hope those pre_dump notifiers
-will be executed under conditional check, e.g only if 'crash_kexec_post_notifiers'
-is specified in kernel cmdline. 
+or alternatively add
+
+	u64 permitted_xss = supported_xss;
+
+so that you use "permitted" consistently.  Anybody can vote on what they
+prefer (including "permitted_xcr0" and no #define/#undef).
+
+Paolo
 
