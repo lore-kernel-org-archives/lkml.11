@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B73F0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD2DC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409980AbiAYA2I (ORCPT
+        id S3410018AbiAYA2Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:28:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455409AbiAXVfX (ORCPT
+        Mon, 24 Jan 2022 19:28:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47594 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455357AbiAXVfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0344C05A183;
-        Mon, 24 Jan 2022 12:22:20 -0800 (PST)
+        Mon, 24 Jan 2022 16:35:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DF8A61383;
-        Mon, 24 Jan 2022 20:22:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50185C340E5;
-        Mon, 24 Jan 2022 20:22:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 819FAB811A2;
+        Mon, 24 Jan 2022 21:35:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5B43C340E4;
+        Mon, 24 Jan 2022 21:35:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055739;
-        bh=B4uadrCG/JO5wAor5xYJ7HGh84FA/qtEttragrSIf7M=;
+        s=korg; t=1643060115;
+        bh=KF6pibaRN3M5P+SzqEn0+NUk4vxB+N8QiQEVZWzxJhE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LnV02ajWtB2JdwL0/hZeaYuayrsem3uZcA151+91kc0VhK8zwmuXIGQnGzbeHqikh
-         t1DRpqwSPpweA+igISWWr8FXfxl27aJRuuwybTbWbCPRIuh9nP/YugRbYFrXfvnBHq
-         SifnJ5mgkRUFBvTgZk9MdmaY8pWr5VK2qDGBalXU=
+        b=p1cbTGywPSMm5LT87sIccUe0SOXQYjWx8v919h2JhaXkNFL77BSIdC69pBZvYdkmk
+         mY0OcwL7s98xI+DzNWp03uQM4PiWdYf3mZiyntwNxGdWexcUzoxelzA5LniSN64v7b
+         HYm1/IdWlmsjsXmuc4VH+lnB8Q8k4efDmA29neaI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 249/846] net: dsa: hellcreek: Allow PTP P2P measurements on blocked ports
-Date:   Mon, 24 Jan 2022 19:36:06 +0100
-Message-Id: <20220124184109.532229695@linuxfoundation.org>
+        stable@vger.kernel.org, Guoqing Jiang <guoqing.jiang@linux.dev>,
+        Xiao Ni <xni@redhat.com>, Song Liu <song@kernel.org>
+Subject: [PATCH 5.16 0845/1039] md: Move alloc/free acct bioset in to personality
+Date:   Mon, 24 Jan 2022 19:43:54 +0100
+Message-Id: <20220124184153.690927004@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,38 +46,336 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+From: Xiao Ni <xni@redhat.com>
 
-[ Upstream commit cad1798d2d0811ded37d1e946c6796102e58013b ]
+commit 0c031fd37f69deb0cd8c43bbfcfccd62ebd7e952 upstream.
 
-Allow PTP peer delay measurements on blocked ports by STP. In case of topology
-changes the PTP stack can directly start with the correct delays.
+bioset acct is only needed for raid0 and raid5. Therefore, md_run only
+allocates it for raid0 and raid5. However, this does not cover
+personality takeover, which may cause uninitialized bioset. For example,
+the following repro steps:
 
-Fixes: ddd56dfe52c9 ("net: dsa: hellcreek: Add PTP clock support")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  mdadm -CR /dev/md0 -l1 -n2 /dev/loop0 /dev/loop1
+  mdadm --wait /dev/md0
+  mkfs.xfs /dev/md0
+  mdadm /dev/md0 --grow -l5
+  mount /dev/md0 /mnt
+
+causes panic like:
+
+[  225.933939] BUG: kernel NULL pointer dereference, address: 0000000000000000
+[  225.934903] #PF: supervisor instruction fetch in kernel mode
+[  225.935639] #PF: error_code(0x0010) - not-present page
+[  225.936361] PGD 0 P4D 0
+[  225.936677] Oops: 0010 [#1] PREEMPT SMP DEBUG_PAGEALLOC KASAN PTI
+[  225.937525] CPU: 27 PID: 1133 Comm: mount Not tainted 5.16.0-rc3+ #706
+[  225.938416] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-2.module_el8.4.0+547+a85d02ba 04/01/2014
+[  225.939922] RIP: 0010:0x0
+[  225.940289] Code: Unable to access opcode bytes at RIP 0xffffffffffffffd6.
+[  225.941196] RSP: 0018:ffff88815897eff0 EFLAGS: 00010246
+[  225.941897] RAX: 0000000000000000 RBX: 0000000000092800 RCX: ffffffff81370a39
+[  225.942813] RDX: dffffc0000000000 RSI: 0000000000000000 RDI: 0000000000092800
+[  225.943772] RBP: 1ffff1102b12fe04 R08: fffffbfff0b43c01 R09: fffffbfff0b43c01
+[  225.944807] R10: ffffffff85a1e007 R11: fffffbfff0b43c00 R12: ffff88810eaaaf58
+[  225.945757] R13: 0000000000000000 R14: ffff88810eaaafb8 R15: ffff88815897f040
+[  225.946709] FS:  00007ff3f2505080(0000) GS:ffff888fb5e00000(0000) knlGS:0000000000000000
+[  225.947814] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  225.948556] CR2: ffffffffffffffd6 CR3: 000000015aa5a006 CR4: 0000000000370ee0
+[  225.949537] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+[  225.950455] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+[  225.951414] Call Trace:
+[  225.951787]  <TASK>
+[  225.952120]  mempool_alloc+0xe5/0x250
+[  225.952625]  ? mempool_resize+0x370/0x370
+[  225.953187]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  225.953862]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  225.954464]  ? sched_clock_cpu+0x15/0x120
+[  225.955019]  ? find_held_lock+0xac/0xd0
+[  225.955564]  bio_alloc_bioset+0x1ed/0x2a0
+[  225.956080]  ? lock_downgrade+0x3a0/0x3a0
+[  225.956644]  ? bvec_alloc+0xc0/0xc0
+[  225.957135]  bio_clone_fast+0x19/0x80
+[  225.957651]  raid5_make_request+0x1370/0x1b70
+[  225.958286]  ? sched_clock_cpu+0x15/0x120
+[  225.958797]  ? __lock_acquire+0x8b2/0x3510
+[  225.959339]  ? raid5_get_active_stripe+0xce0/0xce0
+[  225.959986]  ? lock_is_held_type+0xd8/0x130
+[  225.960528]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  225.961135]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  225.961703]  ? sched_clock_cpu+0x15/0x120
+[  225.962232]  ? lock_release+0x27a/0x6c0
+[  225.962746]  ? do_wait_intr_irq+0x130/0x130
+[  225.963302]  ? lock_downgrade+0x3a0/0x3a0
+[  225.963815]  ? lock_release+0x6c0/0x6c0
+[  225.964348]  md_handle_request+0x342/0x530
+[  225.964888]  ? set_in_sync+0x170/0x170
+[  225.965397]  ? blk_queue_split+0x133/0x150
+[  225.965988]  ? __blk_queue_split+0x8b0/0x8b0
+[  225.966524]  ? submit_bio_checks+0x3b2/0x9d0
+[  225.967069]  md_submit_bio+0x127/0x1c0
+[...]
+
+Fix this by moving alloc/free of acct bioset to pers->run and pers->free.
+
+While we are on this, properly handle md_integrity_register() error in
+raid0_run().
+
+Fixes: daee2024715d (md: check level before create and exit io_acct_set)
+Cc: stable@vger.kernel.org
+Acked-by: Guoqing Jiang <guoqing.jiang@linux.dev>
+Signed-off-by: Xiao Ni <xni@redhat.com>
+Signed-off-by: Song Liu <song@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/dsa/hirschmann/hellcreek.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/md/md.c    |   27 +++++++++++++++++----------
+ drivers/md/md.h    |    2 ++
+ drivers/md/raid0.c |   38 ++++++++++++++++++++++++++++----------
+ drivers/md/raid5.c |   41 ++++++++++++++++++++++++++++++-----------
+ 4 files changed, 77 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 1469e41f2045a..2dd1227e0c357 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -1069,7 +1069,7 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
- 		.portmask     = 0x03,	/* Management ports */
- 		.age	      = 0,
- 		.is_obt	      = 0,
--		.pass_blocked = 0,
-+		.pass_blocked = 1,
- 		.is_static    = 1,
- 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
- 		.reprio_en    = 1,
--- 
-2.34.1
-
+--- a/drivers/md/md.c
++++ b/drivers/md/md.c
+@@ -5875,13 +5875,6 @@ int md_run(struct mddev *mddev)
+ 		if (err)
+ 			goto exit_bio_set;
+ 	}
+-	if (mddev->level != 1 && mddev->level != 10 &&
+-	    !bioset_initialized(&mddev->io_acct_set)) {
+-		err = bioset_init(&mddev->io_acct_set, BIO_POOL_SIZE,
+-				  offsetof(struct md_io_acct, bio_clone), 0);
+-		if (err)
+-			goto exit_sync_set;
+-	}
+ 
+ 	spin_lock(&pers_lock);
+ 	pers = find_pers(mddev->level, mddev->clevel);
+@@ -6058,9 +6051,6 @@ bitmap_abort:
+ 	module_put(pers->owner);
+ 	md_bitmap_destroy(mddev);
+ abort:
+-	if (mddev->level != 1 && mddev->level != 10)
+-		bioset_exit(&mddev->io_acct_set);
+-exit_sync_set:
+ 	bioset_exit(&mddev->sync_set);
+ exit_bio_set:
+ 	bioset_exit(&mddev->bio_set);
+@@ -8594,6 +8584,23 @@ void md_submit_discard_bio(struct mddev
+ }
+ EXPORT_SYMBOL_GPL(md_submit_discard_bio);
+ 
++int acct_bioset_init(struct mddev *mddev)
++{
++	int err = 0;
++
++	if (!bioset_initialized(&mddev->io_acct_set))
++		err = bioset_init(&mddev->io_acct_set, BIO_POOL_SIZE,
++			offsetof(struct md_io_acct, bio_clone), 0);
++	return err;
++}
++EXPORT_SYMBOL_GPL(acct_bioset_init);
++
++void acct_bioset_exit(struct mddev *mddev)
++{
++	bioset_exit(&mddev->io_acct_set);
++}
++EXPORT_SYMBOL_GPL(acct_bioset_exit);
++
+ static void md_end_io_acct(struct bio *bio)
+ {
+ 	struct md_io_acct *md_io_acct = bio->bi_private;
+--- a/drivers/md/md.h
++++ b/drivers/md/md.h
+@@ -721,6 +721,8 @@ extern void md_error(struct mddev *mddev
+ extern void md_finish_reshape(struct mddev *mddev);
+ void md_submit_discard_bio(struct mddev *mddev, struct md_rdev *rdev,
+ 			struct bio *bio, sector_t start, sector_t size);
++int acct_bioset_init(struct mddev *mddev);
++void acct_bioset_exit(struct mddev *mddev);
+ void md_account_bio(struct mddev *mddev, struct bio **bio);
+ 
+ extern bool __must_check md_flush_request(struct mddev *mddev, struct bio *bio);
+--- a/drivers/md/raid0.c
++++ b/drivers/md/raid0.c
+@@ -356,7 +356,21 @@ static sector_t raid0_size(struct mddev
+ 	return array_sectors;
+ }
+ 
+-static void raid0_free(struct mddev *mddev, void *priv);
++static void free_conf(struct mddev *mddev, struct r0conf *conf)
++{
++	kfree(conf->strip_zone);
++	kfree(conf->devlist);
++	kfree(conf);
++	mddev->private = NULL;
++}
++
++static void raid0_free(struct mddev *mddev, void *priv)
++{
++	struct r0conf *conf = priv;
++
++	free_conf(mddev, conf);
++	acct_bioset_exit(mddev);
++}
+ 
+ static int raid0_run(struct mddev *mddev)
+ {
+@@ -370,11 +384,16 @@ static int raid0_run(struct mddev *mddev
+ 	if (md_check_no_bitmap(mddev))
+ 		return -EINVAL;
+ 
++	if (acct_bioset_init(mddev)) {
++		pr_err("md/raid0:%s: alloc acct bioset failed.\n", mdname(mddev));
++		return -ENOMEM;
++	}
++
+ 	/* if private is not null, we are here after takeover */
+ 	if (mddev->private == NULL) {
+ 		ret = create_strip_zones(mddev, &conf);
+ 		if (ret < 0)
+-			return ret;
++			goto exit_acct_set;
+ 		mddev->private = conf;
+ 	}
+ 	conf = mddev->private;
+@@ -413,17 +432,16 @@ static int raid0_run(struct mddev *mddev
+ 	dump_zones(mddev);
+ 
+ 	ret = md_integrity_register(mddev);
++	if (ret)
++		goto free;
+ 
+ 	return ret;
+-}
+ 
+-static void raid0_free(struct mddev *mddev, void *priv)
+-{
+-	struct r0conf *conf = priv;
+-
+-	kfree(conf->strip_zone);
+-	kfree(conf->devlist);
+-	kfree(conf);
++free:
++	free_conf(mddev, conf);
++exit_acct_set:
++	acct_bioset_exit(mddev);
++	return ret;
+ }
+ 
+ static void raid0_handle_discard(struct mddev *mddev, struct bio *bio)
+--- a/drivers/md/raid5.c
++++ b/drivers/md/raid5.c
+@@ -7446,12 +7446,19 @@ static int raid5_run(struct mddev *mddev
+ 	struct md_rdev *rdev;
+ 	struct md_rdev *journal_dev = NULL;
+ 	sector_t reshape_offset = 0;
+-	int i;
++	int i, ret = 0;
+ 	long long min_offset_diff = 0;
+ 	int first = 1;
+ 
+-	if (mddev_init_writes_pending(mddev) < 0)
++	if (acct_bioset_init(mddev)) {
++		pr_err("md/raid456:%s: alloc acct bioset failed.\n", mdname(mddev));
+ 		return -ENOMEM;
++	}
++
++	if (mddev_init_writes_pending(mddev) < 0) {
++		ret = -ENOMEM;
++		goto exit_acct_set;
++	}
+ 
+ 	if (mddev->recovery_cp != MaxSector)
+ 		pr_notice("md/raid:%s: not clean -- starting background reconstruction\n",
+@@ -7482,7 +7489,8 @@ static int raid5_run(struct mddev *mddev
+ 	    (mddev->bitmap_info.offset || mddev->bitmap_info.file)) {
+ 		pr_notice("md/raid:%s: array cannot have both journal and bitmap\n",
+ 			  mdname(mddev));
+-		return -EINVAL;
++		ret = -EINVAL;
++		goto exit_acct_set;
+ 	}
+ 
+ 	if (mddev->reshape_position != MaxSector) {
+@@ -7507,13 +7515,15 @@ static int raid5_run(struct mddev *mddev
+ 		if (journal_dev) {
+ 			pr_warn("md/raid:%s: don't support reshape with journal - aborting.\n",
+ 				mdname(mddev));
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto exit_acct_set;
+ 		}
+ 
+ 		if (mddev->new_level != mddev->level) {
+ 			pr_warn("md/raid:%s: unsupported reshape required - aborting.\n",
+ 				mdname(mddev));
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto exit_acct_set;
+ 		}
+ 		old_disks = mddev->raid_disks - mddev->delta_disks;
+ 		/* reshape_position must be on a new-stripe boundary, and one
+@@ -7529,7 +7539,8 @@ static int raid5_run(struct mddev *mddev
+ 		if (sector_div(here_new, chunk_sectors * new_data_disks)) {
+ 			pr_warn("md/raid:%s: reshape_position not on a stripe boundary\n",
+ 				mdname(mddev));
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto exit_acct_set;
+ 		}
+ 		reshape_offset = here_new * chunk_sectors;
+ 		/* here_new is the stripe we will write to */
+@@ -7551,7 +7562,8 @@ static int raid5_run(struct mddev *mddev
+ 			else if (mddev->ro == 0) {
+ 				pr_warn("md/raid:%s: in-place reshape must be started in read-only mode - aborting\n",
+ 					mdname(mddev));
+-				return -EINVAL;
++				ret = -EINVAL;
++				goto exit_acct_set;
+ 			}
+ 		} else if (mddev->reshape_backwards
+ 		    ? (here_new * chunk_sectors + min_offset_diff <=
+@@ -7561,7 +7573,8 @@ static int raid5_run(struct mddev *mddev
+ 			/* Reading from the same stripe as writing to - bad */
+ 			pr_warn("md/raid:%s: reshape_position too early for auto-recovery - aborting.\n",
+ 				mdname(mddev));
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto exit_acct_set;
+ 		}
+ 		pr_debug("md/raid:%s: reshape will continue\n", mdname(mddev));
+ 		/* OK, we should be able to continue; */
+@@ -7585,8 +7598,10 @@ static int raid5_run(struct mddev *mddev
+ 	else
+ 		conf = mddev->private;
+ 
+-	if (IS_ERR(conf))
+-		return PTR_ERR(conf);
++	if (IS_ERR(conf)) {
++		ret = PTR_ERR(conf);
++		goto exit_acct_set;
++	}
+ 
+ 	if (test_bit(MD_HAS_JOURNAL, &mddev->flags)) {
+ 		if (!journal_dev) {
+@@ -7783,7 +7798,10 @@ abort:
+ 	free_conf(conf);
+ 	mddev->private = NULL;
+ 	pr_warn("md/raid:%s: failed to run raid set.\n", mdname(mddev));
+-	return -EIO;
++	ret = -EIO;
++exit_acct_set:
++	acct_bioset_exit(mddev);
++	return ret;
+ }
+ 
+ static void raid5_free(struct mddev *mddev, void *priv)
+@@ -7791,6 +7809,7 @@ static void raid5_free(struct mddev *mdd
+ 	struct r5conf *conf = priv;
+ 
+ 	free_conf(conf);
++	acct_bioset_exit(mddev);
+ 	mddev->to_remove = &raid5_attrs_group;
+ }
+ 
 
 
