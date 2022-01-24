@@ -2,44 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86592C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25654C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:05:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346092AbiAXTFD (ORCPT
+        id S1346130AbiAXTFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:05:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343948AbiAXS6m (ORCPT
+        Mon, 24 Jan 2022 14:05:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56110 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344731AbiAXS7A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:58:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AC20C0617BD;
-        Mon, 24 Jan 2022 10:55:36 -0800 (PST)
+        Mon, 24 Jan 2022 13:59:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7805B8121F;
-        Mon, 24 Jan 2022 18:55:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0AAFC340E5;
-        Mon, 24 Jan 2022 18:55:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A33C60010;
+        Mon, 24 Jan 2022 18:59:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32099C36AE2;
+        Mon, 24 Jan 2022 18:58:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050533;
-        bh=Z4nxAGJ3zNBXE1ZFPZ/Q4sjK2iny9EAwaDNANlUTFik=;
+        s=korg; t=1643050739;
+        bh=DChxv8YFRrtwCojAA4/44bOFk8gKrjPyvXuZ4JI20dQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EM6a3ANhzO9vWEnLRTaqyiMYqiHBNHlbLhCZycGIfWtLqC9Yeisd0wDBHO3HsPep4
-         dBCi8MnI7bgbfjJvFXWoS13NZrNLApgAGNpbLzsmt5cwhm4icTIcegulssPQJlGFm0
-         MBeoCjL9FAzNOdDDBd+VCcQL/wgv4FjAlPMlBRqU=
+        b=RsbCS2wJBkcH9l83tnJ1l0pb9JJE039t9pWmrgAIRXFBsgc07GbLyvSBZCQfHY6rl
+         jQeYY8XyAWklZjpivC8BshAOooxSayYFp/NzoG7bGU0N1Byjv6JpsQhprMPKx4bGX8
+         a/YNIoilYfba6Jh5n0z8jdrMuL7IVspXbfEm1WsY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 032/157] media: dmxdev: fix UAF when dvb_register_device() fails
-Date:   Mon, 24 Jan 2022 19:42:02 +0100
-Message-Id: <20220124183933.821294735@linuxfoundation.org>
+Subject: [PATCH 4.9 097/157] btrfs: remove BUG_ON() in find_parent_nodes()
+Date:   Mon, 24 Jan 2022 19:43:07 +0100
+Message-Id: <20220124183935.849473541@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -51,102 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit ab599eb11882f834951c436cc080c3455ba32b9b ]
+[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
 
-I got a use-after-free report:
+We search for an extent entry with .offset = -1, which shouldn't be a
+thing, but corruption happens.  Add an ASSERT() for the developers,
+return -EUCLEAN for mortals.
 
-dvbdev: dvb_register_device: failed to create device dvb1.dvr0 (-12)
-...
-==================================================================
-BUG: KASAN: use-after-free in dvb_dmxdev_release+0xce/0x2f0
-...
-Call Trace:
- dump_stack_lvl+0x6c/0x8b
- print_address_description.constprop.0+0x48/0x70
- kasan_report.cold+0x82/0xdb
- __asan_load4+0x6b/0x90
- dvb_dmxdev_release+0xce/0x2f0
-...
-Allocated by task 7666:
- kasan_save_stack+0x23/0x50
- __kasan_kmalloc+0x83/0xa0
- kmem_cache_alloc_trace+0x22e/0x470
- dvb_register_device+0x12f/0x980
- dvb_dmxdev_init+0x1f3/0x230
-...
-Freed by task 7666:
- kasan_save_stack+0x23/0x50
- kasan_set_track+0x20/0x30
- kasan_set_free_info+0x24/0x40
- __kasan_slab_free+0xf2/0x130
- kfree+0xd1/0x5c0
- dvb_register_device.cold+0x1ac/0x1fa
- dvb_dmxdev_init+0x1f3/0x230
-...
-
-When dvb_register_device() in dvb_dmxdev_init() fails, dvb_dmxdev_init()
-does not return a failure, and the memory pointed to by dvbdev or
-dvr_dvbdev is invalid at this point. If they are used subsequently, it
-will result in UFA or null-ptr-deref.
-
-If dvb_register_device() in dvb_dmxdev_init() fails, fix the bug by making
-dvb_dmxdev_init() return an error as well.
-
-Link: https://lore.kernel.org/linux-media/20211015085741.1203283-1-wanghai38@huawei.com
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/dvb-core/dmxdev.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ fs/btrfs/backref.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/dvb-core/dmxdev.c b/drivers/media/dvb-core/dmxdev.c
-index 0418b5a0fb645..32a2e6ffdb097 100644
---- a/drivers/media/dvb-core/dmxdev.c
-+++ b/drivers/media/dvb-core/dmxdev.c
-@@ -1225,7 +1225,7 @@ static const struct dvb_device dvbdev_dvr = {
- };
- int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
- {
--	int i;
-+	int i, ret;
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index bb008ac507fe3..29a19bc2abe18 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1271,7 +1271,12 @@ again:
+ 	ret = btrfs_search_slot(trans, fs_info->extent_root, &key, path, 0, 0);
+ 	if (ret < 0)
+ 		goto out;
+-	BUG_ON(ret == 0);
++	if (ret == 0) {
++		/* This shouldn't happen, indicates a bug or fs corruption. */
++		ASSERT(ret != 0);
++		ret = -EUCLEAN;
++		goto out;
++	}
  
- 	if (dmxdev->demux->open(dmxdev->demux) < 0)
- 		return -EUSERS;
-@@ -1243,14 +1243,26 @@ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
- 					    DMXDEV_STATE_FREE);
- 	}
- 
--	dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
-+	ret = dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
- 			    DVB_DEVICE_DEMUX, dmxdev->filternum);
--	dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
-+	if (ret < 0)
-+		goto err_register_dvbdev;
-+
-+	ret = dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
- 			    dmxdev, DVB_DEVICE_DVR, dmxdev->filternum);
-+	if (ret < 0)
-+		goto err_register_dvr_dvbdev;
- 
- 	dvb_ringbuffer_init(&dmxdev->dvr_buffer, NULL, 8192);
- 
- 	return 0;
-+
-+err_register_dvr_dvbdev:
-+	dvb_unregister_device(dmxdev->dvbdev);
-+err_register_dvbdev:
-+	vfree(dmxdev->filter);
-+	dmxdev->filter = NULL;
-+	return ret;
- }
- 
- EXPORT_SYMBOL(dvb_dmxdev_init);
+ #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
+ 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
 -- 
 2.34.1
 
