@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6C49C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EE79C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2359545AbiAXXcu (ORCPT
+        id S2359506AbiAXXcn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:32:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
+        Mon, 24 Jan 2022 18:32:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382818AbiAXWjs (ORCPT
+        with ESMTP id S1456644AbiAXWjw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:39:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D962C055A8C;
-        Mon, 24 Jan 2022 13:03:41 -0800 (PST)
+        Mon, 24 Jan 2022 17:39:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6959BC04D61A;
+        Mon, 24 Jan 2022 13:04:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E24C4611C8;
-        Mon, 24 Jan 2022 21:03:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6783C340E5;
-        Mon, 24 Jan 2022 21:03:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31945B8105C;
+        Mon, 24 Jan 2022 21:04:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E5CFC340E5;
+        Mon, 24 Jan 2022 21:04:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058220;
-        bh=Dm1rBUKIAFcXxvuutpMut0aM2fwHRehNyKyaSmdh4gk=;
+        s=korg; t=1643058253;
+        bh=sLeBLzFgVT8t1e9qRMlDmM/Em1aCfW1X4MlX6q4CEq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jPZGN+QbNie/GxxdVxZaWaBRlIEYzW0Z0erW1cAS29Mj99XJXOBC/9cvZv80K7R9/
-         ul4CfSXLf38YzfYED++vNZUnsQ06c+1SpwrQ2icDm/RyxA8Zb9f3+NG26AzG6a05/o
-         OlsY2Uk3z7vJjvIklIH8I+PhvcWVfcD0AS4ONULY=
+        b=YTFwCVIalOb6G4HDq8ITDUNt4JpKZqm2fqyR8BtPaRtpR0YRUrQ5qyaCPxXgCizEz
+         zxGpy4IlL7jbNo8cvUUQeMSXD5KFtEwVpCdJBLFzlARcnzros4lK+8goybmRwTQIvI
+         mynFWmFDOLC8jzXUO+btkzzhFP/ch0REUPp7DjeQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Nishanth Menon <nm@ti.com>, Pratyush Yadav <p.yadav@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0218/1039] arm64: dts: ti: k3-am642: Fix the L2 cache sets
-Date:   Mon, 24 Jan 2022 19:33:27 +0100
-Message-Id: <20220124184132.668442862@linuxfoundation.org>
+Subject: [PATCH 5.16 0196/1039] media: venus: core: Fix a potential NULL pointer dereference in an error handling path
+Date:   Mon, 24 Jan 2022 19:33:05 +0100
+Message-Id: <20220124184131.917171588@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,44 +52,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit a27a93bf70045be54b594fa8482959ffb84166d7 ]
+[ Upstream commit e4debea9be7d5db52bc6a565a4c02c3c6560d093 ]
 
-A53's L2 cache[1] on AM642[2] is 256KB. A53's L2 is fixed line length
-of 64 bytes and 16-way set-associative cache structure.
+The normal path of the function makes the assumption that
+'pm_ops->core_power' may be NULL.
+We should make the same assumption in the error handling path or a NULL
+pointer dereference may occur.
 
-256KB of L2 / 64 (line length) = 4096 ways
-4096 ways / 16 = 256 sets
+Add the missing test before calling 'pm_ops->core_power'
 
-Fix the l2 cache-sets.
-
-[1] https://developer.arm.com/documentation/ddi0500/j/Level-2-Memory-System/About-the-L2-memory-system?lang=en
-[2] https://www.ti.com/lit/pdf/spruim2
-
-Fixes: 8abae9389bdb ("arm64: dts: ti: Add support for AM642 SoC")
-Reported-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20211113043635.4296-1-nm@ti.com
+Fixes: 9e8efdb57879 ("media: venus: core: vote for video-mem path")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/ti/k3-am642.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/qcom/venus/core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-am642.dtsi b/arch/arm64/boot/dts/ti/k3-am642.dtsi
-index e2b397c884018..8a76f4821b11b 100644
---- a/arch/arm64/boot/dts/ti/k3-am642.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-am642.dtsi
-@@ -60,6 +60,6 @@
- 		cache-level = <2>;
- 		cache-size = <0x40000>;
- 		cache-line-size = <64>;
--		cache-sets = <512>;
-+		cache-sets = <256>;
- 	};
- };
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index f5fa81896012d..fd32385485fa6 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -473,7 +473,8 @@ static __maybe_unused int venus_runtime_suspend(struct device *dev)
+ err_video_path:
+ 	icc_set_bw(core->cpucfg_path, kbps_to_icc(1000), 0);
+ err_cpucfg_path:
+-	pm_ops->core_power(core, POWER_ON);
++	if (pm_ops->core_power)
++		pm_ops->core_power(core, POWER_ON);
+ 
+ 	return ret;
+ }
 -- 
 2.34.1
 
