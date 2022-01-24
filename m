@@ -2,110 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28FB6C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C38C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315961AbiAYCy5 (ORCPT
+        id S1315936AbiAYCyy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38796 "EHLO
+        Mon, 24 Jan 2022 21:54:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3409762AbiAYA1V (ORCPT
+        with ESMTP id S3409738AbiAYA1T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:27:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F736C0680B0;
-        Mon, 24 Jan 2022 12:08:01 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E4E76136F;
-        Mon, 24 Jan 2022 20:08:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA691C36AE3;
-        Mon, 24 Jan 2022 20:07:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054880;
-        bh=sJTHRCOFGEKhCCSbR10rJRMVIOEL5CyPtm+xZ+Ap18c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PehiphV64z/Tea7jZN2NiOpJoDMLUiuf4ViTcdK4UEIT1JDvTTjt6JgQC5btZfyHl
-         qGL7O9jPw6wqV6BlD2DnaC3Dbi0KwlZZJXICgawKv55l7/WL1e6QuL8qK4JTp8eq1O
-         QooGDOkQ0movuZB0Goa4wPR86O3Vjz2S1D5Y0N3k=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Eran Ben Elisha <eranbe@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [PATCH 5.10 501/563] Revert "net/mlx5: Add retry mechanism to the command entry index allocation"
-Date:   Mon, 24 Jan 2022 19:44:26 +0100
-Message-Id: <20220124184041.786100923@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 19:27:19 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21F3C046E03;
+        Mon, 24 Jan 2022 14:09:25 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id y17so3641053ilm.1;
+        Mon, 24 Jan 2022 14:09:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=d6HjppEWR1T8ZOcwdp+EOP/ztmmko1v8gQaGfPlFykA=;
+        b=hGDljOFLASbsoMo+rcy/eXZrA59L6Zh/LlOQEBmL6YzOvLS2AjNgBfEei25hhxaxSL
+         W3aSXsKTwJrIhbL4e4IWQeWpBFOO7JLb+bt/Jrpal9j/v5CfX2tR4iXme1k6g7HRAfKp
+         8NbVw4XVbcceiUm8OkImUmbHVhdRh8oW5rlhzn5TgRs4v6hzH9nviJAFQ3VxMEy6C9ML
+         JH5Ra4099xJ7v/JF/EC57bBk3zh0iEff8JTkQv63GL7ojY2VZpJuXSnaWyC4dSvhGv4k
+         aOiUM5l33Met6VKn8K6CjMV2nFzcM3n0Ny45RCZXc3IeOSH2AiSzLDJK0uMDG7GWi/h6
+         Pxmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=d6HjppEWR1T8ZOcwdp+EOP/ztmmko1v8gQaGfPlFykA=;
+        b=TNT+kznhYwjlSu2e8Nemp+qhzvEuN8Q7LhAUsJOS1rmcWnaN6FRz9OABqyZhdXyePm
+         4TyOb3A9BTJfLr6HhGrWF9aHUa1OBR6vGWCDNJ7WhUM3GMd1vS/7ZU0syFIEfke5BIop
+         EEbf/PRgFs+/MCzfeQrMB2mSprNRtwY6HlEU24f8ZLCtB4JI7cI+VRw8WTZRz6JYkVgX
+         GQiy2p5oNtcrcA064ei0V0qrtXXwY+b6B5iLBzeLabs8l3gEHN/yKqRsDWQmg2+of6NN
+         wCaYZbARFxaUbH32k02CKLBzdPHZhW2mL59ghRAch9rmljMitrWB4lOycURKa4gWQVS2
+         p4XA==
+X-Gm-Message-State: AOAM532thjKf2AFm/vtQXkHauycY6k2i/OoAryaqURaXInJt4D+eofEs
+        f4EG6DRRBneOlAC4h+EE8bF3lZ/LNreRF7B8cbw=
+X-Google-Smtp-Source: ABdhPJwdeoHnJR9W8Q6Dtox2JxDYbtjJrpqft3BvbegaPWgsRQNkibILgfHG2HkruRoKnslClqAvxANGNw0Kvdf3pVI=
+X-Received: by 2002:a05:6e02:1749:: with SMTP id y9mr9274241ill.252.1643062164966;
+ Mon, 24 Jan 2022 14:09:24 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220124184100.867127425@linuxfoundation.org> <29a0f562-af46-f4d0-182c-09c8d99e0a93@applied-asynchrony.com>
+In-Reply-To: <29a0f562-af46-f4d0-182c-09c8d99e0a93@applied-asynchrony.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 24 Jan 2022 14:09:13 -0800
+Message-ID: <CAEf4BzaOHPD72jTsdJjUa6md2AyRp2LnArNKyrKCva6pWCdzaA@mail.gmail.com>
+Subject: Re: [PATCH 5.15 000/846] 5.15.17-rc1 review
+To:     =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Andrew Morton <akpm@linux-foundation.org>, linux@roeck-us.net,
+        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        linux- stable <stable@vger.kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+On Mon, Jan 24, 2022 at 12:36 PM Holger Hoffst=C3=A4tte
+<holger@applied-asynchrony.com> wrote:
+>
+> On 2022-01-24 19:31, Greg Kroah-Hartman wrote:
+> > This is the start of the stable review cycle for the 5.15.17 release.
+>
+> Oh noes :(
+>
+>    DESCEND bpf/resolve_btfids
+>    MKDIR     /tmp/linux-5.15.17/tools/bpf/resolve_btfids//libbpf
+>    GEN     /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/bpf_helper_=
+defs.h
+>    MKDIR   /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/
+>    CC      /tmp/linux-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/=
+libbpf.o
+> libbpf.c: In function 'bpf_object__elf_collect':
+> libbpf.c:3038:31: error: invalid type argument of '->' (have 'GElf_Shdr' =
+{aka 'Elf64_Shdr'})
+>   3038 |                         if (sh->sh_type !=3D SHT_PROGBITS)
+>        |                               ^~
+> libbpf.c:3042:31: error: invalid type argument of '->' (have 'GElf_Shdr' =
+{aka 'Elf64_Shdr'})
+>   3042 |                         if (sh->sh_type !=3D SHT_PROGBITS)
+>        |                               ^~
+> make[4]: *** [/tmp/linux-5.15.17/tools/build/Makefile.build:97: /tmp/linu=
+x-5.15.17/tools/bpf/resolve_btfids/libbpf/staticobjs/libbpf.o] Error 1
+> make[3]: *** [Makefile:158: /tmp/linux-5.15.17/tools/bpf/resolve_btfids/l=
+ibbpf/staticobjs/libbpf-in.o] Error 2
+> make[2]: *** [Makefile:44: /tmp/linux-5.15.17/tools/bpf/resolve_btfids//l=
+ibbpf/libbpf.a] Error 2
+> make[1]: *** [Makefile:72: bpf/resolve_btfids] Error 2
+> make: *** [Makefile:1371: tools/bpf/resolve_btfids] Error 2
+>
+> Reverting "libbpf-validate-that-.btf-and-.btf.ext-sections-cont.patcht" a=
+ka
+> this one:
+>
+> > Andrii Nakryiko <andrii@kernel.org>
+> >      libbpf: Validate that .BTF and .BTF.ext sections contain data
+>
+> makes it build & run fine. I looked for followups but couldn't find anyth=
+ing that
+> stood out, maybe the BPF folks (cc'ed) know what's missing/wrong.
+>
 
-commit 4f6626b0e140867fd6d5a2e9d4ceaef97f10f46a upstream.
+That small fix depends on much bigger refactoring in ad23b7238474
+("libbpf: Use Elf64-specific types explicitly for dealing with ELF").
+I think this small fix can be dropped.
 
-This reverts commit 410bd754cd73c4a2ac3856d9a03d7b08f9c906bf.
-
-The reverted commit had added a retry mechanism to the command entry
-index allocation. The previous patch ensures that there is a free
-command entry index once the command work handler holds the command
-semaphore. Thus the retry mechanism is not needed.
-
-Fixes: 410bd754cd73 ("net/mlx5: Add retry mechanism to the command entry index allocation")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Eran Ben Elisha <eranbe@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/mellanox/mlx5/core/cmd.c |   21 +--------------------
- 1 file changed, 1 insertion(+), 20 deletions(-)
-
---- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-@@ -887,25 +887,6 @@ static bool opcode_allowed(struct mlx5_c
- 	return cmd->allowed_opcode == opcode;
- }
- 
--static int cmd_alloc_index_retry(struct mlx5_cmd *cmd)
--{
--	unsigned long alloc_end = jiffies + msecs_to_jiffies(1000);
--	int idx;
--
--retry:
--	idx = cmd_alloc_index(cmd);
--	if (idx < 0 && time_before(jiffies, alloc_end)) {
--		/* Index allocation can fail on heavy load of commands. This is a temporary
--		 * situation as the current command already holds the semaphore, meaning that
--		 * another command completion is being handled and it is expected to release
--		 * the entry index soon.
--		 */
--		cpu_relax();
--		goto retry;
--	}
--	return idx;
--}
--
- bool mlx5_cmd_is_down(struct mlx5_core_dev *dev)
- {
- 	return pci_channel_offline(dev->pdev) ||
-@@ -930,7 +911,7 @@ static void cmd_work_handler(struct work
- 	sem = ent->page_queue ? &cmd->pages_sem : &cmd->sem;
- 	down(sem);
- 	if (!ent->page_queue) {
--		alloc_ret = cmd_alloc_index_retry(cmd);
-+		alloc_ret = cmd_alloc_index(cmd);
- 		if (alloc_ret < 0) {
- 			mlx5_core_err_rl(dev, "failed to allocate command entry\n");
- 			if (ent->callback) {
+That's sort of a general rule with libbpf-related fixes, they are
+usually not that critical to backport to stable, because most users
+use/build libbpf from its Github mirror, which is always taken from
+latest bpf-next. Libbpf is also not supposed to be used with untrusted
+inputs (i.e., BPF object files) as BPF programs are loaded into the
+kernel under root.
 
 
+> cheers
+> Holger
