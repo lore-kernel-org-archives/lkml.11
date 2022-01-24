@@ -2,87 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7674DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C24C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456816AbiAXVkJ (ORCPT
+        id S1456914AbiAXVkY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:40:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444617AbiAXVBM (ORCPT
+        Mon, 24 Jan 2022 16:40:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54806 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445114AbiAXVCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:01:12 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1BF4C04C062
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:02:29 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id y17so6554462plg.7
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:02:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=YEJC09BaXrXowCgo9lvcrsFTV9cTaqg/eq8tuzFMaPw=;
-        b=DLTXaapbxBx8Ck2RAOi8Km23rVDe/NrQim0Hyuk9wVITZr/4LaUJWCmM6ZbgIdHD5+
-         Bfbyk94aQIaY1Rc+qGCqqMdFebGLVBDH96OROrgotIHdW4Hh1dhVpWkfWTn0q4Te3Pgj
-         aSfCuKXWAQ/cZJ1OyKX80U3Vyd1/5T8MhgqNBA/rp/ewQIcdx+4TY/xZVbIDvyn0D+ZK
-         ECdAoT2mVumJv3G+w1blktv69GFp0n4Mr6Gy7flDMz8sym5urBR1piAz0EmnubjfByUv
-         je+eezmQoun/pWIz0vxjehkBQF/etGyOdFNp4dPOQ530mru/TUA1BjBlZXxiFbzeGk5t
-         08YA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=YEJC09BaXrXowCgo9lvcrsFTV9cTaqg/eq8tuzFMaPw=;
-        b=Ys+NYQIhqDs23yQXZMT6WDJ2AQz/VPAc/2bWWN16NTFsgd52WENMaxnZNBH8X5rQmO
-         xTprIe/o8PXUWjSxi8rkQ8RmvI/3sTx+5k7UxeX4cNoGwBkQ/QUgr5pDTi/6bQSsppJ7
-         qxyB8tGoGaL1V2kd7Aa3Gkbfwsijlg1TQ44v5jCg38tfhYGqQr/yfEY4q5mq8BFVuXC8
-         /yG5myTauorP2Zf51CgOhFEEqToKXngrT+pVcSNSbzeL2pEUsJ6tg/8isYg/TYgPcf1u
-         vIlvFlsybR7IIeLEEOGCRm5OitlXqA91i02/Iizv9bf+zhEqtskJ2Bvo4YjYrqmbKf+V
-         p8QA==
-X-Gm-Message-State: AOAM532MBw+2IdU4JdOiyrnw2Bwx/kVxC3HWo36NSrku8ZkYWBBHN8xl
-        CG3pWcxcJtnSBpuHXkhReFBxsw==
-X-Google-Smtp-Source: ABdhPJyiTOFUPgKGEwmWzQPhRYM03CkpcJgdqO1Y7YACYLF7j4l4I+LB4xnmrsL4Sfps2GBC71HDOA==
-X-Received: by 2002:a17:902:9a49:b0:149:7b66:e85c with SMTP id x9-20020a1709029a4900b001497b66e85cmr16054144plv.66.1643054549104;
-        Mon, 24 Jan 2022 12:02:29 -0800 (PST)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id q7sm15972777pfs.32.2022.01.24.12.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:02:28 -0800 (PST)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Christian Hewitt <christianshewitt@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>,
-        Furkan Kardame <furkan@fkardame.com>
-Subject: Re: [PATCH 0/3] arm64: dts: meson: add BL32 reserved region to
- Beelink g12b devices
-In-Reply-To: <20220122073221.2398-1-christianshewitt@gmail.com>
-References: <20220122073221.2398-1-christianshewitt@gmail.com>
-Date:   Mon, 24 Jan 2022 12:02:28 -0800
-Message-ID: <7h7daoyka3.fsf@baylibre.com>
+        Mon, 24 Jan 2022 16:02:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C28E261365;
+        Mon, 24 Jan 2022 21:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9860FC340E5;
+        Mon, 24 Jan 2022 21:02:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058133;
+        bh=elCfbszIBuVRR6VjRT0ZBLCHfXRupXPKDV8BynvhD0M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=p+kNFVc8FI3Kk3oBQCB8caq/D/BcEIXWRY39hNLyS4RngmnSdaKZ1+2NEAvRvqqfy
+         txUFP+KLt7SsvNhGfRBwjEkTxwr9GYBKSiMT7fNyVBp3Xd+FaxkeoEhQOWaBMEDl4F
+         oQBFwQvTIMwkZ4Y+5z2vsELbLOpKYWHLl1UmsBZY=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0189/1039] media: imx-pxp: Initialize the spinlock prior to using it
+Date:   Mon, 24 Jan 2022 19:32:58 +0100
+Message-Id: <20220124184131.658280532@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christian Hewitt <christianshewitt@gmail.com> writes:
+From: Fabio Estevam <festevam@denx.de>
 
-> This resolves a long-running issue where Beelink GT-King/Pro and
-> GS-King-X wedge on boot or shortly after when booting from vendor
-> u-boot. In some distros the issue is often reported as triggered
-> by large file transfers to/from USB or SD cards. Reserving the
-> BL32 memory region prevents the issue.
+[ Upstream commit ed2f97ad4b21072f849cf4ae6645d1f2b1d3f550 ]
 
-The BL32 is typically common for the SoC family, so this change should
-probably go into the g12b.dtsi.  Or probably even
-meson-g12-common.dtsi, which is where the BL31 reserved-memory is
-described.
+After devm_request_threaded_irq() is called there is a chance that an
+interrupt may occur before the spinlock is initialized, which will trigger
+a kernel oops.
 
-Kevin
+To prevent that, move the initialization of the spinlock prior to
+requesting the interrupts.
+
+Fixes: 51abcf7fdb70 ("media: imx-pxp: add i.MX Pixel Pipeline driver")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Reviewed-by: Philipp Zabel <p.zabel@pengutronix.de>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/platform/imx-pxp.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/media/platform/imx-pxp.c b/drivers/media/platform/imx-pxp.c
+index 723b096fedd10..b7174778db539 100644
+--- a/drivers/media/platform/imx-pxp.c
++++ b/drivers/media/platform/imx-pxp.c
+@@ -1659,6 +1659,8 @@ static int pxp_probe(struct platform_device *pdev)
+ 	if (irq < 0)
+ 		return irq;
+ 
++	spin_lock_init(&dev->irqlock);
++
+ 	ret = devm_request_threaded_irq(&pdev->dev, irq, NULL, pxp_irq_handler,
+ 			IRQF_ONESHOT, dev_name(&pdev->dev), dev);
+ 	if (ret < 0) {
+@@ -1676,8 +1678,6 @@ static int pxp_probe(struct platform_device *pdev)
+ 		goto err_clk;
+ 	}
+ 
+-	spin_lock_init(&dev->irqlock);
+-
+ 	ret = v4l2_device_register(&pdev->dev, &dev->v4l2_dev);
+ 	if (ret)
+ 		goto err_clk;
+-- 
+2.34.1
+
 
 
