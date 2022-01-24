@@ -2,105 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2171AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C2FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:33:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348641AbiAXUdD (ORCPT
+        id S1385350AbiAXUdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:33:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        Mon, 24 Jan 2022 15:33:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355416AbiAXUNi (ORCPT
+        with ESMTP id S1346897AbiAXUMN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18AADC061762;
-        Mon, 24 Jan 2022 11:35:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D380CB8123D;
-        Mon, 24 Jan 2022 19:35:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BEDDC340E5;
-        Mon, 24 Jan 2022 19:35:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052950;
-        bh=RV+GZ1lMaOyQ7OYXWIqi5CS12JZeAKVD0W8zLOYkvQE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ldVc8QYuoXWXE4MjuaD6BCSIjZ9iXlk9RPA26csyipxbQLbZ16bwyWsOUzjBe1DBY
-         nHSiFsfnZfBOXG7OmRJFYdcxglKaHFIRTwsGPffr5dEPQavDYcj98WbR2wA2L0lN1f
-         ZV3en8+52FwwuM9Meo51T8ZPUmgejgtgEYWA340E=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 226/320] powerpc/cell: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:30 +0100
-Message-Id: <20220124184001.677544745@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 15:12:13 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31AF5C028C24
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:33:54 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id z25-20020a0568301db900b005946f536d85so23655074oti.9
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:33:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=v4SG+DqwLKzywP0j01kwA66yUj5lO6i+67mlhA4ZOG4=;
+        b=R3PLwXkZGrs9ceWT1j8dt5GiDq1FaY0RBbkRiyJ5xFRj8KlGtFPGfM5BNZYqW+ONq8
+         aFLQeCr3namNypqS03nc7dxIQhBmcXckv0nuEMmiDcz1gA5NSNsaiIdUN/qLotSFxGMn
+         kiH4+VNO9kusFxuqPy0o4vKumCh+SifaZiN9Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=v4SG+DqwLKzywP0j01kwA66yUj5lO6i+67mlhA4ZOG4=;
+        b=I1vm4MPl9WYvcQYUNtwqAvbD4e//M0kszQty03K+iCaVGG1eSRu5iVfELzC0uC3ekX
+         OiXWs/D43wDngjt0hT8PGkxecTjn76/BDw3LlTaajqDEyR9kJRiwjC5uLOkvrCiuN6Iu
+         zcmIbzIJ6ksjhVU0+AqpLyYXeVN3l49Rp9c9NKuas4QctHel0M5pGG6BxMFyCqF795GJ
+         SVbQg0x6dykfQ+0goJbKBMTfiaTNtNmtF7vRIhm/eZEUAG1pOm3koEw8kxE5jJVTg+XU
+         FUv+bfV8egD0//roH4Npr35AwaJVO1sIJZZohU7XL0kxohm3t5AWGCoRq2HtDliLDlpq
+         7iqQ==
+X-Gm-Message-State: AOAM533pQzK7Y8NsFdgwG4mdg/H9ZJus6IWhBdqShJu10j9EpMLwXwfO
+        IC1K1QAobyUWTQIde7QWwFb/RNNnx7JVf7pXUxR+fQ==
+X-Google-Smtp-Source: ABdhPJxerNGg5PQ/cE7yz50qIfApJ1R8+nvofzeC6d9N1nf/CtJn5zcX/vn8QEy6PjgNpOeM0zb4zAeqFy0ndz+r+Dw=
+X-Received: by 2002:a9d:410d:: with SMTP id o13mr5394273ote.77.1643052833561;
+ Mon, 24 Jan 2022 11:33:53 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 24 Jan 2022 11:33:53 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <efa57fd8-d2ac-4c02-04ac-c62315b3b28c@quicinc.com>
+References: <20220120204132.17875-1-quic_amelende@quicinc.com>
+ <20220120204132.17875-2-quic_amelende@quicinc.com> <CAE-0n508nxF_c9pzsTaQfSi42ZGQXkqb3NyQebuMBec2DCV0KA@mail.gmail.com>
+ <efa57fd8-d2ac-4c02-04ac-c62315b3b28c@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 24 Jan 2022 11:33:53 -0800
+Message-ID: <CAE-0n51GUGskL17MGhk-=-dbdPU_3ChE37Hbzq6VBZc2Ge0vkA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] input: misc: pm8941-pwrkey: add software key press
+ debouncing support
+To:     Anjelique Melendez <quic_amelende@quicinc.com>,
+        dmitry.torokhov@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, collinsd@codeaurora.org,
+        bjorn.andersson@linaro.org, skakit@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+Quoting Anjelique Melendez (2022-01-21 16:04:13)
+>
+>
+> On 1/20/2022 8:08 PM, Stephen Boyd wrote:
+> > Quoting Anjelique Melendez (2022-01-20 12:41:33)
+> >> @@ -200,15 +268,21 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+> >>                         dev_err(&pdev->dev, "failed to locate regmap\n");
+> >>                         return -ENODEV;
+> >>                 }
+> >> +       }
+> >>
+> >> -               error = of_property_read_u32(parent->of_node,
+> >> -                                            "reg", &pwrkey->baseaddr);
+> >> -       } else {
+> >> -               error = of_property_read_u32(pdev->dev.of_node, "reg",
+> >> -                                            &pwrkey->baseaddr);
+> >> +       addr = of_get_address(regmap_node, 0, NULL, NULL);
+> >> +       if (!addr) {
+> >> +               dev_err(&pdev->dev, "reg property missing\n");
+> >> +               return -EINVAL;
+> >> +       }
+> >> +       pwrkey->baseaddr = be32_to_cpu(*addr);
+> > Can this hunk be split off? A new API is used and it doesn't look
+> > relevant to this patch.
+>
+> In PMK8350 and following chips the reg property will have the pon hlos address first,
+> followed by a second pon pbs address. This change is needed so that both the older chipsets
+> and the newer can be used regardless of how many reg addresses are being used.
 
-[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
+Got it, but do we ned to change to of_get_address() in this patch? I was
+suggesting that the change to the new API be done first so that it's
+clearer what's going on with the change in address location.
 
-for_each_node_by_name performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+>
+> >
+> >> +
+> >> +       if (pwrkey->data->has_pon_pbs) {
+> >> +               /* PON_PBS base address is optional */
+> >> +               addr = of_get_address(regmap_node, 1, NULL, NULL);
+> >> +               if (addr)
+> >> +                       pwrkey->pon_pbs_baseaddr = be32_to_cpu(*addr);
+> >>         }
+> >> -       if (error)
+> >> -               return error;
+> >>
+> >>         pwrkey->irq = platform_get_irq(pdev, 0);
+> >>         if (pwrkey->irq < 0)
+> >> @@ -217,7 +291,14 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+> >>         error = regmap_read(pwrkey->regmap, pwrkey->baseaddr + PON_REV2,
+> >>                             &pwrkey->revision);
+> >>         if (error) {
+> >> -               dev_err(&pdev->dev, "failed to set debounce: %d\n", error);
+> >> +               dev_err(&pdev->dev, "failed to read revision: %d\n", error);
+> > Nice error message fix!
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+This can be split off to a different patch as well.
 
-// <smpl>
-@@
-expression e,e1;
-local idexpression n;
-@@
+> >
+> >> +               return error;
+> >> +       }
+> >> +
+> >> +       error = regmap_read(pwrkey->regmap, pwrkey->baseaddr + PON_SUBTYPE,
+> >> +                           &pwrkey->subtype);
+> >> +       if (error) {
+> >> +               dev_err(&pdev->dev, "failed to read subtype: %d\n", error);
+> >>                 return error;
+> >>         }
+> >>
+> >> @@ -255,6 +336,12 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+> >>                 }
+> >>         }
+> >>
+> >> +       if (pwrkey->data->needs_sw_debounce) {
+> >> +               error = pm8941_pwrkey_sw_debounce_init(pwrkey);
+> >> +               if (error)
+> >> +                       return error;
+> >> +       }
+> >> +
+> >>         if (pwrkey->data->pull_up_bit) {
+> >>                 error = regmap_update_bits(pwrkey->regmap,
+> >>                                            pwrkey->baseaddr + PON_PULL_CTL,
+> >> @@ -316,6 +403,8 @@ static const struct pm8941_data pwrkey_data = {
+> >>         .phys = "pm8941_pwrkey/input0",
+> >>         .supports_ps_hold_poff_config = true,
+> >>         .supports_debounce_config = true,
+> >> +       .needs_sw_debounce = true,
+> > needs_sw_debounce is always true? Why is it even an option then?
+>
+> As of right now the "needs_sw_debounce" property is being used for a sw work around for a hw
+> problem. We anticipate that chips in the future will fix this hw problem and we would then have
+> devices where needs_sw_debounce would be set to false.
 
- for_each_node_by_name(n, e1) {
-   ... when != of_node_put(n)
-       when != e = n
-(
-   return n;
-|
-+  of_node_put(n);
-?  return ...;
-)
-   ...
- }
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/platforms/cell/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
-index ca9ffc1c8685d..a6a60e2b8f453 100644
---- a/arch/powerpc/platforms/cell/iommu.c
-+++ b/arch/powerpc/platforms/cell/iommu.c
-@@ -976,6 +976,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
- 			if (hbase < dbase || (hend > (dbase + dsize))) {
- 				pr_debug("iommu: hash window doesn't fit in"
- 					 "real DMA window\n");
-+				of_node_put(np);
- 				return -1;
- 			}
- 		}
--- 
-2.34.1
-
-
-
+Hmm ok. Why can't future chips be supported in this series? What happens
+if nobody ever adds support for the new chips? We're left with this
+condition that looks like dead code.
