@@ -2,87 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EAEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD83C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587453AbiAXW2X (ORCPT
+        id S1587468AbiAXW20 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53848 "EHLO
+        Mon, 24 Jan 2022 17:28:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454658AbiAXVdT (ORCPT
+        with ESMTP id S1454645AbiAXVdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:33:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADACC07597E;
-        Mon, 24 Jan 2022 12:21:31 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28A15B810BD;
-        Mon, 24 Jan 2022 20:21:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E284C340E5;
-        Mon, 24 Jan 2022 20:21:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055688;
-        bh=SW3LaOTkedTk7adcIdVcisEywFdafNAxlRBLboYCbE8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HXPpyzJ9mywxfMFGO6nV8jmT85jAL4BXrzpeokYkCW4EQxWo3iGB7b4E7e3U/E9pV
-         N6DwnoLAo1VJmnWXCeHKLWbSZT8+4DKtej6eFrKuz3vd00/mSMei2Ju3pB7NlH1lwp
-         2HOckG9r4oB2pbVd+aSoWRm0keRaWZefZc7i/hFQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 234/846] crypto: stm32/cryp - fix double pm exit
-Date:   Mon, 24 Jan 2022 19:35:51 +0100
-Message-Id: <20220124184109.003431232@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52909C075972
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:21:22 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id u14so21341598lfo.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:21:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wyMvRdYooGkNnpiPbja1/uSfdA1/U9snsdIqkkHvJEc=;
+        b=htyyJ1Z3GRsmUZan58N3Prr0pEBcELIKOR7HkjpOyyQX11oHKKsVhGziUzHRAk9gAQ
+         qKIJ1la4FQPjdeduY0TumzsXC1keATPYK+6nRTIgrBg2Yx3j+qLswnmWYNKKkUD32SGa
+         NEUVgy1cbCWp9ftv9S/S5W24Xf77OuvIUUPVXQgqfByM1wogeIS6Un6jOyUF9MMCkpXG
+         teWa0koFmo2WyVhH9ii5kbYSuulkh24QTq4DkaKRlSHApSrAqcmB2KzC4vQu8X9FU9gv
+         2EOV8xLbbtvhhc9TN8f/mQhQ6bw3lBLH/4ZukkYU7sfiq5QPCY/xyIFbbSA1hYPq/sPZ
+         OO2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wyMvRdYooGkNnpiPbja1/uSfdA1/U9snsdIqkkHvJEc=;
+        b=B5LU5nNDO4HuF+KKzLY2NJ20Cm2UkD2Gny+ghaP5gwu8NpOEswkHxSTFVuTAUpCApu
+         R1MhPtKpChywxbT48Q1+6Xc3Ua7uC81V2ggp4s40gML02iOp5C07XvxSRguYOlqlwMHz
+         dIiAPakSfI//otD2gb2ZePsrTV25r7Ebp0ro3W/iBks1h0mdRgRKGJ8b13LJKsLmRH48
+         VT5chSBW89G06HstWHxt3NdCP6vI19b6lg3+K4FpZQeUh2p7PBcd4+V+HSFTSqo62eGt
+         2dvO37gTYCbSe81bqEiPBAloOl5yxzRYk1esIfa7wMaXi22z2WuGgnvlH7+wIb21iXes
+         ib3w==
+X-Gm-Message-State: AOAM530nFHRXG1lZytNBFlekI1spQ8287nDfrwkcepUXYJjuWQnshn9m
+        lzELxtn/6kTlHhSSMxb4IqAc+44PMXxdxpzblrBkAQ==
+X-Google-Smtp-Source: ABdhPJzNbWHLfVK0G4oHmQubeJbQeEM15S/l2in0t/MpUPzxIWlbk0Bzs9ERTx3WfdkjIX9h30ubfENOdawlZCrT2bU=
+X-Received: by 2002:a19:ad02:: with SMTP id t2mr14058303lfc.82.1643055680456;
+ Mon, 24 Jan 2022 12:21:20 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220119224628.123084-1-colin.i.king@gmail.com>
+In-Reply-To: <20220119224628.123084-1-colin.i.king@gmail.com>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jan 2022 12:21:07 -0800
+Message-ID: <CAKwvOdnMibw77AvvWw7seB2PPamS_OLMUarSjdsa4w4OP1isKg@mail.gmail.com>
+Subject: Re: [PATCH] drm/radeon: remove redundant assignment to reg
+To:     Colin Ian King <colin.i.king@gmail.com>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+On Wed, Jan 19, 2022 at 2:46 PM Colin Ian King <colin.i.king@gmail.com> wrote:
+>
+> The pointer reg is being assigned a value that is not read, the
+> exit path via label 'out' never accesses it. The assignment is
+> redundant and can be removed.
+>
+> Cleans up clang scan build warning:
+> drivers/gpu/drm/radeon/radeon_object.c:570:3: warning: Value
+> stored to 'reg' is never read [deadcode.DeadStores]
+>
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 
-[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
+Thanks for the patch!
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Delete extraneous lines in probe error handling code: pm was
-disabled twice.
+> ---
+>  drivers/gpu/drm/radeon/radeon_object.c | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/radeon/radeon_object.c b/drivers/gpu/drm/radeon/radeon_object.c
+> index 56ede9d63b12..87536d205593 100644
+> --- a/drivers/gpu/drm/radeon/radeon_object.c
+> +++ b/drivers/gpu/drm/radeon/radeon_object.c
+> @@ -567,7 +567,6 @@ int radeon_bo_get_surface_reg(struct radeon_bo *bo)
+>                 return 0;
+>
+>         if (bo->surface_reg >= 0) {
+> -               reg = &rdev->surface_regs[bo->surface_reg];
+>                 i = bo->surface_reg;
+>                 goto out;
+>         }
+> --
+> 2.33.1
+>
+>
 
-Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
 
-Reported-by: Marek Vasut <marex@denx.de>
-Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/crypto/stm32/stm32-cryp.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
-index fd7fb73a4d450..061db567908ae 100644
---- a/drivers/crypto/stm32/stm32-cryp.c
-+++ b/drivers/crypto/stm32/stm32-cryp.c
-@@ -2134,8 +2134,6 @@ err_engine1:
- 	list_del(&cryp->list);
- 	spin_unlock(&cryp_list.lock);
- 
--	pm_runtime_disable(dev);
--	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
- 	pm_runtime_put_noidle(dev);
- 
 -- 
-2.34.1
-
-
-
+Thanks,
+~Nick Desaulniers
