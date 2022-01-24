@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4DE5C35268
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7F6C3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380098AbiAXUPk (ORCPT
+        id S1380142AbiAXUPq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:15:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58614 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358413AbiAXTzI (ORCPT
+        Mon, 24 Jan 2022 15:15:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42720 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359054AbiAXT4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:55:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C036C0418B1;
-        Mon, 24 Jan 2022 11:27:20 -0800 (PST)
+        Mon, 24 Jan 2022 14:56:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 05889B81243;
-        Mon, 24 Jan 2022 19:27:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33E35C340E7;
-        Mon, 24 Jan 2022 19:27:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46BDFB810AF;
+        Mon, 24 Jan 2022 19:56:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EBACC340E5;
+        Mon, 24 Jan 2022 19:56:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052437;
-        bh=fntRpshkPH1kBf19IZiQRtlhXjIeJ4hCEiSlfehiMwY=;
+        s=korg; t=1643054174;
+        bh=Adkz8tW47vbwofh7NrAPeUglOkNTCxORjd0loYPv954=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IOqHTpz7uQp39FFBwlM+7FHzveyW3T7IZ82Uzf3+bFIzRKQ0ZQ67oVietWCnM0Iv1
-         eTdU+0AR5xHwL2TYgacdTENGOuPw9q5qoTtRGdmvj15kd8CYvJ/V7EE0DjQ0NW5BmL
-         84H9mPijXCfacmKhlP4O9XtiWWXMEmfxGWIAdVlM=
+        b=Fy8hekyhvUx3/KYKgpDljlJgHe6E/pzcuY7mDViEQqP4oY+XCa7IGmy7tgxog3hAn
+         aMHNiwfEujmboC2dbnydhKUyZ52k1OLo0yUou34jY31XhbCsionnZYCBUjsIYbKsp1
+         fy7vrI59KSUu46t8x3go5TDcpOE793O66CX8wCYg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 057/320] media: si470x-i2c: fix possible memory leak in si470x_i2c_probe()
-Date:   Mon, 24 Jan 2022 19:40:41 +0100
-Message-Id: <20220124183955.677433044@linuxfoundation.org>
+Subject: [PATCH 5.10 302/563] selftests/bpf: Fix bpf_object leak in skb_ctx selftest
+Date:   Mon, 24 Jan 2022 19:41:07 +0100
+Message-Id: <20220124184034.893760003@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,60 +48,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit ef054e345ed8c79ce1121a3599b5a2dfd78e57a0 ]
+[ Upstream commit 8c7a95520184b6677ca6075e12df9c208d57d088 ]
 
-n the 'radio->hdl.error' error handling, ctrl handler allocated by
-v4l2_ctrl_new_std() does not released, and caused memory leak as
-follows:
+skb_ctx selftest didn't close bpf_object implicitly allocated by
+bpf_prog_test_load() helper. Fix the problem by explicitly calling
+bpf_object__close() at the end of the test.
 
-unreferenced object 0xffff888033d54200 (size 256):
-  comm "i2c-si470x-19", pid 909, jiffies 4294914203 (age 8.072s)
-  hex dump (first 32 bytes):
-    e8 69 11 03 80 88 ff ff 00 46 d5 33 80 88 ff ff  .i.......F.3....
-    10 42 d5 33 80 88 ff ff 10 42 d5 33 80 88 ff ff  .B.3.....B.3....
-  backtrace:
-    [<00000000086bd4ed>] __kmalloc_node+0x1eb/0x360
-    [<00000000bdb68871>] kvmalloc_node+0x66/0x120
-    [<00000000fac74e4c>] v4l2_ctrl_new+0x7b9/0x1c60 [videodev]
-    [<00000000693bf940>] v4l2_ctrl_new_std+0x19b/0x270 [videodev]
-    [<00000000c0cb91bc>] si470x_i2c_probe+0x2d3/0x9a0 [radio_si470x_i2c]
-    [<0000000056a6f01f>] i2c_device_probe+0x4d8/0xbe0
-
-Fix the error handling path to avoid memory leak.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 8c081b6f9a9b ("media: radio: Critical v4l2 registration...")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-10-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/radio/si470x/radio-si470x-i2c.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/bpf/prog_tests/skb_ctx.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/media/radio/si470x/radio-si470x-i2c.c b/drivers/media/radio/si470x/radio-si470x-i2c.c
-index a972c0705ac79..76d39e2e87706 100644
---- a/drivers/media/radio/si470x/radio-si470x-i2c.c
-+++ b/drivers/media/radio/si470x/radio-si470x-i2c.c
-@@ -368,7 +368,7 @@ static int si470x_i2c_probe(struct i2c_client *client)
- 	if (radio->hdl.error) {
- 		retval = radio->hdl.error;
- 		dev_err(&client->dev, "couldn't register control\n");
--		goto err_dev;
-+		goto err_all;
- 	}
- 
- 	/* video device initialization */
-@@ -463,7 +463,6 @@ static int si470x_i2c_probe(struct i2c_client *client)
- 	return 0;
- err_all:
- 	v4l2_ctrl_handler_free(&radio->hdl);
--err_dev:
- 	v4l2_device_unregister(&radio->v4l2_dev);
- err_initial:
- 	return retval;
+diff --git a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+index fafeddaad6a99..23915be6172d6 100644
+--- a/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
++++ b/tools/testing/selftests/bpf/prog_tests/skb_ctx.c
+@@ -105,4 +105,6 @@ void test_skb_ctx(void)
+ 		   "ctx_out_mark",
+ 		   "skb->mark == %u, expected %d\n",
+ 		   skb.mark, 10);
++
++	bpf_object__close(obj);
+ }
 -- 
 2.34.1
 
