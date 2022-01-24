@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A66C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E36EC43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2372788AbiAYAMb (ORCPT
+        id S2372811AbiAYAMd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:12:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
+        Mon, 24 Jan 2022 19:12:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1848976AbiAXXY3 (ORCPT
+        with ESMTP id S1384582AbiAXXYB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:24:29 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B769C07321A;
-        Mon, 24 Jan 2022 13:29:47 -0800 (PST)
+        Mon, 24 Jan 2022 18:24:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A21EC073090;
+        Mon, 24 Jan 2022 13:29:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04D1560C44;
-        Mon, 24 Jan 2022 21:29:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D292DC340E4;
-        Mon, 24 Jan 2022 21:29:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62454B8105C;
+        Mon, 24 Jan 2022 21:29:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B7A2C36AE9;
+        Mon, 24 Jan 2022 21:29:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059786;
-        bh=GjXLsfRDL+vMnvwCNX4tCqIZuHwbl8YDD1glN2o18Y8=;
+        s=korg; t=1643059763;
+        bh=PT9cOZRjZokQfTIoZoyk+ac+Lh97j0RFBNiuxEnwne8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RU03oQyTTRlTzj5y40M2iHAjLO3/7Vl8786t5dDdIRcr3+uYQsc+0qDpIqfySrpEe
-         OfXNhuyPKffp9IqS+kdXMgdbxoqlhkiUDGMoVfU7JxQC+cRpV4KblkLFVYY+5+Ryu9
-         OqQ6Y3lgbAKGwHvamao3aPcSPJPdF0UbFyKaWM/o=
+        b=hdDPTGiiq2swvGhWrDVDwnNYkp28PpotciFMI0U2UW1fiHAdIcC7/8hBoL9uEM2Ce
+         BKUi7G2rCtej7Rz/cnAl8kGixMRL8S7A9mTG2uvG+rvRovK3VsvMeyIaJvsGYFULY+
+         PK6mniXRmZRsst/h8MrTdvHQfNa2qV45xI8bp/08=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0734/1039] powerpc/6xx: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:42:03 +0100
-Message-Id: <20220124184149.999778545@linuxfoundation.org>
+Subject: [PATCH 5.16 0692/1039] Bluetooth: vhci: Set HCI_QUIRK_VALID_LE_STATES
+Date:   Mon, 24 Jan 2022 19:41:21 +0100
+Message-Id: <20220124184148.603873277@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,62 +51,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
 
-[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
+[ Upstream commit cfb4c313be670fd4bd09650216620fa4514cdb93 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+This set HCI_QUIRK_VALID_LE_STATES quirk which is required for the likes
+of experimental LE simultaneous roles.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
-
-// <smpl>
-@@
-expression e;
-local idexpression n;
-@@
-
-@@
-local idexpression n;
-expression e;
-@@
-
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/bluetooth/hci_vhci.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-index 15396333a90bd..a4b020e4b6af0 100644
---- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-+++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-@@ -214,6 +214,7 @@ void hlwd_pic_probe(void)
- 			irq_set_chained_handler(cascade_virq,
- 						hlwd_pic_irq_cascade);
- 			hlwd_irq_host = host;
-+			of_node_put(np);
- 			break;
- 		}
- 	}
+diff --git a/drivers/bluetooth/hci_vhci.c b/drivers/bluetooth/hci_vhci.c
+index 5fd91106e853d..95af01bdd02a2 100644
+--- a/drivers/bluetooth/hci_vhci.c
++++ b/drivers/bluetooth/hci_vhci.c
+@@ -239,6 +239,8 @@ static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
+ 	if (opcode & 0x80)
+ 		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
+ 
++	set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
++
+ 	if (hci_register_dev(hdev) < 0) {
+ 		BT_ERR("Can't register HCI device");
+ 		hci_free_dev(hdev);
 -- 
 2.34.1
 
