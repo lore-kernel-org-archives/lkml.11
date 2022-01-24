@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB41C41535
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A719C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367577AbiAXXzz (ORCPT
+        id S2367605AbiAXX4A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:55:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50594 "EHLO
+        Mon, 24 Jan 2022 18:56:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846536AbiAXXQT (ORCPT
+        with ESMTP id S1846559AbiAXXQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:16:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C9C061776;
-        Mon, 24 Jan 2022 11:44:38 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CCBC07E291;
+        Mon, 24 Jan 2022 11:44:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63AADB81188;
-        Mon, 24 Jan 2022 19:44:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A6DC340E5;
-        Mon, 24 Jan 2022 19:44:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 854D7B81188;
+        Mon, 24 Jan 2022 19:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B728C340E5;
+        Mon, 24 Jan 2022 19:44:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053476;
-        bh=QoKvG1rlfkeJTxGZcwcVqHKO30I0UMzibYlNdPulq9E=;
+        s=korg; t=1643053494;
+        bh=XkwDeNlHci496NYmFmsJJ6uvx9eXXONCTwinhOIY5r4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Djphgox4RyKxVMLn3zWItsgd0et0rAZJVQWsJoUXTx+o2P7zzRhyq/Skv1GrJaO/I
-         BLwWKw2b6/W9hBxqrEQobLACHUpBXGNy0yL6i+O0XrcW7XuG5eOz8hf8Pzp9ooroXG
-         yBYPXwQ/gwwifN+I/n2m7WOWqxpqIOv1pz5XkGzo=
+        b=SFAuqllBdpTTuMW232PXkvT+5rgm49lZi5wMGf11jpdQOPSNMGHSpHYVOSk8JoTBL
+         lMVr3exZE5IPc5tsCyRUiAY+kMvEJvmrJqBY6OqrrqvNctyJRQAXT8m3xsoQ2nuYOP
+         3DZwEpUNSoe1IFqMTxl8WdJRuSxRQFctR7p2Exnk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
-        Alexander Stein <alexander.stein@mailbox.org>,
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 078/563] arm64: dts: amlogic: meson-g12: Fix GPU operating point table node name
-Date:   Mon, 24 Jan 2022 19:37:23 +0100
-Message-Id: <20220124184027.090788992@linuxfoundation.org>
+Subject: [PATCH 5.10 084/563] memory: renesas-rpc-if: Return error in case devm_ioremap_resource() fails
+Date:   Mon, 24 Jan 2022 19:37:29 +0100
+Message-Id: <20220124184027.303523032@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,40 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@mailbox.org>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit bb98a6fd0b0e227cefb2ba91cea2b55455f203b7 ]
+[ Upstream commit 818fdfa89baac77a8df5a2c30f4fb798cc937aa0 ]
 
-Starting with commit 94274f20f6bf ("dt-bindings: opp: Convert to DT
-schema") the opp node name has a mandatory pattern. This change
-fixes the dtbs_check warning:
-gpu-opp-table: $nodename:0: 'gpu-opp-table' does not match
-'^opp-table(-[a-z0-9]+)?$'
-Put the 'gpu' part at the end to match the pattern.
+Make sure we return error in case devm_ioremap_resource() fails for dirmap
+resource.
 
-Fixes: 916a0edc43f0 ("arm64: dts: amlogic: meson-g12: add the Mali OPP table and use DVFS")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211026182813.900775-2-alexander.stein@mailbox.org
+Fixes: ca7d8b980b67 ("memory: add Renesas RPC-IF driver")
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20211025205631.21151-6-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 +-
+ drivers/memory/renesas-rpc-if.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-index 959b299344e54..7342c8a2b322d 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-@@ -52,7 +52,7 @@
- 		secure-monitor = <&sm>;
- 	};
+diff --git a/drivers/memory/renesas-rpc-if.c b/drivers/memory/renesas-rpc-if.c
+index a760ab08256ff..9019121a80f53 100644
+--- a/drivers/memory/renesas-rpc-if.c
++++ b/drivers/memory/renesas-rpc-if.c
+@@ -245,7 +245,7 @@ int rpcif_sw_init(struct rpcif *rpc, struct device *dev)
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "dirmap");
+ 	rpc->dirmap = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(rpc->dirmap))
+-		rpc->dirmap = NULL;
++		return PTR_ERR(rpc->dirmap);
+ 	rpc->size = resource_size(res);
  
--	gpu_opp_table: gpu-opp-table {
-+	gpu_opp_table: opp-table-gpu {
- 		compatible = "operating-points-v2";
- 
- 		opp-124999998 {
+ 	rpc->rstc = devm_reset_control_get_exclusive(&pdev->dev, NULL);
 -- 
 2.34.1
 
