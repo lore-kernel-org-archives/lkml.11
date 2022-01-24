@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44A2FC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D942C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840484AbiAXWxc (ORCPT
+        id S1840516AbiAXWxe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:53:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57082 "EHLO
+        Mon, 24 Jan 2022 17:53:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574395AbiAXVtE (ORCPT
+        with ESMTP id S1574961AbiAXVuu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:49:04 -0500
+        Mon, 24 Jan 2022 16:50:50 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFDAC07A96C;
-        Mon, 24 Jan 2022 12:33:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0983EC0885A8;
+        Mon, 24 Jan 2022 12:33:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAD5DB811FB;
-        Mon, 24 Jan 2022 20:33:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7C94C340E8;
-        Mon, 24 Jan 2022 20:33:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A28D7B811FB;
+        Mon, 24 Jan 2022 20:33:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C618DC340E5;
+        Mon, 24 Jan 2022 20:33:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056402;
-        bh=Qbnpal6S+UxOf65CG/ERZROcEXBzaAoH3S2RJUPcGq0=;
+        s=korg; t=1643056417;
+        bh=Fhv3mi1Mm8uNIIYwqjQOhdSly4zsT0G1KS4gJQ8MreU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ql2CLZHO/qjzYVwR19MjcBLwz3iYJLuUiO1wafA3Eydq22KenIvOv+3LmZEQhrNZy
-         06MBA53dEce5lSsNJjTcBsMo1fD4EvQnPldOR9RHzSkslmSwppiKfAsa8hrDdjz2Dj
-         cUl66gzUP8QugrufLT+efOWc72wAZ11CC09wrnN0=
+        b=DciYPAZe+QimwSosI4FyzgXr905VBRtYTjla5EvZ1vicFbR6g/hFPODakj46URuZW
+         sWr1Gmh33Qznr5WpIZ1ND79eYiwjyJkHjmQLJyJRf4WuyG/Pcn4UEfSO3sM4I0urNa
+         MdzNXliYpOEoVioh90udns7qXZpr+S1p88vEyWHM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 439/846] mips: lantiq: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:39:16 +0100
-Message-Id: <20220124184116.118607029@linuxfoundation.org>
+Subject: [PATCH 5.15 478/846] media: atomisp: handle errors at sh_css_create_isp_params()
+Date:   Mon, 24 Jan 2022 19:39:55 +0100
+Message-Id: <20220124184117.509259804@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,46 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit 76f66dfd60dc5d2f9dec22d99091fea1035c5d03 ]
+[ Upstream commit 58043dbf6d1ae9deab4f5aa1e039c70112017682 ]
 
-Provide a simple implementation of clk_set_parent() in the lantiq
-subarch so that callers of it will build without errors.
+The succ var tracks memory allocation erros on this function.
 
-Fixes these build errors:
+Fix it, in order to stop this W=1 Werror in clang:
 
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
+drivers/staging/media/atomisp/pci/sh_css_params.c:2430:7: error: variable 'succ' set but not used [-Werror,-Wunused-but-set-variable]
+        bool succ = true;
+             ^
 
-Fixes: 171bb2f19ed6 ("MIPS: Lantiq: Add initial support for Lantiq SoCs")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
---to=linux-mips@vger.kernel.org --cc="John Crispin <john@phrozen.org>" --cc="Jonathan Cameron <jic23@kernel.org>" --cc="Russell King <linux@armlinux.org.uk>" --cc="Andy Shevchenko <andy.shevchenko@gmail.com>" --cc=alsa-devel@alsa-project.org --to="Thomas Bogendoerfer <tsbogend@alpha.franken.de>"
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/lantiq/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/staging/media/atomisp/pci/sh_css_params.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/lantiq/clk.c b/arch/mips/lantiq/clk.c
-index 4916cccf378fd..7a623684d9b5e 100644
---- a/arch/mips/lantiq/clk.c
-+++ b/arch/mips/lantiq/clk.c
-@@ -164,6 +164,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
+diff --git a/drivers/staging/media/atomisp/pci/sh_css_params.c b/drivers/staging/media/atomisp/pci/sh_css_params.c
+index dbd3bfe3d343c..ccc0078795648 100644
+--- a/drivers/staging/media/atomisp/pci/sh_css_params.c
++++ b/drivers/staging/media/atomisp/pci/sh_css_params.c
+@@ -2431,7 +2431,7 @@ sh_css_create_isp_params(struct ia_css_stream *stream,
+ 	unsigned int i;
+ 	struct sh_css_ddr_address_map *ddr_ptrs;
+ 	struct sh_css_ddr_address_map_size *ddr_ptrs_size;
+-	int err = 0;
++	int err;
+ 	size_t params_size;
+ 	struct ia_css_isp_parameters *params =
+ 	kvmalloc(sizeof(struct ia_css_isp_parameters), GFP_KERNEL);
+@@ -2473,7 +2473,11 @@ sh_css_create_isp_params(struct ia_css_stream *stream,
+ 	succ &= (ddr_ptrs->macc_tbl != mmgr_NULL);
  
-+int clk_set_parent(struct clk *clk, struct clk *parent)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(clk_set_parent);
+ 	*isp_params_out = params;
+-	return err;
 +
- static inline u32 get_counter_resolution(void)
- {
- 	u32 res;
++	if (!succ)
++		return -ENOMEM;
++
++	return 0;
+ }
+ 
+ static bool
 -- 
 2.34.1
 
