@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E154AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7AE7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583955AbiAXWTo (ORCPT
+        id S1584029AbiAXWT4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:19:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
+        Mon, 24 Jan 2022 17:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447471AbiAXVKy (ORCPT
+        with ESMTP id S1447467AbiAXVKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:10:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A59C09D30D;
-        Mon, 24 Jan 2022 12:08:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F61C09D306;
+        Mon, 24 Jan 2022 12:08:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C8B3B8122A;
-        Mon, 24 Jan 2022 20:08:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FF8C340E5;
-        Mon, 24 Jan 2022 20:08:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 681F1B81215;
+        Mon, 24 Jan 2022 20:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93393C340E5;
+        Mon, 24 Jan 2022 20:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054932;
-        bh=OLGhyBE3yYUeUqi46/+gVKgkTva0eh9cbOByjskd/PM=;
+        s=korg; t=1643054929;
+        bh=Or7GSkXzoVtS/Y66OyTISEOtYo4mULGloYLLh4FWCl8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VFJorSzUtNIUiTxCS1mkwybUhV5w+kj6oM8eon23ji2rSd4daQOG8gVGvLeECVzZ6
-         exM+YXJkhisifPUQ7Q86Y3YzpLWqniMenFQeizB3Iw4DwNUsrlfQHz8RwW19oR/SDY
-         0d3VEgmNCi+bXRrg77shwUEUzDAYlsyP2BlGFxzA=
+        b=sGeR3Ytfz+DXWF+cJgNZSLxAudWBL6nTH5kp3yro5EwCS/eWbefeMP84Fb3/E1ObJ
+         ADe3UW+v2W7slA1uvP7/IUSM2ViS5cdft8gfxaQJ31Unjx8f4DiDu+xgtmGWFUYXNx
+         q29S21r3YAw+ld1GyrHPdx32IE/6r6YJk7nVLEd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Balbir Singh <bsingharora@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.10 533/563] taskstats: Cleanup the use of task->exit_code
-Date:   Mon, 24 Jan 2022 19:44:58 +0100
-Message-Id: <20220124184042.881061424@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Bracey <kevin@bracey.fi>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 550/563] net_sched: restore "mpu xxx" handling
+Date:   Mon, 24 Jan 2022 19:45:15 +0100
+Message-Id: <20220124184043.458620209@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,59 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Kevin Bracey <kevin@bracey.fi>
 
-commit 1b5a42d9c85f0e731f01c8d1129001fd8531a8a0 upstream.
+commit fb80445c438c78b40b547d12b8d56596ce4ccfeb upstream.
 
-In the function bacct_add_task the code reading task->exit_code was
-introduced in commit f3cef7a99469 ("[PATCH] csa: basic accounting over
-taskstats"), and it is not entirely clear what the taskstats interface
-is trying to return as only returning the exit_code of the first task
-in a process doesn't make a lot of sense.
+commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
+"overhead X", "linklayer atm" and "mpu X" attributes.
 
-As best as I can figure the intent is to return task->exit_code after
-a task exits.  The field is returned with per task fields, so the
-exit_code of the entire process is not wanted.  Only the value of the
-first task is returned so this is not a useful way to get the per task
-ptrace stop code.  The ordinary case of returning this value is
-returning after a task exits, which also precludes use for getting
-a ptrace value.
+"overhead X" and "linklayer atm" have already been fixed. This restores
+the "mpu X" handling, as might be used by DOCSIS or Ethernet shaping:
 
-It is common to for the first task of a process to also be the last
-task of a process so this field may have done something reasonable by
-accident in testing.
+    tc class add ... htb rate X overhead 4 mpu 64
 
-Make ac_exitcode a reliable per task value by always returning it for
-every exited task.
+The code being fixed is used by htb, tbf and act_police. Cake has its
+own mpu handling. qdisc_calculate_pkt_len still uses the size table
+containing values adjusted for mpu by user space.
 
-Setting ac_exitcode in a sensible mannter makes it possible to continue
-to provide this value going forward.
+iproute2 tc has always passed mpu into the kernel via a tc_ratespec
+structure, but the kernel never directly acted on it, merely stored it
+so that it could be read back by `tc class show`.
 
-Cc: Balbir Singh <bsingharora@gmail.com>
-Fixes: f3cef7a99469 ("[PATCH] csa: basic accounting over taskstats")
-Link: https://lkml.kernel.org/r/20220103213312.9144-5-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Rather, tc would generate length-to-time tables that included the mpu
+(and linklayer) in their construction, and the kernel used those tables.
+
+Since v3.7, the tables were no longer used. Along with "mpu", this also
+broke "overhead" and "linklayer" which were fixed in 01cb71d2d47b
+("net_sched: restore "overhead xxx" handling", v3.10) and 8a8e3d84b171
+("net_sched: restore "linklayer atm" handling", v3.11).
+
+"overhead" was fixed by simply restoring use of tc_ratespec::overhead -
+this had originally been used by the kernel but was initially omitted
+from the new non-table-based calculations.
+
+"linklayer" had been handled in the table like "mpu", but the mode was
+not originally passed in tc_ratespec. The new implementation was made to
+handle it by getting new versions of tc to pass the mode in an extended
+tc_ratespec, and for older versions of tc the table contents were analysed
+at load time to deduce linklayer.
+
+As "mpu" has always been given to the kernel in tc_ratespec,
+accompanying the mpu-based table, we can restore system functionality
+with no userspace change by making the kernel act on the tc_ratespec
+value.
+
+Fixes: 56b765b79e9a ("htb: improved accuracy at high rates")
+Signed-off-by: Kevin Bracey <kevin@bracey.fi>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Vimalkumar <j.vimal@gmail.com>
+Link: https://lore.kernel.org/r/20220112170210.1014351-1-kevin@bracey.fi
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/tsacct.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ include/net/sch_generic.h |    5 +++++
+ net/sched/sch_generic.c   |    1 +
+ 2 files changed, 6 insertions(+)
 
---- a/kernel/tsacct.c
-+++ b/kernel/tsacct.c
-@@ -38,11 +38,10 @@ void bacct_add_tsk(struct user_namespace
- 	stats->ac_btime = clamp_t(time64_t, btime, 0, U32_MAX);
- 	stats->ac_btime64 = btime;
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1261,6 +1261,7 @@ struct psched_ratecfg {
+ 	u64	rate_bytes_ps; /* bytes per second */
+ 	u32	mult;
+ 	u16	overhead;
++	u16	mpu;
+ 	u8	linklayer;
+ 	u8	shift;
+ };
+@@ -1270,6 +1271,9 @@ static inline u64 psched_l2t_ns(const st
+ {
+ 	len += r->overhead;
  
--	if (thread_group_leader(tsk)) {
-+	if (tsk->flags & PF_EXITING)
- 		stats->ac_exitcode = tsk->exit_code;
--		if (tsk->flags & PF_FORKNOEXEC)
--			stats->ac_flag |= AFORK;
--	}
-+	if (thread_group_leader(tsk) && (tsk->flags & PF_FORKNOEXEC))
-+		stats->ac_flag |= AFORK;
- 	if (tsk->flags & PF_SUPERPRIV)
- 		stats->ac_flag |= ASU;
- 	if (tsk->flags & PF_DUMPCORE)
++	if (len < r->mpu)
++		len = r->mpu;
++
+ 	if (unlikely(r->linklayer == TC_LINKLAYER_ATM))
+ 		return ((u64)(DIV_ROUND_UP(len,48)*53) * r->mult) >> r->shift;
+ 
+@@ -1292,6 +1296,7 @@ static inline void psched_ratecfg_getrat
+ 	res->rate = min_t(u64, r->rate_bytes_ps, ~0U);
+ 
+ 	res->overhead = r->overhead;
++	res->mpu = r->mpu;
+ 	res->linklayer = (r->linklayer & TC_LINKLAYER_MASK);
+ }
+ 
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1386,6 +1386,7 @@ void psched_ratecfg_precompute(struct ps
+ {
+ 	memset(r, 0, sizeof(*r));
+ 	r->overhead = conf->overhead;
++	r->mpu = conf->mpu;
+ 	r->rate_bytes_ps = max_t(u64, conf->rate, rate64);
+ 	r->linklayer = (conf->linklayer & TC_LINKLAYER_MASK);
+ 	r->mult = 1;
 
 
