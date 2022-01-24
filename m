@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B23F7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D311C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352659AbiAXUx4 (ORCPT
+        id S1359321AbiAXUyE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:53:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36280 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384816AbiAXUaf (ORCPT
+        Mon, 24 Jan 2022 15:54:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384815AbiAXUaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:30:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16F33C07A968;
+        Mon, 24 Jan 2022 11:43:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3681BB811F9;
-        Mon, 24 Jan 2022 20:30:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C181C340E5;
-        Mon, 24 Jan 2022 20:30:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C6F79B8122F;
+        Mon, 24 Jan 2022 19:43:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7D91C340EA;
+        Mon, 24 Jan 2022 19:43:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056232;
-        bh=b/4IslJBEQd84GWcAJuYmPtCMrf3yVEFUlsk8XYbfeA=;
+        s=korg; t=1643053385;
+        bh=PqqgOMdQYsjVK+c5rEKxPaFKwUlR+y4hoxNyhmOITC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BoYtVR4DT6OoljaxOM/oJW+fh97Er/LiPiqdTkHfaFdw6wmHox7/NoA4+Ekey2gKq
-         /NIKMyto83BEYk0jRyFcCPkggFBbYGMxXzjhKi1K1k1YCZzKmBcuagCL0HkOpFUi3g
-         rHgGa3TRSfajQ3wn7XI1LruCep50ethUSuzHpONM=
+        b=g9KUG/hdbiBkuL/OMM0UyxuSG5B6dZNNeEIaiMRdI1Rgh07MWzXJMUForknH2E7a9
+         ZO3GBGkrKyqu+iQtE5dq/WYgEfQyJQ/CDuU+mNg1rnuWvXw4E9z8rs1Rdrhr8llOd0
+         DB7QowVmhDgVYalPQhAIGC4dzELH8dI1SSE8xM2A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Todd Kjos <tkjos@google.com>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 398/846] binder: fix handling of error during copy
-Date:   Mon, 24 Jan 2022 19:38:35 +0100
-Message-Id: <20220124184114.680991182@linuxfoundation.org>
+        stable@vger.kernel.org, aleksandr.o.makarov@gmail.com,
+        Brian Norris <briannorris@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>,
+        Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.10 048/563] drm/rockchip: dsi: Hold pm-runtime across bind/unbind
+Date:   Mon, 24 Jan 2022 19:36:53 +0100
+Message-Id: <20220124184026.078735949@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,47 +52,148 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Todd Kjos <tkjos@google.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit fe6b1869243f23a485a106c214bcfdc7aa0ed593 ]
+commit 514db871922f103886ad4d221cf406b4fcc5e74a upstream.
 
-If a memory copy function fails to copy the whole buffer,
-a positive integar with the remaining bytes is returned.
-In binder_translate_fd_array() this can result in an fd being
-skipped due to the failed copy, but the loop continues
-processing fds since the early return condition expects a
-negative integer on error.
+In commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
+LCDC mux to bind()"), we moved most HW configuration to bind(), but we
+didn't move the runtime PM management. Therefore, depending on initial
+boot state, runtime-PM workqueue delays, and other timing factors, we
+may disable our power domain in between the hardware configuration
+(bind()) and when we enable the display. This can cause us to lose
+hardware state and fail to configure our display. For example:
 
-Fix by returning "ret > 0 ? -EINVAL : ret" to handle this case.
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-innolux-p079zca ff960000.mipi.0: failed to write command 0
 
-Fixes: bb4a2e48d510 ("binder: return errors from buffer copy functions")
-Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Todd Kjos <tkjos@google.com>
-Link: https://lore.kernel.org/r/20211130185152.437403-2-tkjos@google.com
+or:
+
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
+
+We should match the runtime PM to the lifetime of the bind()/unbind()
+cycle.
+
+Tested on Acer Chrometab 10 (RK3399 Gru-Scarlet), with panel drivers
+built either as modules or built-in.
+
+Side notes: it seems one is more likely to see this problem when the
+panel driver is built into the kernel. I've also seen this problem
+bisect down to commits that simply changed Kconfig dependencies, because
+it changed the order in which driver init functions were compiled into
+the kernel, and therefore the ordering and timing of built-in device
+probe.
+
+Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
+Link: https://lore.kernel.org/linux-rockchip/9aedfb528600ecf871885f7293ca4207c84d16c1.camel@gmail.com/
+Reported-by: <aleksandr.o.makarov@gmail.com>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.1.Ic2904d37f30013a7f3d8476203ad3733c186827e@changeid
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/android/binder.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/android/binder.c b/drivers/android/binder.c
-index c75fb600740cc..7d29d3d931a79 100644
---- a/drivers/android/binder.c
-+++ b/drivers/android/binder.c
-@@ -2269,8 +2269,8 @@ static int binder_translate_fd_array(struct binder_fd_array_object *fda,
- 		if (!ret)
- 			ret = binder_translate_fd(fd, offset, t, thread,
- 						  in_reply_to);
--		if (ret < 0)
--			return ret;
-+		if (ret)
-+			return ret > 0 ? -EINVAL : ret;
- 	}
- 	return 0;
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -753,10 +753,6 @@ static void dw_mipi_dsi_encoder_enable(s
+ 	if (mux < 0)
+ 		return;
+ 
+-	pm_runtime_get_sync(dsi->dev);
+-	if (dsi->slave)
+-		pm_runtime_get_sync(dsi->slave->dev);
+-
+ 	/*
+ 	 * For the RK3399, the clk of grf must be enabled before writing grf
+ 	 * register. And for RK3288 or other soc, this grf_clk must be NULL,
+@@ -775,20 +771,10 @@ static void dw_mipi_dsi_encoder_enable(s
+ 	clk_disable_unprepare(dsi->grf_clk);
  }
--- 
-2.34.1
-
+ 
+-static void dw_mipi_dsi_encoder_disable(struct drm_encoder *encoder)
+-{
+-	struct dw_mipi_dsi_rockchip *dsi = to_dsi(encoder);
+-
+-	if (dsi->slave)
+-		pm_runtime_put(dsi->slave->dev);
+-	pm_runtime_put(dsi->dev);
+-}
+-
+ static const struct drm_encoder_helper_funcs
+ dw_mipi_dsi_encoder_helper_funcs = {
+ 	.atomic_check = dw_mipi_dsi_encoder_atomic_check,
+ 	.enable = dw_mipi_dsi_encoder_enable,
+-	.disable = dw_mipi_dsi_encoder_disable,
+ };
+ 
+ static int rockchip_dsi_drm_create_encoder(struct dw_mipi_dsi_rockchip *dsi,
+@@ -918,10 +904,14 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 		put_device(second);
+ 	}
+ 
++	pm_runtime_get_sync(dsi->dev);
++	if (dsi->slave)
++		pm_runtime_get_sync(dsi->slave->dev);
++
+ 	ret = clk_prepare_enable(dsi->pllref_clk);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to enable pllref_clk: %d\n", ret);
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	/*
+@@ -933,7 +923,7 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 	ret = clk_prepare_enable(dsi->grf_clk);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	dw_mipi_dsi_rockchip_config(dsi);
+@@ -945,16 +935,23 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 	ret = rockchip_dsi_drm_create_encoder(dsi, drm_dev);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to create drm encoder\n");
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	ret = dw_mipi_dsi_bind(dsi->dmd, &dsi->encoder);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to bind: %d\n", ret);
+-		return ret;
++		goto out_pm_runtime;
+ 	}
+ 
+ 	return 0;
++
++out_pm_runtime:
++	pm_runtime_put(dsi->dev);
++	if (dsi->slave)
++		pm_runtime_put(dsi->slave->dev);
++
++	return ret;
+ }
+ 
+ static void dw_mipi_dsi_rockchip_unbind(struct device *dev,
+@@ -969,6 +966,10 @@ static void dw_mipi_dsi_rockchip_unbind(
+ 	dw_mipi_dsi_unbind(dsi->dmd);
+ 
+ 	clk_disable_unprepare(dsi->pllref_clk);
++
++	pm_runtime_put(dsi->dev);
++	if (dsi->slave)
++		pm_runtime_put(dsi->slave->dev);
+ }
+ 
+ static const struct component_ops dw_mipi_dsi_rockchip_ops = {
 
 
