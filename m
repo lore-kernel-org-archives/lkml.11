@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 213BBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84894C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453548AbiAXVaT (ORCPT
+        id S1453645AbiAXVae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:30:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443056AbiAXU7O (ORCPT
+        Mon, 24 Jan 2022 16:30:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49988 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442904AbiAXU7P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:59:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73E7CC04D625;
-        Mon, 24 Jan 2022 12:01:20 -0800 (PST)
+        Mon, 24 Jan 2022 15:59:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FD1BB8123A;
-        Mon, 24 Jan 2022 20:01:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F1B2C340E5;
-        Mon, 24 Jan 2022 20:01:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 681D460907;
+        Mon, 24 Jan 2022 20:59:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54E20C340E5;
+        Mon, 24 Jan 2022 20:59:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054477;
-        bh=RKSEmNaXGd0qqSaJBIwGtQiobulqLStSBkj1kyOlIzM=;
+        s=korg; t=1643057953;
+        bh=yt0SBqxMsExRaYTBC1Vv6ewmv9rpWwvS0gCEpAGnriw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d5Rlr3Q7rf37Au/zHqCOVvn21ytUMqcNfO+pR+tm88aJPb0WZXrHgpROQRKX+jKX8
-         J+3w11LnBSykm/Ubz0wz8+YSFevfBK1gpI4Y/Q4wxnMZrSYMTUruM7sDsMxNlyYZko
-         Be4cE9LYJeqHxgZXUA8UZtF00+XlrE+46UniE33U=
+        b=D4dj8fWa3QAFx/FmnOKDQrO2wKs92j1pawxmDAX17rbn/P/+hv81vsmRVieEEXasY
+         HR4Q/4Sq/D6A656u5ut0nhjkGC/f5UTQDSODcqbV04F88EnZYAArRMAp+Mt32XAoAk
+         NiT3qJrvlDHLrLJqCoET08smFE0eHgmJarYIwHXA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        Lukas Wunner <lukas@wunner.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 403/563] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 24 Jan 2022 19:42:48 +0100
-Message-Id: <20220124184038.386658409@linuxfoundation.org>
+        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
+        Alexander Stein <alexander.stein@mailbox.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0134/1039] arm64: dts: amlogic: Fix SPI NOR flash node name for ODROID N2/N2+
+Date:   Mon, 24 Jan 2022 19:32:03 +0100
+Message-Id: <20220124184129.666187858@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,56 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit 95d35256b564aca33fb661eac77dc94bfcffc8df ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+Fix the schema warning: "spi-flash@0: $nodename:0: 'spi-flash@0' does
+ not match '^flash(@.*)?$'" from jedec,spi-nor.yaml
 
-Where does this register write come from?
-
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
-
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a084eaf3096c ("arm64: dts: meson-g12b-odroid-n2: add SPIFC controller node")
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211026182813.900775-3-alexander.stein@mailbox.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 3284f34e9dfe1..75d61e038a775 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -448,14 +448,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+index e8a00a2f88128..3e968b2441918 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12b-odroid-n2.dtsi
+@@ -609,7 +609,7 @@
+ 	pinctrl-0 = <&nor_pins>;
+ 	pinctrl-names = "default";
  
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+-	mx25u64: spi-flash@0 {
++	mx25u64: flash@0 {
+ 		#address-cells = <1>;
+ 		#size-cells = <1>;
+ 		compatible = "mxicy,mx25u6435f", "jedec,spi-nor";
 -- 
 2.34.1
 
