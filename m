@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D623C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7397C4707E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843587AbiAXXFB (ORCPT
+        id S1843652AbiAXXFO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:05:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34738 "EHLO
+        Mon, 24 Jan 2022 18:05:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581211AbiAXWLY (ORCPT
+        with ESMTP id S1583217AbiAXWR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:11:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 924AEC0DF2FE;
-        Mon, 24 Jan 2022 12:43:34 -0800 (PST)
+        Mon, 24 Jan 2022 17:17:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F114DC0617BF;
+        Mon, 24 Jan 2022 12:48:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E164360907;
-        Mon, 24 Jan 2022 20:43:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABA5DC340E5;
-        Mon, 24 Jan 2022 20:43:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9B2DB81057;
+        Mon, 24 Jan 2022 20:48:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB1F4C340E5;
+        Mon, 24 Jan 2022 20:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057013;
-        bh=ddcl4cBea324E6KzDBct/pV9ygz8c88MAFzgAN9niJk=;
+        s=korg; t=1643057282;
+        bh=DipoW+9j9osrZ+kfOvN/q/9oNghSGZj1flwFPyKMQQU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fCS3moWeixOMvs3MW9U7sILYSO73qsoLA1n2geE3c2TvS8MghnhBJ4WzkN7ZJOPzs
-         xvsAGvtB+sJvuqbxcV0t+miLP/AKXDd1G2gBRrwmNA+8aFMsRR6kRvWXSPV++oKapN
-         keeJsAOkNAeAL6lxcBUqP8Xmtdead9vPmj8SUFkM=
+        b=ZnvxrbDGmxJhowmb2nC92JlQocGFYtoa4PNDN7JE1Z5LDzF9rqlX1CN/+Bc+lc3Hd
+         fs1cGlIiBwNV0b9Dj8wa1MmYMauoA25HfiD11fo1xTH7d2CtZQ9ihvccWFtPSSJHH4
+         FLJDs7m8AZiCFJppqU0u2rd4TQK7hz3gdxNUow4o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Stefan Berger <stefanb@linux.ibm.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.15 673/846] tpm: fix potential NULL pointer access in tpm_del_char_device
-Date:   Mon, 24 Jan 2022 19:43:10 +0100
-Message-Id: <20220124184124.292354647@linuxfoundation.org>
+        stable@vger.kernel.org, Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Russell King <russell.king@oracle.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alan Maguire <alan.maguire@oracle.com>
+Subject: [PATCH 5.15 762/846] arm64/bpf: Remove 128MB limit for BPF JIT programs
+Date:   Mon, 24 Jan 2022 19:44:39 +0100
+Message-Id: <20220124184127.244740766@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,64 +51,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+From: Russell King <russell.king@oracle.com>
 
-commit eabad7ba2c752392ae50f24a795093fb115b686d upstream.
+commit b89ddf4cca43f1269093942cf5c4e457fd45c335 upstream.
 
-Some SPI controller drivers unregister the controller in the shutdown
-handler (e.g. BCM2835). If such a controller is used with a TPM 2 slave
-chip->ops may be accessed when it is already NULL:
+Commit 91fc957c9b1d ("arm64/bpf: don't allocate BPF JIT programs in module
+memory") restricts BPF JIT program allocation to a 128MB region to ensure
+BPF programs are still in branching range of each other. However this
+restriction should not apply to the aarch64 JIT, since BPF_JMP | BPF_CALL
+are implemented as a 64-bit move into a register and then a BLR instruction -
+which has the effect of being able to call anything without proximity
+limitation.
 
-At system shutdown the pre-shutdown handler tpm_class_shutdown() shuts down
-TPM 2 and sets chip->ops to NULL. Then at SPI controller unregistration
-tpm_tis_spi_remove() is called and eventually calls tpm_del_char_device()
-which tries to shut down TPM 2 again. Thereby it accesses chip->ops again:
-(tpm_del_char_device calls tpm_chip_start which calls tpm_clk_enable which
-calls chip->ops->clk_enable).
+The practical reason to relax this restriction on JIT memory is that 128MB of
+JIT memory can be quickly exhausted, especially where PAGE_SIZE is 64KB - one
+page is needed per program. In cases where seccomp filters are applied to
+multiple VMs on VM launch - such filters are classic BPF but converted to
+BPF - this can severely limit the number of VMs that can be launched. In a
+world where we support BPF JIT always on, turning off the JIT isn't always an
+option either.
 
-Avoid the NULL pointer access by testing if chip->ops is valid and skipping
-the TPM 2 shutdown procedure in case it is NULL.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Fixes: 39d0099f9439 ("powerpc/pseries: Add shutdown() to vio_driver and vio_bus")
-Reviewed-by: Stefan Berger <stefanb@linux.ibm.com>
-Tested-by: Stefan Berger <stefanb@linux.ibm.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: 91fc957c9b1d ("arm64/bpf: don't allocate BPF JIT programs in module memory")
+Suggested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
+Signed-off-by: Russell King <russell.king@oracle.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Tested-by: Alan Maguire <alan.maguire@oracle.com>
+Link: https://lore.kernel.org/bpf/1636131046-5982-2-git-send-email-alan.maguire@oracle.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm-chip.c |   18 +++++++++++++-----
- 1 file changed, 13 insertions(+), 5 deletions(-)
+ arch/arm64/include/asm/extable.h |    9 ---------
+ arch/arm64/include/asm/memory.h  |    5 +----
+ arch/arm64/kernel/traps.c        |    2 +-
+ arch/arm64/mm/ptdump.c           |    2 --
+ arch/arm64/net/bpf_jit_comp.c    |    7 ++-----
+ 5 files changed, 4 insertions(+), 21 deletions(-)
 
---- a/drivers/char/tpm/tpm-chip.c
-+++ b/drivers/char/tpm/tpm-chip.c
-@@ -474,13 +474,21 @@ static void tpm_del_char_device(struct t
+--- a/arch/arm64/include/asm/extable.h
++++ b/arch/arm64/include/asm/extable.h
+@@ -22,15 +22,6 @@ struct exception_table_entry
  
- 	/* Make the driver uncallable. */
- 	down_write(&chip->ops_sem);
--	if (chip->flags & TPM_CHIP_FLAG_TPM2) {
--		if (!tpm_chip_start(chip)) {
--			tpm2_shutdown(chip, TPM2_SU_CLEAR);
--			tpm_chip_stop(chip);
-+
-+	/*
-+	 * Check if chip->ops is still valid: In case that the controller
-+	 * drivers shutdown handler unregisters the controller in its
-+	 * shutdown handler we are called twice and chip->ops to NULL.
-+	 */
-+	if (chip->ops) {
-+		if (chip->flags & TPM_CHIP_FLAG_TPM2) {
-+			if (!tpm_chip_start(chip)) {
-+				tpm2_shutdown(chip, TPM2_SU_CLEAR);
-+				tpm_chip_stop(chip);
-+			}
- 		}
-+		chip->ops = NULL;
- 	}
--	chip->ops = NULL;
- 	up_write(&chip->ops_sem);
+ #define ARCH_HAS_RELATIVE_EXTABLE
+ 
+-static inline bool in_bpf_jit(struct pt_regs *regs)
+-{
+-	if (!IS_ENABLED(CONFIG_BPF_JIT))
+-		return false;
+-
+-	return regs->pc >= BPF_JIT_REGION_START &&
+-	       regs->pc < BPF_JIT_REGION_END;
+-}
+-
+ #ifdef CONFIG_BPF_JIT
+ int arm64_bpf_fixup_exception(const struct exception_table_entry *ex,
+ 			      struct pt_regs *regs);
+--- a/arch/arm64/include/asm/memory.h
++++ b/arch/arm64/include/asm/memory.h
+@@ -44,11 +44,8 @@
+ #define _PAGE_OFFSET(va)	(-(UL(1) << (va)))
+ #define PAGE_OFFSET		(_PAGE_OFFSET(VA_BITS))
+ #define KIMAGE_VADDR		(MODULES_END)
+-#define BPF_JIT_REGION_START	(_PAGE_END(VA_BITS_MIN))
+-#define BPF_JIT_REGION_SIZE	(SZ_128M)
+-#define BPF_JIT_REGION_END	(BPF_JIT_REGION_START + BPF_JIT_REGION_SIZE)
+ #define MODULES_END		(MODULES_VADDR + MODULES_VSIZE)
+-#define MODULES_VADDR		(BPF_JIT_REGION_END)
++#define MODULES_VADDR		(_PAGE_END(VA_BITS_MIN))
+ #define MODULES_VSIZE		(SZ_128M)
+ #define VMEMMAP_START		(-(UL(1) << (VA_BITS - VMEMMAP_SHIFT)))
+ #define VMEMMAP_END		(VMEMMAP_START + VMEMMAP_SIZE)
+--- a/arch/arm64/kernel/traps.c
++++ b/arch/arm64/kernel/traps.c
+@@ -988,7 +988,7 @@ static struct break_hook bug_break_hook
+ static int reserved_fault_handler(struct pt_regs *regs, unsigned int esr)
+ {
+ 	pr_err("%s generated an invalid instruction at %pS!\n",
+-		in_bpf_jit(regs) ? "BPF JIT" : "Kernel text patching",
++		"Kernel text patching",
+ 		(void *)instruction_pointer(regs));
+ 
+ 	/* We cannot handle this */
+--- a/arch/arm64/mm/ptdump.c
++++ b/arch/arm64/mm/ptdump.c
+@@ -41,8 +41,6 @@ static struct addr_marker address_marker
+ 	{ 0 /* KASAN_SHADOW_START */,	"Kasan shadow start" },
+ 	{ KASAN_SHADOW_END,		"Kasan shadow end" },
+ #endif
+-	{ BPF_JIT_REGION_START,		"BPF start" },
+-	{ BPF_JIT_REGION_END,		"BPF end" },
+ 	{ MODULES_VADDR,		"Modules start" },
+ 	{ MODULES_END,			"Modules end" },
+ 	{ VMALLOC_START,		"vmalloc() area" },
+--- a/arch/arm64/net/bpf_jit_comp.c
++++ b/arch/arm64/net/bpf_jit_comp.c
+@@ -1138,15 +1138,12 @@ out:
+ 
+ u64 bpf_jit_alloc_exec_limit(void)
+ {
+-	return BPF_JIT_REGION_SIZE;
++	return VMALLOC_END - VMALLOC_START;
  }
  
+ void *bpf_jit_alloc_exec(unsigned long size)
+ {
+-	return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
+-				    BPF_JIT_REGION_END, GFP_KERNEL,
+-				    PAGE_KERNEL, 0, NUMA_NO_NODE,
+-				    __builtin_return_address(0));
++	return vmalloc(size);
+ }
+ 
+ void bpf_jit_free_exec(void *addr)
 
 
