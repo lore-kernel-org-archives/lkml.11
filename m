@@ -2,104 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6469C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:04:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03981C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236980AbiAXKEL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:04:11 -0500
-Received: from foss.arm.com ([217.140.110.172]:55970 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235062AbiAXKEF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:04:05 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2A5286D;
-        Mon, 24 Jan 2022 02:04:05 -0800 (PST)
-Received: from e120937-lin.home (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7E7533F73B;
-        Mon, 24 Jan 2022 02:04:03 -0800 (PST)
-From:   Cristian Marussi <cristian.marussi@arm.com>
-To:     linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Cc:     sudeep.holla@arm.com, james.quinlan@broadcom.com,
-        Jonathan.Cameron@Huawei.com, f.fainelli@gmail.com,
-        etienne.carriere@linaro.org, vincent.guittot@linaro.org,
-        souvik.chakravarty@arm.com, peter.hilber@opensynergy.com,
-        igor.skalkin@opensynergy.com, cristian.marussi@arm.com
-Subject: [PATCH 0/6] Add SCMI Virtio & Clock atomic support
-Date:   Mon, 24 Jan 2022 10:03:35 +0000
-Message-Id: <20220124100341.41191-1-cristian.marussi@arm.com>
-X-Mailer: git-send-email 2.17.1
+        id S236984AbiAXKER (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:04:17 -0500
+Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:48152
+        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S236914AbiAXKEH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:04:07 -0500
+Received: from [192.168.88.87] (unknown [36.81.38.25])
+        by gnuweeb.org (Postfix) with ESMTPSA id 7E855C3022;
+        Mon, 24 Jan 2022 10:04:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
+        s=default; t=1643018644;
+        bh=rLCietX+8asL0GcSnssoo9Wq4OVIrWT57SoaybWDYhA=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=D8I8lBKcdphw4TT1nh6JGbDlzMDvNd7w+LbTh9C2P3I+s7FQa6DwgTorSMSACxQfX
+         HtBWz83MD68F/lEG+LQx+E8ebS1d6nc6Z+9BQqA2ZV6jOGI8YIOy3E4o/dnBwd/VcQ
+         eTGqfesNIVysSV4tM4oLMjhDs7dUtcaPWbq8xKTi1CcOER3+43ZyCvSi1/VFW1JCTq
+         5mq3ZIbUzB9cK5NBMqixW5Si9Flkcj0hr/D9RVqZU8E0FfnzWKBuBr0SFZpooMAMv6
+         9ZbJVCGnfqB9jD1auR+fYCF+PZt4NVE1DuC8rU8V5k1u/G/UXDCH6A82PEJ9Kxa1b3
+         BGgEoDYKJQdUQ==
+Message-ID: <ec15ce1f-4766-6ccc-97d2-980c8ea183a7@gnuweeb.org>
+Date:   Mon, 24 Jan 2022 17:03:58 +0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v2] rcu: Add per-CPU rcuc task info to RCU CPU stall
+ warnings
+Content-Language: en-US
+To:     Zqiang <qiang1.zhang@intel.com>, paulmck@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220124103637.4001386-1-qiang1.zhang@intel.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220124103637.4001386-1-qiang1.zhang@intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+Hi Zqiang,
 
-This small series is the tail-subset of the previous V8 series about atomic
-support in SCMI [1], whose 8-patches head-subset has now been queued on
-[2]; as such, it is based on [2] on top of tag scmi-updates-5.17:
+On Sat, 22 Jan 2022 02:30:00 +0800, Zqiang <qiang1.zhang@intel.com> wrote:
+```
+ > +static void rcuc_kthread_dump(struct rcu_data *rdp)
+ > +{
+ > +        int cpu;
+ > +        unsigned long j;
+ > +        struct task_struct *rcuc = rdp->rcu_cpu_kthread_task;
+ > +
+ > +        if (rcu_is_rcuc_kthread_starving(rdp, &j)) {
+ > +                cpu = rcuc ? task_cpu(rcuc) : -1;
+ > +
+ > +                if (rcuc) {
+ > +                        pr_err("%s kthread starved for %ld jiffies, stack dump:\n",
+ > + rcuc->comm, j);
+ > +                        sched_show_task(rcuc);
+ > +                        if (cpu >= 0) {
+ > +                                if (cpu_online(cpu) && !idle_cpu(cpu)) {
+ > +                                        pr_err("Dump current CPU stack:\n");
+ > +                                        if (!trigger_single_cpu_backtrace(cpu))
+ > + dump_cpu_task(cpu);
+ > +                                }
+ > +                        }
+ > +                }
+ > +        }
+ > +}
+```
 
-commit 94d0cd1da14a ("firmware: arm_scmi: Add new parameter to
-		     mark_txdone")
+1) We can reduce the nested if with an early return
+    after checking `rcu_is_rcuc_kthread_starving()`.
 
-Patch 1/5 adds polling mode to SCMI VirtIO transport in order to support
-atomic operations on such transport and it could have been an independent
-patch indeed, it is provided here only for ease of testing.
+2) This ternary operator doesn't make sense:
 
-Patch 2,3 introduce a new optional SCMI binding, atomic_threshold, to
-configure a platform specific time threshold used in the following patches
-to select with a finer grain which SCMI resources should be eligible for
-atomic operations when requested.
+   `cpu = rcuc ? task_cpu(rcuc) : -1;`
 
-Patch 4 exposes new SCMI Clock protocol operations to allow an SCMI user
-to request atomic mode on clock enable commands.
+If `rcuc` is NULL, then the "if (rcuc)" block will never
+be executed, and `cpu` variable won't be used, why should
+we perform a conditional with ternary to assign -1 here?
 
-Patch 5 adds support to SCMI Clock protocol for a new clock attributes
-field which advertises typical enable latency for a specific resource.
-It is marked as RFC since the SCMI spec including such addition is still
-to be finalized.
+3) We can use an early return as well for the `if (rcuc)` to
+    avoid more nested if.
 
-Finally patch 6 add support for atomic operations to the SCMI clock driver;
-the underlying logic here is that we register with the Clock framework
-atomic-capable clock resources if and only if the backing SCMI transport is
-capable of atomic operations AND the specific clock resource has been
-advertised by the SCMI platform as having:
 
-	clock_enable_latency <= atomic_threshold
+FWIW, this one makes more sense:
+```
+static void rcuc_kthread_dump(struct rcu_data *rdp)
+{
+     int cpu;
+     unsigned long j;
+     struct task_struct *rcuc;
 
-The idea is to avoid costly atomic busy-waiting for resources that have
-been advertised as 'slow' to operate upon. (i.e. a PLL vs a gating clock)
-This last patch is marked as RFC too since it is dependent on the previous
-one (that is RFC-tagged too)
+     if (!rcu_is_rcuc_kthread_starving(rdp, &j))
+         return;
 
-To ease testing the whole series can be find at [3].
+     rcuc = rdp->rcu_cpu_kthread_task;
+     if (!rcuc)
+         return;
 
-Any feedback/testing welcome as usual.
+     pr_err("%s kthread starved for %ld jiffies, stack dump:\n", rcuc->comm, j);
+     sched_show_task(rcuc);
+     cpu = task_cpu(rcuc);
+     if (cpu_online(cpu) && !idle_cpu(cpu)) {
+         pr_err("Dump current CPU stack:\n");
+         if (!trigger_single_cpu_backtrace(cpu))
+             dump_cpu_task(cpu);
+     }
+}
+```
 
-Thanks,
-Cristian
-
-[1]: https://lore.kernel.org/linux-arm-kernel/20211220195646.44498-1-cristian.marussi@arm.com/
-[2]: https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux.git/tag/?h=scmi-updates-5.17
-[3]: https://gitlab.arm.com/linux-arm/linux-cm/-/commits/scmi_atomic_clk_virtio_V1/
-
-Cristian Marussi (6):
-  firmware: arm_scmi: Add atomic mode support to virtio transport
-  dt-bindings: firmware: arm,scmi: Add atomic_threshold optional
-    property
-  firmware: arm_scmi: Support optional system wide atomic_threshold
-  firmware: arm_scmi: Add atomic support to clock protocol
-  [RFC] firmware: arm_scmi: Add support for clock_enable_latency
-  [RFC] clk: scmi: Support atomic clock enable/disable API
-
- .../bindings/firmware/arm,scmi.yaml           |  10 +
- drivers/clk/clk-scmi.c                        |  71 +++-
- drivers/firmware/arm_scmi/Kconfig             |  15 +
- drivers/firmware/arm_scmi/clock.c             |  34 +-
- drivers/firmware/arm_scmi/driver.c            |  36 +-
- drivers/firmware/arm_scmi/virtio.c            | 315 ++++++++++++++++--
- include/linux/scmi_protocol.h                 |   9 +-
- 7 files changed, 440 insertions(+), 50 deletions(-)
+Thank you!
 
 -- 
-2.17.1
+Ammar Faizi
 
