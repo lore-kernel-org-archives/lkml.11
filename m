@@ -2,83 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0097AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 07:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26F7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 07:21:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241755AbiAXHSp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 02:18:45 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31117 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236113AbiAXHSo (ORCPT
+        id S241769AbiAXHVf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 02:21:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50288 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235807AbiAXHVe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 02:18:44 -0500
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jj1T66vJwz1FCqD;
-        Mon, 24 Jan 2022 15:14:50 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 24 Jan 2022 15:18:42 +0800
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 24 Jan 2022 15:18:42 +0800
-From:   Xiongfeng Wang <wangxiongfeng2@huawei.com>
-To:     <tglx@linutronix.de>, <maz@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <wangxiongfeng2@huawei.com>,
-        <guohanjun@huawei.com>
-Subject: [PATCH] irqchip/gic-v3-its: Select housekeeping CPUs preferentially for managed IRQs
-Date:   Mon, 24 Jan 2022 15:34:40 +0800
-Message-ID: <20220124073440.88598-1-wangxiongfeng2@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 24 Jan 2022 02:21:34 -0500
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB70AC06173B;
+        Sun, 23 Jan 2022 23:21:34 -0800 (PST)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1nBtf5-0004hl-3j; Mon, 24 Jan 2022 08:21:11 +0100
+Date:   Mon, 24 Jan 2022 08:21:11 +0100
+From:   Florian Westphal <fw@strlen.de>
+To:     kai zhang <zhangkaiheb@126.com>
+Cc:     pablo@netfilter.org, kadlec@netfilter.org, fw@strlen.de,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        kuba@kernel.org, netfilter-devel@vger.kernel.org,
+        coreteam@netfilter.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: fix duplicate logs of iptables TRACE target
+Message-ID: <20220124072111.GB14018@breakpoint.cc>
+References: <20220124053455.55858-1-zhangkaiheb@126.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124053455.55858-1-zhangkaiheb@126.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When using kernel parameter 'isolcpus=managed_irq,xxxx' to bind the
-managed IRQs to housekeeping CPUs, the effective_affinity sometimes
-still contains the non-housekeeping CPUs.
+kai zhang <zhangkaiheb@126.com> wrote:
+> Below configuration, mangle,filter and security tables have no rule:
+> 
+> There are 5 logs for incoming ssh packet:
+> 
+> kernel: [ 7018.727278] TRACE: raw:PREROUTING:policy:2 IN=enp9s0 ...
+> kernel: [ 7018.727304] TRACE: mangle:PREROUTING:policy:1 IN=enp9s0 ...
+> kernel: [ 7018.727327] TRACE: mangle:INPUT:policy:1 IN=enp9s0 ...
+> kernel: [ 7018.727343] TRACE: filter:INPUT:policy:1 IN=enp9s0 ...
+> kernel: [ 7018.727359] TRACE: security:INPUT:policy:1 IN=enp9s0 ...
 
-irq_do_set_affinity() passes the housekeeping cpumask to
-chip->irq_set_affinity(), but ITS driver select CPU according to
-irq_common_data->affinity. While 'irq_common_data->affinity' is updated
-after chip->irq_set_affinity() is called in irq_do_set_affinity(). Also
-'irq_common_data->affinity' may contains non-housekeeping CPUs. I found
-the below link explaining the reason.
-  https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg2267032.html
+Thats correct and exactly whats supposed to happen.
 
-To modify CPU selecting logic to prefer housekeeping CPUs, select CPU
-from the input cpumask parameter first. If none of it is online, then
-select CPU from 'irq_common_data->affinity'.
+>  #if IS_ENABLED(CONFIG_NETFILTER_XT_TARGET_TRACE)
+>  		/* The packet is traced: log it */
+> -		if (unlikely(skb->nf_trace))
+> +		if (unlikely(skb->nf_trace)) {
+>  			trace_packet(state->net, skb, hook, state->in,
+>  				     state->out, table->name, private, e);
+> +			nf_reset_trace(skb);
+> +		}
 
-Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
----
- drivers/irqchip/irq-gic-v3-its.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index d25b7a864bbb..17c15d3b2784 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -1624,7 +1624,10 @@ static int its_select_cpu(struct irq_data *d,
- 
- 		cpu = cpumask_pick_least_loaded(d, tmpmask);
- 	} else {
--		cpumask_and(tmpmask, irq_data_get_affinity_mask(d), cpu_online_mask);
-+		cpumask_and(tmpmask, aff_mask, cpu_online_mask);
-+		if (cpumask_empty(tmpmask))
-+			cpumask_and(tmpmask, irq_data_get_affinity_mask(d),
-+				    cpu_online_mask);
- 
- 		/* If we cannot cross sockets, limit the search to that node */
- 		if ((its_dev->its->flags & ITS_FLAGS_WORKAROUND_CAVIUM_23144) &&
--- 
-2.20.1
-
+This breaks the long established behavior of TRACE,
+we don't want users to have to TRACE tables individually which may also
+be hard when nat is involved.
