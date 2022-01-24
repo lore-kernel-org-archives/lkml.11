@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BBA1C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA351C3526C
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423091AbiAYCcy (ORCPT
+        id S3423360AbiAYCdc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37046 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356111AbiAXUWc (ORCPT
+        Mon, 24 Jan 2022 21:33:32 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35468 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349448AbiAXU3G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 918AAC0417D1;
-        Mon, 24 Jan 2022 11:40:19 -0800 (PST)
+        Mon, 24 Jan 2022 15:29:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39B88B81239;
-        Mon, 24 Jan 2022 19:40:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66C9FC340E7;
-        Mon, 24 Jan 2022 19:40:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63E7EB815A6;
+        Mon, 24 Jan 2022 20:29:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CF5DC340E5;
+        Mon, 24 Jan 2022 20:29:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053218;
-        bh=Nfhpuzi4irbRQN3E3HkAZc4HSOT9aiM10z8KebCFNVM=;
+        s=korg; t=1643056144;
+        bh=hoGmMt6X0klq0+u7iW/1fCYXghyAHMkMKI5zDTPe7y0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i4k9PuQsRNigywDeO/YurS5pO1DBwUkuyuye5MIq3J6Fwduy28IGnv9rzjTDPEdcu
-         naJ2naVo4RmqsDbuCdfxvnWf5E3grSBUUNX2Mym1zSLO8A0ApDc9+nlPJjEhkeOqVU
-         dwFAe3S0jSJLGdB61f3w5YlDz5UhUOXi+qh6Rtsg=
+        b=OMA70Lr0x7UOYvk2PLFCbg2kW5GkQnOfvNlTbH+VFIg1xWgbeYWRlJvXG73tZG9Hg
+         9CUDR3Kcc65hSudLFrEkPamxAjXhZsoC1nULOYsiYLvoQKE4ivfpkaFoQhmfO1hhN5
+         T7MOAS9soxSfRt3ASTnX57HD9WFMLxhayDk6RnbY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.4 281/320] scsi: core: Show SCMD_LAST in text form
-Date:   Mon, 24 Jan 2022 19:44:25 +0100
-Message-Id: <20220124184003.536800740@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 385/846] ASoC: uniphier: drop selecting non-existing SND_SOC_UNIPHIER_AIO_DMA
+Date:   Mon, 24 Jan 2022 19:38:22 +0100
+Message-Id: <20220124184114.217141803@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,32 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit 3369046e54ca8f82e0cb17740643da2d80d3cfa8 upstream.
+[ Upstream commit 49f893253ab43566e34332a969324531fea463f6 ]
 
-The SCSI debugfs code supports showing information about pending commands,
-including translating SCSI command flags from numeric into text format.
-Also convert the SCMD_LAST flag from numeric into text form.
+Commit f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common
+driver") adds configs SND_SOC_UNIPHIER_{LD11,PXS2}, which select the
+non-existing config SND_SOC_UNIPHIER_AIO_DMA.
 
-Link: https://lore.kernel.org/r/20211129194609.3466071-4-bvanassche@acm.org
-Fixes: 8930a6c20791 ("scsi: core: add support for request batching")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Hence, ./scripts/checkkconfigsymbols.py warns:
+
+  SND_SOC_UNIPHIER_AIO_DMA
+  Referencing files: sound/soc/uniphier/Kconfig
+
+Probably, there is actually no further config intended to be selected
+here. So, just drop selecting the non-existing config.
+
+Fixes: f37fe2f9987b ("ASoC: uniphier: add support for UniPhier AIO common driver")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Link: https://lore.kernel.org/r/20211125095158.8394-2-lukas.bulwahn@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi_debugfs.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/uniphier/Kconfig | 2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/scsi/scsi_debugfs.c
-+++ b/drivers/scsi/scsi_debugfs.c
-@@ -10,6 +10,7 @@ static const char *const scsi_cmd_flags[
- 	SCSI_CMD_FLAG_NAME(TAGGED),
- 	SCSI_CMD_FLAG_NAME(UNCHECKED_ISA_DMA),
- 	SCSI_CMD_FLAG_NAME(INITIALIZED),
-+	SCSI_CMD_FLAG_NAME(LAST),
- };
- #undef SCSI_CMD_FLAG_NAME
- 
+diff --git a/sound/soc/uniphier/Kconfig b/sound/soc/uniphier/Kconfig
+index aa3592ee1358b..ddfa6424c656b 100644
+--- a/sound/soc/uniphier/Kconfig
++++ b/sound/soc/uniphier/Kconfig
+@@ -23,7 +23,6 @@ config SND_SOC_UNIPHIER_LD11
+ 	tristate "UniPhier LD11/LD20 Device Driver"
+ 	depends on SND_SOC_UNIPHIER
+ 	select SND_SOC_UNIPHIER_AIO
+-	select SND_SOC_UNIPHIER_AIO_DMA
+ 	help
+ 	  This adds ASoC driver for Socionext UniPhier LD11/LD20
+ 	  input and output that can be used with other codecs.
+@@ -34,7 +33,6 @@ config SND_SOC_UNIPHIER_PXS2
+ 	tristate "UniPhier PXs2 Device Driver"
+ 	depends on SND_SOC_UNIPHIER
+ 	select SND_SOC_UNIPHIER_AIO
+-	select SND_SOC_UNIPHIER_AIO_DMA
+ 	help
+ 	  This adds ASoC driver for Socionext UniPhier PXs2
+ 	  input and output that can be used with other codecs.
+-- 
+2.34.1
+
 
 
