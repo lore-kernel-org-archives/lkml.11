@@ -2,44 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B206DC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6CB1C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353116AbiAXUHR (ORCPT
+        id S1376911AbiAXUEd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:07:17 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38296 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346805AbiAXTsm (ORCPT
+        Mon, 24 Jan 2022 15:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356359AbiAXTqB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:42 -0500
+        Mon, 24 Jan 2022 14:46:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5713CC02417B;
+        Mon, 24 Jan 2022 11:22:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E4AAB81142;
-        Mon, 24 Jan 2022 19:48:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8241EC340E5;
-        Mon, 24 Jan 2022 19:48:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA72E6143D;
+        Mon, 24 Jan 2022 19:22:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBBEBC340E8;
+        Mon, 24 Jan 2022 19:22:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053720;
-        bh=po8e2/5PZlaR1L4ebFA+7hbiUKq4RTDZucpG7BuzS80=;
+        s=korg; t=1643052160;
+        bh=T4/i0YuXX/RMcyoaCx/hrRoyWRKFKPUqGz9imKlq18w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=URNNM7f5X/6z6x6I6CT/BbKGNrOvF0crskxICMnPS2zepDgEoVMtSYfNYJQlPy3Mv
-         orIjllDKPhSvWAjdaPVzWv0rI32e151C4pi3gqLj9Hnqh6fyv/dwnlmcjkYDrL4enW
-         XqAl3gyQV8rSncM3bSlY+8fRkhUj08Bu/M+ta9jE=
+        b=RRbOcHXKXtDrWbwlXI3Ua5jakU8m74I/qmEPlu/m/X5WWFU0+5hdAgz/FsilPlU4c
+         9epGAVvKpjLmdTkIa/62ApY0scJYkuZ3rPLa2leoq/faic9f/0n8Ke+/3T/Aehu4gn
+         PEu2Xbdz5yLeQvBKC4posgKZw/VRGNKdo6tO/MHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabien Dessenne <fabien.dessenne@st.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 156/563] crypto: stm32/cryp - check early input data
-Date:   Mon, 24 Jan 2022 19:38:41 +0100
-Message-Id: <20220124184029.782338718@linuxfoundation.org>
+        Lionel Debieve <lionel.debieve@st.com>,
+        Nicolas Toromanoff <nicolas.toromanoff@st.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Subject: [PATCH 4.19 207/239] crypto: stm32/crc32 - Fix kernel BUG triggered in probe()
+Date:   Mon, 24 Jan 2022 19:44:05 +0100
+Message-Id: <20220124183949.688480674@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,241 +56,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 39e6e699c7fb92bdb2617b596ca4a4ea35c5d2a7 ]
+commit 29009604ad4e3ef784fd9b9fef6f23610ddf633d upstream.
 
-Some auto tests failed because driver wasn't returning the expected
-error with some input size/iv value/tag size.
-Now:
- Return 0 early for empty buffer. (We don't need to start the engine for
- an empty input buffer).
- Accept any valid authsize for gcm(aes).
- Return -EINVAL if iv for ccm(aes) is invalid.
- Return -EINVAL if buffer size is a not a multiple of algorithm block size.
+The include/linux/crypto.h struct crypto_alg field cra_driver_name description
+states "Unique name of the transformation provider. " ... " this contains the
+name of the chip or provider and the name of the transformation algorithm."
 
-Fixes: 9e054ec21ef8 ("crypto: stm32 - Support for STM32 CRYP crypto module")
+In case of the stm32-crc driver, field cra_driver_name is identical for all
+registered transformation providers and set to the name of the driver itself,
+which is incorrect. This patch fixes it by assigning a unique cra_driver_name
+to each registered transformation provider.
 
-Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+The kernel crash is triggered when the driver calls crypto_register_shashes()
+which calls crypto_register_shash(), which calls crypto_register_alg(), which
+calls __crypto_register_alg(), which returns -EEXIST, which is propagated
+back through this call chain. Upon -EEXIST from crypto_register_shash(), the
+crypto_register_shashes() starts unregistering the providers back, and calls
+crypto_unregister_shash(), which calls crypto_unregister_alg(), and this is
+where the BUG() triggers due to incorrect cra_refcnt.
+
+Fixes: b51dbe90912a ("crypto: stm32 - Support for STM32 CRC32 crypto module")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: <stable@vger.kernel.org> # 4.12+
+Cc: Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc: Fabien Dessenne <fabien.dessenne@st.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Lionel Debieve <lionel.debieve@st.com>
+Cc: Nicolas Toromanoff <nicolas.toromanoff@st.com>
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+To: linux-crypto@vger.kernel.org
+Acked-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/stm32/stm32-cryp.c | 114 +++++++++++++++++++++++++++++-
- 1 file changed, 113 insertions(+), 1 deletion(-)
+ drivers/crypto/stm32/stm32_crc32.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
-index e2bcc4f98b0ae..fd7fb73a4d450 100644
---- a/drivers/crypto/stm32/stm32-cryp.c
-+++ b/drivers/crypto/stm32/stm32-cryp.c
-@@ -799,7 +799,20 @@ static int stm32_cryp_aes_aead_setkey(struct crypto_aead *tfm, const u8 *key,
- static int stm32_cryp_aes_gcm_setauthsize(struct crypto_aead *tfm,
- 					  unsigned int authsize)
- {
--	return authsize == AES_BLOCK_SIZE ? 0 : -EINVAL;
-+	switch (authsize) {
-+	case 4:
-+	case 8:
-+	case 12:
-+	case 13:
-+	case 14:
-+	case 15:
-+	case 16:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return 0;
- }
- 
- static int stm32_cryp_aes_ccm_setauthsize(struct crypto_aead *tfm,
-@@ -823,31 +836,61 @@ static int stm32_cryp_aes_ccm_setauthsize(struct crypto_aead *tfm,
- 
- static int stm32_cryp_aes_ecb_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % AES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_AES | FLG_ECB | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_aes_ecb_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % AES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_AES | FLG_ECB);
- }
- 
- static int stm32_cryp_aes_cbc_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % AES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_AES | FLG_CBC | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_aes_cbc_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % AES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_AES | FLG_CBC);
- }
- 
- static int stm32_cryp_aes_ctr_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_AES | FLG_CTR | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_aes_ctr_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_AES | FLG_CTR);
- }
- 
-@@ -861,53 +904,122 @@ static int stm32_cryp_aes_gcm_decrypt(struct aead_request *req)
- 	return stm32_cryp_aead_crypt(req, FLG_AES | FLG_GCM);
- }
- 
-+static inline int crypto_ccm_check_iv(const u8 *iv)
-+{
-+	/* 2 <= L <= 8, so 1 <= L' <= 7. */
-+	if (iv[0] < 1 || iv[0] > 7)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static int stm32_cryp_aes_ccm_encrypt(struct aead_request *req)
- {
-+	int err;
-+
-+	err = crypto_ccm_check_iv(req->iv);
-+	if (err)
-+		return err;
-+
- 	return stm32_cryp_aead_crypt(req, FLG_AES | FLG_CCM | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_aes_ccm_decrypt(struct aead_request *req)
- {
-+	int err;
-+
-+	err = crypto_ccm_check_iv(req->iv);
-+	if (err)
-+		return err;
-+
- 	return stm32_cryp_aead_crypt(req, FLG_AES | FLG_CCM);
- }
- 
- static int stm32_cryp_des_ecb_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_DES | FLG_ECB | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_des_ecb_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_DES | FLG_ECB);
- }
- 
- static int stm32_cryp_des_cbc_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_DES | FLG_CBC | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_des_cbc_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_DES | FLG_CBC);
- }
- 
- static int stm32_cryp_tdes_ecb_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_TDES | FLG_ECB | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_tdes_ecb_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_TDES | FLG_ECB);
- }
- 
- static int stm32_cryp_tdes_cbc_encrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_TDES | FLG_CBC | FLG_ENCRYPT);
- }
- 
- static int stm32_cryp_tdes_cbc_decrypt(struct skcipher_request *req)
- {
-+	if (req->cryptlen % DES_BLOCK_SIZE)
-+		return -EINVAL;
-+
-+	if (req->cryptlen == 0)
-+		return 0;
-+
- 	return stm32_cryp_crypt(req, FLG_TDES | FLG_CBC);
- }
- 
--- 
-2.34.1
-
+--- a/drivers/crypto/stm32/stm32_crc32.c
++++ b/drivers/crypto/stm32/stm32_crc32.c
+@@ -230,7 +230,7 @@ static struct shash_alg algs[] = {
+ 		.digestsize     = CHKSUM_DIGEST_SIZE,
+ 		.base           = {
+ 			.cra_name               = "crc32",
+-			.cra_driver_name        = DRIVER_NAME,
++			.cra_driver_name        = "stm32-crc32-crc32",
+ 			.cra_priority           = 200,
+ 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
+ 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
+@@ -252,7 +252,7 @@ static struct shash_alg algs[] = {
+ 		.digestsize     = CHKSUM_DIGEST_SIZE,
+ 		.base           = {
+ 			.cra_name               = "crc32c",
+-			.cra_driver_name        = DRIVER_NAME,
++			.cra_driver_name        = "stm32-crc32-crc32c",
+ 			.cra_priority           = 200,
+ 			.cra_flags		= CRYPTO_ALG_OPTIONAL_KEY,
+ 			.cra_blocksize          = CHKSUM_BLOCK_SIZE,
 
 
