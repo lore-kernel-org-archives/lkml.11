@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D58A3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:24:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C97CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:24:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237344AbiAXTYQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:24:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40326 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348225AbiAXTPE (ORCPT
+        id S1344285AbiAXTYT (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:24:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44358 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348273AbiAXTPJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:15:04 -0500
+        Mon, 24 Jan 2022 14:15:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D9E9B8121A;
-        Mon, 24 Jan 2022 19:15:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9400C340E5;
-        Mon, 24 Jan 2022 19:15:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9281612FA;
+        Mon, 24 Jan 2022 19:15:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA4D8C340E5;
+        Mon, 24 Jan 2022 19:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051702;
-        bh=C/D2h9OZPFVVIfo9DacnrUoGpxJYsOFF0b8+7wbpPCo=;
+        s=korg; t=1643051708;
+        bh=vQxa3OKPW4dCeFASeWVK/aTkRn+gKtR3N8LvRWNxdF0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nt6A8gjDkrTmtkIuyIznDf0/p/PjInc+3Ep2X13TOEvDvXrGlm9Tp1oTl/p8D3x0R
-         E5iwQ0IRQHz1pKa9zReNAeqw2uRfjRQXx4XVv5bMFsIQmpWRiqh+eBAtO+9QhD14LW
-         3tLXgKUiSxgMqVxvCJQVuMV+iX0E38lk03ZUSN0s=
+        b=N13T2ow8XYL9j0aYu2U1XpmirHEltUT4y1FEpRH0CtxVv+rTiPUGediLtr8ogBZ5U
+         VbuXNXPnibF0fZ0ZBKCI6OYZ0JKnQ2jKb+QJ6h3XF3Pc8KADm7i8cl6e4L/h/vi+az
+         pDiKOYJ+k6at/sHkDuk3VPHfadj9IznE6/BAvL+8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
-        Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>,
-        Michael Rodin <mrodin@de.adit-jv.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
+        stable@vger.kernel.org,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 059/239] media: rcar-csi2: Correct the selection of hsfreqrange
-Date:   Mon, 24 Jan 2022 19:41:37 +0100
-Message-Id: <20220124183945.017599609@linuxfoundation.org>
+Subject: [PATCH 4.19 061/239] media: mtk-vcodec: call v4l2_m2m_ctx_release first when file is released
+Date:   Mon, 24 Jan 2022 19:41:39 +0100
+Message-Id: <20220124183945.080723468@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -51,78 +49,83 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Udipi <sudipi@jp.adit-jv.com>
+From: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
 
-[ Upstream commit cee44d4fbacbbdfe62697ec94e76c6e4f726c5df ]
+[ Upstream commit 9f89c881bffbdffe4060ffaef3489a2830a6dd9c ]
 
-hsfreqrange should be chosen based on the calculated mbps which
-is closer to the default bit rate  and within the range as per
-table[1]. But current calculation always selects first value which
-is greater than or equal to the calculated mbps which may lead
-to chosing a wrong range in some cases.
+The func v4l2_m2m_ctx_release waits for currently running jobs
+to finish and then stop streaming both queues and frees the buffers.
+All this should be done before the call to mtk_vcodec_enc_release
+which frees the encoder handler. This fixes null-pointer dereference bug:
 
-For example for 360 mbps for H3/M3N
-Existing logic selects
-Calculated value 360Mbps : Default 400Mbps Range [368.125 -433.125 mbps]
+[  638.028076] Mem abort info:
+[  638.030932]   ESR = 0x96000004
+[  638.033978]   EC = 0x25: DABT (current EL), IL = 32 bits
+[  638.039293]   SET = 0, FnV = 0
+[  638.042338]   EA = 0, S1PTW = 0
+[  638.045474]   FSC = 0x04: level 0 translation fault
+[  638.050349] Data abort info:
+[  638.053224]   ISV = 0, ISS = 0x00000004
+[  638.057055]   CM = 0, WnR = 0
+[  638.060018] user pgtable: 4k pages, 48-bit VAs, pgdp=000000012b6db000
+[  638.066485] [00000000000001a0] pgd=0000000000000000, p4d=0000000000000000
+[  638.073277] Internal error: Oops: 96000004 [#1] SMP
+[  638.078145] Modules linked in: rfkill mtk_vcodec_dec mtk_vcodec_enc uvcvideo mtk_mdp mtk_vcodec_common videobuf2_dma_contig v4l2_h264 cdc_ether v4l2_mem2mem videobuf2_vmalloc usbnet videobuf2_memops videobuf2_v4l2 r8152 videobuf2_common videodev cros_ec_sensors cros_ec_sensors_core industrialio_triggered_buffer kfifo_buf elan_i2c elants_i2c sbs_battery mc cros_usbpd_charger cros_ec_chardev cros_usbpd_logger crct10dif_ce mtk_vpu fuse ip_tables x_tables ipv6
+[  638.118583] CPU: 0 PID: 212 Comm: kworker/u8:5 Not tainted 5.15.0-06427-g58a1d4dcfc74-dirty #109
+[  638.127357] Hardware name: Google Elm (DT)
+[  638.131444] Workqueue: mtk-vcodec-enc mtk_venc_worker [mtk_vcodec_enc]
+[  638.137974] pstate: 60000005 (nZCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[  638.144925] pc : vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
+[  638.150493] lr : venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
+[  638.156060] sp : ffff8000124d3c40
+[  638.159364] x29: ffff8000124d3c40 x28: 0000000000000000 x27: 0000000000000000
+[  638.166493] x26: 0000000000000000 x25: ffff0000e7f252d0 x24: ffff8000124d3d58
+[  638.173621] x23: ffff8000124d3d58 x22: ffff8000124d3d60 x21: 0000000000000001
+[  638.180750] x20: ffff80001137e000 x19: 0000000000000000 x18: 0000000000000001
+[  638.187878] x17: 000000040044ffff x16: 00400032b5503510 x15: 0000000000000000
+[  638.195006] x14: ffff8000118536c0 x13: ffff8000ee1da000 x12: 0000000030d4d91d
+[  638.202134] x11: 0000000000000000 x10: 0000000000000980 x9 : ffff8000124d3b20
+[  638.209262] x8 : ffff0000c18d4ea0 x7 : ffff0000c18d44c0 x6 : ffff0000c18d44c0
+[  638.216391] x5 : ffff80000904a3b0 x4 : ffff8000124d3d58 x3 : ffff8000124d3d60
+[  638.223519] x2 : ffff8000124d3d78 x1 : 0000000000000001 x0 : ffff80001137efb8
+[  638.230648] Call trace:
+[  638.233084]  vp8_enc_encode+0x34/0x2b0 [mtk_vcodec_enc]
+[  638.238304]  venc_if_encode+0xac/0x1b0 [mtk_vcodec_enc]
+[  638.243525]  mtk_venc_worker+0x110/0x250 [mtk_vcodec_enc]
+[  638.248918]  process_one_work+0x1f8/0x498
+[  638.252923]  worker_thread+0x140/0x538
+[  638.256664]  kthread+0x148/0x158
+[  638.259884]  ret_from_fork+0x10/0x20
+[  638.263455] Code: f90023f9 2a0103f5 aa0303f6 aa0403f8 (f940d277)
+[  638.269538] ---[ end trace e374fc10f8e181f5 ]---
 
-This hsfreqrange is out of range.
-
-The logic is changed to get the default value which is closest to the
-calculated value [1]
-
-Calculated value 360Mbps : Default 350Mbps  Range [320.625 -380.625 mpbs]
-
-[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.9]
-
-Please note that According to Renesas in Table 25.9 the range for
-220 default value is corrected as below
-
- |Range (Mbps)     |  Default  Bit rate (Mbps) |
- -----------------------------------------------
- | 197.125-244.125 |     220                   |
- -----------------------------------------------
-
-Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
-Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
-Signed-off-by: Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+[gst-master] root@debian:~/gst-build# [  638.019193] Unable to handle kernel NULL pointer dereference at virtual address 00000000000001a0
+Fixes: 4e855a6efa547 ("[media] vcodec: mediatek: Add Mediatek V4L2 Video Encoder Driver")
+Signed-off-by: Dafna Hirschfeld <dafna.hirschfeld@collabora.com>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rcar-vin/rcar-csi2.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
-index 23f55514b002a..bdcddc48e2f08 100644
---- a/drivers/media/platform/rcar-vin/rcar-csi2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
-@@ -416,16 +416,23 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv)
- static int rcsi2_set_phypll(struct rcar_csi2 *priv, unsigned int mbps)
- {
- 	const struct rcsi2_mbps_reg *hsfreq;
-+	const struct rcsi2_mbps_reg *hsfreq_prev = NULL;
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+index 83f859e8509c9..b95006a864c26 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
+@@ -217,11 +217,11 @@ static int fops_vcodec_release(struct file *file)
+ 	mtk_v4l2_debug(1, "[%d] encoder", ctx->id);
+ 	mutex_lock(&dev->dev_mutex);
  
--	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++)
-+	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++) {
- 		if (hsfreq->mbps >= mbps)
- 			break;
-+		hsfreq_prev = hsfreq;
-+	}
++	v4l2_m2m_ctx_release(ctx->m2m_ctx);
+ 	mtk_vcodec_enc_release(ctx);
+ 	v4l2_fh_del(&ctx->fh);
+ 	v4l2_fh_exit(&ctx->fh);
+ 	v4l2_ctrl_handler_free(&ctx->ctrl_hdl);
+-	v4l2_m2m_ctx_release(ctx->m2m_ctx);
  
- 	if (!hsfreq->mbps) {
- 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
- 		return -ERANGE;
- 	}
- 
-+	if (hsfreq_prev &&
-+	    ((mbps - hsfreq_prev->mbps) <= (hsfreq->mbps - mbps)))
-+		hsfreq = hsfreq_prev;
-+
- 	rcsi2_write(priv, PHYPLL_REG, PHYPLL_HSFREQRANGE(hsfreq->reg));
- 
- 	return 0;
+ 	list_del_init(&ctx->list);
+ 	kfree(ctx);
 -- 
 2.34.1
 
