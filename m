@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4451BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:48:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D9F3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:48:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245311AbiAXSse (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:48:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42506 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245274AbiAXSs0 (ORCPT
+        id S245322AbiAXSsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:48:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49012 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235540AbiAXSsc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:48:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AD0C061401;
-        Mon, 24 Jan 2022 10:48:26 -0800 (PST)
+        Mon, 24 Jan 2022 13:48:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC497B81214;
-        Mon, 24 Jan 2022 18:48:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCF10C340E5;
-        Mon, 24 Jan 2022 18:48:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CCC5B81215;
+        Mon, 24 Jan 2022 18:48:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E6D9C340E5;
+        Mon, 24 Jan 2022 18:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050103;
-        bh=fZdxtjsP9F4pYFdU33TBh0qEMt10NcGpyNRNnIcGzIs=;
+        s=korg; t=1643050109;
+        bh=+bmhEDGX3R6kR6lLlbmkW2uZJfDH5wEcAdJyMWaPorc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BYO9myR5zPG5Cu5rgyXUxcjHLnCqWRsEyQzqB/6QqNHw6rfKnQTFhegEu9cqPSmic
-         AX87rSGE1tHzdvS46VNwjORFE1Vq4AkzCRxsBNA5tIPCaGW+owbUCG8oN/h67XMUdf
-         fXynujkqmlaaJgldocx1zw2Lz6wMOfqYT7FztQMA=
+        b=gEQhwT+kJGpELktgfqOg21WC0PGtT4E+LKh41qHVD/8Buw+Z9xsk2UBL61i+FOjwX
+         pEed+BXd3cjRiQEZ2gC8qxA7z6oPB5gW5aqsqTVJK+jwG3jroZD36h2rqQZ4sEA4yc
+         ZaARfg14xP4rLPignRe+U7gBAXBrsRpQsxWMhFgA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jonathan McDowell <noodles@earth.li>,
-        Alan Stern <stern@rowland.harvard.edu>
-Subject: [PATCH 4.4 002/114] USB: core: Fix bug in resuming hubs handling of wakeup requests
-Date:   Mon, 24 Jan 2022 19:41:37 +0100
-Message-Id: <20220124183927.176753026@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        Aditya Garg <gargaditya08@live.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 4.4 004/114] mfd: intel-lpss: Fix too early PM enablement in the ACPI ->probe()
+Date:   Mon, 24 Jan 2022 19:41:39 +0100
+Message-Id: <20220124183927.236477614@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -48,69 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-commit 0f663729bb4afc92a9986b66131ebd5b8a9254d1 upstream.
+commit c9e143084d1a602f829115612e1ec79df3727c8b upstream.
 
-Bugzilla #213839 reports a 7-port hub that doesn't work properly when
-devices are plugged into some of the ports; the kernel goes into an
-unending disconnect/reinitialize loop as shown in the bug report.
+The runtime PM callback may be called as soon as the runtime PM facility
+is enabled and activated. It means that ->suspend() may be called before
+we finish probing the device in the ACPI case. Hence, NULL pointer
+dereference:
 
-This "7-port hub" comprises two four-port hubs with one plugged into
-the other; the failures occur when a device is plugged into one of the
-downstream hub's ports.  (These hubs have other problems too.  For
-example, they bill themselves as USB-2.0 compliant but they only run
-at full speed.)
+  intel-lpss INT34BA:00: IRQ index 0 not found
+  BUG: kernel NULL pointer dereference, address: 0000000000000030
+  ...
+  Workqueue: pm pm_runtime_work
+  RIP: 0010:intel_lpss_suspend+0xb/0x40 [intel_lpss]
 
-It turns out that the failures are caused by bugs in both the kernel
-and the hub.  The hub's bug is that it reports a different
-bmAttributes value in its configuration descriptor following a remote
-wakeup (0xe0 before, 0xc0 after -- the wakeup-support bit has
-changed).
+To fix this, first try to register the device and only after that enable
+runtime PM facility.
 
-The kernel's bug is inside the hub driver's resume handler.  When
-hub_activate() sees that one of the hub's downstream ports got a
-wakeup request from a child device, it notes this fact by setting the
-corresponding bit in the hub->change_bits variable.  But this variable
-is meant for connection changes, not wakeup events; setting it causes
-the driver to believe the downstream port has been disconnected and
-then connected again (in addition to having received a wakeup
-request).
-
-Because of this, the hub driver then tries to check whether the device
-currently plugged into the downstream port is the same as the device
-that had been attached there before.  Normally this check succeeds and
-wakeup handling continues with no harm done (which is why the bug
-remained undetected until now).  But with these dodgy hubs, the check
-fails because the config descriptor has changed.  This causes the hub
-driver to reinitialize the child device, leading to the
-disconnect/reinitialize loop described in the bug report.
-
-The proper way to note reception of a downstream wakeup request is
-to set a bit in the hub->event_bits variable instead of
-hub->change_bits.  That way the hub driver will realize that something
-has happened to the port but will not think the port and child device
-have been disconnected.  This patch makes that change.
-
-Cc: <stable@vger.kernel.org>
-Tested-by: Jonathan McDowell <noodles@earth.li>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Link: https://lore.kernel.org/r/YdCw7nSfWYPKWQoD@rowland.harvard.edu
+Fixes: 4b45efe85263 ("mfd: Add support for Intel Sunrisepoint LPSS devices")
+Reported-by: Orlando Chamberlain <redecorating@protonmail.com>
+Reported-by: Aditya Garg <gargaditya08@live.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Tested-by: Aditya Garg <gargaditya08@live.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211101190008.86473-1-andriy.shevchenko@linux.intel.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/usb/core/hub.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mfd/intel-lpss-acpi.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1169,7 +1169,7 @@ static void hub_activate(struct usb_hub
- 			 */
- 			if (portchange || (hub_is_superspeed(hub->hdev) &&
- 						port_resumed))
--				set_bit(port1, hub->change_bits);
-+				set_bit(port1, hub->event_bits);
+--- a/drivers/mfd/intel-lpss-acpi.c
++++ b/drivers/mfd/intel-lpss-acpi.c
+@@ -53,6 +53,7 @@ static int intel_lpss_acpi_probe(struct
+ {
+ 	struct intel_lpss_platform_info *info;
+ 	const struct acpi_device_id *id;
++	int ret;
  
- 		} else if (udev->persist_enabled) {
- #ifdef CONFIG_PM
+ 	id = acpi_match_device(intel_lpss_acpi_ids, &pdev->dev);
+ 	if (!id)
+@@ -66,10 +67,14 @@ static int intel_lpss_acpi_probe(struct
+ 	info->mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	info->irq = platform_get_irq(pdev, 0);
+ 
++	ret = intel_lpss_probe(&pdev->dev, info);
++	if (ret)
++		return ret;
++
+ 	pm_runtime_set_active(&pdev->dev);
+ 	pm_runtime_enable(&pdev->dev);
+ 
+-	return intel_lpss_probe(&pdev->dev, info);
++	return 0;
+ }
+ 
+ static int intel_lpss_acpi_remove(struct platform_device *pdev)
 
 
