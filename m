@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5107C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:58:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 723AAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:59:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350048AbiAXW6l (ORCPT
+        id S1841412AbiAXW6y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:58:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60030 "EHLO
+        Mon, 24 Jan 2022 17:58:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576001AbiAXV7I (ORCPT
+        with ESMTP id S1575047AbiAXV7F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:59:08 -0500
+        Mon, 24 Jan 2022 16:59:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB386C02B8DD;
-        Mon, 24 Jan 2022 12:39:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE81C02B8D1;
+        Mon, 24 Jan 2022 12:39:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C333615A5;
-        Mon, 24 Jan 2022 20:39:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F1D0C340E5;
-        Mon, 24 Jan 2022 20:39:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CD9661008;
+        Mon, 24 Jan 2022 20:39:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAAFC340E5;
+        Mon, 24 Jan 2022 20:39:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056772;
-        bh=35lOTX6cm3m1nD+3sw8XpEL6aINTmKJuCTuO6dclzwU=;
+        s=korg; t=1643056766;
+        bh=0db0lA3LF46u41ABe7SmiK02EzboUvOSIxyIoCE8fDY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=THHUj21Mo1YZ8beNGRP+28tW0XYlSOQAhLJv5fbmL6F6j7spJtwJPGsQDKTpl/jLG
-         Dgh+Lm0AZMTbSzdGc+dWS+NBIiug7q/XwCXG7TTZzH6tKq+BV31cqLgbXqDVCF3yOM
-         5knxOQSBjANVQr4EAAFsy2rFE5l0e+ayPCBnOL1Y=
+        b=CTEnvNpH+o9IK1yeabcl4AdHkQw+5AsvDaA21VhiGKaqt12i61AXPtQ5gHA9USYxk
+         E3mFlZdhM7b7LLENAhXpv8d9sal3ObXR8uhGbZLizwjdrjsFmv6DeBFK1gs5icjXNR
+         N580xb//mERHJtp0aVQ7EMhvgK846QaI1lFXx6VE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Felix Kuehling <Felix.Kuehling@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        David Yat Sin <david.yatsin@amd.com>,
-        Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 595/846] drm/amdgpu: Dont inherit GEM object VMAs in child process
-Date:   Mon, 24 Jan 2022 19:41:52 +0100
-Message-Id: <20220124184121.566094072@linuxfoundation.org>
+Subject: [PATCH 5.15 576/846] iwlwifi: remove module loading failure message
+Date:   Mon, 24 Jan 2022 19:41:33 +0100
+Message-Id: <20220124184120.908064995@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -53,54 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit fbcdbfde87509d523132b59f661a355c731139d0 ]
+[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
 
-When an application having open file access to a node forks, its shared
-mappings also get reflected in the address space of child process even
-though it cannot access them with the object permissions applied. With the
-existing permission checks on the gem objects, it might be reasonable to
-also create the VMAs with VM_DONTCOPY flag so a user space application
-doesn't need to explicitly call the madvise(addr, len, MADV_DONTFORK)
-system call to prevent the pages in the mapped range to appear in the
-address space of the child process. It also prevents the memory leaks
-due to additional reference counts on the mapped BOs in the child
-process that prevented freeing the memory in the parent for which we had
-worked around earlier in the user space inside the thunk library.
+When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
+when the opmode module cannot be loaded, due to completing
+the completion before using drv->dev, which can then already
+be freed.
 
-Additionally, we faced this issue when using CRIU to checkpoint restore
-an application that had such inherited mappings in the child which
-confuse CRIU when it mmaps on restore. Having this flag set for the
-render node VMAs helps. VMAs mapped via KFD already take care of this so
-this is needed only for the render nodes.
+Fix this by removing the (fairly useless) message. Moving the
+completion later causes a deadlock instead, so that's not an
+option.
 
-To limit the impact of the change to user space consumers such as OpenGL
-etc, limit it to KFD BOs only.
-
-Acked-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: David Yat Sin <david.yatsin@amd.com>
-Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-index a1e63ba4c54a5..630dc99e49086 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-@@ -264,6 +264,9 @@ static int amdgpu_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_str
- 	    !(vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
- 		vma->vm_flags &= ~VM_MAYWRITE;
- 
-+	if (bo->kfd_bo)
-+		vma->vm_flags |= VM_DONTCOPY;
-+
- 	return drm_gem_ttm_mmap(obj, vma);
- }
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+index 2206f66f69940..b7f7b9c5b670c 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1597,15 +1597,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 	 * else from proceeding if the module fails to load
+ 	 * or hangs loading.
+ 	 */
+-	if (load_module) {
++	if (load_module)
+ 		request_module("%s", op->name);
+-#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
+-		if (err)
+-			IWL_ERR(drv,
+-				"failed to load module %s (error %d), is dynamic loading enabled?\n",
+-				op->name, err);
+-#endif
+-	}
+ 	failure = false;
+ 	goto free;
  
 -- 
 2.34.1
