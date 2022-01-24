@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AC01C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8EBC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838685AbiAXWrH (ORCPT
+        id S1377411AbiAXWrP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:47:07 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48390 "EHLO
+        Mon, 24 Jan 2022 17:47:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52408 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349372AbiAXVhK (ORCPT
+        with ESMTP id S1457859AbiAXVmY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:10 -0500
+        Mon, 24 Jan 2022 16:42:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55ADBB811A9;
-        Mon, 24 Jan 2022 21:37:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC4CC340E4;
-        Mon, 24 Jan 2022 21:37:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAE16B811A9;
+        Mon, 24 Jan 2022 21:42:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15A74C340E4;
+        Mon, 24 Jan 2022 21:42:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060226;
-        bh=bO33B91w8GdPLiN34Gv8tmv6269wB+3MTPbgMjpdAfc=;
+        s=korg; t=1643060541;
+        bh=Gl0jy4PB5R5wa6o52whfL1Em2AKbbEFdXHfbPfhrtME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eY+3F2vHOjLYwVc+nox2cFZhesR5D435CZYk+sAKZpWsXwxQI1OrvnEea39/Lv0mm
-         T+Ryi4/BjxV9Peg9vbkyKYHhxGo7H2zBvbu/ftCLVb3pivAJjiLkfsos+KgbyUt4uD
-         6pRypY0zEbyWkvffZwRyFm230vb9LKgo1DycVp0I=
+        b=K49rSfobpH8tJuU7To1ke4zDHyldQjk99jmZ0hcpUfXMIw8Y4jA846+2ZvGjBHiRW
+         zKROg6rw1iklVmejWfugQpI9JE496I3SDOSkShj4oJIXBN/wRzLaJtyAE83vOhMXmc
+         GzTIzcZNyi+ua65jvuZgq1KmPNgQ3wmfx2U2+ylw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ghalem Boudour <ghalem.boudour@6wind.com>,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH 5.16 0880/1039] xfrm: fix policy lookup for ipv6 gre packets
-Date:   Mon, 24 Jan 2022 19:44:29 +0100
-Message-Id: <20220124184154.879723129@linuxfoundation.org>
+        stable@vger.kernel.org, "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>,
+        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.16 0983/1039] virtio_ring: mark ring unused on error
+Date:   Mon, 24 Jan 2022 19:46:12 +0100
+Message-Id: <20220124184158.318703837@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,100 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ghalem Boudour <ghalem.boudour@6wind.com>
+From: Michael S. Tsirkin <mst@redhat.com>
 
-commit bcf141b2eb551b3477b24997ebc09c65f117a803 upstream.
+commit 1861ba626ae9b98136f3e504208cdef6b29cd3ec upstream.
 
-On egress side, xfrm lookup is called from __gre6_xmit() with the
-fl6_gre_key field not initialized leading to policies selectors check
-failure. Consequently, gre packets are sent without encryption.
+A recently added error path does not mark ring unused when exiting on
+OOM, which will lead to BUG on the next entry in debug builds.
 
-On ingress side, INET6_PROTO_NOPOLICY was set, thus packets were not
-checked against xfrm policies. Like for egress side, fl6_gre_key should be
-correctly set, this is now done in decode_session6().
+TODO: refactor code so we have START_USE and END_USE in the same function.
 
-Fixes: c12b395a4664 ("gre: Support GRE over IPv6")
-Cc: stable@vger.kernel.org
-Signed-off-by: Ghalem Boudour <ghalem.boudour@6wind.com>
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: fc6d70f40b3d ("virtio_ring: check desc == NULL when using indirect with packed")
+Cc: "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
+Cc: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv6/ip6_gre.c     |    5 ++++-
- net/xfrm/xfrm_policy.c |   21 +++++++++++++++++++++
- 2 files changed, 25 insertions(+), 1 deletion(-)
+ drivers/virtio/virtio_ring.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/net/ipv6/ip6_gre.c
-+++ b/net/ipv6/ip6_gre.c
-@@ -755,6 +755,7 @@ static netdev_tx_t __gre6_xmit(struct sk
- 		fl6->daddr = key->u.ipv6.dst;
- 		fl6->flowlabel = key->label;
- 		fl6->flowi6_uid = sock_net_uid(dev_net(dev), NULL);
-+		fl6->fl6_gre_key = tunnel_id_to_key32(key->tun_id);
+--- a/drivers/virtio/virtio_ring.c
++++ b/drivers/virtio/virtio_ring.c
+@@ -1197,8 +1197,10 @@ static inline int virtqueue_add_packed(s
+ 	if (virtqueue_use_indirect(_vq, total_sg)) {
+ 		err = virtqueue_add_indirect_packed(vq, sgs, total_sg, out_sgs,
+ 						    in_sgs, data, gfp);
+-		if (err != -ENOMEM)
++		if (err != -ENOMEM) {
++			END_USE(vq);
+ 			return err;
++		}
  
- 		dsfield = key->tos;
- 		flags = key->tun_flags &
-@@ -990,6 +991,7 @@ static netdev_tx_t ip6erspan_tunnel_xmit
- 		fl6.daddr = key->u.ipv6.dst;
- 		fl6.flowlabel = key->label;
- 		fl6.flowi6_uid = sock_net_uid(dev_net(dev), NULL);
-+		fl6.fl6_gre_key = tunnel_id_to_key32(key->tun_id);
- 
- 		dsfield = key->tos;
- 		if (!(tun_info->key.tun_flags & TUNNEL_ERSPAN_OPT))
-@@ -1098,6 +1100,7 @@ static void ip6gre_tnl_link_config_commo
- 	fl6->flowi6_oif = p->link;
- 	fl6->flowlabel = 0;
- 	fl6->flowi6_proto = IPPROTO_GRE;
-+	fl6->fl6_gre_key = t->parms.o_key;
- 
- 	if (!(p->flags&IP6_TNL_F_USE_ORIG_TCLASS))
- 		fl6->flowlabel |= IPV6_TCLASS_MASK & p->flowinfo;
-@@ -1544,7 +1547,7 @@ static void ip6gre_fb_tunnel_init(struct
- static struct inet6_protocol ip6gre_protocol __read_mostly = {
- 	.handler     = gre_rcv,
- 	.err_handler = ip6gre_err,
--	.flags       = INET6_PROTO_NOPOLICY|INET6_PROTO_FINAL,
-+	.flags       = INET6_PROTO_FINAL,
- };
- 
- static void ip6gre_destroy_tunnels(struct net *net, struct list_head *head)
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -33,6 +33,7 @@
- #include <net/flow.h>
- #include <net/xfrm.h>
- #include <net/ip.h>
-+#include <net/gre.h>
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
- #include <net/mip6.h>
- #endif
-@@ -3422,6 +3423,26 @@ decode_session6(struct sk_buff *skb, str
- 			}
- 			fl6->flowi6_proto = nexthdr;
- 			return;
-+		case IPPROTO_GRE:
-+			if (!onlyproto &&
-+			    (nh + offset + 12 < skb->data ||
-+			     pskb_may_pull(skb, nh + offset + 12 - skb->data))) {
-+				struct gre_base_hdr *gre_hdr;
-+				__be32 *gre_key;
-+
-+				nh = skb_network_header(skb);
-+				gre_hdr = (struct gre_base_hdr *)(nh + offset);
-+				gre_key = (__be32 *)(gre_hdr + 1);
-+
-+				if (gre_hdr->flags & GRE_KEY) {
-+					if (gre_hdr->flags & GRE_CSUM)
-+						gre_key++;
-+					fl6->fl6_gre_key = *gre_key;
-+				}
-+			}
-+			fl6->flowi6_proto = nexthdr;
-+			return;
-+
- #if IS_ENABLED(CONFIG_IPV6_MIP6)
- 		case IPPROTO_MH:
- 			offset += ipv6_optlen(exthdr);
+ 		/* fall back on direct */
+ 	}
 
 
