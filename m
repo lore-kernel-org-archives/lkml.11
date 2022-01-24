@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68693C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 488E7C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452749AbiAXV03 (ORCPT
+        id S1378101AbiAXV1A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358721AbiAXUtA (ORCPT
+        Mon, 24 Jan 2022 16:27:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53558 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444396AbiAXVAu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413C0C04189D;
-        Mon, 24 Jan 2022 11:57:48 -0800 (PST)
+        Mon, 24 Jan 2022 16:00:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F015BB8123A;
-        Mon, 24 Jan 2022 19:57:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1080FC340E5;
-        Mon, 24 Jan 2022 19:57:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0AD4612E9;
+        Mon, 24 Jan 2022 21:00:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E4F6C340E5;
+        Mon, 24 Jan 2022 21:00:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054265;
-        bh=pDLLvoeU36LjGUQLKpr+514zihBBhyi8aheoZQjcDAU=;
+        s=korg; t=1643058048;
+        bh=AuuH0Kty7H2/ZTZUm98NLAwa0+UopAyoe2zfWSIK1HU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1+ab6hdO/5118LX4aroI/nou7K4IN32g0R57X+jhMUAH8XfC1A2dTbqckKsAl2IK
-         9rAzNov7cjMYO3+VR98aBwvxySIAvkAbRuYa6O7tSVg04JcnkDfeNiIVl6yOlXNFom
-         4cshDQSjmgAW7xOVwvY2qGSsEgYpJml/d54V0p0Y=
+        b=Wd45aYVFvtw+cucv9Fcjw+A63o8/+DI2YvUwm44ikSixlEdUWmxVK8j83Uc6zXVIX
+         kD/IzjeXc01yTbcE2Tn5Pse8Us/HdS4+ioUkIkSATGKsQgtj4ATSiXI9gz22IESY9R
+         B/GjiqB5Yc3db8NPm2LUCmCvrTZjSTSw5TDo7nTM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Thara Gopinath <thara.gopinath@linaro.org>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 333/563] ACPI / x86: Drop PWM2 device on Lenovo Yoga Book from always present table
-Date:   Mon, 24 Jan 2022 19:41:38 +0100
-Message-Id: <20220124184035.942065856@linuxfoundation.org>
+Subject: [PATCH 5.16 0165/1039] cpufreq: qcom-cpufreq-hw: Update offline CPUs per-cpu thermal pressure
+Date:   Mon, 24 Jan 2022 19:32:34 +0100
+Message-Id: <20220124184130.767895775@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Lukasz Luba <lukasz.luba@arm.com>
 
-[ Upstream commit d431dfb764b145369be820fcdfd50f2159b9bbc2 ]
+[ Upstream commit 93d9e6f93e1586fcc97498c764be2e8c8401f4bd ]
 
-It turns out that there is a WMI object which controls the PWM2 device
-used for the keyboard backlight and that WMI object also provides some
-other useful functionality.
+The thermal pressure signal gives information to the scheduler about
+reduced CPU capacity due to thermal. It is based on a value stored in
+a per-cpu 'thermal_pressure' variable. The online CPUs will get the
+new value there, while the offline won't. Unfortunately, when the CPU
+is back online, the value read from per-cpu variable might be wrong
+(stale data).  This might affect the scheduler decisions, since it
+sees the CPU capacity differently than what is actually available.
 
-The upcoming lenovo-yogabook-wmi driver will offer both backlight
-control and the other functionality, so there no longer is a need
-to have the lpss-pwm driver binding to PWM2 for backlight control;
-and this is now actually undesirable because this will cause both
-the WMI code and the lpss-pwm driver to poke at the same PWM
-controller.
+Fix it by making sure that all online+offline CPUs would get the
+proper value in their per-cpu variable when there is throttling
+or throttling is removed.
 
-Drop the always-present quirk for the PWM2 ACPI-device, so that the
- lpss-pwm controller will no longer bind to it.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Fixes: 275157b367f479 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
+Reviewed-by: Thara Gopinath <thara.gopinath@linaro.org>
+Signed-off-by: Lukasz Luba <lukasz.luba@arm.com>
+Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/utils.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/cpufreq/qcom-cpufreq-hw.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
-index bdc1ba00aee9f..baaa44edc9441 100644
---- a/drivers/acpi/x86/utils.c
-+++ b/drivers/acpi/x86/utils.c
-@@ -54,10 +54,6 @@ static const struct always_present_id always_present_ids[] = {
- 	ENTRY("80860F09", "1", X86_MATCH(ATOM_SILVERMONT), {}),
- 	ENTRY("80862288", "1", X86_MATCH(ATOM_AIRMONT), {}),
+diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
+index a2be0df7e1747..0138b2ec406dc 100644
+--- a/drivers/cpufreq/qcom-cpufreq-hw.c
++++ b/drivers/cpufreq/qcom-cpufreq-hw.c
+@@ -304,7 +304,8 @@ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
+ 	if (capacity > max_capacity)
+ 		capacity = max_capacity;
  
--	/* Lenovo Yoga Book uses PWM2 for keyboard backlight control */
--	ENTRY("80862289", "2", X86_MATCH(ATOM_AIRMONT), {
--			DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
--		}),
+-	arch_set_thermal_pressure(policy->cpus, max_capacity - capacity);
++	arch_set_thermal_pressure(policy->related_cpus,
++				  max_capacity - capacity);
+ 
  	/*
- 	 * The INT0002 device is necessary to clear wakeup interrupt sources
- 	 * on Cherry Trail devices, without it we get nobody cared IRQ msgs.
+ 	 * In the unlikely case policy is unregistered do not enable
 -- 
 2.34.1
 
