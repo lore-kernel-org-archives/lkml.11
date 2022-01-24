@@ -2,107 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49226C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:18:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AF4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:18:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377262AbiAXVS2 (ORCPT
+        id S1354634AbiAXVSm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:18:28 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:56536 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391925AbiAXUuE (ORCPT
+        Mon, 24 Jan 2022 16:18:42 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48840 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391924AbiAXUuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:50:04 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id AB6CF1C0B76; Mon, 24 Jan 2022 21:41:48 +0100 (CET)
-Date:   Mon, 24 Jan 2022 21:41:48 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Christian Eggers <ceggers@arri.de>, Han Xu <han.xu@nxp.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: Re: [PATCH 5.4 007/320] mtd: rawnand: gpmi: Add ERR007117 protection
- for nfc_apply_timings
-Message-ID: <20220124204148.GB19321@duo.ucw.cz>
-References: <20220124183953.750177707@linuxfoundation.org>
- <20220124183954.021297586@linuxfoundation.org>
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7439BB80CCF;
+        Mon, 24 Jan 2022 20:50:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0F1CC340E5;
+        Mon, 24 Jan 2022 20:50:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057401;
+        bh=cEeNf3jmmVOl8gPLt5Ntuzx6bXre2UP5a4Q4MpBvFYg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KMb/Onp78ur2tmhBIZDWSF7H/9mCMs2/Xf2AVS1wWLRL37yekrTijfH7f+7XR9gSC
+         XqKnn6sM5Ge1tVrZhZmCqsFeEZKNnUNYPrqMSJzahKtwJm2Q1pxZK/eNyFVbhcBTh3
+         M/xrWjxcRj5zUPb8YTqzb2GNjSi2HpT0llbyCmcg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        anton.ivanov@cambridgegreys.com,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 801/846] um: gitignore: Add kernel/capflags.c
+Date:   Mon, 24 Jan 2022 19:45:18 +0100
+Message-Id: <20220124184128.570992096@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="SkvwRMAIpAhPCcCJ"
-Content-Disposition: inline
-In-Reply-To: <20220124183954.021297586@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Johannes Berg <johannes.berg@intel.com>
 
---SkvwRMAIpAhPCcCJ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 4b86366fdfbedec42f8f7ee037775f2839921d34 upstream.
 
-Hi!
+This file is generated, we should ignore it.
 
-> commit f53d4c109a666bf1a4883b45d546fba079258717 upstream.
->=20
-> gpmi_io clock needs to be gated off when changing the parent/dividers of
-> enfc_clk_root (i.MX6Q/i.MX6UL) respectively qspi2_clk_root (i.MX6SX).
-> Otherwise this rate change can lead to an unresponsive GPMI core which
-> results in DMA timeouts and failed driver probe:
-=2E..
+Fixes: d8fb32f4790f ("um: Add support for host CPU flags and alignment")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Acked-By: anton.ivanov@cambridgegreys.com
+Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ arch/um/.gitignore |    1 +
+ 1 file changed, 1 insertion(+)
 
-> @@ -2429,7 +2449,9 @@ static int gpmi_nfc_exec_op(struct nand_
->  	 */
->  	if (this->hw.must_apply_timings) {
->  		this->hw.must_apply_timings =3D false;
-> -		gpmi_nfc_apply_timings(this);
-> +		ret =3D gpmi_nfc_apply_timings(this);
-> +		if (ret)
-> +			return ret;
->  	}
-> =20
->  	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
->
-
-AFAICT this leaks pm reference in the error case. Not sure what
-variant is right, there, so...
-
-Best regards,
-								Pavel
-
-diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/=
-raw/gpmi-nand/gpmi-nand.c
-index 1b64c5a5140d..06840cff6945 100644
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -2284,8 +2284,10 @@ static int gpmi_nfc_exec_op(struct nand_chip *chip,
- 	if (this->hw.must_apply_timings) {
- 		this->hw.must_apply_timings =3D false;
- 		ret =3D gpmi_nfc_apply_timings(this);
--		if (ret)
-+		if (ret) {
-+			pm_runtime_put_....(this->dev);
- 			return ret;
-+		}
- 	}
-=20
- 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
+--- a/arch/um/.gitignore
++++ b/arch/um/.gitignore
+@@ -2,3 +2,4 @@
+ kernel/config.c
+ kernel/config.tmp
+ kernel/vmlinux.lds
++kernel/capflags.c
 
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---SkvwRMAIpAhPCcCJ
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYe8PDAAKCRAw5/Bqldv6
-8v7vAJoDfKtboxtAqFDCxbUgNCrwj/NDCwCgv3VjVjkIMPLCMGOdIpi+XjFLSjM=
-=C1YM
------END PGP SIGNATURE-----
-
---SkvwRMAIpAhPCcCJ--
