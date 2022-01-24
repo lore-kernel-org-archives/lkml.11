@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41838C4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 866ADC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374138AbiAYAQO (ORCPT
+        id S2374413AbiAYARC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:16:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52906 "EHLO
+        Mon, 24 Jan 2022 19:17:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382763AbiAXX2E (ORCPT
+        with ESMTP id S1850496AbiAXXaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:04 -0500
+        Mon, 24 Jan 2022 18:30:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014C1C01D7F0;
-        Mon, 24 Jan 2022 13:31:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA355C0A8930;
+        Mon, 24 Jan 2022 13:34:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 954A1614DE;
-        Mon, 24 Jan 2022 21:31:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54EC7C340E4;
-        Mon, 24 Jan 2022 21:31:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A87161469;
+        Mon, 24 Jan 2022 21:34:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52050C340E4;
+        Mon, 24 Jan 2022 21:34:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059875;
-        bh=PyUDj7NjAiWTUocF8frnXLOzu5jD+g0sSLunoBOVGXw=;
+        s=korg; t=1643060079;
+        bh=sLfxwkR7xnnWAPCDwvtlM2q9dCEaGfOBaWsBhM/oKzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ku/OrO5l8WxOO8RHcEUu7Yy03B46dYVfzj+L2YV22fb5nW13GVRBJmvWWWdoXbgh0
-         nq9Lhk+8zIfqthAE7qFPR6xzL2kfEzKaYX4HJ8V+e8UiZ3BF6sCLwhq6iDoBOyTbDY
-         rstcAnDxRvqKupeO7Qi2ykQDefwRAjPgnXILum68=
+        b=Z/ZMPbkKVltW7skwetVaT8o69LuL85zcQGUZ16S77OMIwfzxDGsI09O0iG/jnwTea
+         pxYS85YfdRDERp0d7yBRPkv0ggSop67vtJap0qcWGzOuYXX+ixJxtpPYW3bTFHHMv/
+         JqAZkQlE4ar4OVEccRQLR4wUW4aqN0T6ULj5MsmQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0731/1039] can: flexcan: add more quirks to describe RX path capabilities
-Date:   Mon, 24 Jan 2022 19:42:00 +0100
-Message-Id: <20220124184149.898031977@linuxfoundation.org>
+Subject: [PATCH 5.16 0799/1039] PCI: mvebu: Check for errors from pci_bridge_emul_init() call
+Date:   Mon, 24 Jan 2022 19:43:08 +0100
+Message-Id: <20220124184152.158416216@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,163 +51,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit c5c88591040ee7d84d037328eed9019d3ffab821 ]
+[ Upstream commit 5d18d702e5c9309f4195653475c7a7fdde4ca71f ]
 
-Most flexcan IP cores support 2 RX modes:
-- FIFO
-- mailbox
+Function pci_bridge_emul_init() may fail so correctly check for errors.
 
-Some IP core versions cannot receive CAN RTR messages via mailboxes.
-This patch adds quirks to document this.
-
-This information will be used in a later patch to switch from FIFO to
-more performant mailbox mode at the expense of losing the ability to
-receive RTR messages. This trade off is beneficial in certain use
-cases.
-
-Link: https://lore.kernel.org/all/20220107193105.1699523-5-mkl@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Link: https://lore.kernel.org/r/20211125124605.25915-3-pali@kernel.org
+Fixes: 1f08673eef12 ("PCI: mvebu: Convert to PCI emulated bridge config space")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/flexcan.c | 66 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 54 insertions(+), 12 deletions(-)
+ drivers/pci/controller/pci-mvebu.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index ba52e70d6a166..57cebc4156616 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -252,6 +252,12 @@
- #define FLEXCAN_QUIRK_NR_IRQ_3 BIT(12)
- /* Setup 16 mailboxes */
- #define FLEXCAN_QUIRK_NR_MB_16 BIT(13)
-+/* Device supports RX via mailboxes */
-+#define FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX BIT(14)
-+/* Device supports RTR reception via mailboxes */
-+#define FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR BIT(15)
-+/* Device supports RX via FIFO */
-+#define FLEXCAN_QUIRK_SUPPPORT_RX_FIFO BIT(16)
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index ed13e81cd691d..e6d63ad4d23b8 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -570,7 +570,7 @@ static struct pci_bridge_emul_ops mvebu_pci_bridge_emul_ops = {
+  * Initialize the configuration space of the PCI-to-PCI bridge
+  * associated with the given PCIe interface.
+  */
+-static void mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
++static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
+ {
+ 	struct pci_bridge_emul *bridge = &port->bridge;
  
- /* Structure of the message buffer */
- struct flexcan_mb {
-@@ -386,59 +392,78 @@ struct flexcan_priv {
+@@ -589,7 +589,7 @@ static void mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
+ 	bridge->data = port;
+ 	bridge->ops = &mvebu_pci_bridge_emul_ops;
  
- static const struct flexcan_devtype_data fsl_mcf5441x_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16,
-+		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16 |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
+-	pci_bridge_emul_init(bridge, PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR);
++	return pci_bridge_emul_init(bridge, PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR);
+ }
  
- static const struct flexcan_devtype_data fsl_p1010_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_WERR_STATE |
- 		FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN,
-+		FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
+ static inline struct mvebu_pcie *sys_to_pcie(struct pci_sys_data *sys)
+@@ -1112,9 +1112,18 @@ static int mvebu_pcie_probe(struct platform_device *pdev)
+ 			continue;
+ 		}
  
- static const struct flexcan_devtype_data fsl_imx25_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_WERR_STATE |
--		FLEXCAN_QUIRK_BROKEN_PERR_STATE,
-+		FLEXCAN_QUIRK_BROKEN_PERR_STATE |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
- 
- static const struct flexcan_devtype_data fsl_imx28_devtype_data = {
--	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE,
-+	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
- 
- static const struct flexcan_devtype_data fsl_imx6q_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR,
-+		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_imx8qm_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW,
-+		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static struct flexcan_devtype_data fsl_imx8mp_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
- 		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
--		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC,
-+		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_vf610_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
--		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC,
-+		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_ls1021a_r2_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
--		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX,
-+		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_lx2160a_r1_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
- 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_SUPPORT_FD |
--		FLEXCAN_QUIRK_SUPPORT_ECC,
-+		FLEXCAN_QUIRK_SUPPORT_ECC |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct can_bittiming_const flexcan_bittiming_const = {
-@@ -2164,8 +2189,25 @@ static int flexcan_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 
- 	if ((devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_FD) &&
--	    !(devtype_data->quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)) {
--		dev_err(&pdev->dev, "CAN-FD mode doesn't work with FIFO mode!\n");
-+	    !((devtype_data->quirks &
-+	       (FLEXCAN_QUIRK_USE_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO)) ==
-+	      (FLEXCAN_QUIRK_USE_RX_MAILBOX |
-+	       FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+	       FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR))) {
-+		dev_err(&pdev->dev, "CAN-FD mode doesn't work in RX-FIFO mode!\n");
-+		return -EINVAL;
-+	}
++		ret = mvebu_pci_bridge_emul_init(port);
++		if (ret < 0) {
++			dev_err(dev, "%s: cannot init emulated bridge\n",
++				port->name);
++			devm_iounmap(dev, port->base);
++			port->base = NULL;
++			mvebu_pcie_powerdown(port);
++			continue;
++		}
 +
-+	if ((devtype_data->quirks &
-+	     (FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+	      FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR)) ==
-+	    FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR) {
-+		dev_err(&pdev->dev,
-+			"Quirks (0x%08x) inconsistent: RX_MAILBOX_RX supported but not RX_MAILBOX\n",
-+			devtype_data->quirks);
- 		return -EINVAL;
+ 		mvebu_pcie_setup_hw(port);
+ 		mvebu_pcie_set_local_dev_nr(port, 1);
+-		mvebu_pci_bridge_emul_init(port);
  	}
  
+ 	pcie->nports = i;
 -- 
 2.34.1
 
