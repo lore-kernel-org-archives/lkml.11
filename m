@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26204C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE56C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345781AbiAXTWm (ORCPT
+        id S1349977AbiAXTW7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:22:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43854 "EHLO
+        Mon, 24 Jan 2022 14:22:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42282 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346734AbiAXTO3 (ORCPT
+        with ESMTP id S1346371AbiAXTMl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:14:29 -0500
+        Mon, 24 Jan 2022 14:12:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4631D60909;
-        Mon, 24 Jan 2022 19:14:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 125A4C340E5;
-        Mon, 24 Jan 2022 19:14:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04975611DA;
+        Mon, 24 Jan 2022 19:12:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF88DC340E7;
+        Mon, 24 Jan 2022 19:12:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051667;
-        bh=d23pXWXux0b/sd/FDTFAvhlEPzSEJl7kdCJKVQtmT4w=;
+        s=korg; t=1643051558;
+        bh=an8wbRIoUSTqX7geJnMl5kKqR7w6jg1m7eh6WjdnOt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bupGS98cprj20EDkHsJ9BIk7u05Cgi0EyP+V24EXQZLOZFGd5CeaTUMdj+EnYSo3f
-         ++YtFKttyEMMrU3xfcB8AYAAx3KyWrSZ/hlLd3R7mqUbFuRomUVxc167fhzoBqrb6C
-         c0zvrg+zVn6DLvbhgOcDJEKUNUrOnp46CG3UoZ74=
+        b=J9rtlf9f5EZNvqpC7xK99ydPyWUKwupqVSoyyTB3mYNjCkD/ObaHn06ia7fPeOQ5o
+         XX6p3w7afWuJ8NflCO1dMpL+q6nbIDo95q2O9HuciNzdcd2hOUANHE5FcZCdTDQuhh
+         SUouzQR8Cp5veKi5CSciS4hg+ELljzGwCmRhcplg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 049/239] wcn36xx: Release DMA channel descriptor allocations
-Date:   Mon, 24 Jan 2022 19:41:27 +0100
-Message-Id: <20220124183944.697627697@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mike Marshall <hubcap@omnibond.com>
+Subject: [PATCH 4.19 014/239] orangefs: Fix the size of a memory allocation in orangefs_bufmap_alloc()
+Date:   Mon, 24 Jan 2022 19:40:52 +0100
+Message-Id: <20220124183943.568589736@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,38 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 3652096e5263ad67604b0323f71d133485f410e5 ]
+commit 40a74870b2d1d3d44e13b3b73c6571dd34f5614d upstream.
 
-When unloading the driver we are not releasing the DMA descriptors which we
-previously allocated.
+'buffer_index_array' really looks like a bitmap. So it should be allocated
+as such.
+When kzalloc is called, a number of bytes is expected, but a number of
+longs is passed instead.
 
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211105122152.1580542-3-bryan.odonoghue@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+In get(), if not enough memory is allocated, un-allocated memory may be
+read or written.
+
+So use bitmap_zalloc() to safely allocate the correct memory size and
+avoid un-expected behavior.
+
+While at it, change the corresponding kfree() into bitmap_free() to keep
+the semantic.
+
+Fixes: ea2c9c9f6574 ("orangefs: bufmap rewrite")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Mike Marshall <hubcap@omnibond.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/wcn36xx/dxe.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ fs/orangefs/orangefs-bufmap.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
-index 657525988d1ee..38eef1579db2d 100644
---- a/drivers/net/wireless/ath/wcn36xx/dxe.c
-+++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
-@@ -954,4 +954,9 @@ void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
- 
- 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_l_ch);
- 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_h_ch);
-+
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_l_ch);
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_h_ch);
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_l_ch);
-+	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_h_ch);
+--- a/fs/orangefs/orangefs-bufmap.c
++++ b/fs/orangefs/orangefs-bufmap.c
+@@ -179,7 +179,7 @@ orangefs_bufmap_free(struct orangefs_buf
+ {
+ 	kfree(bufmap->page_array);
+ 	kfree(bufmap->desc_array);
+-	kfree(bufmap->buffer_index_array);
++	bitmap_free(bufmap->buffer_index_array);
+ 	kfree(bufmap);
  }
--- 
-2.34.1
-
+ 
+@@ -229,8 +229,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
+ 	bufmap->desc_size = user_desc->size;
+ 	bufmap->desc_shift = ilog2(bufmap->desc_size);
+ 
+-	bufmap->buffer_index_array =
+-		kzalloc(DIV_ROUND_UP(bufmap->desc_count, BITS_PER_LONG), GFP_KERNEL);
++	bufmap->buffer_index_array = bitmap_zalloc(bufmap->desc_count, GFP_KERNEL);
+ 	if (!bufmap->buffer_index_array)
+ 		goto out_free_bufmap;
+ 
+@@ -253,7 +252,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
+ out_free_desc_array:
+ 	kfree(bufmap->desc_array);
+ out_free_index_array:
+-	kfree(bufmap->buffer_index_array);
++	bitmap_free(bufmap->buffer_index_array);
+ out_free_bufmap:
+ 	kfree(bufmap);
+ out:
 
 
