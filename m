@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 916D9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6BB4C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356828AbiAYC17 (ORCPT
+        id S3421896AbiAYC3P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48884 "EHLO
+        Mon, 24 Jan 2022 21:29:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49536 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378614AbiAXUHr (ORCPT
+        with ESMTP id S1351363AbiAXUIo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:07:47 -0500
+        Mon, 24 Jan 2022 15:08:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 24B72B81544;
-        Mon, 24 Jan 2022 20:07:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC40C340E5;
-        Mon, 24 Jan 2022 20:07:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C20EB81229;
+        Mon, 24 Jan 2022 20:08:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC83BC340E5;
+        Mon, 24 Jan 2022 20:08:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054864;
-        bh=br/iQTyRsURcetzVqnQpSl1GiGq29hfg10350Q/e9Ew=;
+        s=korg; t=1643054920;
+        bh=jvYhz8YpNmkbER86BXrSZ5adwkxgPvr1U2vrZuzY4l0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LpVDu3+9mWvN2wjDwgkCEgewy4tY/EJVgh8ZVg8lNrIdt7y8iNyKMYR/VrZtZnBpK
-         QVJ5SHPq7Lnl+cseu61w1JafGmOKsz2En5ASKOODQzDGJzZpi5xMaoD1p24UtLATtQ
-         LFy0WgVLvCY7+tSRMiNUjFleU1sYliSLma/8Fg8I=
+        b=czipoAkGJYyveVf7IL9wl73IRdvtibGHmYo4EGf4vAVpAbbhVeefwhu8ZhSblFiLr
+         7anz73k2KDNntG1NZ51mxGjKIyKB3MkOFxmxDOeCayUwDJtw108FTGPFA3ZAVziLon
+         Llp/1vrnoNImXF8Itb52jpE+H6/zqf11PjPT+G/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 527/563] net: axienet: fix for TX busy handling
-Date:   Mon, 24 Jan 2022 19:44:52 +0100
-Message-Id: <20220124184042.656055898@linuxfoundation.org>
+Subject: [PATCH 5.10 547/563] devlink: Remove misleading internal_flags from health reporter dump
+Date:   Mon, 24 Jan 2022 19:45:12 +0100
+Message-Id: <20220124184043.346118706@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,149 +46,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Leon Romanovsky <leonro@nvidia.com>
 
-commit bb193e3db8b86a63f26889c99e14fd30c9ebd72a upstream.
+commit e9538f8270db24d272659e15841854c7ea11119e upstream.
 
-Network driver documentation indicates we should be avoiding returning
-NETDEV_TX_BUSY from ndo_start_xmit in normal cases, since it requires
-the packets to be requeued. Instead the queue should be stopped after
-a packet is added to the TX ring when there may not be enough room for an
-additional one. Also, when TX ring entries are completed, we should only
-wake the queue if we know there is room for another full maximally
-fragmented packet.
+DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET command doesn't have .doit callback
+and has no use in internal_flags at all. Remove this misleading assignment.
 
-Print a warning if there is insufficient space at the start of start_xmit,
-since this should no longer happen.
-
-Combined with increasing the default TX ring size (in a subsequent
-patch), this appears to recover the TX performance lost by previous changes
-to actually manage the TX ring state properly.
-
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Fixes: e44ef4e4516c ("devlink: Hang reporter's dump method on a dumpit cb")
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   86 ++++++++++++----------
- 1 file changed, 47 insertions(+), 39 deletions(-)
+ net/core/devlink.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -661,6 +661,32 @@ static int axienet_free_tx_chain(struct
- }
- 
- /**
-+ * axienet_check_tx_bd_space - Checks if a BD/group of BDs are currently busy
-+ * @lp:		Pointer to the axienet_local structure
-+ * @num_frag:	The number of BDs to check for
-+ *
-+ * Return: 0, on success
-+ *	    NETDEV_TX_BUSY, if any of the descriptors are not free
-+ *
-+ * This function is invoked before BDs are allocated and transmission starts.
-+ * This function returns 0 if a BD or group of BDs can be allocated for
-+ * transmission. If the BD or any of the BDs are not free the function
-+ * returns a busy status. This is invoked from axienet_start_xmit.
-+ */
-+static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
-+					    int num_frag)
-+{
-+	struct axidma_bd *cur_p;
-+
-+	/* Ensure we see all descriptor updates from device or TX IRQ path */
-+	rmb();
-+	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
-+	if (cur_p->cntrl)
-+		return NETDEV_TX_BUSY;
-+	return 0;
-+}
-+
-+/**
-  * axienet_start_xmit_done - Invoked once a transmit is completed by the
-  * Axi DMA Tx channel.
-  * @ndev:	Pointer to the net_device structure
-@@ -689,33 +715,8 @@ static void axienet_start_xmit_done(stru
- 	/* Matches barrier in axienet_start_xmit */
- 	smp_mb();
- 
--	netif_wake_queue(ndev);
--}
--
--/**
-- * axienet_check_tx_bd_space - Checks if a BD/group of BDs are currently busy
-- * @lp:		Pointer to the axienet_local structure
-- * @num_frag:	The number of BDs to check for
-- *
-- * Return: 0, on success
-- *	    NETDEV_TX_BUSY, if any of the descriptors are not free
-- *
-- * This function is invoked before BDs are allocated and transmission starts.
-- * This function returns 0 if a BD or group of BDs can be allocated for
-- * transmission. If the BD or any of the BDs are not free the function
-- * returns a busy status. This is invoked from axienet_start_xmit.
-- */
--static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
--					    int num_frag)
--{
--	struct axidma_bd *cur_p;
--
--	/* Ensure we see all descriptor updates from device or TX IRQ path */
--	rmb();
--	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
--	if (cur_p->cntrl)
--		return NETDEV_TX_BUSY;
--	return 0;
-+	if (!axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1))
-+		netif_wake_queue(ndev);
- }
- 
- /**
-@@ -748,19 +749,14 @@ axienet_start_xmit(struct sk_buff *skb,
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
- 
- 	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
--		if (netif_queue_stopped(ndev))
--			return NETDEV_TX_BUSY;
--
-+		/* Should not happen as last start_xmit call should have
-+		 * checked for sufficient space and queue should only be
-+		 * woken when sufficient space is available.
-+		 */
- 		netif_stop_queue(ndev);
--
--		/* Matches barrier in axienet_start_xmit_done */
--		smp_mb();
--
--		/* Space might have just been freed - check again */
--		if (axienet_check_tx_bd_space(lp, num_frag + 1))
--			return NETDEV_TX_BUSY;
--
--		netif_wake_queue(ndev);
-+		if (net_ratelimit())
-+			netdev_warn(ndev, "TX ring unexpectedly full\n");
-+		return NETDEV_TX_BUSY;
- 	}
- 
- 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-@@ -821,6 +817,18 @@ axienet_start_xmit(struct sk_buff *skb,
- 	if (++lp->tx_bd_tail >= lp->tx_bd_num)
- 		lp->tx_bd_tail = 0;
- 
-+	/* Stop queue if next transmit may not have space */
-+	if (axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1)) {
-+		netif_stop_queue(ndev);
-+
-+		/* Matches barrier in axienet_start_xmit_done */
-+		smp_mb();
-+
-+		/* Space might have just been freed - check again */
-+		if (!axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1))
-+			netif_wake_queue(ndev);
-+	}
-+
- 	return NETDEV_TX_OK;
- }
- 
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -7852,8 +7852,6 @@ static const struct genl_small_ops devli
+ 			    GENL_DONT_VALIDATE_DUMP_STRICT,
+ 		.dumpit = devlink_nl_cmd_health_reporter_dump_get_dumpit,
+ 		.flags = GENL_ADMIN_PERM,
+-		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT |
+-				  DEVLINK_NL_FLAG_NO_LOCK,
+ 	},
+ 	{
+ 		.cmd = DEVLINK_CMD_HEALTH_REPORTER_DUMP_CLEAR,
 
 
