@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2331C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345214AbiAXTJI (ORCPT
+        id S1345375AbiAXTJN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:09:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59458 "EHLO
+        Mon, 24 Jan 2022 14:09:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59542 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345129AbiAXTCs (ORCPT
+        with ESMTP id S1345162AbiAXTCt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:02:48 -0500
+        Mon, 24 Jan 2022 14:02:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB7C0B81240;
-        Mon, 24 Jan 2022 19:02:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0813EC340E5;
-        Mon, 24 Jan 2022 19:02:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DDCCEB8122F;
+        Mon, 24 Jan 2022 19:02:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8B0C340E5;
+        Mon, 24 Jan 2022 19:02:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050963;
-        bh=9cL7YfU2Tl2x+HNhay8gNcf5LyL2e/h7o6fZeBMPIRg=;
+        s=korg; t=1643050966;
+        bh=iQYLBwzLMi48bseQjprm7HaXg8owdAOoP16c2+NUHWs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aj0IAuDcg7EhRUo7UZz6YdppdiqUXXytAXq7bMHZ8BwwUd/kRi54vUoUR0RwXDqjB
-         3cia4tgbG4WIig+d4K58Ys/NwTssRJC6qOOV+6f169dCXz3ZToX9bWfPFKmutRZ3n6
-         Ne64RAsTFTRkojLua3cbktq1oEJslRS+I0L8zVgc=
+        b=DC115jhZyzdXOYOacuYls6ZnGf+gfSLh/IlDgECaVEnkrRvfiLebjuFtjyWYoXx8X
+         t90rvPYTyPC9jW9OklBtaEBGJMn2Yvez1cFeDRW+e6JTapGh/PLT039Sag6QNHzCi7
+         QtTwdv8rtfKbVfGzOcvkQk4bMv5YZ1ZHRpUJyw0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Mike Marshall <hubcap@omnibond.com>
-Subject: [PATCH 4.14 011/186] orangefs: Fix the size of a memory allocation in orangefs_bufmap_alloc()
-Date:   Mon, 24 Jan 2022 19:41:26 +0100
-Message-Id: <20220124183937.477418496@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.14 012/186] media: uvcvideo: fix division by zero at stream start
+Date:   Mon, 24 Jan 2022 19:41:27 +0100
+Message-Id: <20220124183937.507289946@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,61 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Johan Hovold <johan@kernel.org>
 
-commit 40a74870b2d1d3d44e13b3b73c6571dd34f5614d upstream.
+commit 8aa637bf6d70d2fb2ad4d708d8b9dd02b1c095df upstream.
 
-'buffer_index_array' really looks like a bitmap. So it should be allocated
-as such.
-When kzalloc is called, a number of bytes is expected, but a number of
-longs is passed instead.
+Add the missing bulk-endpoint max-packet sanity check to
+uvc_video_start_transfer() to avoid division by zero in
+uvc_alloc_urb_buffers() in case a malicious device has broken
+descriptors (or when doing descriptor fuzz testing).
 
-In get(), if not enough memory is allocated, un-allocated memory may be
-read or written.
+Note that USB core will reject URBs submitted for endpoints with zero
+wMaxPacketSize but that drivers doing packet-size calculations still
+need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
+endpoint descriptors with maxpacket=0")).
 
-So use bitmap_zalloc() to safely allocate the correct memory size and
-avoid un-expected behavior.
-
-While at it, change the corresponding kfree() into bitmap_free() to keep
-the semantic.
-
-Fixes: ea2c9c9f6574 ("orangefs: bufmap rewrite")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Mike Marshall <hubcap@omnibond.com>
+Fixes: c0efd232929c ("V4L/DVB (8145a): USB Video Class driver")
+Cc: stable@vger.kernel.org      # 2.6.26
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/orangefs/orangefs-bufmap.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/media/usb/uvc/uvc_video.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/fs/orangefs/orangefs-bufmap.c
-+++ b/fs/orangefs/orangefs-bufmap.c
-@@ -179,7 +179,7 @@ orangefs_bufmap_free(struct orangefs_buf
- {
- 	kfree(bufmap->page_array);
- 	kfree(bufmap->desc_array);
--	kfree(bufmap->buffer_index_array);
-+	bitmap_free(bufmap->buffer_index_array);
- 	kfree(bufmap);
- }
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -1711,6 +1711,10 @@ static int uvc_init_video(struct uvc_str
+ 		if (ep == NULL)
+ 			return -EIO;
  
-@@ -243,8 +243,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
- 	bufmap->desc_size = user_desc->size;
- 	bufmap->desc_shift = ilog2(bufmap->desc_size);
++		/* Reject broken descriptors. */
++		if (usb_endpoint_maxp(&ep->desc) == 0)
++			return -EIO;
++
+ 		ret = uvc_init_video_bulk(stream, ep, gfp_flags);
+ 	}
  
--	bufmap->buffer_index_array =
--		kzalloc(DIV_ROUND_UP(bufmap->desc_count, BITS_PER_LONG), GFP_KERNEL);
-+	bufmap->buffer_index_array = bitmap_zalloc(bufmap->desc_count, GFP_KERNEL);
- 	if (!bufmap->buffer_index_array)
- 		goto out_free_bufmap;
- 
-@@ -267,7 +266,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
- out_free_desc_array:
- 	kfree(bufmap->desc_array);
- out_free_index_array:
--	kfree(bufmap->buffer_index_array);
-+	bitmap_free(bufmap->buffer_index_array);
- out_free_bufmap:
- 	kfree(bufmap);
- out:
 
 
