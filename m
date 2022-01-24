@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94F06C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758E1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843255AbiAXXDi (ORCPT
+        id S1843336AbiAXXDu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
+        Mon, 24 Jan 2022 18:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458063AbiAXVzG (ORCPT
+        with ESMTP id S1458043AbiAXVzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:55:06 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF1DC061779;
-        Mon, 24 Jan 2022 12:37:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1759FC07E2A7;
+        Mon, 24 Jan 2022 12:36:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E86A61545;
-        Mon, 24 Jan 2022 20:37:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84326C340E5;
-        Mon, 24 Jan 2022 20:37:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AADBC61545;
+        Mon, 24 Jan 2022 20:36:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7031EC340E5;
+        Mon, 24 Jan 2022 20:36:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056625;
-        bh=NsNmxlzJcp4bHdt1JVI79chzoIVKauwC5RQte6uzHu4=;
+        s=korg; t=1643056616;
+        bh=AXo2SKIfBrFl+rOiVbbS6B5EIC7YCr/SvPrUDVh/G4E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DYmM2gthlkn9/ZFfrqu8sPX9My9/eH0YPvQ/bUTvsTYLd+2YvYD9BYYBZmzbYXWW7
-         PT3QLj2DBCqdAmLD229rFShWnEpWlV2OLnDX7TSjuwu/0HnW0ZJ6qjgq4tqkFQLGrU
-         O+eaKy9cbyJzTc06+YooV8g18TjhhjX/PjMPRaFs=
+        b=wqF44NPHuqswW/pCMu1S4BIyuHPDre4NkbRSDRBFmqMWW2Djc9rCjS+z/xLFC1D7a
+         VTCBtE/mN7C+ba74Xav7YumCIM5x/BU4YPS/578Q6vqMby+s8N77YhiHr545MryloB
+         u21C3ym+Lm6qxtZdJyKGFRBzQcteEvUG3zOj/rRI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        Adam Ward <Adam.Ward.opensource@diasemi.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 539/846] selftests/ftrace: make kprobe profile testcase description unique
-Date:   Mon, 24 Jan 2022 19:40:56 +0100
-Message-Id: <20220124184119.593749627@linuxfoundation.org>
+Subject: [PATCH 5.15 510/846] regulator: da9121: Prevent current limit change when enabled
+Date:   Mon, 24 Jan 2022 19:40:27 +0100
+Message-Id: <20220124184118.613591302@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -53,39 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: Adam Ward <Adam.Ward.opensource@diasemi.com>
 
-[ Upstream commit e5992f373c6eed6d09e5858e9623df1259b3ce30 ]
+[ Upstream commit 24f0853228f3b98f1ef08d5824376c69bb8124d2 ]
 
-Commit 32f6e5da83c7 ("selftests/ftrace: Add kprobe profile testcase")
-added a new kprobes testcase, but has a description which does not
-describe what the test case is doing and is duplicating the description
-of another test case.
+Prevent changing current limit when enabled as a precaution against
+possibile instability due to tight integration with switching cycle
 
-Therefore change the test case description, so it is unique and then
-allows easily to tell which test case actually passed or failed.
-
-Reported-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Adam Ward <Adam.Ward.opensource@diasemi.com>
+Link: https://lore.kernel.org/r/52ee682476004a1736c1e0293358987319c1c415.1638223185.git.Adam.Ward.opensource@diasemi.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/ftrace/test.d/kprobe/profile.tc | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/regulator/da9121-regulator.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-index 98166fa3eb91c..34fb89b0c61fa 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-@@ -1,6 +1,6 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
--# description: Kprobe dynamic event - adding and removing
-+# description: Kprobe profile
- # requires: kprobe_events
+diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
+index e669250902580..0a4fd449c27d1 100644
+--- a/drivers/regulator/da9121-regulator.c
++++ b/drivers/regulator/da9121-regulator.c
+@@ -253,6 +253,11 @@ static int da9121_set_current_limit(struct regulator_dev *rdev,
+ 		goto error;
+ 	}
  
- ! grep -q 'myevent' kprobe_profile
++	if (rdev->desc->ops->is_enabled(rdev)) {
++		ret = -EBUSY;
++		goto error;
++	}
++
+ 	ret = da9121_ceiling_selector(rdev, min_ua, max_ua, &sel);
+ 	if (ret < 0)
+ 		goto error;
 -- 
 2.34.1
 
