@@ -2,142 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA32FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F55C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238156AbiAXOCk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:02:40 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:51021 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238154AbiAXOCg (ORCPT
+        id S238200AbiAXODC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:03:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51437 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238170AbiAXODB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:02:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1643032956; x=1674568956;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=FzD2XGTF/bLkKovwrBSu85+pYRRSWYyu6nXfaWkmH4Y=;
-  b=TpL61cS1N9VjXph0DCrqX7yAVx4EH4buX6XI5zJKHlIxhPoBGPZT5y2y
-   FIzLjmQ/KbZztoPkTghnUnMiyiEpQlCYgZ0oHTrLHLAcXjnPgmAfxRdyO
-   up7l2f3LKzNcdWDxr785O5sR5IQrKL/6/J3VOCCVPQqK0tGNGEp1kM+oX
-   o=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 Jan 2022 06:02:35 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:02:35 -0800
-Received: from [10.216.45.46] (10.80.80.8) by nasanex01c.na.qualcomm.com
- (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 24 Jan
- 2022 06:02:32 -0800
-Message-ID: <4f2ada96-234f-31d8-664a-c84f5b461385@quicinc.com>
-Date:   Mon, 24 Jan 2022 19:32:01 +0530
+        Mon, 24 Jan 2022 09:03:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643032980;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=71OMRwnzQ9vcWo2Yl4uI77rVjb7JJPzSN8H73qAHNAM=;
+        b=IGVVojc6B3OOfbbJBT8nemgzAeUdufOlt5N0fQ1MV4Z/zsmME+wbj7Gy2mL5shJ9Jv9RNm
+        GncpCeTOjSROBOuIgjUgU/m0AG6AKNPWn+hQjMrbWeNKr3ZwTlFbEGd8hXgHfpl+2EYAKg
+        Js9A+ZciJJe6lXXGdymNzOT8bufrYqs=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-457-wk85KERQO5OtLdVqm8H1iA-1; Mon, 24 Jan 2022 09:02:59 -0500
+X-MC-Unique: wk85KERQO5OtLdVqm8H1iA-1
+Received: by mail-ed1-f69.google.com with SMTP id el8-20020a056402360800b00403bbdcef64so13144241edb.14
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 06:02:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=71OMRwnzQ9vcWo2Yl4uI77rVjb7JJPzSN8H73qAHNAM=;
+        b=e5RPBsfDIiggbdB1gn8xN165B3iQRWFCpvazDlJ5VnUaZRJycdhiTo27qmaCCpTRbY
+         Ibe4CqmtZsT02P3R4kvV7wj+xoXEKrZE5UnweNFsvIlqb+8/XAM5ll5aHahcY8QT1gQ0
+         t1EoU2mzmYRP22/BX3AjNV+R+qpqcILIENE/HLn/+/y1j/Hl3Q5vi65+tviSJCSLy2uC
+         xfaCF4SogA84i3NNyvTiGMK8d0Tck5g5oTFB77NcHNCQ+QTnHMNMCt39T5ew8f2p2HAF
+         noWPNdRNS/rJjQkOHNvqN9ROj5p/stmg2fa+N244XJp0YCzkS/jhF0OenhNWPADR5pNd
+         KZhQ==
+X-Gm-Message-State: AOAM530I0OmIUBvZ0Hbdkjpj3BcA24JzxuN0pyEfvhp5iOI3WG5T2po2
+        3Kt3P0/ZpaHev6V9ZyQMC8UYo8gGabH41Ci9rmK5pOFB6u6aZyL26H9n386XPYEXCHz2phNvXwj
+        wdCNDjQjQ8/gUrfR95SlnEAm4
+X-Received: by 2002:a17:907:1dca:: with SMTP id og10mr12455505ejc.597.1643032977606;
+        Mon, 24 Jan 2022 06:02:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy11cY4vuoXAFcdU3X4chXiK6B8Sc/D3PyYzvkaZgkot9ZWTWlk6b1fVKjCWPAXjduQeca55Q==
+X-Received: by 2002:a17:907:1dca:: with SMTP id og10mr12455484ejc.597.1643032977329;
+        Mon, 24 Jan 2022 06:02:57 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id f19sm4932863ejb.0.2022.01.24.06.02.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 06:02:56 -0800 (PST)
+Message-ID: <95f63ed6-743b-3547-dda1-4fe83bc39070@redhat.com>
+Date:   Mon, 24 Jan 2022 15:02:50 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: synchronize_rcu_expedited gets stuck in hotplug path
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH 2/2] KVM: x86: Use memcmp in kvm_cpuid_check_equal()
 Content-Language: en-US
-To:     <paulmck@kernel.org>, Tejun Heo <tj@kernel.org>
-CC:     lkml <linux-kernel@vger.kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>, <jiangshanlai@gmail.com>
-References: <7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com>
- <20220118200646.GJ947480@paulmck-ThinkPad-P17-Gen-1>
- <Yece9mH3nzwGxar6@slm.duckdns.org>
- <20220118214155.GK947480@paulmck-ThinkPad-P17-Gen-1>
-From:   Mukesh Ojha <quic_mojha@quicinc.com>
-In-Reply-To: <20220118214155.GK947480@paulmck-ThinkPad-P17-Gen-1>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20220124103606.2630588-1-vkuznets@redhat.com>
+ <20220124103606.2630588-3-vkuznets@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220124103606.2630588-3-vkuznets@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-On 1/19/2022 3:11 AM, Paul E. McKenney wrote:
-> On Tue, Jan 18, 2022 at 10:11:34AM -1000, Tejun Heo wrote:
->> Hello,
->>
->> On Tue, Jan 18, 2022 at 12:06:46PM -0800, Paul E. McKenney wrote:
->>> Interesting.  Adding Tejun and Lai on CC for their perspective.
->>>
->>> As you say, the incoming CPU invoked synchronize_rcu_expedited() which
->>> in turn invoked queue_work().  By default, workqueues will of course
->>> queue that work on the current CPU.  But in this case, the CPU's bit
->>> is not yet set in the cpu_active_mask.  Thus, a workqueue scheduled on
->>> the incoming CPU won't be invoked until CPUHP_AP_ACTIVE, which won't
->>> be reached until after the grace period ends, which cannot happen until
->>> the workqueue handler is invoked.
->>>
->>> I could imagine doing something as shown in the (untested) patch below,
->>> but first does this help?
->>>
->>> If it does help, would this sort of check be appropriate here or
->>> should it instead go into workqueues?
->> Maybe it can be solved by rearranging the hotplug sequence but it's fragile
->> to schedule per-cpu work items from hotplug paths. Maybe the whole issue can
->> be side-stepped by making synchronize_rcu_expedited() use unbound workqueue
->> instead? Does it require to be per-cpu?
-> Good point!
->
-> And now that you mention it, RCU expedited grace periods already avoid
-> using workqueues during early boot.  The (again untested) patch below
-> extends that approach to incoming CPUs.
->
-> Thoughts?
-
-Hi Paul,
-
-We are not seeing the issue after this patch.
-Can we merge this patch ?
-
--Mukesh
-
->
-> 							Thanx, Paul
->
-> ------------------------------------------------------------------------
->
-> diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-> index 60197ea24ceb9..1a45667402260 100644
-> --- a/kernel/rcu/tree_exp.h
-> +++ b/kernel/rcu/tree_exp.h
-> @@ -816,7 +816,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp)
->    */
->   void synchronize_rcu_expedited(void)
+On 1/24/22 11:36, Vitaly Kuznetsov wrote:
+> kvm_cpuid_check_equal() should also check .flags equality but instead
+> of adding it to the existing check, just switch to using memcmp() for
+> the whole 'struct kvm_cpuid_entry2'.
+> 
+> When .flags are not checked, kvm_cpuid_check_equal() may allow an update
+> which it shouldn't but kvm_set_cpuid() does not actually update anything
+> and just returns success.
+> 
+> Suggested-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>   arch/x86/kvm/cpuid.c | 13 ++-----------
+>   1 file changed, 2 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+> index 89d7822a8f5b..7dd9c8f4f46e 100644
+> --- a/arch/x86/kvm/cpuid.c
+> +++ b/arch/x86/kvm/cpuid.c
+> @@ -123,20 +123,11 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
+>   static int kvm_cpuid_check_equal(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+>   				 int nent)
 >   {
-> -	bool boottime = (rcu_scheduler_active == RCU_SCHEDULER_INIT);
-> +	bool no_wq;
->   	struct rcu_exp_work rew;
->   	struct rcu_node *rnp;
->   	unsigned long s;
-> @@ -841,9 +841,15 @@ void synchronize_rcu_expedited(void)
->   	if (exp_funnel_lock(s))
->   		return;  /* Someone else did our work for us. */
+> -	struct kvm_cpuid_entry2 *orig;
+> -	int i;
+> -
+>   	if (nent != vcpu->arch.cpuid_nent)
+>   		return -EINVAL;
 >   
-> +	/* Don't use workqueue during boot or from an incoming CPU. */
-> +	preempt_disable();
-> +	no_wq = rcu_scheduler_active == RCU_SCHEDULER_INIT ||
-> +		!cpumask_test_cpu(smp_processor_id(), cpu_active_mask);
-> +	preempt_enable();
-> +
->   	/* Ensure that load happens before action based on it. */
-> -	if (unlikely(boottime)) {
-> -		/* Direct call during scheduler init and early_initcalls(). */
-> +	if (unlikely(no_wq)) {
-> +		/* Direct call for scheduler init, early_initcall()s, and incoming CPUs. */
->   		rcu_exp_sel_wait_wake(s);
->   	} else {
->   		/* Marshall arguments & schedule the expedited grace period. */
-> @@ -861,7 +867,7 @@ void synchronize_rcu_expedited(void)
->   	/* Let the next expedited grace period start. */
->   	mutex_unlock(&rcu_state.exp_mutex);
->   
-> -	if (likely(!boottime))
-> +	if (likely(!no_wq))
->   		destroy_work_on_stack(&rew.rew_work);
->   }
->   EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
+> -	for (i = 0; i < nent; i++) {
+> -		orig = &vcpu->arch.cpuid_entries[i];
+> -		if (e2[i].function != orig->function ||
+> -		    e2[i].index != orig->index ||
+> -		    e2[i].eax != orig->eax || e2[i].ebx != orig->ebx ||
+> -		    e2[i].ecx != orig->ecx || e2[i].edx != orig->edx)
+> -			return -EINVAL;
+> -	}
+> +	if (memcmp(e2, vcpu->arch.cpuid_entries, nent * sizeof(*e2)))
+> +		return -EINVAL;
+
+Hmm, not sure about that due to the padding in struct kvm_cpuid_entry2. 
+  It might break userspace that isn't too careful about zeroing it.
+
+Queued patch 1 though.
+
+Paolo
+
