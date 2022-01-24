@@ -2,164 +2,203 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7984EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89EB1C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315479AbiAYCxa (ORCPT
+        id S1315517AbiAYCxi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:53:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33026 "EHLO
+        Mon, 24 Jan 2022 21:53:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387506AbiAYAE7 (ORCPT
+        with ESMTP id S2371542AbiAYAIa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:04:59 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D223DC10FB1A
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:50:16 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id n8so12407223lfq.4
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:50:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OGMPavFiygsyRUvP6iJHreifdhTfnFs8KzTgqM4LQXE=;
-        b=hHNFgGgpW1yZ1w3yidJ34MJlAwrfsR1lTv2j8pjJOimmG76AEX2nqrZgl12L1c2EjT
-         pUXl5fJZL52pNzq6q9l2kdXzPi1VwipLre4QSLIvXamsR28pncmewCxcyiyy/6snPrcw
-         MwZCDsjudVnfJyWF7UtVsZGai9O0RQi1zC7aH8CLCfHHcuJojcS/pXSWLJyDFybg6mV9
-         qW91v9PSr7mwaE8Y9WsVwjEp6SJz/l/3Zp+eKu5XGzD6r4RS1yZvmiHhoenEqJvfLJAR
-         BoWPA5dvK0QDl6tg0qrC/8YSBCha1070ecMkBJokjd1b1X7uetupIvFBhoPYhlw9JEjn
-         hbbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OGMPavFiygsyRUvP6iJHreifdhTfnFs8KzTgqM4LQXE=;
-        b=m9n6f+rA4vfAH1s3BWxrGwJZh+2vi0JaNVqUTPHHZSS4JM/f9+nVS8E+PrJJbGidPR
-         QWsfmxQ7m03m0XLjgBgejymJT4TRfGaEx3G7Xxb5Pjo8Y29OFuIQHjdNHSTRja/mvd25
-         Q29gBSsvCQlhTTDo42EvrgKQU+Zxt4C2WxnprGJ+hPSEr5oepIeaL28/iIqf28Lo0pOF
-         N0dvCFjitQjrXTGARpqwFiMEbosAhiW55OUMwJ0afxzVt0w3qVnuUGan0XfcPJAammQK
-         praIIenET/Si4PI9hsYGqyhjvf5NfjpcuCFD4PMdhaIyarFZsNiZBbbrFmI+bo2uP809
-         rvnQ==
-X-Gm-Message-State: AOAM532KHaHLDgznFfBcwH667DTKJFDlucR8EkR6vQiKFQEMtjG74xra
-        JcbzDyPctu9jb0N5JI4V00GxuI3/jRTSUc/fOL+jnQ==
-X-Google-Smtp-Source: ABdhPJzuUMYTwxoD6Be0fgMi8vjGomcIgc/33qufgHrwjBHGO7+ZPBh2d6fqFcJfjL6sG98DFQ8nsvt7hnR1jFZtn1E=
-X-Received: by 2002:a19:ad02:: with SMTP id t2mr14282474lfc.82.1643061014920;
- Mon, 24 Jan 2022 13:50:14 -0800 (PST)
+        Mon, 24 Jan 2022 19:08:30 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8194FC07E5FC;
+        Mon, 24 Jan 2022 13:56:45 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JjP2g5NNcz4xkH;
+        Tue, 25 Jan 2022 08:56:43 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1643061404;
+        bh=4S2QL1mgQdDy3wG5x8z+3aHXu4I0TpoY6OXzQgXC6gM=;
+        h=Date:From:To:Cc:Subject:From;
+        b=KopXF4/hev5V2fzuxyBJm/547JvhmXcBZp2ruOVmha+g5iNl5GEo8JjNsAN/fDLsN
+         PL2zq4XapD+gS79OkAuQQQRWoEVZKl6GOKoHTksRCNZ15K3uTLWmvcCIgYR5LU3WBC
+         Ki0toDsFI2H+vQbNtQ/Fo8fYUVFrIJLgbvos0eagCgruCCTOtKYxeVu69O/mXuKByd
+         pYgcA89ZsDqonzyTQUoK+aUNkmRceXnTL0WalkmWqd5L7mpn+7MtxJWxfLzKTfXiEh
+         JMxdOGNwgMULdmqzLVb7nSYt7ivmCe26pa7wzSds1+jpVYYoYPfCaMtYw/ef5BBI14
+         aEjDkmbmRLYqg==
+Date:   Tue, 25 Jan 2022 08:56:43 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Toke =?UTF-8?B?SMO4aWxhbmQt?= =?UTF-8?B?SsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>
+Subject: linux-next: manual merge of the bpf-next tree with Linus' tree
+Message-ID: <20220125085643.14e441b6@canb.auug.org.au>
 MIME-Version: 1.0
-References: <202201200359.lTk9zHg4-lkp@intel.com> <39230575-13ea-7384-71bc-2aac1fa2edb8@intel.com>
-In-Reply-To: <39230575-13ea-7384-71bc-2aac1fa2edb8@intel.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 24 Jan 2022 13:50:02 -0800
-Message-ID: <CAKwvOd=NVZs7bfz-OTnhPmk4xZfmJq6zQzJaEtaX4AO0N7Pi9A@mail.gmail.com>
-Subject: Re: arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory after
- it is freed [clang-analyzer-unix.Malloc]
-To:     Nikita Shubin <nikita.shubin@maquefel.me>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexander Sverdlin <alexander.sverdlin@gmail.com>,
-        kernel test robot <yujie.liu@intel.com>,
-        Nathan Huckleberry <nhuck@google.com>,
-        Philip Li <philip.li@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/1_7SJyP+trl=NHHKfArBEdF";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 5:46 PM kernel test robot <yujie.liu@intel.com> wrote:
->
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> head:   1d1df41c5a33359a00e919d54eaebfb789711fdc
-> commit: 9645ccc7bd7a16cd73c3be9dee70cd702b03be37 ep93xx: clock: convert in-place to COMMON_CLK
-> date:   3 months ago
-> config: arm-randconfig-c002-20220118 (https://download.01.org/0day-ci/archive/20220120/202201200359.lTk9zHg4-lkp@intel.com/config)
-> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
-> reproduce (this is a W=1 build):
->          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->          chmod +x ~/bin/make.cross
->          # install arm cross compiling tool for clang build
->          # apt-get install binutils-arm-linux-gnueabi
->          # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=9645ccc7bd7a16cd73c3be9dee70cd702b03be37
->          git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
->          git fetch --no-tags linus master
->          git checkout 9645ccc7bd7a16cd73c3be9dee70cd702b03be37
->          # save the config file to linux build tree
->          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=arm clang-analyzer
+--Sig_/1_7SJyP+trl=NHHKfArBEdF
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Hey! This check finally caught something that looks legit! Cool to see
-0day bot running clang-analyzer, too!
-Nikita, can you PTAL?
+Hi all,
 
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
->
-> clang-analyzer warnings: (new ones prefixed by >>)
->
->  >> arch/arm/mach-ep93xx/clock.c:154:2: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
->             return &psc->hw;
->             ^
->     arch/arm/mach-ep93xx/clock.c:151:2: note: Taking true branch
->             if (IS_ERR(clk))
->             ^
->     arch/arm/mach-ep93xx/clock.c:152:3: note: Memory is released
->                     kfree(psc);
->                     ^~~~~~~~~~
->     arch/arm/mach-ep93xx/clock.c:154:2: note: Use of memory after it is freed
->             return &psc->hw;
->             ^      ~~~~~~~~
->  >> arch/arm/mach-ep93xx/clock.c:484:2: warning: Value stored to 'hw' is never read [clang-analyzer-deadcode.DeadStores]
->             hw = clk_hw_register_fixed_factor(NULL, "uart", "xtali", 0, 1, clk_uart_div);
->             ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->  >> arch/arm/mach-ep93xx/clock.c:612:2: warning: Value stored to 'hw' is never read [clang-analyzer-deadcode.DeadStores]
->             hw = clk_hw_register_fixed_factor(NULL, "usb_clk", "pll2", 0, 1, clk_usb_div);
->             ^    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->
-> vim +154 arch/arm/mach-ep93xx/clock.c
->
-> ff05c0330b9880 Hartley Sweeten 2009-05-07  125
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  126  static struct clk_hw *ep93xx_clk_register_gate(const char *name,
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  127                                      const char *parent_name,
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  128                                      void __iomem *reg,
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  129                                      u8 bit_idx)
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  130  {
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  131          struct clk_init_data init;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  132          struct clk_psc *psc;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  133          struct clk *clk;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  134
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  135          psc = kzalloc(sizeof(*psc), GFP_KERNEL);
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  136          if (!psc)
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  137                  return ERR_PTR(-ENOMEM);
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  138
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  139          init.name = name;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  140          init.ops = &clk_ep93xx_gate_ops;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  141          init.flags = CLK_SET_RATE_PARENT;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  142          init.parent_names = (parent_name ? &parent_name : NULL);
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  143          init.num_parents = (parent_name ? 1 : 0);
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  144
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  145          psc->reg = reg;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  146          psc->bit_idx = bit_idx;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  147          psc->hw.init = &init;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  148          psc->lock = &clk_lock;
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  149
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  150          clk = clk_register(NULL, &psc->hw);
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  151          if (IS_ERR(clk))
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  152                  kfree(psc);
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
-probably should `return ERR_CAST(clk);` ?
+  tools/testing/selftests/bpf/prog_tests/xdp_link.c
 
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18  153
-> 9645ccc7bd7a16 Nikita Shubin   2021-10-18 @154          return &psc->hw;
-> ff05c0330b9880 Hartley Sweeten 2009-05-07  155  }
-> ff05c0330b9880 Hartley Sweeten 2009-05-07  156
->
-> ---
-> 0-DAY CI Kernel Test Service, Intel Corporation
-> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
->
+between commit:
 
+  4b27480dcaa7 ("bpf/selftests: convert xdp_link test to ASSERT_* macros")
 
--- 
-Thanks,
-~Nick Desaulniers
+from Linus' tree and commit:
+
+  544356524dd6 ("selftests/bpf: switch to new libbpf XDP APIs")
+
+from the bpf-next tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc tools/testing/selftests/bpf/prog_tests/xdp_link.c
+index b2b357f8c74c,0c5e4ea8eaae..000000000000
+--- a/tools/testing/selftests/bpf/prog_tests/xdp_link.c
++++ b/tools/testing/selftests/bpf/prog_tests/xdp_link.c
+@@@ -8,9 -8,9 +8,9 @@@
+ =20
+  void serial_test_xdp_link(void)
+  {
+- 	DECLARE_LIBBPF_OPTS(bpf_xdp_set_link_opts, opts, .old_fd =3D -1);
+ -	__u32 duration =3D 0, id1, id2, id0 =3D 0, prog_fd1, prog_fd2, err;
+  	struct test_xdp_link *skel1 =3D NULL, *skel2 =3D NULL;
+ +	__u32 id1, id2, id0 =3D 0, prog_fd1, prog_fd2;
++ 	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
+  	struct bpf_link_info link_info;
+  	struct bpf_prog_info prog_info;
+  	struct bpf_link *link;
+@@@ -41,14 -40,14 +41,14 @@@
+  	id2 =3D prog_info.id;
+ =20
+  	/* set initial prog attachment */
+- 	err =3D bpf_set_link_xdp_fd_opts(IFINDEX_LO, prog_fd1, XDP_FLAGS_REPLACE=
+, &opts);
++ 	err =3D bpf_xdp_attach(IFINDEX_LO, prog_fd1, XDP_FLAGS_REPLACE, &opts);
+ -	if (CHECK(err, "fd_attach", "initial prog attach failed: %d\n", err))
+ +	if (!ASSERT_OK(err, "fd_attach"))
+  		goto cleanup;
+ =20
+  	/* validate prog ID */
+- 	err =3D bpf_get_link_xdp_id(IFINDEX_LO, &id0, 0);
++ 	err =3D bpf_xdp_query_id(IFINDEX_LO, 0, &id0);
+ -	CHECK(err || id0 !=3D id1, "id1_check",
+ -	      "loaded prog id %u !=3D id1 %u, err %d", id0, id1, err);
+ +	if (!ASSERT_OK(err, "id1_check_err") || !ASSERT_EQ(id0, id1, "id1_check_=
+val"))
+ +		goto cleanup;
+ =20
+  	/* BPF link is not allowed to replace prog attachment */
+  	link =3D bpf_program__attach_xdp(skel1->progs.xdp_handler, IFINDEX_LO);
+@@@ -61,9 -60,9 +61,9 @@@
+  	}
+ =20
+  	/* detach BPF program */
+- 	opts.old_fd =3D prog_fd1;
+- 	err =3D bpf_set_link_xdp_fd_opts(IFINDEX_LO, -1, XDP_FLAGS_REPLACE, &opt=
+s);
++ 	opts.old_prog_fd =3D prog_fd1;
++ 	err =3D bpf_xdp_detach(IFINDEX_LO, XDP_FLAGS_REPLACE, &opts);
+ -	if (CHECK(err, "prog_detach", "failed %d\n", err))
+ +	if (!ASSERT_OK(err, "prog_detach"))
+  		goto cleanup;
+ =20
+  	/* now BPF link should attach successfully */
+@@@ -73,24 -72,25 +73,24 @@@
+  	skel1->links.xdp_handler =3D link;
+ =20
+  	/* validate prog ID */
+- 	err =3D bpf_get_link_xdp_id(IFINDEX_LO, &id0, 0);
++ 	err =3D bpf_xdp_query_id(IFINDEX_LO, 0, &id0);
+ -	if (CHECK(err || id0 !=3D id1, "id1_check",
+ -		  "loaded prog id %u !=3D id1 %u, err %d", id0, id1, err))
+ +	if (!ASSERT_OK(err, "id1_check_err") || !ASSERT_EQ(id0, id1, "id1_check_=
+val"))
+  		goto cleanup;
+ =20
+  	/* BPF prog attach is not allowed to replace BPF link */
+- 	opts.old_fd =3D prog_fd1;
+- 	err =3D bpf_set_link_xdp_fd_opts(IFINDEX_LO, prog_fd2, XDP_FLAGS_REPLACE=
+, &opts);
++ 	opts.old_prog_fd =3D prog_fd1;
++ 	err =3D bpf_xdp_attach(IFINDEX_LO, prog_fd2, XDP_FLAGS_REPLACE, &opts);
+ -	if (CHECK(!err, "prog_attach_fail", "unexpected success\n"))
+ +	if (!ASSERT_ERR(err, "prog_attach_fail"))
+  		goto cleanup;
+ =20
+  	/* Can't force-update when BPF link is active */
+- 	err =3D bpf_set_link_xdp_fd(IFINDEX_LO, prog_fd2, 0);
++ 	err =3D bpf_xdp_attach(IFINDEX_LO, prog_fd2, 0, NULL);
+ -	if (CHECK(!err, "prog_update_fail", "unexpected success\n"))
+ +	if (!ASSERT_ERR(err, "prog_update_fail"))
+  		goto cleanup;
+ =20
+  	/* Can't force-detach when BPF link is active */
+- 	err =3D bpf_set_link_xdp_fd(IFINDEX_LO, -1, 0);
++ 	err =3D bpf_xdp_detach(IFINDEX_LO, 0, NULL);
+ -	if (CHECK(!err, "prog_detach_fail", "unexpected success\n"))
+ +	if (!ASSERT_ERR(err, "prog_detach_fail"))
+  		goto cleanup;
+ =20
+  	/* BPF link is not allowed to replace another BPF link */
+@@@ -109,8 -109,9 +109,8 @@@
+  		goto cleanup;
+  	skel2->links.xdp_handler =3D link;
+ =20
+- 	err =3D bpf_get_link_xdp_id(IFINDEX_LO, &id0, 0);
++ 	err =3D bpf_xdp_query_id(IFINDEX_LO, 0, &id0);
+ -	if (CHECK(err || id0 !=3D id2, "id2_check",
+ -		  "loaded prog id %u !=3D id2 %u, err %d", id0, id1, err))
+ +	if (!ASSERT_OK(err, "id2_check_err") || !ASSERT_EQ(id0, id2, "id2_check_=
+val"))
+  		goto cleanup;
+ =20
+  	/* updating program under active BPF link works as expected */
+
+--Sig_/1_7SJyP+trl=NHHKfArBEdF
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHvIJsACgkQAVBC80lX
+0GwzXwf/d+fypAnqe9dQ0KH2hWEWCM+EuR+6KNO3awVyilMlumFFqA6fgj6gjnVi
+N7KUtj4XuyLHdDyScoWy8JXfFBz4V1wyVRoKB6I2bB0xF3inV3GrPOucv9ytQrU1
+CtCRSDaEe/FeUM9pr5ck70fwB6X36+zPqERqOD4xkD8Rvc1VRr16zKydAhsup1Tv
+7X4QMazfwHoavWKk5vSqmd1ePx4ZlHEcpcF8ES7rgmgqFUrLXK2RaovwBhVX0oFV
+UjzwPYkw2BKE/hgSITSVI2H9H4UcADcK9fcfKfEmGDC1AwiVNU4XbyXqcq+Hfagg
+ScEKp1VDUWHVb5osbZVoLIWAkgU/wA==
+=XKBz
+-----END PGP SIGNATURE-----
+
+--Sig_/1_7SJyP+trl=NHHKfArBEdF--
