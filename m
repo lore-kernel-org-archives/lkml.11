@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42478C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:08:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD0AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:08:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380084AbiAXWIM (ORCPT
+        id S1380116AbiAXWI1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:08:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38026 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449126AbiAXVO5 (ORCPT
+        Mon, 24 Jan 2022 17:08:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49906 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449132AbiAXVO5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:14:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5F01C06E013;
+        Mon, 24 Jan 2022 12:11:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D539061320;
-        Mon, 24 Jan 2022 21:14:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B3B3C340E5;
-        Mon, 24 Jan 2022 21:14:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69726B8122D;
+        Mon, 24 Jan 2022 20:11:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86951C340E5;
+        Mon, 24 Jan 2022 20:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058896;
-        bh=g6pSpn2i0X05d9/e/pvWbJQ995pdOEPCyDaWB64n2Dw=;
+        s=korg; t=1643055080;
+        bh=5cGp+aSWnuWz15OHFFkJuyGsVGAc0ab+PsZw/z1KGJQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A8TfzFupAeMFv+oOIcOMkIgwCyIAZtoxIxpTUMh3Q9UZLkupdfvTAh9MqnJz/Wrvf
-         gisa2/zIcZLd0V3XN8r/K2sfEY0ZKQy3uk/VeMVCl98xpvLLngAfpGLb4kF91mVsGP
-         992ygy/t9dnIQKygJgcsxWy//EFpUZ7Xz9tAFScI=
+        b=RmBJ1MYVbJoTpHMZk2IRrO4jfhldXQEnh1oE03HSnIEULmdoiO2zgy6zakwkZH4Z/
+         ulaRJxVADCOW+JeEXfnx+FqEmhVuvvyO8KhK/Vu9yH59qN2O3CdjvV4PyGYXpYENh6
+         WXrqxK+yeAsoVOP+n5j847CPSIFvmjWqOQN4aQVI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@ZenIV.linux.org.uk>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0436/1039] pcmcia: fix setting of kthread task states
-Date:   Mon, 24 Jan 2022 19:37:05 +0100
-Message-Id: <20220124184139.955395323@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.15 007/846] HID: wacom: Avoid using stale array indicies to read contact count
+Date:   Mon, 24 Jan 2022 19:32:04 +0100
+Message-Id: <20220124184101.152949416@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,55 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dominik Brodowski <linux@dominikbrodowski.net>
+From: Jason Gerecke <killertofu@gmail.com>
 
-[ Upstream commit fbb3485f1f931102d8ba606f1c28123f5b48afa3 ]
+commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
 
-We need to set TASK_INTERRUPTIBLE before calling kthread_should_stop().
-Otherwise, kthread_stop() might see that the pccardd thread is still
-in TASK_RUNNING state and fail to wake it up.
+If we ever see a touch report with contact count data we initialize
+several variables used to read the contact count in the pre-report
+phase. These variables are never reset if we process a report which
+doesn't contain a contact count, however. This can cause the pre-
+report function to trigger a read of arbitrary memory (e.g. NULL
+if we're lucky) and potentially crash the driver.
 
-Additionally, we only need to set the state back to TASK_RUNNING if
-kthread_should_stop() breaks the loop.
+This commit restores resetting of the variables back to default
+"none" values that were used prior to the commit mentioned
+below.
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Reported-by: Al Viro <viro@ZenIV.linux.org.uk>
-Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-Fixes: d3046ba809ce ("pcmcia: fix a boot time warning in pcmcia cs code")
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://github.com/linuxwacom/input-wacom/issues/276
+Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pcmcia/cs.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/hid/wacom_wac.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/pcmcia/cs.c b/drivers/pcmcia/cs.c
-index e211e2619680c..f70197154a362 100644
---- a/drivers/pcmcia/cs.c
-+++ b/drivers/pcmcia/cs.c
-@@ -666,18 +666,16 @@ static int pccardd(void *__skt)
- 		if (events || sysfs_events)
- 			continue;
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2682,6 +2682,10 @@ static void wacom_wac_finger_pre_report(
  
-+		set_current_state(TASK_INTERRUPTIBLE);
- 		if (kthread_should_stop())
- 			break;
+ 	hid_data->confidence = true;
  
--		set_current_state(TASK_INTERRUPTIBLE);
--
- 		schedule();
- 
--		/* make sure we are running */
--		__set_current_state(TASK_RUNNING);
--
- 		try_to_freeze();
- 	}
-+	/* make sure we are running before we exit */
-+	__set_current_state(TASK_RUNNING);
- 
- 	/* shut down socket, if a device is still present */
- 	if (skt->state & SOCKET_PRESENT) {
--- 
-2.34.1
-
++	hid_data->cc_report = 0;
++	hid_data->cc_index = -1;
++	hid_data->cc_value_index = -1;
++
+ 	for (i = 0; i < report->maxfield; i++) {
+ 		struct hid_field *field = report->field[i];
+ 		int j;
 
 
