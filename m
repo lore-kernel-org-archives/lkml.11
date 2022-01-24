@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DB39C3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58D51C35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362317AbiAXXmM (ORCPT
+        id S2362586AbiAXXmk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45202 "EHLO
+        Mon, 24 Jan 2022 18:42:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1841091AbiAXW5g (ORCPT
+        with ESMTP id S1843730AbiAXXFi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:57:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA85FC055ABE;
-        Mon, 24 Jan 2022 13:12:01 -0800 (PST)
+        Mon, 24 Jan 2022 18:05:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E035CC02B77E;
+        Mon, 24 Jan 2022 13:16:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6B8A66147D;
-        Mon, 24 Jan 2022 21:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 506B0C340E5;
-        Mon, 24 Jan 2022 21:12:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8836BB811A2;
+        Mon, 24 Jan 2022 21:16:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E02CBC340E4;
+        Mon, 24 Jan 2022 21:16:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058720;
-        bh=RLQt645kFXrizzQINI9AoTr4vJ0Bgr5GYFhh/k5hya0=;
+        s=korg; t=1643058994;
+        bh=n+2oQiECCDibeXeXVuzVRofAl5ID7Qq6aThu6u/Ccas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tnEOIYi8EPGNwvbEhbseyNOl7+paVpl9TdrCp6r/4fyZIIyhq5lL1zlyz8jRlqPo6
-         xoZmCEoHtP6rkeTHOM8gCPt6qt+vIPT2f/RbmJeq9oKpZjBdKVq8zhlQSUffy5o7rI
-         iCwc/jia0U+5DtJUDKQKLk7eaQxFsDOLvefXz8Bo=
+        b=hpw+kscnvqiOeTJkcSs9J7R+i1V9wUtYgJpfxldzVuzxDH3GCyCmQymvwSRvljLgZ
+         ciBM576y4y7wAEe1ITg9NIot4FLUKTXHbYM2sgNPKVIOB/NpTUgR6kM0YGKNbtKnya
+         cVXWgvYagraN4iYiR7B8+sm7A5wmbN/J0bBcz5U0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0381/1039] net: fix SOF_TIMESTAMPING_BIND_PHC to work with multiple sockets
-Date:   Mon, 24 Jan 2022 19:36:10 +0100
-Message-Id: <20220124184138.119678932@linuxfoundation.org>
+Subject: [PATCH 5.16 0442/1039] amt: fix wrong return type of amt_send_membership_update()
+Date:   Mon, 24 Jan 2022 19:37:11 +0100
+Message-Id: <20220124184140.152117560@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,128 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miroslav Lichvar <mlichvar@redhat.com>
+From: Taehee Yoo <ap420073@gmail.com>
 
-[ Upstream commit 007747a984ea5e895b7d8b056b24ebf431e1e71d ]
+[ Upstream commit dd3ca4c5184ea98e40acb8eb293d85b88ea04ee2 ]
 
-When multiple sockets using the SOF_TIMESTAMPING_BIND_PHC flag received
-a packet with a hardware timestamp (e.g. multiple PTP instances in
-different PTP domains using the UDPv4/v6 multicast or L2 transport),
-the timestamps received on some sockets were corrupted due to repeated
-conversion of the same timestamp (by the same or different vclocks).
+amt_send_membership_update() would return -1 but it's return type is bool.
+So, it should be used TRUE instead of -1.
 
-Fix ptp_convert_timestamp() to not modify the shared skb timestamp
-and return the converted timestamp as a ktime_t instead. If the
-conversion fails, return 0 to not confuse the application with
-timestamps corresponding to an unexpected PHC.
-
-Fixes: d7c088265588 ("net: socket: support hardware timestamp conversion to PHC bound")
-Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
-Cc: Yangbo Lu <yangbo.lu@nxp.com>
-Cc: Richard Cochran <richardcochran@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+Link: https://lore.kernel.org/r/20220109163702.6331-1-ap420073@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/ptp/ptp_vclock.c         | 10 +++++-----
- include/linux/ptp_clock_kernel.h | 12 +++++++-----
- net/socket.c                     |  9 ++++++---
- 3 files changed, 18 insertions(+), 13 deletions(-)
+ drivers/net/amt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
-index baee0379482bc..ab1d233173e13 100644
---- a/drivers/ptp/ptp_vclock.c
-+++ b/drivers/ptp/ptp_vclock.c
-@@ -185,8 +185,8 @@ out:
- }
- EXPORT_SYMBOL(ptp_get_vclocks_index);
- 
--void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
--			   int vclock_index)
-+ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
-+			      int vclock_index)
- {
- 	char name[PTP_CLOCK_NAME_LEN] = "";
- 	struct ptp_vclock *vclock;
-@@ -198,12 +198,12 @@ void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
- 	snprintf(name, PTP_CLOCK_NAME_LEN, "ptp%d", vclock_index);
- 	dev = class_find_device_by_name(ptp_class, name);
- 	if (!dev)
--		return;
-+		return 0;
- 
- 	ptp = dev_get_drvdata(dev);
- 	if (!ptp->is_virtual_clock) {
- 		put_device(dev);
--		return;
-+		return 0;
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index b732ee9a50ef9..d3a9dda6c7286 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -1106,7 +1106,7 @@ static bool amt_send_membership_query(struct amt_dev *amt,
+ 	rt = ip_route_output_key(amt->net, &fl4);
+ 	if (IS_ERR(rt)) {
+ 		netdev_dbg(amt->dev, "no route to %pI4\n", &tunnel->ip4);
+-		return -1;
++		return true;
  	}
  
- 	vclock = info_to_vclock(ptp->info);
-@@ -215,7 +215,7 @@ void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
- 	spin_unlock_irqrestore(&vclock->lock, flags);
- 
- 	put_device(dev);
--	hwtstamps->hwtstamp = ns_to_ktime(ns);
-+	return ns_to_ktime(ns);
- }
- EXPORT_SYMBOL(ptp_convert_timestamp);
- #endif
-diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
-index 2e5565067355b..554454cb86931 100644
---- a/include/linux/ptp_clock_kernel.h
-+++ b/include/linux/ptp_clock_kernel.h
-@@ -351,15 +351,17 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index);
-  *
-  * @hwtstamps:    skb_shared_hwtstamps structure pointer
-  * @vclock_index: phc index of ptp vclock.
-+ *
-+ * Returns converted timestamp, or 0 on error.
-  */
--void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
--			   int vclock_index);
-+ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
-+			      int vclock_index);
- #else
- static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
- { return 0; }
--static inline void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
--					 int vclock_index)
--{ }
-+static inline ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
-+					    int vclock_index)
-+{ return 0; }
- 
- #endif
- 
-diff --git a/net/socket.c b/net/socket.c
-index 7f64a6eccf63f..5053eb0100e48 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -829,6 +829,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- 	int empty = 1, false_tstamp = 0;
- 	struct skb_shared_hwtstamps *shhwtstamps =
- 		skb_hwtstamps(skb);
-+	ktime_t hwtstamp;
- 
- 	/* Race occurred between timestamp enabling and packet
- 	   receiving.  Fill in the current time for now. */
-@@ -877,10 +878,12 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- 	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
- 	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
- 		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
--			ptp_convert_timestamp(shhwtstamps, sk->sk_bind_phc);
-+			hwtstamp = ptp_convert_timestamp(shhwtstamps,
-+							 sk->sk_bind_phc);
-+		else
-+			hwtstamp = shhwtstamps->hwtstamp;
- 
--		if (ktime_to_timespec64_cond(shhwtstamps->hwtstamp,
--					     tss.ts + 2)) {
-+		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
- 			empty = 0;
- 
- 			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
+ 	amtmq		= skb_push(skb, sizeof(*amtmq));
 -- 
 2.34.1
 
