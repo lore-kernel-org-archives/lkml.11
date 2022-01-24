@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACC2C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FE5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576815AbiAXV4b (ORCPT
+        id S1576849AbiAXV4f (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:56:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51096 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450885AbiAXVVm (ORCPT
+        Mon, 24 Jan 2022 16:56:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38404 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378451AbiAXVRb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:21:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871D8C0617AB;
-        Mon, 24 Jan 2022 12:16:30 -0800 (PST)
+        Mon, 24 Jan 2022 16:17:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25865611CD;
-        Mon, 24 Jan 2022 20:16:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0822EC340E5;
-        Mon, 24 Jan 2022 20:16:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B574161320;
+        Mon, 24 Jan 2022 21:17:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D048C340E4;
+        Mon, 24 Jan 2022 21:17:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055389;
-        bh=lvp0Le3VVEXhImapXju5LURgBY2c/1oUn9iXm9ZTrnQ=;
+        s=korg; t=1643059048;
+        bh=+JhNhfhX4CzHKo6zamglhaOW+gem5nuxs1xCVr/STrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wX9tjvi4ij94AxpEV8naTsfQ1Q1q8+W4yiTGA+gCVA9rOBBwuXbL1/UPZmPYPqzIs
-         hZh7zPgLDIrdQj0AJ/U6sOlyIjIlW/yaTL5fz6+kIEyyra9O3DXPSUo7NtGyNSgD5/
-         FlIFYGj+KMh2BeYhCXL1mvXA1RM9l5teMmTFkBlc=
+        b=sb3ptaBDq6E4OnMUQMJ++lRxS0o/iOIgFzjy71iMHv39PsitKBNC6Zx7VblUO5Z6l
+         j7454LWmHJrtps6LTXkBICMICE1wOeC1K9M0k/23Q+gRVCGBOxIcJ8zsk0GDbXKUBY
+         KhjfFGQT1UKhCaQULikkAZZyVqSgfoI2lr2t3Z6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 135/846] arm64: dts: renesas: cat875: Add rx/tx delays
-Date:   Mon, 24 Jan 2022 19:34:12 +0100
-Message-Id: <20220124184105.654897363@linuxfoundation.org>
+        stable@vger.kernel.org, Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0488/1039] of: unittest: 64 bit dma address test requires arch support
+Date:   Mon, 24 Jan 2022 19:37:57 +0100
+Message-Id: <20220124184141.675082704@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +46,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Frank Rowand <frank.rowand@sony.com>
 
-[ Upstream commit e1a9faddffe7e555304dc2e3284c84fbee0679ee ]
+[ Upstream commit 9fd4cf5d3571b27d746b8ead494a3f051485b679 ]
 
-The CAT875 sub board from Silicon Linux uses a Realtek PHY.
+If an architecture does not support 64 bit dma addresses then testing
+for an expected dma address >= 0x100000000 will fail.
 
-The phy driver commit bbc4d71d63549bcd003 ("net: phy: realtek: fix
-rtl8211e rx/tx delay config") introduced NFS mount failures.  Now it
-needs both rx/tx delays for the NFS mount to work.
-
-This patch fixes the NFS mount failure issue by adding "rgmii-id" mode
-to the avb device node.
-
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-Fixes: bbc4d71d63549bcd ("net: phy: realtek: fix rtl8211e rx/tx delay config")
-Link: https://lore.kernel.org/r/20211115142830.12651-1-biju.das.jz@bp.renesas.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
+Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20211212221852.233295-1-frowand.list@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/renesas/cat875.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/of/unittest.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/renesas/cat875.dtsi b/arch/arm64/boot/dts/renesas/cat875.dtsi
-index 801ea54b027c4..20f8adc635e72 100644
---- a/arch/arm64/boot/dts/renesas/cat875.dtsi
-+++ b/arch/arm64/boot/dts/renesas/cat875.dtsi
-@@ -18,6 +18,7 @@
- 	pinctrl-names = "default";
- 	renesas,no-ether-link;
- 	phy-handle = <&phy0>;
-+	phy-mode = "rgmii-id";
- 	status = "okay";
- 
- 	phy0: ethernet-phy@0 {
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index 02c5cd06ad19c..35af4fedc15de 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -942,8 +942,9 @@ static void __init of_unittest_parse_dma_ranges(void)
+ {
+ 	of_unittest_dma_ranges_one("/testcase-data/address-tests/device@70000000",
+ 		0x0, 0x20000000);
+-	of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
+-		0x100000000, 0x20000000);
++	if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
++		of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
++			0x100000000, 0x20000000);
+ 	of_unittest_dma_ranges_one("/testcase-data/address-tests/pci@90000000",
+ 		0x80000000, 0x20000000);
+ }
 -- 
 2.34.1
 
