@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DF7C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 714A7C4707A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453143AbiAXV2P (ORCPT
+        id S1449415AbiAXV2b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:28:15 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53796 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444606AbiAXVBL (ORCPT
+        Mon, 24 Jan 2022 16:28:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55514 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444715AbiAXVBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:01:11 -0500
+        Mon, 24 Jan 2022 16:01:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C473761317;
-        Mon, 24 Jan 2022 21:01:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F689C340E5;
-        Mon, 24 Jan 2022 21:01:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79F1FB80FA3;
+        Mon, 24 Jan 2022 21:01:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F8E5C340E5;
+        Mon, 24 Jan 2022 21:01:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058070;
-        bh=KXzbmPA767ltcjzNwVWOMCdu5eyCPYs7gRedD1yhhm0=;
+        s=korg; t=1643058079;
+        bh=QA8+oOIsCW4SEIRGEnJ6v+finhlrCS8bNEytK881OKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=goF2PXxf7QSRK3TAK5FKer4ODLEQKuYej9nnsrgE2oEP8WFqRpqzL6sMnVlA3H7VI
-         RhwFTRZZAEZvZCU2gxsfL1Fr7ikWiEVCw8sifHCnn2AtXm0iauczy8qh4UGPny9Lll
-         K2mXTdfivGbmAogrDqNO3Ct5TaooZHOlOMyrCWXY=
+        b=RD1D1JegVhp8qeCr0zIYTs60MzjsvDZj8piRkzbndsQHT1WHRdKFMI+j7iaDhrJnd
+         jg7XkQL8BPDAdiShNudVgbgVb0J1lZxcjpNEm4KEljMyVd/+GLBeQr5JoeHZSAZ0tm
+         ADuU+s769atr/pFVSloJN3XCL/9DfT5xzDhdcjlg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Wolfgang Ocker <weo@reccoware.de>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0172/1039] libbpf: Fix glob_syms memory leak in bpf_linker
-Date:   Mon, 24 Jan 2022 19:32:41 +0100
-Message-Id: <20220124184131.023971255@linuxfoundation.org>
+Subject: [PATCH 5.16 0157/1039] crypto: atmel-aes - Reestablish the correct tfm context at dequeue
+Date:   Mon, 24 Jan 2022 19:32:26 +0100
+Message-Id: <20220124184130.453484468@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,33 +48,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit 8cb125566c40b7141d8842c534f0ea5820ee3d5c ]
+[ Upstream commit 6d48de655917a9d782953eba65de4e3db593ddf0 ]
 
-glob_syms array wasn't freed on bpf_link__free(). Fix that.
+In case there were more requests from different tfms in the crypto
+queue, only the context of the last initialized tfm was considered.
 
-Fixes: a46349227cd8 ("libbpf: Add linker extern resolution support for functions and global variables")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20211124002325.1737739-6-andrii@kernel.org
+Fixes: ec2088b66f7a ("crypto: atmel-aes - Allocate aes dev at tfm init time")
+Reported-by: Wolfgang Ocker <weo@reccoware.de>
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/linker.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/crypto/atmel-aes.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
-index f677dccdeae44..94bdd97859285 100644
---- a/tools/lib/bpf/linker.c
-+++ b/tools/lib/bpf/linker.c
-@@ -210,6 +210,7 @@ void bpf_linker__free(struct bpf_linker *linker)
- 	}
- 	free(linker->secs);
+diff --git a/drivers/crypto/atmel-aes.c b/drivers/crypto/atmel-aes.c
+index 9391ccc03382d..fe05584031914 100644
+--- a/drivers/crypto/atmel-aes.c
++++ b/drivers/crypto/atmel-aes.c
+@@ -960,6 +960,7 @@ static int atmel_aes_handle_queue(struct atmel_aes_dev *dd,
+ 	ctx = crypto_tfm_ctx(areq->tfm);
  
-+	free(linker->glob_syms);
- 	free(linker);
- }
+ 	dd->areq = areq;
++	dd->ctx = ctx;
+ 	start_async = (areq != new_areq);
+ 	dd->is_async = start_async;
  
+@@ -1274,7 +1275,6 @@ static int atmel_aes_init_tfm(struct crypto_skcipher *tfm)
+ 
+ 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
+ 	ctx->base.dd = dd;
+-	ctx->base.dd->ctx = &ctx->base;
+ 	ctx->base.start = atmel_aes_start;
+ 
+ 	return 0;
+@@ -1291,7 +1291,6 @@ static int atmel_aes_ctr_init_tfm(struct crypto_skcipher *tfm)
+ 
+ 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
+ 	ctx->base.dd = dd;
+-	ctx->base.dd->ctx = &ctx->base;
+ 	ctx->base.start = atmel_aes_ctr_start;
+ 
+ 	return 0;
+@@ -1783,7 +1782,6 @@ static int atmel_aes_gcm_init(struct crypto_aead *tfm)
+ 
+ 	crypto_aead_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
+ 	ctx->base.dd = dd;
+-	ctx->base.dd->ctx = &ctx->base;
+ 	ctx->base.start = atmel_aes_gcm_start;
+ 
+ 	return 0;
+@@ -1927,7 +1925,6 @@ static int atmel_aes_xts_init_tfm(struct crypto_skcipher *tfm)
+ 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx) +
+ 				    crypto_skcipher_reqsize(ctx->fallback_tfm));
+ 	ctx->base.dd = dd;
+-	ctx->base.dd->ctx = &ctx->base;
+ 	ctx->base.start = atmel_aes_xts_start;
+ 
+ 	return 0;
+@@ -2154,7 +2151,6 @@ static int atmel_aes_authenc_init_tfm(struct crypto_aead *tfm,
+ 	crypto_aead_set_reqsize(tfm, (sizeof(struct atmel_aes_authenc_reqctx) +
+ 				      auth_reqsize));
+ 	ctx->base.dd = dd;
+-	ctx->base.dd->ctx = &ctx->base;
+ 	ctx->base.start = atmel_aes_authenc_start;
+ 
+ 	return 0;
 -- 
 2.34.1
 
