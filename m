@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2621FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18B31C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350707AbiAXTnD (ORCPT
+        id S1355691AbiAXTnK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:43:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57036 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346903AbiAXTbg (ORCPT
+        Mon, 24 Jan 2022 14:43:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51950 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345942AbiAXTb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:36 -0500
+        Mon, 24 Jan 2022 14:31:29 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C121C028BE4;
+        Mon, 24 Jan 2022 11:14:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C08B61551;
-        Mon, 24 Jan 2022 19:31:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C6C1C340E5;
-        Mon, 24 Jan 2022 19:31:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B829060917;
+        Mon, 24 Jan 2022 19:14:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93103C340E5;
+        Mon, 24 Jan 2022 19:14:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052694;
-        bh=aUjhzXTyAHaJTVFOxM8vpuyzYbSsGkP8DhdJfquucl4=;
+        s=korg; t=1643051677;
+        bh=vnfzU01oU3K111HF/yhjplnZMUUJJyYhNA2FRFWaTUk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yzqVMfPbodcLQM/BzRMJvgL3MDSzDKnX+0+3pT1IjxZiKZJ+7mlVQBCOIZls+snpJ
-         p0wAi5WYaeY0C6I2wWRkqcvZNu58WCg5x/QX3HaQdI4kk7I+RA5yFHh3f0kSeBx6WB
-         mWxr/M7Tl8CKqRzHMDLCxo7XcyayxhnzV56MMtZw=
+        b=toPHgh3RXVPtHDj1Id5+g+mDB/Ks/CTiXFsRe2OlnkSF/h90Smom1KS3CI2X6DSG2
+         NxyfTYSUs/KEilwB5Q5XOJ/QPtr5jo0HgSyNRN9XObfTZ6OhBYOSd1q+5LrIhKtWrB
+         zC+0LcizHyBVQTB909RN0/GrWS9axpVVJAje2saQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 145/320] ASoC: mediatek: Check for error clk pointer
-Date:   Mon, 24 Jan 2022 19:42:09 +0100
-Message-Id: <20220124183958.566967543@linuxfoundation.org>
+Subject: [PATCH 4.19 052/239] arm64: dts: meson-gxbb-wetek: fix missing GPIO binding
+Date:   Mon, 24 Jan 2022 19:41:30 +0100
+Message-Id: <20220124183944.791419739@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,66 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Christian Hewitt <christianshewitt@gmail.com>
 
-[ Upstream commit 9de2b9286a6dd16966959b3cb34fc2ddfd39213e ]
+[ Upstream commit c019abb2feba3cbbd7cf7178f8e6499c4fa6fced ]
 
-Yes, you are right and now the return code depending on the
-init_clks().
+The absence of this binding appears to be harmless in Linux but it breaks
+Ethernet support in mainline u-boot. So add the binding (which is present
+in all other u-boot supported GXBB device-trees).
 
-Fixes: 6078c651947a ("soc: mediatek: Refine scpsys to support multiple platform")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20211222015157.1025853-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: fb72c03e0e32 ("ARM64: dts: meson-gxbb-wetek: add a wetek specific dtsi to cleanup hub and play2")
+
+Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211012052522.30873-3-christianshewitt@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/mediatek/mtk-scpsys.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/soc/mediatek/mtk-scpsys.c b/drivers/soc/mediatek/mtk-scpsys.c
-index 75f25f08245fd..71afa2a99b17f 100644
---- a/drivers/soc/mediatek/mtk-scpsys.c
-+++ b/drivers/soc/mediatek/mtk-scpsys.c
-@@ -333,12 +333,17 @@ out:
- 	return ret;
- }
+diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
+index 70325b273bd2b..c7f06692d6c2a 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
+@@ -6,6 +6,7 @@
+  */
  
--static void init_clks(struct platform_device *pdev, struct clk **clk)
-+static int init_clks(struct platform_device *pdev, struct clk **clk)
- {
- 	int i;
+ #include "meson-gxbb.dtsi"
++#include <dt-bindings/gpio/gpio.h>
  
--	for (i = CLK_NONE + 1; i < CLK_MAX; i++)
-+	for (i = CLK_NONE + 1; i < CLK_MAX; i++) {
- 		clk[i] = devm_clk_get(&pdev->dev, clk_names[i]);
-+		if (IS_ERR(clk[i]))
-+			return PTR_ERR(clk[i]);
-+	}
-+
-+	return 0;
- }
- 
- static struct scp *init_scp(struct platform_device *pdev,
-@@ -348,7 +353,7 @@ static struct scp *init_scp(struct platform_device *pdev,
- {
- 	struct genpd_onecell_data *pd_data;
- 	struct resource *res;
--	int i, j;
-+	int i, j, ret;
- 	struct scp *scp;
- 	struct clk *clk[CLK_MAX];
- 
-@@ -403,7 +408,9 @@ static struct scp *init_scp(struct platform_device *pdev,
- 
- 	pd_data->num_domains = num;
- 
--	init_clks(pdev, clk);
-+	ret = init_clks(pdev, clk);
-+	if (ret)
-+		return ERR_PTR(ret);
- 
- 	for (i = 0; i < num; i++) {
- 		struct scp_domain *scpd = &scp->domains[i];
+ / {
+ 	aliases {
 -- 
 2.34.1
 
