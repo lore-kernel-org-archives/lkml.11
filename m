@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73974C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A66C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2372729AbiAYAMY (ORCPT
+        id S2372788AbiAYAMb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:12:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52000 "EHLO
+        Mon, 24 Jan 2022 19:12:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1849616AbiAXX0Q (ORCPT
+        with ESMTP id S1848976AbiAXXY3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:26:16 -0500
+        Mon, 24 Jan 2022 18:24:29 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8696EC01D7E6;
-        Mon, 24 Jan 2022 13:30:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B769C07321A;
+        Mon, 24 Jan 2022 13:29:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 25DA061028;
-        Mon, 24 Jan 2022 21:30:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0928EC340E4;
-        Mon, 24 Jan 2022 21:30:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04D1560C44;
+        Mon, 24 Jan 2022 21:29:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D292DC340E4;
+        Mon, 24 Jan 2022 21:29:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059821;
-        bh=lllL1+YSQOwmnLAGhKuxtgJRcS5EeLGylTj5nvLlLTA=;
+        s=korg; t=1643059786;
+        bh=GjXLsfRDL+vMnvwCNX4tCqIZuHwbl8YDD1glN2o18Y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WJ8/GY6sIcVe2o0US7HfiGCL3OO/A31BHmp3fjIwhfxXjnvqt75drupp3VL52GXp5
-         Fl2Jga4OUmwO2aXn5iRpGtMtP0edt+Ho8EY3Smoam4gGKaMEqGdzaQ7TzRypUYeL04
-         NdghAi6xK/AxEdGBqN+LQ883IjgKaE/0l+idwoT8=
+        b=RU03oQyTTRlTzj5y40M2iHAjLO3/7Vl8786t5dDdIRcr3+uYQsc+0qDpIqfySrpEe
+         OfXNhuyPKffp9IqS+kdXMgdbxoqlhkiUDGMoVfU7JxQC+cRpV4KblkLFVYY+5+Ryu9
+         OqQ6Y3lgbAKGwHvamao3aPcSPJPdF0UbFyKaWM/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0745/1039] KVM: PPC: Book3S: Suppress warnings when allocating too big memory slots
-Date:   Mon, 24 Jan 2022 19:42:14 +0100
-Message-Id: <20220124184150.376175438@linuxfoundation.org>
+Subject: [PATCH 5.16 0734/1039] powerpc/6xx: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:42:03 +0100
+Message-Id: <20220124184149.999778545@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,49 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 511d25d6b789fffcb20a3eb71899cf974a31bd9d ]
+[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
 
-The userspace can trigger "vmalloc size %lu allocation failure: exceeds
-total pages" via the KVM_SET_USER_MEMORY_REGION ioctl.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-This silences the warning by checking the limit before calling vzalloc()
-and returns ENOMEM if failed.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-This does not call underlying valloc helpers as __vmalloc_node() is only
-exported when CONFIG_TEST_VMALLOC_MODULE and __vmalloc_node_range() is
-not exported at all.
+// <smpl>
+@@
+expression e;
+local idexpression n;
+@@
 
-Spotted by syzkaller.
+@@
+local idexpression n;
+expression e;
+@@
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-[mpe: Use 'size' for the variable rather than 'cb']
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20210901084512.1658628-1-aik@ozlabs.ru
+Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 7b74fc0a986b8..94da0d25eb125 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -4861,8 +4861,12 @@ static int kvmppc_core_prepare_memory_region_hv(struct kvm *kvm,
- 	unsigned long npages = mem->memory_size >> PAGE_SHIFT;
- 
- 	if (change == KVM_MR_CREATE) {
--		slot->arch.rmap = vzalloc(array_size(npages,
--					  sizeof(*slot->arch.rmap)));
-+		unsigned long size = array_size(npages, sizeof(*slot->arch.rmap));
-+
-+		if ((size >> PAGE_SHIFT) > totalram_pages())
-+			return -ENOMEM;
-+
-+		slot->arch.rmap = vzalloc(size);
- 		if (!slot->arch.rmap)
- 			return -ENOMEM;
+diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
+index 15396333a90bd..a4b020e4b6af0 100644
+--- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
++++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
+@@ -214,6 +214,7 @@ void hlwd_pic_probe(void)
+ 			irq_set_chained_handler(cascade_virq,
+ 						hlwd_pic_irq_cascade);
+ 			hlwd_irq_host = host;
++			of_node_put(np);
+ 			break;
+ 		}
  	}
 -- 
 2.34.1
