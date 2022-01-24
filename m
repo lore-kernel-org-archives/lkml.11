@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A57AC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410523AbiAYA31 (ORCPT
+        id S3410584AbiAYA3e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53744 "EHLO
+        Mon, 24 Jan 2022 19:29:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47772 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573122AbiAXVo3 (ORCPT
+        with ESMTP id S1455590AbiAXVfm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:29 -0500
+        Mon, 24 Jan 2022 16:35:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A81BFB815A2;
-        Mon, 24 Jan 2022 21:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAC2AC340E4;
-        Mon, 24 Jan 2022 21:44:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0F85FB81057;
+        Mon, 24 Jan 2022 21:35:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28AA6C340E4;
+        Mon, 24 Jan 2022 21:35:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060662;
-        bh=Q+kbtrSzN3sW0F+y05oRP18A4WGq9IVLlwKWgshlVIM=;
+        s=korg; t=1643060139;
+        bh=28iv+IlR6fG6foqJ96vlzt15jft0kK5kKyy556Qfa+s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1GbOkb+G5A3W13F6hvzJOQoSf18AaT+/IX74meYhGZGsrQEC+oACTuhJVB5GUwCjQ
-         lJCXv3v1Ek8ax/sLmuBux3A+Jzew7SxGRCOxFY2+rTglAvC9Rsc810HMCHb8391PHz
-         yH+bSlZ19Nv1KP0H8HoCRUFa+ZqeWSNdF9BLzcsU=
+        b=z6CmdiCUHFs85Zu9DIQ6UumaurjpZL4aSIYS3dZNusQhE+6Yiwp66S0XmrMNby3b6
+         pnF4EwBC8TjsbMI/Ne47mZUDRqne0Llsq2SXpj0dcwHMcBrnZfrgdld4Tag6dkGFxe
+         KeeCQb1uYE10zR2Rl02dsFZrji5YE/seYYxPOh0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Stein <alexander.stein@mailbox.org>,
-        Rob Herring <robh@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 5.16 1023/1039] dt-bindings: display: meson-vpu: Add missing amlogic,canvas property
-Date:   Mon, 24 Jan 2022 19:46:52 +0100
-Message-Id: <20220124184159.682617668@linuxfoundation.org>
+        Daniel Bristot de Oliveira <bristot@kernel.org>,
+        Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.16 0852/1039] tracing/osnoise: Properly unhook events if start_per_cpu_kthreads() fails
+Date:   Mon, 24 Jan 2022 19:44:01 +0100
+Message-Id: <20220124184153.916097176@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,54 +48,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@mailbox.org>
+From: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
 
-commit 640f35b871d29cd685ce0ea0762636381beeb98a upstream.
+commit 0878355b51f5f26632e652c848a8e174bb02d22d upstream.
 
-This property was already mentioned in the old textual bindings
-amlogic,meson-vpu.txt, but got dropped during conversion.
-Adding it back similar to amlogic,gx-vdec.yaml.
+If start_per_cpu_kthreads() called from osnoise_workload_start() returns
+error, event hooks are left in broken state: unhook_irq_events() called
+but unhook_thread_events() and unhook_softirq_events() not called, and
+trace_osnoise_callback_enabled flag not cleared.
 
-Fixes: 6b9ebf1e0e67 ("dt-bindings: display: amlogic, meson-vpu: convert to yaml")
-Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
-Acked-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211219094155.177206-1-alexander.stein@mailbox.org
+On the next tracer enable, hooks get not installed due to
+trace_osnoise_callback_enabled flag.
+
+And on the further tracer disable an attempt to remove non-installed
+hooks happened, hitting a WARN_ON_ONCE() in tracepoint_remove_func().
+
+Fix the error path by adding the missing part of cleanup.
+While at this, introduce osnoise_unhook_events() to avoid code
+duplication between this error path and normal tracer disable.
+
+Link: https://lkml.kernel.org/r/20220109153459.3701773-1-nikita.yushchenko@virtuozzo.com
+
+Cc: stable@vger.kernel.org
+Fixes: bce29ac9ce0b ("trace: Add osnoise tracer")
+Acked-by: Daniel Bristot de Oliveira <bristot@kernel.org>
+Signed-off-by: Nikita Yushchenko <nikita.yushchenko@virtuozzo.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml |    6 ++++++
- 1 file changed, 6 insertions(+)
+ kernel/trace/trace_osnoise.c |   20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
---- a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
-+++ b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
-@@ -78,6 +78,10 @@ properties:
-   interrupts:
-     maxItems: 1
+--- a/kernel/trace/trace_osnoise.c
++++ b/kernel/trace/trace_osnoise.c
+@@ -2123,6 +2123,13 @@ out_unhook_irq:
+ 	return -EINVAL;
+ }
  
-+  amlogic,canvas:
-+    description: should point to a canvas provider node
-+    $ref: /schemas/types.yaml#/definitions/phandle
++static void osnoise_unhook_events(void)
++{
++	unhook_thread_events();
++	unhook_softirq_events();
++	unhook_irq_events();
++}
 +
-   power-domains:
-     maxItems: 1
-     description: phandle to the associated power domain
-@@ -106,6 +110,7 @@ required:
-   - port@1
-   - "#address-cells"
-   - "#size-cells"
-+  - amlogic,canvas
+ /*
+  * osnoise_workload_start - start the workload and hook to events
+  */
+@@ -2155,7 +2162,14 @@ static int osnoise_workload_start(void)
  
- additionalProperties: false
+ 	retval = start_per_cpu_kthreads();
+ 	if (retval) {
+-		unhook_irq_events();
++		trace_osnoise_callback_enabled = false;
++		/*
++		 * Make sure that ftrace_nmi_enter/exit() see
++		 * trace_osnoise_callback_enabled as false before continuing.
++		 */
++		barrier();
++
++		osnoise_unhook_events();
+ 		return retval;
+ 	}
  
-@@ -118,6 +123,7 @@ examples:
-         interrupts = <3>;
-         #address-cells = <1>;
-         #size-cells = <0>;
-+        amlogic,canvas = <&canvas>;
+@@ -2186,9 +2200,7 @@ static void osnoise_workload_stop(void)
  
-         /* CVBS VDAC output port */
-         port@0 {
+ 	stop_per_cpu_kthreads();
+ 
+-	unhook_irq_events();
+-	unhook_softirq_events();
+-	unhook_thread_events();
++	osnoise_unhook_events();
+ }
+ 
+ static void osnoise_tracer_start(struct trace_array *tr)
 
 
