@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C37D0C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E89DEC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574895AbiAXVul (ORCPT
+        id S1575002AbiAXVux (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:50:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37578 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448972AbiAXVOa (ORCPT
+        Mon, 24 Jan 2022 16:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1449098AbiAXVOx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:14:30 -0500
+        Mon, 24 Jan 2022 16:14:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801ECC09F494;
+        Mon, 24 Jan 2022 12:11:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A417614C7;
-        Mon, 24 Jan 2022 21:14:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47DC1C340E5;
-        Mon, 24 Jan 2022 21:14:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 36980B81229;
+        Mon, 24 Jan 2022 20:11:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D299C340E5;
+        Mon, 24 Jan 2022 20:11:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058868;
-        bh=rktmjRmnahCAgSOOgWpBvMZunEdB5saFcuYLb61QNmk=;
+        s=korg; t=1643055067;
+        bh=NhTprGcyprwLpWfIqENv8mq2r3cv0BORHm4H5znzBLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zrG5zHf7FCwdWPZEC+JM2IqIIlJYZ5mf/ycfON0nHnuV5xaEuoAs9q8QsXyl/eRfj
-         ivr68kbfa/2tZsGGwc9pHV7I+mRqJK2CYmvQU0H8AMpQyi91CqjQz2tLK5EYapRbQI
-         CclHgqLdWY0Ikc+W4rP6rY0jRJJpESWk6OuDFP0w=
+        b=D3hlJMWHY40D9ibSVQlXZSgchKjH6GXakgqvb5RMnegX3yPbx6GxEMRZQLwq+8Vp2
+         vaGzYFveQT/uHj+EKnpH1QLly05zeAPaGH6n88mhuiHYcrDfoqypU3zuTtX962KNCh
+         aztTCL3c23py+jZx3G89G4bbngvFKrIrmcgnjjnQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0428/1039] net: mscc: ocelot: fix incorrect balancing with down LAG ports
-Date:   Mon, 24 Jan 2022 19:36:57 +0100
-Message-Id: <20220124184139.683693516@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.15 030/846] tools/nolibc: i386: fix initial stack alignment
+Date:   Mon, 24 Jan 2022 19:32:27 +0100
+Message-Id: <20220124184101.963330674@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,202 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit a14e6b69f393d651913edcbe4ec0dec27b8b4b40 ]
+commit ebbe0d8a449d183fa43b42d84fcb248e25303985 upstream.
 
-Assuming the test setup described here:
-https://patchwork.kernel.org/project/netdevbpf/cover/20210205130240.4072854-1-vladimir.oltean@nxp.com/
-(swp1 and swp2 are in bond0, and bond0 is in a bridge with swp0)
+After re-checking in the spec and comparing stack offsets with glibc,
+The last pushed argument must be 16-byte aligned (i.e. aligned before the
+call) so that in the callee esp+4 is multiple of 16, so the principle is
+the 32-bit equivalent to what Ammar fixed for x86_64. It's possible that
+32-bit code using SSE2 or MMX could have been affected. In addition the
+frame pointer ought to be zero at the deepest level.
 
-it can be seen that when swp1 goes down (on either board A or B), then
-traffic that should go through that port isn't forwarded anywhere.
-
-A dump of the PGID table shows the following:
-
-PGID_DST[0] = ports 0
-PGID_DST[1] = ports 1
-PGID_DST[2] = ports 2
-PGID_DST[3] = ports 3
-PGID_DST[4] = ports 4
-PGID_DST[5] = ports 5
-PGID_DST[6] = no ports
-PGID_AGGR[0] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[1] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[2] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[3] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[4] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[5] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[6] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[7] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[8] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[9] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[10] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[11] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[12] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[13] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[14] = ports 0, 1, 2, 3, 4, 5
-PGID_AGGR[15] = ports 0, 1, 2, 3, 4, 5
-PGID_SRC[0] = ports 1, 2
-PGID_SRC[1] = ports 0
-PGID_SRC[2] = ports 0
-PGID_SRC[3] = no ports
-PGID_SRC[4] = no ports
-PGID_SRC[5] = no ports
-PGID_SRC[6] = ports 0, 1, 2, 3, 4, 5
-
-Whereas a "good" PGID configuration for that setup should have looked
-like this:
-
-PGID_DST[0] = ports 0
-PGID_DST[1] = ports 1, 2
-PGID_DST[2] = ports 1, 2
-PGID_DST[3] = ports 3
-PGID_DST[4] = ports 4
-PGID_DST[5] = ports 5
-PGID_DST[6] = no ports
-PGID_AGGR[0] = ports 0, 2, 3, 4, 5
-PGID_AGGR[1] = ports 0, 2, 3, 4, 5
-PGID_AGGR[2] = ports 0, 2, 3, 4, 5
-PGID_AGGR[3] = ports 0, 2, 3, 4, 5
-PGID_AGGR[4] = ports 0, 2, 3, 4, 5
-PGID_AGGR[5] = ports 0, 2, 3, 4, 5
-PGID_AGGR[6] = ports 0, 2, 3, 4, 5
-PGID_AGGR[7] = ports 0, 2, 3, 4, 5
-PGID_AGGR[8] = ports 0, 2, 3, 4, 5
-PGID_AGGR[9] = ports 0, 2, 3, 4, 5
-PGID_AGGR[10] = ports 0, 2, 3, 4, 5
-PGID_AGGR[11] = ports 0, 2, 3, 4, 5
-PGID_AGGR[12] = ports 0, 2, 3, 4, 5
-PGID_AGGR[13] = ports 0, 2, 3, 4, 5
-PGID_AGGR[14] = ports 0, 2, 3, 4, 5
-PGID_AGGR[15] = ports 0, 2, 3, 4, 5
-PGID_SRC[0] = ports 1, 2
-PGID_SRC[1] = ports 0
-PGID_SRC[2] = ports 0
-PGID_SRC[3] = no ports
-PGID_SRC[4] = no ports
-PGID_SRC[5] = no ports
-PGID_SRC[6] = ports 0, 1, 2, 3, 4, 5
-
-In other words, in the "bad" configuration, the attempt is to remove the
-inactive swp1 from the destination ports via PGID_DST. But when a MAC
-table entry is learned, it is learned towards PGID_DST 1, because that
-is the logical port id of the LAG itself (it is equal to the lowest
-numbered member port). So when swp1 becomes inactive, if we set
-PGID_DST[1] to contain just swp1 and not swp2, the packet will not have
-any chance to reach the destination via swp2.
-
-The "correct" way to remove swp1 as a destination is via PGID_AGGR
-(remove swp1 from the aggregation port groups for all aggregation
-codes). This means that PGID_DST[1] and PGID_DST[2] must still contain
-both swp1 and swp2. This makes the MAC table still treat packets
-destined towards the single-port LAG as "multicast", and the inactive
-ports are removed via the aggregation code tables.
-
-The change presented here is a design one: the ocelot_get_bond_mask()
-function used to take an "only_active_ports" argument. We don't need
-that. The only call site that specifies only_active_ports=true,
-ocelot_set_aggr_pgids(), must retrieve the entire bonding mask, because
-it must program that into PGID_DST. Additionally, it must also clear the
-inactive ports from the bond mask here, which it can't do if bond_mask
-just contains the active ports:
-
-	ac = ocelot_read_rix(ocelot, ANA_PGID_PGID, i);
-	ac &= ~bond_mask;  <---- here
-	/* Don't do division by zero if there was no active
-	 * port. Just make all aggregation codes zero.
-	 */
-	if (num_active_ports)
-		ac |= BIT(aggr_idx[i % num_active_ports]);
-	ocelot_write_rix(ocelot, ac, ANA_PGID_PGID, i);
-
-So it becomes the responsibility of ocelot_set_aggr_pgids() to take
-ocelot_port->lag_tx_active into consideration when populating the
-aggr_idx array.
-
-Fixes: 23ca3b727ee6 ("net: mscc: ocelot: rebalance LAGs on link up/down events")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Link: https://lore.kernel.org/r/20220107164332.402133-1-vladimir.oltean@nxp.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://gitlab.com/x86-psABIs/i386-ABI/-/wikis/Intel386-psABI
+Cc: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+Cc: stable@vger.kernel.org
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+ tools/include/nolibc/nolibc.h |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 1e4ad953cffbc..d1e883666951c 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1688,8 +1688,7 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_get_ts_info);
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -583,13 +583,21 @@ struct sys_stat_struct {
+ })
  
--static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond,
--				bool only_active_ports)
-+static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
- {
- 	u32 mask = 0;
- 	int port;
-@@ -1700,12 +1699,8 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond,
- 		if (!ocelot_port)
- 			continue;
- 
--		if (ocelot_port->bond == bond) {
--			if (only_active_ports && !ocelot_port->lag_tx_active)
--				continue;
--
-+		if (ocelot_port->bond == bond)
- 			mask |= BIT(port);
--		}
- 	}
- 
- 	return mask;
-@@ -1792,10 +1787,8 @@ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
- 			mask = ocelot_get_bridge_fwd_mask(ocelot, port, bridge);
- 			mask |= cpu_fwd_mask;
- 			mask &= ~BIT(port);
--			if (bond) {
--				mask &= ~ocelot_get_bond_mask(ocelot, bond,
--							      false);
--			}
-+			if (bond)
-+				mask &= ~ocelot_get_bond_mask(ocelot, bond);
- 		} else {
- 			/* Standalone ports forward only to DSA tag_8021q CPU
- 			 * ports (if those exist), or to the hardware CPU port
-@@ -2112,13 +2105,17 @@ static void ocelot_set_aggr_pgids(struct ocelot *ocelot)
- 		if (!bond || (visited & BIT(lag)))
- 			continue;
- 
--		bond_mask = ocelot_get_bond_mask(ocelot, bond, true);
-+		bond_mask = ocelot_get_bond_mask(ocelot, bond);
- 
- 		for_each_set_bit(port, &bond_mask, ocelot->num_phys_ports) {
-+			struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
- 			// Destination mask
- 			ocelot_write_rix(ocelot, bond_mask,
- 					 ANA_PGID_PGID, port);
--			aggr_idx[num_active_ports++] = port;
-+
-+			if (ocelot_port->lag_tx_active)
-+				aggr_idx[num_active_ports++] = port;
- 		}
- 
- 		for_each_aggr_pgid(ocelot, i) {
-@@ -2167,8 +2164,7 @@ static void ocelot_setup_logical_port_ids(struct ocelot *ocelot)
- 
- 		bond = ocelot_port->bond;
- 		if (bond) {
--			int lag = __ffs(ocelot_get_bond_mask(ocelot, bond,
--							     false));
-+			int lag = __ffs(ocelot_get_bond_mask(ocelot, bond));
- 
- 			ocelot_rmw_gix(ocelot,
- 				       ANA_PORT_PORT_CFG_PORTID_VAL(lag),
--- 
-2.34.1
-
+ /* startup code */
++/*
++ * i386 System V ABI mandates:
++ * 1) last pushed argument must be 16-byte aligned.
++ * 2) The deepest stack frame should be set to zero
++ *
++ */
+ asm(".section .text\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %eax\n"                // argc   (first arg, %eax)
+     "mov %esp, %ebx\n"          // argv[] (second arg, %ebx)
+     "lea 4(%ebx,%eax,4),%ecx\n" // then a NULL then envp (third arg, %ecx)
+-    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned when
++    "xor %ebp, %ebp\n"          // zero the stack frame
++    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned before
++    "sub $4, %esp\n"            // the call instruction (args are aligned)
+     "push %ecx\n"               // push all registers on the stack so that we
+     "push %ebx\n"               // support both regparm and plain stack modes
+     "push %eax\n"
 
 
