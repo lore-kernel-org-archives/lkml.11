@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B83EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE31FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575781AbiAXVwa (ORCPT
+        id S1575819AbiAXVwd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37676 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450398AbiAXVU1 (ORCPT
+        Mon, 24 Jan 2022 16:52:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50056 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376425AbiAXVTe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:20:27 -0500
+        Mon, 24 Jan 2022 16:19:34 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03384C06F8ED;
+        Mon, 24 Jan 2022 12:13:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9D2C9B81057;
-        Mon, 24 Jan 2022 21:20:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC27C340E4;
-        Mon, 24 Jan 2022 21:20:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 953EA61028;
+        Mon, 24 Jan 2022 20:13:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A470C340E5;
+        Mon, 24 Jan 2022 20:13:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059224;
-        bh=dlPDKHqCSXfPjaKZ96hJwLoit81JvMZoIoPBWl/uRsA=;
+        s=korg; t=1643055218;
+        bh=qfAGAbyPTg3olyE7z+5FG/FBdquTGx9E7vNPDPs2aZI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m9A+tYIRIcKLlYBxb3oYISv8eRyqaDPH8/Yfp1bn/3hmYhU4DvSsrlOVZwc3qR82U
-         ByuA5FM8xlaetEGIU7Erbr/BTqJMbjkYs3r/zr1Ei3sn5to3dza3Yg2ZCcMw95BTAN
-         ilfK1iHaaXNnVxxbCVbuJefU9qdeyu7D5xmA3PvA=
+        b=yXNV7GeZslVamN2y2f2a0z2vQ9LHJyk+UPyMt9oKAhX6seiiVXEjb814m5g5bR9sM
+         axyJ31ak/nU0GYWXKBf7+hqYSIBqAM0ImRZ/T/uB6FTSljYnybuVZ5djB1knYb8nVe
+         4VP5ssJunEWwRbdPcu9YwTXhLACfH6v+D79X1c7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Archie Pusaka <apusaka@chromium.org>,
-        Sonny Sasaka <sonnysasaka@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0543/1039] Bluetooth: Fix removing adv when processing cmd complete
-Date:   Mon, 24 Jan 2022 19:38:52 +0100
-Message-Id: <20220124184143.528865585@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.15 046/846] media: cpia2: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:32:43 +0100
+Message-Id: <20220124184102.538367716@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Archie Pusaka <apusaka@chromium.org>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 2128939fe2e771645dd88e1938c27fdf96bd1cd0 ]
+commit 10729be03327f53258cb196362015ad5c6eabe02 upstream.
 
-If we remove one instance of adv using Set Extended Adv Enable, there
-is a possibility of issue occurs when processing the Command Complete
-event. Especially, the adv_info might not be found since we already
-remove it in hci_req_clear_adv_instance() -> hci_remove_adv_instance().
-If that's the case, we will mistakenly proceed to remove all adv
-instances instead of just one single instance.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-This patch fixes the issue by checking the content of the HCI command
-instead of checking whether the adv_info is found.
-
-Signed-off-by: Archie Pusaka <apusaka@chromium.org>
-Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: ab33d5071de7 ("V4L/DVB (3376): Add cpia2 camera support")
+Cc: stable@vger.kernel.org      # 2.6.17
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/hci_event.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/media/usb/cpia2/cpia2_usb.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 6eba439487749..8882c6dfb48f4 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -1326,8 +1326,10 @@ static void hci_cc_le_set_ext_adv_enable(struct hci_dev *hdev,
- 					   &conn->le_conn_timeout,
- 					   conn->conn_timeout);
- 	} else {
--		if (adv) {
--			adv->enabled = false;
-+		if (cp->num_of_sets) {
-+			if (adv)
-+				adv->enabled = false;
-+
- 			/* If just one instance was disabled check if there are
- 			 * any other instance enabled before clearing HCI_LE_ADV
- 			 */
--- 
-2.34.1
-
+--- a/drivers/media/usb/cpia2/cpia2_usb.c
++++ b/drivers/media/usb/cpia2/cpia2_usb.c
+@@ -550,7 +550,7 @@ static int write_packet(struct usb_devic
+ 			       0,	/* index */
+ 			       buf,	/* buffer */
+ 			       size,
+-			       HZ);
++			       1000);
+ 
+ 	kfree(buf);
+ 	return ret;
+@@ -582,7 +582,7 @@ static int read_packet(struct usb_device
+ 			       0,	/* index */
+ 			       buf,	/* buffer */
+ 			       size,
+-			       HZ);
++			       1000);
+ 
+ 	if (ret >= 0)
+ 		memcpy(registers, buf, size);
 
 
