@@ -2,55 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C1DC35273
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A492C35276
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358935AbiAXT4D (ORCPT
+        id S1344460AbiAXT4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36048 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345983AbiAXToU (ORCPT
+        Mon, 24 Jan 2022 14:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354667AbiAXTg7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:20 -0500
+        Mon, 24 Jan 2022 14:36:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD11AC0612F8;
+        Mon, 24 Jan 2022 11:17:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A20FB81215;
-        Mon, 24 Jan 2022 19:44:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5DCFC340E5;
-        Mon, 24 Jan 2022 19:44:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AE56B81236;
+        Mon, 24 Jan 2022 19:17:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2E49C36AE9;
+        Mon, 24 Jan 2022 19:17:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053457;
-        bh=Lht58LNI8KdoxzRSF1qDz20MWcfbNF8A5zAHYBz8diQ=;
+        s=korg; t=1643051823;
+        bh=M2+xpmoMG2NGJVhNb6RBrBI9zSJc9RCc0W1WeKz/v80=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Juf/LJDlgakA+hD2fISYbRWn/+dz2aIWLQOtAjx+kDIZ6JlCQmMXn6hWDktM8x/qx
-         fowvxE6kYYS+usYc3TD0odkq0QCijLAcAZen1GkKUuNXrGIWeEOkx7hdO1sOEz5+AP
-         l9G5/Wjolwfukfck6ZYVKNVtr7QB6JAsjJEi6SCE=
+        b=ucL6Fnu2dcFxzz5Oz4SHNvrjL8pybacqBj8WblczGozRsJp+m0SrZeAkoB8Uk0SCg
+         ByLea2dXXIJkLaPMqimPhM42xVomdLI0UsN05S74Vxoxe5ah7gZD3+WD7r1HFiGA0q
+         0HeXf3orYJNeGwsk/Qx5yazEId1nkIdi/HtoA3B4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Borislav Petkov <bp@alien8.de>, Christoph Hellwig <hch@lst.de>,
-        David Hildenbrand <david@redhat.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 039/563] mm/page_alloc.c: do not warn allocation failure on zone DMA if no managed pages
-Date:   Mon, 24 Jan 2022 19:36:44 +0100
-Message-Id: <20220124184025.779821957@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 098/239] ext4: avoid trim error on fs with small groups
+Date:   Mon, 24 Jan 2022 19:42:16 +0100
+Message-Id: <20220124183946.222952786@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,98 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baoquan He <bhe@redhat.com>
+From: Jan Kara <jack@suse.cz>
 
-commit c4dc63f0032c77464fbd4e7a6afc22fa6913c4a7 upstream.
+[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
 
-In kdump kernel of x86_64, page allocation failure is observed:
+A user reported FITRIM ioctl failing for him on ext4 on some devices
+without apparent reason.  After some debugging we've found out that
+these devices (being LVM volumes) report rather large discard
+granularity of 42MB and the filesystem had 1k blocksize and thus group
+size of 8MB. Because ext4 FITRIM implementation puts discard
+granularity into minlen, ext4_trim_fs() declared the trim request as
+invalid. However just silently doing nothing seems to be a more
+appropriate reaction to such combination of parameters since user did
+not specify anything wrong.
 
- kworker/u2:2: page allocation failure: order:0, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
- CPU: 0 PID: 55 Comm: kworker/u2:2 Not tainted 5.16.0-rc4+ #5
- Hardware name: AMD Dinar/Dinar, BIOS RDN1505B 06/05/2013
- Workqueue: events_unbound async_run_entry_fn
- Call Trace:
-  <TASK>
-  dump_stack_lvl+0x48/0x5e
-  warn_alloc.cold+0x72/0xd6
-  __alloc_pages_slowpath.constprop.0+0xc69/0xcd0
-  __alloc_pages+0x1df/0x210
-  new_slab+0x389/0x4d0
-  ___slab_alloc+0x58f/0x770
-  __slab_alloc.constprop.0+0x4a/0x80
-  kmem_cache_alloc_trace+0x24b/0x2c0
-  sr_probe+0x1db/0x620
-  ......
-  device_add+0x405/0x920
-  ......
-  __scsi_add_device+0xe5/0x100
-  ata_scsi_scan_host+0x97/0x1d0
-  async_run_entry_fn+0x30/0x130
-  process_one_work+0x1e8/0x3c0
-  worker_thread+0x50/0x3b0
-  ? rescuer_thread+0x350/0x350
-  kthread+0x16b/0x190
-  ? set_kthread_struct+0x40/0x40
-  ret_from_fork+0x22/0x30
-  </TASK>
- Mem-Info:
- ......
-
-The above failure happened when calling kmalloc() to allocate buffer with
-GFP_DMA.  It requests to allocate slab page from DMA zone while no managed
-pages at all in there.
-
- sr_probe()
- --> get_capabilities()
-     --> buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-
-Because in the current kernel, dma-kmalloc will be created as long as
-CONFIG_ZONE_DMA is enabled.  However, kdump kernel of x86_64 doesn't have
-managed pages on DMA zone since commit 6f599d84231f ("x86/kdump: Always
-reserve the low 1M when the crashkernel option is specified").  The
-failure can be always reproduced.
-
-For now, let's mute the warning of allocation failure if requesting pages
-from DMA zone while no managed pages.
-
-[akpm@linux-foundation.org: fix warning]
-
-Link: https://lkml.kernel.org/r/20211223094435.248523-4-bhe@redhat.com
-Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
-Reviewed-by: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: Pekka Enberg <penberg@kernel.org>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: David Hildenbrand <david@redhat.com>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Lukas Czerner <lczerner@redhat.com>
+Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/page_alloc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ext4/ioctl.c   | 2 --
+ fs/ext4/mballoc.c | 8 ++++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -3964,7 +3964,9 @@ void warn_alloc(gfp_t gfp_mask, nodemask
- 	va_list args;
- 	static DEFINE_RATELIMIT_STATE(nopage_rs, 10*HZ, 1);
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index 21c9ebfe83478..484cb68c34d92 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -1052,8 +1052,6 @@ resizefs_out:
+ 		    sizeof(range)))
+ 			return -EFAULT;
  
--	if ((gfp_mask & __GFP_NOWARN) || !__ratelimit(&nopage_rs))
-+	if ((gfp_mask & __GFP_NOWARN) ||
-+	     !__ratelimit(&nopage_rs) ||
-+	     ((gfp_mask & __GFP_DMA) && !has_managed_dma()))
- 		return;
- 
- 	va_start(args, fmt);
+-		range.minlen = max((unsigned int)range.minlen,
+-				   q->limits.discard_granularity);
+ 		ret = ext4_trim_fs(sb, &range);
+ 		if (ret < 0)
+ 			return ret;
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index 447aa17c804e2..db8243627b085 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -5260,6 +5260,7 @@ out:
+  */
+ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ {
++	struct request_queue *q = bdev_get_queue(sb->s_bdev);
+ 	struct ext4_group_info *grp;
+ 	ext4_group_t group, first_group, last_group;
+ 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
+@@ -5278,6 +5279,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ 	    start >= max_blks ||
+ 	    range->len < sb->s_blocksize)
+ 		return -EINVAL;
++	/* No point to try to trim less than discard granularity */
++	if (range->minlen < q->limits.discard_granularity) {
++		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
++			q->limits.discard_granularity >> sb->s_blocksize_bits);
++		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
++			goto out;
++	}
+ 	if (end >= max_blks)
+ 		end = max_blks - 1;
+ 	if (end <= first_data_blk)
+-- 
+2.34.1
+
 
 
