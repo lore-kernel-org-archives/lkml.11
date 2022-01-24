@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A021FC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644A3C3526D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349061AbiAXTUI (ORCPT
+        id S1349229AbiAXTU2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47982 "EHLO
+        Mon, 24 Jan 2022 14:20:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347811AbiAXTLL (ORCPT
+        with ESMTP id S1344755AbiAXTLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:11 -0500
+        Mon, 24 Jan 2022 14:11:53 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5575C061363;
-        Mon, 24 Jan 2022 11:02:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50624C061A7D;
+        Mon, 24 Jan 2022 11:03:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 653D460E8D;
-        Mon, 24 Jan 2022 19:02:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ED0BC340E5;
-        Mon, 24 Jan 2022 19:02:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E1E8A609EE;
+        Mon, 24 Jan 2022 19:03:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE00CC340E8;
+        Mon, 24 Jan 2022 19:03:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050972;
-        bh=hVdfrHB2ZSWoX/hpKALbnPJ5Gr6TKGq80beaN5XyGN8=;
+        s=korg; t=1643051013;
+        bh=2oP2LDwVaJ0zFvAODpVplv81tT3l5LF8ATWXhfox+4U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SXHn/NFAUzYo/91exB1K28JlxVviXTqMF4xmNvfxD40uJFr6M/puJpGJ1yi346df9
-         8I2PfwWjtFQhtZa6K33ToivTDlSWp59K3r01UhW8bl3dn5Cen1Bw+XVtBHM/GfGMrU
-         rinzvK5rL2VK/pn8FBSiQ4+IBF+ESjraQXIgdr4s=
+        b=q/7TaQ3CPZ4GAsbmTyMAPY3VMkQA9mkNDbLZxJIVazjg/xI5Urne87NZIIxji+YNC
+         DfuzR5fCha1imNG2HJo3XEittcBMg7xLigEeVfdVjwro5Ma8bdUuna8EPm9B9F/9bV
+         St9I9xmybnUf1/3Bbp8rslbyN0bLcZg5+2dJXdpE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com,
-        Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>
-Subject: [PATCH 4.14 014/186] Bluetooth: schedule SCO timeouts with delayed_work
-Date:   Mon, 24 Jan 2022 19:41:29 +0100
-Message-Id: <20220124183937.568318274@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.14 026/186] media: dib0700: fix undefined behavior in tuner shutdown
+Date:   Mon, 24 Jan 2022 19:41:41 +0100
+Message-Id: <20220124183937.962117631@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -52,146 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
+From: Michael Kuron <michael.kuron@gmail.com>
 
-commit ba316be1b6a00db7126ed9a39f9bee434a508043 upstream.
+commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
 
-struct sock.sk_timer should be used as a sock cleanup timer. However,
-SCO uses it to implement sock timeouts.
+This fixes a problem where closing the tuner would leave it in a state
+where it would not tune to any channel when reopened. This problem was
+discovered as part of https://github.com/hselasky/webcamd/issues/16.
 
-This causes issues because struct sock.sk_timer's callback is run in
-an IRQ context, and the timer callback function sco_sock_timeout takes
-a spin lock on the socket. However, other functions such as
-sco_conn_del and sco_conn_ready take the spin lock with interrupts
-enabled.
+Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
+behavior. The driver still worked in practice as the overflow would in
+most environments result in 0, which rendered the line a no-op. When
+running the driver as part of webcamd however, the overflow could lead
+to 0xff due to optimizations by the compiler, which would, in the end,
+improperly shut down the tuner.
 
-This inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} lock usage could
-lead to deadlocks as reported by Syzbot [1]:
-       CPU0
-       ----
-  lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
-  <Interrupt>
-    lock(slock-AF_BLUETOOTH-BTPROTO_SCO);
+The bug is a regression introduced in the commit referenced below. The
+present patch causes identical behavior to before that commit for
+adap->id equal to 0 or 1. The driver does not contain support for
+dib0700 devices with more adapters, assuming such even exist.
 
-To fix this, we use delayed work to implement SCO sock timouts
-instead. This allows us to avoid taking the spin lock on the socket in
-an IRQ context, and corrects the misuse of struct sock.sk_timer.
+Tests have been performed with the Xbox One Digital TV Tuner on amd64.
+Not all dib0700 devices are expected to be affected by the regression;
+this code path is only taken by those with incorrect endpoint numbers.
 
-As a note, cancel_delayed_work is used instead of
-cancel_delayed_work_sync in sco_sock_set_timer and
-sco_sock_clear_timer to avoid a deadlock. In the future, the call to
-bh_lock_sock inside sco_sock_timeout should be changed to lock_sock to
-synchronize with other functions using lock_sock. However, since
-sco_sock_set_timer and sco_sock_clear_timer are sometimes called under
-the locked socket (in sco_connect and __sco_sock_close),
-cancel_delayed_work_sync might cause them to sleep until an
-sco_sock_timeout that has started finishes running. But
-sco_sock_timeout would also sleep until it can grab the lock_sock.
+Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
 
-Using cancel_delayed_work is fine because sco_sock_timeout does not
-change from run to run, hence there is no functional difference
-between:
-1. waiting for a timeout to finish running before scheduling another
-timeout
-2. scheduling another timeout while a timeout is running.
-
-Link: https://syzkaller.appspot.com/bug?id=9089d89de0502e120f234ca0fc8a703f7368b31e [1]
-Reported-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-Tested-by: syzbot+2f6d7c28bb4bf7e82060@syzkaller.appspotmail.com
-Signed-off-by: Desmond Cheong Zhi Xi <desmondcheongzx@gmail.com>
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-[OP: adjusted context for 4.14]
-Signed-off-by: Ovidiu Panait <ovidiu.panait@windriver.com>
+Cc: stable@vger.kernel.org
+Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
+Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/sco.c |   35 +++++++++++++++++++++++++++++------
- 1 file changed, 29 insertions(+), 6 deletions(-)
+ drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/net/bluetooth/sco.c
-+++ b/net/bluetooth/sco.c
-@@ -48,6 +48,8 @@ struct sco_conn {
- 	spinlock_t	lock;
- 	struct sock	*sk;
- 
-+	struct delayed_work	timeout_work;
-+
- 	unsigned int    mtu;
- };
- 
-@@ -73,9 +75,20 @@ struct sco_pinfo {
- #define SCO_CONN_TIMEOUT	(HZ * 40)
- #define SCO_DISCONN_TIMEOUT	(HZ * 2)
- 
--static void sco_sock_timeout(unsigned long arg)
-+static void sco_sock_timeout(struct work_struct *work)
- {
--	struct sock *sk = (struct sock *)arg;
-+	struct sco_conn *conn = container_of(work, struct sco_conn,
-+					     timeout_work.work);
-+	struct sock *sk;
-+
-+	sco_conn_lock(conn);
-+	sk = conn->sk;
-+	if (sk)
-+		sock_hold(sk);
-+	sco_conn_unlock(conn);
-+
-+	if (!sk)
-+		return;
- 
- 	BT_DBG("sock %p state %d", sk, sk->sk_state);
- 
-@@ -89,14 +102,21 @@ static void sco_sock_timeout(unsigned lo
- 
- static void sco_sock_set_timer(struct sock *sk, long timeout)
- {
-+	if (!sco_pi(sk)->conn)
-+		return;
-+
- 	BT_DBG("sock %p state %d timeout %ld", sk, sk->sk_state, timeout);
--	sk_reset_timer(sk, &sk->sk_timer, jiffies + timeout);
-+	cancel_delayed_work(&sco_pi(sk)->conn->timeout_work);
-+	schedule_delayed_work(&sco_pi(sk)->conn->timeout_work, timeout);
- }
- 
- static void sco_sock_clear_timer(struct sock *sk)
- {
-+	if (!sco_pi(sk)->conn)
-+		return;
-+
- 	BT_DBG("sock %p state %d", sk, sk->sk_state);
--	sk_stop_timer(sk, &sk->sk_timer);
-+	cancel_delayed_work(&sco_pi(sk)->conn->timeout_work);
- }
- 
- /* ---- SCO connections ---- */
-@@ -176,6 +196,9 @@ static void sco_conn_del(struct hci_conn
- 		sco_chan_del(sk, err);
- 		bh_unlock_sock(sk);
- 		sock_put(sk);
-+
-+		/* Ensure no more work items will run before freeing conn. */
-+		cancel_delayed_work_sync(&conn->timeout_work);
- 	}
- 
- 	hcon->sco_data = NULL;
-@@ -190,6 +213,8 @@ static void __sco_chan_add(struct sco_co
- 	sco_pi(sk)->conn = conn;
- 	conn->sk = sk;
- 
-+	INIT_DELAYED_WORK(&conn->timeout_work, sco_sock_timeout);
-+
- 	if (parent)
- 		bt_accept_enqueue(parent, sk, true);
- }
-@@ -466,8 +491,6 @@ static struct sock *sco_sock_alloc(struc
- 
- 	sco_pi(sk)->setting = BT_VOICE_CVSD_16BIT;
- 
--	setup_timer(&sk->sk_timer, sco_sock_timeout, (unsigned long)sk);
--
- 	bt_sock_link(&sco_sk_list, sk);
- 	return sk;
- }
+--- a/drivers/media/usb/dvb-usb/dib0700_core.c
++++ b/drivers/media/usb/dvb-usb/dib0700_core.c
+@@ -619,8 +619,6 @@ int dib0700_streaming_ctrl(struct dvb_us
+ 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->id);
+-		else
+-			st->channel_state |=	1 << ~(adap->id);
+ 	} else {
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
 
 
