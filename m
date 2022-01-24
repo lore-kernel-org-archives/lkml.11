@@ -2,105 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3194BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:27:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1800CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237132AbiAXK1K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:27:10 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:54614 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235178AbiAXK1C (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:27:02 -0500
-Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20O6jNgR004848;
-        Mon, 24 Jan 2022 11:26:56 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=selector1;
- bh=6iYh3HvDKsBuXC7i6mR0bnn4qfD6pUZAhtq3u6rdDLw=;
- b=tSdwKfLqm4vbNlm0ABgatJtnRk8KHdRllfC1EuePJHOrfGA1BAxDknyDoXaMhEbnVtQJ
- lWklWdBG2WEtZmsfzIbYlUHZK5pwTGoLRShe4vPhm8mWN9kj1v6LEe6ojmeQNdLLq7w8
- iSfeSjP08/tXHEIanEBmJeKp0fsN+z2p64f0PIQKqjbMjz5WvECjizURyL8i1bBkDLt7
- VFdVNCtuBEPJ+Yiu1to0h33y7qftOlQD3AD8esow2FyR7uy44QjA33GFhYvlQik6Z+kh
- pVUQx7rMXswLUE/oMZuuKFIjc0L39WoDYezsh00ssDp6SFswR++XDZdsShk1Xq6jY2Py Zg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3ds9v1kcsa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 24 Jan 2022 11:26:56 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C501210002A;
-        Mon, 24 Jan 2022 11:26:55 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3C7022128C0;
-        Mon, 24 Jan 2022 11:26:55 +0100 (CET)
-Received: from localhost (10.75.127.44) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 24 Jan 2022 11:26:54
- +0100
-From:   Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-CC:     <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <julien.massot@iot.bzh>, <arnaud.pouliquen@foss.st.com>,
-        Anup Patel <anup@brainfault.org>,
-        <linux-riscv@lists.infradead.org>
-Subject: [PATCH v9 05/11] RISC-V: configs: Configs that had RPMSG_CHAR now get RPMSG_CTRL
-Date:   Mon, 24 Jan 2022 11:25:18 +0100
-Message-ID: <20220124102524.295783-6-arnaud.pouliquen@foss.st.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124102524.295783-1-arnaud.pouliquen@foss.st.com>
-References: <20220124102524.295783-1-arnaud.pouliquen@foss.st.com>
+        id S237089AbiAXK1p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:27:45 -0500
+Received: from foss.arm.com ([217.140.110.172]:56804 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232516AbiAXK1o (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:27:44 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 037446D;
+        Mon, 24 Jan 2022 02:27:44 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.2.109])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DEA203F73B;
+        Mon, 24 Jan 2022 02:27:40 -0800 (PST)
+Date:   Mon, 24 Jan 2022 10:27:32 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
+        pjt@google.com, posk@google.com, avagin@google.com,
+        jannh@google.com, tdelisle@uwaterloo.ca, posk@posk.io
+Subject: Re: [RFC][PATCH v2 5/5] sched: User Mode Concurency Groups
+Message-ID: <Ye5/FIlVcym/Fbjs@FVFF77S0Q05N>
+References: <20220120155517.066795336@infradead.org>
+ <20220120160822.914418096@infradead.org>
+ <Yerl+ZrZ2qflIMyg@FVFF77S0Q05N>
+ <20220124100306.GO20638@worktop.programming.kicks-ass.net>
+ <20220124100704.GC22849@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-24_06,2022-01-24_01,2021-12-02_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124100704.GC22849@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In the patch "rpmsg: Move the rpmsg control device from rpmsg_char
-to rpmsg_ctrl", we split the rpmsg_char driver in two.
-By default give everyone who had the old driver enabled the rpmsg_ctrl
-driver too.
+On Mon, Jan 24, 2022 at 11:07:04AM +0100, Peter Zijlstra wrote:
+> On Mon, Jan 24, 2022 at 11:03:06AM +0100, Peter Zijlstra wrote:
+> 
+> > > Either way, it looks like we'd need helpers along the lines of:
+> > > 
+> > > | static __always_inline void umcg_enter_from_user(struct pt_regs *regs)
+> > > | {
+> > > | 	if (current->flags & PF_UMCG_WORKER)
+> > > | 		umcg_sys_enter(regs, -1);
+> > > | }
+> > > | 
+> > > | static __always_inline void umcg_exit_to_user(struct pt_regs *regs)
+> > > | {
+> > > | 	if (current->flags & PF_UMCG_WORKER)
+> > > | 		umcg_sys_exit(regs);
+> > > | }
+> > 
+> > Would something like:
+> > 
+> > #ifndef arch_irqentry_irq_enter
+> > static __always_inline bool arch_irqentry_irq_enter(struct pt_regs *regs)
+> > {
+> > 	if (!regs_irqs_disabled(regs)) {
+> > 		local_irq_enable();
+> > 		return true;
+> > 	}
+> > 	return false;
+> > }
+> > #endif
+> > 
+> > static __always_inline void irqentry_irq_enter(struct pt_regs *regs)
+> > {
+> > 	if (arch_irqentry_irq_inherit(regs)) {
+> > 		if (user_mode(regs) && (current->flags & PF_UMCG_WORKER))
+> > 			umcg_sys_enter(regs, -1);
+> > 	}
+> > }
+> > 
+> > Work? Then arm64 can do:
+> > 
+> > static __always_inline bool arch_irqentry_irq_enter(struct pt_regs *regs)
+> > {
+> > 	local_daif_inherit();
+> > 	return interrupts_enabled(regs);
+> > }
+> > 
+> > or somesuch...
+> 
+> Ah,.. just read your other email, so your concern is about the
+> user_mode() thing due to ARM64 taking a different exception path for
+> from-user vs from-kernel ?
 
-Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-Reviewed-by: Anup Patel <anup@brainfault.org>
-cc: linux-riscv@lists.infradead.org
----
- arch/riscv/configs/defconfig      | 1 +
- arch/riscv/configs/rv32_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+Yup; it's two-fold:
 
-diff --git a/arch/riscv/configs/defconfig b/arch/riscv/configs/defconfig
-index f120fcc43d0a..aaccb1e5f328 100644
---- a/arch/riscv/configs/defconfig
-+++ b/arch/riscv/configs/defconfig
-@@ -100,6 +100,7 @@ CONFIG_VIRTIO_BALLOON=y
- CONFIG_VIRTIO_INPUT=y
- CONFIG_VIRTIO_MMIO=y
- CONFIG_RPMSG_CHAR=y
-+CONFIG_RPMSG_CTRL=y
- CONFIG_RPMSG_VIRTIO=y
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
-diff --git a/arch/riscv/configs/rv32_defconfig b/arch/riscv/configs/rv32_defconfig
-index 8b56a7f1eb06..47e50c992c9c 100644
---- a/arch/riscv/configs/rv32_defconfig
-+++ b/arch/riscv/configs/rv32_defconfig
-@@ -92,6 +92,7 @@ CONFIG_VIRTIO_BALLOON=y
- CONFIG_VIRTIO_INPUT=y
- CONFIG_VIRTIO_MMIO=y
- CONFIG_RPMSG_CHAR=y
-+CONFIG_RPMSG_CTRL=y
- CONFIG_RPMSG_VIRTIO=y
- CONFIG_EXT4_FS=y
- CONFIG_EXT4_FS_POSIX_ACL=y
--- 
-2.25.1
+1) We have separate vectors for entry from-user and from-kernel, and I'd like
+   to avoid the conditionality (e.g. the user_mode(regs) checks) where possible. 
+   Having that unconditional and explicit in the from-user code avoids
+   redundant work and is much easier to see that it's correct and balanced.
 
+   We have separate irqentry_from_user() and irqentry_from_kernel() helpers
+   today for this.
+
+2) Due to the way we nest classes of exception, on the entry path we manipulate
+   the flags differently depending on which specific exception we've taken. On
+   the return path we always mask everything (necessary due to the way
+   exception return works architecturally).
+
+   Luckily exceptions from-user don't nest, so those cases are simpler than
+   exceptions from-kernel.
+
+> I don't mind too much if arm64 decides to open-code the umcg hooks, but
+> please do it such that's hard to forget a spot.
+
+I'll see what I can do. :)
+
+Thanks,
+Mark.
