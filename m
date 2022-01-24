@@ -2,68 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76FF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:32:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5716C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:33:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233812AbiAXJcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:32:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiAXJcW (ORCPT
+        id S234263AbiAXJdz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:33:55 -0500
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:52601 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234217AbiAXJdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:32:22 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F555C06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 01:32:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=apuUXH+60n6hljRak/UVGWlJLkn1KcaMbpnLlafoj9s=; b=hVSTPrEcrShyI50dK3OBPQnhac
-        maUZoKQh8S9+L4HSCfX2bpnHFRylBiAFnpnySwK8VANInwz9+Q3PQczTrtReo2Z71IhkalEjU9IrX
-        zp1orRmwMunA4S4gWCFQy//JLgYjB6uZgjzVtCH2nptqNpe2886yBsOy4RWYBPvcmxqM1/R+gakd3
-        CfRiiJDFzOnXcLZn4FAILBTaqCOcC0/GZUvlwNJRwVmulvcGydFJWZDE90TGJEdgn6HbZB8wIVBk0
-        KVLzMKAeJE9URH+f89yX5NaN7ayeFp1EowP4ZeaXe80w9FRuO83rSHt1owTqL7Kz0QWEZSsJD7HP4
-        7zCyL4MQ==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nBvht-002nqj-Nq; Mon, 24 Jan 2022 09:32:13 +0000
-Date:   Mon, 24 Jan 2022 01:32:13 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     Lu Baolu <baolu.lu@linux.intel.com>
-Cc:     Joerg Roedel <joro@8bytes.org>, Jason Gunthorpe <jgg@nvidia.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Kevin Tian <kevin.tian@intel.com>,
-        Ashok Raj <ashok.raj@intel.com>, Will Deacon <will@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Liu Yi L <yi.l.liu@intel.com>,
-        Jacob jun Pan <jacob.jun.pan@intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 6/7] iommu: Use right way to retrieve iommu_ops
-Message-ID: <Ye5yHejpaAnJQYeR@infradead.org>
-References: <20220124071103.2097118-1-baolu.lu@linux.intel.com>
- <20220124071103.2097118-7-baolu.lu@linux.intel.com>
+        Mon, 24 Jan 2022 04:33:53 -0500
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 20O9QV9m054147;
+        Mon, 24 Jan 2022 17:26:31 +0800 (GMT-8)
+        (envelope-from jammy_huang@aspeedtech.com)
+Received: from JammyHuang-PC.aspeed.com (192.168.2.115) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 24 Jan
+ 2022 17:33:48 +0800
+From:   Jammy Huang <jammy_huang@aspeedtech.com>
+To:     <eajames@linux.ibm.com>, <mchehab@kernel.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <linux-media@vger.kernel.org>,
+        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 2/4] media: aspeed: Use FIELD_GET to improve readability
+Date:   Mon, 24 Jan 2022 17:33:43 +0800
+Message-ID: <20220124093345.3935-3-jammy_huang@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220124093345.3935-1-jammy_huang@aspeedtech.com>
+References: <20220124093345.3935-1-jammy_huang@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220124071103.2097118-7-baolu.lu@linux.intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.115]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 20O9QV9m054147
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 03:11:01PM +0800, Lu Baolu wrote:
-> The common iommu_ops is hooked to both device and domain. When a helper
-> has both device and domain pointer, the way to get the iommu_ops looks
-> messy in iommu core. This sorts out the way to get iommu_ops. The device
-> related helpers go through device pointer, while the domain related ones
-> go through domain pointer.
+Use the bitfield macro FIELD_GET, and GENMASK to do the shift and mask in
+one go for reg values.
 
-Ugg. This really sounds like we should have a different structures for
-each set of ops?
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+---
+ v3:
+  - no update
+ v2:
+  - Put some codes on one line
+---
+ drivers/media/platform/aspeed-video.c | 31 +++++++++++----------------
+ 1 file changed, 12 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index d5f77b205175..c241038ee27c 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -156,26 +156,22 @@
+ #define  VE_SRC_LR_EDGE_DET_NO_H	BIT(13)
+ #define  VE_SRC_LR_EDGE_DET_NO_DISP	BIT(14)
+ #define  VE_SRC_LR_EDGE_DET_NO_CLK	BIT(15)
+-#define  VE_SRC_LR_EDGE_DET_RT_SHF	16
+-#define  VE_SRC_LR_EDGE_DET_RT		GENMASK(27, VE_SRC_LR_EDGE_DET_RT_SHF)
++#define  VE_SRC_LR_EDGE_DET_RT		GENMASK(27, 16)
+ #define  VE_SRC_LR_EDGE_DET_INTERLACE	BIT(31)
+ 
+ #define VE_SRC_TB_EDGE_DET		0x094
+ #define  VE_SRC_TB_EDGE_DET_TOP		GENMASK(12, 0)
+-#define  VE_SRC_TB_EDGE_DET_BOT_SHF	16
+-#define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, VE_SRC_TB_EDGE_DET_BOT_SHF)
++#define  VE_SRC_TB_EDGE_DET_BOT		GENMASK(28, 16)
+ 
+ #define VE_MODE_DETECT_STATUS		0x098
+ #define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
+-#define  VE_MODE_DETECT_V_LINES_SHF	16
+-#define  VE_MODE_DETECT_V_LINES		GENMASK(27, VE_MODE_DETECT_V_LINES_SHF)
++#define  VE_MODE_DETECT_V_LINES		GENMASK(27, 16)
+ #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
+ #define  VE_MODE_DETECT_STATUS_HSYNC	BIT(29)
+ 
+ #define VE_SYNC_STATUS			0x09c
+ #define  VE_SYNC_STATUS_HSYNC		GENMASK(11, 0)
+-#define  VE_SYNC_STATUS_VSYNC_SHF	16
+-#define  VE_SYNC_STATUS_VSYNC		GENMASK(27, VE_SYNC_STATUS_VSYNC_SHF)
++#define  VE_SYNC_STATUS_VSYNC		GENMASK(27, 16)
+ 
+ #define VE_H_TOTAL_PIXELS		0x0A0
+ 
+@@ -988,23 +984,20 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 		sync = aspeed_video_read(video, VE_SYNC_STATUS);
+ 		htotal = aspeed_video_read(video, VE_H_TOTAL_PIXELS);
+ 
+-		video->frame_bottom = (src_tb_edge & VE_SRC_TB_EDGE_DET_BOT) >>
+-			VE_SRC_TB_EDGE_DET_BOT_SHF;
+-		video->frame_top = src_tb_edge & VE_SRC_TB_EDGE_DET_TOP;
++		video->frame_bottom = FIELD_GET(VE_SRC_TB_EDGE_DET_BOT, src_tb_edge);
++		video->frame_top = FIELD_GET(VE_SRC_TB_EDGE_DET_TOP, src_tb_edge);
+ 		det->vfrontporch = video->frame_top;
+-		det->vbackporch = ((mds & VE_MODE_DETECT_V_LINES) >>
+-			VE_MODE_DETECT_V_LINES_SHF) - video->frame_bottom;
+-		det->vsync = (sync & VE_SYNC_STATUS_VSYNC) >>
+-			VE_SYNC_STATUS_VSYNC_SHF;
++		det->vbackporch = FIELD_GET(VE_MODE_DETECT_V_LINES, mds) -
++			video->frame_bottom;
++		det->vsync = FIELD_GET(VE_SYNC_STATUS_VSYNC, sync);
+ 		if (video->frame_top > video->frame_bottom)
+ 			continue;
+ 
+-		video->frame_right = (src_lr_edge & VE_SRC_LR_EDGE_DET_RT) >>
+-			VE_SRC_LR_EDGE_DET_RT_SHF;
+-		video->frame_left = src_lr_edge & VE_SRC_LR_EDGE_DET_LEFT;
++		video->frame_right = FIELD_GET(VE_SRC_LR_EDGE_DET_RT, src_lr_edge);
++		video->frame_left = FIELD_GET(VE_SRC_LR_EDGE_DET_LEFT, src_lr_edge);
+ 		det->hfrontporch = video->frame_left;
+ 		det->hbackporch = htotal - video->frame_right;
+-		det->hsync = sync & VE_SYNC_STATUS_HSYNC;
++		det->hsync = FIELD_GET(VE_SYNC_STATUS_HSYNC, sync);
+ 		if (video->frame_left > video->frame_right)
+ 			continue;
+ 
+-- 
+2.25.1
+
