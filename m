@@ -2,66 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E035C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:37:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2FBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 10:38:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235193AbiAXKhi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 05:37:38 -0500
-Received: from foss.arm.com ([217.140.110.172]:57092 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234250AbiAXKhg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 05:37:36 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 152B16D;
-        Mon, 24 Jan 2022 02:37:36 -0800 (PST)
-Received: from [10.57.86.86] (unknown [10.57.86.86])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id ED9653F73B;
-        Mon, 24 Jan 2022 02:37:34 -0800 (PST)
-Message-ID: <ecfce441-d79d-4a6b-b8b1-c45619eff78f@arm.com>
-Date:   Mon, 24 Jan 2022 10:37:33 +0000
+        id S232684AbiAXKie (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 05:38:34 -0500
+Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:48160
+        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S232626AbiAXKi1 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 05:38:27 -0500
+Received: from [192.168.88.87] (unknown [36.81.38.25])
+        by gnuweeb.org (Postfix) with ESMTPSA id 50EC2C302E;
+        Mon, 24 Jan 2022 10:38:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
+        s=default; t=1643020704;
+        bh=xw1wMZsw66j6y31Lmm247ZVt9e0jOQk+3R9d5cjT3+U=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NKLVL7Twe0p0sa+qQUMkRc/VP34HHu3BWClXN79ajhy7DDpzNiLSu5NoH4Y/UM7lb
+         xwUDAseqcq3P32HNUP2RfbJCPbtQTfTQFiS2AnQerHL4mjd3UePNjOtLa3Q9cTJznU
+         SGQXyjh5g+cnOmqfMumC6ZIExSvszXl6jXu03K6LAMMaNKqmJLVs35/1rgLFjXByLC
+         TvZtCua9YOLqf+qaD+M8txM4IeCWkBHMDJDBJHkRsYPF8Hxe6qqzOgn0qmfn0CdRXQ
+         KUE4xCXE2cp8opzWcIetELuVdWGQc+yCs4zb5cg90dy74agk4NDL5ue1FRzo7Zwsp3
+         pHbefpxqoyg2w==
+Message-ID: <e7d56d70-3750-b83a-8c1c-99878722c805@gnuweeb.org>
+Date:   Mon, 24 Jan 2022 17:38:21 +0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [PATCH V2 0/2] coresight: trbe: Update existing errata for
- Cortex-X2
-To:     Anshuman Khandual <anshuman.khandual@arm.com>,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        coresight@lists.linaro.org, linux-kernel@vger.kernel.org
-References: <1642994138-25887-1-git-send-email-anshuman.khandual@arm.com>
-From:   Suzuki K Poulose <suzuki.poulose@arm.com>
-In-Reply-To: <1642994138-25887-1-git-send-email-anshuman.khandual@arm.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v2] rcu: Add per-CPU rcuc task info to RCU CPU stall
+ warnings
+Content-Language: en-US
+To:     Zqiang <qiang1.zhang@intel.com>, paulmck@kernel.org
+Cc:     linux-kernel@vger.kernel.org
+References: <20220124103637.4001386-1-qiang1.zhang@intel.com>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220124103637.4001386-1-qiang1.zhang@intel.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/01/2022 03:15, Anshuman Khandual wrote:
-> Errata ARM64_ERRATUM_[2119858|2224489] also affect some Cortex-X2 ranges as
-> well. This series updates the errata definition and detection as required.
-> This series applies on v5.17-rc1.
-> 
-> Relevant identification document can be found here.
-> 
-> https://developer.arm.com/documentation/101803/0200/AArch64-system-registers/
-> AArch64-identification-register-summary/MIDR-EL1--Main-ID-Register
-> 
-> Relevant errata document can be found here.
-> 
-> https://developer.arm.com/documentation/SDEN1775100
-> 
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
-> Cc: Suzuki Poulose <suzuki.poulose@arm.com>
-> Cc: coresight@lists.linaro.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-kernel@vger.kernel.org
-> 
 
-For the series:
+[ I resend and fix my reply, my previous reply seems to have an
+   issue with the "Date" ]
 
-Reviewed-by: Suzuki K Poulose <suzuki.poulose@arm.com>
+Hi Zqiang,
+
+On Mon, 24 Jan 2022 18:36:37 +0800, Zqiang <qiang1.zhang@intel.com> wrote:> +static void rcuc_kthread_dump(struct rcu_data *rdp)
+> +{
+> +	int cpu;
+> +	unsigned long j;
+> +	struct task_struct *rcuc = rdp->rcu_cpu_kthread_task;
+> +
+> +	if (rcu_is_rcuc_kthread_starving(rdp, &j)) {
+> +		cpu = rcuc ? task_cpu(rcuc) : -1;
+> +
+> +		if (rcuc) {
+> +			pr_err("%s kthread starved for %ld jiffies, stack dump:\n",
+> +									rcuc->comm, j);
+> +			sched_show_task(rcuc);
+> +			if (cpu >= 0) {
+> +				if (cpu_online(cpu) && !idle_cpu(cpu)) {
+> +					pr_err("Dump current CPU stack:\n");
+> +					if (!trigger_single_cpu_backtrace(cpu))
+> +						dump_cpu_task(cpu);
+> +				}
+> +			}
+> +		}
+> +	}
+> +}
+
+1) We can reduce the nested if with an early return after
+    checking `rcu_is_rcuc_kthread_starving()`.
+
+2) This ternary operator doesn't make sense:
+
+    `cpu = rcuc ? task_cpu(rcuc) : -1;`
+
+    If `rcuc` is NULL, then the "if (rcuc)" block will never
+    be executed, and `cpu` variable won't be used, why should
+    we perform a conditional with ternary to assign -1 here?
+
+3) We can use an early return as well for the `if (rcuc)` to
+    avoid more nested if.
+
+FWIW, this one makes more sense:
+```
+static void rcuc_kthread_dump(struct rcu_data *rdp)
+{
+	 int cpu;
+	 unsigned long j;
+	 struct task_struct *rcuc;
+
+	 if (!rcu_is_rcuc_kthread_starving(rdp, &j))
+		 return;
+
+	 rcuc = rdp->rcu_cpu_kthread_task;
+	 if (!rcuc)
+		 return;
+
+	 pr_err("%s kthread starved for %ld jiffies, stack dump:\n", rcuc->comm, j);
+	 sched_show_task(rcuc);
+	 cpu = task_cpu(rcuc);
+	 if (cpu_online(cpu) && !idle_cpu(cpu)) {
+		 pr_err("Dump current CPU stack:\n");
+		 if (!trigger_single_cpu_backtrace(cpu))
+			 dump_cpu_task(cpu);
+	 }
+}
+```
+
+Thank you!
+
+-- 
+Ammar Faizi
