@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AA6DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:33:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7128C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421012AbiAYCZ5 (ORCPT
+        id S3421030AbiAYC0A (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:25:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45332 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357011AbiAXTsM (ORCPT
+        Mon, 24 Jan 2022 21:26:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37996 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244239AbiAXTsT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:12 -0500
+        Mon, 24 Jan 2022 14:48:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D915D61298;
-        Mon, 24 Jan 2022 19:48:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4364C340E7;
-        Mon, 24 Jan 2022 19:48:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE296B81215;
+        Mon, 24 Jan 2022 19:48:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EFFD6C340E5;
+        Mon, 24 Jan 2022 19:48:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053689;
-        bh=0QUssqJNsNALCtFHI2M4tOyb+toYMUWbwPGQqJ03+fw=;
+        s=korg; t=1643053695;
+        bh=16LNaUCzIzb/T+JoyZ/ziwN0gPqMj0yFnQdm07T7pxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BH4nad/5ePNung0vySifG8mbrPJ3e06Vt2mkJjA4FvavH3LL3r8rR1W7aKTo4IlPd
-         pS7GpSa1jqPDefFNuaxFJPGoyjzh4JIDe9yMMC5EODqM4fhM0JWzhFgGUCvSmbnas/
-         jS+tzk5jFlAL6dRLclxYuHqXReTn91Pha6UCVdPI=
+        b=shcIEfWvnM0gbpdkALGEjXiDVd3xiWRmKG35WGE8uVqi+u762JnRbPFx6TpIANYbA
+         uZ9OuijgvGMpkD1Ec6q+TMgA+NeYwywhh/SdwjWQ0aok3IhDEgJsjbJqnhUAs5SSoc
+         kRu/YdOSaT7QNgMqLFxG7alHqNqiIr5o0Pm2yRno=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Martin Weber <martin.weber@br-automation.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Reiji Watanabe <reijiw@google.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 112/563] media: coda: fix CODA960 JPEG encoder buffer overflow
-Date:   Mon, 24 Jan 2022 19:37:57 +0100
-Message-Id: <20220124184028.293601037@linuxfoundation.org>
+Subject: [PATCH 5.10 140/563] arm64: clear_page() shouldnt use DC ZVA when DCZID_EL0.DZP == 1
+Date:   Mon, 24 Jan 2022 19:38:25 +0100
+Message-Id: <20220124184029.244698891@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,93 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Philipp Zabel <p.zabel@pengutronix.de>
+From: Reiji Watanabe <reijiw@google.com>
 
-[ Upstream commit 1a59cd88f55068710f6549bee548846661673780 ]
+[ Upstream commit f0616abd4e67143b45b04b565839148458857347 ]
 
-Stop the CODA960 JPEG encoder from overflowing capture buffers.
-The bitstream buffer overflow interrupt doesn't seem to be connected,
-so this has to be handled via timeout instead.
+Currently, clear_page() uses DC ZVA instruction unconditionally.  But it
+should make sure that DCZID_EL0.DZP, which indicates whether or not use
+of DC ZVA instruction is prohibited, is zero when using the instruction.
+Use STNP instead when DCZID_EL0.DZP == 1.
 
-Reported-by: Martin Weber <martin.weber@br-automation.com>
-Fixes: 96f6f62c4656 ("media: coda: jpeg: add CODA960 JPEG encoder support")
-Tested-by: Martin Weber <martin.weber@br-automation.com>
-Signed-off-by: Philipp Zabel <p.zabel@pengutronix.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: f27bb139c387 ("arm64: Miscellaneous library functions")
+Signed-off-by: Reiji Watanabe <reijiw@google.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20211206004736.1520989-2-reijiw@google.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/coda/coda-common.c |  8 +++++---
- drivers/media/platform/coda/coda-jpeg.c   | 21 ++++++++++++++++++++-
- 2 files changed, 25 insertions(+), 4 deletions(-)
+ arch/arm64/lib/clear_page.S | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/media/platform/coda/coda-common.c b/drivers/media/platform/coda/coda-common.c
-index 87a2c706f7477..1eed69d29149f 100644
---- a/drivers/media/platform/coda/coda-common.c
-+++ b/drivers/media/platform/coda/coda-common.c
-@@ -1537,11 +1537,13 @@ static void coda_pic_run_work(struct work_struct *work)
- 
- 	if (!wait_for_completion_timeout(&ctx->completion,
- 					 msecs_to_jiffies(1000))) {
--		dev_err(dev->dev, "CODA PIC_RUN timeout\n");
-+		if (ctx->use_bit) {
-+			dev_err(dev->dev, "CODA PIC_RUN timeout\n");
- 
--		ctx->hold = true;
-+			ctx->hold = true;
- 
--		coda_hw_reset(ctx);
-+			coda_hw_reset(ctx);
-+		}
- 
- 		if (ctx->ops->run_timeout)
- 			ctx->ops->run_timeout(ctx);
-diff --git a/drivers/media/platform/coda/coda-jpeg.c b/drivers/media/platform/coda/coda-jpeg.c
-index b11cfbe166dd3..a72f4655e5ad5 100644
---- a/drivers/media/platform/coda/coda-jpeg.c
-+++ b/drivers/media/platform/coda/coda-jpeg.c
-@@ -1127,7 +1127,8 @@ static int coda9_jpeg_prepare_encode(struct coda_ctx *ctx)
- 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_BT_PTR);
- 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_WD_PTR);
- 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_BBSR);
--	coda_write(dev, 0, CODA9_REG_JPEG_BBC_STRM_CTRL);
-+	coda_write(dev, BIT(31) | ((end_addr - start_addr - header_len) / 256),
-+		   CODA9_REG_JPEG_BBC_STRM_CTRL);
- 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_CTRL);
- 	coda_write(dev, 0, CODA9_REG_JPEG_GBU_FF_RPTR);
- 	coda_write(dev, 127, CODA9_REG_JPEG_GBU_BBER);
-@@ -1257,6 +1258,23 @@ static void coda9_jpeg_finish_encode(struct coda_ctx *ctx)
- 	coda_hw_reset(ctx);
- }
- 
-+static void coda9_jpeg_encode_timeout(struct coda_ctx *ctx)
-+{
-+	struct coda_dev *dev = ctx->dev;
-+	u32 end_addr, wr_ptr;
+diff --git a/arch/arm64/lib/clear_page.S b/arch/arm64/lib/clear_page.S
+index b84b179edba3a..1fd5d790ab800 100644
+--- a/arch/arm64/lib/clear_page.S
++++ b/arch/arm64/lib/clear_page.S
+@@ -16,6 +16,7 @@
+  */
+ SYM_FUNC_START_PI(clear_page)
+ 	mrs	x1, dczid_el0
++	tbnz	x1, #4, 2f	/* Branch if DC ZVA is prohibited */
+ 	and	w1, w1, #0xf
+ 	mov	x2, #4
+ 	lsl	x1, x2, x1
+@@ -25,5 +26,14 @@ SYM_FUNC_START_PI(clear_page)
+ 	tst	x0, #(PAGE_SIZE - 1)
+ 	b.ne	1b
+ 	ret
 +
-+	/* Handle missing BBC overflow interrupt via timeout */
-+	end_addr = coda_read(dev, CODA9_REG_JPEG_BBC_END_ADDR);
-+	wr_ptr = coda_read(dev, CODA9_REG_JPEG_BBC_WR_PTR);
-+	if (wr_ptr >= end_addr - 256) {
-+		v4l2_err(&dev->v4l2_dev, "JPEG too large for capture buffer\n");
-+		coda9_jpeg_finish_encode(ctx);
-+		return;
-+	}
-+
-+	coda_hw_reset(ctx);
-+}
-+
- static void coda9_jpeg_release(struct coda_ctx *ctx)
- {
- 	int i;
-@@ -1276,6 +1294,7 @@ const struct coda_context_ops coda9_jpeg_encode_ops = {
- 	.start_streaming = coda9_jpeg_start_encoding,
- 	.prepare_run = coda9_jpeg_prepare_encode,
- 	.finish_run = coda9_jpeg_finish_encode,
-+	.run_timeout = coda9_jpeg_encode_timeout,
- 	.release = coda9_jpeg_release,
- };
- 
++2:	stnp	xzr, xzr, [x0]
++	stnp	xzr, xzr, [x0, #16]
++	stnp	xzr, xzr, [x0, #32]
++	stnp	xzr, xzr, [x0, #48]
++	add	x0, x0, #64
++	tst	x0, #(PAGE_SIZE - 1)
++	b.ne	2b
++	ret
+ SYM_FUNC_END_PI(clear_page)
+ EXPORT_SYMBOL(clear_page)
 -- 
 2.34.1
 
