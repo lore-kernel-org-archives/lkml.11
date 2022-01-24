@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1EBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F06AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3420285AbiAYCXn (ORCPT
+        id S3420377AbiAYCYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:23:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35184 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346961AbiAXTJT (ORCPT
+        Mon, 24 Jan 2022 21:24:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38446 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347526AbiAXTKn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:09:19 -0500
+        Mon, 24 Jan 2022 14:10:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7612AB8122F;
-        Mon, 24 Jan 2022 19:09:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABBD7C340E5;
-        Mon, 24 Jan 2022 19:09:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50D66603DE;
+        Mon, 24 Jan 2022 19:10:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B2D2C340E5;
+        Mon, 24 Jan 2022 19:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051356;
-        bh=31mIpIf4U5NaA21ma6Md0jO8Atfeo/xK83c8MkT/dOc=;
+        s=korg; t=1643051442;
+        bh=gk9HNkOw8giGGMPD+7p+DjpVIM6kP8mjUyFj3QJZWyw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VjQQnW3kiUNo9ojGRqkRA5y2U0W7zTtCrxb4KiJ409afuTMBFrYxv5S1YazaxzRHh
-         d59LaJpTWIkauJYH0rBwZ9PRsDauQ5/gTTSSP70kzEtMwyXnfOaJTfe+cQDI13l5os
-         b42SuwpRn7vGx/twWERbgv6b9zmNQXfZGl+DHC40=
+        b=QrhU4twLkqiILEAvrVM1EYWORaJArw7eihFUHfGVHeM77RpD1/1CxL189+PMP36Xt
+         dyqJC0NuIIm94niBwruduvdwP1Uh4sxj/W0bJ+zDE9aqglyS+K3/rlK3cgia6hNuof
+         Z3tiK/rreBc2SU7UtDnpeH8yzH+W4nxxjz1w5fjA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 135/186] powerpc/btext: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:30 +0100
-Message-Id: <20220124183941.452996642@linuxfoundation.org>
+        stable@vger.kernel.org, Naresh Kamboju <naresh.kamboju@linaro.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Subject: [PATCH 4.14 163/186] powerpc/cell: Fix clang -Wimplicit-fallthrough warning
+Date:   Mon, 24 Jan 2022 19:43:58 +0100
+Message-Id: <20220124183942.352926189@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,63 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Anders Roxell <anders.roxell@linaro.org>
 
-[ Upstream commit a1d2b210ffa52d60acabbf7b6af3ef7e1e69cda0 ]
+commit e89257e28e844f5d1d39081bb901d9f1183a7705 upstream.
 
-for_each_node_by_type performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Clang warns:
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+arch/powerpc/platforms/cell/pervasive.c:81:2: error: unannotated fall-through between switch labels
+        case SRR1_WAKEEE:
+        ^
+arch/powerpc/platforms/cell/pervasive.c:81:2: note: insert 'break;' to avoid fall-through
+        case SRR1_WAKEEE:
+        ^
+        break;
+1 error generated.
 
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
+Clang is more pedantic than GCC, which does not warn when failing
+through to a case that is just break or return. Clang's version is more
+in line with the kernel's own stance in deprecated.rst. Add athe missing
+break to silence the warning.
 
- for_each_node_by_type(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Fixes: 6e83985b0f6e ("powerpc/cbe: Do not process external or decremeter interrupts from sreset")
+Reported-by: Naresh Kamboju <naresh.kamboju@linaro.org>
+Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-6-git-send-email-Julia.Lawall@lip6.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211207110228.698956-1-anders.roxell@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/powerpc/kernel/btext.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/powerpc/platforms/cell/pervasive.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/kernel/btext.c b/arch/powerpc/kernel/btext.c
-index 6537cba1a7580..d1a2fc7186ce7 100644
---- a/arch/powerpc/kernel/btext.c
-+++ b/arch/powerpc/kernel/btext.c
-@@ -258,8 +258,10 @@ int __init btext_find_display(int allow_nonstdout)
- 			rc = btext_initialize(np);
- 			printk("result: %d\n", rc);
- 		}
--		if (rc == 0)
-+		if (rc == 0) {
-+			of_node_put(np);
- 			break;
-+		}
- 	}
- 	return rc;
- }
--- 
-2.34.1
-
+--- a/arch/powerpc/platforms/cell/pervasive.c
++++ b/arch/powerpc/platforms/cell/pervasive.c
+@@ -90,6 +90,7 @@ static int cbe_system_reset_exception(st
+ 	switch (regs->msr & SRR1_WAKEMASK) {
+ 	case SRR1_WAKEDEC:
+ 		set_dec(1);
++		break;
+ 	case SRR1_WAKEEE:
+ 		/*
+ 		 * Handle these when interrupts get re-enabled and we take
 
 
