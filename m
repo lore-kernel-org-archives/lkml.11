@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D05C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7B3C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348392AbiAXTPS (ORCPT
+        id S1343832AbiAXTPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:15:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35056 "EHLO
+        Mon, 24 Jan 2022 14:15:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35354 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345296AbiAXTG5 (ORCPT
+        with ESMTP id S1344339AbiAXTHX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:06:57 -0500
+        Mon, 24 Jan 2022 14:07:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C25AC612F1;
-        Mon, 24 Jan 2022 19:06:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86381C340E5;
-        Mon, 24 Jan 2022 19:06:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8076E60E8D;
+        Mon, 24 Jan 2022 19:07:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E13FC340E5;
+        Mon, 24 Jan 2022 19:07:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051210;
-        bh=NA/mU0i1Vi+X8zp/d7ZDj3kHh2fK5QZ3ovBPxx+vMWs=;
+        s=korg; t=1643051242;
+        bh=hX05DE8qEpcQDsWFeRFg+CgRqppCEqZHdVOmfan5VdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DADAexnBAkyo1FwAdbGDi3BPNssuAt3vvzezydzDng8/CBMfnzjnkJmORgKQZtYpX
-         TpkgqOntflQ7KAf2JvMRYpZTcTkXCsqL5zEVul6/gu5MNVZFUJIBCDAY7PpwNVXonM
-         iLNsP4KHPFWZcQEScccq10fUxOyaikjvNuG7+lrs=
+        b=KvwUC5P/ka53G7lbVAbeeCaENgc8IjWbvpaD7Blyirp3PHjvpapOld3L3AmJECsru
+         AF73lcJyQY1fJl45fVSbrAruMU5bNrVSKTTgAEVlaLxMgw7IEaqHjwKCpkK+ANZ7gL
+         Gg7zzGyyB1vE2kHp4ZFR2Rk9QSjPo3I/7j9ST36o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Neal Liu <neal_liu@aspeedtech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 072/186] RDMA/hns: Validate the pkey index
-Date:   Mon, 24 Jan 2022 19:42:27 +0100
-Message-Id: <20220124183939.441587144@linuxfoundation.org>
+Subject: [PATCH 4.14 099/186] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 24 Jan 2022 19:42:54 +0100
+Message-Id: <20220124183940.301891945@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,35 +46,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-Before query pkey, make sure that the queried index is valid.
+Enable ast2600 uhci quirks.
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
-index d9777b662eba9..6f64dc5262c0d 100644
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -294,6 +294,9 @@ static int hns_roce_query_gid(struct ib_device *ib_dev, u8 port_num, int index,
- static int hns_roce_query_pkey(struct ib_device *ib_dev, u8 port, u16 index,
- 			       u16 *pkey)
- {
-+	if (index > 0)
-+		return -EINVAL;
-+
- 	*pkey = PKEY_ID;
- 
- 	return 0;
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 6cb16d4b22578..4e91f7b21a796 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
+ 		}
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
 -- 
 2.34.1
 
