@@ -2,102 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1072FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:14:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D09B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844579AbiAXXJr (ORCPT
+        id S1844889AbiAXXKf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:09:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35664 "EHLO
+        Mon, 24 Jan 2022 18:10:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583165AbiAXWRW (ORCPT
+        with ESMTP id S1581269AbiAXWRS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:17:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC192C04A2E0;
-        Mon, 24 Jan 2022 12:45:52 -0800 (PST)
+        Mon, 24 Jan 2022 17:17:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40EA3C04A2D5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:45:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 451D960C2A;
-        Mon, 24 Jan 2022 20:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C9D8C340E5;
-        Mon, 24 Jan 2022 20:45:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057151;
-        bh=RYKL0195HNgCJWuQDIBJ5AxoBVK81NvUTBgz1ofwYFw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RRyGF9Mo2pgGJ9PPvoBJcKSV9bd6ub7OlUSD+XLfWmNkz9i7ZCGXBAfw6YAxqDLw+
-         wO/A2eoDGaUaDjtiFgIzS5t82abfPA5haqebN/8x2bN9a6RiMSyxcRh8DaM7UAT8Ni
-         cV+2i4c9l/461TOwcKyQJ5DPqhop9DeQnTzhy5Fw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Tom Zanussi <zanussi@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCH 5.15 685/846] tracing: Have syscall trace events use trace_event_buffer_lock_reserve()
-Date:   Mon, 24 Jan 2022 19:43:22 +0100
-Message-Id: <20220124184124.693915947@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id AD49EB8121C
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 20:45:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 677CEC340E5;
+        Mon, 24 Jan 2022 20:45:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643057136;
+        bh=yrceQicqpEIe7QLu9/qr6uF5VLg1Sq98e0P9UJLrRlQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jq28KEBd4ggLqKrCYV3myDJMtlj5L7GOiePTyMeAN4LQ2qizDarBE+TpI4EMAJEeh
+         VEfNL3meHpQRJfSfyfgVma9C32VAFCg8cXa04NWUBa1jLzP5yYcPRy4otsZ35qv6+1
+         n5d6b8ru44U0QPQ7YIN+o8RYbcZV8l0qwYK7yk4ORKS6jNSh+ifNp2fnhozI5UFmO4
+         +1T2vBbZ+cCjX3xwOj7xVerW6b7luhj3DDVinXfglQRDxTwdYWCjn1faov30g/Ggwv
+         ryzdBjFbDFVOCD2RUhchR8wL2eH+u1LhkDjHmHS2VVXSVYiiTatHXPMFB4mABn/rm/
+         HBaPjyxQg14YQ==
+Date:   Mon, 24 Jan 2022 20:45:32 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Detlev Casanova <detlev.casanova@collabora.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH v2 8/9] regulator/rpi-panel-attiny: Don't read the LCD
+ power status
+Message-ID: <Ye8P7PmOzy6tCnpi@sirena.org.uk>
+References: <20220121152056.2044551-1-detlev.casanova@collabora.com>
+ <20220121152056.2044551-9-detlev.casanova@collabora.com>
+ <Yerfr8Nj43TTPcAF@sirena.org.uk>
+ <5533342.DvuYhMxLoT@falcon9>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="STjVNrkqRnBsFO5k"
+Content-Disposition: inline
+In-Reply-To: <5533342.DvuYhMxLoT@falcon9>
+X-Cookie: The second best policy is dishonesty.
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Steven Rostedt <rostedt@goodmis.org>
 
-commit 3e2a56e6f639492311e0a8533f0a7aed60816308 upstream.
+--STjVNrkqRnBsFO5k
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Currently, the syscall trace events call trace_buffer_lock_reserve()
-directly, which means that it misses out on some of the filtering
-optimizations provided by the helper function
-trace_event_buffer_lock_reserve(). Have the syscall trace events call that
-instead, as it was missed when adding the update to use the temp buffer
-when filtering.
+On Mon, Jan 24, 2022 at 03:22:35PM -0500, Detlev Casanova wrote:
+> On Friday, January 21, 2022 11:30:39 A.M. EST Mark Brown wrote:
 
-Link: https://lkml.kernel.org/r/20220107225839.823118570@goodmis.org
+> > If that's the case since you're using regmap would it not make sense to
+> > enable caching in order to minimise reads in general.
 
-Cc: stable@vger.kernel.org
-Cc: Ingo Molnar <mingo@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Tom Zanussi <zanussi@kernel.org>
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-Fixes: 0fc1b09ff1ff4 ("tracing: Use temp buffer when filtering events")
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- kernel/trace/trace_syscalls.c |    6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+> Would caching avoid all reads if the values are written at least once bef=
+ore?=20
+> The idea here is to make sure they are never read, I'm not sure if the re=
+gmap=20
+> cache ensures no read in this situation.
 
---- a/kernel/trace/trace_syscalls.c
-+++ b/kernel/trace/trace_syscalls.c
-@@ -323,8 +323,7 @@ static void ftrace_syscall_enter(void *d
- 
- 	trace_ctx = tracing_gen_ctx();
- 
--	buffer = tr->array_buffer.buffer;
--	event = trace_buffer_lock_reserve(buffer,
-+	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
- 			sys_data->enter_event->event.type, size, trace_ctx);
- 	if (!event)
- 		return;
-@@ -367,8 +366,7 @@ static void ftrace_syscall_exit(void *da
- 
- 	trace_ctx = tracing_gen_ctx();
- 
--	buffer = tr->array_buffer.buffer;
--	event = trace_buffer_lock_reserve(buffer,
-+	event = trace_event_buffer_lock_reserve(&buffer, trace_file,
- 			sys_data->exit_event->event.type, sizeof(*entry),
- 			trace_ctx);
- 	if (!event)
+All reads for which the value in the hardware is known, either from a
+register default or from a previous write.
 
+--STjVNrkqRnBsFO5k
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHvD+sACgkQJNaLcl1U
+h9DFpAf/X58GVi+nxaZJiA37YVmb1AEiCDAqPyThZzF1EWKawel6wnA/r/fVzii+
+0ZRht60C/f91ODum1VtcLEdHgE4GT0If7AAVmR5vKVcJn0YTy8L2epouCpiTjn73
+hdyjzqXOm4AmBdRnQhazMzR8S/FpqaG079U8GRix1dx90KVJBHLSE54MdwMtEhsu
+isXP7FGLZp6suBXoIPJ+2fJuUwALVuecTMv+yxpIkzFS6oPCzrr9CWzDK4CORSyh
+7kAc5fwIOCeyXhz1neTd+tXCdaNhlxMI0S0RmTbYGnQbX1PkDBuZiBuswoZKbGK9
+qn40MKHWoxa06IOKtu19597dl+tduA==
+=Orsc
+-----END PGP SIGNATURE-----
+
+--STjVNrkqRnBsFO5k--
