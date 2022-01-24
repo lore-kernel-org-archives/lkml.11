@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A09C3526E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6A4C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573674AbiAXVpf (ORCPT
+        id S1573606AbiAXVpX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33566 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446902AbiAXVJi (ORCPT
+        Mon, 24 Jan 2022 16:45:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60210 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446607AbiAXVIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:38 -0500
+        Mon, 24 Jan 2022 16:08:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 78E766131F;
-        Mon, 24 Jan 2022 21:09:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58730C340E5;
-        Mon, 24 Jan 2022 21:09:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B66ADB80CCF;
+        Mon, 24 Jan 2022 21:08:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE9A2C340E5;
+        Mon, 24 Jan 2022 21:08:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058577;
-        bh=sfLZiX02BJ5cJ5jesEuIRjHJpSQs6iwfZWTLM8msD+o=;
+        s=korg; t=1643058525;
+        bh=AONqG5bMtL6kUVRHWb9GpOeyQRbkloKcPD/OKYlC4ZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JLG84KrXYqW81gHyoXl/MWNcRx/6Xsude0XoPyl1RaInZYfzdv3DzzFyRZHAU5vmb
-         MEUYgKtCbR1qi2DbugsoJ0zlidXpO9JvrKXAAjGalJzNl5CWFoULrgrUT/4OJaP1v7
-         GGB6hodEayK0IcEeIsOTZHWaCsVm+3tNuwQ1ODS4=
+        b=jL0f3rTxZfy8f3kmECkdglqwRrdQBdN8rD97pUf8mAq48RtIbRxcNMu0bUVOSg0Wo
+         AyxazxgG8y48Sza2X2cAErPiAc6MXmW3ei7K+HdwiQw1v/oNv5gee2CE+ZN4IVrIo8
+         kr+i80in2bGNCB6ht6vvpiJDCVUd4wAR2Ngbbi40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Eyal Birger <eyal.birger@gmail.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0301/1039] xfrm: interface with if_id 0 should return error
-Date:   Mon, 24 Jan 2022 19:34:50 +0100
-Message-Id: <20220124184135.429986884@linuxfoundation.org>
+        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0317/1039] mt76: connac: fix last_chan configuration in mt76_connac_mcu_rate_txpower_band
+Date:   Mon, 24 Jan 2022 19:35:06 +0100
+Message-Id: <20220124184135.951734676@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,67 +46,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Lorenzo Bianconi <lorenzo@kernel.org>
 
-[ Upstream commit 8dce43919566f06e865f7e8949f5c10d8c2493f5 ]
+[ Upstream commit 73c7c0443685d8d152c3451e7305a2c2bc47b32e ]
 
-xfrm interface if_id = 0 would cause xfrm policy lookup errors since
-Commit 9f8550e4bd9d.
+last_ch configuration must not be dependent on the current configured band
+but it is defined by hw capabilities since the fw always expects the
+following order:
+- 2GHz
+- 5GHz
+- 6GHz
 
-Now explicitly fail to create an xfrm interface when if_id = 0
-
-With this commit:
- ip link add ipsec0  type xfrm dev lo  if_id 0
- Error: if_id must be non zero.
-
-v1->v2 change:
- - add Fixes: tag
-
-Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 9b2ea8eee42a1 ("mt76: connac: set 6G phymode in single-sku support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_interface.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
-index 41de46b5ffa94..57448fc519fcd 100644
---- a/net/xfrm/xfrm_interface.c
-+++ b/net/xfrm/xfrm_interface.c
-@@ -637,11 +637,16 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
- 			struct netlink_ext_ack *extack)
- {
- 	struct net *net = dev_net(dev);
--	struct xfrm_if_parms p;
-+	struct xfrm_if_parms p = {};
- 	struct xfrm_if *xi;
- 	int err;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+index 61c4c86e79c88..b15bbd650a90c 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
+@@ -2008,12 +2008,12 @@ mt76_connac_mcu_rate_txpower_band(struct mt76_phy *phy,
+ 	}
+ 	batch_size = DIV_ROUND_UP(n_chan, batch_len);
  
- 	xfrmi_netlink_parms(data, &p);
-+	if (!p.if_id) {
-+		NL_SET_ERR_MSG(extack, "if_id must be non zero");
-+		return -EINVAL;
-+	}
-+
- 	xi = xfrmi_locate(net, &p);
- 	if (xi)
- 		return -EEXIST;
-@@ -666,7 +671,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
- {
- 	struct xfrm_if *xi = netdev_priv(dev);
- 	struct net *net = xi->net;
--	struct xfrm_if_parms p;
-+	struct xfrm_if_parms p = {};
-+
-+	if (!p.if_id) {
-+		NL_SET_ERR_MSG(extack, "if_id must be non zero");
-+		return -EINVAL;
-+	}
+-	if (!phy->cap.has_5ghz)
+-		last_ch = chan_list_2ghz[n_chan - 1];
+-	else if (phy->cap.has_6ghz)
+-		last_ch = chan_list_6ghz[n_chan - 1];
++	if (phy->cap.has_6ghz)
++		last_ch = chan_list_6ghz[ARRAY_SIZE(chan_list_6ghz) - 1];
++	else if (phy->cap.has_5ghz)
++		last_ch = chan_list_5ghz[ARRAY_SIZE(chan_list_5ghz) - 1];
+ 	else
+-		last_ch = chan_list_5ghz[n_chan - 1];
++		last_ch = chan_list_2ghz[ARRAY_SIZE(chan_list_2ghz) - 1];
  
- 	xfrmi_netlink_parms(data, &p);
- 	xi = xfrmi_locate(net, &p);
+ 	for (i = 0; i < batch_size; i++) {
+ 		struct mt76_connac_tx_power_limit_tlv tx_power_tlv = {};
 -- 
 2.34.1
 
