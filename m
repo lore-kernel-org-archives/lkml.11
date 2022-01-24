@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EB55C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F71C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:29:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376423AbiAXV3S (ORCPT
+        id S1377015AbiAXV3c (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:29:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50446 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352878AbiAXU5n (ORCPT
+        Mon, 24 Jan 2022 16:29:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443499AbiAXU5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:57:43 -0500
+        Mon, 24 Jan 2022 15:57:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A713EC054866;
+        Mon, 24 Jan 2022 12:00:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EF496091C;
-        Mon, 24 Jan 2022 20:57:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B966CC340E5;
-        Mon, 24 Jan 2022 20:57:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63FC3B8122A;
+        Mon, 24 Jan 2022 20:00:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77AF4C340E8;
+        Mon, 24 Jan 2022 20:00:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057862;
-        bh=E+geO893sEofmPyZ87Zb0IqJCydCQDY6kQK2m97CFPg=;
+        s=korg; t=1643054450;
+        bh=twGCo6Va5F3vSA9YOP7NgbYkHKzZtHUGT0pyg9iWBIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTtF/Xnq/Umzg7iN4e5n7jihg5WDVabZnQGKSJmB0ZmBPeyp/OztH8kDOsDg5+wBa
-         WhSRgYoIXadctArkC1lIKOCMlf1eyljWOZ1AVqTvXGwBqxUlRlLcFR6wbQjuELvAWP
-         egm/J8k/PCNw48yicyQcSmaiDKsIreZc7hPKgvag=
+        b=Q061FsHD2tbA8waY01+bt7dwRiPMZ3xblangEGXfpqHxPtJyEvtGjbo+kw4jIC/OZ
+         nWh3uxpJloZpZfhrtB9u4o/xZAAPtxK23btqp1OjDmmxANK3jUyM68inCNIQfLrZMx
+         m8q+czoYUDZ8R66eJdLS0Pt47MiVZCVQTJ8S9wFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Colin Ian King <colin.king@canonical.com>,
-        Gerd Hoffmann <kraxel@redhat.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0103/1039] drm/virtio: fix potential integer overflow on shift of a int
-Date:   Mon, 24 Jan 2022 19:31:32 +0100
-Message-Id: <20220124184128.620812085@linuxfoundation.org>
+Subject: [PATCH 5.10 361/563] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Mon, 24 Jan 2022 19:42:06 +0100
+Message-Id: <20220124184036.899291970@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,38 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 8f4502fa284478a5264afa8a5a95511276fa9b80 ]
+[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
 
-The left shift of unsigned int 32 bit integer constant 1 is evaluated
-using 32 bit arithmetic and then assigned to a signed 64 bit integer.
-In the case where i is 32 or more this can lead to an overflow. Fix
-this by shifting the value 1ULL instead.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-Addresses-Coverity: ("Uninitentional integer overflow")
-Fixes: 8d6b006e1f51 ("drm/virtio: implement context init: handle VIRTGPU_CONTEXT_PARAM_POLL_RINGS_MASK")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Link: http://patchwork.freedesktop.org/patch/msgid/20210930101941.16546-1-colin.king@canonical.com
-Signed-off-by: Gerd Hoffmann <kraxel@redhat.com>
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
+
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/virtio/virtgpu_ioctl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/virtio/virtgpu_ioctl.c b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-index 3607646d32295..5e8103a197a96 100644
---- a/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-+++ b/drivers/gpu/drm/virtio/virtgpu_ioctl.c
-@@ -819,7 +819,7 @@ static int virtio_gpu_context_init_ioctl(struct drm_device *dev,
- 	if (vfpriv->ring_idx_mask) {
- 		valid_ring_mask = 0;
- 		for (i = 0; i < vfpriv->num_rings; i++)
--			valid_ring_mask |= 1 << i;
-+			valid_ring_mask |= 1ULL << i;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 706c31ae65b01..7fa4283f2a8c0 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7921,9 +7921,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+ {
+ 	const u32 act_max = XDP_REDIRECT;
  
- 		if (~valid_ring_mask & vfpriv->ring_idx_mask) {
- 			ret = -EINVAL;
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
+ }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+ 
 -- 
 2.34.1
 
