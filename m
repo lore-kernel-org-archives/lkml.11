@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECC5C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FB41C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367459AbiAXXzc (ORCPT
+        id S2367577AbiAXXzz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:55:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49638 "EHLO
+        Mon, 24 Jan 2022 18:55:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846531AbiAXXQP (ORCPT
+        with ESMTP id S1846536AbiAXXQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:16:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FA1C07E2B3;
-        Mon, 24 Jan 2022 11:47:38 -0800 (PST)
+        Mon, 24 Jan 2022 18:16:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C9C061776;
+        Mon, 24 Jan 2022 11:44:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B9F2D60909;
-        Mon, 24 Jan 2022 19:47:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A645C340E5;
-        Mon, 24 Jan 2022 19:47:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63AADB81188;
+        Mon, 24 Jan 2022 19:44:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A6DC340E5;
+        Mon, 24 Jan 2022 19:44:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053657;
-        bh=mmvAoJjg43JXHo+H49l9ox+6UY5dyipU5KxhAj68wNo=;
+        s=korg; t=1643053476;
+        bh=QoKvG1rlfkeJTxGZcwcVqHKO30I0UMzibYlNdPulq9E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uERMQBz8ZculV3aWLnga7v0AiuZQLXmzuWs1SlULGNvrjakjH3CTCHIaulu+sDK/i
-         ZY3Qa5VgDl/33ja+KiBGvILh/mkggkKJQC9DGThBx3E46Gf8CFu6Q6ZfPavGWdLLYK
-         nS/Jkl/ChyVZcxrLyrtmnhG94z+QeJdjWeUASwbY=
+        b=Djphgox4RyKxVMLn3zWItsgd0et0rAZJVQWsJoUXTx+o2P7zzRhyq/Skv1GrJaO/I
+         BLwWKw2b6/W9hBxqrEQobLACHUpBXGNy0yL6i+O0XrcW7XuG5eOz8hf8Pzp9ooroXG
+         yBYPXwQ/gwwifN+I/n2m7WOWqxpqIOv1pz5XkGzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vincent Donnefort <vincent.donnefort@arm.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Valentin Schneider <valentin.schneider@arm.com>,
+        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
+        Alexander Stein <alexander.stein@mailbox.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 134/563] sched/fair: Fix detection of per-CPU kthreads waking a task
-Date:   Mon, 24 Jan 2022 19:38:19 +0100
-Message-Id: <20220124184029.032288957@linuxfoundation.org>
+Subject: [PATCH 5.10 078/563] arm64: dts: amlogic: meson-g12: Fix GPU operating point table node name
+Date:   Mon, 24 Jan 2022 19:37:23 +0100
+Message-Id: <20220124184027.090788992@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -53,46 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vincent Donnefort <vincent.donnefort@arm.com>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-[ Upstream commit 8b4e74ccb582797f6f0b0a50372ebd9fd2372a27 ]
+[ Upstream commit bb98a6fd0b0e227cefb2ba91cea2b55455f203b7 ]
 
-select_idle_sibling() has a special case for tasks woken up by a per-CPU
-kthread, where the selected CPU is the previous one. However, the current
-condition for this exit path is incomplete. A task can wake up from an
-interrupt context (e.g. hrtimer), while a per-CPU kthread is running. A
-such scenario would spuriously trigger the special case described above.
-Also, a recent change made the idle task like a regular per-CPU kthread,
-hence making that situation more likely to happen
-(is_per_cpu_kthread(swapper) being true now).
+Starting with commit 94274f20f6bf ("dt-bindings: opp: Convert to DT
+schema") the opp node name has a mandatory pattern. This change
+fixes the dtbs_check warning:
+gpu-opp-table: $nodename:0: 'gpu-opp-table' does not match
+'^opp-table(-[a-z0-9]+)?$'
+Put the 'gpu' part at the end to match the pattern.
 
-Checking for task context makes sure select_idle_sibling() will not
-interpret a wake up from any other context as a wake up by a per-CPU
-kthread.
-
-Fixes: 52262ee567ad ("sched/fair: Allow a per-CPU kthread waking a task to stack on the same CPU, to fix XFS performance regression")
-Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Vincent Guittot <vincent.guittot@linaro.org>
-Reviewed-by: Valentin Schneider <valentin.schneider@arm.com>
-Link: https://lore.kernel.org/r/20211201143450.479472-1-vincent.donnefort@arm.com
+Fixes: 916a0edc43f0 ("arm64: dts: amlogic: meson-g12: add the Mali OPP table and use DVFS")
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://lore.kernel.org/r/20211026182813.900775-2-alexander.stein@mailbox.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/fair.c | 1 +
- 1 file changed, 1 insertion(+)
+ arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-index c004e3b89c324..a7589552be5fc 100644
---- a/kernel/sched/fair.c
-+++ b/kernel/sched/fair.c
-@@ -6284,6 +6284,7 @@ static int select_idle_sibling(struct task_struct *p, int prev, int target)
- 	 * pattern is IO completions.
- 	 */
- 	if (is_per_cpu_kthread(current) &&
-+	    in_task() &&
- 	    prev == smp_processor_id() &&
- 	    this_rq()->nr_running <= 1) {
- 		return prev;
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+index 959b299344e54..7342c8a2b322d 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
+@@ -52,7 +52,7 @@
+ 		secure-monitor = <&sm>;
+ 	};
+ 
+-	gpu_opp_table: gpu-opp-table {
++	gpu_opp_table: opp-table-gpu {
+ 		compatible = "operating-points-v2";
+ 
+ 		opp-124999998 {
 -- 
 2.34.1
 
