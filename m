@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41F96C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B23F7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352472AbiAXUxt (ORCPT
+        id S1352659AbiAXUx4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:53:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54866 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384832AbiAXUai (ORCPT
+        Mon, 24 Jan 2022 15:53:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:36280 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384816AbiAXUaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:38 -0500
+        Mon, 24 Jan 2022 15:30:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EF73614E2;
-        Mon, 24 Jan 2022 20:30:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7502BC340E5;
-        Mon, 24 Jan 2022 20:30:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3681BB811F9;
+        Mon, 24 Jan 2022 20:30:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C181C340E5;
+        Mon, 24 Jan 2022 20:30:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056236;
-        bh=mZ3TmLwV+XX3SCnqWrn6HwwnB01kskCiDLYtCvbS3mU=;
+        s=korg; t=1643056232;
+        bh=b/4IslJBEQd84GWcAJuYmPtCMrf3yVEFUlsk8XYbfeA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s9YtnGrElkQ8nw/Hd0OrHxsMIDzGrBf/ZAZbqryCBJaqOD/mW6HFkqx8yj2s9AEGg
-         najxm0Xx0Yv+Gy31PJpT+P8SW74VSYqvtssYAgUsMXCdDktX3BRmaTFV5K++M4nomO
-         XcnvNX+voqlAUyihNolsaEn+GOphGgImgk84/Kd4=
+        b=BoYtVR4DT6OoljaxOM/oJW+fh97Er/LiPiqdTkHfaFdw6wmHox7/NoA4+Ekey2gKq
+         /NIKMyto83BEYk0jRyFcCPkggFBbYGMxXzjhKi1K1k1YCZzKmBcuagCL0HkOpFUi3g
+         rHgGa3TRSfajQ3wn7XI1LruCep50ethUSuzHpONM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 416/846] mips: add SYS_HAS_CPU_MIPS64_R5 config for MIPS Release 5 support
-Date:   Mon, 24 Jan 2022 19:38:53 +0100
-Message-Id: <20220124184115.331045317@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Todd Kjos <tkjos@google.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 398/846] binder: fix handling of error during copy
+Date:   Mon, 24 Jan 2022 19:38:35 +0100
+Message-Id: <20220124184114.680991182@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,50 +47,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Todd Kjos <tkjos@google.com>
 
-[ Upstream commit fd4eb90b164442cb1e9909f7845e12a0835ac699 ]
+[ Upstream commit fe6b1869243f23a485a106c214bcfdc7aa0ed593 ]
 
-Commit ab7c01fdc3cf ("mips: Add MIPS Release 5 support") adds the two
-configs CPU_MIPS32_R5 and CPU_MIPS64_R5, which depend on the corresponding
-SYS_HAS_CPU_MIPS32_R5 and SYS_HAS_CPU_MIPS64_R5, respectively.
+If a memory copy function fails to copy the whole buffer,
+a positive integar with the remaining bytes is returned.
+In binder_translate_fd_array() this can result in an fd being
+skipped due to the failed copy, but the loop continues
+processing fds since the early return condition expects a
+negative integer on error.
 
-The config SYS_HAS_CPU_MIPS32_R5 was already introduced with commit
-c5b367835cfc ("MIPS: Add support for XPA."); the config
-SYS_HAS_CPU_MIPS64_R5, however, was never introduced.
+Fix by returning "ret > 0 ? -EINVAL : ret" to handle this case.
 
-Hence, ./scripts/checkkconfigsymbols.py warns:
-
-  SYS_HAS_CPU_MIPS64_R5
-  Referencing files: arch/mips/Kconfig, arch/mips/include/asm/cpu-type.h
-
-Add the definition for config SYS_HAS_CPU_MIPS64_R5 under the assumption
-that SYS_HAS_CPU_MIPS64_R5 follows the same pattern as the existing
-SYS_HAS_CPU_MIPS32_R5 and SYS_HAS_CPU_MIPS64_R6.
-
-Fixes: ab7c01fdc3cf ("mips: Add MIPS Release 5 support")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: bb4a2e48d510 ("binder: return errors from buffer copy functions")
+Suggested-by: Dan Carpenter <dan.carpenter@oracle.com>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Todd Kjos <tkjos@google.com>
+Link: https://lore.kernel.org/r/20211130185152.437403-2-tkjos@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/Kconfig | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/android/binder.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 23654ccdbfb12..0200ebb7a0144 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -1993,6 +1993,10 @@ config SYS_HAS_CPU_MIPS64_R1
- config SYS_HAS_CPU_MIPS64_R2
- 	bool
- 
-+config SYS_HAS_CPU_MIPS64_R5
-+	bool
-+	select ARCH_HAS_SYNC_DMA_FOR_CPU if DMA_NONCOHERENT
-+
- config SYS_HAS_CPU_MIPS64_R6
- 	bool
- 	select ARCH_HAS_SYNC_DMA_FOR_CPU if DMA_NONCOHERENT
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index c75fb600740cc..7d29d3d931a79 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -2269,8 +2269,8 @@ static int binder_translate_fd_array(struct binder_fd_array_object *fda,
+ 		if (!ret)
+ 			ret = binder_translate_fd(fd, offset, t, thread,
+ 						  in_reply_to);
+-		if (ret < 0)
+-			return ret;
++		if (ret)
++			return ret > 0 ? -EINVAL : ret;
+ 	}
+ 	return 0;
+ }
 -- 
 2.34.1
 
