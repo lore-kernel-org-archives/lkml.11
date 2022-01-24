@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E22BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379636AbiAXWEP (ORCPT
+        id S1380661AbiAXWE1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:04:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450889AbiAXVVn (ORCPT
+        Mon, 24 Jan 2022 17:04:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42788 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450922AbiAXVVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:21:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9809BC0604E1;
-        Mon, 24 Jan 2022 12:16:24 -0800 (PST)
+        Mon, 24 Jan 2022 16:21:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35A4C611CD;
-        Mon, 24 Jan 2022 20:16:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0DBCC340E5;
-        Mon, 24 Jan 2022 20:16:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08B8D614D7;
+        Mon, 24 Jan 2022 21:21:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDFEDC340E5;
+        Mon, 24 Jan 2022 21:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055383;
-        bh=Gj/ZBJfXwO4Vq/uUWw7uOBpKsabtffRUsI+FbzQkHyo=;
+        s=korg; t=1643059304;
+        bh=1EyoLpH3u/C9VtsMId1mXlNNHGrLClCkoMSf0/DC940=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XYL3eOyhzNXhwQc6rpHK39Tjeq0jyLZ0mg15AECcrLlvHRIdXjYPIN+jErH4iWlty
-         kOPtUpEDyYhx6fh0SyNwvND9YUS2vAb3L/j+5Q5MMnWMWrdqkTHc1gyDP58quzx3rq
-         TSZCTHwHXhQbaPDpHLcMbzrYSUykd0pvYyayKLtw=
+        b=k/FmX+09eWrSgJu6p8wX+1pctsjho6cztan9bAa/gEW3jMEwNP33IP9MqjSQ5rccA
+         PH8GQ4faDN4PSgd+S7oZ+Je7HA4IgLqYAD6YShyYp89pH+19j5uDTyFv4Z9D770EKe
+         3RztkRamvQIedk723y8ynB5yTagIGnJuRTIwayuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lyude Paul <lyude@redhat.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 133/846] drm/dp: Dont read back backlight mode in drm_edp_backlight_enable()
-Date:   Mon, 24 Jan 2022 19:34:10 +0100
-Message-Id: <20220124184105.572031601@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0571/1039] HID: magicmouse: Report battery level over USB
+Date:   Mon, 24 Jan 2022 19:39:20 +0100
+Message-Id: <20220124184144.527010715@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,96 +47,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lyude Paul <lyude@redhat.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 646596485e1ed2182adf293dfd5aec4a96c46330 ]
+[ Upstream commit 0b91b4e4dae63cd43871fc2012370b86ee588f91 ]
 
-As it turns out, apparently some machines will actually leave additional
-backlight functionality like dynamic backlight control on before the OS
-loads. Currently we don't take care to disable unsupported features when
-writing back the backlight mode, which can lead to some rather strange
-looking behavior when adjusting the backlight.
+When connected over USB, the Apple Magic Mouse 2 and the Apple Magic
+Trackpad 2 register multiple interfaces, one of them is used to report
+the battery level.
 
-So, let's fix this by just not reading back the current backlight mode on
-initial enable. I don't think there should really be any downsides to this,
-and this will ensure we don't leave any unsupported functionality enabled.
+However, unlike when connected over Bluetooth, the battery level is not
+reported automatically and it is required to fetch it manually.
 
-This should fix at least one (but not all) of the issues seen with DPCD
-backlight support on fi-bdw-samus
+Fix the battery report descriptor and add a timer to fetch the battery
+level.
 
-v5:
-* Just avoid reading back DPCD register - Doug Anderson
-
-Signed-off-by: Lyude Paul <lyude@redhat.com>
-Fixes: 867cf9cd73c3 ("drm/dp: Extract i915's eDP backlight code into DRM helpers")
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211105183342.130810-4-lyude@redhat.com
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/drm_dp_helper.c | 40 ++++++++++-----------------------
- 1 file changed, 12 insertions(+), 28 deletions(-)
+ drivers/hid/hid-magicmouse.c | 94 +++++++++++++++++++++++++++++++++---
+ 1 file changed, 88 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/drm_dp_helper.c b/drivers/gpu/drm/drm_dp_helper.c
-index 6d0f2c447f3b9..7bb24523a7493 100644
---- a/drivers/gpu/drm/drm_dp_helper.c
-+++ b/drivers/gpu/drm/drm_dp_helper.c
-@@ -3214,27 +3214,13 @@ int drm_edp_backlight_enable(struct drm_dp_aux *aux, const struct drm_edp_backli
- 			     const u16 level)
+diff --git a/drivers/hid/hid-magicmouse.c b/drivers/hid/hid-magicmouse.c
+index d7687ce706144..eba1e8087bfd1 100644
+--- a/drivers/hid/hid-magicmouse.c
++++ b/drivers/hid/hid-magicmouse.c
+@@ -57,6 +57,8 @@ MODULE_PARM_DESC(report_undeciphered, "Report undeciphered multi-touch state fie
+ #define MOUSE_REPORT_ID    0x29
+ #define MOUSE2_REPORT_ID   0x12
+ #define DOUBLE_REPORT_ID   0xf7
++#define USB_BATTERY_TIMEOUT_MS 60000
++
+ /* These definitions are not precise, but they're close enough.  (Bits
+  * 0x03 seem to indicate the aspect ratio of the touch, bits 0x70 seem
+  * to be some kind of bit mask -- 0x20 may be a near-field reading,
+@@ -140,6 +142,7 @@ struct magicmouse_sc {
+ 
+ 	struct hid_device *hdev;
+ 	struct delayed_work work;
++	struct timer_list battery_timer;
+ };
+ 
+ static int magicmouse_firm_touch(struct magicmouse_sc *msc)
+@@ -738,6 +741,44 @@ static void magicmouse_enable_mt_work(struct work_struct *work)
+ 		hid_err(msc->hdev, "unable to request touch data (%d)\n", ret);
+ }
+ 
++static int magicmouse_fetch_battery(struct hid_device *hdev)
++{
++#ifdef CONFIG_HID_BATTERY_STRENGTH
++	struct hid_report_enum *report_enum;
++	struct hid_report *report;
++
++	if (!hdev->battery || hdev->vendor != USB_VENDOR_ID_APPLE ||
++	    (hdev->product != USB_DEVICE_ID_APPLE_MAGICMOUSE2 &&
++	     hdev->product != USB_DEVICE_ID_APPLE_MAGICTRACKPAD2))
++		return -1;
++
++	report_enum = &hdev->report_enum[hdev->battery_report_type];
++	report = report_enum->report_id_hash[hdev->battery_report_id];
++
++	if (!report || report->maxfield < 1)
++		return -1;
++
++	if (hdev->battery_capacity == hdev->battery_max)
++		return -1;
++
++	hid_hw_request(hdev, report, HID_REQ_GET_REPORT);
++	return 0;
++#else
++	return -1;
++#endif
++}
++
++static void magicmouse_battery_timer_tick(struct timer_list *t)
++{
++	struct magicmouse_sc *msc = from_timer(msc, t, battery_timer);
++	struct hid_device *hdev = msc->hdev;
++
++	if (magicmouse_fetch_battery(hdev) == 0) {
++		mod_timer(&msc->battery_timer,
++			  jiffies + msecs_to_jiffies(USB_BATTERY_TIMEOUT_MS));
++	}
++}
++
+ static int magicmouse_probe(struct hid_device *hdev,
+ 	const struct hid_device_id *id)
  {
+@@ -745,11 +786,6 @@ static int magicmouse_probe(struct hid_device *hdev,
+ 	struct hid_report *report;
  	int ret;
--	u8 dpcd_buf, new_dpcd_buf;
-+	u8 dpcd_buf = DP_EDP_BACKLIGHT_CONTROL_MODE_DPCD;
  
--	ret = drm_dp_dpcd_readb(aux, DP_EDP_BACKLIGHT_MODE_SET_REGISTER, &dpcd_buf);
--	if (ret != 1) {
--		drm_dbg_kms(aux->drm_dev,
--			    "%s: Failed to read backlight mode: %d\n", aux->name, ret);
--		return ret < 0 ? ret : -EIO;
--	}
+-	if (id->vendor == USB_VENDOR_ID_APPLE &&
+-	    id->product == USB_DEVICE_ID_APPLE_MAGICTRACKPAD2 &&
+-	    hdev->type != HID_TYPE_USBMOUSE)
+-		return -ENODEV;
 -
--	new_dpcd_buf = dpcd_buf;
--
--	if ((dpcd_buf & DP_EDP_BACKLIGHT_CONTROL_MODE_MASK) != DP_EDP_BACKLIGHT_CONTROL_MODE_DPCD) {
--		new_dpcd_buf &= ~DP_EDP_BACKLIGHT_CONTROL_MODE_MASK;
--		new_dpcd_buf |= DP_EDP_BACKLIGHT_CONTROL_MODE_DPCD;
--
--		if (bl->pwmgen_bit_count) {
--			ret = drm_dp_dpcd_writeb(aux, DP_EDP_PWMGEN_BIT_COUNT, bl->pwmgen_bit_count);
--			if (ret != 1)
--				drm_dbg_kms(aux->drm_dev, "%s: Failed to write aux pwmgen bit count: %d\n",
--					    aux->name, ret);
--		}
-+	if (bl->pwmgen_bit_count) {
-+		ret = drm_dp_dpcd_writeb(aux, DP_EDP_PWMGEN_BIT_COUNT, bl->pwmgen_bit_count);
-+		if (ret != 1)
-+			drm_dbg_kms(aux->drm_dev, "%s: Failed to write aux pwmgen bit count: %d\n",
-+				    aux->name, ret);
+ 	msc = devm_kzalloc(&hdev->dev, sizeof(*msc), GFP_KERNEL);
+ 	if (msc == NULL) {
+ 		hid_err(hdev, "can't alloc magicmouse descriptor\n");
+@@ -775,6 +811,16 @@ static int magicmouse_probe(struct hid_device *hdev,
+ 		return ret;
  	}
  
- 	if (bl->pwm_freq_pre_divider) {
-@@ -3244,16 +3230,14 @@ int drm_edp_backlight_enable(struct drm_dp_aux *aux, const struct drm_edp_backli
- 				    "%s: Failed to write aux backlight frequency: %d\n",
- 				    aux->name, ret);
- 		else
--			new_dpcd_buf |= DP_EDP_BACKLIGHT_FREQ_AUX_SET_ENABLE;
-+			dpcd_buf |= DP_EDP_BACKLIGHT_FREQ_AUX_SET_ENABLE;
- 	}
++	timer_setup(&msc->battery_timer, magicmouse_battery_timer_tick, 0);
++	mod_timer(&msc->battery_timer,
++		  jiffies + msecs_to_jiffies(USB_BATTERY_TIMEOUT_MS));
++	magicmouse_fetch_battery(hdev);
++
++	if (id->vendor == USB_VENDOR_ID_APPLE &&
++	    (id->product == USB_DEVICE_ID_APPLE_MAGICMOUSE2 ||
++	     (id->product == USB_DEVICE_ID_APPLE_MAGICTRACKPAD2 && hdev->type != HID_TYPE_USBMOUSE)))
++		return 0;
++
+ 	if (!msc->input) {
+ 		hid_err(hdev, "magicmouse input not registered\n");
+ 		ret = -ENOMEM;
+@@ -835,17 +881,52 @@ static void magicmouse_remove(struct hid_device *hdev)
+ {
+ 	struct magicmouse_sc *msc = hid_get_drvdata(hdev);
  
--	if (new_dpcd_buf != dpcd_buf) {
--		ret = drm_dp_dpcd_writeb(aux, DP_EDP_BACKLIGHT_MODE_SET_REGISTER, new_dpcd_buf);
--		if (ret != 1) {
--			drm_dbg_kms(aux->drm_dev, "%s: Failed to write aux backlight mode: %d\n",
--				    aux->name, ret);
--			return ret < 0 ? ret : -EIO;
--		}
-+	ret = drm_dp_dpcd_writeb(aux, DP_EDP_BACKLIGHT_MODE_SET_REGISTER, dpcd_buf);
-+	if (ret != 1) {
-+		drm_dbg_kms(aux->drm_dev, "%s: Failed to write aux backlight mode: %d\n",
-+			    aux->name, ret);
-+		return ret < 0 ? ret : -EIO;
- 	}
+-	if (msc)
++	if (msc) {
+ 		cancel_delayed_work_sync(&msc->work);
++		del_timer_sync(&msc->battery_timer);
++	}
  
- 	ret = drm_edp_backlight_set_level(aux, bl, level);
+ 	hid_hw_stop(hdev);
+ }
+ 
++static __u8 *magicmouse_report_fixup(struct hid_device *hdev, __u8 *rdesc,
++				     unsigned int *rsize)
++{
++	/*
++	 * Change the usage from:
++	 *   0x06, 0x00, 0xff, // Usage Page (Vendor Defined Page 1)  0
++	 *   0x09, 0x0b,       // Usage (Vendor Usage 0x0b)           3
++	 * To:
++	 *   0x05, 0x01,       // Usage Page (Generic Desktop)        0
++	 *   0x09, 0x02,       // Usage (Mouse)                       2
++	 */
++	if (hdev->vendor == USB_VENDOR_ID_APPLE &&
++	    (hdev->product == USB_DEVICE_ID_APPLE_MAGICMOUSE2 ||
++	     hdev->product == USB_DEVICE_ID_APPLE_MAGICTRACKPAD2) &&
++	    *rsize == 83 && rdesc[46] == 0x84 && rdesc[58] == 0x85) {
++		hid_info(hdev,
++			 "fixing up magicmouse battery report descriptor\n");
++		*rsize = *rsize - 1;
++		rdesc = kmemdup(rdesc + 1, *rsize, GFP_KERNEL);
++		if (!rdesc)
++			return NULL;
++
++		rdesc[0] = 0x05;
++		rdesc[1] = 0x01;
++		rdesc[2] = 0x09;
++		rdesc[3] = 0x02;
++	}
++
++	return rdesc;
++}
++
+ static const struct hid_device_id magic_mice[] = {
+ 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+ 		USB_DEVICE_ID_APPLE_MAGICMOUSE), .driver_data = 0 },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE,
+ 		USB_DEVICE_ID_APPLE_MAGICMOUSE2), .driver_data = 0 },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE,
++		USB_DEVICE_ID_APPLE_MAGICMOUSE2), .driver_data = 0 },
+ 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+ 		USB_DEVICE_ID_APPLE_MAGICTRACKPAD), .driver_data = 0 },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE,
+@@ -861,6 +942,7 @@ static struct hid_driver magicmouse_driver = {
+ 	.id_table = magic_mice,
+ 	.probe = magicmouse_probe,
+ 	.remove = magicmouse_remove,
++	.report_fixup = magicmouse_report_fixup,
+ 	.raw_event = magicmouse_raw_event,
+ 	.event = magicmouse_event,
+ 	.input_mapping = magicmouse_input_mapping,
 -- 
 2.34.1
 
