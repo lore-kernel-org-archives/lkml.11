@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ED5C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 210A5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349686AbiAXTVJ (ORCPT
+        id S1343958AbiAXTV3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47510 "EHLO
+        Mon, 24 Jan 2022 14:21:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241800AbiAXTNO (ORCPT
+        with ESMTP id S1344078AbiAXTNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:14 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3456CC08EA44;
-        Mon, 24 Jan 2022 11:04:27 -0800 (PST)
+        Mon, 24 Jan 2022 14:13:20 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6E1C061753;
+        Mon, 24 Jan 2022 11:05:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C4F9860010;
-        Mon, 24 Jan 2022 19:04:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0800C340E5;
-        Mon, 24 Jan 2022 19:04:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9177B81233;
+        Mon, 24 Jan 2022 19:05:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6A98C340E5;
+        Mon, 24 Jan 2022 19:05:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051066;
-        bh=+yHQkpZqkv1wHMW7qRo2WHGJBgSOI2MtONsWBWU49Z0=;
+        s=korg; t=1643051131;
+        bh=eZnupatPIV3ci7NnZFNHGOgaYKGfQO9VVbfWgx6Ag74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cfeHxaDCPPAKrSf4VbLSG3GUDSZL7K1Z3u1gAhVEXbPW5NNVgyMG69aZEme72ZF/a
-         9lm05van6ZupGLRrOpEdqfIO0aZPfQwxQNAEkzCqcYsZK3YM27P8Q7usWTqmvOd5dd
-         HHWpl5Xo321czefxFT8MRkDlB8l0tWLbjHyf2gCY=
+        b=lkjr/E1xFcmc59pL3ZyOn2LLWyW+srCFC9filhR1eSyP4674JbU81pUGZaUsBBjgB
+         RF78jmEAGm37JuWn3JjhHEZMb0AnR/FYb1T3x88gptR7P46w3imqJkPgDc0HJABGGu
+         uim+b80aUGP/UmwJM+ip8l8GVQ7tC8LQWezMS4UU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 036/186] wcn36xx: Indicate beacon not connection loss on MISSED_BEACON_IND
-Date:   Mon, 24 Jan 2022 19:41:51 +0100
-Message-Id: <20220124183938.288430717@linuxfoundation.org>
+Subject: [PATCH 4.14 064/186] can: softing: softing_startstop(): fix set but not used variable warning
+Date:   Mon, 24 Jan 2022 19:42:19 +0100
+Message-Id: <20220124183939.180928836@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -51,49 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 588b45c88ae130fe373a8c50edaf54735c3f4fe3 ]
+[ Upstream commit 370d988cc529598ebaec6487d4f84c2115dc696b ]
 
-Firmware can trigger a missed beacon indication, this is not the same as a
-lost signal.
+In the function softing_startstop() the variable error_reporting is
+assigned but not used. The code that uses this variable is commented
+out. Its stated that the functionality is not finally verified.
 
-Flag to Linux the missed beacon and let the WiFi stack decide for itself if
-the link is up or down by sending its own probe to determine this.
+To fix the warning:
 
-We should only be signalling the link is lost when the firmware indicates
+| drivers/net/can/softing/softing_fw.c:424:9: error: variable 'error_reporting' set but not used [-Werror,-Wunused-but-set-variable]
 
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211027232529.657764-1-bryan.odonoghue@linaro.org
+remove the comment, activate the code, but add a "0 &&" to the if
+expression and rely on the optimizer rather than the preprocessor to
+remove the code.
+
+Link: https://lore.kernel.org/all/20220109103126.1872833-1-mkl@pengutronix.de
+Fixes: 03fd3cf5a179 ("can: add driver for Softing card")
+Cc: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/smd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/softing/softing_fw.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index c5b5fbcd2066c..3073c5af7dae8 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2053,7 +2053,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    tmp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 		}
- 		return 0;
+diff --git a/drivers/net/can/softing/softing_fw.c b/drivers/net/can/softing/softing_fw.c
+index aac58ce6e371a..209eddeb822e5 100644
+--- a/drivers/net/can/softing/softing_fw.c
++++ b/drivers/net/can/softing/softing_fw.c
+@@ -576,18 +576,19 @@ int softing_startstop(struct net_device *dev, int up)
+ 		if (ret < 0)
+ 			goto failed;
  	}
-@@ -2068,7 +2068,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    rsp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 			return 0;
- 		}
+-	/* enable_error_frame */
+-	/*
++
++	/* enable_error_frame
++	 *
+ 	 * Error reporting is switched off at the moment since
+ 	 * the receiving of them is not yet 100% verified
+ 	 * This should be enabled sooner or later
+-	 *
+-	if (error_reporting) {
++	 */
++	if (0 && error_reporting) {
+ 		ret = softing_fct_cmd(card, 51, "enable_error_frame");
+ 		if (ret < 0)
+ 			goto failed;
  	}
+-	*/
++
+ 	/* initialize interface */
+ 	iowrite16(1, &card->dpram[DPRAM_FCT_PARAM + 2]);
+ 	iowrite16(1, &card->dpram[DPRAM_FCT_PARAM + 4]);
 -- 
 2.34.1
 
