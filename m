@@ -2,111 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADAA9C2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C6F8C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353943AbiAXTfh (ORCPT
+        id S1353900AbiAXTfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49014 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348197AbiAXT2L (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:28:11 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62A72B8121A;
-        Mon, 24 Jan 2022 19:28:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90400C340E5;
-        Mon, 24 Jan 2022 19:28:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052488;
-        bh=8x76DRlB8IfR/34mTMkzRlPwJKUqVUcLK23r2U2ikrY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ndXtwCZU80x33cDBMe/2cFS9/OwN9DGSZIIaL9AVS32uuCcPEhr3flajYPSHN5ITB
-         2nSl2Y/z7r4Hjta+6gCK+ZT8zh6ymVSJFm2r3hTpMkbR8MpQK8rd+dK6ingvc8E/D8
-         kRkAOohrZ+nRvAtuw2Bs+JufSO5bEHtjnK++lnfA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neeraj Upadhyay <quic_neeraju@quicinc.com>,
-        Frederic Weisbecker <frederic@kernel.org>,
-        Uladzislau Rezki <urezki@gmail.com>,
-        Boqun Feng <boqun.feng@gmail.com>,
-        Josh Triplett <josh@joshtriplett.org>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 076/320] rcu/exp: Mark current CPU as exp-QS in IPI loop second pass
-Date:   Mon, 24 Jan 2022 19:41:00 +0100
-Message-Id: <20220124183956.321184458@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 14:35:32 -0500
+Received: from mga04.intel.com ([192.55.52.120]:46673 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1351946AbiAXT3T (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 14:29:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643052558; x=1674588558;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=kw/Pqxn4zzEA3FRO8NnV1FqsGwZ/uPeuzfjR4yCnkRg=;
+  b=T+H02f1v0iCzGFNEQBucoogCJJrjA6zVx12rZAVxaKNkaxd7Pl6M9SFC
+   1xvQdJTsJ4Ma8viQ/0RtWdGNi/zRuAQIoJHG5ZodRTu9QCR8B2M2N7jc5
+   /dULbVBJ++G03bQTWagTJmENk+byyxS82sVFKQ/+j9pFLi9T8soXEHN2F
+   shv14GQQzussZX68nPQLCE8TGkCjhaFvNA5Gk4fWoNFGjcpLyvOsfOpf2
+   aH9JE6fNeYIsKJvPGUv2rTSJWESFoTIttcw5qs2R7zE0VzPbxYfRB1GUb
+   2WX8SrPO7Uwm++WwcERaq+nXX8Qw1MAZOadl62nd26Kol/D3cuA5Cr6PJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="244962033"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="244962033"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 11:25:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="624197286"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 24 Jan 2022 11:25:05 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nC4xa-000IoX-Ry; Mon, 24 Jan 2022 19:25:02 +0000
+Date:   Tue, 25 Jan 2022 03:24:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [esmil:visionfive 59/63]
+ drivers/soc/sifive/sifive_l2_cache.c:148:19: warning: result of comparison
+ of constant 36507222016 with expression of type 'unsigned long' is always
+ false
+Message-ID: <202201250206.q2ugUJBE-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frederic Weisbecker <frederic@kernel.org>
+tree:   https://github.com/esmil/linux visionfive
+head:   fdbe623707a8f3f9b9d2cb3c4c240299a12b8302
+commit: c17f07c367229d46348e9005d004d8b3416637bc [59/63] RISC-V: Enable SIFIVE_L2_FLUSH for StarFive SoCs
+config: riscv-randconfig-r015-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250206.q2ugUJBE-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/esmil/linux/commit/c17f07c367229d46348e9005d004d8b3416637bc
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout c17f07c367229d46348e9005d004d8b3416637bc
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash drivers/soc/sifive/
 
-[ Upstream commit 81f6d49cce2d2fe507e3fddcc4a6db021d9c2e7b ]
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Expedited RCU grace periods invoke sync_rcu_exp_select_node_cpus(), which
-takes two passes over the leaf rcu_node structure's CPUs.  The first
-pass gathers up the current CPU and CPUs that are in dynticks idle mode.
-The workqueue will report a quiescent state on their behalf later.
-The second pass sends IPIs to the rest of the CPUs, but excludes the
-current CPU, incorrectly assuming it has been included in the first
-pass's list of CPUs.
+All warnings (new ones prefixed by >>):
 
-Unfortunately the current CPU may have changed between the first and
-second pass, due to the fact that the various rcu_node structures'
-->lock fields have been dropped, thus momentarily enabling preemption.
-This means that if the second pass's CPU was not on the first pass's
-list, it will be ignored completely.  There will be no IPI sent to
-it, and there will be no reporting of quiescent states on its behalf.
-Unfortunately, the expedited grace period will nevertheless be waiting
-for that CPU to report a quiescent state, but with that CPU having no
-reason to believe that such a report is needed.
+   drivers/soc/sifive/sifive_l2_cache.c:158:3: error: implicit declaration of function 'writeq' [-Werror,-Wimplicit-function-declaration]
+                   writeq(line, l2_base + SIFIVE_L2_FLUSH64);
+                   ^
+>> drivers/soc/sifive/sifive_l2_cache.c:148:19: warning: result of comparison of constant 36507222016 with expression of type 'unsigned long' is always false [-Wtautological-constant-out-of-range-compare]
+              (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
+              ~~~~~~~~~~~~~ ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning and 1 error generated.
 
-The result will be an expedited grace period stall.
 
-Fix this by no longer excluding the current CPU from consideration during
-the second pass.
+vim +148 drivers/soc/sifive/sifive_l2_cache.c
 
-Fixes: b9ad4d6ed18e ("rcu: Avoid self-IPI in sync_rcu_exp_select_node_cpus()")
-Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
-Cc: Uladzislau Rezki <urezki@gmail.com>
-Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
-Cc: Boqun Feng <boqun.feng@gmail.com>
-Cc: Josh Triplett <josh@joshtriplett.org>
-Cc: Joel Fernandes <joel@joelfernandes.org>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+a967a289f16969 arch/riscv/mm/sifive_l2_cache.c      Yash Shah          2019-05-06  126  
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  127  #ifdef CONFIG_SIFIVE_L2_FLUSH
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  128  void sifive_l2_flush64_range(unsigned long start, unsigned long len)
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  129  {
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  130  	unsigned long line;
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  131  
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  132  	if(!l2_base) {
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  133  		pr_warn("L2CACHE: base addr invalid, skipping flush\n");
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  134  		return;
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  135  	}
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  136  
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  137  	/* TODO: if (len == 0), skipping flush or going on? */
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  138  	if(!len) {
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  139  		pr_debug("L2CACHE: flush64 range @ 0x%lx(len:0)\n", start);
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  140  		return;
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  141  	}
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  142  
+0684fe29f5de5f drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  143  	len = len + (start % SIFIVE_L2_FLUSH64_LINE_LEN);
+0684fe29f5de5f drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  144  	start = ALIGN_DOWN(start, SIFIVE_L2_FLUSH64_LINE_LEN);
+0684fe29f5de5f drivers/soc/sifive/sifive_l2_cache.c Atish Patra        2021-06-12  145  
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  146  	/* make sure the address is in the range */
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  147  	if(start < CONFIG_SIFIVE_L2_FLUSH_START ||
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08 @148  	   (start + len) > (CONFIG_SIFIVE_L2_FLUSH_START +
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  149  			     CONFIG_SIFIVE_L2_FLUSH_SIZE)) {
+b5cf3456431952 drivers/soc/sifive/sifive_l2_cache.c Geert Uytterhoeven 2021-05-21  150  		WARN(1, "L2CACHE: flush64 out of range: %lx(%lx), skip flush\n",
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  151  		     start, len);
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  152  		return;
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  153  	}
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  154  
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  155  	mb();	/* sync */
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  156  	for (line = start; line < start + len;
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  157  	     line += SIFIVE_L2_FLUSH64_LINE_LEN) {
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  158  		writeq(line, l2_base + SIFIVE_L2_FLUSH64);
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  159  		mb();
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  160  	}
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  161  }
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  162  EXPORT_SYMBOL_GPL(sifive_l2_flush64_range);
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  163  #endif
+c6649e71d37210 drivers/soc/sifive/sifive_l2_cache.c Tom                2021-01-08  164  
+
+:::::: The code at line 148 was first introduced by commit
+:::::: c6649e71d37210bc4c33eada849aeda98c823de9 sifive/sifive_l2_cache: Add sifive_l2_flush64_range function
+
+:::::: TO: Tom <support@vamrs.com>
+:::::: CC: Emil Renner Berthing <kernel@esmil.dk>
+
 ---
- kernel/rcu/tree_exp.h | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
-index 4c4d7683a4e5b..173e3ce607900 100644
---- a/kernel/rcu/tree_exp.h
-+++ b/kernel/rcu/tree_exp.h
-@@ -382,6 +382,7 @@ retry_ipi:
- 			continue;
- 		}
- 		if (get_cpu() == cpu) {
-+			mask_ofl_test |= mask;
- 			put_cpu();
- 			continue;
- 		}
--- 
-2.34.1
-
-
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
