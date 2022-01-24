@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1C0BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:49:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21691C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:49:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352761AbiAXUsk (ORCPT
+        id S1356254AbiAXUsn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:48:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59238 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353543AbiAXUXG (ORCPT
+        Mon, 24 Jan 2022 15:48:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354371AbiAXUYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:06 -0500
+        Mon, 24 Jan 2022 15:24:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D1F7C0085BD;
+        Mon, 24 Jan 2022 11:40:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0345AB812A4;
-        Mon, 24 Jan 2022 20:23:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F6EC340E5;
-        Mon, 24 Jan 2022 20:23:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 21F59B81239;
+        Mon, 24 Jan 2022 19:40:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50BCAC340E5;
+        Mon, 24 Jan 2022 19:40:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055783;
-        bh=U+Nb0NPZWLh7Nmoze8/HV96EGs6PbpH8kYa4V7Ihd9c=;
+        s=korg; t=1643053253;
+        bh=4vD56yFlgUBC5atksTz50D4Z2EyBrU/6DhqxbVI8tNM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QCZ40Rc6a4/UyF2yKSwDThDNRRlaoaB7Ahv9eymcYoakfsyrtRabZ96dBQoSudYGQ
-         XYHhPKQ2adQeypIwjnjCqo1U9oHGk1BhCB4EgeIiwH0kKzCslhHJfCnyRtzui2s2b6
-         hPorjJpFwILuFCId1yr7lsrHkF/y3WgvMYkPiBSk=
+        b=BzfnHKaLpfGrmy0fpiDDD56QR7FKLlYQtC4VREilCOjC9gRo3bfTVPl2IJknuJtXI
+         rLxMIojTNBXG2+Qk6Bo46uEMesFoELr+l5uSQXVCDA/tinmknZxVZFstAwOeIBNgVY
+         5H1MBaU7Wjp41g1RyA43nOqvSH7tH8ApBllE3Wys=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 265/846] ARM: dts: armada-38x: Add generic compatible to UART nodes
-Date:   Mon, 24 Jan 2022 19:36:22 +0100
-Message-Id: <20220124184110.069355958@linuxfoundation.org>
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.4 316/320] scripts/dtc: dtx_diff: remove broken example from help text
+Date:   Mon, 24 Jan 2022 19:45:00 +0100
+Message-Id: <20220124184004.689164480@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Behún <kabel@kernel.org>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-[ Upstream commit 62480772263ab6b52e758f2346c70a526abd1d28 ]
+commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
 
-Add generic compatible string "ns16550a" to serial port nodes of Armada
-38x.
+dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
+this has never worked: The /proc/self/fds/... paths passed by the shell
+will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
+but even with this check removed, the function cannot work: hexdump will
+eat up the DTB magic, making the subsequent dtc call fail, as a pipe
+cannot be rewound.
 
-This makes it possible to use earlycon.
+Simply remove this broken example, as there is already an alternative one
+that works fine.
 
-Fixes: 0d3d96ab0059 ("ARM: mvebu: add Device Tree description of the Armada 380/385 SoCs")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Reviewed-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/armada-38x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ scripts/dtc/dtx_diff |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/armada-38x.dtsi b/arch/arm/boot/dts/armada-38x.dtsi
-index 9b1a24cc5e91f..df3c8d1d8f641 100644
---- a/arch/arm/boot/dts/armada-38x.dtsi
-+++ b/arch/arm/boot/dts/armada-38x.dtsi
-@@ -168,7 +168,7 @@
- 			};
+--- a/scripts/dtc/dtx_diff
++++ b/scripts/dtc/dtx_diff
+@@ -56,12 +56,8 @@ Otherwise DTx is treated as a dts source
+    or '/include/' to be processed.
  
- 			uart0: serial@12000 {
--				compatible = "marvell,armada-38x-uart";
-+				compatible = "marvell,armada-38x-uart", "ns16550a";
- 				reg = <0x12000 0x100>;
- 				reg-shift = <2>;
- 				interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
-@@ -178,7 +178,7 @@
- 			};
+    If DTx_1 and DTx_2 are in different architectures, then this script
+-   may not work since \${ARCH} is part of the include path.  Two possible
+-   workarounds:
+-
+-      `basename $0` \\
+-          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
+-          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
++   may not work since \${ARCH} is part of the include path.  The following
++   workaround can be used:
  
- 			uart1: serial@12100 {
--				compatible = "marvell,armada-38x-uart";
-+				compatible = "marvell,armada-38x-uart", "ns16550a";
- 				reg = <0x12100 0x100>;
- 				reg-shift = <2>;
- 				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
--- 
-2.34.1
-
+       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
+       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
 
 
