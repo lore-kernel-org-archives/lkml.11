@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE705C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3343CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356054AbiAXTpI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:45:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54006 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354097AbiAXTf7 (ORCPT
+        id S239752AbiAXTrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:47:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58390 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354593AbiAXTgu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:35:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8DDEC0617AE;
-        Mon, 24 Jan 2022 11:16:48 -0800 (PST)
+        Mon, 24 Jan 2022 14:36:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 190066135D;
-        Mon, 24 Jan 2022 19:16:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA468C340E5;
-        Mon, 24 Jan 2022 19:16:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C7F4FB81229;
+        Mon, 24 Jan 2022 19:36:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E17A4C340E5;
+        Mon, 24 Jan 2022 19:36:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051807;
-        bh=PP9uLvzWC9cDcqDXuUVuJjBDEv8xT7ubGng62qaT7qs=;
+        s=korg; t=1643053007;
+        bh=+4Y45NR2lyzG41zk6KY232Sml1e0lHoiQZKzYnmhRPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZqqePjufXT6O8AK/Lpg8Kf1nMplipREk1L4j2arAe4kgEZZC99mRKG0rWog2QulJ+
-         KC8pzhzsMAp6fHykYOuQo/vNKpuUyJ5eHpYbvm+24IK7TivIijipTM6S6FreV3WOwL
-         aZIig1ycwwDrLjYKrVAVFH6i/oUw3v/qgIk2GTHc=
+        b=IkT13YGt2JSQZs78+o4bBK6HiXy0YMsbysQIhIv9A7ddgjNMJaqchQxSXcWCED2R1
+         UhWsPlJzYfK8eQUpjb3J4DALJbF7/Y5O+6rpMWa9dcVZcuinALaORJj3p2t4WbgPm9
+         zTe6/je2d6IlCwmaFe79vC6RtJ85NcUXmkArh5bw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Jun <chenjun102@huawei.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 093/239] tpm: add request_locality before write TPM_INT_ENABLE
-Date:   Mon, 24 Jan 2022 19:42:11 +0100
-Message-Id: <20220124183946.069737911@linuxfoundation.org>
+Subject: [PATCH 5.4 238/320] powerpc: handle kdump appropriately with crash_kexec_post_notifiers option
+Date:   Mon, 24 Jan 2022 19:43:42 +0100
+Message-Id: <20220124184002.088618195@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +47,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Jun <chenjun102@huawei.com>
+From: Hari Bathini <hbathini@linux.ibm.com>
 
-[ Upstream commit 0ef333f5ba7f24f5d8478425c163d3097f1c7afd ]
+[ Upstream commit 219572d2fc4135b5ce65c735d881787d48b10e71 ]
 
-Locality is not appropriately requested before writing the int mask.
-Add the missing boilerplate.
+Kdump can be triggered after panic_notifers since commit f06e5153f4ae2
+("kernel/panic.c: add "crash_kexec_post_notifiers" option for kdump
+after panic_notifers") introduced crash_kexec_post_notifiers option.
+But using this option would mean smp_send_stop(), that marks all other
+CPUs as offline, gets called before kdump is triggered. As a result,
+kdump routines fail to save other CPUs' registers. To fix this, kdump
+friendly crash_smp_send_stop() function was introduced with kernel
+commit 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump
+friendly version in panic path"). Override this kdump friendly weak
+function to handle crash_kexec_post_notifiers option appropriately
+on powerpc.
 
-Fixes: e6aef069b6e9 ("tpm_tis: convert to using locality callbacks")
-Signed-off-by: Chen Jun <chenjun102@huawei.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+[Fixed signature of crash_stop_this_cpu() - reported by lkp@intel.com]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211207103719.91117-1-hbathini@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ arch/powerpc/kernel/smp.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-index c9a5f34097df5..c95ce9323d77a 100644
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -874,7 +874,15 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
- 	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
- 		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
- 	intmask &= ~TPM_GLOBAL_INT_ENABLE;
-+
-+	rc = request_locality(chip, 0);
-+	if (rc < 0) {
-+		rc = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
-+	release_locality(chip, 0);
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index 82dff003a7fd6..4de63ec2e1551 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -582,6 +582,36 @@ void crash_send_ipi(void (*crash_ipi_callback)(struct pt_regs *))
+ }
+ #endif
  
- 	rc = tpm2_probe(chip);
- 	if (rc)
++#ifdef CONFIG_NMI_IPI
++static void crash_stop_this_cpu(struct pt_regs *regs)
++#else
++static void crash_stop_this_cpu(void *dummy)
++#endif
++{
++	/*
++	 * Just busy wait here and avoid marking CPU as offline to ensure
++	 * register data is captured appropriately.
++	 */
++	while (1)
++		cpu_relax();
++}
++
++void crash_smp_send_stop(void)
++{
++	static bool stopped = false;
++
++	if (stopped)
++		return;
++
++	stopped = true;
++
++#ifdef CONFIG_NMI_IPI
++	smp_send_nmi_ipi(NMI_IPI_ALL_OTHERS, crash_stop_this_cpu, 1000000);
++#else
++	smp_call_function(crash_stop_this_cpu, NULL, 0);
++#endif /* CONFIG_NMI_IPI */
++}
++
+ #ifdef CONFIG_NMI_IPI
+ static void nmi_stop_this_cpu(struct pt_regs *regs)
+ {
 -- 
 2.34.1
 
