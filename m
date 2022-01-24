@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D41C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25261C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355353AbiAXUNa (ORCPT
+        id S1355384AbiAXUNh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:13:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41822 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358225AbiAXTyk (ORCPT
+        Mon, 24 Jan 2022 15:13:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50102 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352212AbiAXTwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:54:40 -0500
+        Mon, 24 Jan 2022 14:52:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 43F73B81215;
-        Mon, 24 Jan 2022 19:54:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FEA2C340E5;
-        Mon, 24 Jan 2022 19:54:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35B8860B03;
+        Mon, 24 Jan 2022 19:52:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F24C7C340E5;
+        Mon, 24 Jan 2022 19:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054078;
-        bh=bW+bF1ExHsREagpkrACN8lVvle3DblM3ngq6eFFY7eA=;
+        s=korg; t=1643053963;
+        bh=OlA4Y8FkDzTA8w20jYBGvYJlPZZsqfaEp19JGgNdp7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gi36GAea6uoH4P9ztcU39Y9vduda6PurWerRvi1wzDJ9DTfAVRkOW7srWbsFUJdEP
-         XT6faO1bcDaUE+eTdOqr5Zt/yPbNfnekdlu3IG2Ezh3nm2er/XiTtPe3us8F08H7/Q
-         eO2kGHsSKpeXlORFQA+pvYFE9zjzF72hvybSfejk=
+        b=tEhS2897oYeeHjYrAJPpvgNhR81VTglomEjFkPvAJs1IP6f2/tA5QAgSClmTV42YC
+         QE0PUvD4JPlbdFCFvsSXS1UZhc5rkOWdYEjFIfYIT9O/DEIroKhnoxPxwdiH0zsUA9
+         2s6RAVQ5/YNjms1i1jFQvf07oarstK8K4xyVPCcs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Jim Quinlan <jim2101024@gmail.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Frank Rowand <frank.rowand@sony.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 271/563] of: unittest: fix warning on PowerPC frame size warning
-Date:   Mon, 24 Jan 2022 19:40:36 +0100
-Message-Id: <20220124184033.811895623@linuxfoundation.org>
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 234/563] can: xilinx_can: xcan_probe(): check for error irq
+Date:   Mon, 24 Jan 2022 19:39:59 +0100
+Message-Id: <20220124184032.534625351@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,67 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jim Quinlan <jim2101024@gmail.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit a8d61a9112ad0c9216ab45d050991e07bc4f3408 ]
+[ Upstream commit c6564c13dae25cd7f8e1de5127b4da4500ee5844 ]
 
-The struct device variable "dev_bogus" was triggering this warning
-on a PowerPC build:
+For the possible failure of the platform_get_irq(), the returned irq
+could be error number and will finally cause the failure of the
+request_irq().
 
-    drivers/of/unittest.c: In function 'of_unittest_dma_ranges_one.constprop':
-    [...] >> The frame size of 1424 bytes is larger than 1024 bytes
-             [-Wframe-larger-than=]
+Consider that platform_get_irq() can now in certain cases return
+-EPROBE_DEFER, and the consequences of letting request_irq()
+effectively convert that into -EINVAL, even at probe time rather than
+later on. So it might be better to check just now.
 
-This variable is now dynamically allocated.
-
-Fixes: e0d072782c734 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Jim Quinlan <jim2101024@gmail.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Frank Rowand <frank.rowand@sony.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20211210184636.7273-2-jim2101024@gmail.com
+Fixes: b1201e44f50b ("can: xilinx CAN controller support")
+Link: https://lore.kernel.org/all/20211224021324.1447494-1-jiasheng@iscas.ac.cn
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/unittest.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/net/can/xilinx_can.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
-index 1d4b0b7d0cc10..a5c4c77b6f3e2 100644
---- a/drivers/of/unittest.c
-+++ b/drivers/of/unittest.c
-@@ -910,11 +910,18 @@ static void __init of_unittest_dma_ranges_one(const char *path,
- 	if (!rc) {
- 		phys_addr_t	paddr;
- 		dma_addr_t	dma_addr;
--		struct device	dev_bogus;
-+		struct device	*dev_bogus;
+diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
+index 48d746e18f302..375998263af7a 100644
+--- a/drivers/net/can/xilinx_can.c
++++ b/drivers/net/can/xilinx_can.c
+@@ -1762,7 +1762,12 @@ static int xcan_probe(struct platform_device *pdev)
+ 	spin_lock_init(&priv->tx_lock);
  
--		dev_bogus.dma_range_map = map;
--		paddr = dma_to_phys(&dev_bogus, expect_dma_addr);
--		dma_addr = phys_to_dma(&dev_bogus, expect_paddr);
-+		dev_bogus = kzalloc(sizeof(struct device), GFP_KERNEL);
-+		if (!dev_bogus) {
-+			unittest(0, "kzalloc() failed\n");
-+			kfree(map);
-+			return;
-+		}
+ 	/* Get IRQ for the device */
+-	ndev->irq = platform_get_irq(pdev, 0);
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		goto err_free;
 +
-+		dev_bogus->dma_range_map = map;
-+		paddr = dma_to_phys(dev_bogus, expect_dma_addr);
-+		dma_addr = phys_to_dma(dev_bogus, expect_paddr);
++	ndev->irq = ret;
++
+ 	ndev->flags |= IFF_ECHO;	/* We support local echo */
  
- 		unittest(paddr == expect_paddr,
- 			 "of_dma_get_range: wrong phys addr %pap (expecting %llx) on node %pOF\n",
-@@ -924,6 +931,7 @@ static void __init of_unittest_dma_ranges_one(const char *path,
- 			 &dma_addr, expect_dma_addr, np);
- 
- 		kfree(map);
-+		kfree(dev_bogus);
- 	}
- 	of_node_put(np);
- #endif
+ 	platform_set_drvdata(pdev, ndev);
 -- 
 2.34.1
 
