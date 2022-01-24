@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDEF3C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85E96C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581686AbiAXWMK (ORCPT
+        id S1581708AbiAXWMM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:12:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42586 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452970AbiAXV1b (ORCPT
+        Mon, 24 Jan 2022 17:12:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47554 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452996AbiAXV1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:27:31 -0500
+        Mon, 24 Jan 2022 16:27:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FCA2B81218;
-        Mon, 24 Jan 2022 21:27:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6292C340E4;
-        Mon, 24 Jan 2022 21:27:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1F60614C9;
+        Mon, 24 Jan 2022 21:27:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4271C340E4;
+        Mon, 24 Jan 2022 21:27:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059648;
-        bh=t24xaTbX/YPgqubRwPSZulUBEsrmp1dBDxvvqQabvmg=;
+        s=korg; t=1643059654;
+        bh=UND6nXt7n9+NZjYujgAg5y31VQ9oBzFhCxZj4nu5wWI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tg4X64ZC96dazK6u20I8v7YGFaxr/eyAldXPyzavse1p7mth+gc9hK/behkJ9xZCd
-         fhTYm1mKFMqflsLDf+WcVpvrB2qPzAyVw6cw9JjQlanoKjV84Y3PefhTYApsTXL0wz
-         ZlJAcwQbRo8M3ersHzwhujodAI+KI255FpmRyxt4=
+        b=N4X6EQXZ0QFlxeNo3KxFYdrpLTVICAO7xlufT3AQ0lqIWKlit9/5Zu6yytPWiTGUO
+         0BOrz7lG6b6en7S7WzqQACHmZG4CIL0iIWfvplZKfsz2znRFf2jANvhdRpV7jFFQB/
+         KBLZmuY3IUMQU9p8jWoLw3BIJR8WYJo9c10Q1k78=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, wangyangbo <wangyangbo@uniontech.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0685/1039] iwlwifi: pcie: make sure prph_info is set when treating wakeup IRQ
-Date:   Mon, 24 Jan 2022 19:41:14 +0100
-Message-Id: <20220124184148.376711013@linuxfoundation.org>
+Subject: [PATCH 5.16 0687/1039] block: check minor range in device_add_disk()
+Date:   Mon, 24 Jan 2022 19:41:16 +0100
+Message-Id: <20220124184148.446317970@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,43 +48,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
 
-[ Upstream commit 459fc0f2c6b0f6e280bfa0f230c100c9dfe3a199 ]
+[ Upstream commit e338924bd05d6e71574bc13e310c89e10e49a8a5 ]
 
-In some rare cases when the HW is in a bad state, we may get this
-interrupt when prph_info is not set yet.  Then we will try to
-dereference it to check the sleep_notif element, which will cause an
-oops.
+ioctl(fd, LOOP_CTL_ADD, 1048576) causes
 
-Fix that by ignoring the interrupt if prph_info is not set yet.
+  sysfs: cannot create duplicate filename '/dev/block/7:0'
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219132536.0537aa562313.I183bb336345b9b3da196ba9e596a6f189fbcbd09@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+message because such request is treated as if ioctl(fd, LOOP_CTL_ADD, 0)
+due to MINORMASK == 1048575. Verify that all minor numbers for that device
+fit in the minor range.
+
+Reported-by: wangyangbo <wangyangbo@uniontech.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Link: https://lore.kernel.org/r/b1b19379-23ee-5379-0eb5-94bf5f79f1b4@i-love.sakura.ne.jp
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ block/genhd.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-index 14602d6d6699f..8247014278f30 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-@@ -2266,7 +2266,12 @@ irqreturn_t iwl_pcie_irq_msix_handler(int irq, void *dev_id)
+diff --git a/block/genhd.c b/block/genhd.c
+index 596e43764846b..5308e0920fa6f 100644
+--- a/block/genhd.c
++++ b/block/genhd.c
+@@ -425,6 +425,8 @@ int __must_check device_add_disk(struct device *parent, struct gendisk *disk,
+ 				DISK_MAX_PARTS);
+ 			disk->minors = DISK_MAX_PARTS;
  		}
- 	}
- 
--	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP) {
-+	/*
-+	 * In some rare cases when the HW is in a bad state, we may
-+	 * get this interrupt too early, when prph_info is still NULL.
-+	 * So make sure that it's not NULL to prevent crashing.
-+	 */
-+	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP && trans_pcie->prph_info) {
- 		u32 sleep_notif =
- 			le32_to_cpu(trans_pcie->prph_info->sleep_notif);
- 		if (sleep_notif == IWL_D3_SLEEP_STATUS_SUSPEND ||
++		if (disk->first_minor + disk->minors > MINORMASK + 1)
++			return -EINVAL;
+ 	} else {
+ 		if (WARN_ON(disk->minors))
+ 			return -EINVAL;
 -- 
 2.34.1
 
