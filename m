@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3480C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB136C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452795AbiAXV0g (ORCPT
+        id S1347299AbiAXV0n (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55078 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444340AbiAXVAm (ORCPT
+        Mon, 24 Jan 2022 16:26:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391136AbiAXUq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:00:42 -0500
+        Mon, 24 Jan 2022 15:46:59 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38380C0619CD;
+        Mon, 24 Jan 2022 11:57:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74154B8122A;
-        Mon, 24 Jan 2022 21:00:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A07D2C340E5;
-        Mon, 24 Jan 2022 21:00:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01A2EB8128F;
+        Mon, 24 Jan 2022 19:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DBBC33DA3;
+        Mon, 24 Jan 2022 19:57:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058039;
-        bh=OzkQojU2CQWWU1b+Ypc3Ses6ysxsIjIUCCxdS7saOgE=;
+        s=korg; t=1643054240;
+        bh=e/pMVKumLe2FHFOwgK2m3U8iURjNJRFnpl9Hmy2/nEQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZVL9n6yX8EluVa/R9Be3ppbyDeGfERmbteLWX9qkeJSfBj7CDpEjBLp/BYPT6/5r0
-         KKNHC5LMOAJ6nuJR2QzT94WurbPxTHSrpzROIh/3O3zgI1eXqKC4TjU2TxqKMhfG7H
-         fxhFZ7NK6heoq+GuYAh+JPcfjjTgj0NyyJT/fnAs=
+        b=wY6sXAsiJCr/+Sa/3mEg7RN8fC08hrtMERN+z/2JIG8MTwzJ8+Y4QGlVax1zjwrt5
+         Xxv5CklEJIv70W68kWph5nL9APbxJs3ZpAbBnEvHGDYpNwPDrHFccj7YQaQiwwFHI/
+         q9vmf/fGzgqIni8HA5VNu80EcD+wu6ICotjrP8Gk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0128/1039] media: atomisp: fix enum formats logic
-Date:   Mon, 24 Jan 2022 19:31:57 +0100
-Message-Id: <20220124184129.459538078@linuxfoundation.org>
+Subject: [PATCH 5.10 291/563] powerpc/xive: Add missing null check after calling kmalloc
+Date:   Mon, 24 Jan 2022 19:40:56 +0100
+Message-Id: <20220124184034.517499362@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,80 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Ammar Faizi <ammarfaizi2@gmail.com>
 
-[ Upstream commit fae46cb0531b45c789e39128f676f2bafa3a7b47 ]
+[ Upstream commit 18dbfcdedc802f9500b2c29794f22a31d27639c0 ]
 
-Changeset 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
-added an extra verification for a pads parameter for enum mbus
-format code.
+Commit 930914b7d528fc ("powerpc/xive: Add a debugfs file to dump
+internal XIVE state") forgot to add a null check.
 
-Such change broke atomisp, because now the V4L2 core
-refuses to enum MBUS formats if the state is empty.
+Add it.
 
-So, add .which field in order to select the active formats,
-in order to make it work again.
-
-While here, improve error messages.
-
-Fixes: 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 930914b7d528fc6b0249bffc00564100bcf6ef75 ("powerpc/xive: Add a debugfs file to dump internal XIVE state")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211226135314.251221-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_ioctl.c | 23 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ arch/powerpc/sysdev/xive/spapr.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-index a57e640fbf791..29826f8e4143d 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-@@ -773,7 +773,10 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 	struct video_device *vdev = video_devdata(file);
- 	struct atomisp_device *isp = video_get_drvdata(vdev);
- 	struct atomisp_sub_device *asd = atomisp_to_video_pipe(vdev)->asd;
--	struct v4l2_subdev_mbus_code_enum code = { 0 };
-+	struct v4l2_subdev_mbus_code_enum code = {
-+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
-+	};
-+	struct v4l2_subdev *camera;
- 	unsigned int i, fi = 0;
- 	int rval;
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index 1e3674d7ea7bc..b57eeaff7bb33 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -658,6 +658,9 @@ static int xive_spapr_debug_show(struct seq_file *m, void *private)
+ 	struct xive_irq_bitmap *xibm;
+ 	char *buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
  
-@@ -783,14 +786,20 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 		return -EINVAL;
- 	}
- 
-+	camera = isp->inputs[asd->input_curr].camera;
-+	if(!camera) {
-+		dev_err(isp->dev, "%s(): camera is NULL, device is %s\n",
-+			__func__, vdev->name);
-+		return -EINVAL;
-+	}
++	if (!buf)
++		return -ENOMEM;
 +
- 	rt_mutex_lock(&isp->mutex);
--	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera, pad,
--				enum_mbus_code, NULL, &code);
-+
-+	rval = v4l2_subdev_call(camera, pad, enum_mbus_code, NULL, &code);
- 	if (rval == -ENOIOCTLCMD) {
- 		dev_warn(isp->dev,
--			 "enum_mbus_code pad op not supported. Please fix your sensor driver!\n");
--		//	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera,
--		//				video, enum_mbus_fmt, 0, &code.code);
-+			 "enum_mbus_code pad op not supported by %s. Please fix your sensor driver!\n",
-+			 camera->name);
- 	}
- 	rt_mutex_unlock(&isp->mutex);
- 
-@@ -820,6 +829,8 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 		f->pixelformat = format->pixelformat;
- 		return 0;
- 	}
-+	dev_err(isp->dev, "%s(): format for code %x not found.\n",
-+		__func__, code.code);
- 
- 	return -EINVAL;
- }
+ 	list_for_each_entry(xibm, &xive_irq_bitmaps, list) {
+ 		memset(buf, 0, PAGE_SIZE);
+ 		bitmap_print_to_pagebuf(true, buf, xibm->bitmap, xibm->count);
 -- 
 2.34.1
 
