@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E301C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A600BC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354909AbiAXV4v (ORCPT
+        id S1576979AbiAXV5D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:56:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38674 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451061AbiAXVWE (ORCPT
+        Mon, 24 Jan 2022 16:57:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392046AbiAXVRG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:22:04 -0500
+        Mon, 24 Jan 2022 16:17:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA11C067A4B;
+        Mon, 24 Jan 2022 12:12:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46B10B81142;
-        Mon, 24 Jan 2022 21:22:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FADBC340E4;
-        Mon, 24 Jan 2022 21:22:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 191756090A;
+        Mon, 24 Jan 2022 20:12:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153C9C340E5;
+        Mon, 24 Jan 2022 20:12:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059322;
-        bh=bLZe5OoYsGgnPbNAU3HWfa4F/i/GsLBmkpOXd9PxLn0=;
+        s=korg; t=1643055135;
+        bh=iQYvZKOwn04GejAiJzx17eTC96LSLpLWKisII9IwQuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dnz70WMr9VeKQsqNdX0/QHrsbC7a2bXqFteAbd30/qMcooB3wMw5hMoGcEisp5I4z
-         3OYrjQEbogcgoNjBdLGwp1FRa/l8Zx19lULy/2kNVKtqccrvHwNUdcFMjU9H4GZrms
-         UhZRXfeIEmak48aUo08g2KUzPXIycrB/bX2LROw4=
+        b=bR42Fc8U6cmMmt5st1Te/qsONvq2UnlGX/nkQrwNpKeO4K2U9rD79O00AJkN4eTm5
+         jj68I27OtxQ43JshMOgbp5PnZI94QbtMhUWxEqUfXSXrRqAjx5ncbUb+WSqKfTaIyj
+         8y9KrA96BN0zErhzwL3jhQECl2u3CgGTEXWZ1+f4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
-        Borislav Petkov <bp@suse.de>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0576/1039] EDAC/synopsys: Use the quirk for version instead of ddr version
-Date:   Mon, 24 Jan 2022 19:39:25 +0100
-Message-Id: <20220124184144.704959594@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 053/846] can: softing_cs: softingcs_probe(): fix memleak on registration failure
+Date:   Mon, 24 Jan 2022 19:32:50 +0100
+Message-Id: <20220124184102.789483048@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,38 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dinh Nguyen <dinguyen@kernel.org>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit bd1d6da17c296bd005bfa656952710d256e77dd3 ]
+commit ced4913efb0acc844ed65cc01d091a85d83a2082 upstream.
 
-Version 2.40a supports DDR_ECC_INTR_SUPPORT for a quirk, so use that
-quirk to determine a call to setup_address_map().
+In case device registration fails during probe, the driver state and
+the embedded platform device structure needs to be freed using
+platform_device_put() to properly free all resources (e.g. the device
+name).
 
-Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Michal Simek <michal.simek@xilinx.com>
-Link: https://lkml.kernel.org/r/20211012190709.1504152-1-dinguyen@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0a0b7a5f7a04 ("can: add driver for Softing card")
+Link: https://lore.kernel.org/all/20211222104843.6105-1-johan@kernel.org
+Cc: stable@vger.kernel.org # 2.6.38
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/edac/synopsys_edac.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/can/softing/softing_cs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
-index 7d08627e738b3..a5486d86fdd2f 100644
---- a/drivers/edac/synopsys_edac.c
-+++ b/drivers/edac/synopsys_edac.c
-@@ -1352,8 +1352,7 @@ static int mc_probe(struct platform_device *pdev)
- 		}
- 	}
+--- a/drivers/net/can/softing/softing_cs.c
++++ b/drivers/net/can/softing/softing_cs.c
+@@ -293,7 +293,7 @@ static int softingcs_probe(struct pcmcia
+ 	return 0;
  
--	if (of_device_is_compatible(pdev->dev.of_node,
--				    "xlnx,zynqmp-ddrc-2.40a"))
-+	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT)
- 		setup_address_map(priv);
- #endif
- 
--- 
-2.34.1
-
+ platform_failed:
+-	kfree(dev);
++	platform_device_put(pdev);
+ mem_failed:
+ pcmcia_bad:
+ pcmcia_failed:
 
 
