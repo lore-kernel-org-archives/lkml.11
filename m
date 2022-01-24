@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F6FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B57B1C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348151AbiAXT2C (ORCPT
+        id S1348174AbiAXT2F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:28:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41852 "EHLO
+        Mon, 24 Jan 2022 14:28:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43174 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347558AbiAXTQ5 (ORCPT
+        with ESMTP id S1346908AbiAXTSO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:16:57 -0500
+        Mon, 24 Jan 2022 14:18:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0CF73B8122C;
-        Mon, 24 Jan 2022 19:16:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31811C340E5;
-        Mon, 24 Jan 2022 19:16:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE2FDB81239;
+        Mon, 24 Jan 2022 19:18:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31119C340E5;
+        Mon, 24 Jan 2022 19:18:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051813;
-        bh=X/v5IuwqHcVUCiRsJOL2BOtTSjI51ZmzRnPqQBxRUMU=;
+        s=korg; t=1643051891;
+        bh=LPPlPD6ORgm9S9P5/5krIKf+1DfSqW/soWywH7Rs4lk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UxCrMJ/LjWevn7QxgJlI6RGRpkx39TJlbDdEjKd3uiC43El5j5Ggr93YUUoGRq8k3
-         RNyZBreBIp6TMfGWERM0D1yEiUcx6LZSxYjVDDlfpiAHsf5IxcSR6xmxedhipMGodz
-         3SPag0I4v8Gm6Bo0gnnWgsUkJa1iOLq7rkSW4jZ4=
+        b=IDnwQuX1tPjDNwcQExFSpFh285XAwzIReErdZKnSQCRcxIBK5ojzX76Ez/Lk2uIIL
+         iAlS6r2WNBbPN6ijHxXpm9KVAoxGnaNL2CPuj/0Ul1K0EvN5b2GCKWeeFDjbiKuJI7
+         AH2qG0tWvypT0yP8xD9guoQQL+NPeSLmGh8xm0lA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 095/239] can: xilinx_can: xcan_probe(): check for error irq
-Date:   Mon, 24 Jan 2022 19:42:13 +0100
-Message-Id: <20220124183946.129286782@linuxfoundation.org>
+Subject: [PATCH 4.19 121/239] fs: dlm: filter user dlm messages for kernel locks
+Date:   Mon, 24 Jan 2022 19:42:39 +0100
+Message-Id: <20220124183946.950983553@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,46 +47,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit c6564c13dae25cd7f8e1de5127b4da4500ee5844 ]
+[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
+This patch fixes the following crash by receiving a invalid message:
 
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq()
-effectively convert that into -EINVAL, even at probe time rather than
-later on. So it might be better to check just now.
+[  160.672220] ==================================================================
+[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
+[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
+[  160.681447]
+[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
+[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
+[  160.685574] Workqueue: dlm_recv process_recv_sockets
+[  160.686721] Call Trace:
+[  160.687310]  dump_stack_lvl+0x56/0x6f
+[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
+[  160.689116]  kasan_report.cold.14+0x116/0x11b
+[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
+[  160.690832]  dlm_user_add_ast+0xc3/0x370
+[  160.691502]  _receive_unlock_reply+0x103/0x170
+[  160.692241]  _receive_message+0x11df/0x1ec0
+[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.694427]  ? lock_acquire+0x175/0x400
+[  160.695058]  ? do_purge.isra.51+0x200/0x200
+[  160.695744]  ? lock_acquired+0x360/0x5d0
+[  160.696400]  ? lock_contended+0x6a0/0x6a0
+[  160.697055]  ? lock_release+0x21d/0x5e0
+[  160.697686]  ? lock_is_held_type+0xe0/0x110
+[  160.698352]  ? lock_is_held_type+0xe0/0x110
+[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
+[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
+[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
+[  160.701249]  ? down_write_killable+0x2b0/0x2b0
+[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
+[  160.702690]  dlm_receive_buffer+0x1a5/0x210
+[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
+[  160.704210]  receive_from_sock+0x1c0/0x3b0
+[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
+[  160.705561]  ? lock_acquire+0x175/0x400
+[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.707681]  process_recv_sockets+0x32/0x40
+[  160.708366]  process_one_work+0x55e/0xad0
+[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
+[  160.709820]  worker_thread+0x65/0x5e0
+[  160.710423]  ? process_one_work+0xad0/0xad0
+[  160.711087]  kthread+0x1ed/0x220
+[  160.711628]  ? set_kthread_struct+0x80/0x80
+[  160.712314]  ret_from_fork+0x22/0x30
 
-Fixes: b1201e44f50b ("can: xilinx CAN controller support")
-Link: https://lore.kernel.org/all/20211224021324.1447494-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+The issue is that we received a DLM message for a user lock but the
+destination lock is a kernel lock. Note that the address which is trying
+to derefence is 00000000deadbeef, which is in a kernel lock
+lkb->lkb_astparam, this field should never be derefenced by the DLM
+kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
+(memory is shared by a union field). The struct lkb_ua will be handled
+by the DLM kernel stack but on a kernel lock it will contain invalid
+data and ends in most likely crashing the kernel.
+
+It can be reproduced with two cluster nodes.
+
+node 2:
+dlm_tool join test
+echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
+echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
+
+node 1:
+dlm_tool join test
+
+python:
+foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
+          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
+newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
+newFile.write(bytes(foo))
+
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/xilinx_can.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ fs/dlm/lock.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index b01c6da4dd814..90447a420ec7c 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1536,7 +1536,12 @@ static int xcan_probe(struct platform_device *pdev)
- 	spin_lock_init(&priv->tx_lock);
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index a928ba008d7d7..26a4847efccca 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -3977,6 +3977,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 	int from = ms->m_header.h_nodeid;
+ 	int error = 0;
  
- 	/* Get IRQ for the device */
--	ndev->irq = platform_get_irq(pdev, 0);
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		goto err_free;
++	/* currently mixing of user/kernel locks are not supported */
++	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
++		log_error(lkb->lkb_resource->res_ls,
++			  "got user dlm message for a kernel lock");
++		error = -EINVAL;
++		goto out;
++	}
 +
-+	ndev->irq = ret;
-+
- 	ndev->flags |= IFF_ECHO;	/* We support local echo */
+ 	switch (ms->m_type) {
+ 	case DLM_MSG_CONVERT:
+ 	case DLM_MSG_UNLOCK:
+@@ -4005,6 +4013,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 		error = -EINVAL;
+ 	}
  
- 	platform_set_drvdata(pdev, ndev);
++out:
+ 	if (error)
+ 		log_error(lkb->lkb_resource->res_ls,
+ 			  "ignore invalid message %d from %d %x %x %x %d",
 -- 
 2.34.1
 
