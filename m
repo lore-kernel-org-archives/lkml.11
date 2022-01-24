@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 400BCC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21119C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846819AbiAXXRH (ORCPT
+        id S1846798AbiAXXRF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:17:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
+        Mon, 24 Jan 2022 18:17:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583206AbiAXWRY (ORCPT
+        with ESMTP id S1381393AbiAXWRY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:17:24 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC3F3C04A2EC;
-        Mon, 24 Jan 2022 12:46:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B04CC04A2EA;
+        Mon, 24 Jan 2022 12:46:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69F33B81243;
-        Mon, 24 Jan 2022 20:46:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D242C340E5;
-        Mon, 24 Jan 2022 20:46:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33EE8B80CCF;
+        Mon, 24 Jan 2022 20:46:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E87CDC340E7;
+        Mon, 24 Jan 2022 20:46:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057210;
-        bh=Ss9cJ1xCoPXGKemzTHnuPgLOcrn/oCFFznA4VV3+pwk=;
+        s=korg; t=1643057192;
+        bh=60JLLZy+JtWGkK8II3PXJSB9hxxKXb/hbCzkUXWJsIY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jzpaWpauw46rj8tsT2N84MSQVyO+aXm6ZYTLVsq2gRgZcO71cm8dujlbtiHBgBzU4
-         5egOqOIsFLqDYKnsk4JiQh/IkmopDNFChUIXKTx8QXHh+dXW68XjLCXOnO9LmH7I24
-         OlPpQDjBHHsmPgmeUR3sh/FqRYgvTxNOG5tBHck8=
+        b=fyygUE7b+XhenzhMK0EsIEdK+yUOTYP1X3e3HiHXZkS8KF1xnB8dOekK6Y8PYW1Hf
+         q2d8ujRqmW54MrTMKKIU7St0Qlcjaa8aE8b41ealE2/gUtc5wFi659XlOoeo5Rwc2z
+         KY4lGdUzMaaM5nw3iDgQlmbj7DnkyLZaS8162kSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 737/846] Documentation: dmaengine: Correctly describe dmatest with channel unset
-Date:   Mon, 24 Jan 2022 19:44:14 +0100
-Message-Id: <20220124184126.419089840@linuxfoundation.org>
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.15 732/846] can: mcp251xfd: mcp251xfd_tef_obj_read(): fix typo in error message
+Date:   Mon, 24 Jan 2022 19:44:09 +0100
+Message-Id: <20220124184126.252521332@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,42 +48,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Thompson <daniel.thompson@linaro.org>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-commit c61d7b2ef141abf81140756b45860a2306f395a2 upstream.
+commit 99e7cc3b3f85d9a583ab83f386315c59443509ae upstream.
 
-Currently the documentation states that channels must be configured before
-running the dmatest. This has not been true since commit 6b41030fdc79
-("dmaengine: dmatest: Restore default for channel"). Fix accordingly.
+This patch fixes a typo in the error message in
+mcp251xfd_tef_obj_read(), if trying to read too many objects.
 
-Fixes: 6b41030fdc79 ("dmaengine: dmatest: Restore default for channel")
-Signed-off-by: Daniel Thompson <daniel.thompson@linaro.org>
-Link: https://lore.kernel.org/r/20211118100952.27268-3-daniel.thompson@linaro.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Link: https://lore.kernel.org/all/20220105154300.1258636-3-mkl@pengutronix.de
+Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxFD SPI CAN")
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/driver-api/dmaengine/dmatest.rst |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/Documentation/driver-api/dmaengine/dmatest.rst
-+++ b/Documentation/driver-api/dmaengine/dmatest.rst
-@@ -143,13 +143,14 @@ Part 5 - Handling channel allocation
- Allocating Channels
- -------------------
- 
--Channels are required to be configured prior to starting the test run.
--Attempting to run the test without configuring the channels will fail.
-+Channels do not need to be configured prior to starting a test run. Attempting
-+to run the test without configuring the channels will result in testing any
-+channels that are available.
- 
- Example::
- 
-     % echo 1 > /sys/module/dmatest/parameters/run
--    dmatest: Could not start test, no channels configured
-+    dmatest: No channels configured, continue with any
- 
- Channels are registered using the "channel" parameter. Channels can be requested by their
- name, once requested, the channel is registered and a pending thread is added to the test list.
+--- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
++++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
+@@ -1336,7 +1336,7 @@ mcp251xfd_tef_obj_read(const struct mcp2
+ 	     len > tx_ring->obj_num ||
+ 	     offset + len > tx_ring->obj_num)) {
+ 		netdev_err(priv->ndev,
+-			   "Trying to read to many TEF objects (max=%d, offset=%d, len=%d).\n",
++			   "Trying to read too many TEF objects (max=%d, offset=%d, len=%d).\n",
+ 			   tx_ring->obj_num, offset, len);
+ 		return -ERANGE;
+ 	}
 
 
