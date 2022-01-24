@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C1B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237317AbiAXTXT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:23:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48024 "EHLO
+        id S1345517AbiAXTXW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:23:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241887AbiAXTNU (ORCPT
+        with ESMTP id S1346472AbiAXTNY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E58E5C061751;
-        Mon, 24 Jan 2022 11:05:30 -0800 (PST)
+        Mon, 24 Jan 2022 14:13:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C338C061763;
+        Mon, 24 Jan 2022 11:05:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2F40B81233;
-        Mon, 24 Jan 2022 19:05:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3A04C340E5;
-        Mon, 24 Jan 2022 19:05:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B02F7603DE;
+        Mon, 24 Jan 2022 19:05:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E359C340E5;
+        Mon, 24 Jan 2022 19:05:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051128;
-        bh=5/w/TnqMOOVU69Cwul8larGgy3UEIvr70dTh3O8P4TU=;
+        s=korg; t=1643051156;
+        bh=2oJQ6ThJe2gdSrrrORMLu8Meow0HMdp7Eylv6Q47zng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ONyABkGrUpRUoZs8XyUGclPFVvBQjHlJ1jvGM5rersa0Scu1H8GQahQh0dIKHJHaL
-         WB0mWNJCAyih9zEPT3fiiCLsTbxMp9b4UoP63uzmR9yaq/ypDHArdu0Eq51DukI0MW
-         BrFkf7tCyRFoVfZmuy0TDo3FLdqkgisNZTTjIfUU=
+        b=SOmjTNJ1cDKyeNDilmDqnqy9zXJmSOudddDbFlINnjSAciBE5tWzUtc04UJnnPkVJ
+         0C4su13uolZcwy1wsKoo9jGJzjYWF7B/RAQrM8rZmaXXg0QfSKqFjKgUTq4VoDiMCV
+         lnuh/J2i1tVd1N4LKVlu26Re3gvmyDvfFv8PdhLY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chen Jun <chenjun102@huawei.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 063/186] tpm: add request_locality before write TPM_INT_ENABLE
-Date:   Mon, 24 Jan 2022 19:42:18 +0100
-Message-Id: <20220124183939.149952646@linuxfoundation.org>
+Subject: [PATCH 4.14 040/186] crypto: qce - fix uaf on qce_ahash_register_one
+Date:   Mon, 24 Jan 2022 19:41:55 +0100
+Message-Id: <20220124183938.413364817@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -49,42 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chen Jun <chenjun102@huawei.com>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit 0ef333f5ba7f24f5d8478425c163d3097f1c7afd ]
+[ Upstream commit b4cb4d31631912842eb7dce02b4350cbb7562d5e ]
 
-Locality is not appropriately requested before writing the int mask.
-Add the missing boilerplate.
+Pointer base points to sub field of tmpl, it
+is dereferenced after tmpl is freed. Fix
+this by accessing base before free tmpl.
 
-Fixes: e6aef069b6e9 ("tpm_tis: convert to using locality callbacks")
-Signed-off-by: Chen Jun <chenjun102@huawei.com>
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/tpm/tpm_tis_core.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/crypto/qce/sha.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
-index 1ac9abcdad52a..9e42943f6a599 100644
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -809,7 +809,15 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
- 	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
- 		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
- 	intmask &= ~TPM_GLOBAL_INT_ENABLE;
-+
-+	rc = request_locality(chip, 0);
-+	if (rc < 0) {
-+		rc = -ENODEV;
-+		goto out_err;
-+	}
-+
- 	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
-+	release_locality(chip, 0);
+diff --git a/drivers/crypto/qce/sha.c b/drivers/crypto/qce/sha.c
+index 47e114ac09d01..ff1e788f92767 100644
+--- a/drivers/crypto/qce/sha.c
++++ b/drivers/crypto/qce/sha.c
+@@ -544,8 +544,8 @@ static int qce_ahash_register_one(const struct qce_ahash_def *def,
  
- 	rc = tpm2_probe(chip);
- 	if (rc)
+ 	ret = crypto_register_ahash(alg);
+ 	if (ret) {
+-		kfree(tmpl);
+ 		dev_err(qce->dev, "%s registration failed\n", base->cra_name);
++		kfree(tmpl);
+ 		return ret;
+ 	}
+ 
 -- 
 2.34.1
 
