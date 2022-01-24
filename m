@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43B75C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385684AbiAXUd6 (ORCPT
+        id S1385717AbiAXUeI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:33:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
+        Mon, 24 Jan 2022 15:34:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355424AbiAXUNj (ORCPT
+        with ESMTP id S1355446AbiAXUNl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:39 -0500
+        Mon, 24 Jan 2022 15:13:41 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 135B1C061768;
-        Mon, 24 Jan 2022 11:36:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F54C06177C;
+        Mon, 24 Jan 2022 11:36:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D02ACB81239;
-        Mon, 24 Jan 2022 19:36:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0835DC340E5;
-        Mon, 24 Jan 2022 19:35:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D0ABB81247;
+        Mon, 24 Jan 2022 19:36:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 533F3C340E5;
+        Mon, 24 Jan 2022 19:36:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052959;
-        bh=Fu2rLzeUDaVElkoc6+b62pdiMdE6f0wRxHkWDfpMuv4=;
+        s=korg; t=1643052998;
+        bh=f6NAM56Og1Yrc6Od3Am5rH5imViISDUzVvr7k4kzIP8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RUtVEXsEdZ/1gbxOTVxDRJjg10Gpy31EGE5qN6Ib4d7OsqR7BPE7i5fOCJkVB2cB6
-         eguJpOc6N8/aAZDfd1YjSqwiWamYs6d5+cpmDfld9pK2iE9UPavGXc+cunvInh0lPi
-         IugevJAdI7peSQMRzxVwl+IvqmRo+TRUwz7sySwA=
+        b=KBCabPR4cWINd44h1jRLTDQyVcgo6EOGG/r+m1vZgF8MXMAfffGL/JzYNn1PwqcUB
+         DW1Fed3jHfiWxISQf1UpKBZdr3O6dPZD9rVTAdUMPSBwuU6/KSnKdgkuucxNcw2SM1
+         zZXtQKjSddxiolWqAR4cGYd34SEnf++KBNkvqGSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, Zongmin Zhou <zhouzongmin@kylinos.cn>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 229/320] i2c: i801: Dont silently correct invalid transfer size
-Date:   Mon, 24 Jan 2022 19:43:33 +0100
-Message-Id: <20220124184001.775036885@linuxfoundation.org>
+Subject: [PATCH 5.4 209/320] drm/amdgpu: fixup bad vram size on gmc v8
+Date:   Mon, 24 Jan 2022 19:43:13 +0100
+Message-Id: <20220124184000.737133591@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,61 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+From: Zongmin Zhou <zhouzongmin@kylinos.cn>
 
-[ Upstream commit effa453168a7eeb8a562ff4edc1dbf9067360a61 ]
+[ Upstream commit 11544d77e3974924c5a9c8a8320b996a3e9b2f8b ]
 
-If an invalid block size is provided, reject it instead of silently
-changing it to a supported value. Especially critical I see the case of
-a write transfer with block length 0. In this case we have no guarantee
-that the byte we would write is valid. When silently reducing a read to
-32 bytes then we don't return an error and the caller may falsely
-assume that we returned the full requested data.
+Some boards(like RX550) seem to have garbage in the upper
+16 bits of the vram size register.  Check for
+this and clamp the size properly.  Fixes
+boards reporting bogus amounts of vram.
 
-If this change should break any (broken) caller, then I think we should
-fix the caller.
+after add this patch,the maximum GPU VRAM size is 64GB,
+otherwise only 64GB vram size will be used.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Zongmin Zhou<zhouzongmin@kylinos.cn>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-i801.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c | 13 ++++++++++---
+ 1 file changed, 10 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index a959062ded4f8..4e6d0b722ddcd 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -785,6 +785,11 @@ static int i801_block_transaction(struct i801_priv *priv,
- 	int result = 0;
- 	unsigned char hostc;
+diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+index ea764dd9245db..2975331a7b867 100644
+--- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
++++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
+@@ -524,10 +524,10 @@ static void gmc_v8_0_mc_program(struct amdgpu_device *adev)
+ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ {
+ 	int r;
++	u32 tmp;
  
-+	if (read_write == I2C_SMBUS_READ && command == I2C_SMBUS_BLOCK_DATA)
-+		data->block[0] = I2C_SMBUS_BLOCK_MAX;
-+	else if (data->block[0] < 1 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
-+		return -EPROTO;
-+
- 	if (command == I2C_SMBUS_I2C_BLOCK_DATA) {
- 		if (read_write == I2C_SMBUS_WRITE) {
- 			/* set I2C_EN bit in configuration register */
-@@ -798,16 +803,6 @@ static int i801_block_transaction(struct i801_priv *priv,
- 		}
+ 	adev->gmc.vram_width = amdgpu_atombios_get_vram_width(adev);
+ 	if (!adev->gmc.vram_width) {
+-		u32 tmp;
+ 		int chansize, numchan;
+ 
+ 		/* Get VRAM informations */
+@@ -571,8 +571,15 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
+ 		adev->gmc.vram_width = numchan * chansize;
  	}
+ 	/* size in MB on si */
+-	adev->gmc.mc_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
+-	adev->gmc.real_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
++	tmp = RREG32(mmCONFIG_MEMSIZE);
++	/* some boards may have garbage in the upper 16 bits */
++	if (tmp & 0xffff0000) {
++		DRM_INFO("Probable bad vram size: 0x%08x\n", tmp);
++		if (tmp & 0xffff)
++			tmp &= 0xffff;
++	}
++	adev->gmc.mc_vram_size = tmp * 1024ULL * 1024ULL;
++	adev->gmc.real_vram_size = adev->gmc.mc_vram_size;
  
--	if (read_write == I2C_SMBUS_WRITE
--	 || command == I2C_SMBUS_I2C_BLOCK_DATA) {
--		if (data->block[0] < 1)
--			data->block[0] = 1;
--		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
--			data->block[0] = I2C_SMBUS_BLOCK_MAX;
--	} else {
--		data->block[0] = 32;	/* max for SMBus block reads */
--	}
--
- 	/* Experience has shown that the block buffer can only be used for
- 	   SMBus (not I2C) block transactions, even though the datasheet
- 	   doesn't mention this limitation. */
+ 	if (!(adev->flags & AMD_IS_APU)) {
+ 		r = amdgpu_device_resize_fb_bar(adev);
 -- 
 2.34.1
 
