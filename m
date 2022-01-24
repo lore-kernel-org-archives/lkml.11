@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C26CC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1E17C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441894AbiAXUvv (ORCPT
+        id S1358558AbiAXUv5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:51:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35350 "EHLO
+        Mon, 24 Jan 2022 15:51:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35322 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384120AbiAXU2y (ORCPT
+        with ESMTP id S1384067AbiAXU2x (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:28:54 -0500
+        Mon, 24 Jan 2022 15:28:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F5DDB81249;
-        Mon, 24 Jan 2022 20:28:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49180C340E5;
-        Mon, 24 Jan 2022 20:28:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33843B81239;
+        Mon, 24 Jan 2022 20:28:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4828CC340E5;
+        Mon, 24 Jan 2022 20:28:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056131;
-        bh=E3RTaUgku1Rf9mVYCDXetqPO8OLq391heMQ/FMi8orE=;
+        s=korg; t=1643056128;
+        bh=g6pSpn2i0X05d9/e/pvWbJQ995pdOEPCyDaWB64n2Dw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EyHQNQe8QZX138DpTe3WVhcyROgvI7ZlmWzj+lFN5XzlIglQeUZ+CJA0HiQJhWKhK
-         5+hRAYnuS++9xV1+TB2A3gKtBRqvB4KgZc58F69ZIdOlOVthqMEKoFyITFQF6z8mug
-         URg+RMpB5MDav9/RLSebAmbWCRPH2ghs7A5acDo8=
+        b=A0WFYp3stJ8v89n5nFk7/EgP4CM95DmOi7kw96WsxY5XSWNEZv3ENTZ4AXWnBL22v
+         k4dDuCfmRsiUYtbAqenyJOYjN1kuSzWK5JlAZMO0n+O2Xq/0qWtVH4MHgaM7LDrNzD
+         p7rm4kGjJsFlZEJB8ecCpNeiSzeyz9AmhB6MqPYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org, Al Viro <viro@ZenIV.linux.org.uk>,
+        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 381/846] clk: renesas: rzg2l: Check return value of pm_genpd_init()
-Date:   Mon, 24 Jan 2022 19:38:18 +0100
-Message-Id: <20220124184114.085861691@linuxfoundation.org>
+Subject: [PATCH 5.15 363/846] pcmcia: fix setting of kthread task states
+Date:   Mon, 24 Jan 2022 19:38:00 +0100
+Message-Id: <20220124184113.452642141@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,59 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+From: Dominik Brodowski <linux@dominikbrodowski.net>
 
-[ Upstream commit 27527a3d3b162e4512798c058c0e8a216c721187 ]
+[ Upstream commit fbb3485f1f931102d8ba606f1c28123f5b48afa3 ]
 
-Make sure we check the return value of pm_genpd_init() which might fail.
-Also add a devres action to remove the power-domain in-case the probe
-callback fails further down in the code flow.
+We need to set TASK_INTERRUPTIBLE before calling kthread_should_stop().
+Otherwise, kthread_stop() might see that the pccardd thread is still
+in TASK_RUNNING state and fail to wake it up.
 
-Fixes: ef3c613ccd68a ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
-Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Link: https://lore.kernel.org/r/20211117115101.28281-2-prabhakar.mahadev-lad.rj@bp.renesas.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Additionally, we only need to set the state back to TASK_RUNNING if
+kthread_should_stop() breaks the loop.
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Al Viro <viro@ZenIV.linux.org.uk>
+Reviewed-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+Fixes: d3046ba809ce ("pcmcia: fix a boot time warning in pcmcia cs code")
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/clk/renesas/rzg2l-cpg.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/pcmcia/cs.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
-index 761922ea5db76..61e7c0c4f3794 100644
---- a/drivers/clk/renesas/rzg2l-cpg.c
-+++ b/drivers/clk/renesas/rzg2l-cpg.c
-@@ -638,10 +638,16 @@ static void rzg2l_cpg_detach_dev(struct generic_pm_domain *unused, struct device
- 		pm_clk_destroy(dev);
- }
+diff --git a/drivers/pcmcia/cs.c b/drivers/pcmcia/cs.c
+index e211e2619680c..f70197154a362 100644
+--- a/drivers/pcmcia/cs.c
++++ b/drivers/pcmcia/cs.c
+@@ -666,18 +666,16 @@ static int pccardd(void *__skt)
+ 		if (events || sysfs_events)
+ 			continue;
  
-+static void rzg2l_cpg_genpd_remove(void *data)
-+{
-+	pm_genpd_remove(data);
-+}
-+
- static int __init rzg2l_cpg_add_clk_domain(struct device *dev)
- {
- 	struct device_node *np = dev->of_node;
- 	struct generic_pm_domain *genpd;
-+	int ret;
++		set_current_state(TASK_INTERRUPTIBLE);
+ 		if (kthread_should_stop())
+ 			break;
  
- 	genpd = devm_kzalloc(dev, sizeof(*genpd), GFP_KERNEL);
- 	if (!genpd)
-@@ -652,7 +658,13 @@ static int __init rzg2l_cpg_add_clk_domain(struct device *dev)
- 		       GENPD_FLAG_ACTIVE_WAKEUP;
- 	genpd->attach_dev = rzg2l_cpg_attach_dev;
- 	genpd->detach_dev = rzg2l_cpg_detach_dev;
--	pm_genpd_init(genpd, &pm_domain_always_on_gov, false);
-+	ret = pm_genpd_init(genpd, &pm_domain_always_on_gov, false);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(dev, rzg2l_cpg_genpd_remove, genpd);
-+	if (ret)
-+		return ret;
+-		set_current_state(TASK_INTERRUPTIBLE);
+-
+ 		schedule();
  
- 	of_genpd_add_provider_simple(np, genpd);
- 	return 0;
+-		/* make sure we are running */
+-		__set_current_state(TASK_RUNNING);
+-
+ 		try_to_freeze();
+ 	}
++	/* make sure we are running before we exit */
++	__set_current_state(TASK_RUNNING);
+ 
+ 	/* shut down socket, if a device is still present */
+ 	if (skt->state & SOCKET_PRESENT) {
 -- 
 2.34.1
 
