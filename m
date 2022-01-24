@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DC6C35275
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCD9C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367006AbiAXXx6 (ORCPT
+        id S2367425AbiAXXzZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49114 "EHLO
+        Mon, 24 Jan 2022 18:55:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845966AbiAXXOG (ORCPT
+        with ESMTP id S1846523AbiAXXQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:06 -0500
+        Mon, 24 Jan 2022 18:16:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39976C0A02BA;
-        Mon, 24 Jan 2022 13:20:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D61C0617B1;
+        Mon, 24 Jan 2022 13:25:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAF2DB81188;
-        Mon, 24 Jan 2022 21:20:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1195EC340E4;
-        Mon, 24 Jan 2022 21:20:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 12649B81243;
+        Mon, 24 Jan 2022 21:25:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A177C340E4;
+        Mon, 24 Jan 2022 21:25:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059202;
-        bh=qVTsRmkfHHvtcYhP+AfBxHTCm0Hpp40vXIcFjCKm+lI=;
+        s=korg; t=1643059518;
+        bh=76k952JqIoqnSJrdx/YN9ePOzNmgl602GkwnJ/y28TY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MZp7poPCKQ3WGkBME7ZwfAARuiNNmLXOML4gKSOCcbP0gIfAbEfQ2qH2eRRZ/X1BH
-         eQwnmKQ1j5sWrkdd/J+RaHSPf6aWKJ/7q6msW9jlO/OqwBIBOpZAlpFZ0IkBIFPTOc
-         9j/ar9zZIZUGcj1Bj5ZzPburoCYvoNsUxqCJVQjw=
+        b=hX9abKQjqWcHi2yiscz10ufTLNOZl0NqPvd5BUL+xzD5g//faInXFfcp+4SVHzRj4
+         QGBhOac1SxLGb5bA/J3vcW3LVq2nve+ZTeobm/flfTg/eqy5HZYR1E2jHnQIKAWTEg
+         HmGi4sSZbBpTTa0lvZ3R1KlgMuMpa/FOCX/n0fqA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Merlijn Wajer <merlijn@wizzup.org>,
-        "Sicelo A. Mhlongo" <absicsz@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0537/1039] ARM: dts: omap3-n900: Fix lp5523 for multi color
-Date:   Mon, 24 Jan 2022 19:38:46 +0100
-Message-Id: <20220124184143.330009016@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0642/1039] x86/mce: Mark mce_panic() noinstr
+Date:   Mon, 24 Jan 2022 19:40:31 +0100
+Message-Id: <20220124184146.936639036@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,139 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sicelo A. Mhlongo <absicsz@gmail.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit e9af026a3b24f59d7af4609f73e0ef60a4d6d516 ]
+[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
 
-Since the LED multicolor framework support was added in commit
-92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
-LEDs on this platform stopped working.
+And allow instrumentation inside it because it does calls to other
+facilities which will not be tagged noinstr.
 
-Fixes: 92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
-Fixes: ac219bf3c9bd ("leds: lp55xx: Convert to use GPIO descriptors")
-Signed-off-by: Merlijn Wajer <merlijn@wizzup.org>
-Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
-Signed-off-by: Pavel Machek <pavel@ucw.cz>
+Fixes
+
+  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-n900.dts | 50 +++++++++++++++++++++++++-------
- 1 file changed, 40 insertions(+), 10 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/arch/arm/boot/dts/omap3-n900.dts b/arch/arm/boot/dts/omap3-n900.dts
-index 32335d4ce478b..d40c3d2c4914e 100644
---- a/arch/arm/boot/dts/omap3-n900.dts
-+++ b/arch/arm/boot/dts/omap3-n900.dts
-@@ -8,6 +8,7 @@
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 70ec5685906b2..9a52ec55e0555 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -267,11 +267,17 @@ static void wait_for_panic(void)
+ 	panic("Panicing machine check CPU died");
+ }
  
- #include "omap34xx.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
+-static void mce_panic(const char *msg, struct mce *final, char *exp)
++static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
+ {
+-	int apei_err = 0;
+ 	struct llist_node *pending;
+ 	struct mce_evt_llist *l;
++	int apei_err = 0;
++
++	/*
++	 * Allow instrumentation around external facilities usage. Not that it
++	 * matters a whole lot since the machine is going to panic anyway.
++	 */
++	instrumentation_begin();
  
- /*
-  * Default secure signed bootloader (Nokia X-Loader) does not enable L3 firewall
-@@ -630,63 +631,92 @@
- 	};
+ 	if (!fake_panic) {
+ 		/*
+@@ -286,7 +292,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
+ 	} else {
+ 		/* Don't log too much for fake panic */
+ 		if (atomic_inc_return(&mce_fake_panicked) > 1)
+-			return;
++			goto out;
+ 	}
+ 	pending = mce_gen_pool_prepare_records();
+ 	/* First print corrected ones that are still unlogged */
+@@ -324,6 +330,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
+ 		panic(msg);
+ 	} else
+ 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
++
++out:
++	instrumentation_end();
+ }
  
- 	lp5523: lp5523@32 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 		compatible = "national,lp5523";
- 		reg = <0x32>;
- 		clock-mode = /bits/ 8 <0>; /* LP55XX_CLOCK_AUTO */
--		enable-gpio = <&gpio2 9 GPIO_ACTIVE_HIGH>; /* 41 */
-+		enable-gpios = <&gpio2 9 GPIO_ACTIVE_HIGH>; /* 41 */
- 
--		chan0 {
-+		led@0 {
-+			reg = <0>;
- 			chan-name = "lp5523:kb1";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan1 {
-+		led@1 {
-+			reg = <1>;
- 			chan-name = "lp5523:kb2";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan2 {
-+		led@2 {
-+			reg = <2>;
- 			chan-name = "lp5523:kb3";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan3 {
-+		led@3 {
-+			reg = <3>;
- 			chan-name = "lp5523:kb4";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan4 {
-+		led@4 {
-+			reg = <4>;
- 			chan-name = "lp5523:b";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_BLUE>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan5 {
-+		led@5 {
-+			reg = <5>;
- 			chan-name = "lp5523:g";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan6 {
-+		led@6 {
-+			reg = <6>;
- 			chan-name = "lp5523:r";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan7 {
-+		led@7 {
-+			reg = <7>;
- 			chan-name = "lp5523:kb5";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan8 {
-+		led@8 {
-+			reg = <8>;
- 			chan-name = "lp5523:kb6";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 	};
- 
+ /* Support code for software error injection */
 -- 
 2.34.1
 
