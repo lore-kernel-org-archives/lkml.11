@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59457C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24D11C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344639AbiAXT0f (ORCPT
+        id S1351246AbiAXT0O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:26:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48160 "EHLO
+        Mon, 24 Jan 2022 14:26:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47850 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345146AbiAXTTP (ORCPT
+        with ESMTP id S1347361AbiAXTS5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:19:15 -0500
+        Mon, 24 Jan 2022 14:18:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 733B5613F9;
-        Mon, 24 Jan 2022 19:19:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33B96C340E7;
-        Mon, 24 Jan 2022 19:19:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01C146135E;
+        Mon, 24 Jan 2022 19:18:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D605DC340E5;
+        Mon, 24 Jan 2022 19:18:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051954;
-        bh=ZC36WnheV32GTiyfyRTPvOOYO8m2u9dH7wQLkkmFlDE=;
+        s=korg; t=1643051936;
+        bh=0LzPtP+1imS3yKjOyhidBSJgXssfUSqeD1/ITevQIJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uHD7JqthSUlMrvY0v2OgWryxBX4iWjgO2iU851RHcAjIDjUv08QNxrWJlJU4hTFVP
-         24ce2D684VdFIi1im3d+kDqNQ/zzR4IJyXHLH5ZWibi+fb07XCLXR2qzTGdqj/PF4q
-         wuMaaP7LPhpq63aK1JNiniBipFKkw3k2oQLgCK58=
+        b=ECo2+pwpNt0BDCJHh9nGJ27jnYSAzcS+jQOZ/6uMS2zHTIS47+w3NLtUy6yYY4Nb4
+         GQuQehss9A6EC4S6LCSGOCNoN5vJkZnDgj0BWwonagHRX73ZC6lZvaXzjOm6k20Ugx
+         AOitDdK/Jy+dZ+JpVoACXCmOdFOo7G8Tqu5rVs4U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Neal Liu <neal_liu@aspeedtech.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 139/239] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 24 Jan 2022 19:42:57 +0100
-Message-Id: <20220124183947.527614489@linuxfoundation.org>
+Subject: [PATCH 4.19 134/239] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 24 Jan 2022 19:42:52 +0100
+Message-Id: <20220124183947.370932685@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -50,70 +46,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+Enable ast2600 uhci quirks.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 697a66acba9ce..3f37fb64e71c2 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1623,6 +1623,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1632,6 +1633,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
-+
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
- }
- 
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 89700e26fb296..813ff3660e9f1 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
+ 		}
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
 -- 
 2.34.1
 
