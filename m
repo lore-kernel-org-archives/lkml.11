@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF6BFC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A77A7C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345123AbiAXS7u (ORCPT
+        id S1344965AbiAXS7l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44116 "EHLO
+        Mon, 24 Jan 2022 13:59:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344483AbiAXS4z (ORCPT
+        with ESMTP id S1343815AbiAXS46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:56:55 -0500
+        Mon, 24 Jan 2022 13:56:58 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84E13C0612B0;
-        Mon, 24 Jan 2022 10:54:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EE71C061753;
+        Mon, 24 Jan 2022 10:55:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2BFDBB810BD;
-        Mon, 24 Jan 2022 18:54:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51E5CC340E5;
-        Mon, 24 Jan 2022 18:54:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0A63B8121A;
+        Mon, 24 Jan 2022 18:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2F0CC340EA;
+        Mon, 24 Jan 2022 18:54:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050475;
-        bh=bfcNSSSFgCqI3GxKVbE6LXuPeSyfon74j0nK3vab2lY=;
+        s=korg; t=1643050498;
+        bh=qJAm7nxkvWLXikpp65EDpvm73EhmGBm8p+/E1dgdSS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NSaQcZPxe2InvKodciSfmD/LECf8NWmeWmK03ZVCBp4DkPYsxk2GFAsqkjaLWeV+A
-         vw0eL+wB4u7kZYbw1uAP56cLoQXomVHY8MFnydgi4zqBQ0hAL0CIRNMyMfj/r4Gs8T
-         kHjmfcItt3uDN30nbDxGDNfLGK/rHUkPT1rQPzWY=
+        b=A8tuTd34f10vxkcqfyyi2ZAAE120up6vp5uHkxRKar3KI/636c/AZqU5U6lN2JvvM
+         ViCytgWTSXu+1VMORszkKJmm/S2mFQqboJGR3b0VJ11SzxGa6ziEGUbGHMtREhmBMm
+         9iIdyYUczqV9ve9IHocxYp3NKXKnF8+QgS89eaDc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 4.9 007/157] random: fix data race on crng_node_pool
-Date:   Mon, 24 Jan 2022 19:41:37 +0100
-Message-Id: <20220124183933.019583375@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.9 022/157] media: dib0700: fix undefined behavior in tuner shutdown
+Date:   Mon, 24 Jan 2022 19:41:52 +0100
+Message-Id: <20220124183933.500112255@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -50,106 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Biggers <ebiggers@google.com>
+From: Michael Kuron <michael.kuron@gmail.com>
 
-commit 5d73d1e320c3fd94ea15ba5f79301da9a8bcc7de upstream.
+commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
 
-extract_crng() and crng_backtrack_protect() load crng_node_pool with a
-plain load, which causes undefined behavior if do_numa_crng_init()
-modifies it concurrently.
+This fixes a problem where closing the tuner would leave it in a state
+where it would not tune to any channel when reopened. This problem was
+discovered as part of https://github.com/hselasky/webcamd/issues/16.
 
-Fix this by using READ_ONCE().  Note: as per the previous discussion
-https://lore.kernel.org/lkml/20211219025139.31085-1-ebiggers@kernel.org/T/#u,
-READ_ONCE() is believed to be sufficient here, and it was requested that
-it be used here instead of smp_load_acquire().
+Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
+behavior. The driver still worked in practice as the overflow would in
+most environments result in 0, which rendered the line a no-op. When
+running the driver as part of webcamd however, the overflow could lead
+to 0xff due to optimizations by the compiler, which would, in the end,
+improperly shut down the tuner.
 
-Also change do_numa_crng_init() to set crng_node_pool using
-cmpxchg_release() instead of mb() + cmpxchg(), as the former is
-sufficient here but is more lightweight.
+The bug is a regression introduced in the commit referenced below. The
+present patch causes identical behavior to before that commit for
+adap->id equal to 0 or 1. The driver does not contain support for
+dib0700 devices with more adapters, assuming such even exist.
 
-Fixes: 1e7f583af67b ("random: make /dev/urandom scalable for silly userspace programs")
+Tests have been performed with the Xbox One Digital TV Tuner on amd64.
+Not all dib0700 devices are expected to be affected by the regression;
+this code path is only taken by those with incorrect endpoint numbers.
+
+Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
+
 Cc: stable@vger.kernel.org
-Signed-off-by: Eric Biggers <ebiggers@google.com>
-Acked-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
+Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/random.c |   42 ++++++++++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 20 deletions(-)
+ drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
+ 1 file changed, 2 deletions(-)
 
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -845,8 +845,8 @@ static void do_numa_crng_init(struct wor
- 		crng_initialize(crng);
- 		pool[i] = crng;
- 	}
--	mb();
--	if (cmpxchg(&crng_node_pool, NULL, pool)) {
-+	/* pairs with READ_ONCE() in select_crng() */
-+	if (cmpxchg_release(&crng_node_pool, NULL, pool) != NULL) {
- 		for_each_node(i)
- 			kfree(pool[i]);
- 		kfree(pool);
-@@ -859,8 +859,26 @@ static void numa_crng_init(void)
- {
- 	schedule_work(&numa_crng_init_work);
- }
-+
-+static struct crng_state *select_crng(void)
-+{
-+	struct crng_state **pool;
-+	int nid = numa_node_id();
-+
-+	/* pairs with cmpxchg_release() in do_numa_crng_init() */
-+	pool = READ_ONCE(crng_node_pool);
-+	if (pool && pool[nid])
-+		return pool[nid];
-+
-+	return &primary_crng;
-+}
- #else
- static void numa_crng_init(void) {}
-+
-+static struct crng_state *select_crng(void)
-+{
-+	return &primary_crng;
-+}
- #endif
- 
- static void crng_reseed(struct crng_state *crng, struct entropy_store *r)
-@@ -945,15 +963,7 @@ static void _extract_crng(struct crng_st
- 
- static void extract_crng(__u8 out[CHACHA20_BLOCK_SIZE])
- {
--	struct crng_state *crng = NULL;
--
--#ifdef CONFIG_NUMA
--	if (crng_node_pool)
--		crng = crng_node_pool[numa_node_id()];
--	if (crng == NULL)
--#endif
--		crng = &primary_crng;
--	_extract_crng(crng, out);
-+	_extract_crng(select_crng(), out);
- }
- 
- /*
-@@ -982,15 +992,7 @@ static void _crng_backtrack_protect(stru
- 
- static void crng_backtrack_protect(__u8 tmp[CHACHA20_BLOCK_SIZE], int used)
- {
--	struct crng_state *crng = NULL;
--
--#ifdef CONFIG_NUMA
--	if (crng_node_pool)
--		crng = crng_node_pool[numa_node_id()];
--	if (crng == NULL)
--#endif
--		crng = &primary_crng;
--	_crng_backtrack_protect(crng, tmp, used);
-+	_crng_backtrack_protect(select_crng(), tmp, used);
- }
- 
- static ssize_t extract_crng_user(void __user *buf, size_t nbytes)
+--- a/drivers/media/usb/dvb-usb/dib0700_core.c
++++ b/drivers/media/usb/dvb-usb/dib0700_core.c
+@@ -610,8 +610,6 @@ int dib0700_streaming_ctrl(struct dvb_us
+ 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->id);
+-		else
+-			st->channel_state |=	1 << ~(adap->id);
+ 	} else {
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
 
 
