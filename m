@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C757C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03292C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452626AbiAXVZ7 (ORCPT
+        id S1452697AbiAXV0O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:25:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44232 "EHLO
+        Mon, 24 Jan 2022 16:26:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442672AbiAXUzE (ORCPT
+        with ESMTP id S1392299AbiAXUvB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:04 -0500
+        Mon, 24 Jan 2022 15:51:01 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 195BBC047CE8;
-        Mon, 24 Jan 2022 12:00:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47D93C054301;
+        Mon, 24 Jan 2022 11:58:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB431B81229;
-        Mon, 24 Jan 2022 20:00:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03D62C340E7;
-        Mon, 24 Jan 2022 20:00:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E2EB8B8119D;
+        Mon, 24 Jan 2022 19:58:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 482BFC340E7;
+        Mon, 24 Jan 2022 19:58:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054403;
-        bh=Gvxsjpd5cfIoDoJ7uJZx2+ip3PN++DHEoQrmqb82lSg=;
+        s=korg; t=1643054289;
+        bh=zfEYjZPtuQKLUiQd334jkr6Im+SBhh1cinJVAghTffk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Nr0mLG+lVb03ubTfVTQeFJwSsrEo8MMDIFYEPwiMWKzAdn/paT791TTsPxSbIQUqH
-         UmnGTvKb73zxnASzbaSRQvceh8tZHv90jISRXyd+qlBTBJj6HS8jKf9D6P8YX5nP5A
-         2kdWxoRMBIZ5IgMTLPtxSOynut564IsjOl2GY+6Q=
+        b=iGk+uYmvtZFi1jsS+ey3VHhnNu0DE0Nnt2bWheyfr5U9GD4t/jYuO/1HCOhI9qeyx
+         OYIvsq1BHZEKc6LGDth1U1mw2Pd58lUAHp1FD6sSrPp6pGGjcAB4q7BXGLVJqzuhWC
+         lx8riCaBkEx0VBo/KpguFiImrO7RqghkHzTdWOzo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 378/563] iwlwifi: pcie: make sure prph_info is set when treating wakeup IRQ
-Date:   Mon, 24 Jan 2022 19:42:23 +0100
-Message-Id: <20220124184037.498455575@linuxfoundation.org>
+        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 340/563] x86/mm: Flush global TLB when switching to trampoline page-table
+Date:   Mon, 24 Jan 2022 19:41:45 +0100
+Message-Id: <20220124184036.186221874@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,43 +49,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Joerg Roedel <jroedel@suse.de>
 
-[ Upstream commit 459fc0f2c6b0f6e280bfa0f230c100c9dfe3a199 ]
+[ Upstream commit 71d5049b053876afbde6c3273250b76935494ab2 ]
 
-In some rare cases when the HW is in a bad state, we may get this
-interrupt when prph_info is not set yet.  Then we will try to
-dereference it to check the sleep_notif element, which will cause an
-oops.
+Move the switching code into a function so that it can be re-used and
+add a global TLB flush. This makes sure that usage of memory which is
+not mapped in the trampoline page-table is reliably caught.
 
-Fix that by ignoring the interrupt if prph_info is not set yet.
+Also move the clearing of CR4.PCIDE before the CR3 switch because the
+cr4_clear_bits() function will access data not mapped into the
+trampoline page-table.
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219132536.0537aa562313.I183bb336345b9b3da196ba9e596a6f189fbcbd09@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211202153226.22946-4-joro@8bytes.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/realmode.h |  1 +
+ arch/x86/kernel/reboot.c        | 12 ++----------
+ arch/x86/realmode/init.c        | 26 ++++++++++++++++++++++++++
+ 3 files changed, 29 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-index 2c13fa8f28200..6aedf5762571d 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-@@ -2260,7 +2260,12 @@ irqreturn_t iwl_pcie_irq_msix_handler(int irq, void *dev_id)
- 		}
- 	}
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index 5db5d083c8732..331474b150f16 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -89,6 +89,7 @@ static inline void set_real_mode_mem(phys_addr_t mem)
+ }
  
--	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP) {
+ void reserve_real_mode(void);
++void load_trampoline_pgtable(void);
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
+index 798a6f73f8946..df3514835b356 100644
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -113,17 +113,9 @@ void __noreturn machine_real_restart(unsigned int type)
+ 	spin_unlock(&rtc_lock);
+ 
+ 	/*
+-	 * Switch back to the initial page table.
++	 * Switch to the trampoline page table.
+ 	 */
+-#ifdef CONFIG_X86_32
+-	load_cr3(initial_page_table);
+-#else
+-	write_cr3(real_mode_header->trampoline_pgd);
+-
+-	/* Exiting long mode will fail if CR4.PCIDE is set. */
+-	if (boot_cpu_has(X86_FEATURE_PCID))
+-		cr4_clear_bits(X86_CR4_PCIDE);
+-#endif
++	load_trampoline_pgtable();
+ 
+ 	/* Jump to the identity-mapped low memory code */
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
+index 3313bffbecd4d..1a702c6a226ec 100644
+--- a/arch/x86/realmode/init.c
++++ b/arch/x86/realmode/init.c
+@@ -17,6 +17,32 @@ u32 *trampoline_cr4_features;
+ /* Hold the pgd entry used on booting additional CPUs */
+ pgd_t trampoline_pgd_entry;
+ 
++void load_trampoline_pgtable(void)
++{
++#ifdef CONFIG_X86_32
++	load_cr3(initial_page_table);
++#else
 +	/*
-+	 * In some rare cases when the HW is in a bad state, we may
-+	 * get this interrupt too early, when prph_info is still NULL.
-+	 * So make sure that it's not NULL to prevent crashing.
++	 * This function is called before exiting to real-mode and that will
++	 * fail with CR4.PCIDE still set.
 +	 */
-+	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP && trans_pcie->prph_info) {
- 		u32 sleep_notif =
- 			le32_to_cpu(trans_pcie->prph_info->sleep_notif);
- 		if (sleep_notif == IWL_D3_SLEEP_STATUS_SUSPEND ||
++	if (boot_cpu_has(X86_FEATURE_PCID))
++		cr4_clear_bits(X86_CR4_PCIDE);
++
++	write_cr3(real_mode_header->trampoline_pgd);
++#endif
++
++	/*
++	 * The CR3 write above will not flush global TLB entries.
++	 * Stale, global entries from previous page tables may still be
++	 * present.  Flush those stale entries.
++	 *
++	 * This ensures that memory accessed while running with
++	 * trampoline_pgd is *actually* mapped into trampoline_pgd.
++	 */
++	__flush_tlb_all();
++}
++
+ void __init reserve_real_mode(void)
+ {
+ 	phys_addr_t mem;
 -- 
 2.34.1
 
