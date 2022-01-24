@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F02FEC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D753CC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367176AbiAXXyq (ORCPT
+        id S1844719AbiAXXyk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:54:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
+        Mon, 24 Jan 2022 18:54:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846525AbiAXXQP (ORCPT
+        with ESMTP id S1846509AbiAXXQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:16:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4F2CC0617B9;
-        Mon, 24 Jan 2022 13:25:22 -0800 (PST)
+        Mon, 24 Jan 2022 18:16:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CB9C0617B0;
+        Mon, 24 Jan 2022 13:25:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51B1C614B4;
-        Mon, 24 Jan 2022 21:25:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3215CC340E4;
-        Mon, 24 Jan 2022 21:25:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3DB47B80FA1;
+        Mon, 24 Jan 2022 21:25:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FF0C340E4;
+        Mon, 24 Jan 2022 21:25:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059521;
-        bh=3LV5DA4CunFmtMFjiRUINxyiWNUMTcXhYsN9cLaWweI=;
+        s=korg; t=1643059510;
+        bh=OLkQY0VqpEjqmsadHkfttEzD4OLRruEKHl2jmHWNBVM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jyVN+TnWZ0RJ4OxTa1WTr2cRmaS2YLgDZ9DbDNU8WNhex+A5e4NpCgN5Ci5t/En+Z
-         6ZlxMoahAVwBTX999agP17o83ELYmcen4IfBrFR9eYx5oEYFpUBLQ8lQVdLS9bqzur
-         sYFRNBp2HD+7AKmapQxg7qjCae62FKO9KKRJ3PuQ=
+        b=q6D14CEV7n50vz6/yI0ezWPfM3IhkRr4iFeaWfJUrycsrjqgBJMm4V//Gzs0LCc0w
+         oMAbGiwK9eTKc04RICKZAodRhcOnIs84PWO+/KLseAntPzulAI6+6nD0COS4HK2t6/
+         sY91pU9KKdf3IPKZbQjajVWq2bWSsOqreejhR+4k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0643/1039] x86/mce: Mark mce_end() noinstr
-Date:   Mon, 24 Jan 2022 19:40:32 +0100
-Message-Id: <20220124184146.973490807@linuxfoundation.org>
+Subject: [PATCH 5.16 0639/1039] ARM: dts: qcom: sdx55: fix IPA interconnect definitions
+Date:   Mon, 24 Jan 2022 19:40:28 +0100
+Message-Id: <20220124184146.834483881@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,63 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Alex Elder <elder@linaro.org>
 
-[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
+[ Upstream commit c0d6316c238b1bd743108bd4b08eda364f47c7c9 ]
 
-It is called by the #MC handler which is noinstr.
+The first two interconnects defined for IPA on the SDX55 SoC are
+really two parts of what should be represented as a single path
+between IPA and system memory.
 
-Fixes
+Fix this by combining the "memory-a" and "memory-b" interconnects
+into a single "memory" interconnect.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
+Reported-by: David Heidelberg <david@ixit.cz>
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/qcom-sdx55.dtsi | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 9a52ec55e0555..75095986e5eff 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1063,10 +1063,13 @@ static int mce_start(int *no_way_out)
-  * Synchronize between CPUs after main scanning loop.
-  * This invokes the bulk of the Monarch processing.
-  */
--static int mce_end(int order)
-+static noinstr int mce_end(int order)
- {
--	int ret = -1;
- 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
-+	int ret = -1;
-+
-+	/* Allow instrumentation around external facilities. */
-+	instrumentation_begin();
+diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
+index 44526ad9d210b..eee2f63b9bbab 100644
+--- a/arch/arm/boot/dts/qcom-sdx55.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
+@@ -333,12 +333,10 @@
+ 			clocks = <&rpmhcc RPMH_IPA_CLK>;
+ 			clock-names = "core";
  
- 	if (!timeout)
- 		goto reset;
-@@ -1110,7 +1113,8 @@ static int mce_end(int order)
- 		/*
- 		 * Don't reset anything. That's done by the Monarch.
- 		 */
--		return 0;
-+		ret = 0;
-+		goto out;
- 	}
- 
- 	/*
-@@ -1126,6 +1130,10 @@ reset:
- 	 * Let others run again.
- 	 */
- 	atomic_set(&mce_executing, 0);
-+
-+out:
-+	instrumentation_end();
-+
- 	return ret;
- }
+-			interconnects = <&system_noc MASTER_IPA &system_noc SLAVE_SNOC_MEM_NOC_GC>,
+-					<&mem_noc MASTER_SNOC_GC_MEM_NOC &mc_virt SLAVE_EBI_CH0>,
++			interconnects = <&system_noc MASTER_IPA &mc_virt SLAVE_EBI_CH0>,
+ 					<&system_noc MASTER_IPA &system_noc SLAVE_OCIMEM>,
+ 					<&mem_noc MASTER_AMPSS_M0 &system_noc SLAVE_IPA_CFG>;
+-			interconnect-names = "memory-a",
+-					     "memory-b",
++			interconnect-names = "memory",
+ 					     "imem",
+ 					     "config";
  
 -- 
 2.34.1
