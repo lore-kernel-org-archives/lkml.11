@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7604DC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F9B1C4707E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581409AbiAXWLo (ORCPT
+        id S1581369AbiAXWLi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40648 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452646AbiAXV0C (ORCPT
+        Mon, 24 Jan 2022 17:11:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452527AbiAXVZr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:26:02 -0500
+        Mon, 24 Jan 2022 16:25:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7530DC01D7DE;
+        Mon, 24 Jan 2022 12:18:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA4F8B81061;
-        Mon, 24 Jan 2022 21:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4FBC340E4;
-        Mon, 24 Jan 2022 21:25:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1C7A3B812A5;
+        Mon, 24 Jan 2022 20:18:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B036C33DFC;
+        Mon, 24 Jan 2022 20:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059560;
-        bh=02LVYUDW/mrOuwuMTZ8bCkojsOTTzLhDWhfOpPkpTUw=;
+        s=korg; t=1643055487;
+        bh=etfi1XoxwPCCKLkAB4cI1QWD8NDS0GEZK+3hfTrKG3w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yC07YOnhMlQ3Fm93NDeAhkzLk4r8QqqwpC/cqUZD/eYmhRCHugdXta8g7Uxq3AUQS
-         lC4rmMqhc4UMu4xOkfdDrPcqCqVHppOSLBYdw1c9OT+MVf/gf+qyYEgqolufPaVq7Q
-         jKk1PABQNzq5+SMWdGCp7Mjdg9x5R0F4/QgZE6J0=
+        b=IAGfx9+rX7QTPX2sBPpX7isIDLqcvrhVcjeIkMjTnDsUVh8FrRNU3+XhTJ7TbBZJ9
+         1uShcsyfW3FqdzdB1qS0TDGMQ4jp7ubvn4znnnoB7pBKM5sSa3gomVxKVcP113+lSy
+         0kcT1o7Mr9Qe8/XZxraTZ8INZY6d4qBsuAG/rztw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Chen-Yu Tsai <wenst@chromium.org>,
+        Nicolas Dufresne <nicolas.dufresne@collabora.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0624/1039] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 24 Jan 2022 19:40:13 +0100
-Message-Id: <20220124184146.311973043@linuxfoundation.org>
+Subject: [PATCH 5.15 167/846] media: hantro: Hook up RK3399 JPEG encoder output
+Date:   Mon, 24 Jan 2022 19:34:44 +0100
+Message-Id: <20220124184106.738124517@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,70 +52,123 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Chen-Yu Tsai <wenst@chromium.org>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit 230d683ae04894933720425c8dead9508a09ebc3 ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+The JPEG encoder found in the Hantro H1 encoder block only produces a
+raw entropy-encoded scan. The driver is responsible for building a JPEG
+compliant bitstream and placing the entropy-encoded scan in it. Right
+now the driver uses a bounce buffer for the hardware to output the raw
+scan to.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
+In commit e765dba11ec2 ("hantro: Move hantro_enc_buf_finish to JPEG
+codec_ops.done"), the code that copies the raw scan from the bounce
+buffer to the capture buffer was moved, but was only hooked up for the
+Hantro H1 (then RK3288) variant. The RK3399 variant was broken,
+producing a JPEG bitstream without the scan, and the capture buffer's
+.bytesused field unset.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fix this by duplicating the code that is executed when the JPEG encoder
+finishes encoding a frame. As the encoded length is read back from
+hardware, and the variants having different register layouts, the
+code is duplicated rather than shared.
+
+Fixes: e765dba11ec2 ("hantro: Move hantro_enc_buf_finish to JPEG codec_ops.done")
+Signed-off-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Nicolas Dufresne <nicolas.dufresne@collabora.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ .../staging/media/hantro/hantro_h1_jpeg_enc.c   |  2 +-
+ drivers/staging/media/hantro/hantro_hw.h        |  3 ++-
+ .../media/hantro/rockchip_vpu2_hw_jpeg_enc.c    | 17 +++++++++++++++++
+ drivers/staging/media/hantro/rockchip_vpu_hw.c  |  5 +++--
+ 4 files changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 897e3b91ddb2f..9c5c10908f013 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1688,6 +1688,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1697,6 +1698,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
-+
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
+diff --git a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
+index 56cf261a8e958..9cd713c02a455 100644
+--- a/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
++++ b/drivers/staging/media/hantro/hantro_h1_jpeg_enc.c
+@@ -140,7 +140,7 @@ int hantro_h1_jpeg_enc_run(struct hantro_ctx *ctx)
+ 	return 0;
  }
  
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+-void hantro_jpeg_enc_done(struct hantro_ctx *ctx)
++void hantro_h1_jpeg_enc_done(struct hantro_ctx *ctx)
+ {
+ 	struct hantro_dev *vpu = ctx->dev;
+ 	u32 bytesused = vepu_read(vpu, H1_REG_STR_BUF_LIMIT) / 8;
+diff --git a/drivers/staging/media/hantro/hantro_hw.h b/drivers/staging/media/hantro/hantro_hw.h
+index df7b5e3a57b9b..fd738653a5735 100644
+--- a/drivers/staging/media/hantro/hantro_hw.h
++++ b/drivers/staging/media/hantro/hantro_hw.h
+@@ -235,7 +235,8 @@ int hantro_h1_jpeg_enc_run(struct hantro_ctx *ctx);
+ int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx);
+ int hantro_jpeg_enc_init(struct hantro_ctx *ctx);
+ void hantro_jpeg_enc_exit(struct hantro_ctx *ctx);
+-void hantro_jpeg_enc_done(struct hantro_ctx *ctx);
++void hantro_h1_jpeg_enc_done(struct hantro_ctx *ctx);
++void rockchip_vpu2_jpeg_enc_done(struct hantro_ctx *ctx);
+ 
+ dma_addr_t hantro_h264_get_ref_buf(struct hantro_ctx *ctx,
+ 				   unsigned int dpb_idx);
+diff --git a/drivers/staging/media/hantro/rockchip_vpu2_hw_jpeg_enc.c b/drivers/staging/media/hantro/rockchip_vpu2_hw_jpeg_enc.c
+index 991213ce16108..5d9ff420f0b5f 100644
+--- a/drivers/staging/media/hantro/rockchip_vpu2_hw_jpeg_enc.c
++++ b/drivers/staging/media/hantro/rockchip_vpu2_hw_jpeg_enc.c
+@@ -171,3 +171,20 @@ int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx)
+ 
+ 	return 0;
+ }
++
++void rockchip_vpu2_jpeg_enc_done(struct hantro_ctx *ctx)
++{
++	struct hantro_dev *vpu = ctx->dev;
++	u32 bytesused = vepu_read(vpu, VEPU_REG_STR_BUF_LIMIT) / 8;
++	struct vb2_v4l2_buffer *dst_buf = hantro_get_dst_buf(ctx);
++
++	/*
++	 * TODO: Rework the JPEG encoder to eliminate the need
++	 * for a bounce buffer.
++	 */
++	memcpy(vb2_plane_vaddr(&dst_buf->vb2_buf, 0) +
++	       ctx->vpu_dst_fmt->header_size,
++	       ctx->jpeg_enc.bounce_buffer.cpu, bytesused);
++	vb2_set_plane_payload(&dst_buf->vb2_buf, 0,
++			      ctx->vpu_dst_fmt->header_size + bytesused);
++}
+diff --git a/drivers/staging/media/hantro/rockchip_vpu_hw.c b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+index d4f52957cc534..0c22039162a00 100644
+--- a/drivers/staging/media/hantro/rockchip_vpu_hw.c
++++ b/drivers/staging/media/hantro/rockchip_vpu_hw.c
+@@ -343,7 +343,7 @@ static const struct hantro_codec_ops rk3066_vpu_codec_ops[] = {
+ 		.run = hantro_h1_jpeg_enc_run,
+ 		.reset = rockchip_vpu1_enc_reset,
+ 		.init = hantro_jpeg_enc_init,
+-		.done = hantro_jpeg_enc_done,
++		.done = hantro_h1_jpeg_enc_done,
+ 		.exit = hantro_jpeg_enc_exit,
+ 	},
+ 	[HANTRO_MODE_H264_DEC] = {
+@@ -371,7 +371,7 @@ static const struct hantro_codec_ops rk3288_vpu_codec_ops[] = {
+ 		.run = hantro_h1_jpeg_enc_run,
+ 		.reset = rockchip_vpu1_enc_reset,
+ 		.init = hantro_jpeg_enc_init,
+-		.done = hantro_jpeg_enc_done,
++		.done = hantro_h1_jpeg_enc_done,
+ 		.exit = hantro_jpeg_enc_exit,
+ 	},
+ 	[HANTRO_MODE_H264_DEC] = {
+@@ -399,6 +399,7 @@ static const struct hantro_codec_ops rk3399_vpu_codec_ops[] = {
+ 		.run = rockchip_vpu2_jpeg_enc_run,
+ 		.reset = rockchip_vpu2_enc_reset,
+ 		.init = hantro_jpeg_enc_init,
++		.done = rockchip_vpu2_jpeg_enc_done,
+ 		.exit = hantro_jpeg_enc_exit,
+ 	},
+ 	[HANTRO_MODE_H264_DEC] = {
 -- 
 2.34.1
 
