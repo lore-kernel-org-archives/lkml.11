@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1B0AC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E29C3526F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360128AbiAXXgF (ORCPT
+        id S1578696AbiAXXef (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:36:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43912 "EHLO
+        Mon, 24 Jan 2022 18:34:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1838741AbiAXWsA (ORCPT
+        with ESMTP id S1838090AbiAXWpw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:48:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D003BC068094;
-        Mon, 24 Jan 2022 13:07:19 -0800 (PST)
+        Mon, 24 Jan 2022 17:45:52 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C551C0550F9;
+        Mon, 24 Jan 2022 13:06:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6A63161446;
-        Mon, 24 Jan 2022 21:07:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33995C340E5;
-        Mon, 24 Jan 2022 21:07:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23295B81142;
+        Mon, 24 Jan 2022 21:06:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EAE5C340E5;
+        Mon, 24 Jan 2022 21:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058438;
-        bh=wObO+B5KFU6f959FvGizWAR8qcGc9TgRvKJQdmxbzMs=;
+        s=korg; t=1643058382;
+        bh=1Xu0fY9+VgGKTdVcFCdBa37F4Om7SvBXrvrP+wodbko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hYWSSxeLF1xuLIi3U9ai7mz2AT/2SY09trC2pdk85m1+nBV9xvyZdNpn+9ubzGZQ+
-         SsyOzy9RMmXbBwPkQBljGdyMn4RZ9DUv8i4mQ6u1Dk7GD2OVMBv3Ze2sx5g5163wsz
-         WxorQQYe9xG8n9duA+u1CX+m7x530rZHDUwA1/gY=
+        b=JOK//x8C42s7VOPLUhvzGQ/irofn7dcla5NAQwdovIm/9jzC4hZnvqnOK05uXOMD/
+         jRWzUsvXyAtIGuPJA67SuLES7uT8kX9wwJsDRlok0mIpY8sc0YPVyM/66l+wSC7ORT
+         ArPlrhgKlwpT6cF5yp6sa66dvr4UZUol9FlLwNuA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0289/1039] net: dsa: hellcreek: Fix insertion of static FDB entries
-Date:   Mon, 24 Jan 2022 19:34:38 +0100
-Message-Id: <20220124184134.995912313@linuxfoundation.org>
+Subject: [PATCH 5.16 0272/1039] crypto: stm32/cryp - fix xts and race condition in crypto_engine requests
+Date:   Mon, 24 Jan 2022 19:34:21 +0100
+Message-Id: <20220124184134.442878223@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,48 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kurt Kanzenbach <kurt@linutronix.de>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit 4db4c3ea56978086ca367a355e440de17d534827 ]
+[ Upstream commit d703c7a994ee34b7fa89baf21631fca0aa9f17fc ]
 
-The insertion of static FDB entries ignores the pass_blocked bit. That bit is
-evaluated with regards to STP. Add the missing functionality.
+Don't erase key:
+If key is erased before the crypto_finalize_.*_request() call, some
+pending process will run with a key={ 0 }.
+Moreover if the key is reset at end of request, it breaks xts chaining
+mode, as for last xts block (in case input len is not a multiple of
+block) a new AES request is started without calling again set_key().
 
-Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
-Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Acked-by: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 9e054ec21ef8 ("crypto: stm32 - Support for STM32 CRYP crypto module")
+
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/dsa/hirschmann/hellcreek.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
-index 4e0b53d94b525..bb1a24c8078be 100644
---- a/drivers/net/dsa/hirschmann/hellcreek.c
-+++ b/drivers/net/dsa/hirschmann/hellcreek.c
-@@ -710,8 +710,9 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
- 	u16 meta = 0;
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index d13b262b36252..e2bcc4f98b0ae 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -674,8 +674,6 @@ static void stm32_cryp_finish_req(struct stm32_cryp *cryp, int err)
+ 	else
+ 		crypto_finalize_skcipher_request(cryp->engine, cryp->req,
+ 						   err);
+-
+-	memset(cryp->ctx->key, 0, cryp->ctx->keylen);
+ }
  
- 	dev_dbg(hellcreek->dev, "Add static FDB entry: MAC=%pM, MASK=0x%02x, "
--		"OBT=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac, entry->portmask,
--		entry->is_obt, entry->reprio_en, entry->reprio_tc);
-+		"OBT=%d, PASS_BLOCKED=%d, REPRIO_EN=%d, PRIO=%d\n", entry->mac,
-+		entry->portmask, entry->is_obt, entry->pass_blocked,
-+		entry->reprio_en, entry->reprio_tc);
- 
- 	/* Add mac address */
- 	hellcreek_write(hellcreek, entry->mac[1] | (entry->mac[0] << 8), HR_FDBWDH);
-@@ -722,6 +723,8 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
- 	meta |= entry->portmask << HR_FDBWRM0_PORTMASK_SHIFT;
- 	if (entry->is_obt)
- 		meta |= HR_FDBWRM0_OBT;
-+	if (entry->pass_blocked)
-+		meta |= HR_FDBWRM0_PASS_BLOCKED;
- 	if (entry->reprio_en) {
- 		meta |= HR_FDBWRM0_REPRIO_EN;
- 		meta |= entry->reprio_tc << HR_FDBWRM0_REPRIO_TC_SHIFT;
+ static int stm32_cryp_cpu_start(struct stm32_cryp *cryp)
 -- 
 2.34.1
 
