@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B0FC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C41C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354445AbiAXTgh (ORCPT
+        id S1354582AbiAXTgr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56854 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352973AbiAXTbU (ORCPT
+        Mon, 24 Jan 2022 14:36:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54946 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353025AbiAXTbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:20 -0500
+        Mon, 24 Jan 2022 14:31:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D89E60909;
-        Mon, 24 Jan 2022 19:31:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E942EC340E5;
-        Mon, 24 Jan 2022 19:31:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49212B81215;
+        Mon, 24 Jan 2022 19:31:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BDD4C340E5;
+        Mon, 24 Jan 2022 19:31:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052679;
-        bh=QXwHeHYX/Zqd8QEkJTWYF2EP0u+fr0fdpX7u7hy1n4k=;
+        s=korg; t=1643052707;
+        bh=TYR6G0G1NNZYgGiHfvo4P7O8iCjHHs0h9Uv+G6h0s/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xcSZmzRcWXIdkhilnNdrboVsy4InDskp6M42jPEyisGgDvVYcXIsgTVIGrv/kiSmf
-         HwIIx9UkrlAvPuF00Njz6CycLqbt9MDVBn695C35xXPI+KnUCLeWLUYCJrfnn6FavH
-         Yrb3kfyMcXQ7J3DYAOjVJkTvNi581ESSgPbzvlkY=
+        b=wLEgCA0fM+DeHukj/oXpjTPaLXtLquEGWaVDLjZQXo2dE08AUT9UPEwPT/X2hUCec
+         fyG7c8GXqPIv5ZRQLZa3xOe4p9r9+6vda93T6cqG25J4pUpQDsjrNta931ykNRDKA6
+         QgpKvnnl+KpdZsRx3YMj4JThEx6pJlxwwvTL27TM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 140/320] ASoC: rt5663: Handle device_property_read_u32_array error codes
-Date:   Mon, 24 Jan 2022 19:42:04 +0100
-Message-Id: <20220124183958.411641176@linuxfoundation.org>
+Subject: [PATCH 5.4 149/320] mips: bcm63xx: add support for clk_set_parent()
+Date:   Mon, 24 Jan 2022 19:42:13 +0100
+Message-Id: <20220124183958.705625217@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,63 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 2167c0b205960607fb136b4bb3c556a62be1569a ]
+[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
 
-The return value of device_property_read_u32_array() is not always 0.
-To catch the exception in case that devm_kzalloc failed and the
-rt5663->imp_table was NULL, which caused the failure of
-device_property_read_u32_array.
+The MIPS BMC63XX subarch does not provide/support clk_set_parent().
+This causes build errors in a few drivers, so add a simple implementation
+of that function so that callers of it will build without errors.
 
-Fixes: 450f0f6a8fb4 ("ASoC: rt5663: Add the manual offset field to compensate the DC offset")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Link: https://lore.kernel.org/r/20211215031550.70702-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes these build errors:
+
+ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
+ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
+
+Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/codecs/rt5663.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ arch/mips/bcm63xx/clk.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/sound/soc/codecs/rt5663.c b/sound/soc/codecs/rt5663.c
-index 2943692f66edd..3610be1590fcc 100644
---- a/sound/soc/codecs/rt5663.c
-+++ b/sound/soc/codecs/rt5663.c
-@@ -3461,6 +3461,7 @@ static void rt5663_calibrate(struct rt5663_priv *rt5663)
- static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
+diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
+index aba6e2d6a736c..dcfa0ea912fe1 100644
+--- a/arch/mips/bcm63xx/clk.c
++++ b/arch/mips/bcm63xx/clk.c
+@@ -387,6 +387,12 @@ struct clk *clk_get_parent(struct clk *clk)
+ }
+ EXPORT_SYMBOL(clk_get_parent);
+ 
++int clk_set_parent(struct clk *clk, struct clk *parent)
++{
++	return 0;
++}
++EXPORT_SYMBOL(clk_set_parent);
++
+ unsigned long clk_get_rate(struct clk *clk)
  {
- 	int table_size;
-+	int ret;
- 
- 	device_property_read_u32(dev, "realtek,dc_offset_l_manual",
- 		&rt5663->pdata.dc_offset_l_manual);
-@@ -3477,9 +3478,11 @@ static int rt5663_parse_dp(struct rt5663_priv *rt5663, struct device *dev)
- 		table_size = sizeof(struct impedance_mapping_table) *
- 			rt5663->pdata.impedance_sensing_num;
- 		rt5663->imp_table = devm_kzalloc(dev, table_size, GFP_KERNEL);
--		device_property_read_u32_array(dev,
-+		ret = device_property_read_u32_array(dev,
- 			"realtek,impedance_sensing_table",
- 			(u32 *)rt5663->imp_table, table_size);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	return 0;
-@@ -3504,8 +3507,11 @@ static int rt5663_i2c_probe(struct i2c_client *i2c,
- 
- 	if (pdata)
- 		rt5663->pdata = *pdata;
--	else
--		rt5663_parse_dp(rt5663, &i2c->dev);
-+	else {
-+		ret = rt5663_parse_dp(rt5663, &i2c->dev);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	for (i = 0; i < ARRAY_SIZE(rt5663->supplies); i++)
- 		rt5663->supplies[i].supply = rt5663_supply_names[i];
+ 	if (!clk)
 -- 
 2.34.1
 
