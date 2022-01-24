@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A152C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A2B7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:41:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388535AbiAXUjL (ORCPT
+        id S1355301AbiAXUjW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:39:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        Mon, 24 Jan 2022 15:39:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355301AbiAXUSF (ORCPT
+        with ESMTP id S236888AbiAXULn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:18:05 -0500
+        Mon, 24 Jan 2022 15:11:43 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B85C0A893D;
-        Mon, 24 Jan 2022 11:38:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E75F5C06F8F9;
+        Mon, 24 Jan 2022 11:33:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5043F6153A;
-        Mon, 24 Jan 2022 19:38:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2318AC340E5;
-        Mon, 24 Jan 2022 19:38:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86506614B8;
+        Mon, 24 Jan 2022 19:33:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47EEBC340E5;
+        Mon, 24 Jan 2022 19:33:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053109;
-        bh=khj1TPKAGtqZ8SRnFW3L1kpEHrsWYchWuXRxLdSbLMw=;
+        s=korg; t=1643052820;
+        bh=+JMII1/WLNgrn/UhD/fchGRwGgo2s8880QhuVgd4d5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pyl1MVjUxR8JMIfZNRyFtJZXhWi7AdZoaeF95FqTu152HIJ27N8dPJ+yBqowcZufK
-         eOpHzIh1qIOan2nYGZn7bpP4r0n0wDbpgvUfZQ8n8KFgDpcVYVQkDfpbxB/8wUe+Ny
-         BJZss1dW0+oR295n6S6s7dcqsGdHvZsLVkzjIGZw=
+        b=o7FMlxVZF+WYqhnNfjyNMbrbckp7dq+wkbFVXXrbVybo7iPuPckYkYmB4BY/NLY4i
+         PJEdoYgEWXrjbfQEzuQz9lT2Lpi+Mq6pQ07O+5/lAq2ll+E1uKeQ2OLMtg+nRKu4Lq
+         0A/aJUNk8V2pygpkqF8rES6Cki1oG/Q1Ilxboy2w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang.zhang1211@gmail.com>,
-        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 237/320] ALSA: seq: Set upper limit of processed events
-Date:   Mon, 24 Jan 2022 19:43:41 +0100
-Message-Id: <20220124184002.049031441@linuxfoundation.org>
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 185/320] x86/mce: Mark mce_end() noinstr
+Date:   Mon, 24 Jan 2022 19:42:49 +0100
+Message-Id: <20220124183959.945114596@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,85 +49,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
+[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
 
-Currently ALSA sequencer core tries to process the queued events as
-much as possible when they become dispatchable.  If applications try
-to queue too massive events to be processed at the very same timing,
-the sequencer core would still try to process such all events, either
-in the interrupt context or via some notifier; in either away, it
-might be a cause of RCU stall or such problems.
+It is called by the #MC handler which is noinstr.
 
-As a potential workaround for those problems, this patch adds the
-upper limit of the amount of events to be processed.  The remaining
-events are processed in the next batch, so they won't be lost.
+Fixes
 
-For the time being, it's limited up to 1000 events per queue, which
-should be high enough for any normal usages.
+  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
 
-Reported-by: Zqiang <qiang.zhang1211@gmail.com>
-Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
-Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/seq/seq_queue.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
-index 71a6ea62c3be7..4ff0b927230c2 100644
---- a/sound/core/seq/seq_queue.c
-+++ b/sound/core/seq/seq_queue.c
-@@ -234,12 +234,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
- 
- /* -------------------------------------------------------- */
- 
-+#define MAX_CELL_PROCESSES_IN_QUEUE	1000
-+
- void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 290d64e04ab20..a0f6c574c3783 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1080,10 +1080,13 @@ static int mce_start(int *no_way_out)
+  * Synchronize between CPUs after main scanning loop.
+  * This invokes the bulk of the Monarch processing.
+  */
+-static int mce_end(int order)
++static noinstr int mce_end(int order)
  {
- 	unsigned long flags;
- 	struct snd_seq_event_cell *cell;
- 	snd_seq_tick_time_t cur_tick;
- 	snd_seq_real_time_t cur_time;
-+	int processed = 0;
+-	int ret = -1;
+ 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
++	int ret = -1;
++
++	/* Allow instrumentation around external facilities. */
++	instrumentation_begin();
  
- 	if (q == NULL)
- 		return;
-@@ -262,6 +265,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
+ 	if (!timeout)
+ 		goto reset;
+@@ -1127,7 +1130,8 @@ static int mce_end(int order)
+ 		/*
+ 		 * Don't reset anything. That's done by the Monarch.
+ 		 */
+-		return 0;
++		ret = 0;
++		goto out;
  	}
  
- 	/* Process time queue... */
-@@ -271,14 +276,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
+ 	/*
+@@ -1142,6 +1146,10 @@ reset:
+ 	 * Let others run again.
+ 	 */
+ 	atomic_set(&mce_executing, 0);
++
++out:
++	instrumentation_end();
++
+ 	return ret;
+ }
  
-+ out:
- 	/* free lock */
- 	spin_lock_irqsave(&q->check_lock, flags);
- 	if (q->check_again) {
- 		q->check_again = 0;
--		spin_unlock_irqrestore(&q->check_lock, flags);
--		goto __again;
-+		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
-+			spin_unlock_irqrestore(&q->check_lock, flags);
-+			goto __again;
-+		}
- 	}
- 	q->check_blocked = 0;
- 	spin_unlock_irqrestore(&q->check_lock, flags);
 -- 
 2.34.1
 
