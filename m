@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D44ABC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7976DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345856AbiAXTRT (ORCPT
+        id S1348414AbiAXTRY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:17:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47502 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345122AbiAXTJL (ORCPT
+        Mon, 24 Jan 2022 14:17:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35190 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345422AbiAXTHH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:09:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E948C08C5C5;
-        Mon, 24 Jan 2022 11:02:09 -0800 (PST)
+        Mon, 24 Jan 2022 14:07:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF5E8B8119D;
-        Mon, 24 Jan 2022 19:02:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1933BC340E5;
-        Mon, 24 Jan 2022 19:02:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6126060B88;
+        Mon, 24 Jan 2022 19:07:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A0CC340E5;
+        Mon, 24 Jan 2022 19:07:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050926;
-        bh=aDFoXBfXTkfoNdAUutnNPz0dvkoSMcKTMdxDWksInsE=;
+        s=korg; t=1643051222;
+        bh=uDx30uAgUcsN7K0VNe2fp8EuYvLg5djITcl6kF56cWw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q6e4S11eXMhSJCVmeaL4dOJIAAQf+7vvXJQZ4/EQCXTxvCZVTM9LWWZyHh0fENWqD
-         /CXwRqw2rrTGfxCFsO/aV91cA6q7xz23a1pW6TJmduy7b/4ZJAJ+DfCslK4bO8QR47
-         5RZzFxA4QCkBiy1VDDs3foHhsI/AHC6g/8GPnoTw=
+        b=ax5bbS3eXRvzFGgdq/1F4CXiCh6iy5Iyc81dDC9iGQ0pihFJtl71C/jYmMAi22b1P
+         3Xe3WX+45/Zi0QSCSIC+uB3zukO0lB0GceY/8Ba95al4WI2+ALkl/euEmciC5Qiluf
+         GcUJfksAAEHa63ovv+Kl2sY4f2boCVE4LXp92Vd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.9 157/157] KVM: do not allow mapping valid but non-reference-counted pages
-Date:   Mon, 24 Jan 2022 19:44:07 +0100
-Message-Id: <20220124183937.735989252@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 093/186] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
+Date:   Mon, 24 Jan 2022 19:42:48 +0100
+Message-Id: <20220124183940.113116021@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,71 +47,121 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit f8be156be163a052a067306417cd0ff679068c97 upstream.
+[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
 
-It's possible to create a region which maps valid but non-refcounted
-pages (e.g., tail pages of non-compound higher order allocations). These
-host pages can then be returned by gfn_to_page, gfn_to_pfn, etc., family
-of APIs, which take a reference to the page, which takes it from 0 to 1.
-When the reference is dropped, this will free the page incorrectly.
+Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
+DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
 
-Fix this by only taking a reference on valid pages if it was non-zero,
-which indicates it is participating in normal refcounting (and can be
-released with put_page).
+So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
+Kconfig and rename the definitions to IMX27 as further clean-up.
 
-This addresses CVE-2021-22543.
+This issue was discovered with ./scripts/checkkconfigsymbols.py, which
+reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
+SOC_IMX21.
 
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Tested-by: Paolo Bonzini <pbonzini@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- virt/kvm/kvm_main.c |   19 +++++++++++++++++--
- 1 file changed, 17 insertions(+), 2 deletions(-)
+ arch/arm/Kconfig.debug            | 14 +++++++-------
+ arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1513,6 +1513,13 @@ static bool vma_is_valid(struct vm_area_
- 	return true;
- }
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index d6cf18a0cb0a9..b70ed4c7691e5 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -363,12 +363,12 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on i.MX25.
  
-+static int kvm_try_get_pfn(kvm_pfn_t pfn)
-+{
-+	if (kvm_is_reserved_pfn(pfn))
-+		return 1;
-+	return get_page_unless_zero(pfn_to_page(pfn));
-+}
+-	config DEBUG_IMX21_IMX27_UART
+-		bool "i.MX21 and i.MX27 Debug UART"
+-		depends on SOC_IMX21 || SOC_IMX27
++	config DEBUG_IMX27_UART
++		bool "i.MX27 Debug UART"
++		depends on SOC_IMX27
+ 		help
+ 		  Say Y here if you want kernel low-level debugging support
+-		  on i.MX21 or i.MX27.
++		  on i.MX27.
+ 
+ 	config DEBUG_IMX28_UART
+ 		bool "i.MX28 Debug UART"
+@@ -1398,7 +1398,7 @@ config DEBUG_IMX_UART_PORT
+ 	int "i.MX Debug UART Port Selection"
+ 	depends on DEBUG_IMX1_UART || \
+ 		   DEBUG_IMX25_UART || \
+-		   DEBUG_IMX21_IMX27_UART || \
++		   DEBUG_IMX27_UART || \
+ 		   DEBUG_IMX31_UART || \
+ 		   DEBUG_IMX35_UART || \
+ 		   DEBUG_IMX50_UART || \
+@@ -1451,12 +1451,12 @@ config DEBUG_LL_INCLUDE
+ 	default "debug/icedcc.S" if DEBUG_ICEDCC
+ 	default "debug/imx.S" if DEBUG_IMX1_UART || \
+ 				 DEBUG_IMX25_UART || \
+-				 DEBUG_IMX21_IMX27_UART || \
++				 DEBUG_IMX27_UART || \
+ 				 DEBUG_IMX31_UART || \
+ 				 DEBUG_IMX35_UART || \
+ 				 DEBUG_IMX50_UART || \
+ 				 DEBUG_IMX51_UART || \
+-				 DEBUG_IMX53_UART ||\
++				 DEBUG_IMX53_UART || \
+ 				 DEBUG_IMX6Q_UART || \
+ 				 DEBUG_IMX6SL_UART || \
+ 				 DEBUG_IMX6SX_UART || \
+diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
+index bce58e975ad1f..c750cc9876f6d 100644
+--- a/arch/arm/include/debug/imx-uart.h
++++ b/arch/arm/include/debug/imx-uart.h
+@@ -14,13 +14,6 @@
+ #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
+ #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
+ 
+-#define IMX21_UART1_BASE_ADDR	0x1000a000
+-#define IMX21_UART2_BASE_ADDR	0x1000b000
+-#define IMX21_UART3_BASE_ADDR	0x1000c000
+-#define IMX21_UART4_BASE_ADDR	0x1000d000
+-#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
+-#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
+-
+ #define IMX25_UART1_BASE_ADDR	0x43f90000
+ #define IMX25_UART2_BASE_ADDR	0x43f94000
+ #define IMX25_UART3_BASE_ADDR	0x5000c000
+@@ -29,6 +22,13 @@
+ #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
+ #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
+ 
++#define IMX27_UART1_BASE_ADDR	0x1000a000
++#define IMX27_UART2_BASE_ADDR	0x1000b000
++#define IMX27_UART3_BASE_ADDR	0x1000c000
++#define IMX27_UART4_BASE_ADDR	0x1000d000
++#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
++#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
 +
- static int hva_to_pfn_remapped(struct vm_area_struct *vma,
- 			       unsigned long addr, bool *async,
- 			       bool write_fault, bool *writable,
-@@ -1562,13 +1569,21 @@ static int hva_to_pfn_remapped(struct vm
- 	 * Whoever called remap_pfn_range is also going to call e.g.
- 	 * unmap_mapping_range before the underlying pages are freed,
- 	 * causing a call to our MMU notifier.
-+	 *
-+	 * Certain IO or PFNMAP mappings can be backed with valid
-+	 * struct pages, but be allocated without refcounting e.g.,
-+	 * tail pages of non-compound higher order allocations, which
-+	 * would then underflow the refcount when the caller does the
-+	 * required put_page. Don't allow those pages here.
- 	 */ 
--	kvm_get_pfn(pfn);
-+	if (!kvm_try_get_pfn(pfn))
-+		r = -EFAULT;
+ #define IMX31_UART1_BASE_ADDR	0x43f90000
+ #define IMX31_UART2_BASE_ADDR	0x43f94000
+ #define IMX31_UART3_BASE_ADDR	0x5000c000
+@@ -115,10 +115,10 @@
  
- out:
- 	pte_unmap_unlock(ptep, ptl);
- 	*p_pfn = pfn;
--	return 0;
-+
-+	return r;
- }
- 
- /*
+ #ifdef CONFIG_DEBUG_IMX1_UART
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
+-#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
+-#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
+ #elif defined(CONFIG_DEBUG_IMX25_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
++#elif defined(CONFIG_DEBUG_IMX27_UART)
++#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
+ #elif defined(CONFIG_DEBUG_IMX31_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
+ #elif defined(CONFIG_DEBUG_IMX35_UART)
+-- 
+2.34.1
+
 
 
