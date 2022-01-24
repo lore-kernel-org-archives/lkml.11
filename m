@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A33C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C6BC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:47:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2362803AbiAXXmz (ORCPT
+        id S2362826AbiAXXnA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:42:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
+        Mon, 24 Jan 2022 18:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1844045AbiAXXHi (ORCPT
+        with ESMTP id S1384506AbiAXXGH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:07:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EB50C06E03E;
-        Mon, 24 Jan 2022 13:17:20 -0800 (PST)
+        Mon, 24 Jan 2022 18:06:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3E47C06E024;
+        Mon, 24 Jan 2022 13:17:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B36F1614A6;
-        Mon, 24 Jan 2022 21:17:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AEBC36AFB;
-        Mon, 24 Jan 2022 21:17:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D03DB8123D;
+        Mon, 24 Jan 2022 21:17:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D179C340E4;
+        Mon, 24 Jan 2022 21:17:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059039;
-        bh=tF0uGitjesxu8ManvGEcTbhnaW04Nx0vJWHp4smfh6s=;
+        s=korg; t=1643059024;
+        bh=Md4ZH5I6rM15jQTYj4f4nWYyhIsKhAhF5qdEF3guwUA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l67EzOipAkcgLVusaMvAZGdCwX0ElCeAx64e5b8Iilw5j1s3OXMXUe+KfrxQ+TFSQ
-         8/IPLTmKo7kC6kSop28O4RHXrz6Gp3uuN5CZZZb3oDb9uNz9lVKPGik4yPXWGCkKx/
-         wKcL0Jzo5HNFN704R46ryBXsI1s9BVzfOpHCvNjk=
+        b=0QPQ+HQ3bccwKNlGRUIKmtbiTD1ZE8YR46oYI23rCFheNt7LqO7F+z1dNhWvQVyCX
+         hB33m7KOJya/s2WaTiUbWU6Y9uMkiEa/TXZEMQAQTnFhi4nVWzDgroJ2GCMWyeaTjN
+         UqcE+3zoU6veVM4clqdt3dgHMnrT4arLioYoVSyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Avihai Horon <avihaih@nvidia.com>,
-        Mark Zhang <markzhang@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0485/1039] RDMA/cma: Let cma_resolve_ib_dev() continue search even after empty entry
-Date:   Mon, 24 Jan 2022 19:37:54 +0100
-Message-Id: <20220124184141.573177206@linuxfoundation.org>
+Subject: [PATCH 5.16 0447/1039] ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:37:16 +0100
+Message-Id: <20220124184140.318641098@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,63 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Avihai Horon <avihaih@nvidia.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 20679094a0161c94faf77e373fa3f7428a8e14bd ]
+[ Upstream commit 80bd64af75b4bb11c0329bc66c35da2ddfb66d88 ]
 
-Currently, when cma_resolve_ib_dev() searches for a matching GID it will
-stop searching after encountering the first empty GID table entry. This
-behavior is wrong since neither IB nor RoCE spec enforce tightly packed
-GID tables.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-For example, when the matching valid GID entry exists at index N, and if a
-GID entry is empty at index N-1, cma_resolve_ib_dev() will fail to find
-the matching valid entry.
-
-Fix it by making cma_resolve_ib_dev() continue searching even after
-encountering missing entries.
-
-Fixes: f17df3b0dede ("RDMA/cma: Add support for AF_IB to rdma_resolve_addr()")
-Link: https://lore.kernel.org/r/b7346307e3bb396c43d67d924348c6c496493991.1639055490.git.leonro@nvidia.com
-Signed-off-by: Avihai Horon <avihaih@nvidia.com>
-Reviewed-by: Mark Zhang <markzhang@nvidia.com>
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Fixes: d13bd412dce2 ("ALSA: hda - Manage kcontrol lists")
+Link: https://lore.kernel.org/r/20211116071314.15065-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/core/cma.c | 12 +++++++++---
- 1 file changed, 9 insertions(+), 3 deletions(-)
+ sound/pci/hda/hda_codec.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
-index 835ac54d4a24c..a3834ef691910 100644
---- a/drivers/infiniband/core/cma.c
-+++ b/drivers/infiniband/core/cma.c
-@@ -766,6 +766,7 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
- 	unsigned int p;
- 	u16 pkey, index;
- 	enum ib_port_state port_state;
-+	int ret;
+diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
+index 0c4a337c9fc0d..eda70814369bd 100644
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -1727,8 +1727,11 @@ void snd_hda_ctls_clear(struct hda_codec *codec)
+ {
  	int i;
- 
- 	cma_dev = NULL;
-@@ -784,9 +785,14 @@ static int cma_resolve_ib_dev(struct rdma_id_private *id_priv)
- 
- 			if (ib_get_cached_port_state(cur_dev->device, p, &port_state))
- 				continue;
--			for (i = 0; !rdma_query_gid(cur_dev->device,
--						    p, i, &gid);
--			     i++) {
+ 	struct hda_nid_item *items = codec->mixers.list;
 +
-+			for (i = 0; i < cur_dev->device->port_data[p].immutable.gid_tbl_len;
-+			     ++i) {
-+				ret = rdma_query_gid(cur_dev->device, p, i,
-+						     &gid);
-+				if (ret)
-+					continue;
-+
- 				if (!memcmp(&gid, dgid, sizeof(gid))) {
- 					cma_dev = cur_dev;
- 					sgid = gid;
++	down_write(&codec->card->controls_rwsem);
+ 	for (i = 0; i < codec->mixers.used; i++)
+ 		snd_ctl_remove(codec->card, items[i].kctl);
++	up_write(&codec->card->controls_rwsem);
+ 	snd_array_free(&codec->mixers);
+ 	snd_array_free(&codec->nids);
+ }
 -- 
 2.34.1
 
