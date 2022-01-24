@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D150CC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E23DC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575748AbiAXVw1 (ORCPT
+        id S1576031AbiAXVwy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42878 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450166AbiAXVTz (ORCPT
+        Mon, 24 Jan 2022 16:52:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38990 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450514AbiAXVUo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:55 -0500
+        Mon, 24 Jan 2022 16:20:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4159961320;
-        Mon, 24 Jan 2022 21:19:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B8D4C340E4;
-        Mon, 24 Jan 2022 21:19:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B927B8122A;
+        Mon, 24 Jan 2022 21:20:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97DDDC340E4;
+        Mon, 24 Jan 2022 21:20:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059190;
-        bh=ZraSDlyB3Ox8MuBaGkawHRM3GvAIGMwaK8tbx1y+SJk=;
+        s=korg; t=1643059242;
+        bh=jSECrfroaRL6gnqItNOsQdsp2IFqaB2YwhTsNYAREpQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k4qR++ms+xO0bCdK++jtlfM1FLYh5H/ofKXa42Wlt4KLyeEcLBzJmHsl7p+VjEzQ6
-         rWzvvGZMs3Nh47nFkZUdXrvSwonBB658/3NgYsZSdD017PlJSuqO8VOkudu0nvamCy
-         C1oAUYDQHIusYy1eU76Kq0gyVvfbZQmdxzL48c98=
+        b=FK+WdRPGTGbxXmsYUEMr4CGo1hbxvACrv9wdL7J2lY6KR4QnbFBSiyS4hctE3lxO7
+         rB5PXpFVyxXDqSY0JeJtP8Dx9P61EAISci+W21z9KfpiXawQ+bvX73MwLtpCWTeYXh
+         8vFmOhxgWmgIUNSYsvO57qXZHLfYoTlZHvhivRhc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "jason-jh.lin" <jason-jh.lin@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
+        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0533/1039] mailbox: fix gce_num of mt8192 driver data
-Date:   Mon, 24 Jan 2022 19:38:42 +0100
-Message-Id: <20220124184143.200649646@linuxfoundation.org>
+Subject: [PATCH 5.16 0517/1039] powerpc/xive: Add missing null check after calling kmalloc
+Date:   Mon, 24 Jan 2022 19:38:26 +0100
+Message-Id: <20220124184142.670010140@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,34 +48,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: jason-jh.lin <jason-jh.lin@mediatek.com>
+From: Ammar Faizi <ammarfaizi2@gmail.com>
 
-[ Upstream commit 35ca43710f792ce183312fdc7e4b2bb0b721a173 ]
+[ Upstream commit 18dbfcdedc802f9500b2c29794f22a31d27639c0 ]
 
-Because mt8192 only have 1 gce, the gce_num should be 1.
+Commit 930914b7d528fc ("powerpc/xive: Add a debugfs file to dump
+internal XIVE state") forgot to add a null check.
 
-Fixes: 85dfdbfc13ea ("mailbox: cmdq: add multi-gce clocks support for mt8195")
-Signed-off-by: jason-jh.lin <jason-jh.lin@mediatek.com>
-Reviewed-by: Matthias Brugger <matthias.bgg@gmail.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Add it.
+
+Fixes: 930914b7d528fc6b0249bffc00564100bcf6ef75 ("powerpc/xive: Add a debugfs file to dump internal XIVE state")
+Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
+Reviewed-by: Cédric Le Goater <clg@kaod.org>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211226135314.251221-1-ammar.faizi@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/mtk-cmdq-mailbox.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/sysdev/xive/spapr.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/mailbox/mtk-cmdq-mailbox.c b/drivers/mailbox/mtk-cmdq-mailbox.c
-index a8845b162dbfa..9aae13e9e050e 100644
---- a/drivers/mailbox/mtk-cmdq-mailbox.c
-+++ b/drivers/mailbox/mtk-cmdq-mailbox.c
-@@ -658,7 +658,7 @@ static const struct gce_plat gce_plat_v5 = {
- 	.thread_nr = 24,
- 	.shift = 3,
- 	.control_by_sw = true,
--	.gce_num = 2
-+	.gce_num = 1
- };
+diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
+index f143b6f111ac0..1179632560b8d 100644
+--- a/arch/powerpc/sysdev/xive/spapr.c
++++ b/arch/powerpc/sysdev/xive/spapr.c
+@@ -653,6 +653,9 @@ static int xive_spapr_debug_show(struct seq_file *m, void *private)
+ 	struct xive_irq_bitmap *xibm;
+ 	char *buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
  
- static const struct gce_plat gce_plat_v6 = {
++	if (!buf)
++		return -ENOMEM;
++
+ 	list_for_each_entry(xibm, &xive_irq_bitmaps, list) {
+ 		memset(buf, 0, PAGE_SIZE);
+ 		bitmap_print_to_pagebuf(true, buf, xibm->bitmap, xibm->count);
 -- 
 2.34.1
 
