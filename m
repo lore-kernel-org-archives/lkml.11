@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BC1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 707D3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835248AbiAXWfw (ORCPT
+        id S1835297AbiAXWgA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:35:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55864 "EHLO
+        Mon, 24 Jan 2022 17:36:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456718AbiAXVjy (ORCPT
+        with ESMTP id S1456712AbiAXVjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:39:54 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B17C0419CB;
-        Mon, 24 Jan 2022 12:26:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9232C0419C6;
+        Mon, 24 Jan 2022 12:26:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC4B76150D;
-        Mon, 24 Jan 2022 20:26:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94D08C340E5;
-        Mon, 24 Jan 2022 20:26:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46A1C614ED;
+        Mon, 24 Jan 2022 20:26:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13EC7C340E5;
+        Mon, 24 Jan 2022 20:26:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055999;
-        bh=Ps18ta2PSjn+ctkFGbm3u5EjvOxYZsiEunta9c6c+Vk=;
+        s=korg; t=1643055978;
+        bh=3Fu7+CpOM2je09bja5KFR0o3WRmslcWj3YAGQSVyIFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=shexEMPQcSnN0tzktB/Sg2EAvjMIG9P8Dv2p0uPqxmdXQqqbXIKcSji3l2IYblsWq
-         HJgV68nq7Kq0HwDPei6MKJX9ORj+OuJ0FoVJ4+k8NlWzzUwKkf+7VgOzETuo/NF/7q
-         32spHKY1np3m/5FKZ5lrNuFE4xguf3eFyB3MpdCA=
+        b=tznkrP8hLY2zu285JEZ6pvY3wqpbzPPRa2PEc4yWqRD5epXivgSjeuNmuzqagtcgg
+         jUcaQj1b/yZgIsg86zfeZJFnPguSen000hrH2ZUtfabGvS07wWrc7nDg/ze/5lMfCe
+         JejNfUcdXSg5/huP+VNhkMBVmu21pMA3OWLTI2IE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 337/846] net/mlx5e: Fix page DMA map/unmap attributes
-Date:   Mon, 24 Jan 2022 19:37:34 +0100
-Message-Id: <20220124184112.545502437@linuxfoundation.org>
+Subject: [PATCH 5.15 296/846] regulator: qcom-labibb: OCP interrupts are not a failure while disabled
+Date:   Mon, 24 Jan 2022 19:36:53 +0100
+Message-Id: <20220124184111.128184376@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,74 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aya Levin <ayal@nvidia.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 0b7cfa4082fbf550595bc0e40f05614bd83bf0cd ]
+[ Upstream commit d27bb69dc83f00f86a830298c967052cded6e784 ]
 
-Driver initiates DMA sync, hence it may skip CPU sync. Add
-DMA_ATTR_SKIP_CPU_SYNC as input attribute both to dma_map_page and
-dma_unmap_page to avoid redundant sync with the CPU.
-When forcing the device to work with SWIOTLB, the extra sync might cause
-data corruption. The driver unmaps the whole page while the hardware
-used just a part of the bounce buffer. So syncing overrides the entire
-page with bounce buffer that only partially contains real data.
+Receiving the Over-Current Protection interrupt while the regulator is
+disabled does not count as unhandled/failure (IRQ_NONE, or 0 as it were)
+but a "fake event", usually due to inrush as the is regulator about to
+be enabled.
 
-Fixes: bc77b240b3c5 ("net/mlx5e: Add fragmented memory support for RX multi packet WQE")
-Fixes: db05815b36cb ("net/mlx5e: Add XSK zero-copy support")
-Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Gal Pressman <gal@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+Fixes: 390af53e0411 ("regulator: qcom-labibb: Implement short-circuit and over-current IRQs")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Link: https://lore.kernel.org/r/20211224113450.107958-1-marijn.suijten@somainline.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c | 4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c       | 7 ++++---
- 2 files changed, 6 insertions(+), 5 deletions(-)
+ drivers/regulator/qcom-labibb-regulator.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
-index 7b562d2c8a196..279cd8f4e79f7 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/pool.c
-@@ -11,13 +11,13 @@ static int mlx5e_xsk_map_pool(struct mlx5e_priv *priv,
- {
- 	struct device *dev = mlx5_core_dma_dev(priv->mdev);
+diff --git a/drivers/regulator/qcom-labibb-regulator.c b/drivers/regulator/qcom-labibb-regulator.c
+index b3da0dc58782f..639b71eb41ffe 100644
+--- a/drivers/regulator/qcom-labibb-regulator.c
++++ b/drivers/regulator/qcom-labibb-regulator.c
+@@ -260,7 +260,7 @@ static irqreturn_t qcom_labibb_ocp_isr(int irq, void *chip)
  
--	return xsk_pool_dma_map(pool, dev, 0);
-+	return xsk_pool_dma_map(pool, dev, DMA_ATTR_SKIP_CPU_SYNC);
- }
+ 	/* If the regulator is not enabled, this is a fake event */
+ 	if (!ops->is_enabled(vreg->rdev))
+-		return 0;
++		return IRQ_HANDLED;
  
- static void mlx5e_xsk_unmap_pool(struct mlx5e_priv *priv,
- 				 struct xsk_buff_pool *pool)
- {
--	return xsk_pool_dma_unmap(pool, 0);
-+	return xsk_pool_dma_unmap(pool, DMA_ATTR_SKIP_CPU_SYNC);
- }
- 
- static int mlx5e_xsk_get_pools(struct mlx5e_xsk *xsk)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 29a6586ef28dc..0015545d5235b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -271,8 +271,8 @@ static inline int mlx5e_page_alloc_pool(struct mlx5e_rq *rq,
- 	if (unlikely(!dma_info->page))
- 		return -ENOMEM;
- 
--	dma_info->addr = dma_map_page(rq->pdev, dma_info->page, 0,
--				      PAGE_SIZE, rq->buff.map_dir);
-+	dma_info->addr = dma_map_page_attrs(rq->pdev, dma_info->page, 0, PAGE_SIZE,
-+					    rq->buff.map_dir, DMA_ATTR_SKIP_CPU_SYNC);
- 	if (unlikely(dma_mapping_error(rq->pdev, dma_info->addr))) {
- 		page_pool_recycle_direct(rq->page_pool, dma_info->page);
- 		dma_info->page = NULL;
-@@ -293,7 +293,8 @@ static inline int mlx5e_page_alloc(struct mlx5e_rq *rq,
- 
- void mlx5e_page_dma_unmap(struct mlx5e_rq *rq, struct mlx5e_dma_info *dma_info)
- {
--	dma_unmap_page(rq->pdev, dma_info->addr, PAGE_SIZE, rq->buff.map_dir);
-+	dma_unmap_page_attrs(rq->pdev, dma_info->addr, PAGE_SIZE, rq->buff.map_dir,
-+			     DMA_ATTR_SKIP_CPU_SYNC);
- }
- 
- void mlx5e_page_release_dynamic(struct mlx5e_rq *rq,
+ 	/* If we tried to recover for too many times it's not getting better */
+ 	if (vreg->ocp_irq_count > LABIBB_MAX_OCP_COUNT)
 -- 
 2.34.1
 
