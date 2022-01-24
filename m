@@ -2,96 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6156CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D229C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353100AbiAXUDw (ORCPT
+        id S1345717AbiAXUD6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:03:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36996 "EHLO
+        Mon, 24 Jan 2022 15:03:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37030 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356415AbiAXTqM (ORCPT
+        with ESMTP id S1356421AbiAXTqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:46:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E598B8121C;
-        Mon, 24 Jan 2022 19:46:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCB7EC340E7;
-        Mon, 24 Jan 2022 19:46:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643053567;
-        bh=gJlHbxnMW0wTSxm4hKs/P78n5KAVQuBy0pzkZMpkAGQ=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=pBLf/juVpsFO6ypTkWqRMy7awwXjZ8Rw3n3NDnpqdQKeMJ2cgvfQLL0GpUqvtulR+
-         bmo/qL875hJXqkr81U3qQrQyZ5F5D8Jyzdc5HuVrYZyuTlaU1tRRH075D6tlF9Z7yu
-         vsY/HEQSCUklTYdk89aYoyEc7/7AcqfhvgEJk6fBGMHQMkIkc3yUqVOreEUWcwq0+j
-         QJjAbkykYxXP2DL9/i1fPlNuezzba0ip2ANz3M3yC8Bc/07GKj4wGg9z5l+Fo9JiLZ
-         6rAjcIZjA9t0P2KKfQ5Ni3rLGfv9fm3mDEPQGkLcOzqJR2FtIeiFs+i2iVeep0n3+7
-         WBkVgCU05PHgw==
-Content-Type: text/plain; charset="utf-8"
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EC4DB8122A;
+        Mon, 24 Jan 2022 19:46:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FE1BC340E5;
+        Mon, 24 Jan 2022 19:46:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053569;
+        bh=CilhLBgCJlcnOoNau8LRQawIH8ihBF0Ww7tvfGee2IE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=eXTV7CBzCoErAJqo6OG23lobKpM1MafxaWHLujdKmyx6C0iSNUu1uT1J9it30XQfy
+         DfIUNQBdXi5J4DxwlcPsTNZ1d6+t6M+MQUbafsuW7PUMzgPt7/kwEB7AKdbH4Rd+lB
+         QAjy/s4g7WaMLg3YNjTkccJKIUFlPvTP1kzQ/YeA=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 076/563] media: em28xx: fix memory leak in em28xx_init_dev
+Date:   Mon, 24 Jan 2022 19:37:21 +0100
+Message-Id: <20220124184027.022405066@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220124162442.29497-3-tdas@codeaurora.org>
-References: <20220124162442.29497-1-tdas@codeaurora.org> <20220124162442.29497-3-tdas@codeaurora.org>
-Subject: Re: [PATCH v3 2/2] clk: qcom: lpass: Add support for LPASS clock controller for SC7280
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Rajendra Nayak <rnayak@codeaurora.org>,
-        linux-arm-msm@vger.kernel.org, linux-soc@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh@kernel.org, robh+dt@kernel.org,
-        Taniya Das <tdas@codeaurora.org>
-To:     Michael Turquette <mturquette@baylibre.com>,
-        Taniya Das <tdas@codeaurora.org>
-Date:   Mon, 24 Jan 2022 11:46:05 -0800
-User-Agent: alot/0.10
-Message-Id: <20220124194607.BCB7EC340E7@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Taniya Das (2022-01-24 08:24:42)
-> diff --git a/drivers/clk/qcom/lpasscorecc-sc7280.c b/drivers/clk/qcom/lpa=
-sscorecc-sc7280.c
-> new file mode 100644
-> index 000000000000..3ac62ea5767e
-> --- /dev/null
-> +++ b/drivers/clk/qcom/lpasscorecc-sc7280.c
-> @@ -0,0 +1,430 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) 2021, The Linux Foundation. All rights reserved.
-> + */
-> +
-> +#include <linux/clk-provider.h>
-> +#include <linux/err.h>
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/of.h>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-Is the of.h include used?
+[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
 
-> +#include <linux/pm_clock.h>
-> +#include <linux/pm_runtime.h>
-> +#include <linux/regmap.h>
-> +
-> +#include <dt-bindings/clock/qcom,lpasscorecc-sc7280.h>
-> +
-> +#include "clk-alpha-pll.h"
-> +#include "clk-branch.h"
-> +#include "clk-rcg.h"
-> +#include "clk-regmap.h"
-> +#include "clk-regmap-divider.h"
-> +#include "common.h"
-> +#include "gdsc.h"
-> +
-[...]
-> +
-> +static struct regmap_config lpass_core_cc_sc7280_regmap_config =3D {
-> +       .reg_bits =3D 32,
-> +       .reg_stride =3D 4,
-> +       .val_bits =3D 32,
-> +       .fast_io =3D true,
+In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
+to deallocate the media_dev allocated in the em28xx_media_device_init.
 
-What's the max_register? Please set it so that debugfs works.
+Fix this by adding em28xx_unregister_media_device to free media_dev.
+
+BTW, this patch is tested in my local syzkaller instance, and it can
+prevent the memory leak from occurring again.
+
+CC: Pavel Skripkin <paskripkin@gmail.com>
+Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index cf45cc566cbe2..87e375562dbb2 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -3575,8 +3575,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 
+ 	if (dev->is_audio_only) {
+ 		retval = em28xx_audio_setup(dev);
+-		if (retval)
+-			return -ENODEV;
++		if (retval) {
++			retval = -ENODEV;
++			goto err_deinit_media;
++		}
+ 		em28xx_init_extension(dev);
+ 
+ 		return 0;
+@@ -3595,7 +3597,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 		dev_err(&dev->intf->dev,
+ 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
+ 		       __func__, retval);
+-		return retval;
++		goto err_deinit_media;
+ 	}
+ 
+ 	/* register i2c bus 1 */
+@@ -3611,9 +3613,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 				"%s: em28xx_i2c_register bus 1 - error [%d]!\n",
+ 				__func__, retval);
+ 
+-			em28xx_i2c_unregister(dev, 0);
+-
+-			return retval;
++			goto err_unreg_i2c;
+ 		}
+ 	}
+ 
+@@ -3621,6 +3621,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 	em28xx_card_setup(dev);
+ 
+ 	return 0;
++
++err_unreg_i2c:
++	em28xx_i2c_unregister(dev, 0);
++err_deinit_media:
++	em28xx_unregister_media_device(dev);
++	return retval;
+ }
+ 
+ static int em28xx_duplicate_dev(struct em28xx *dev)
+-- 
+2.34.1
+
+
+
