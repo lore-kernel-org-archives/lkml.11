@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EA2FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 404F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377697AbiAXVTR (ORCPT
+        id S1376387AbiAXVTf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:19:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42638 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392244AbiAXUu4 (ORCPT
+        Mon, 24 Jan 2022 16:19:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392375AbiAXUvF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:50:56 -0500
+        Mon, 24 Jan 2022 15:51:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0E7C05432D;
+        Mon, 24 Jan 2022 11:58:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1972660B0B;
-        Mon, 24 Jan 2022 20:50:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D22F0C340E5;
-        Mon, 24 Jan 2022 20:50:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E218861028;
+        Mon, 24 Jan 2022 19:58:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B55FFC340E5;
+        Mon, 24 Jan 2022 19:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057455;
-        bh=qUzPwoD8luyL20rDQ9zTz7gFj1WnVztB4linAqs+gbM=;
+        s=korg; t=1643054308;
+        bh=ogkFxolfQWRQxJZn/Tdu72Ih6tdiWRo2xRIJQtxu78g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=spNLVKN8+7pkV/fBGCpjOO2GH/thD5O5MBfbhO1MtlG2s2jrjvDZt+AZwYDRxXTfl
-         PNSQTrHc5GbpeJF9vuUfraUcIIMcZME21zO0aUynude+l56OfAxhDQWvQN2IpD8DCw
-         Hys2U8lI+y8mb2xYO9pQmAHNF4L/f6kelOSrE2xA=
+        b=abD5uZA+mkgD4DhYARoDRt+1Zad14ECoS1kZWmrSl3yMShD3xU3sBpAaWRTA669J3
+         Vi2WljSFa7w1j7Iz2f3vSliPsjGy6jGfBRjE6jqQ7/nk38xVO2U8AWAuD+zej6eFA8
+         ZF1bCkdXfWxehqOCNLanKVxQDDEcvSpClz11tpr0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 817/846] dmaengine: at_xdmac: Print debug message after realeasing the lock
-Date:   Mon, 24 Jan 2022 19:45:34 +0100
-Message-Id: <20220124184129.089588433@linuxfoundation.org>
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 346/563] thunderbolt: Runtime PM activate both ends of the device link
+Date:   Mon, 24 Jan 2022 19:41:51 +0100
+Message-Id: <20220124184036.381000032@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,38 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-commit 5edc24ac876a928f36f407a0fcdb33b94a3a210f upstream.
+[ Upstream commit f3380cac0c0b3a6f49ab161e2a057c363962f48d ]
 
-It is desirable to do the prints without the lock held if possible, so
-move the print after the lock is released.
+If protocol tunnels are already up when the driver is loaded, for
+instance if the boot firmware implements connection manager of its own,
+runtime PM reference count of the consumer devices behind the tunnel
+might have been increased already before the device link is created but
+the supplier device runtime PM reference count is not. This leads to a
+situation where the supplier (the Thunderbolt driver) can runtime
+suspend even if it should not because the corresponding protocol tunnel
+needs to be up causing the devices to be removed from the corresponding
+native bus.
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-4-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Prevent this from happening by making both sides of the link runtime PM
+active briefly. The pm_runtime_put() for the consumer (PCIe
+root/downstream port, xHCI) then allows it to runtime suspend again but
+keeps the supplier runtime resumed the whole time it is runtime active.
+
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/at_xdmac.c |    6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/thunderbolt/acpi.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -473,10 +473,12 @@ static dma_cookie_t at_xdmac_tx_submit(s
- 	spin_lock_irqsave(&atchan->lock, irqflags);
- 	cookie = dma_cookie_assign(tx);
+diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
+index b5442f979b4d0..6355fdf7d71a3 100644
+--- a/drivers/thunderbolt/acpi.c
++++ b/drivers/thunderbolt/acpi.c
+@@ -7,6 +7,7 @@
+  */
  
--	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
--		 __func__, atchan, desc);
- 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
- 	spin_unlock_irqrestore(&atchan->lock, irqflags);
-+
-+	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
-+		 __func__, atchan, desc);
-+
- 	return cookie;
- }
+ #include <linux/acpi.h>
++#include <linux/pm_runtime.h>
  
+ #include "tb.h"
+ 
+@@ -74,8 +75,18 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
+ 		 pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))) {
+ 		const struct device_link *link;
+ 
++		/*
++		 * Make them both active first to make sure the NHI does
++		 * not runtime suspend before the consumer. The
++		 * pm_runtime_put() below then allows the consumer to
++		 * runtime suspend again (which then allows NHI runtime
++		 * suspend too now that the device link is established).
++		 */
++		pm_runtime_get_sync(&pdev->dev);
++
+ 		link = device_link_add(&pdev->dev, &nhi->pdev->dev,
+ 				       DL_FLAG_AUTOREMOVE_SUPPLIER |
++				       DL_FLAG_RPM_ACTIVE |
+ 				       DL_FLAG_PM_RUNTIME);
+ 		if (link) {
+ 			dev_dbg(&nhi->pdev->dev, "created link from %s\n",
+@@ -84,6 +95,8 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
+ 			dev_warn(&nhi->pdev->dev, "device link creation from %s failed\n",
+ 				 dev_name(&pdev->dev));
+ 		}
++
++		pm_runtime_put(&pdev->dev);
+ 	}
+ 
+ out_put:
+-- 
+2.34.1
+
 
 
