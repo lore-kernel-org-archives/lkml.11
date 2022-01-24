@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 333CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5F64C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382000AbiAXW5Z (ORCPT
+        id S1841069AbiAXW5b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:57:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59094 "EHLO
+        Mon, 24 Jan 2022 17:57:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458137AbiAXVzI (ORCPT
+        with ESMTP id S1577000AbiAXV5F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF70C07E2AE;
-        Mon, 24 Jan 2022 12:37:42 -0800 (PST)
+        Mon, 24 Jan 2022 16:57:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14005C09426C;
+        Mon, 24 Jan 2022 12:38:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA5376154F;
-        Mon, 24 Jan 2022 20:37:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A52AC340E5;
-        Mon, 24 Jan 2022 20:37:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF3E9B81218;
+        Mon, 24 Jan 2022 20:38:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C0C0C340E5;
+        Mon, 24 Jan 2022 20:38:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056661;
-        bh=LSCFijlqwDVH3dQEdv7hVOW/AfBT0FrxVmDG8/uNt/8=;
+        s=korg; t=1643056715;
+        bh=sUaXfDJ9Sn5dKwepOQtj6siD2em1urOqxKMAIkUatHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yOtVvsXFkBlXMTQS6hX6Pm/wENA3aLGJlq9Ves5YBhfcjTbdYw6Ld/GnGKtgLmSpi
-         mUSYCB38X+R8dswh2tyvsmdJtLcHQGhc3gc99pEqX3AiXhp7pokYe/lk2vRnLcMOAN
-         MVyqRJQEYBvc3Ba2kQLbyJ3P1jMpbF+90vqAmSOI=
+        b=K5P6qHCm77e5PcSVKe91pZRDTsIVk1UX3rIUlQSaMGrY+Vzqg9s2plJZmyHGlphMt
+         F5lm8GaLzXoJGJARlLPyYY+qZ5M5Qfua2uTnr316Pdr/XCkBxNNxRc8u2nZ0WcsyJV
+         Me0DHZvmTFyBRC6CkCTe+ajNPFmVYN9lVg40C7c4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jingwen Chen <Jingwen.Chen2@amd.com>,
-        Horace Chen <horace.chen@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 558/846] drm/amd/amdgpu: fix gmc bo pin count leak in SRIOV
-Date:   Mon, 24 Jan 2022 19:41:15 +0100
-Message-Id: <20220124184120.277980117@linuxfoundation.org>
+Subject: [PATCH 5.15 543/846] x86/mce: Mark mce_panic() noinstr
+Date:   Mon, 24 Jan 2022 19:41:00 +0100
+Message-Id: <20220124184119.759494910@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,66 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jingwen Chen <Jingwen.Chen2@amd.com>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 948e7ce01413b71395723aaf846015062aea3a43 ]
+[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
 
-[Why]
-gmc bo will be pinned during loading amdgpu and reset in SRIOV while
-only unpinned in unload amdgpu
+And allow instrumentation inside it because it does calls to other
+facilities which will not be tagged noinstr.
 
-[How]
-add amdgpu_in_reset and sriov judgement to skip pin bo
+Fixes
 
-v2: fix wrong judgement
+  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
 
-Signed-off-by: Jingwen Chen <Jingwen.Chen2@amd.com>
-Reviewed-by: Horace Chen <horace.chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c | 4 ++++
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c  | 4 ++++
- 2 files changed, 8 insertions(+)
+ arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-index e47104a1f5596..3c01be6610144 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -1021,10 +1021,14 @@ static int gmc_v10_0_gart_enable(struct amdgpu_device *adev)
- 		return -EINVAL;
- 	}
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index c8d121085c8f7..c5a1022463bcc 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -295,11 +295,17 @@ static void wait_for_panic(void)
+ 	panic("Panicing machine check CPU died");
+ }
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
+-static void mce_panic(const char *msg, struct mce *final, char *exp)
++static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
+ {
+-	int apei_err = 0;
+ 	struct llist_node *pending;
+ 	struct mce_evt_llist *l;
++	int apei_err = 0;
 +
- 	r = amdgpu_gart_table_vram_pin(adev);
- 	if (r)
- 		return r;
++	/*
++	 * Allow instrumentation around external facilities usage. Not that it
++	 * matters a whole lot since the machine is going to panic anyway.
++	 */
++	instrumentation_begin();
  
-+skip_pin_bo:
- 	r = adev->gfxhub.funcs->gart_enable(adev);
- 	if (r)
- 		return r;
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index 5551359d5dfdc..b5d93247237b1 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1708,10 +1708,14 @@ static int gmc_v9_0_gart_enable(struct amdgpu_device *adev)
- 		return -EINVAL;
+ 	if (!fake_panic) {
+ 		/*
+@@ -314,7 +320,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
+ 	} else {
+ 		/* Don't log too much for fake panic */
+ 		if (atomic_inc_return(&mce_fake_panicked) > 1)
+-			return;
++			goto out;
  	}
- 
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
+ 	pending = mce_gen_pool_prepare_records();
+ 	/* First print corrected ones that are still unlogged */
+@@ -352,6 +358,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
+ 		panic(msg);
+ 	} else
+ 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
 +
- 	r = amdgpu_gart_table_vram_pin(adev);
- 	if (r)
- 		return r;
++out:
++	instrumentation_end();
+ }
  
-+skip_pin_bo:
- 	r = adev->gfxhub.funcs->gart_enable(adev);
- 	if (r)
- 		return r;
+ /* Support code for software error injection */
 -- 
 2.34.1
 
