@@ -2,111 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C596EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 439FCC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1312378AbiAYCnN (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:43:13 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:55180 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387209AbiAXUgj (ORCPT
+        id S233707AbiAYCn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:43:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387518AbiAXUgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:39 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 1B5011C0B76; Mon, 24 Jan 2022 21:36:38 +0100 (CET)
-Date:   Mon, 24 Jan 2022 21:36:37 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: Re: [PATCH 4.19 026/239] f2fs: fix to do sanity check in is_alive()
-Message-ID: <20220124203637.GA19321@duo.ucw.cz>
-References: <20220124183943.102762895@linuxfoundation.org>
- <20220124183943.957395248@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:36:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398A6C038AF5;
+        Mon, 24 Jan 2022 11:50:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEC6760A28;
+        Mon, 24 Jan 2022 19:50:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9462C340E7;
+        Mon, 24 Jan 2022 19:50:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053801;
+        bh=7Gn/6wz8LMSKYolBvf8PNaQwMzarikHb90OTHazhURw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MqoJ/xQmo/QPmoh1g4Be8RQ/SiPYLl1U/XkUVvjoMtySUuhZzlPZjlg4qXu3yteb5
+         A+hbJag3OuslgvnJ9oiko2t+SBRSah8vU09h+hZWXHPET/pV79G/OC9GEP7mJ16Wg6
+         Pu8fD6boxtq1vpdGyZqDDMJcplVDNjCD98y3hXho=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Quentin Perret <qperret@google.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 139/563] arm64: lib: Annotate {clear, copy}_page() as position-independent
+Date:   Mon, 24 Jan 2022 19:38:24 +0100
+Message-Id: <20220124184029.214159326@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="9jxsPFA5p3P2qPhR"
-Content-Disposition: inline
-In-Reply-To: <20220124183943.957395248@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Will Deacon <will@kernel.org>
 
---9jxsPFA5p3P2qPhR
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit 8d9902055c57548bb342dc3ca78caa21e9643024 ]
 
-Hi!
+clear_page() and copy_page() are suitable for use outside of the kernel
+address space, so annotate them as position-independent code.
 
-> From: Chao Yu <chao@kernel.org>
->=20
-> commit 77900c45ee5cd5da63bd4d818a41dbdf367e81cd upstream.
->=20
-> In fuzzed image, SSA table may indicate that a data block belongs to
-> invalid node, which node ID is out-of-range (0, 1, 2 or max_nid), in
-> order to avoid migrating inconsistent data in such corrupted image,
-> let's do sanity check anyway before data block migration.
+Signed-off-by: Will Deacon <will@kernel.org>
+Signed-off-by: Quentin Perret <qperret@google.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/20210319100146.1149909-2-qperret@google.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ arch/arm64/lib/clear_page.S | 4 ++--
+ arch/arm64/lib/copy_page.S  | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-This may be good idea, but AFAICT this leads to leak of page reference.
+diff --git a/arch/arm64/lib/clear_page.S b/arch/arm64/lib/clear_page.S
+index 073acbf02a7c8..b84b179edba3a 100644
+--- a/arch/arm64/lib/clear_page.S
++++ b/arch/arm64/lib/clear_page.S
+@@ -14,7 +14,7 @@
+  * Parameters:
+  *	x0 - dest
+  */
+-SYM_FUNC_START(clear_page)
++SYM_FUNC_START_PI(clear_page)
+ 	mrs	x1, dczid_el0
+ 	and	w1, w1, #0xf
+ 	mov	x2, #4
+@@ -25,5 +25,5 @@ SYM_FUNC_START(clear_page)
+ 	tst	x0, #(PAGE_SIZE - 1)
+ 	b.ne	1b
+ 	ret
+-SYM_FUNC_END(clear_page)
++SYM_FUNC_END_PI(clear_page)
+ EXPORT_SYMBOL(clear_page)
+diff --git a/arch/arm64/lib/copy_page.S b/arch/arm64/lib/copy_page.S
+index e7a793961408d..29144f4cd4492 100644
+--- a/arch/arm64/lib/copy_page.S
++++ b/arch/arm64/lib/copy_page.S
+@@ -17,7 +17,7 @@
+  *	x0 - dest
+  *	x1 - src
+  */
+-SYM_FUNC_START(copy_page)
++SYM_FUNC_START_PI(copy_page)
+ alternative_if ARM64_HAS_NO_HW_PREFETCH
+ 	// Prefetch three cache lines ahead.
+ 	prfm	pldl1strm, [x1, #128]
+@@ -75,5 +75,5 @@ alternative_else_nop_endif
+ 	stnp	x16, x17, [x0, #112 - 256]
+ 
+ 	ret
+-SYM_FUNC_END(copy_page)
++SYM_FUNC_END_PI(copy_page)
+ EXPORT_SYMBOL(copy_page)
+-- 
+2.34.1
 
-> +++ b/fs/f2fs/gc.c
-> @@ -589,6 +589,9 @@ static bool is_alive(struct f2fs_sb_info
->  		set_sbi_flag(sbi, SBI_NEED_FSCK);
->  	}
-> =20
-> +	if (f2fs_check_nid_range(sbi, dni->ino))
-> +		return false;
-> +
->  	*nofs =3D ofs_of_node(node_page);
->  	source_blkaddr =3D datablock_addr(NULL, node_page, ofs_in_node);
->  	f2fs_put_page(node_page, 1);
-
-AFAICT f2fs_put_page() needs to be done in the error path, too.
-
-(Problem seems to exist in mainline, too).
-
-Something like this?
-
-Signed-off-by: Pavel Machek <pavel@denx.de>
-
-Best regards,
-								Pavel
-
-diff --git a/fs/f2fs/gc.c b/fs/f2fs/gc.c
-index ee308a8de432..e020804f7b07 100644
---- a/fs/f2fs/gc.c
-+++ b/fs/f2fs/gc.c
-@@ -1038,8 +1038,10 @@ static bool is_alive(struct f2fs_sb_info *sbi, struc=
-t f2fs_summary *sum,
- 		set_sbi_flag(sbi, SBI_NEED_FSCK);
- 	}
-=20
--	if (f2fs_check_nid_range(sbi, dni->ino))
-+	if (f2fs_check_nid_range(sbi, dni->ino)) {
-+		f2fs_put_page(node_page, 1);
- 		return false;
-+	}
-=20
- 	*nofs =3D ofs_of_node(node_page);
- 	source_blkaddr =3D data_blkaddr(NULL, node_page, ofs_in_node);
 
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---9jxsPFA5p3P2qPhR
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYe8N1QAKCRAw5/Bqldv6
-8iluAJ4pFchtjQXsPSylkcIofl1xlZpjtACguBTQY+IRb8eImaAncSwdHnIHml8=
-=qPFd
------END PGP SIGNATURE-----
-
---9jxsPFA5p3P2qPhR--
