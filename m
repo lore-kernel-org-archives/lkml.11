@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 123BAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B83EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575797AbiAXVwc (ORCPT
+        id S1575781AbiAXVwa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450069AbiAXVTl (ORCPT
+        Mon, 24 Jan 2022 16:52:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37676 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450398AbiAXVU1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5478C06F8EF;
-        Mon, 24 Jan 2022 12:13:49 -0800 (PST)
+        Mon, 24 Jan 2022 16:20:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6CBEFB810BD;
-        Mon, 24 Jan 2022 20:13:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7917FC340E5;
-        Mon, 24 Jan 2022 20:13:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9D2C9B81057;
+        Mon, 24 Jan 2022 21:20:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC27C340E4;
+        Mon, 24 Jan 2022 21:20:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055227;
-        bh=olKOp1fP6GqohxFV6u2yGgn8fWqUo03Gd4u6tv86pMY=;
+        s=korg; t=1643059224;
+        bh=dlPDKHqCSXfPjaKZ96hJwLoit81JvMZoIoPBWl/uRsA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q5sAYIY26DEBSxvo4CH5Ld/nxcCrezuRdPjW4Cwg4uURhqTm+l3sqKg1q4Ns7vg4A
-         V9ci+2UJHlb9iy4iuTSEFfaoZOAFWQ+yAcGUfNbi7gUKulhFvB03ax9bKVbw6RebcW
-         Fo5zOAtuU5I3lvo2vPKEJWcD4LD2cpZrBanf30ko=
+        b=m9A+tYIRIcKLlYBxb3oYISv8eRyqaDPH8/Yfp1bn/3hmYhU4DvSsrlOVZwc3qR82U
+         ByuA5FM8xlaetEGIU7Erbr/BTqJMbjkYs3r/zr1Ei3sn5to3dza3Yg2ZCcMw95BTAN
+         ilfK1iHaaXNnVxxbCVbuJefU9qdeyu7D5xmA3PvA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 039/846] ksmbd: add reserved room in ipc request/response
-Date:   Mon, 24 Jan 2022 19:32:36 +0100
-Message-Id: <20220124184102.289979131@linuxfoundation.org>
+        stable@vger.kernel.org, Archie Pusaka <apusaka@chromium.org>,
+        Sonny Sasaka <sonnysasaka@chromium.org>,
+        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0543/1039] Bluetooth: Fix removing adv when processing cmd complete
+Date:   Mon, 24 Jan 2022 19:38:52 +0100
+Message-Id: <20220124184143.528865585@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,104 +48,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Archie Pusaka <apusaka@chromium.org>
 
-commit 41dbda16a0902798e732abc6599de256b9dc3b27 upstream.
+[ Upstream commit 2128939fe2e771645dd88e1938c27fdf96bd1cd0 ]
 
-Whenever new parameter is added to smb configuration, It is possible
-to break the execution of the IPC daemon by mismatch size of
-request/response. This patch tries to reserve space in ipc request/response
-in advance to prevent that.
+If we remove one instance of adv using Set Extended Adv Enable, there
+is a possibility of issue occurs when processing the Command Complete
+event. Especially, the adv_info might not be found since we already
+remove it in hci_req_clear_adv_instance() -> hci_remove_adv_instance().
+If that's the case, we will mistakenly proceed to remove all adv
+instances instead of just one single instance.
 
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This patch fixes the issue by checking the content of the HCI command
+instead of checking whether the adv_info is found.
+
+Signed-off-by: Archie Pusaka <apusaka@chromium.org>
+Reviewed-by: Sonny Sasaka <sonnysasaka@chromium.org>
+Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/ksmbd_netlink.h |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ net/bluetooth/hci_event.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
---- a/fs/ksmbd/ksmbd_netlink.h
-+++ b/fs/ksmbd/ksmbd_netlink.h
-@@ -104,6 +104,7 @@ struct ksmbd_startup_request {
- 					 */
- 	__u32	sub_auth[3];		/* Subauth value for Security ID */
- 	__u32	smb2_max_credits;	/* MAX credits */
-+	__u32	reserved[128];		/* Reserved room */
- 	__u32	ifc_list_sz;		/* interfaces list size */
- 	__s8	____payload[];
- };
-@@ -114,7 +115,7 @@ struct ksmbd_startup_request {
-  * IPC request to shutdown ksmbd server.
-  */
- struct ksmbd_shutdown_request {
--	__s32	reserved;
-+	__s32	reserved[16];
- };
- 
- /*
-@@ -123,6 +124,7 @@ struct ksmbd_shutdown_request {
- struct ksmbd_login_request {
- 	__u32	handle;
- 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ]; /* user account name */
-+	__u32	reserved[16];				/* Reserved room */
- };
- 
- /*
-@@ -136,6 +138,7 @@ struct ksmbd_login_response {
- 	__u16	status;
- 	__u16	hash_sz;			/* hash size */
- 	__s8	hash[KSMBD_REQ_MAX_HASH_SZ];	/* password hash */
-+	__u32	reserved[16];			/* Reserved room */
- };
- 
- /*
-@@ -144,6 +147,7 @@ struct ksmbd_login_response {
- struct ksmbd_share_config_request {
- 	__u32	handle;
- 	__s8	share_name[KSMBD_REQ_MAX_SHARE_NAME]; /* share name */
-+	__u32	reserved[16];		/* Reserved room */
- };
- 
- /*
-@@ -158,6 +162,7 @@ struct ksmbd_share_config_response {
- 	__u16	force_directory_mode;
- 	__u16	force_uid;
- 	__u16	force_gid;
-+	__u32	reserved[128];		/* Reserved room */
- 	__u32	veto_list_sz;
- 	__s8	____payload[];
- };
-@@ -188,6 +193,7 @@ struct ksmbd_tree_connect_request {
- 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ];
- 	__s8	share[KSMBD_REQ_MAX_SHARE_NAME];
- 	__s8	peer_addr[64];
-+	__u32	reserved[16];		/* Reserved room */
- };
- 
- /*
-@@ -197,6 +203,7 @@ struct ksmbd_tree_connect_response {
- 	__u32	handle;
- 	__u16	status;
- 	__u16	connection_flags;
-+	__u32	reserved[16];		/* Reserved room */
- };
- 
- /*
-@@ -205,6 +212,7 @@ struct ksmbd_tree_connect_response {
- struct ksmbd_tree_disconnect_request {
- 	__u64	session_id;	/* session id */
- 	__u64	connect_id;	/* tree connection id */
-+	__u32	reserved[16];	/* Reserved room */
- };
- 
- /*
-@@ -213,6 +221,7 @@ struct ksmbd_tree_disconnect_request {
- struct ksmbd_logout_request {
- 	__s8	account[KSMBD_REQ_MAX_ACCOUNT_NAME_SZ]; /* user account name */
- 	__u32	account_flags;
-+	__u32	reserved[16];				/* Reserved room */
- };
- 
- /*
+diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
+index 6eba439487749..8882c6dfb48f4 100644
+--- a/net/bluetooth/hci_event.c
++++ b/net/bluetooth/hci_event.c
+@@ -1326,8 +1326,10 @@ static void hci_cc_le_set_ext_adv_enable(struct hci_dev *hdev,
+ 					   &conn->le_conn_timeout,
+ 					   conn->conn_timeout);
+ 	} else {
+-		if (adv) {
+-			adv->enabled = false;
++		if (cp->num_of_sets) {
++			if (adv)
++				adv->enabled = false;
++
+ 			/* If just one instance was disabled check if there are
+ 			 * any other instance enabled before clearing HCI_LE_ADV
+ 			 */
+-- 
+2.34.1
+
 
 
