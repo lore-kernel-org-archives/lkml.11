@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B628C35273
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 967DCC4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360464AbiAXXgt (ORCPT
+        id S1386359AbiAXXhW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:36:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44796 "EHLO
+        Mon, 24 Jan 2022 18:37:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839748AbiAXWvx (ORCPT
+        with ESMTP id S1382592AbiAXW4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:51:53 -0500
+        Mon, 24 Jan 2022 17:56:03 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9396C09D9F7;
-        Mon, 24 Jan 2022 13:08:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AF1C055AA2;
+        Mon, 24 Jan 2022 13:10:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71B50B81057;
-        Mon, 24 Jan 2022 21:08:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1ECFC340E5;
-        Mon, 24 Jan 2022 21:07:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 187BBB80CCF;
+        Mon, 24 Jan 2022 21:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F544C340E5;
+        Mon, 24 Jan 2022 21:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058479;
-        bh=485Pel/umrmGTI7pbf0TizhUtAcoT/WJdPbsQcA5Gb0=;
+        s=korg; t=1643058642;
+        bh=dK3hIHSJOFGdVBAyhBXTzS2yjHybOl79EpD320zhCR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=viZIaBjaN+YzeMo/jKDS89p2LZG23lpMRVS/nn9k4XoShFJDDnatlkTlDPCgL6gsF
-         qYrLWJLRpqGKxY7YGEjHRsKm6uZhLe3mvoJYbzlU5ibqo/UP2nL327ascOqDJaEZMO
-         /Y7/dnw3Oi1QvvSc2Z+Tm3vNdvMXBzzsvFgpAFCE=
+        b=K7h8D2FQP9GbQ4zW8Jf1nudySIkIJNUv2KCD9fnwMiCHin/UydFHqIehuE+QUYmGe
+         Ihlm19hn9QYeossWXY+csriTUefqBa810pDGi1R3DcFAGFM59R7IBiS0i8n7Rjd+HY
+         ITj5EM4vlYQFwtRqZjXxp/U0Qf2u8kdGf+Odoz3o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Anders Roxell <anders.roxell@linaro.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0269/1039] selftests: clone3: clone3: add case CLONE3_ARGS_NO_TEST
-Date:   Mon, 24 Jan 2022 19:34:18 +0100
-Message-Id: <20220124184134.343027218@linuxfoundation.org>
+Subject: [PATCH 5.16 0355/1039] crypto: octeontx2 - prevent underflow in get_cores_bmap()
+Date:   Mon, 24 Jan 2022 19:35:44 +0100
+Message-Id: <20220124184137.215571101@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,45 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Anders Roxell <anders.roxell@linaro.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit a531b0c23c0fc68ad758cc31a74cf612a4dafeb0 ]
+[ Upstream commit 10371b6212bb682f13247733d6b76b91b2b80f9a ]
 
-Building selftests/clone3 with clang warns about enumeration not handled
-in switch case:
+If we're going to cap "eng_grp->g->engs_num" upper bounds then we should
+cap the lower bounds as well.
 
-clone3.c:54:10: warning: enumeration value 'CLONE3_ARGS_NO_TEST' not handled in switch [-Wswitch]
-        switch (test_mode) {
-                ^
-
-Add the missing switch case with a comment.
-
-Fixes: 17a810699c18 ("selftests: add tests for clone3()")
-Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: 43ac0b824f1c ("crypto: octeontx2 - load microcode and create engine groups")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/clone3/clone3.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/clone3/clone3.c b/tools/testing/selftests/clone3/clone3.c
-index 42be3b9258301..076cf4325f783 100644
---- a/tools/testing/selftests/clone3/clone3.c
-+++ b/tools/testing/selftests/clone3/clone3.c
-@@ -52,6 +52,12 @@ static int call_clone3(uint64_t flags, size_t size, enum test_mode test_mode)
- 		size = sizeof(struct __clone_args);
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+index dff34b3ec09e1..7c1b92aaab398 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
+@@ -29,7 +29,8 @@ static struct otx2_cpt_bitmap get_cores_bmap(struct device *dev,
+ 	bool found = false;
+ 	int i;
  
- 	switch (test_mode) {
-+	case CLONE3_ARGS_NO_TEST:
-+		/*
-+		 * Uses default 'flags' and 'SIGCHLD'
-+		 * assignment.
-+		 */
-+		break;
- 	case CLONE3_ARGS_ALL_0:
- 		args.flags = 0;
- 		args.exit_signal = 0;
+-	if (eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
++	if (eng_grp->g->engs_num < 0 ||
++	    eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
+ 		dev_err(dev, "unsupported number of engines %d on octeontx2\n",
+ 			eng_grp->g->engs_num);
+ 		return bmap;
 -- 
 2.34.1
 
