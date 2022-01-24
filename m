@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3ECDC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A772C4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413210AbiAYAih (ORCPT
+        id S3413115AbiAYAi1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:38:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57816 "EHLO
+        Mon, 24 Jan 2022 19:38:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2364657AbiAXXsq (ORCPT
+        with ESMTP id S1454114AbiAXVbt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:48:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A18C8C0419C3;
-        Mon, 24 Jan 2022 13:43:52 -0800 (PST)
+        Mon, 24 Jan 2022 16:31:49 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F452C07595A;
+        Mon, 24 Jan 2022 12:21:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F2406150C;
-        Mon, 24 Jan 2022 21:43:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E9E8C340E4;
-        Mon, 24 Jan 2022 21:43:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3857EB8119E;
+        Mon, 24 Jan 2022 20:21:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B99FC340E5;
+        Mon, 24 Jan 2022 20:21:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060631;
-        bh=CebMge8ZokDceHnQirwT/xJla2PRMXWsgU00AcpgTGk=;
+        s=korg; t=1643055662;
+        bh=U94C906NVzu+fIoK8RoHp3J6s382LtXBfWhOw9c3lbA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qvtm+dGydx3j/ulWAcEoK0XwN+Q6aqBUwniOFcPPyM91r3cxBS0AMJKlRHd8h96Vp
-         tDNVFJzeJCWPAcu68l5jdIhjPbvirMPB6qtr+VVMKZL+u6bJHbH/OSjr9i+OwDKe+o
-         yw8fj/ftf5vhsRXOfSi0oSpPzv+IKfzT2qvkNoKQ=
+        b=nLLvYsFUg2F/dC0YDOqSfHf5I3UZz09pc3HqqiBV+dL7XusvvpT+Tsgb8AjDzFCLc
+         gXLQeeWJ+LKoPQYcG/iKyOWulO6ei2c3hVhq+DybnV+7LXuQtJVc5IkEoscJlJlH0O
+         GefzEOU+X0aoeP1AzpmuAYzB9m6a7K/FPeD+BkFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Matt Johnston <matt@codeconstruct.com.au>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.16 0979/1039] mctp: test: zero out sockaddr
-Date:   Mon, 24 Jan 2022 19:46:08 +0100
-Message-Id: <20220124184158.194479211@linuxfoundation.org>
+        stable@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 181/846] ACPI: EC: Rework flushing of EC work while suspended to idle
+Date:   Mon, 24 Jan 2022 19:34:58 +0100
+Message-Id: <20220124184107.226676200@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,31 +50,218 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matt Johnston <matt@codeconstruct.com.au>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-commit 284a4d94e8e74fbd731ee67e29196656ca823423 upstream.
+[ Upstream commit 4a9af6cac050dce2e895ec3205c4615383ad9112 ]
 
-MCTP now requires that padding bytes are zero.
+The flushing of pending work in the EC driver uses drain_workqueue()
+to flush the event handling work that can requeue itself via
+advance_transaction(), but this is problematic, because that
+work may also be requeued from the query workqueue.
 
-Signed-off-by: Matt Johnston <matt@codeconstruct.com.au>
-Fixes: 1e4b50f06d97 ("mctp: handle the struct sockaddr_mctp padding fields")
-Link: https://lore.kernel.org/r/20220110021806.2343023-1-matt@codeconstruct.com.au
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Namely, if an EC transaction is carried out during the execution of
+a query handler, it involves calling advance_transaction() which
+may queue up the event handling work again.  This causes the kernel
+to complain about attempts to add a work item to the EC event
+workqueue while it is being drained and worst-case it may cause a
+valid event to be skipped.
+
+To avoid this problem, introduce two new counters, events_in_progress
+and queries_in_progress, incremented when a work item is queued on
+the event workqueue or the query workqueue, respectively, and
+decremented at the end of the corresponding work function, and make
+acpi_ec_dispatch_gpe() the workqueues in a loop until the both of
+these counters are zero (or system wakeup is pending) instead of
+calling acpi_ec_flush_work().
+
+At the same time, change __acpi_ec_flush_work() to call
+flush_workqueue() instead of drain_workqueue() to flush the event
+workqueue.
+
+While at it, use the observation that the work item queued in
+acpi_ec_query() cannot be pending at that time, because it is used
+only once, to simplify the code in there.
+
+Additionally, clean up a comment in acpi_ec_query() and adjust white
+space in acpi_ec_event_processor().
+
+Fixes: f0ac20c3f613 ("ACPI: EC: Fix flushing of pending work")
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/mctp/test/route-test.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/ec.c       | 57 +++++++++++++++++++++++++++++++----------
+ drivers/acpi/internal.h |  2 ++
+ 2 files changed, 45 insertions(+), 14 deletions(-)
 
---- a/net/mctp/test/route-test.c
-+++ b/net/mctp/test/route-test.c
-@@ -285,7 +285,7 @@ static void __mctp_route_test_init(struc
- 				   struct mctp_test_route **rtp,
- 				   struct socket **sockp)
+diff --git a/drivers/acpi/ec.c b/drivers/acpi/ec.c
+index e629e891d1bb3..9b859ff976e89 100644
+--- a/drivers/acpi/ec.c
++++ b/drivers/acpi/ec.c
+@@ -166,6 +166,7 @@ struct acpi_ec_query {
+ 	struct transaction transaction;
+ 	struct work_struct work;
+ 	struct acpi_ec_query_handler *handler;
++	struct acpi_ec *ec;
+ };
+ 
+ static int acpi_ec_query(struct acpi_ec *ec, u8 *data);
+@@ -452,6 +453,7 @@ static void acpi_ec_submit_query(struct acpi_ec *ec)
+ 		ec_dbg_evt("Command(%s) submitted/blocked",
+ 			   acpi_ec_cmd_string(ACPI_EC_COMMAND_QUERY));
+ 		ec->nr_pending_queries++;
++		ec->events_in_progress++;
+ 		queue_work(ec_wq, &ec->work);
+ 	}
+ }
+@@ -518,7 +520,7 @@ static void acpi_ec_enable_event(struct acpi_ec *ec)
+ #ifdef CONFIG_PM_SLEEP
+ static void __acpi_ec_flush_work(void)
  {
--	struct sockaddr_mctp addr;
-+	struct sockaddr_mctp addr = {0};
- 	struct mctp_test_route *rt;
- 	struct mctp_test_dev *dev;
- 	struct socket *sock;
+-	drain_workqueue(ec_wq); /* flush ec->work */
++	flush_workqueue(ec_wq); /* flush ec->work */
+ 	flush_workqueue(ec_query_wq); /* flush queries */
+ }
+ 
+@@ -1103,7 +1105,7 @@ void acpi_ec_remove_query_handler(struct acpi_ec *ec, u8 query_bit)
+ }
+ EXPORT_SYMBOL_GPL(acpi_ec_remove_query_handler);
+ 
+-static struct acpi_ec_query *acpi_ec_create_query(u8 *pval)
++static struct acpi_ec_query *acpi_ec_create_query(struct acpi_ec *ec, u8 *pval)
+ {
+ 	struct acpi_ec_query *q;
+ 	struct transaction *t;
+@@ -1111,11 +1113,13 @@ static struct acpi_ec_query *acpi_ec_create_query(u8 *pval)
+ 	q = kzalloc(sizeof (struct acpi_ec_query), GFP_KERNEL);
+ 	if (!q)
+ 		return NULL;
++
+ 	INIT_WORK(&q->work, acpi_ec_event_processor);
+ 	t = &q->transaction;
+ 	t->command = ACPI_EC_COMMAND_QUERY;
+ 	t->rdata = pval;
+ 	t->rlen = 1;
++	q->ec = ec;
+ 	return q;
+ }
+ 
+@@ -1132,13 +1136,21 @@ static void acpi_ec_event_processor(struct work_struct *work)
+ {
+ 	struct acpi_ec_query *q = container_of(work, struct acpi_ec_query, work);
+ 	struct acpi_ec_query_handler *handler = q->handler;
++	struct acpi_ec *ec = q->ec;
+ 
+ 	ec_dbg_evt("Query(0x%02x) started", handler->query_bit);
++
+ 	if (handler->func)
+ 		handler->func(handler->data);
+ 	else if (handler->handle)
+ 		acpi_evaluate_object(handler->handle, NULL, NULL, NULL);
++
+ 	ec_dbg_evt("Query(0x%02x) stopped", handler->query_bit);
++
++	spin_lock_irq(&ec->lock);
++	ec->queries_in_progress--;
++	spin_unlock_irq(&ec->lock);
++
+ 	acpi_ec_delete_query(q);
+ }
+ 
+@@ -1148,7 +1160,7 @@ static int acpi_ec_query(struct acpi_ec *ec, u8 *data)
+ 	int result;
+ 	struct acpi_ec_query *q;
+ 
+-	q = acpi_ec_create_query(&value);
++	q = acpi_ec_create_query(ec, &value);
+ 	if (!q)
+ 		return -ENOMEM;
+ 
+@@ -1170,19 +1182,20 @@ static int acpi_ec_query(struct acpi_ec *ec, u8 *data)
+ 	}
+ 
+ 	/*
+-	 * It is reported that _Qxx are evaluated in a parallel way on
+-	 * Windows:
++	 * It is reported that _Qxx are evaluated in a parallel way on Windows:
+ 	 * https://bugzilla.kernel.org/show_bug.cgi?id=94411
+ 	 *
+-	 * Put this log entry before schedule_work() in order to make
+-	 * it appearing before any other log entries occurred during the
+-	 * work queue execution.
++	 * Put this log entry before queue_work() to make it appear in the log
++	 * before any other messages emitted during workqueue handling.
+ 	 */
+ 	ec_dbg_evt("Query(0x%02x) scheduled", value);
+-	if (!queue_work(ec_query_wq, &q->work)) {
+-		ec_dbg_evt("Query(0x%02x) overlapped", value);
+-		result = -EBUSY;
+-	}
++
++	spin_lock_irq(&ec->lock);
++
++	ec->queries_in_progress++;
++	queue_work(ec_query_wq, &q->work);
++
++	spin_unlock_irq(&ec->lock);
+ 
+ err_exit:
+ 	if (result)
+@@ -1240,6 +1253,10 @@ static void acpi_ec_event_handler(struct work_struct *work)
+ 	ec_dbg_evt("Event stopped");
+ 
+ 	acpi_ec_check_event(ec);
++
++	spin_lock_irqsave(&ec->lock, flags);
++	ec->events_in_progress--;
++	spin_unlock_irqrestore(&ec->lock, flags);
+ }
+ 
+ static void acpi_ec_handle_interrupt(struct acpi_ec *ec)
+@@ -2021,6 +2038,7 @@ void acpi_ec_set_gpe_wake_mask(u8 action)
+ 
+ bool acpi_ec_dispatch_gpe(void)
+ {
++	bool work_in_progress;
+ 	u32 ret;
+ 
+ 	if (!first_ec)
+@@ -2041,8 +2059,19 @@ bool acpi_ec_dispatch_gpe(void)
+ 	if (ret == ACPI_INTERRUPT_HANDLED)
+ 		pm_pr_dbg("ACPI EC GPE dispatched\n");
+ 
+-	/* Flush the event and query workqueues. */
+-	acpi_ec_flush_work();
++	/* Drain EC work. */
++	do {
++		acpi_ec_flush_work();
++
++		pm_pr_dbg("ACPI EC work flushed\n");
++
++		spin_lock_irq(&first_ec->lock);
++
++		work_in_progress = first_ec->events_in_progress +
++			first_ec->queries_in_progress > 0;
++
++		spin_unlock_irq(&first_ec->lock);
++	} while (work_in_progress && !pm_wakeup_pending());
+ 
+ 	return false;
+ }
+diff --git a/drivers/acpi/internal.h b/drivers/acpi/internal.h
+index d91b560e88674..54b2be94d23dc 100644
+--- a/drivers/acpi/internal.h
++++ b/drivers/acpi/internal.h
+@@ -183,6 +183,8 @@ struct acpi_ec {
+ 	struct work_struct work;
+ 	unsigned long timestamp;
+ 	unsigned long nr_pending_queries;
++	unsigned int events_in_progress;
++	unsigned int queries_in_progress;
+ 	bool busy_polling;
+ 	unsigned int polling_guard;
+ };
+-- 
+2.34.1
+
 
 
