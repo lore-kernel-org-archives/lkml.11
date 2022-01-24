@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26236C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:09:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 907AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:09:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580152AbiAXWIx (ORCPT
+        id S1580267AbiAXWJK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:08:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44732 "EHLO
+        Mon, 24 Jan 2022 17:09:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45782 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452215AbiAXVYU (ORCPT
+        with ESMTP id S1452251AbiAXVY0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:24:20 -0500
+        Mon, 24 Jan 2022 16:24:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C60E861320;
-        Mon, 24 Jan 2022 21:24:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7A5AC340E4;
-        Mon, 24 Jan 2022 21:24:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99970614D8;
+        Mon, 24 Jan 2022 21:24:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E80DC340E4;
+        Mon, 24 Jan 2022 21:24:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059459;
-        bh=iJWsnEH3EqlFoyUdRdRa/2WUrAEJb4H3pNL5VUzpUbM=;
+        s=korg; t=1643059465;
+        bh=3v1HE+aP+jyFLtVWiJY2W1IvFFukw8FwMDbrTfFOkGc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qd57NVl2iUDNZZFn5WQxJaKWFUHPdtDsKahxmeuikE+73gH3KdAFAZanjyNqsDvba
-         s96ayB3WYgtjekQcIKiyTax2Pqh6/C498Preb3MHYMh2f1gVKhGiHZYnG/K00u7s1B
-         Gh04ZePS0+BDoGcCGxBK3IJIqk/bHXLuEnFP1sZE=
+        b=hHo8PGzq+IU4hyJFlLgS3jDOMSBuqIS8t0bnA8frwVI/UlRdrDHMuPdchflbcCCRy
+         iMn+/KWwe8V27kHkQHLS/xcPGcIBC+omKgk3S4qDvZXDgp/ih/YyJLPdBc+SSoFN9s
+         GyNaaOlTxbOr/0ZOgu8NWyy/k6sfnxicr9GQaoSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiri Slaby <jslaby@suse.cz>,
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0590/1039] mxser: increase buf_overrun if tty_insert_flip_char() fails
-Date:   Mon, 24 Jan 2022 19:39:39 +0100
-Message-Id: <20220124184145.165420298@linuxfoundation.org>
+Subject: [PATCH 5.16 0582/1039] drm/amd/display: check top_pipe_to_program pointer
+Date:   Mon, 24 Jan 2022 19:39:31 +0100
+Message-Id: <20220124184144.909444563@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,47 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit eb68ac0462bffc2ceb63b3a76737d6c9f186e6de ]
+[ Upstream commit a689e8d1f80012f90384ebac9dcfac4201f9f77e ]
 
-mxser doesn't increase port->icount.buf_overrun at all. Do so if overrun
-happens, so that it can be read from the stats.
+Clang static analysis reports this error
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211118073125.12283-17-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2870:7: warning:
+Dereference of null pointer [clang-analyzer-core.NullDereference]
+                if
+(top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
+                    ^
+
+top_pipe_to_program being NULL is caught as an error
+But then it is used to report the error.
+
+So add a check before using it.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/mxser.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 3b5d193b7f245..39458b42df7b0 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1536,7 +1536,8 @@ static bool mxser_receive_chars_new(struct tty_struct *tty,
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 0ded4decee05f..f0fbd8ad56229 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -2870,7 +2870,8 @@ static void commit_planes_for_stream(struct dc *dc,
+ #endif
  
- 	while (gdl--) {
- 		u8 ch = inb(port->ioaddr + UART_RX);
--		tty_insert_flip_char(&port->port, ch, 0);
-+		if (!tty_insert_flip_char(&port->port, ch, 0))
-+			port->icount.buf_overrun++;
- 	}
- 
- 	return true;
-@@ -1582,8 +1583,10 @@ static u8 mxser_receive_chars_old(struct tty_struct *tty,
- 					port->icount.overrun++;
- 				}
- 			}
--			if (!tty_insert_flip_char(&port->port, ch, flag))
-+			if (!tty_insert_flip_char(&port->port, ch, flag)) {
-+				port->icount.buf_overrun++;
- 				break;
-+			}
- 		}
- 
- 		if (hwid)
+ 	if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
+-		if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
++		if (top_pipe_to_program &&
++			top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
+ 			if (should_use_dmub_lock(stream->link)) {
+ 				union dmub_hw_lock_flags hw_locks = { 0 };
+ 				struct dmub_hw_lock_inst_flags inst_flags = { 0 };
 -- 
 2.34.1
 
