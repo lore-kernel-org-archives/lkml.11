@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEC0C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47614C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1851031AbiAXXbo (ORCPT
+        id S1851099AbiAXXbz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:31:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41420 "EHLO
+        Mon, 24 Jan 2022 18:31:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836485AbiAXWjg (ORCPT
+        with ESMTP id S233914AbiAXWjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:39:36 -0500
+        Mon, 24 Jan 2022 17:39:39 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3205BC05486F;
-        Mon, 24 Jan 2022 13:00:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0E53C05487A;
+        Mon, 24 Jan 2022 13:02:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8138612E9;
-        Mon, 24 Jan 2022 21:00:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF9ECC340E5;
-        Mon, 24 Jan 2022 21:00:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 50D3E60E8D;
+        Mon, 24 Jan 2022 21:02:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E0C7C340E5;
+        Mon, 24 Jan 2022 21:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058042;
-        bh=Aj5TDU2BYJhH8yJcxyj4GLS7YGita8rMfJSmLM8MX+Y=;
+        s=korg; t=1643058139;
+        bh=mt0KdQ610w0e3Y/eYKlgO6C5fSV+AQItylCNXXm/KYw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a0j9ynsquILairebgHqUs9d3a1aMfXCnnOOFeVNwWeVctHOjhJKe0jSA62qJs9m6l
-         VpBpHU5vjEqy8vt3sJaP8FpzDZZsbksMUwsOiLM6cWCtJ28njI5DvKRNUURCiIzpZq
-         dD7GM3RmmWMq38vJSGfhxVKHGknewyX5JeyiwH54=
+        b=rem19Lmwer26EbTMNVPqAhQ8+FxFXnpHjBNmcsp79et6m1ZXSW3YVCrErJWxN8I0g
+         8kMDaeFHi+6I8Fhkwu8Cx9LB7JDpqI6jP+B+T4z7aDhqgJqs6S+6vHB7ym//39USoB
+         f8rKY0YoLnPQUxIo8Sd3zlyh7jezLSkt4t44059Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0119/1039] media: videobuf2: Fix the size printk format
-Date:   Mon, 24 Jan 2022 19:31:48 +0100
-Message-Id: <20220124184129.138927856@linuxfoundation.org>
+Subject: [PATCH 5.16 0160/1039] crypto: qce - fix uaf on qce_ahash_register_one
+Date:   Mon, 24 Jan 2022 19:32:29 +0100
+Message-Id: <20220124184130.577932260@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,48 +51,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit c9ee220d76775e42f35d634479c978d9350077d3 ]
+[ Upstream commit b4cb4d31631912842eb7dce02b4350cbb7562d5e ]
 
-Since the type of parameter size is unsigned long,
-it should printk by %lu, instead of %ld, fix it.
+Pointer base points to sub field of tmpl, it
+is dereferenced after tmpl is freed. Fix
+this by accessing base before free tmpl.
 
-Fixes: 7952be9b6ece ("media: drivers/media/common/videobuf2: rename from videobuf")
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/videobuf2/videobuf2-dma-contig.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/crypto/qce/sha.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index 556e42ba66e55..7c4096e621738 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -257,7 +257,7 @@ static void *vb2_dc_alloc(struct vb2_buffer *vb,
- 		ret = vb2_dc_alloc_coherent(buf);
+diff --git a/drivers/crypto/qce/sha.c b/drivers/crypto/qce/sha.c
+index 8e6fcf2c21cc0..59159f5e64e52 100644
+--- a/drivers/crypto/qce/sha.c
++++ b/drivers/crypto/qce/sha.c
+@@ -498,8 +498,8 @@ static int qce_ahash_register_one(const struct qce_ahash_def *def,
  
+ 	ret = crypto_register_ahash(alg);
  	if (ret) {
--		dev_err(dev, "dma alloc of size %ld failed\n", size);
-+		dev_err(dev, "dma alloc of size %lu failed\n", size);
- 		kfree(buf);
- 		return ERR_PTR(-ENOMEM);
+-		kfree(tmpl);
+ 		dev_err(qce->dev, "%s registration failed\n", base->cra_name);
++		kfree(tmpl);
+ 		return ret;
  	}
-@@ -298,9 +298,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
  
- 	vma->vm_ops->open(vma);
- 
--	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %ld\n",
--		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
--		buf->size);
-+	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %lu\n",
-+		 __func__, (unsigned long)buf->dma_addr, vma->vm_start,
-+		 buf->size);
- 
- 	return 0;
- }
 -- 
 2.34.1
 
