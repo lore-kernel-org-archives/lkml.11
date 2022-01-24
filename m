@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 478C1C2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57710C3525A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850878AbiAXXbI (ORCPT
+        id S1850894AbiAXXbL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:31:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
+        Mon, 24 Jan 2022 18:31:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835803AbiAXWhf (ORCPT
+        with ESMTP id S1579202AbiAXWFM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:37:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE18C054844;
-        Mon, 24 Jan 2022 12:59:08 -0800 (PST)
+        Mon, 24 Jan 2022 17:05:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D984C0C6857;
+        Mon, 24 Jan 2022 12:42:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E01761355;
-        Mon, 24 Jan 2022 20:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3196EC340E5;
-        Mon, 24 Jan 2022 20:59:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CBBF6B80FA3;
+        Mon, 24 Jan 2022 20:42:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAD2C36B08;
+        Mon, 24 Jan 2022 20:42:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057947;
-        bh=RxIigBhFTeZ+GtzDVEchnUoTO75Wyk7sQHW98SGKpKA=;
+        s=korg; t=1643056932;
+        bh=OBTuXiREeeRTt0kQKSBldCdfbCJ4bnAco+QXL8c1owQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ik06TuR3iEiaYNl9Yt+iGYlz3qaiCnxnl7splqYDFuM9TbL63KUKTOyXxvZIM30P2
-         Jx9pW0oWBfGZe1UDdt0Q9BVTWe833lrTe65aOnbSEViD2qARMzPNbGF95K1qTRI7/N
-         wyVL90yDGsV2VcECCqmYOK6tuLmWsbsj9lMIE0kk=
+        b=ikCY4LB1Dd2Ljc8C4jq+uDk5yWLB6G0uJ0mBY3kWcA4s/gJwxnz8COLbtHYddgOVK
+         q5AkxZP1ScdUn+lPHW5ArkNdAmAaLGOjHGTX/dmFzEG1+elowkjmvfDDtfVcUpvssx
+         PnKuwL3WUwHEcvzJz4GVhayWkOZvyjstoVLomMmE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0132/1039] media: aspeed: Update signal status immediately to ensure sane hw state
-Date:   Mon, 24 Jan 2022 19:32:01 +0100
-Message-Id: <20220124184129.596914928@linuxfoundation.org>
+Subject: [PATCH 5.15 614/846] random: do not throw away excess input to crng_fast_load
+Date:   Mon, 24 Jan 2022 19:42:11 +0100
+Message-Id: <20220124184122.222730672@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,63 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jammy Huang <jammy_huang@aspeedtech.com>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit af6d1bde395cac174ee71adcd3fa43f6435c7206 ]
+[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
 
-If res-chg, VE_INTERRUPT_MODE_DETECT_WD irq will be raised. But
-v4l2_input_status won't be updated to no-signal immediately until
-aspeed_video_get_resolution() in aspeed_video_resolution_work().
+When crng_fast_load() is called by add_hwgenerator_randomness(), we
+currently will advance to crng_init==1 once we've acquired 64 bytes, and
+then throw away the rest of the buffer. Usually, that is not a problem:
+When add_hwgenerator_randomness() gets called via EFI or DT during
+setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
+passed by EFI exactly matches what is needed to advance to crng_init==1.
+Usually, DT seems to pass 64 bytes as well -- with one notable exception
+being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
+In that case, we'll advance to crng_init==1 once 64 of those bytes are
+consumed by crng_fast_load(), but won't continue onward feeding in bytes
+to progress to crng_init==2. This commit fixes the issue by feeding
+any leftover bytes into the next phase in add_hwgenerator_randomness().
 
-During the period of time, aspeed_video_start_frame() could be called
-because it doesn't know signal becomes unstable now. If it goes with
-aspeed_video_init_regs() of aspeed_video_irq_res_change()
-simultaneously, it will mess up hw state.
-
-To fix this problem, v4l2_input_status is updated to no-signal
-immediately for VE_INTERRUPT_MODE_DETECT_WD irq.
-
-Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
-Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
-Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+[linux@dominikbrodowski.net: rewrite commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/aspeed-video.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/char/random.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
-index 136383ad0e97c..7a24daf7165a4 100644
---- a/drivers/media/platform/aspeed-video.c
-+++ b/drivers/media/platform/aspeed-video.c
-@@ -595,6 +595,8 @@ static void aspeed_video_irq_res_change(struct aspeed_video *video, ulong delay)
- 	set_bit(VIDEO_RES_CHANGE, &video->flags);
- 	clear_bit(VIDEO_FRAME_INPRG, &video->flags);
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 7470ee24db2f9..a27ae3999ff32 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -912,12 +912,14 @@ static struct crng_state *select_crng(void)
  
-+	video->v4l2_input_status = V4L2_IN_ST_NO_SIGNAL;
-+
- 	aspeed_video_off(video);
- 	aspeed_video_bufs_done(video, VB2_BUF_STATE_ERROR);
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+- * path.  So we can't afford to dilly-dally.
++ * path.  So we can't afford to dilly-dally. Returns the number of
++ * bytes processed from cp.
+  */
+-static int crng_fast_load(const char *cp, size_t len)
++static size_t crng_fast_load(const char *cp, size_t len)
+ {
+ 	unsigned long flags;
+ 	char *p;
++	size_t ret = 0;
  
-@@ -1375,7 +1377,6 @@ static void aspeed_video_resolution_work(struct work_struct *work)
- 	struct delayed_work *dwork = to_delayed_work(work);
- 	struct aspeed_video *video = container_of(dwork, struct aspeed_video,
- 						  res_work);
--	u32 input_status = video->v4l2_input_status;
+ 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
+ 		return 0;
+@@ -928,7 +930,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 	p = (unsigned char *) &primary_crng.state[4];
+ 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
+ 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
+-		cp++; crng_init_cnt++; len--;
++		cp++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+@@ -936,7 +938,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 		crng_init = 1;
+ 		pr_notice("fast init done\n");
+ 	}
+-	return 1;
++	return ret;
+ }
  
- 	aspeed_video_on(video);
+ /*
+@@ -1287,7 +1289,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
+ 	if (unlikely(crng_init == 0)) {
+ 		if ((fast_pool->count >= 64) &&
+ 		    crng_fast_load((char *) fast_pool->pool,
+-				   sizeof(fast_pool->pool))) {
++				   sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 		}
+@@ -2295,8 +2297,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
+ 	struct entropy_store *poolp = &input_pool;
  
-@@ -1388,8 +1389,7 @@ static void aspeed_video_resolution_work(struct work_struct *work)
- 	aspeed_video_get_resolution(video);
+ 	if (unlikely(crng_init == 0)) {
+-		crng_fast_load(buffer, count);
+-		return;
++		size_t ret = crng_fast_load(buffer, count);
++		count -= ret;
++		buffer += ret;
++		if (!count || crng_init == 0)
++			return;
+ 	}
  
- 	if (video->detected_timings.width != video->active_timings.width ||
--	    video->detected_timings.height != video->active_timings.height ||
--	    input_status != video->v4l2_input_status) {
-+	    video->detected_timings.height != video->active_timings.height) {
- 		static const struct v4l2_event ev = {
- 			.type = V4L2_EVENT_SOURCE_CHANGE,
- 			.u.src_change.changes = V4L2_EVENT_SRC_CH_RESOLUTION,
+ 	/* Suspend writing if we're above the trickle threshold.
 -- 
 2.34.1
 
