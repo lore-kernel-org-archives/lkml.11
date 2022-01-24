@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B589C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C14C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357641AbiAYAOe (ORCPT
+        id S2373748AbiAYAPN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
+        Mon, 24 Jan 2022 19:15:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1572900AbiAXX2Q (ORCPT
+        with ESMTP id S1581148AbiAXX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:16 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07FBC01D7FD;
-        Mon, 24 Jan 2022 13:32:26 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 666E4C0A552A;
+        Mon, 24 Jan 2022 13:32:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 98E1EB8105C;
-        Mon, 24 Jan 2022 21:32:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC73BC340E4;
-        Mon, 24 Jan 2022 21:32:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 05BCE61028;
+        Mon, 24 Jan 2022 21:32:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DECF1C340E4;
+        Mon, 24 Jan 2022 21:32:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059944;
-        bh=vqNbZ/QgN62kkNQGfD6HduBejctEmovphbmTpQUP7KY=;
+        s=korg; t=1643059974;
+        bh=JiOVbM2qS81Tf9TfdFeLSOmQd6su6h5Fdx5wlgaihSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7fR+ZSS1Q2jhLpUR3LqYDADPC44hGRpt+x+T/MoQQaCXxQLKyCPuf97coRGlysDG
-         S81rR5lTZeh0QyteKg7vk3flmz88MEYvCdek0t7OG66byPkGIQz4zSIiqHD2567cNc
-         siH97xj94usC7Ezxpp/8eSc14CjI0aAjn38q2ECI=
+        b=x+vByxuXPcDK4VHOid5r7IroSYktw8nN0VYIiWYtHf7nDO2b+SbmB5u3F03rETE9A
+         kFDed1dQpHlby+gd6PmPZeqYORijPPKwTZdFN2szIggrAc/l/28o/7+26ZyjVh7V5V
+         uP30WOUhnQow97k6cAhKFJa+076NjrwlG2MwRmjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0787/1039] PCI: apple: Fix REFCLK1 enable/poll logic
-Date:   Mon, 24 Jan 2022 19:42:56 +0100
-Message-Id: <20220124184151.746567209@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0764/1039] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 24 Jan 2022 19:42:33 +0100
+Message-Id: <20220124184150.994855214@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,49 +51,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit 75d36df6807838f3c826c21c0fa51cdc079667d1 ]
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-REFCLK1 has req/ack bits that need to be programmed, just like REFCLK0.
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
 
-Link: https://lore.kernel.org/r/20211117140044.193865-1-marcan@marcan.st
-Fixes: 1e33888fbe44 ("PCI: apple: Add initial hardware bring-up")
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Acked-by: Marc Zyngier <maz@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pcie-apple.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
-index b090924b41fee..537ac9fe2e842 100644
---- a/drivers/pci/controller/pcie-apple.c
-+++ b/drivers/pci/controller/pcie-apple.c
-@@ -42,8 +42,9 @@
- #define   CORE_FABRIC_STAT_MASK		0x001F001F
- #define CORE_LANE_CFG(port)		(0x84000 + 0x4000 * (port))
- #define   CORE_LANE_CFG_REFCLK0REQ	BIT(0)
--#define   CORE_LANE_CFG_REFCLK1		BIT(1)
-+#define   CORE_LANE_CFG_REFCLK1REQ	BIT(1)
- #define   CORE_LANE_CFG_REFCLK0ACK	BIT(2)
-+#define   CORE_LANE_CFG_REFCLK1ACK	BIT(3)
- #define   CORE_LANE_CFG_REFCLKEN	(BIT(9) | BIT(10))
- #define CORE_LANE_CTL(port)		(0x84004 + 0x4000 * (port))
- #define   CORE_LANE_CTL_CFGACC		BIT(15)
-@@ -482,9 +483,9 @@ static int apple_pcie_setup_refclk(struct apple_pcie *pcie,
- 	if (res < 0)
- 		return res;
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index d56e9b9d2e434..a994022e32c9f 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
  
--	rmw_set(CORE_LANE_CFG_REFCLK1, pcie->base + CORE_LANE_CFG(port->idx));
-+	rmw_set(CORE_LANE_CFG_REFCLK1REQ, pcie->base + CORE_LANE_CFG(port->idx));
- 	res = readl_relaxed_poll_timeout(pcie->base + CORE_LANE_CFG(port->idx),
--					 stat, stat & CORE_LANE_CFG_REFCLK1,
-+					 stat, stat & CORE_LANE_CFG_REFCLK1ACK,
- 					 100, 50000);
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
- 	if (res < 0)
+ 	return ret;
+ }
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
+ 
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 6e4d3619137af..4df919d26b082 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -537,6 +537,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
+ 
 -- 
 2.34.1
 
