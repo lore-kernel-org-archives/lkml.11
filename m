@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1486FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B7DC3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355283AbiAXTkV (ORCPT
+        id S1355299AbiAXTkY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:40:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57204 "EHLO
+        Mon, 24 Jan 2022 14:40:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57292 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353440AbiAXTeo (ORCPT
+        with ESMTP id S1353497AbiAXTev (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:34:44 -0500
+        Mon, 24 Jan 2022 14:34:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 877B0B810BD;
-        Mon, 24 Jan 2022 19:34:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0615C340E5;
-        Mon, 24 Jan 2022 19:34:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EDD87B8119D;
+        Mon, 24 Jan 2022 19:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2148DC340E5;
+        Mon, 24 Jan 2022 19:34:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052882;
-        bh=88jBPow+2JlJ1CiI4sRMcEJq4kG76BFtyjtYunFiHdQ=;
+        s=korg; t=1643052888;
+        bh=5PIb9zgLfIDlpJXXCYVlibu41uMeDiCYR7yxgWThjCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WHcvZOreiWv3NpnwWcQrto/Vhr3mGDhgPtkHtZQ2F+WZ0T1S+KNu98FJEgOdtxn/1
-         OP3n09r8apeS3zCGR2Shtk5q1ZPWlD/6QyiXT/IvlKeJ6VuLzHHLT5GqKhfZYAeEx+
-         zf2UaUwtSift8xF3SR/F9yDRmCO2ZG3trRJcXL0Y=
+        b=Av9RTKR/rnsN12Uy7OMC0gJ+lU3upMlemyAIb9Z0iPCojQLH+SJz/xoybcAUchPog
+         6SIavfXqd4TjiCKGXMXx4nelGkjvGiqKrMn1vC98zGvAX+w53vpwkvbNz3vfbk5brf
+         wq9jKnD6btAa9VDEE+S3WA/uasUz1oSYppCfjcrM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
-        Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 172/320] rsi: Fix out-of-bounds read in rsi_read_pkt()
-Date:   Mon, 24 Jan 2022 19:42:36 +0100
-Message-Id: <20220124183959.512254254@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
+        Xiongwei Song <sxwjean@gmail.com>,
+        Denis Efremov <efremov@linux.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 174/320] floppy: Add max size check for user space request
+Date:   Mon, 24 Jan 2022 19:42:38 +0100
+Message-Id: <20220124183959.580700948@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,106 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
+[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
 
-rsi_get_* functions rely on an offset variable from usb
-input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
-while 2-byte offset can be up to 0xFFFF. Thus a large offset
-can cause out-of-bounds read.
+We need to check the max request size that is from user space before
+allocating pages. If the request size exceeds the limit, return -EINVAL.
+This check can avoid the warning below from page allocator.
 
-The patch adds a bound checking condition when rcv_pkt_len is 0,
-indicating it's USB. It's unclear whether this is triggerable
-from other type of bus. The following check might help in that case.
-offset > rcv_pkt_len - FRAME_DESC_SZ
-
-The bug is trigerrable with conpromised/malfunctioning USB devices.
-I tested the patch with the crashing input and got no more bug report.
-
-Attached is the KASAN report from fuzzing.
-
-BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
-Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
-
-CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
+WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
+Modules linked in:
+CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
+Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
+RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
+R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
+FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
- ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
- __kasan_report.cold+0x37/0x7c
- ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
- kasan_report+0xe/0x20
- rsi_read_pkt+0x42e/0x500 [rsi_91x]
- rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
- ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __wake_up_common+0x10b/0x520
- ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
- kthread+0x2b5/0x3b0
- ? kthread_create_on_node+0xd0/0xd0
- ret_from_fork+0x22/0x40
+ <TASK>
+ alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
+ __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
+ raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
+ raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
+ fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
+ fd_ioctl drivers/block/floppy.c:3555 [inline]
+ fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
+ compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
+ __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
 
-Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
+Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Signed-off-by: Denis Efremov <efremov@linux.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
- drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
- drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/block/floppy.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
-index 441fda71f6289..d92337169ee3a 100644
---- a/drivers/net/wireless/rsi/rsi_91x_main.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_main.c
-@@ -23,6 +23,7 @@
- #include "rsi_common.h"
- #include "rsi_coex.h"
- #include "rsi_hal.h"
-+#include "rsi_usb.h"
+diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
+index 212a1e1ce0d9e..02af4f109e59f 100644
+--- a/drivers/block/floppy.c
++++ b/drivers/block/floppy.c
+@@ -3112,6 +3112,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
+ 	}
+ }
  
- u32 rsi_zone_enabled = /* INFO_ZONE |
- 			INIT_ZONE |
-@@ -167,6 +168,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
- 		frame_desc = &rx_pkt[index];
- 		actual_length = *(u16 *)&frame_desc[0];
- 		offset = *(u16 *)&frame_desc[2];
-+		if (!rcv_pkt_len && offset >
-+			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
-+			goto fail;
- 
- 		queueno = rsi_get_queueno(frame_desc, offset);
- 		length = rsi_get_length(frame_desc, offset);
-diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
-index 730d7bf86c40c..94bf2a7ca635d 100644
---- a/drivers/net/wireless/rsi/rsi_91x_usb.c
-+++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
-@@ -320,7 +320,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
- 	struct sk_buff *skb;
- 	u8 dword_align_bytes = 0;
- 
--#define RSI_MAX_RX_USB_PKT_SIZE	3000
- 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
- 	if (!skb)
- 		return -ENOMEM;
-diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
-index 8702f434b5699..ad88f8c70a351 100644
---- a/drivers/net/wireless/rsi/rsi_usb.h
-+++ b/drivers/net/wireless/rsi/rsi_usb.h
-@@ -44,6 +44,8 @@
- #define RSI_USB_BUF_SIZE	     4096
- #define RSI_USB_CTRL_BUF_SIZE	     0x04
- 
-+#define RSI_MAX_RX_USB_PKT_SIZE	3000
++#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
 +
- struct rx_usb_ctrl_block {
- 	u8 *data;
- 	struct urb *rx_urb;
+ static int raw_cmd_copyin(int cmd, void __user *param,
+ 				 struct floppy_raw_cmd **rcmd)
+ {
+@@ -3149,7 +3151,7 @@ loop:
+ 	ptr->resultcode = 0;
+ 
+ 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
+-		if (ptr->length <= 0)
++		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
+ 			return -EINVAL;
+ 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
+ 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
 -- 
 2.34.1
 
