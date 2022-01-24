@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E9AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC8C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421866AbiAYC3J (ORCPT
+        id S3421984AbiAYC3h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:29:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50764 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378683AbiAXUIT (ORCPT
+        Mon, 24 Jan 2022 21:29:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36132 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353904AbiAXUJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:08:19 -0500
+        Mon, 24 Jan 2022 15:09:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 50960B8121A;
-        Mon, 24 Jan 2022 20:08:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51359C340E5;
-        Mon, 24 Jan 2022 20:08:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22C266131D;
+        Mon, 24 Jan 2022 20:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D26F6C340E7;
+        Mon, 24 Jan 2022 20:09:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054896;
-        bh=Nfhpuzi4irbRQN3E3HkAZc4HSOT9aiM10z8KebCFNVM=;
+        s=korg; t=1643054956;
+        bh=yu+IE5+gItyP4e2FuDlpjTgxMD8d6Lf0tXsdlecCLis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BRNsh3xcM8H9LzTEDLYB//9hfCPoNuW8+GZvQTVv2xUM5e+ZVOgDRfPj72vqnfwYU
-         w04TWSXQpUL4TF6e0Aj+S8nnvJFhZYSRXRL7JaJb5wYpD5Rugd0gdxZMmGlDZLvy4+
-         my69ejpfl7QvpVpkae4J2f89mQr8XauSmdN9UAE0=
+        b=pVO0uHo6LQESZ87fvNf0/m7MXcHpOYI+TVmnpIxLXmrXz+SUZ/8SQC68SdvzXHQIK
+         4MpMfdIF3G/OG76/Rab7EU7TT8WJG0ey4eceYRerFUEGo49Lzvt71+5PVmmPKAgyHf
+         d9elk8Gzvfm52d9Nk9kUoXvXbRYu6ngF1v451RoA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.10 496/563] scsi: core: Show SCMD_LAST in text form
-Date:   Mon, 24 Jan 2022 19:44:21 +0100
-Message-Id: <20220124184041.604864608@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.10 558/563] scripts/dtc: dtx_diff: remove broken example from help text
+Date:   Mon, 24 Jan 2022 19:45:23 +0100
+Message-Id: <20220124184043.747104714@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,32 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-commit 3369046e54ca8f82e0cb17740643da2d80d3cfa8 upstream.
+commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
 
-The SCSI debugfs code supports showing information about pending commands,
-including translating SCSI command flags from numeric into text format.
-Also convert the SCMD_LAST flag from numeric into text form.
+dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
+this has never worked: The /proc/self/fds/... paths passed by the shell
+will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
+but even with this check removed, the function cannot work: hexdump will
+eat up the DTB magic, making the subsequent dtc call fail, as a pipe
+cannot be rewound.
 
-Link: https://lore.kernel.org/r/20211129194609.3466071-4-bvanassche@acm.org
-Fixes: 8930a6c20791 ("scsi: core: add support for request batching")
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Simply remove this broken example, as there is already an alternative one
+that works fine.
+
+Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Reviewed-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/scsi_debugfs.c |    1 +
- 1 file changed, 1 insertion(+)
+ scripts/dtc/dtx_diff |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/drivers/scsi/scsi_debugfs.c
-+++ b/drivers/scsi/scsi_debugfs.c
-@@ -10,6 +10,7 @@ static const char *const scsi_cmd_flags[
- 	SCSI_CMD_FLAG_NAME(TAGGED),
- 	SCSI_CMD_FLAG_NAME(UNCHECKED_ISA_DMA),
- 	SCSI_CMD_FLAG_NAME(INITIALIZED),
-+	SCSI_CMD_FLAG_NAME(LAST),
- };
- #undef SCSI_CMD_FLAG_NAME
+--- a/scripts/dtc/dtx_diff
++++ b/scripts/dtc/dtx_diff
+@@ -59,12 +59,8 @@ Otherwise DTx is treated as a dts source
+    or '/include/' to be processed.
  
+    If DTx_1 and DTx_2 are in different architectures, then this script
+-   may not work since \${ARCH} is part of the include path.  Two possible
+-   workarounds:
+-
+-      `basename $0` \\
+-          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
+-          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
++   may not work since \${ARCH} is part of the include path.  The following
++   workaround can be used:
+ 
+       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
+       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
 
 
