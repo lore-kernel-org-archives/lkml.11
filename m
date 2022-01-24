@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8278CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B589C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850578AbiAYAO1 (ORCPT
+        id S1357641AbiAYAOe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:14:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53430 "EHLO
+        Mon, 24 Jan 2022 19:14:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574952AbiAXX2Q (ORCPT
+        with ESMTP id S1572900AbiAXX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DB0CC0A54D8;
-        Mon, 24 Jan 2022 13:32:49 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07FBC01D7FD;
+        Mon, 24 Jan 2022 13:32:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFC34614B4;
-        Mon, 24 Jan 2022 21:32:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D39C5C340E4;
-        Mon, 24 Jan 2022 21:32:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98E1EB8105C;
+        Mon, 24 Jan 2022 21:32:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC73BC340E4;
+        Mon, 24 Jan 2022 21:32:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059968;
-        bh=VbmKCL72Oen/J1WzvyZ7/8kn5y0mhpkYsLrA1c3G/+4=;
+        s=korg; t=1643059944;
+        bh=vqNbZ/QgN62kkNQGfD6HduBejctEmovphbmTpQUP7KY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dVuXuEasMtNxKDtdlRqxosHouSm+fwkiO3xa+d9Cbc0cx15F+aGZj11IUP4A9SXWC
-         Ol8sLlArhao7vbUmJ4dZeJ0xyMqee5C8PhBPA4pMyoO++Xl6hnSNQgnW5Ew4KqXfMJ
-         48v/r0aw6e51WXrAL7eFk13nPjURuj25mtNMCjnU=
+        b=p7fR+ZSS1Q2jhLpUR3LqYDADPC44hGRpt+x+T/MoQQaCXxQLKyCPuf97coRGlysDG
+         S81rR5lTZeh0QyteKg7vk3flmz88MEYvCdek0t7OG66byPkGIQz4zSIiqHD2567cNc
+         siH97xj94usC7Ezxpp/8eSc14CjI0aAjn38q2ECI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Boris Brezillon <bbrezillon@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Jamie Iles <quic_jiles@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0794/1039] i3c: fix incorrect address slot lookup on 64-bit
-Date:   Mon, 24 Jan 2022 19:43:03 +0100
-Message-Id: <20220124184151.985072196@linuxfoundation.org>
+        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Marc Zyngier <maz@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0787/1039] PCI: apple: Fix REFCLK1 enable/poll logic
+Date:   Mon, 24 Jan 2022 19:42:56 +0100
+Message-Id: <20220124184151.746567209@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,40 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jamie Iles <quic_jiles@quicinc.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit f18f98110f2b179792cb70d85cba697320a3790f ]
+[ Upstream commit 75d36df6807838f3c826c21c0fa51cdc079667d1 ]
 
-The address slot bitmap is an array of unsigned long's which are the
-same size as an int on 32-bit platforms but not 64-bit.  Loading the
-bitmap into an int could result in the incorrect status being returned
-for a slot and slots being reported as the wrong status.
+REFCLK1 has req/ack bits that need to be programmed, just like REFCLK0.
 
-Fixes: 3a379bbcea0a ("i3c: Add core I3C infrastructure")
-Cc: Boris Brezillon <bbrezillon@kernel.org>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Signed-off-by: Jamie Iles <quic_jiles@quicinc.com>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20210922165600.179394-1-quic_jiles@quicinc.com
+Link: https://lore.kernel.org/r/20211117140044.193865-1-marcan@marcan.st
+Fixes: 1e33888fbe44 ("PCI: apple: Add initial hardware bring-up")
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Acked-by: Marc Zyngier <maz@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i3c/master.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pci/controller/pcie-apple.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i3c/master.c b/drivers/i3c/master.c
-index c3b4c677b4429..dfe18dcd008d4 100644
---- a/drivers/i3c/master.c
-+++ b/drivers/i3c/master.c
-@@ -343,7 +343,8 @@ struct bus_type i3c_bus_type = {
- static enum i3c_addr_slot_status
- i3c_bus_get_addr_slot_status(struct i3c_bus *bus, u16 addr)
- {
--	int status, bitpos = addr * 2;
-+	unsigned long status;
-+	int bitpos = addr * 2;
+diff --git a/drivers/pci/controller/pcie-apple.c b/drivers/pci/controller/pcie-apple.c
+index b090924b41fee..537ac9fe2e842 100644
+--- a/drivers/pci/controller/pcie-apple.c
++++ b/drivers/pci/controller/pcie-apple.c
+@@ -42,8 +42,9 @@
+ #define   CORE_FABRIC_STAT_MASK		0x001F001F
+ #define CORE_LANE_CFG(port)		(0x84000 + 0x4000 * (port))
+ #define   CORE_LANE_CFG_REFCLK0REQ	BIT(0)
+-#define   CORE_LANE_CFG_REFCLK1		BIT(1)
++#define   CORE_LANE_CFG_REFCLK1REQ	BIT(1)
+ #define   CORE_LANE_CFG_REFCLK0ACK	BIT(2)
++#define   CORE_LANE_CFG_REFCLK1ACK	BIT(3)
+ #define   CORE_LANE_CFG_REFCLKEN	(BIT(9) | BIT(10))
+ #define CORE_LANE_CTL(port)		(0x84004 + 0x4000 * (port))
+ #define   CORE_LANE_CTL_CFGACC		BIT(15)
+@@ -482,9 +483,9 @@ static int apple_pcie_setup_refclk(struct apple_pcie *pcie,
+ 	if (res < 0)
+ 		return res;
  
- 	if (addr > I2C_MAX_ADDR)
- 		return I3C_ADDR_SLOT_RSVD;
+-	rmw_set(CORE_LANE_CFG_REFCLK1, pcie->base + CORE_LANE_CFG(port->idx));
++	rmw_set(CORE_LANE_CFG_REFCLK1REQ, pcie->base + CORE_LANE_CFG(port->idx));
+ 	res = readl_relaxed_poll_timeout(pcie->base + CORE_LANE_CFG(port->idx),
+-					 stat, stat & CORE_LANE_CFG_REFCLK1,
++					 stat, stat & CORE_LANE_CFG_REFCLK1ACK,
+ 					 100, 50000);
+ 
+ 	if (res < 0)
 -- 
 2.34.1
 
