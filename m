@@ -2,59 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6024C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D80FC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578104AbiAXWBm (ORCPT
+        id S1578076AbiAXWBh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:01:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50914 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447370AbiAXVTH (ORCPT
+        Mon, 24 Jan 2022 17:01:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37676 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446773AbiAXVSY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540FDC0610C8;
-        Mon, 24 Jan 2022 12:13:19 -0800 (PST)
+        Mon, 24 Jan 2022 16:18:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E1CACB8119E;
-        Mon, 24 Jan 2022 20:13:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B331C340E7;
-        Mon, 24 Jan 2022 20:13:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77A4CB81057;
+        Mon, 24 Jan 2022 21:18:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E5E8C340E4;
+        Mon, 24 Jan 2022 21:18:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055196;
-        bh=LuecBG6exdVyr57uhsw42o+FTE4KyTz6RrJJmYThb+Q=;
+        s=korg; t=1643059097;
+        bh=2ZPHVcGpaSXfIN28Z1vt7OZB9VjTVdIcGorkPScaoY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UrclxnQsolJ927gGgNHkldFz1Lr4C9lOKzbDbnMcGOHppZ6R+vZLrZ3HyXeBLo3+1
-         cPcRl2QQ1Izu+AteYEkQH8LhkaE/XplSg6p7/DBmUP7lmZNl/7qUxTF55xi07bfB9g
-         onr4BRI4aJ8PmJ5RjXgyvl+0nf3VqPEI+0Le3sVw=
+        b=adFrGPa9k64AgO/X+haxmEFNtdp1K4O6E29Rks20fz4jEALe9Hsxd6CkESGZs/SLT
+         b+qm7iRaqtc0fwXjJVMUoHdmoMfA7gTWAiZ2FIZjre+2HP3aIWe1+s+uAOiBkqjiCF
+         K7EetBfTX+hOet1BiUqGodaHE5xtVL5DRCHgTa/o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-efi@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        David Hildenbrand <david@redhat.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Christoph Lameter <cl@linux.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        David Rientjes <rientjes@google.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
+        stable@vger.kernel.org, Pingfan Liu <kernelfans@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhen Lei <thunder.leizhen@huawei.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 071/846] dma/pool: create dma atomic pool only if dma zone has managed pages
-Date:   Mon, 24 Jan 2022 19:33:08 +0100
-Message-Id: <20220124184103.423633377@linuxfoundation.org>
+        Mike Rapoport <rppt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Nick Terrell <terrelln@fb.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0503/1039] efi: apply memblock cap after memblock_add()
+Date:   Mon, 24 Jan 2022 19:38:12 +0100
+Message-Id: <20220124184142.176957209@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -63,88 +58,138 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baoquan He <bhe@redhat.com>
+From: Pingfan Liu <kernelfans@gmail.com>
 
-commit a674e48c5443d12a8a43c3ac42367aa39505d506 upstream.
+[ Upstream commit b398123bff3bcbc1facb0f29bf6e7b9f1bc55931 ]
 
-Currently three dma atomic pools are initialized as long as the relevant
-kernel codes are built in.  While in kdump kernel of x86_64, this is not
-right when trying to create atomic_pool_dma, because there's no managed
-pages in DMA zone.  In the case, DMA zone only has low 1M memory
-presented and locked down by memblock allocator.  So no pages are added
-into buddy of DMA zone.  Please check commit f1d4d47c5851 ("x86/setup:
-Always reserve the first 1M of RAM").
+On arm64, during kdump kernel saves vmcore, it runs into the following bug:
+...
+[   15.148919] usercopy: Kernel memory exposure attempt detected from SLUB object 'kmem_cache_node' (offset 0, size 4096)!
+[   15.159707] ------------[ cut here ]------------
+[   15.164311] kernel BUG at mm/usercopy.c:99!
+[   15.168482] Internal error: Oops - BUG: 0 [#1] SMP
+[   15.173261] Modules linked in: xfs libcrc32c crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce sbsa_gwdt ast i2c_algo_bit drm_vram_helper drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops cec drm_ttm_helper ttm drm nvme nvme_core xgene_hwmon i2c_designware_platform i2c_designware_core dm_mirror dm_region_hash dm_log dm_mod overlay squashfs zstd_decompress loop
+[   15.206186] CPU: 0 PID: 542 Comm: cp Not tainted 5.16.0-rc4 #1
+[   15.212006] Hardware name: GIGABYTE R272-P30-JG/MP32-AR0-JG, BIOS F12 (SCP: 1.5.20210426) 05/13/2021
+[   15.221125] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+[   15.228073] pc : usercopy_abort+0x9c/0xa0
+[   15.232074] lr : usercopy_abort+0x9c/0xa0
+[   15.236070] sp : ffff8000121abba0
+[   15.239371] x29: ffff8000121abbb0 x28: 0000000000003000 x27: 0000000000000000
+[   15.246494] x26: 0000000080000400 x25: 0000ffff885c7000 x24: 0000000000000000
+[   15.253617] x23: 000007ff80400000 x22: ffff07ff80401000 x21: 0000000000000001
+[   15.260739] x20: 0000000000001000 x19: ffff07ff80400000 x18: ffffffffffffffff
+[   15.267861] x17: 656a626f2042554c x16: 53206d6f72662064 x15: 6574636574656420
+[   15.274983] x14: 74706d6574746120 x13: 2129363930342065 x12: 7a6973202c302074
+[   15.282105] x11: ffffc8b041d1b148 x10: 00000000ffff8000 x9 : ffffc8b04012812c
+[   15.289228] x8 : 00000000ffff7fff x7 : ffffc8b041d1b148 x6 : 0000000000000000
+[   15.296349] x5 : 0000000000000000 x4 : 0000000000007fff x3 : 0000000000000000
+[   15.303471] x2 : 0000000000000000 x1 : ffff07ff8c064800 x0 : 000000000000006b
+[   15.310593] Call trace:
+[   15.313027]  usercopy_abort+0x9c/0xa0
+[   15.316677]  __check_heap_object+0xd4/0xf0
+[   15.320762]  __check_object_size.part.0+0x160/0x1e0
+[   15.325628]  __check_object_size+0x2c/0x40
+[   15.329711]  copy_oldmem_page+0x7c/0x140
+[   15.333623]  read_from_oldmem.part.0+0xfc/0x1c0
+[   15.338142]  __read_vmcore.constprop.0+0x23c/0x350
+[   15.342920]  read_vmcore+0x28/0x34
+[   15.346309]  proc_reg_read+0xb4/0xf0
+[   15.349871]  vfs_read+0xb8/0x1f0
+[   15.353088]  ksys_read+0x74/0x100
+[   15.356390]  __arm64_sys_read+0x28/0x34
+...
 
-Then in kdump kernel of x86_64, it always prints below failure message:
+This bug introduced by commit b261dba2fdb2 ("arm64: kdump: Remove custom
+linux,usable-memory-range handling"), which moves
+memblock_cap_memory_range() to fdt, but it breaches the rules that
+memblock_cap_memory_range() should come after memblock_add() etc as said
+in commit e888fa7bb882 ("memblock: Check memory add/cap ordering").
 
- DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
- swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
- CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-0.rc5.20210611git929d931f2b40.42.fc35.x86_64 #1
- Hardware name: Dell Inc. PowerEdge R910/0P658H, BIOS 2.12.0 06/04/2018
- Call Trace:
-  dump_stack+0x7f/0xa1
-  warn_alloc.cold+0x72/0xd6
-  __alloc_pages_slowpath.constprop.0+0xf29/0xf50
-  __alloc_pages+0x24d/0x2c0
-  alloc_page_interleave+0x13/0xb0
-  atomic_pool_expand+0x118/0x210
-  __dma_atomic_pool_init+0x45/0x93
-  dma_atomic_pool_init+0xdb/0x176
-  do_one_initcall+0x67/0x320
-  kernel_init_freeable+0x290/0x2dc
-  kernel_init+0xa/0x111
-  ret_from_fork+0x22/0x30
- Mem-Info:
- ......
- DMA: failed to allocate 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocation
- DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
+As a consequence, the virtual address set up by copy_oldmem_page() does
+not bail out from the test of virt_addr_valid() in check_heap_object(),
+and finally hits the BUG_ON().
 
-Here, let's check if DMA zone has managed pages, then create
-atomic_pool_dma if yes.  Otherwise just skip it.
+Since memblock allocator has no idea about when the memblock is fully
+populated, while efi_init() is aware, so tackling this issue by calling the
+interface early_init_dt_check_for_usable_mem_range() exposed by of/fdt.
 
-Link: https://lkml.kernel.org/r/20211223094435.248523-3-bhe@redhat.com
-Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc: Pekka Enberg <penberg@kernel.org>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b261dba2fdb2 ("arm64: kdump: Remove custom linux,usable-memory-range handling")
+Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
+Cc: Catalin Marinas <catalin.marinas@arm.com>
+Cc: Will Deacon <will@kernel.org>
+Cc: Andrew Morton <akpm@linux-foundation.org>
+Cc: Mike Rapoport <rppt@kernel.org>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Frank Rowand <frowand.list@gmail.com>
+Cc: Ard Biesheuvel <ardb@kernel.org>
+Cc: Nick Terrell <terrelln@fb.com>
+Cc: linux-arm-kernel@lists.infradead.org
+To: devicetree@vger.kernel.org
+To: linux-efi@vger.kernel.org
+Acked-by: Ard Biesheuvel <ardb@kernel.org>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20211215021348.8766-1-kernelfans@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/dma/pool.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/firmware/efi/efi-init.c | 5 +++++
+ drivers/of/fdt.c                | 2 +-
+ include/linux/of_fdt.h          | 2 ++
+ 3 files changed, 8 insertions(+), 1 deletion(-)
 
---- a/kernel/dma/pool.c
-+++ b/kernel/dma/pool.c
-@@ -203,7 +203,7 @@ static int __init dma_atomic_pool_init(v
- 						    GFP_KERNEL);
- 	if (!atomic_pool_kernel)
- 		ret = -ENOMEM;
--	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
-+	if (has_managed_dma()) {
- 		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
- 						GFP_KERNEL | GFP_DMA);
- 		if (!atomic_pool_dma)
-@@ -226,7 +226,7 @@ static inline struct gen_pool *dma_guess
- 	if (prev == NULL) {
- 		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
- 			return atomic_pool_dma32;
--		if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
-+		if (atomic_pool_dma && (gfp & GFP_DMA))
- 			return atomic_pool_dma;
- 		return atomic_pool_kernel;
+diff --git a/drivers/firmware/efi/efi-init.c b/drivers/firmware/efi/efi-init.c
+index b19ce1a83f91a..b2c829e95bd14 100644
+--- a/drivers/firmware/efi/efi-init.c
++++ b/drivers/firmware/efi/efi-init.c
+@@ -235,6 +235,11 @@ void __init efi_init(void)
  	}
+ 
+ 	reserve_regions();
++	/*
++	 * For memblock manipulation, the cap should come after the memblock_add().
++	 * And now, memblock is fully populated, it is time to do capping.
++	 */
++	early_init_dt_check_for_usable_mem_range();
+ 	efi_esrt_init();
+ 	efi_mokvar_table_init();
+ 
+diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
+index 5a238a933eb29..65af475dfa950 100644
+--- a/drivers/of/fdt.c
++++ b/drivers/of/fdt.c
+@@ -971,7 +971,7 @@ static unsigned long chosen_node_offset = -FDT_ERR_NOTFOUND;
+  * early_init_dt_check_for_usable_mem_range - Decode usable memory range
+  * location from flat tree
+  */
+-static void __init early_init_dt_check_for_usable_mem_range(void)
++void __init early_init_dt_check_for_usable_mem_range(void)
+ {
+ 	const __be32 *prop;
+ 	int len;
+diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
+index cf48983d3c867..ad09beb6d13c4 100644
+--- a/include/linux/of_fdt.h
++++ b/include/linux/of_fdt.h
+@@ -62,6 +62,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
+ 				     int depth, void *data);
+ extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
+ 				     int depth, void *data);
++extern void early_init_dt_check_for_usable_mem_range(void);
+ extern int early_init_dt_scan_chosen_stdout(void);
+ extern void early_init_fdt_scan_reserved_mem(void);
+ extern void early_init_fdt_reserve_self(void);
+@@ -86,6 +87,7 @@ extern void unflatten_and_copy_device_tree(void);
+ extern void early_init_devtree(void *);
+ extern void early_get_first_memblock_info(void *, phys_addr_t *);
+ #else /* CONFIG_OF_EARLY_FLATTREE */
++static inline void early_init_dt_check_for_usable_mem_range(void) {}
+ static inline int early_init_dt_scan_chosen_stdout(void) { return -ENODEV; }
+ static inline void early_init_fdt_scan_reserved_mem(void) {}
+ static inline void early_init_fdt_reserve_self(void) {}
+-- 
+2.34.1
+
 
 
