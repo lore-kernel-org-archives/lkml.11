@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25FEDC2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A2CC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359187AbiAXT4e (ORCPT
+        id S1359212AbiAXT4g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42426 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355942AbiAXTo6 (ORCPT
+        Mon, 24 Jan 2022 14:56:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58542 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344035AbiAXThL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:58 -0500
+        Mon, 24 Jan 2022 14:37:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F1E3F60909;
-        Mon, 24 Jan 2022 19:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC4EBC340E5;
-        Mon, 24 Jan 2022 19:44:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E74E9B81239;
+        Mon, 24 Jan 2022 19:37:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E45CC340E5;
+        Mon, 24 Jan 2022 19:37:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053497;
-        bh=QjC/tPhb2AT1wpeW0EUSSIwTPy+Ku5oRwIix5WNNPZQ=;
+        s=korg; t=1643053027;
+        bh=opo5R3812xqFwnMjvJtQVvKlpACVBA31j6oNkd7pbfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gfw4wwqNSDk1Yo+1wG1rHIJMUFb1VHvo0fwEE5AKOUfF+RZzQFAFXwcMr3RGqLKGE
-         qQv4aueoz4PpP9oaPjhp8hN1uZrIgAkjMuhUsUrRX8USLwyWSujKLgWaxPNODezTbT
-         QlMP7heA6C7lIjuyEycwETVgFaNNYVYqC332ywCM=
+        b=y7htYdfAYRWY/gsilsiSy0WwOMk5XkYefloLFRcRpnQAhphziMqk4q8w4iXw7dkuD
+         2VtiNLqUc6ygC3v1Fy0o/hWAV90AopAUFIWNBhY0CW+ItiiarLOFROA30+nzjBCMjp
+         mlYlzUdnWsw7rMSspyfhgj2SiczXE3fUi8f8ey3k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Subject: [PATCH 5.10 085/563] Bluetooth: stop proccessing malicious adv data
-Date:   Mon, 24 Jan 2022 19:37:30 +0100
-Message-Id: <20220124184027.342260846@linuxfoundation.org>
+        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
+        Xiangyang Zhang <xyz.sun.ok@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH 5.4 253/320] tracing/kprobes: nmissed not showed correctly for kretprobe
+Date:   Mon, 24 Jan 2022 19:43:57 +0100
+Message-Id: <20220124184002.592999926@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,54 +47,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Xiangyang Zhang <xyz.sun.ok@gmail.com>
 
-[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
+commit dfea08a2116fe327f79d8f4d4b2cf6e0c88be11f upstream.
 
-Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
-problem was in missing validaion check.
+The 'nmissed' column of the 'kprobe_profile' file for kretprobe is
+not showed correctly, kretprobe can be skipped by two reasons,
+shortage of kretprobe_instance which is counted by tk->rp.nmissed,
+and kprobe itself is missed by some reason, so to show the sum.
 
-We should check if data is not malicious and we can read next data block.
-If we won't check ptr validness, code can read a way beyond skb->end and
-it can cause problems, of course.
+Link: https://lkml.kernel.org/r/20220107150242.5019-1-xyz.sun.ok@gmail.com
 
-Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
-Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 4a846b443b4e ("tracing/kprobes: Cleanup kprobe tracer code")
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Xiangyang Zhang <xyz.sun.ok@gmail.com>
+Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/hci_event.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ kernel/trace/trace_kprobe.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 9f52145bb7b76..7ffcca9ae82a1 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5661,7 +5661,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		struct hci_ev_le_advertising_info *ev = ptr;
- 		s8 rssi;
+--- a/kernel/trace/trace_kprobe.c
++++ b/kernel/trace/trace_kprobe.c
+@@ -999,15 +999,18 @@ static int probes_profile_seq_show(struc
+ {
+ 	struct dyn_event *ev = v;
+ 	struct trace_kprobe *tk;
++	unsigned long nmissed;
  
--		if (ev->length <= HCI_MAX_AD_LENGTH) {
-+		if (ev->length <= HCI_MAX_AD_LENGTH &&
-+		    ev->data + ev->length <= skb_tail_pointer(skb)) {
- 			rssi = ev->data[ev->length];
- 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
- 					   ev->bdaddr_type, NULL, 0, rssi,
-@@ -5671,6 +5672,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		}
+ 	if (!is_trace_kprobe(ev))
+ 		return 0;
  
- 		ptr += sizeof(*ev) + ev->length + 1;
-+
-+		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
-+			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
-+			break;
-+		}
- 	}
+ 	tk = to_trace_kprobe(ev);
++	nmissed = trace_kprobe_is_return(tk) ?
++		tk->rp.kp.nmissed + tk->rp.nmissed : tk->rp.kp.nmissed;
+ 	seq_printf(m, "  %-44s %15lu %15lu\n",
+ 		   trace_probe_name(&tk->tp),
+ 		   trace_kprobe_nhit(tk),
+-		   tk->rp.kp.nmissed);
++		   nmissed);
  
- 	hci_dev_unlock(hdev);
--- 
-2.34.1
-
+ 	return 0;
+ }
 
 
