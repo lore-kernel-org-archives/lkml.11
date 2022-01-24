@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB3EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3C08C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350330AbiAXTYu (ORCPT
+        id S1350587AbiAXTZF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:24:50 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40558 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343524AbiAXTPf (ORCPT
+        Mon, 24 Jan 2022 14:25:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45032 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239566AbiAXTP4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:15:35 -0500
+        Mon, 24 Jan 2022 14:15:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0EB5AB8121F;
-        Mon, 24 Jan 2022 19:15:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3045CC340E5;
-        Mon, 24 Jan 2022 19:15:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 708BB61317;
+        Mon, 24 Jan 2022 19:15:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D605C340E5;
+        Mon, 24 Jan 2022 19:15:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051732;
-        bh=pUEzmvsB/pzJ/e1MCSvYHZXzc52nrVDsD0HUPDnJMUc=;
+        s=korg; t=1643051754;
+        bh=/Gj1MDv8sM9owJBcEAcALK1JjHW1CPfyWYHiZcDL3A4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zmb3wxAgIIl9gCA5oU5qdvjIlPOu3XbwZSIY3bPzg5FFf20nRAUCg7CAnXopDvj1U
-         kCouvpIwz3qT9vkNzG2JzdfoOE/+xqzney9oVD7oocFQ3ONKOWtyq90KLK4GiiroEA
-         d6Mc1keKlZLdYadLDQpab9vkAJ3jyL1pWpEPfYU8=
+        b=E9WloB8O6S+FZQvzR5LEThj66CRx2mYlX/8eM8l9f5w2Qy9ZbuLK+vQ0D3Wquj590
+         LCuAQhvBYn/pRYg7yNfYDVPhtfdfz5lG7Vk9n0pnj+Yl4WEtDxR93p/irFVJ1WIpKB
+         yjYKL5J9jn1cPe7J2HWl2G7/JoWsjCa5KFF08BF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tasos Sahanidis <tasos@tasossah.com>,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 068/239] floppy: Fix hang in watchdog when disk is ejected
-Date:   Mon, 24 Jan 2022 19:41:46 +0100
-Message-Id: <20220124183945.297103403@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 044/239] drm/panel: innolux-p079zca: Delete panel on attach() failure
+Date:   Mon, 24 Jan 2022 19:41:22 +0100
+Message-Id: <20220124183944.541633116@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,50 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tasos Sahanidis <tasos@tasossah.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit fb48febce7e30baed94dd791e19521abd2c3fd83 ]
+[ Upstream commit 32a267e9c057e1636e7afdd20599aa5741a73079 ]
 
-When the watchdog detects a disk change, it calls cancel_activity(),
-which in turn tries to cancel the fd_timer delayed work.
+If we fail to attach (e.g., because 1 of 2 dual-DSI controllers aren't
+ready), we leave a dangling drm_panel reference to freed memory. Clean
+that up on failure.
 
-In the above scenario, fd_timer_fn is set to fd_watchdog(), meaning
-it is trying to cancel its own work.
-This results in a hang as cancel_delayed_work_sync() is waiting for the
-watchdog (itself) to return, which never happens.
+This problem exists since the driver's introduction, but is especially
+relevant after refactored for dual-DSI variants.
 
-This can be reproduced relatively consistently by attempting to read a
-broken floppy, and ejecting it while IO is being attempted and retried.
-
-To resolve this, this patch calls cancel_delayed_work() instead, which
-cancels the work without waiting for the watchdog to return and finish.
-
-Before this regression was introduced, the code in this section used
-del_timer(), and not del_timer_sync() to delete the watchdog timer.
-
-Link: https://lore.kernel.org/r/399e486c-6540-db27-76aa-7a271b061f76@tasossah.com
-Fixes: 070ad7e793dc ("floppy: convert to delayed work and single-thread wq")
-Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 14c8f2e9f8ea ("drm/panel: add Innolux P079ZCA panel driver")
+Fixes: 7ad4e4636c54 ("drm/panel: p079zca: Refactor panel driver to support multiple panels")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210923173336.2.I9023cf8811a3abf4964ed84eb681721d8bb489d6@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/panel/panel-innolux-p079zca.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 8f444b375761c..49ac9596c862e 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -1002,7 +1002,7 @@ static DECLARE_DELAYED_WORK(fd_timer, fd_timer_workfn);
- static void cancel_activity(void)
+diff --git a/drivers/gpu/drm/panel/panel-innolux-p079zca.c b/drivers/gpu/drm/panel/panel-innolux-p079zca.c
+index 88c7d035ace66..362ff5555d2e7 100644
+--- a/drivers/gpu/drm/panel/panel-innolux-p079zca.c
++++ b/drivers/gpu/drm/panel/panel-innolux-p079zca.c
+@@ -512,6 +512,7 @@ static void innolux_panel_del(struct innolux_panel *innolux)
+ static int innolux_panel_probe(struct mipi_dsi_device *dsi)
  {
- 	do_floppy = NULL;
--	cancel_delayed_work_sync(&fd_timer);
-+	cancel_delayed_work(&fd_timer);
- 	cancel_work_sync(&floppy_work);
+ 	const struct panel_desc *desc;
++	struct innolux_panel *innolux;
+ 	int err;
+ 
+ 	desc = of_device_get_match_data(&dsi->dev);
+@@ -523,7 +524,14 @@ static int innolux_panel_probe(struct mipi_dsi_device *dsi)
+ 	if (err < 0)
+ 		return err;
+ 
+-	return mipi_dsi_attach(dsi);
++	err = mipi_dsi_attach(dsi);
++	if (err < 0) {
++		innolux = mipi_dsi_get_drvdata(dsi);
++		innolux_panel_del(innolux);
++		return err;
++	}
++
++	return 0;
  }
  
+ static int innolux_panel_remove(struct mipi_dsi_device *dsi)
 -- 
 2.34.1
 
