@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 888D9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3533CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373334AbiAYANe (ORCPT
+        id S1388531AbiAYAOQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:13:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53476 "EHLO
+        Mon, 24 Jan 2022 19:14:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1837811AbiAXX23 (ORCPT
+        with ESMTP id S1458150AbiAXX2Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:29 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71509C075944;
-        Mon, 24 Jan 2022 13:33:55 -0800 (PST)
+        Mon, 24 Jan 2022 18:28:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B51BC01D7FF;
+        Mon, 24 Jan 2022 13:32:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2F095B8123A;
-        Mon, 24 Jan 2022 21:33:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5424C340E7;
-        Mon, 24 Jan 2022 21:33:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2846E61305;
+        Mon, 24 Jan 2022 21:32:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04D5CC340E4;
+        Mon, 24 Jan 2022 21:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060032;
-        bh=ABEAfmidjsjbLbKwr52w0wjGu7YGjdn3QnaXSOEAMvI=;
+        s=korg; t=1643059962;
+        bh=vV8dMG+wgDd6ixe70t0hx35EAlauBYI8+Djh336oDOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2NLrEb04sIQzcnspcYaHfORHQHYE7oxax7OtWHMi2hmh/mG08YiB9YoqxS3uKeSof
-         FHefPtJbYIEvnLgJPGh5ZSUfBPO/l/HtO3VULk1+y2OaOqFkDAGsp7aLuMx25YpoYT
-         4dGI9delSaDrqWT7ngH0Mm1locVuqfCG7DiXSWlk=
+        b=qMH8R9DYc4y8bIFCcdIeYFeHgBwmLMry5PmBmQl97k/VoQPaEOWg6MoDU7GEHIe4H
+         psnYfLp8CXdQ0a7VcMVBbHzNWsqWOoxjvmCHdv2ozj8AJp3LQHWJB3VFK+zuXuZZRB
+         17gV8rRJVy2y4ZwTJqZ0RHdVFBlT0f/VvYMMvpNk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chuck Lever <chuck.lever@oracle.com>,
+        stable@vger.kernel.org, Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0816/1039] SUNRPC: Fix sockaddr handling in svcsock_accept_class trace points
-Date:   Mon, 24 Jan 2022 19:43:25 +0100
-Message-Id: <20220124184152.731952293@linuxfoundation.org>
+Subject: [PATCH 5.16 0792/1039] KVM: x86: Handle 32-bit wrap of EIP for EMULTYPE_SKIP with flat code seg
+Date:   Mon, 24 Jan 2022 19:43:01 +0100
+Message-Id: <20220124184151.922433858@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,48 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Sean Christopherson <seanjc@google.com>
 
-[ Upstream commit 16720861675393a35974532b3c837d9fd7bfe08c ]
+[ Upstream commit 5e854864ee4384736f27a986633bae21731a4e4e ]
 
-Avoid potentially hazardous memory copying and the needless use of
-"%pIS" -- in the kernel, an RPC service listener is always bound to
-ANYADDR. Having the network namespace is helpful when recording
-errors, though.
+Truncate the new EIP to a 32-bit value when handling EMULTYPE_SKIP as the
+decode phase does not truncate _eip.  Wrapping the 32-bit boundary is
+legal if and only if CS is a flat code segment, but that check is
+implicitly handled in the form of limit checks in the decode phase.
 
-Fixes: a0469f46faab ("SUNRPC: Replace dprintk call sites in TCP state change callouts")
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Opportunstically prepare for a future fix by storing the result of any
+truncation in "eip" instead of "_eip".
+
+Fixes: 1957aa63be53 ("KVM: VMX: Handle single-step #DB for EMULTYPE_SKIP on EPT misconfig")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Message-Id: <093eabb1eab2965201c9b018373baf26ff256d85.1635842679.git.houwenlong93@linux.alibaba.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/trace/events/sunrpc.h | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/x86/kvm/x86.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/include/trace/events/sunrpc.h b/include/trace/events/sunrpc.h
-index 52288f1c1b52d..7b5dcff84cf27 100644
---- a/include/trace/events/sunrpc.h
-+++ b/include/trace/events/sunrpc.h
-@@ -2147,17 +2147,17 @@ DECLARE_EVENT_CLASS(svcsock_accept_class,
- 	TP_STRUCT__entry(
- 		__field(long, status)
- 		__string(service, service)
--		__array(unsigned char, addr, sizeof(struct sockaddr_in6))
-+		__field(unsigned int, netns_ino)
- 	),
- 
- 	TP_fast_assign(
- 		__entry->status = status;
- 		__assign_str(service, service);
--		memcpy(__entry->addr, &xprt->xpt_local, sizeof(__entry->addr));
-+		__entry->netns_ino = xprt->xpt_net->ns.inum;
- 	),
- 
--	TP_printk("listener=%pISpc service=%s status=%ld",
--		__entry->addr, __get_str(service), __entry->status
-+	TP_printk("addr=listener service=%s status=%ld",
-+		__get_str(service), __entry->status
- 	)
- );
- 
+diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
+index bb87f43cdc78c..5d5a8e75edcb7 100644
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -8134,7 +8134,12 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 	 * updating interruptibility state and injecting single-step #DBs.
+ 	 */
+ 	if (emulation_type & EMULTYPE_SKIP) {
+-		kvm_rip_write(vcpu, ctxt->_eip);
++		if (ctxt->mode != X86EMUL_MODE_PROT64)
++			ctxt->eip = (u32)ctxt->_eip;
++		else
++			ctxt->eip = ctxt->_eip;
++
++		kvm_rip_write(vcpu, ctxt->eip);
+ 		if (ctxt->eflags & X86_EFLAGS_RF)
+ 			kvm_set_rflags(vcpu, ctxt->eflags & ~X86_EFLAGS_RF);
+ 		return 1;
 -- 
 2.34.1
 
