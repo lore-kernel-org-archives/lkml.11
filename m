@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C5DBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22664C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587264AbiAXW2B (ORCPT
+        id S1587278AbiAXW2C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53498 "EHLO
+        Mon, 24 Jan 2022 17:28:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454845AbiAXVdy (ORCPT
+        with ESMTP id S1441813AbiAXVdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:33:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 166D8C075D33;
-        Mon, 24 Jan 2022 12:21:51 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE20C075D30;
+        Mon, 24 Jan 2022 12:21:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90114614ED;
-        Mon, 24 Jan 2022 20:21:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F6D8C340E5;
-        Mon, 24 Jan 2022 20:21:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 380B2B812A4;
+        Mon, 24 Jan 2022 20:21:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BFAC340E5;
+        Mon, 24 Jan 2022 20:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055710;
-        bh=D0k/8wHfzd2f+CJlNo5H5l4gD1tUJCIVd5hODXTl0kg=;
+        s=korg; t=1643055706;
+        bh=6MCDUWjQGuPK+6rXGKDuy1uhPt3cjwXpXWsXzQaWAVI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1MZOWS2DiBsw6aiEmIn3xQBTvxmmzY72VMTxC1zmcV7aB8EE8bpKWEpyOrsHgpRVe
-         7aKuUuA8fXTDDge39FrOEe83Tj+Nu07j0Ap84z/Q9x/V9uEoVPJf/Q3RFOVBNn9nlT
-         9JPFgwiyYTcl70hCZxYOrfjcqi1FPItSMuh0h1N8=
+        b=t/7uFe1B8rT0lLzXU+hiJaOAMf6wdnCVHnnk6/7kj+yMMHVOgoCuPPRLR/izIo/5s
+         3LGf+srCjz1JH6FC8rfISMP+n/NsFlOP3YMmFuENcMJkrJeD0RBWmJ/3BZkFZhvnre
+         PpdB7v2Ykw7z/qpIkAJkj5B7GE+vwp357w05dvxk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hector Martin <marcan@marcan.st>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Rameshkumar Sundaram <quic_ramess@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 240/846] spi: Fix incorrect cs_setup delay handling
-Date:   Mon, 24 Jan 2022 19:35:57 +0100
-Message-Id: <20220124184109.206425661@linuxfoundation.org>
+Subject: [PATCH 5.15 239/846] ath11k: Fix deleting uninitialized kernel timer during fragment cache flush
+Date:   Mon, 24 Jan 2022 19:35:56 +0100
+Message-Id: <20220124184109.174201070@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,65 +51,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Rameshkumar Sundaram <quic_ramess@quicinc.com>
 
-[ Upstream commit 95c07247399536f83b89dc60cfe7b279d17e69f6 ]
+[ Upstream commit ba53ee7f7f38cf0592b8be1dcdabaf8f7535f8c1 ]
 
-Move the cs_setup delay to the end of spi_set_cs.
+frag_timer will be created & initialized for stations when
+they associate and will be deleted during every key installation
+while flushing old fragments.
 
->From include/linux/spi/spi.h:
+For AP interface self peer will be created and Group keys
+will be installed for this peer, but there will be no real
+Station entry & hence frag_timer won't be created and
+initialized, deleting such uninitialized kernel timers causes below
+warnings and backtraces printed with CONFIG_DEBUG_OBJECTS_TIMERS
+enabled.
 
- * @cs_setup: delay to be introduced by the controller after CS is
-   asserted
+[ 177.828008] ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
+[ 177.836833] WARNING: CPU: 3 PID: 188 at lib/debugobjects.c:508 debug_print_object+0xb0/0xf0
+[ 177.845185] Modules linked in: ath11k_pci ath11k qmi_helpers qrtr_mhi qrtr ns mhi
+[ 177.852679] CPU: 3 PID: 188 Comm: hostapd Not tainted 5.14.0-rc3-32919-g4034139e1838-dirty #14
+[ 177.865805] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
+[ 177.871804] pc : debug_print_object+0xb0/0xf0
+[ 177.876155] lr : debug_print_object+0xb0/0xf0
+[ 177.880505] sp : ffffffc01169b5a0
+[ 177.883810] x29: ffffffc01169b5a0 x28: ffffff80081c2320 x27: ffffff80081c4078
+[ 177.890942] x26: ffffff8003fe8f28 x25: ffffff8003de9890 x24: ffffffc01134d738
+[ 177.898075] x23: ffffffc010948f20 x22: ffffffc010b2d2e0 x21: ffffffc01169b628
+[ 177.905206] x20: ffffffc01134d700 x19: ffffffc010c80d98 x18: 00000000000003f6
+[ 177.912339] x17: 203a657079742074 x16: 63656a626f202930 x15: 0000000000000152
+[ 177.919471] x14: 0000000000000152 x13: 00000000ffffffea x12: ffffffc010d732e0
+[ 177.926603] x11: 0000000000000003 x10: ffffffc010d432a0 x9 : ffffffc010d432f8
+[ 177.933735] x8 : 000000000002ffe8 x7 : c0000000ffffdfff x6 : 0000000000000001
+[ 177.940866] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 00000000ffffffff
+[ 177.947997] x2 : ffffffc010c93240 x1 : ffffff80023624c0 x0 : 0000000000000054
+[ 177.955130] Call trace:
+[ 177.957567] debug_print_object+0xb0/0xf0
+[ 177.961570] debug_object_assert_init+0x124/0x178
+[ 177.966269] try_to_del_timer_sync+0x1c/0x70
+[ 177.970536] del_timer_sync+0x30/0x50
+[ 177.974192] ath11k_peer_frags_flush+0x34/0x68 [ath11k]
+[ 177.979439] ath11k_mac_op_set_key+0x1e4/0x338 [ath11k]
+[ 177.984673] ieee80211_key_enable_hw_accel+0xc8/0x3d0
+[ 177.989722] ieee80211_key_replace+0x360/0x740
+[ 177.994160] ieee80211_key_link+0x16c/0x210
+[ 177.998337] ieee80211_add_key+0x138/0x338
+[ 178.002426] nl80211_new_key+0xfc/0x258
+[ 178.006257] genl_family_rcv_msg_doit.isra.17+0xd8/0x120
+[ 178.011565] genl_rcv_msg+0xd8/0x1c8
+[ 178.015134] netlink_rcv_skb+0x38/0xf8
+[ 178.018877] genl_rcv+0x34/0x48
+[ 178.022012] netlink_unicast+0x174/0x230
+[ 178.025928] netlink_sendmsg+0x188/0x388
+[ 178.029845] ____sys_sendmsg+0x218/0x250
+[ 178.033763] ___sys_sendmsg+0x68/0x90
+[ 178.037418] __sys_sendmsg+0x44/0x88
+[ 178.040988] __arm64_sys_sendmsg+0x20/0x28
+[ 178.045077] invoke_syscall.constprop.5+0x54/0xe0
+[ 178.049776] do_el0_svc+0x74/0xc0
+[ 178.053084] el0_svc+0x10/0x18
+[ 178.056133] el0t_64_sync_handler+0x88/0xb0
+[ 178.060310] el0t_64_sync+0x148/0x14c
+[ 178.063966] ---[ end trace 8a5cf0bf9d34a058 ]---
 
-The cs_setup delay needs to happen *after* CS is asserted, that is, at
-the end of spi_set_cs, not at the beginning. Otherwise we're just
-delaying before the SPI transaction starts at all, which isn't very
-useful.
+Add changes to not to delete frag timer for peers during
+group key installation.
 
-No drivers use this right now, but that is likely to change soon with an
-upcoming Apple SPI HID transport driver.
+Tested on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01092-QCAHKSWPL_SILICONZ-1
 
-Fixes: 25093bdeb6bc ("spi: implement SW control for CS times")
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211210170534.177139-1-marcan@marcan.st
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: c3944a562102 ("ath11k: Clear the fragment cache during key install")
+Signed-off-by: Rameshkumar Sundaram <quic_ramess@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/1639071421-25078-1-git-send-email-quic_ramess@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 97b5a811bd7f7..a42b9e8521ce0 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -868,12 +868,9 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
- 	spi->controller->last_cs_enable = enable;
- 	spi->controller->last_cs_mode_high = spi->mode & SPI_CS_HIGH;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 2df60c74809d3..9dfa77389c4da 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -2791,7 +2791,7 @@ static int ath11k_mac_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
+ 	/* flush the fragments cache during key (re)install to
+ 	 * ensure all frags in the new frag list belong to the same key.
+ 	 */
+-	if (peer && cmd == SET_KEY)
++	if (peer && sta && cmd == SET_KEY)
+ 		ath11k_peer_frags_flush(ar, peer);
+ 	spin_unlock_bh(&ab->base_lock);
  
--	if (spi->cs_gpiod || gpio_is_valid(spi->cs_gpio) ||
--	    !spi->controller->set_cs_timing) {
--		if (activate)
--			spi_delay_exec(&spi->cs_setup, NULL);
--		else
--			spi_delay_exec(&spi->cs_hold, NULL);
-+	if ((spi->cs_gpiod || gpio_is_valid(spi->cs_gpio) ||
-+	    !spi->controller->set_cs_timing) && !activate) {
-+		spi_delay_exec(&spi->cs_hold, NULL);
- 	}
- 
- 	if (spi->mode & SPI_CS_HIGH)
-@@ -915,7 +912,9 @@ static void spi_set_cs(struct spi_device *spi, bool enable, bool force)
- 
- 	if (spi->cs_gpiod || gpio_is_valid(spi->cs_gpio) ||
- 	    !spi->controller->set_cs_timing) {
--		if (!activate)
-+		if (activate)
-+			spi_delay_exec(&spi->cs_setup, NULL);
-+		else
- 			spi_delay_exec(&spi->cs_inactive, NULL);
- 	}
- }
 -- 
 2.34.1
 
