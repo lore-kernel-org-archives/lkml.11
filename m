@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 500A0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D7E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382689AbiAXU0J (ORCPT
+        id S1382824AbiAXU0V (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:09 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60318 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353095AbiAXUDz (ORCPT
+        Mon, 24 Jan 2022 15:26:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60764 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376449AbiAXUEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:03:55 -0500
+        Mon, 24 Jan 2022 15:04:01 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57117C02B746;
+        Mon, 24 Jan 2022 11:30:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D5A86130A;
-        Mon, 24 Jan 2022 20:03:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39301C340E7;
-        Mon, 24 Jan 2022 20:03:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20122B8121B;
+        Mon, 24 Jan 2022 19:30:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C86EC340E5;
+        Mon, 24 Jan 2022 19:30:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054634;
-        bh=TFPhLY7a+S1lP7pzZ62if65Bl194tX+Ki4DpuTF2t9c=;
+        s=korg; t=1643052628;
+        bh=vqngZsueMLG4oC2+ytBbZp2PDn5MOvaO/WQkUAEK5qM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p4A2Y2fG95+iMnqOlgRjgZKEDnx6L+uxuC4wN8wuAj52Y35s2XkEb1uuYilBeRlAy
-         b/cqE5QGVrAPrP4j1xw+Wu7QNSXPA/pwVRUbXyxIqAVAPgOq26iggZPr5gUpXvBZxt
-         j6U3eFmSRHwJnVE20aflizPJk9bq5+KFvACD71GA=
+        b=C96JYqPNzUJZEOUMbWOZH7U7AMkKjf2JO+qi+tKbLNN13U8ykvyn+xhSJ+aTQ/get
+         kzImV1qXn8tBbIZZIlU66v3GOI1nqFcEdgKq7LnlJPNMpzOkE7YXoFYKTGQjhBIHzw
+         ypub8CG1tE+qNbxBbPIqJPnkzHN+uE8eqMI8McbY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlastimil Babka <vbabka@suse.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 5.10 453/563] s390/mm: fix 2KB pgtable release race
-Date:   Mon, 24 Jan 2022 19:43:38 +0100
-Message-Id: <20220124184040.107858769@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 122/320] ext4: avoid trim error on fs with small groups
+Date:   Mon, 24 Jan 2022 19:41:46 +0100
+Message-Id: <20220124183957.835668821@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,110 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Gordeev <agordeev@linux.ibm.com>
+From: Jan Kara <jack@suse.cz>
 
-commit c2c224932fd0ee6854d6ebfc8d059c2bcad86606 upstream.
+[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
 
-There is a race on concurrent 2KB-pgtables release paths when
-both upper and lower halves of the containing parent page are
-freed, one via page_table_free_rcu() + __tlb_remove_table(),
-and the other via page_table_free(). The race might lead to a
-corruption as result of remove of list item in page_table_free()
-concurrently with __free_page() in __tlb_remove_table().
+A user reported FITRIM ioctl failing for him on ext4 on some devices
+without apparent reason.  After some debugging we've found out that
+these devices (being LVM volumes) report rather large discard
+granularity of 42MB and the filesystem had 1k blocksize and thus group
+size of 8MB. Because ext4 FITRIM implementation puts discard
+granularity into minlen, ext4_trim_fs() declared the trim request as
+invalid. However just silently doing nothing seems to be a more
+appropriate reaction to such combination of parameters since user did
+not specify anything wrong.
 
-Let's assume first the lower and next the upper 2KB-pgtables are
-freed from a page. Since both halves of the page are allocated
-the tracking byte (bits 24-31 of the page _refcount) has value
-of 0x03 initially:
-
-CPU0				CPU1
-----				----
-
-page_table_free_rcu() // lower half
-{
-	// _refcount[31..24] == 0x03
-	...
-	atomic_xor_bits(&page->_refcount,
-			0x11U << (0 + 24));
-	// _refcount[31..24] <= 0x12
-	...
-	table = table | (1U << 0);
-	tlb_remove_table(tlb, table);
-}
-...
-__tlb_remove_table()
-{
-	// _refcount[31..24] == 0x12
-	mask = _table & 3;
-	// mask <= 0x01
-	...
-
-				page_table_free() // upper half
-				{
-					// _refcount[31..24] == 0x12
-					...
-					atomic_xor_bits(
-						&page->_refcount,
-						1U << (1 + 24));
-					// _refcount[31..24] <= 0x10
-					// mask <= 0x10
-					...
-	atomic_xor_bits(&page->_refcount,
-			mask << (4 + 24));
-	// _refcount[31..24] <= 0x00
-	// mask <= 0x00
-	...
-	if (mask != 0) // == false
-		break;
-	fallthrough;
-	...
-					if (mask & 3) // == false
-						...
-					else
-	__free_page(page);			list_del(&page->lru);
-	^^^^^^^^^^^^^^^^^^	RACE!		^^^^^^^^^^^^^^^^^^^^^
-}					...
-				}
-
-The problem is page_table_free() releases the page as result of
-lower nibble unset and __tlb_remove_table() observing zero too
-early. With this update page_table_free() will use the similar
-logic as page_table_free_rcu() + __tlb_remove_table(), and mark
-the fragment as pending for removal in the upper nibble until
-after the list_del().
-
-In other words, the parent page is considered as unreferenced and
-safe to release only when the lower nibble is cleared already and
-unsetting a bit in upper nibble results in that nibble turned zero.
-
-Cc: stable@vger.kernel.org
-Suggested-by: Vlastimil Babka <vbabka@suse.com>
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+CC: Lukas Czerner <lczerner@redhat.com>
+Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/s390/mm/pgalloc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ext4/ioctl.c   | 2 --
+ fs/ext4/mballoc.c | 8 ++++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
---- a/arch/s390/mm/pgalloc.c
-+++ b/arch/s390/mm/pgalloc.c
-@@ -253,13 +253,15 @@ void page_table_free(struct mm_struct *m
- 		/* Free 2K page table fragment of a 4K page */
- 		bit = (__pa(table) & ~PAGE_MASK)/(PTRS_PER_PTE*sizeof(pte_t));
- 		spin_lock_bh(&mm->context.lock);
--		mask = atomic_xor_bits(&page->_refcount, 1U << (bit + 24));
-+		mask = atomic_xor_bits(&page->_refcount, 0x11U << (bit + 24));
- 		mask >>= 24;
- 		if (mask & 3)
- 			list_add(&page->lru, &mm->context.pgtable_list);
- 		else
- 			list_del(&page->lru);
- 		spin_unlock_bh(&mm->context.lock);
-+		mask = atomic_xor_bits(&page->_refcount, 0x10U << (bit + 24));
-+		mask >>= 24;
- 		if (mask != 0)
- 			return;
- 	} else {
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index ba13fbb443d58..9fa20f9ba52b5 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -1120,8 +1120,6 @@ resizefs_out:
+ 		    sizeof(range)))
+ 			return -EFAULT;
+ 
+-		range.minlen = max((unsigned int)range.minlen,
+-				   q->limits.discard_granularity);
+ 		ret = ext4_trim_fs(sb, &range);
+ 		if (ret < 0)
+ 			return ret;
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index b67ea979f0cf7..0307702d114db 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -5270,6 +5270,7 @@ out:
+  */
+ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ {
++	struct request_queue *q = bdev_get_queue(sb->s_bdev);
+ 	struct ext4_group_info *grp;
+ 	ext4_group_t group, first_group, last_group;
+ 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
+@@ -5288,6 +5289,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ 	    start >= max_blks ||
+ 	    range->len < sb->s_blocksize)
+ 		return -EINVAL;
++	/* No point to try to trim less than discard granularity */
++	if (range->minlen < q->limits.discard_granularity) {
++		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
++			q->limits.discard_granularity >> sb->s_blocksize_bits);
++		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
++			goto out;
++	}
+ 	if (end >= max_blks)
+ 		end = max_blks - 1;
+ 	if (end <= first_data_blk)
+-- 
+2.34.1
+
 
 
