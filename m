@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99019C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8172C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353094AbiAXT7Q (ORCPT
+        id S1358405AbiAXT7X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:59:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34996 "EHLO
+        Mon, 24 Jan 2022 14:59:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33954 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355380AbiAXTnR (ORCPT
+        with ESMTP id S1355765AbiAXTnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:43:17 -0500
+        Mon, 24 Jan 2022 14:43:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C6BFB8122F;
-        Mon, 24 Jan 2022 19:43:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B442EC340E5;
-        Mon, 24 Jan 2022 19:43:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0A85B811F3;
+        Mon, 24 Jan 2022 19:43:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DB43C340E5;
+        Mon, 24 Jan 2022 19:43:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053394;
-        bh=5mn8xY2Rw2yKpuokmAWh9/JaNI4qxPL/snAS97h6juY=;
+        s=korg; t=1643053418;
+        bh=UO5roCH2zYZALs8rtmhmOHSCw7I+ibAjMZTVl8sl7RU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t5SGBHZ69m7cnE/Sb+cN4p4cvdwSjYL3U6dSJ0g7NNCiuz+o1rilw6aICK8cRlpOn
-         b0wI0DmDqIJSVvedvmFbiR9nNhpX5JjCuKtiQIf7sMMXQvYVRIVye2Vln8syWWtjw6
-         TQixsHEWZMU3pxR1TbAmLdnNN0LTZGhZz9Bznbr4=
+        b=TqgrLfkLNZpQwpqjjZM4Pw4Sjyyxi62VA4XwUicpoowGk/776pC6Y2wAZEZh8pcmQ
+         QqOmPUvBiq9iUtSIleu3TB6pQh0UKG8BQoSytzK3SW68Yck3Xefg6ug4VVgDOQwxAy
+         aG7y1eSD9WaVVkeFqQPoCA61rINyYHGxixxa5Ox4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 051/563] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-Date:   Mon, 24 Jan 2022 19:36:56 +0100
-Message-Id: <20220124184026.193971287@linuxfoundation.org>
+Subject: [PATCH 5.10 058/563] wcn36xx: Release DMA channel descriptor allocations
+Date:   Mon, 24 Jan 2022 19:37:03 +0100
+Message-Id: <20220124184026.419341918@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,52 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
 
-[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
+[ Upstream commit 3652096e5263ad67604b0323f71d133485f410e5 ]
 
-I got a kernel BUG report when doing fault injection test:
+When unloading the driver we are not releasing the DMA descriptors which we
+previously allocated.
 
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-...
-RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
-...
-Call Trace:
- proto_unregister+0x83/0x220
- cmtp_cleanup_sockets+0x37/0x40 [cmtp]
- cmtp_exit+0xe/0x1f [cmtp]
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-
-If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
-success. This will cause a kernel bug when accessing uncreated ctmp
-related data when the module exits.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
+Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211105122152.1580542-3-bryan.odonoghue@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/cmtp/core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/dxe.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index 0a2d78e811cf5..83eb84e8e688f 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -501,9 +501,7 @@ static int __init cmtp_init(void)
- {
- 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
+diff --git a/drivers/net/wireless/ath/wcn36xx/dxe.c b/drivers/net/wireless/ath/wcn36xx/dxe.c
+index 0909d0c423cbb..b117d8a0f446f 100644
+--- a/drivers/net/wireless/ath/wcn36xx/dxe.c
++++ b/drivers/net/wireless/ath/wcn36xx/dxe.c
+@@ -1014,4 +1014,9 @@ void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
  
--	cmtp_init_sockets();
--
--	return 0;
-+	return cmtp_init_sockets();
+ 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_l_ch);
+ 	wcn36xx_dxe_ch_free_skbs(wcn, &wcn->dxe_rx_h_ch);
++
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_l_ch);
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_tx_h_ch);
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_l_ch);
++	wcn36xx_dxe_deinit_descs(wcn->dev, &wcn->dxe_rx_h_ch);
  }
- 
- static void __exit cmtp_exit(void)
 -- 
 2.34.1
 
