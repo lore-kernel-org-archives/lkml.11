@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D942C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2D9EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840516AbiAXWxe (ORCPT
+        id S1382747AbiAXWxl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:53:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57978 "EHLO
+        Mon, 24 Jan 2022 17:53:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574961AbiAXVuu (ORCPT
+        with ESMTP id S1575134AbiAXVvE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:50:50 -0500
+        Mon, 24 Jan 2022 16:51:04 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0983EC0885A8;
-        Mon, 24 Jan 2022 12:33:39 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 813EBC09398A;
+        Mon, 24 Jan 2022 12:33:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A28D7B811FB;
-        Mon, 24 Jan 2022 20:33:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C618DC340E5;
-        Mon, 24 Jan 2022 20:33:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 49DD2B8122C;
+        Mon, 24 Jan 2022 20:33:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE72C340E5;
+        Mon, 24 Jan 2022 20:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056417;
-        bh=Fhv3mi1Mm8uNIIYwqjQOhdSly4zsT0G1KS4gJQ8MreU=;
+        s=korg; t=1643056429;
+        bh=PIlHMzSJcbtlID3nr+KRYnPjFbUreuFKXZbjpwgQed0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DciYPAZe+QimwSosI4FyzgXr905VBRtYTjla5EvZ1vicFbR6g/hFPODakj46URuZW
-         sWr1Gmh33Qznr5WpIZ1ND79eYiwjyJkHjmQLJyJRf4WuyG/Pcn4UEfSO3sM4I0urNa
-         MdzNXliYpOEoVioh90udns7qXZpr+S1p88vEyWHM=
+        b=Olo1C9cVOKExLkTnuojmxZjQWgNLmriQezdwzopFY/lSaWww70gzL8UsgBfu1yOHP
+         q3tIuJ4v95Vq/pssr8aOSlpHkKgLDsfI3DZqbWHdpzL6qFgqTtuwP/AW3WmqhpKrEm
+         EPwww2PDbYXqs4GH2bPZpY7i2jUQ5m1u1Ms/rX58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 478/846] media: atomisp: handle errors at sh_css_create_isp_params()
-Date:   Mon, 24 Jan 2022 19:39:55 +0100
-Message-Id: <20220124184117.509259804@linuxfoundation.org>
+Subject: [PATCH 5.15 482/846] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 24 Jan 2022 19:39:59 +0100
+Message-Id: <20220124184117.638999670@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,51 +50,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-[ Upstream commit 58043dbf6d1ae9deab4f5aa1e039c70112017682 ]
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-The succ var tracks memory allocation erros on this function.
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-Fix it, in order to stop this W=1 Werror in clang:
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
 
-drivers/staging/media/atomisp/pci/sh_css_params.c:2430:7: error: variable 'succ' set but not used [-Werror,-Wunused-but-set-variable]
-        bool succ = true;
-             ^
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/sh_css_params.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css_params.c b/drivers/staging/media/atomisp/pci/sh_css_params.c
-index dbd3bfe3d343c..ccc0078795648 100644
---- a/drivers/staging/media/atomisp/pci/sh_css_params.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css_params.c
-@@ -2431,7 +2431,7 @@ sh_css_create_isp_params(struct ia_css_stream *stream,
- 	unsigned int i;
- 	struct sh_css_ddr_address_map *ddr_ptrs;
- 	struct sh_css_ddr_address_map_size *ddr_ptrs_size;
--	int err = 0;
-+	int err;
- 	size_t params_size;
- 	struct ia_css_isp_parameters *params =
- 	kvmalloc(sizeof(struct ia_css_isp_parameters), GFP_KERNEL);
-@@ -2473,7 +2473,11 @@ sh_css_create_isp_params(struct ia_css_stream *stream,
- 	succ &= (ddr_ptrs->macc_tbl != mmgr_NULL);
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index aac343f7d7d3d..782d67c2c6e0d 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
  
- 	*isp_params_out = params;
--	return err;
-+
-+	if (!succ)
-+		return -ENOMEM;
-+
-+	return 0;
+-	return 0;
++	return stream_open(inode, file);
  }
  
- static bool
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -1154,7 +1154,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
 -- 
 2.34.1
 
