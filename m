@@ -2,98 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78130C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DFC1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:58:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344545AbiAXS55 (ORCPT
+        id S1344557AbiAXS6D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:57:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44094 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344555AbiAXSyr (ORCPT
+        Mon, 24 Jan 2022 13:58:03 -0500
+Received: from mail-ua1-f52.google.com ([209.85.222.52]:40701 "EHLO
+        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242445AbiAXSzp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:54:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66EBCC061348;
-        Mon, 24 Jan 2022 10:53:39 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 069CB61507;
-        Mon, 24 Jan 2022 18:53:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADA99C340E5;
-        Mon, 24 Jan 2022 18:53:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050418;
-        bh=/5CAYepTBiNKnuaUxeDRApQltX0ss9gMvwPaaxbIzC0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S38W0PBxPryzO+sycbJXNS6y6OzUus4F9ZvKw7q14zFa9XAKl8JlIjPwED9mHNFqP
-         ESjUG8i0fCfKJs9yeFpVPXoyv9+nW3LpceRSVJhetC43is53fvQf5Z7IA/Oa2tkZQd
-         Llmj7FUTvjYQLMcrCnFK4TUzbKt7ffl9+AVEJXQY=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 4.4 111/114] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
-Date:   Mon, 24 Jan 2022 19:43:26 +0100
-Message-Id: <20220124183930.530893189@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 13:55:45 -0500
+Received: by mail-ua1-f52.google.com with SMTP id w21so32801061uan.7;
+        Mon, 24 Jan 2022 10:55:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ME4XZXZ5PNYvzDH4OmBox2BIuMK+Mc5MwbGfrqjcLBM=;
+        b=krwgaVuE7IDC/rxMSMdLVC6uJSa/IKo1aMFUsDzc8QqnxQzkUgm+00n86vnoUFQF0V
+         t/afEQFBE5qkd4PwgnEWzJiBnrV7wjOjH4Yb+FUufm3HBdIfbdx50jPutmKTFXqjodzD
+         m6d4F7+l5FYX18rXQ8oFFekvkdnh5QYpS7ERz7sQzH/FdjHdTbT1Krdgfs5LyaZp6DuS
+         2k3pAQCkj1l7z8k0wEvEF4rEwZr1u0se7eCCCLbKgTn3uZQvaHOx1tM+JdSCp3wDmegH
+         7ou9UbdSXcUwNwZwBtQjgczB7V0ZYrbyp/+JMycS0bXEEBxeqplavCDDZroxzta12JMF
+         MuRw==
+X-Gm-Message-State: AOAM532Rwk+fClYn7Oie+oxm1D0fIxBdQ6oQRFbAG59aU59Nu1WSe/Va
+        0vQ8LjJLPDlEPSEr3TyoFZpJdxMmjGia0w==
+X-Google-Smtp-Source: ABdhPJzErMxVydBitJvV9DhLIxXl2tkEu3hu1ychn50c2rXn3rVSZyzIt49BJeS/bJthEGNUNJ53Cw==
+X-Received: by 2002:ab0:5e93:: with SMTP id y19mr6435088uag.13.1643050543868;
+        Mon, 24 Jan 2022 10:55:43 -0800 (PST)
+Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
+        by smtp.gmail.com with ESMTPSA id e194sm257894vke.37.2022.01.24.10.55.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 10:55:43 -0800 (PST)
+Received: by mail-ua1-f47.google.com with SMTP id 2so32864999uax.10;
+        Mon, 24 Jan 2022 10:55:43 -0800 (PST)
+X-Received: by 2002:a9f:2070:: with SMTP id 103mr2821729uam.122.1643050543058;
+ Mon, 24 Jan 2022 10:55:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220123125737.2658758-1-geert@linux-m68k.org>
+ <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg> <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
+In-Reply-To: <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 24 Jan 2022 19:55:32 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
+Message-ID: <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
+Subject: Re: Build regressions/improvements in v5.17-rc1
+To:     Alex Deucher <alexdeucher@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "Tobin C. Harding" <me@tobin.cc>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+Hi Alex,
 
-commit 912f7c6f7fac273f40e621447cf17d14b50d6e5b upstream.
+On Mon, Jan 24, 2022 at 7:52 PM Alex Deucher <alexdeucher@gmail.com> wrote:
+> On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+> > On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
+> > >  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
+>
+> I don't really see what's going on here:
+>
+> #ifdef CONFIG_X86_64
+> return cpu_data(first_cpu_of_numa_node).apicid;
+> #else
+> return first_cpu_of_numa_node;
+> #endif
 
-The hardware channel next descriptor view structure contains just
-fields of 32 bits, while dma_addr_t can be of type u64 or u32
-depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
-what the hardware expects.
+Ah, the actual failure causing this was not included:
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-11-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/dma/at_xdmac.c |   18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+In file included from /kisskb/src/arch/x86/um/asm/processor.h:41:0,
+                 from /kisskb/src/include/linux/mutex.h:19,
+                 from /kisskb/src/include/linux/kernfs.h:11,
+                 from /kisskb/src/include/linux/sysfs.h:16,
+                 from /kisskb/src/include/linux/kobject.h:20,
+                 from /kisskb/src/include/linux/pci.h:35,
+                 from
+/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:25:
+/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In
+function 'kfd_cpumask_to_apic_id':
+/kisskb/src/arch/um/include/asm/processor-generic.h:103:18: error:
+called object is not a function or function pointer
+ #define cpu_data (&boot_cpu_data)
+                  ^
+/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9:
+note: in expansion of macro 'cpu_data'
+  return cpu_data(first_cpu_of_numa_node).apicid;
+         ^
+/kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1:
+error: control reaches end of non-void function [-Werror=return-type]
+ }
+ ^
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -233,15 +233,15 @@ struct at_xdmac {
- 
- /* Linked List Descriptor */
- struct at_xdmac_lld {
--	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
--	u32		mbr_ubc;	/* Microblock Control Member */
--	dma_addr_t	mbr_sa;		/* Source Address Member */
--	dma_addr_t	mbr_da;		/* Destination Address Member */
--	u32		mbr_cfg;	/* Configuration Register */
--	u32		mbr_bc;		/* Block Control Register */
--	u32		mbr_ds;		/* Data Stride Register */
--	u32		mbr_sus;	/* Source Microblock Stride Register */
--	u32		mbr_dus;	/* Destination Microblock Stride Register */
-+	u32 mbr_nda;	/* Next Descriptor Member */
-+	u32 mbr_ubc;	/* Microblock Control Member */
-+	u32 mbr_sa;	/* Source Address Member */
-+	u32 mbr_da;	/* Destination Address Member */
-+	u32 mbr_cfg;	/* Configuration Register */
-+	u32 mbr_bc;	/* Block Control Register */
-+	u32 mbr_ds;	/* Data Stride Register */
-+	u32 mbr_sus;	/* Source Microblock Stride Register */
-+	u32 mbr_dus;	/* Destination Microblock Stride Register */
- };
- 
- /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
+Gr{oetje,eeting}s,
 
+                        Geert
 
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
