@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFB2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 464C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454936AbiAXVeI (ORCPT
+        id S1352188AbiAXVeQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:34:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51358 "EHLO
+        Mon, 24 Jan 2022 16:34:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50862 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344693AbiAXU6X (ORCPT
+        with ESMTP id S1444150AbiAXVAI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:23 -0500
+        Mon, 24 Jan 2022 16:00:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EE1B66148B;
-        Mon, 24 Jan 2022 20:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC6ABC340E8;
-        Mon, 24 Jan 2022 20:58:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6646C611DA;
+        Mon, 24 Jan 2022 21:00:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24851C340E5;
+        Mon, 24 Jan 2022 21:00:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057902;
-        bh=yoRT3qfphQJgL7iYKNchLDHmu3yMtDJ7MmX9qJOVqRA=;
+        s=korg; t=1643058005;
+        bh=kucaGnne7cqZQPDqTUhLgDG6belnp+ejA+u9CyOrx/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y5DeWmrJPMwYZGi9+Kv8HN/GqVGWc7yMtyY8rZjN6p3K+iVuDxn6AaEMuOuVWKmv0
-         YXDf54g7b28hoMnbeP3+qSE6EGkcHsySnepDMkaOLMclfZ3vgUFnkCwIdM2mM/E2pH
-         x4+r6WCgYalX/ISxDtsG0zzTiC4ftEFoJNl0KweA=
+        b=HVb/01x37fk59ltfTuQxIqFiLS9sVvKG/bmE8fnFPNTGrtIEJzJYMvFcf7Joz73f2
+         Djfpnfm2Pir4WaMP4IXD35emQcxy0uEoIPtHF5AvqOjwRz8IGv6yBijNxxgv+wO8Xo
+         5VGV+mv1txw3Lwx7yBxkyO7pjmcybFeU22mzETo0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org,
+        Tirthendu Sarkar <tirthendu.sarkar@intel.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0115/1039] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
-Date:   Mon, 24 Jan 2022 19:31:44 +0100
-Message-Id: <20220124184128.992544933@linuxfoundation.org>
+Subject: [PATCH 5.16 0149/1039] selftests/bpf: Fix xdpxceiver failures for no hugepages
+Date:   Mon, 24 Jan 2022 19:32:18 +0100
+Message-Id: <20220124184130.171764698@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,50 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Benjamin Li <benl@squareup.com>
+From: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
 
-[ Upstream commit cfdf6b19e750f7de8ae71a26932f63b52e3bf74c ]
+[ Upstream commit dd7f091fd22b1dce6c20e8f7769aa068ed88ac6d ]
 
-The linear mapping between the BD rate field and the driver's 5GHz
-legacy rates table (wcn_5ghz_rates) does not only apply for the latter
-four rates -- it applies to all eight rates.
+xsk_configure_umem() needs hugepages to work in unaligned mode. So when
+hugepages are not configured, 'unaligned' tests should be skipped which
+is determined by the helper function hugepages_present(). This function
+erroneously returns true with MAP_NORESERVE flag even when no hugepages
+are configured. The removal of this flag fixes the issue.
 
-Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
-Signed-off-by: Benjamin Li <benl@squareup.com>
-Tested-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211104010548.1107405-3-benl@squareup.com
+The test TEST_TYPE_UNALIGNED_INV_DESC also needs to be skipped when
+there are no hugepages. However, this was not skipped as there was no
+check for presence of hugepages and hence was failing. The check to skip
+the test has now been added.
+
+Fixes: a4ba98dd0c69 (selftests: xsk: Add test for unaligned mode)
+Signed-off-by: Tirthendu Sarkar <tirthendu.sarkar@intel.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211117123613.22288-1-tirthendu.sarkar@intel.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/txrx.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
-index f0a9f069a92a9..dd58dde8c8363 100644
---- a/drivers/net/wireless/ath/wcn36xx/txrx.c
-+++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
-@@ -272,7 +272,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 	const struct wcn36xx_rate *rate;
- 	struct ieee80211_hdr *hdr;
- 	struct wcn36xx_rx_bd *bd;
--	struct ieee80211_supported_band *sband;
- 	u16 fc, sn;
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index 6c7cf8aadc792..621342ec30c48 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -1219,7 +1219,7 @@ static bool hugepages_present(struct ifobject *ifobject)
+ 	void *bufs;
  
- 	/*
-@@ -350,12 +349,11 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
- 		status.enc_flags = rate->encoding_flags;
- 		status.bw = rate->bw;
- 		status.rate_idx = rate->mcs_or_legacy_index;
--		sband = wcn->hw->wiphy->bands[status.band];
- 		status.nss = 1;
+ 	bufs = mmap(NULL, mmap_sz, PROT_READ | PROT_WRITE,
+-		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_NORESERVE | MAP_HUGETLB, -1, 0);
++		    MAP_PRIVATE | MAP_ANONYMOUS | MAP_HUGETLB, -1, 0);
+ 	if (bufs == MAP_FAILED)
+ 		return false;
  
- 		if (status.band == NL80211_BAND_5GHZ &&
- 		    status.encoding == RX_ENC_LEGACY &&
--		    status.rate_idx >= sband->n_bitrates) {
-+		    status.rate_idx >= 4) {
- 			/* no dsss rates in 5Ghz rates table */
- 			status.rate_idx -= 4;
- 		}
+@@ -1366,6 +1366,10 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+ 		testapp_invalid_desc(test);
+ 		break;
+ 	case TEST_TYPE_UNALIGNED_INV_DESC:
++		if (!hugepages_present(test->ifobj_tx)) {
++			ksft_test_result_skip("No 2M huge pages present.\n");
++			return;
++		}
+ 		test_spec_set_name(test, "UNALIGNED_INV_DESC");
+ 		test->ifobj_tx->umem->unaligned_mode = true;
+ 		test->ifobj_rx->umem->unaligned_mode = true;
 -- 
 2.34.1
 
