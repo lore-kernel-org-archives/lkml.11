@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2EBC3526D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 737C7C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444477AbiAXVBB (ORCPT
+        id S1444353AbiAXVAn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60792 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387157AbiAXUgd (ORCPT
+        Mon, 24 Jan 2022 16:00:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385459AbiAXUd0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:33 -0500
+        Mon, 24 Jan 2022 15:33:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9036C07E297;
+        Mon, 24 Jan 2022 11:45:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBFA061536;
-        Mon, 24 Jan 2022 20:36:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CD8C340E5;
-        Mon, 24 Jan 2022 20:36:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75097B8121A;
+        Mon, 24 Jan 2022 19:45:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 839AAC340E5;
+        Mon, 24 Jan 2022 19:45:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056592;
-        bh=dYHVgXTJBZ/3UowgSYH+o0QhZxf6PnFIxrfZXVMuKnM=;
+        s=korg; t=1643053525;
+        bh=qne+I7FLNYBtN/84TB3R3SwarzcOPorxaSIPNuVN8VA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q9O0xV8rqNYeIrEUALmmV3svNNK3kKtQfOICwHp53SbEIkW9uG0N9eLX5OKWzVWXw
-         qN3sULBFhP2Zsgq3Katfdw86F3IE5T0Htx10VG8GRQvCnKiLbrLUxJQywL/M43TheB
-         z1V1pKnSBpNr+MpBRTwFlDjWtSZhegFIVy8oldWY=
+        b=RFBFuJKrTjct5kM2obhGF6dcGWsM782nIl9sjwBaVBFSJHVzdAJFpu4IzFGBOZvRv
+         HRy5n8U3eFf2B9e6JLS8rUO4VZRGufnNChC1t2fDFoFrwvhmsbDec0XSLAaCI8LL2i
+         DPnNx5GNkspOP642pJXITSLHBGY0ckDHWfixfDY4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Gottschall <s.gottschall@dd-wrt.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 534/846] ath10k: Fix tx hanging
-Date:   Mon, 24 Jan 2022 19:40:51 +0100
-Message-Id: <20220124184119.421914115@linuxfoundation.org>
+Subject: [PATCH 5.10 093/563] media: dmxdev: fix UAF when dvb_register_device() fails
+Date:   Mon, 24 Jan 2022 19:37:38 +0100
+Message-Id: <20220124184027.608351413@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,54 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
+[ Upstream commit ab599eb11882f834951c436cc080c3455ba32b9b ]
 
-While running stress tests in roaming scenarios (switching ap's every 5
-seconds, we discovered a issue which leads to tx hangings of exactly 5
-seconds while or after scanning for new accesspoints. We found out that
-this hanging is triggered by ath10k_mac_wait_tx_complete since the
-empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
-To fix this, we simply move the wake_up call to htt_tx_dec_pending,
-since this call was missed on several locations within the ath10k code.
+I got a use-after-free report:
 
-Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
+dvbdev: dvb_register_device: failed to create device dvb1.dvr0 (-12)
+...
+==================================================================
+BUG: KASAN: use-after-free in dvb_dmxdev_release+0xce/0x2f0
+...
+Call Trace:
+ dump_stack_lvl+0x6c/0x8b
+ print_address_description.constprop.0+0x48/0x70
+ kasan_report.cold+0x82/0xdb
+ __asan_load4+0x6b/0x90
+ dvb_dmxdev_release+0xce/0x2f0
+...
+Allocated by task 7666:
+ kasan_save_stack+0x23/0x50
+ __kasan_kmalloc+0x83/0xa0
+ kmem_cache_alloc_trace+0x22e/0x470
+ dvb_register_device+0x12f/0x980
+ dvb_dmxdev_init+0x1f3/0x230
+...
+Freed by task 7666:
+ kasan_save_stack+0x23/0x50
+ kasan_set_track+0x20/0x30
+ kasan_set_free_info+0x24/0x40
+ __kasan_slab_free+0xf2/0x130
+ kfree+0xd1/0x5c0
+ dvb_register_device.cold+0x1ac/0x1fa
+ dvb_dmxdev_init+0x1f3/0x230
+...
+
+When dvb_register_device() in dvb_dmxdev_init() fails, dvb_dmxdev_init()
+does not return a failure, and the memory pointed to by dvbdev or
+dvr_dvbdev is invalid at this point. If they are used subsequently, it
+will result in UFA or null-ptr-deref.
+
+If dvb_register_device() in dvb_dmxdev_init() fails, fix the bug by making
+dvb_dmxdev_init() return an error as well.
+
+Link: https://lore.kernel.org/linux-media/20211015085741.1203283-1-wanghai38@huawei.com
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
- drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ drivers/media/dvb-core/dmxdev.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index d6b8bdcef4160..b793eac2cfac8 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -147,6 +147,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
- 	htt->num_pending_tx--;
- 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
- 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
+diff --git a/drivers/media/dvb-core/dmxdev.c b/drivers/media/dvb-core/dmxdev.c
+index f14a872d12687..e58cb8434dafe 100644
+--- a/drivers/media/dvb-core/dmxdev.c
++++ b/drivers/media/dvb-core/dmxdev.c
+@@ -1413,7 +1413,7 @@ static const struct dvb_device dvbdev_dvr = {
+ };
+ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
+ {
+-	int i;
++	int i, ret;
+ 
+ 	if (dmxdev->demux->open(dmxdev->demux) < 0)
+ 		return -EUSERS;
+@@ -1432,14 +1432,26 @@ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
+ 					    DMXDEV_STATE_FREE);
+ 	}
+ 
+-	dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
++	ret = dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
+ 			    DVB_DEVICE_DEMUX, dmxdev->filternum);
+-	dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
++	if (ret < 0)
++		goto err_register_dvbdev;
 +
-+	if (htt->num_pending_tx == 0)
-+		wake_up(&htt->empty_tx_wq);
++	ret = dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
+ 			    dmxdev, DVB_DEVICE_DVR, dmxdev->filternum);
++	if (ret < 0)
++		goto err_register_dvr_dvbdev;
+ 
+ 	dvb_ringbuffer_init(&dmxdev->dvr_buffer, NULL, 8192);
+ 
+ 	return 0;
++
++err_register_dvr_dvbdev:
++	dvb_unregister_device(dmxdev->dvbdev);
++err_register_dvbdev:
++	vfree(dmxdev->filter);
++	dmxdev->filter = NULL;
++	return ret;
  }
  
- int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index 7c9ea0c073d8b..6f8b642188941 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -82,8 +82,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
- 	flags = skb_cb->flags;
- 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
- 	ath10k_htt_tx_dec_pending(htt);
--	if (htt->num_pending_tx == 0)
--		wake_up(&htt->empty_tx_wq);
- 	spin_unlock_bh(&htt->tx_lock);
- 
- 	rcu_read_lock();
+ EXPORT_SYMBOL(dvb_dmxdev_init);
 -- 
 2.34.1
 
