@@ -2,42 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6996C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E634DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343622AbiAXSvK (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:51:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48650 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245404AbiAXSuA (ORCPT
+        id S245601AbiAXSvN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:51:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49856 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241926AbiAXSuE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:50:00 -0500
+        Mon, 24 Jan 2022 13:50:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A55CC614FE;
-        Mon, 24 Jan 2022 18:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85D8FC340E8;
-        Mon, 24 Jan 2022 18:49:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 536F0B8122D;
+        Mon, 24 Jan 2022 18:50:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9CA5C36AE9;
+        Mon, 24 Jan 2022 18:50:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050199;
-        bh=xyb7el4B8LdNx+P5MYu2OzNDCK3CD8EPUq/+flDETEc=;
+        s=korg; t=1643050202;
+        bh=t/mC74GPu6DwbDU9BF7P9FlIn07H9tWh/CCjzNBe9Ps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BYV4ZJVKvVtH5vzFOoAIyhgbDvjkOVbqvGuGKGHPb+dx9tUHtPryP698peloDSE9s
-         3rVd6NsAbzZlcDS9mixCzoMhILBvun/KBMDOR6RYgGyTfFFozeW76EfwWan52k8fJ1
-         sK5e+Cs0No535aQ2ysaUtase24w9u9xuEoSFf9ns=
+        b=s77J02W2fY9wTUhyxpgusjlHVaE+o78AoO9gDij983ggk/Yd6SxMJhU4r8vHWFl+h
+         4ceIpJTUBlaNDKSuPCFt1Oav/pqf3WfvwAVr9KGyvv6rjhxiA77WIoTEEMQU0cqP4A
+         TeL69D+apKYxe+P+FbRsMHFK0LD85fvZ9s6s8rpc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Subject: [PATCH 4.4 041/114] net: mcs7830: handle usb read errors properly
-Date:   Mon, 24 Jan 2022 19:42:16 +0100
-Message-Id: <20220124183928.377684769@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.4 015/114] media: dib0700: fix undefined behavior in tuner shutdown
+Date:   Mon, 24 Jan 2022 19:41:50 +0100
+Message-Id: <20220124183927.582488506@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -49,56 +45,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Michael Kuron <michael.kuron@gmail.com>
 
-[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
+commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
 
-Syzbot reported uninit value in mcs7830_bind(). The problem was in
-missing validation check for bytes read via usbnet_read_cmd().
+This fixes a problem where closing the tuner would leave it in a state
+where it would not tune to any channel when reopened. This problem was
+discovered as part of https://github.com/hselasky/webcamd/issues/16.
 
-usbnet_read_cmd() internally calls usb_control_msg(), that returns
-number of bytes read. Code should validate that requested number of bytes
-was actually read.
+Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
+behavior. The driver still worked in practice as the overflow would in
+most environments result in 0, which rendered the line a no-op. When
+running the driver as part of webcamd however, the overflow could lead
+to 0xff due to optimizations by the compiler, which would, in the end,
+improperly shut down the tuner.
 
-So, this patch adds missing size validation check inside
-mcs7830_get_reg() to prevent uninit value bugs
+The bug is a regression introduced in the commit referenced below. The
+present patch causes identical behavior to before that commit for
+adap->id equal to 0 or 1. The driver does not contain support for
+dib0700 devices with more adapters, assuming such even exist.
 
-Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
-Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Tests have been performed with the Xbox One Digital TV Tuner on amd64.
+Not all dib0700 devices are expected to be affected by the regression;
+this code path is only taken by those with incorrect endpoint numbers.
+
+Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
+
+Cc: stable@vger.kernel.org
+Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
+Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/usb/mcs7830.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
-index 4f345bd4e6e29..95151b46f2001 100644
---- a/drivers/net/usb/mcs7830.c
-+++ b/drivers/net/usb/mcs7830.c
-@@ -121,8 +121,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
- 
- static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
- {
--	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
--				0x0000, index, data, size);
-+	int ret;
-+
-+	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
-+			      0x0000, index, data, size);
-+	if (ret < 0)
-+		return ret;
-+	else if (ret < size)
-+		return -ENODATA;
-+
-+	return ret;
- }
- 
- static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
--- 
-2.34.1
-
+--- a/drivers/media/usb/dvb-usb/dib0700_core.c
++++ b/drivers/media/usb/dvb-usb/dib0700_core.c
+@@ -583,8 +583,6 @@ int dib0700_streaming_ctrl(struct dvb_us
+ 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->id);
+-		else
+-			st->channel_state |=	1 << ~(adap->id);
+ 	} else {
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
 
 
