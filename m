@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E64C35271
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB81C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353918AbiAXVnJ (ORCPT
+        id S1457099AbiAXVky (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:43:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59890 "EHLO
+        Mon, 24 Jan 2022 16:40:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56160 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446436AbiAXVIO (ORCPT
+        with ESMTP id S1445320AbiAXVCs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:08:14 -0500
+        Mon, 24 Jan 2022 16:02:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D762BB8123A;
-        Mon, 24 Jan 2022 21:08:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E213DC340E7;
-        Mon, 24 Jan 2022 21:08:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4C690B81057;
+        Mon, 24 Jan 2022 21:02:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70613C340E5;
+        Mon, 24 Jan 2022 21:02:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058491;
-        bh=U+Nb0NPZWLh7Nmoze8/HV96EGs6PbpH8kYa4V7Ihd9c=;
+        s=korg; t=1643058165;
+        bh=MMPMmtVSLrtuyr7cLejn7b26l10ZVjMuBWZcYg26WQE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WiYz4HNTW7rkx/X1/3zi0tj0lF+HlpmZvMgmjLHrfDNwwnvltp5K75CXRqi4gZeXP
-         4X+GQpVa7NhBSOUGPp6i594gtpN1D5M8RoSAJpMhdA0nNzSmiVASJo4uTxUl//E6i7
-         D7uD5+FhZKG6WMZx11yxKtggLxQK2Fb7HZRXSUjE=
+        b=Ft1zlP+JT9w94b5TJ+snE25Sy8phg8EBFwdWdLDsRCPfaKaoO7fZIgZXRLb3jt8kO
+         7p1YtwrTZK947uTrXGo7T+JET16eQ77X/lC7cJP/XF0CCcZ9XVfxhrOh7eQzl9DxgR
+         s9pq5F4yfMq8VsxpYp6VCd2Ns4Xr7RISZfqfyYzI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0307/1039] ARM: dts: armada-38x: Add generic compatible to UART nodes
-Date:   Mon, 24 Jan 2022 19:34:56 +0100
-Message-Id: <20220124184135.632924047@linuxfoundation.org>
+Subject: [PATCH 5.16 0201/1039] igc: AF_XDP zero-copy metadata adjust breaks SKBs on XDP_PASS
+Date:   Mon, 24 Jan 2022 19:33:10 +0100
+Message-Id: <20220124184132.088197008@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,46 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Behún <kabel@kernel.org>
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-[ Upstream commit 62480772263ab6b52e758f2346c70a526abd1d28 ]
+[ Upstream commit 4fa8fcd3440101dbacf4fae91de69877ef751977 ]
 
-Add generic compatible string "ns16550a" to serial port nodes of Armada
-38x.
+Driver already implicitly supports XDP metadata access in AF_XDP
+zero-copy mode, as xsk_buff_pool's xp_alloc() naturally set xdp_buff
+data_meta equal data.
 
-This makes it possible to use earlycon.
+This works fine for XDP and AF_XDP, but if a BPF-prog adjust via
+bpf_xdp_adjust_meta() and choose to call XDP_PASS, then igc function
+igc_construct_skb_zc() will construct an invalid SKB packet. The
+function correctly include the xdp->data_meta area in the memcpy, but
+forgot to pull header to take metasize into account.
 
-Fixes: 0d3d96ab0059 ("ARM: mvebu: add Device Tree description of the Armada 380/385 SoCs")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/armada-38x.dtsi | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/armada-38x.dtsi b/arch/arm/boot/dts/armada-38x.dtsi
-index 9b1a24cc5e91f..df3c8d1d8f641 100644
---- a/arch/arm/boot/dts/armada-38x.dtsi
-+++ b/arch/arm/boot/dts/armada-38x.dtsi
-@@ -168,7 +168,7 @@
- 			};
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index d28a80a009537..d83e665b3a4f2 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2448,8 +2448,10 @@ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
  
- 			uart0: serial@12000 {
--				compatible = "marvell,armada-38x-uart";
-+				compatible = "marvell,armada-38x-uart", "ns16550a";
- 				reg = <0x12000 0x100>;
- 				reg-shift = <2>;
- 				interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
-@@ -178,7 +178,7 @@
- 			};
+ 	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
+-	if (metasize)
++	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
++		__skb_pull(skb, metasize);
++	}
  
- 			uart1: serial@12100 {
--				compatible = "marvell,armada-38x-uart";
-+				compatible = "marvell,armada-38x-uart", "ns16550a";
- 				reg = <0x12100 0x100>;
- 				reg-shift = <2>;
- 				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
+ 	return skb;
+ }
 -- 
 2.34.1
 
