@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E55EC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AF7C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353079AbiAXVEX (ORCPT
+        id S1445600AbiAXVEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:04:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351667AbiAXUls (ORCPT
+        Mon, 24 Jan 2022 16:04:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44408 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352807AbiAXUmo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:41:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90784C019B03;
-        Mon, 24 Jan 2022 11:52:12 -0800 (PST)
+        Mon, 24 Jan 2022 15:42:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2967EB81215;
-        Mon, 24 Jan 2022 19:52:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B8B7C340E5;
-        Mon, 24 Jan 2022 19:52:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EFC25B81253;
+        Mon, 24 Jan 2022 20:42:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EEEC340E5;
+        Mon, 24 Jan 2022 20:42:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053929;
-        bh=3bYJ1Uv45V46z7TGSRB+5GaY5VET5wRoQDd1kBkBs3M=;
+        s=korg; t=1643056960;
+        bh=vqm+l+et8fHmf+ZDrFYxAyjLbW9sX4AdX0B4LSjo1aY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KjJGd8Lbrj9yFkCunNjSQLVYsVh1nLrzsdeDp2Yi7jybsabqROKciFvlvRV1xfV2X
-         YlnHnxeN/84BgKRaumfOqlQCdo+Wmx9Yvc47+18fP+I09BmfmP8YC7mr3Rkf5M0vaq
-         A8VbbRljknBStI7xcNTJq0uqNjB5Z6PFAUnCv8TQ=
+        b=r/QOS8WQ/ayX8x7vNQ6g4w5KWYlhhXLTU46Oyk7m3f9rDvbGYDbolLnhKMLDBJwJ5
+         UYd50OLeludeIxRU+qMiABN7Dpk3xCJkBNZwJeEj1z6qr2oM0LXVVM9Pisasa08kFw
+         eW8d2nyX+nQ5LQwf18tr1XoGB6AzvqfiLWzaOafE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zizhuang Deng <sunsetdzz@gmail.com>,
-        Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 224/563] lib/mpi: Add the return value check of kcalloc()
-Date:   Mon, 24 Jan 2022 19:39:49 +0100
-Message-Id: <20220124184032.199902040@linuxfoundation.org>
+Subject: [PATCH 5.15 657/846] ASoC: mediatek: mt8192-mt6359: fix device_node leak
+Date:   Mon, 24 Jan 2022 19:42:54 +0100
+Message-Id: <20220124184123.711611479@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,35 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zizhuang Deng <sunsetdzz@gmail.com>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit dd827abe296fe4249b2f8c9b95f72f814ea8348c ]
+[ Upstream commit 4e28491a7a198c668437f2be8a91a76aa52f20eb ]
 
-Add the return value check of kcalloc() to avoid potential
-NULL ptr dereference.
+The of_parse_phandle() document:
+    >>> Use of_node_put() on it when done.
 
-Fixes: a8ea8bdd9df9 ("lib/mpi: Extend the MPI library")
-Signed-off-by: Zizhuang Deng <sunsetdzz@gmail.com>
-Reviewed-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+The driver didn't call of_node_put().  Fixes the leak.
+
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211214040028.2992627-1-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- lib/mpi/mpi-mod.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/lib/mpi/mpi-mod.c b/lib/mpi/mpi-mod.c
-index 47bc59edd4ff9..54fcc01564d9d 100644
---- a/lib/mpi/mpi-mod.c
-+++ b/lib/mpi/mpi-mod.c
-@@ -40,6 +40,8 @@ mpi_barrett_t mpi_barrett_init(MPI m, int copy)
+diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+index a606133951b70..24a5d0adec1ba 100644
+--- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
++++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
+@@ -1172,7 +1172,11 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
- 	mpi_normalize(m);
- 	ctx = kcalloc(1, sizeof(*ctx), GFP_KERNEL);
-+	if (!ctx)
-+		return NULL;
+-	return devm_snd_soc_register_card(&pdev->dev, card);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++
++	of_node_put(platform_node);
++	of_node_put(hdmi_codec);
++	return ret;
+ }
  
- 	if (copy) {
- 		ctx->m = mpi_copy(m);
+ #ifdef CONFIG_OF
 -- 
 2.34.1
 
