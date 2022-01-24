@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B74AC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABF9CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385406AbiAXXYD (ORCPT
+        id S1848932AbiAXXYV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:24:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
+        Mon, 24 Jan 2022 18:24:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588119AbiAXWbj (ORCPT
+        with ESMTP id S1588135AbiAXWbj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:31:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A0A2C02B868;
-        Mon, 24 Jan 2022 12:56:05 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB03C047CD8;
+        Mon, 24 Jan 2022 12:56:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB2A560C60;
-        Mon, 24 Jan 2022 20:56:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 933CBC340E5;
-        Mon, 24 Jan 2022 20:56:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0FF1B81233;
+        Mon, 24 Jan 2022 20:56:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29236C340E5;
+        Mon, 24 Jan 2022 20:56:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057764;
-        bh=FRJ1sEdX/ouz9H8PhmcqYykcpScjvm5uCXoa1Ym69nI=;
+        s=korg; t=1643057806;
+        bh=237rbF9pS7DmapYAq12bvUaL8GTC3vSFTf2z40fMX3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xgt1qOug0IMXoIPiEiAxXaHh0zwWTAaHNSkG6EIvKKCpvyfmHXCVXGoodIj1W+XMY
-         2HghDfWRs0rtWg06MNUvHQM3nixzUNZEvgZ1vHOdmZncTZufizipUwYIiSZxpqzB0q
-         jkRGrvi+oPb6Dob0Z451JR01eZ1CivzpEzRYThHw=
+        b=rhAYXAA3xPpidHHXTBjfbHgK698LuceBr0okUezaWlGD6l97ja8YkJVoZM3EmrBjI
+         i+MIAn1chIjNHHArWXELncwD6l3MoMBcHFU1ZQTpK6xz/3j+8dC/USbLkYQSMrgnaD
+         WFyQashOAX3Zs6rY8dGOWDO3jF4UTxKSmTdYklqE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hao Xu <haoxu@linux.alibaba.com>,
-        Jens Axboe <axboe@kernel.dk>
-Subject: [PATCH 5.16 0071/1039] io_uring: fix no lock protection for ctx->cq_extra
-Date:   Mon, 24 Jan 2022 19:31:00 +0100
-Message-Id: <20220124184127.559922995@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0053/1039] media: stk1160: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:30:42 +0100
+Message-Id: <20220124184126.924621989@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,39 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hao Xu <haoxu@linux.alibaba.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit e302f1046f4c209291b07ff7bc4d15ca26891f16 upstream.
+commit 6aa6e70cdb5b863a57bad61310bf89b6617a5d2d upstream.
 
-ctx->cq_extra should be protected by completion lock so that the
-req_need_defer() does the right check.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Hao Xu <haoxu@linux.alibaba.com>
-Link: https://lore.kernel.org/r/20211125092103.224502-2-haoxu@linux.alibaba.com
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 9cb2173e6ea8 ("[media] media: Add stk1160 new driver (easycap replacement)")
+Cc: stable@vger.kernel.org      # 3.7
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/io_uring.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/media/usb/stk1160/stk1160-core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -6544,12 +6544,15 @@ static __cold void io_drain_req(struct i
- 	u32 seq = io_get_sequence(req);
+--- a/drivers/media/usb/stk1160/stk1160-core.c
++++ b/drivers/media/usb/stk1160/stk1160-core.c
+@@ -65,7 +65,7 @@ int stk1160_read_reg(struct stk1160 *dev
+ 		return -ENOMEM;
+ 	ret = usb_control_msg(dev->udev, pipe, 0x00,
+ 			USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			0x00, reg, buf, sizeof(u8), HZ);
++			0x00, reg, buf, sizeof(u8), 1000);
+ 	if (ret < 0) {
+ 		stk1160_err("read failed on reg 0x%x (%d)\n",
+ 			reg, ret);
+@@ -85,7 +85,7 @@ int stk1160_write_reg(struct stk1160 *de
  
- 	/* Still need defer if there is pending req in defer list. */
-+	spin_lock(&ctx->completion_lock);
- 	if (!req_need_defer(req, seq) && list_empty_careful(&ctx->defer_list)) {
-+		spin_unlock(&ctx->completion_lock);
- queue:
- 		ctx->drain_active = false;
- 		io_req_task_queue(req);
- 		return;
- 	}
-+	spin_unlock(&ctx->completion_lock);
- 
- 	ret = io_req_prep_async(req);
- 	if (ret) {
+ 	ret =  usb_control_msg(dev->udev, pipe, 0x01,
+ 			USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+-			value, reg, NULL, 0, HZ);
++			value, reg, NULL, 0, 1000);
+ 	if (ret < 0) {
+ 		stk1160_err("write failed on reg 0x%x (%d)\n",
+ 			reg, ret);
 
 
