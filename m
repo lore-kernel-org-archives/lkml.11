@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC44C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A56C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347303AbiAXTS1 (ORCPT
+        id S1347466AbiAXTSb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:18:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36414 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346923AbiAXTJJ (ORCPT
+        Mon, 24 Jan 2022 14:18:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38996 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343934AbiAXTJV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:09:09 -0500
+        Mon, 24 Jan 2022 14:09:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DA981B8121A;
-        Mon, 24 Jan 2022 19:09:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DF48C340E5;
-        Mon, 24 Jan 2022 19:09:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 166F7611A9;
+        Mon, 24 Jan 2022 19:09:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C702EC340E5;
+        Mon, 24 Jan 2022 19:09:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051346;
-        bh=qNILM1RdhmA5Zm0cLlQ79sNMcY7CTw2k9YHU8nTci04=;
+        s=korg; t=1643051359;
+        bh=iMVmUcIEnhx1/dyD/Ep+9ykJlQn0RTzeVgSkysfS/jI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CIfewN+Dia7lY9GxI92G/GpSkMn81A0T7Et5NLLOtZ4IX1rFUUU0bDsB//VpDZnfq
-         qcftELjV1qPwp1MOYrFiVbi5Jmnsl6oDHNs4lfAZT+X9e+1JQ9RuprhkSb6ISUO0ny
-         CHTlI04a6kIhaWL9k5hW17dIIzoF8lKCO+ZSF2fo=
+        b=Z2fUqZAu7celpbh6xhK5eBSCRDT4Do1AB+tr2ihVskjymq8MR+zS67dP92MvRV6Mk
+         vkVsyO9kgxasQutxodnooJDezIy7QaHrtw5yJqYlTWSzYuPi6MePpYrHr30rbdGOUr
+         ytghmwiwtmlo18m0TgsQgwJ6bMIjkfLZmUv3fA4s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 132/186] powerpc/6xx: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:27 +0100
-Message-Id: <20220124183941.357910302@linuxfoundation.org>
+Subject: [PATCH 4.14 109/186] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 24 Jan 2022 19:43:04 +0100
+Message-Id: <20220124183940.618283778@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -47,62 +47,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
+[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. saa7146_vv_release() will be called on
+failure of saa7146_register_device(). There is a dereference of
+dev->vv_data in saa7146_vv_release(), which could lead to a NULL
+pointer dereference on failure of saa7146_vv_init().
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+Fix this bug by adding a check of saa7146_vv_init().
 
-// <smpl>
-@@
-expression e;
-local idexpression n;
-@@
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-@@
-local idexpression n;
-expression e;
-@@
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
+Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
+and our static analyzer no longer warns about this code.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
+Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/common/saa7146/saa7146_fops.c | 2 +-
+ drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-index bf4a125faec66..db2ea6b6889de 100644
---- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-+++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-@@ -220,6 +220,7 @@ void hlwd_pic_probe(void)
- 			irq_set_chained_handler(cascade_virq,
- 						hlwd_pic_irq_cascade);
- 			hlwd_irq_host = host;
-+			of_node_put(np);
- 			break;
- 		}
+diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
+index 930d2c94d5d30..2c9365a39270a 100644
+--- a/drivers/media/common/saa7146/saa7146_fops.c
++++ b/drivers/media/common/saa7146/saa7146_fops.c
+@@ -524,7 +524,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
+ 		ERR("out of memory. aborting.\n");
+ 		kfree(vv);
+ 		v4l2_ctrl_handler_free(hdl);
+-		return -1;
++		return -ENOMEM;
  	}
+ 
+ 	saa7146_video_uops.init(dev,vv);
+diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
+index a527d86b93a77..7f498aebb4112 100644
+--- a/drivers/media/pci/saa7146/hexium_gemini.c
++++ b/drivers/media/pci/saa7146/hexium_gemini.c
+@@ -296,7 +296,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
+ 	hexium_set_input(hexium, 0);
+ 	hexium->cur_input = 0;
+ 
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		i2c_del_adapter(&hexium->i2c_adapter);
++		kfree(hexium);
++		return ret;
++	}
+ 
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
 -- 
 2.34.1
 
