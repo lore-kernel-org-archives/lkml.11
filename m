@@ -2,55 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E95C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5D2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839166AbiAXWt5 (ORCPT
+        id S1839323AbiAXWuY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:49:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52952 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445206AbiAXVng (ORCPT
+        Mon, 24 Jan 2022 17:50:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1572913AbiAXVmv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:43:36 -0500
+        Mon, 24 Jan 2022 16:42:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBEEC0419E1;
+        Mon, 24 Jan 2022 12:31:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F4E3B8119E;
-        Mon, 24 Jan 2022 21:43:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23521C340E4;
-        Mon, 24 Jan 2022 21:43:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38D54B81253;
+        Mon, 24 Jan 2022 20:31:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5116EC340E5;
+        Mon, 24 Jan 2022 20:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060609;
-        bh=xi4KJIaJwSCkynoxCcarqiM8KPP5W/cAYIZDLYrFnBo=;
+        s=korg; t=1643056289;
+        bh=jI6jJQ1Hx8HqSkH0QXPdw56p5o+wSAGat7bHGfPaK7A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O9krJI8xsM2S5QNE6Aw2IuCATZOgoMbs8wBe7VSujvoGSQ+DD7gJDVKP1wHauRJId
-         WUN6Up3OIB6mFG1Wo21dSyGU+aCH2HGhMchR8vkYuvVa1L4vohi1mTd8d+fwY6+U/x
-         KhGqXLo+KqHs0tts/WNorz0G32PJff+/rPf29Qd0=
+        b=1A7Yx2o+CMfPmWYurRzAIP+5emPI9XjWss5z9BElm7HPqSgTQNpZfnaB67kUEp8Yy
+         wwJezy/mgGeX0rlurzMIgH6XEcCWcmW1gOZmid0l9pDJg5TWR/3RYeKv/l75JDSWsb
+         m3j9aUgvAVYdV5sA7JSEEj9VGBVS2p4p+8BWeoQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zechuan Chen <chenzechuan1@huawei.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Jianlin Lv <Jianlin.Lv@arm.com>,
-        Jin Yao <yao.jin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Namhyung Kim <namhyung@kernel.org>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
-        Yang Jihong <yangjihong1@huawei.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>
-Subject: [PATCH 5.16 1004/1039] perf probe: Fix ppc64 perf probe add events failed case
-Date:   Mon, 24 Jan 2022 19:46:33 +0100
-Message-Id: <20220124184159.039062305@linuxfoundation.org>
+        stable@vger.kernel.org, Ashish Mhetre <amhetre@nvidia.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 402/846] iommu: Extend mutex lock scope in iommu_probe_device()
+Date:   Mon, 24 Jan 2022 19:38:39 +0100
+Message-Id: <20220124184114.828786411@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -59,62 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zechuan Chen <chenzechuan1@huawei.com>
+From: Lu Baolu <baolu.lu@linux.intel.com>
 
-commit 4624f199327a704dd1069aca1c3cadb8f2a28c6f upstream.
+[ Upstream commit 556f99ac886635e8da15528995f06d1d7028cfca ]
 
-Because of commit bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms
-lookup across powerpc ABIv1 and ABIv2"), in ppc64 ABIv1, our perf
-command eliminates the need to use the prefix "." at the symbol name.
+Extend the scope of holding group->mutex so that it can cover the default
+domain check/attachment and direct mappings of reserved regions.
 
-But when the command "perf probe -a schedule" is executed on ppc64
-ABIv1, it obtains two symbol address information through /proc/kallsyms,
-for example:
-
-  cat /proc/kallsyms | grep -w schedule
-  c000000000657020 T .schedule
-  c000000000d4fdb8 D schedule
-
-The symbol "D schedule" is not a function symbol, and perf will print:
-"p:probe/schedule _text+13958584"Failed to write event: Invalid argument
-
-Therefore, when searching symbols from map and adding probe point for
-them, a symbol type check is added. If the type of symbol is not a
-function, skip it.
-
-Fixes: bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms lookup across powerpc ABIv1 and ABIv2")
-Signed-off-by: Zechuan Chen <chenzechuan1@huawei.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Jianlin Lv <Jianlin.Lv@arm.com>
-Cc: Jin Yao <yao.jin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
-Cc: Yang Jihong <yangjihong1@huawei.com>
-Link: https://lore.kernel.org/r/20211228111338.218602-1-chenzechuan1@huawei.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Ashish Mhetre <amhetre@nvidia.com>
+Fixes: 211ff31b3d33b ("iommu: Fix race condition during default domain allocation")
+Signed-off-by: Lu Baolu <baolu.lu@linux.intel.com>
+Link: https://lore.kernel.org/r/20211108061349.1985579-1-baolu.lu@linux.intel.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/perf/util/probe-event.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iommu/iommu.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/tools/perf/util/probe-event.c
-+++ b/tools/perf/util/probe-event.c
-@@ -3083,6 +3083,9 @@ static int find_probe_trace_events_from_
- 	for (j = 0; j < num_matched_functions; j++) {
- 		sym = syms[j];
+diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
+index 3303d707bab4b..f62fb6a58f109 100644
+--- a/drivers/iommu/iommu.c
++++ b/drivers/iommu/iommu.c
+@@ -287,11 +287,11 @@ int iommu_probe_device(struct device *dev)
+ 	 */
+ 	mutex_lock(&group->mutex);
+ 	iommu_alloc_default_domain(group, dev);
+-	mutex_unlock(&group->mutex);
  
-+		if (sym->type != STT_FUNC)
-+			continue;
-+
- 		/* There can be duplicated symbols in the map */
- 		for (i = 0; i < j; i++)
- 			if (sym->start == syms[i]->start) {
+ 	if (group->default_domain) {
+ 		ret = __iommu_attach_device(group->default_domain, dev);
+ 		if (ret) {
++			mutex_unlock(&group->mutex);
+ 			iommu_group_put(group);
+ 			goto err_release;
+ 		}
+@@ -299,6 +299,7 @@ int iommu_probe_device(struct device *dev)
+ 
+ 	iommu_create_device_direct_mappings(group, dev);
+ 
++	mutex_unlock(&group->mutex);
+ 	iommu_group_put(group);
+ 
+ 	if (ops->probe_finalize)
+-- 
+2.34.1
+
 
 
