@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7478C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5563CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389016AbiAXUkW (ORCPT
+        id S1358603AbiAXUmd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:40:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36250 "EHLO
+        Mon, 24 Jan 2022 15:42:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351141AbiAXUT0 (ORCPT
+        with ESMTP id S1356533AbiAXUX0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:19:26 -0500
+        Mon, 24 Jan 2022 15:23:26 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF446C0612F5;
-        Mon, 24 Jan 2022 11:38:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5FCBC0417D9;
+        Mon, 24 Jan 2022 11:40:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 75DE8B81229;
-        Mon, 24 Jan 2022 19:38:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9970DC340E5;
-        Mon, 24 Jan 2022 19:38:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CD80B810AF;
+        Mon, 24 Jan 2022 19:40:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3B81C340E5;
+        Mon, 24 Jan 2022 19:40:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053137;
-        bh=v3qNmppBobj181G6eIp2mj/h+JGFuzf+50jMrh4mUIc=;
+        s=korg; t=1643053239;
+        bh=Tel8WpvjObCRmrZAAP6SGwebSrPTvmAswveLhfMl9mE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r62/BZaFwG/AOLCJgFhSFU688fQP0OhmUd3y9YwJGRsLgarMFv5KHWljaU/Ew5MuQ
-         aEQh5DVsRPdrL+7RoGiDbi3rXBT790osk+2oQZhozEfBt4XTsTaksFGwktgeG+wqHO
-         T/TQUrOxkyzfNHOvt/6MtS3gSYnftzwwRaC2L5p0=
+        b=LaKsYUV9GiMI+alfrOCxEbvSzdhBrC7rlx1ASJR9B/i/DKRV4uqWjii2eQ6OvQ3Tm
+         3o2w+2maRRVm0bZuf6IwUNRdpPlWciTzkHyG9Jm/s76HeXeBDUIRbzJNW6TgF6vzuc
+         n+GJ6TR0JXZoOjumckXTuYn11n26MNqBfeYD5hJ0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
+        stable@vger.kernel.org, Kevin Bracey <kevin@bracey.fi>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 289/320] ipv4: avoid quadratic behavior in netns dismantle
-Date:   Mon, 24 Jan 2022 19:44:33 +0100
-Message-Id: <20220124184003.787440229@linuxfoundation.org>
+Subject: [PATCH 5.4 311/320] net_sched: restore "mpu xxx" handling
+Date:   Mon, 24 Jan 2022 19:44:55 +0100
+Message-Id: <20220124184004.511088561@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,139 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Kevin Bracey <kevin@bracey.fi>
 
-commit d07418afea8f1d9896aaf9dc5ae47ac4f45b220c upstream.
+commit fb80445c438c78b40b547d12b8d56596ce4ccfeb upstream.
 
-net/ipv4/fib_semantics.c uses an hash table of 256 slots,
-keyed by device ifindexes: fib_info_devhash[DEVINDEX_HASHSIZE]
+commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
+"overhead X", "linklayer atm" and "mpu X" attributes.
 
-Problem is that with network namespaces, devices tend
-to use the same ifindex.
+"overhead X" and "linklayer atm" have already been fixed. This restores
+the "mpu X" handling, as might be used by DOCSIS or Ethernet shaping:
 
-lo device for instance has a fixed ifindex of one,
-for all network namespaces.
+    tc class add ... htb rate X overhead 4 mpu 64
 
-This means that hosts with thousands of netns spend
-a lot of time looking at some hash buckets with thousands
-of elements, notably at netns dismantle.
+The code being fixed is used by htb, tbf and act_police. Cake has its
+own mpu handling. qdisc_calculate_pkt_len still uses the size table
+containing values adjusted for mpu by user space.
 
-Simply add a per netns perturbation (net_hash_mix())
-to spread elements more uniformely.
+iproute2 tc has always passed mpu into the kernel via a tc_ratespec
+structure, but the kernel never directly acted on it, merely stored it
+so that it could be read back by `tc class show`.
 
-Also change fib_devindex_hashfn() to use more entropy.
+Rather, tc would generate length-to-time tables that included the mpu
+(and linklayer) in their construction, and the kernel used those tables.
 
-Fixes: aa79e66eee5d ("net: Make ifindex generation per-net namespace")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Since v3.7, the tables were no longer used. Along with "mpu", this also
+broke "overhead" and "linklayer" which were fixed in 01cb71d2d47b
+("net_sched: restore "overhead xxx" handling", v3.10) and 8a8e3d84b171
+("net_sched: restore "linklayer atm" handling", v3.11).
+
+"overhead" was fixed by simply restoring use of tc_ratespec::overhead -
+this had originally been used by the kernel but was initially omitted
+from the new non-table-based calculations.
+
+"linklayer" had been handled in the table like "mpu", but the mode was
+not originally passed in tc_ratespec. The new implementation was made to
+handle it by getting new versions of tc to pass the mode in an extended
+tc_ratespec, and for older versions of tc the table contents were analysed
+at load time to deduce linklayer.
+
+As "mpu" has always been given to the kernel in tc_ratespec,
+accompanying the mpu-based table, we can restore system functionality
+with no userspace change by making the kernel act on the tc_ratespec
+value.
+
+Fixes: 56b765b79e9a ("htb: improved accuracy at high rates")
+Signed-off-by: Kevin Bracey <kevin@bracey.fi>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Vimalkumar <j.vimal@gmail.com>
+Link: https://lore.kernel.org/r/20220112170210.1014351-1-kevin@bracey.fi
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ipv4/fib_semantics.c |   36 +++++++++++++++++-------------------
- 1 file changed, 17 insertions(+), 19 deletions(-)
+ include/net/sch_generic.h |    5 +++++
+ net/sched/sch_generic.c   |    1 +
+ 2 files changed, 6 insertions(+)
 
---- a/net/ipv4/fib_semantics.c
-+++ b/net/ipv4/fib_semantics.c
-@@ -29,6 +29,7 @@
- #include <linux/init.h>
- #include <linux/slab.h>
- #include <linux/netlink.h>
-+#include <linux/hash.h>
- 
- #include <net/arp.h>
- #include <net/ip.h>
-@@ -318,11 +319,15 @@ static inline int nh_comp(struct fib_inf
- 
- static inline unsigned int fib_devindex_hashfn(unsigned int val)
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1264,6 +1264,7 @@ struct psched_ratecfg {
+ 	u64	rate_bytes_ps; /* bytes per second */
+ 	u32	mult;
+ 	u16	overhead;
++	u16	mpu;
+ 	u8	linklayer;
+ 	u8	shift;
+ };
+@@ -1273,6 +1274,9 @@ static inline u64 psched_l2t_ns(const st
  {
--	unsigned int mask = DEVINDEX_HASHSIZE - 1;
-+	return hash_32(val, DEVINDEX_HASHBITS);
-+}
-+
-+static struct hlist_head *
-+fib_info_devhash_bucket(const struct net_device *dev)
-+{
-+	u32 val = net_hash_mix(dev_net(dev)) ^ dev->ifindex;
+ 	len += r->overhead;
  
--	return (val ^
--		(val >> DEVINDEX_HASHBITS) ^
--		(val >> (DEVINDEX_HASHBITS * 2))) & mask;
-+	return &fib_info_devhash[fib_devindex_hashfn(val)];
++	if (len < r->mpu)
++		len = r->mpu;
++
+ 	if (unlikely(r->linklayer == TC_LINKLAYER_ATM))
+ 		return ((u64)(DIV_ROUND_UP(len,48)*53) * r->mult) >> r->shift;
+ 
+@@ -1295,6 +1299,7 @@ static inline void psched_ratecfg_getrat
+ 	res->rate = min_t(u64, r->rate_bytes_ps, ~0U);
+ 
+ 	res->overhead = r->overhead;
++	res->mpu = r->mpu;
+ 	res->linklayer = (r->linklayer & TC_LINKLAYER_MASK);
  }
  
- static unsigned int fib_info_hashfn_1(int init_val, u8 protocol, u8 scope,
-@@ -432,12 +437,11 @@ int ip_fib_check_default(__be32 gw, stru
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1396,6 +1396,7 @@ void psched_ratecfg_precompute(struct ps
  {
- 	struct hlist_head *head;
- 	struct fib_nh *nh;
--	unsigned int hash;
- 
- 	spin_lock(&fib_info_lock);
- 
--	hash = fib_devindex_hashfn(dev->ifindex);
--	head = &fib_info_devhash[hash];
-+	head = fib_info_devhash_bucket(dev);
-+
- 	hlist_for_each_entry(nh, head, nh_hash) {
- 		if (nh->fib_nh_dev == dev &&
- 		    nh->fib_nh_gw4 == gw &&
-@@ -1594,12 +1598,10 @@ link_it:
- 	} else {
- 		change_nexthops(fi) {
- 			struct hlist_head *head;
--			unsigned int hash;
- 
- 			if (!nexthop_nh->fib_nh_dev)
- 				continue;
--			hash = fib_devindex_hashfn(nexthop_nh->fib_nh_dev->ifindex);
--			head = &fib_info_devhash[hash];
-+			head = fib_info_devhash_bucket(nexthop_nh->fib_nh_dev);
- 			hlist_add_head(&nexthop_nh->nh_hash, head);
- 		} endfor_nexthops(fi)
- 	}
-@@ -1940,8 +1942,7 @@ void fib_nhc_update_mtu(struct fib_nh_co
- 
- void fib_sync_mtu(struct net_device *dev, u32 orig_mtu)
- {
--	unsigned int hash = fib_devindex_hashfn(dev->ifindex);
--	struct hlist_head *head = &fib_info_devhash[hash];
-+	struct hlist_head *head = fib_info_devhash_bucket(dev);
- 	struct fib_nh *nh;
- 
- 	hlist_for_each_entry(nh, head, nh_hash) {
-@@ -1960,12 +1961,11 @@ void fib_sync_mtu(struct net_device *dev
-  */
- int fib_sync_down_dev(struct net_device *dev, unsigned long event, bool force)
- {
--	int ret = 0;
--	int scope = RT_SCOPE_NOWHERE;
-+	struct hlist_head *head = fib_info_devhash_bucket(dev);
- 	struct fib_info *prev_fi = NULL;
--	unsigned int hash = fib_devindex_hashfn(dev->ifindex);
--	struct hlist_head *head = &fib_info_devhash[hash];
-+	int scope = RT_SCOPE_NOWHERE;
- 	struct fib_nh *nh;
-+	int ret = 0;
- 
- 	if (force)
- 		scope = -1;
-@@ -2110,7 +2110,6 @@ out:
- int fib_sync_up(struct net_device *dev, unsigned char nh_flags)
- {
- 	struct fib_info *prev_fi;
--	unsigned int hash;
- 	struct hlist_head *head;
- 	struct fib_nh *nh;
- 	int ret;
-@@ -2126,8 +2125,7 @@ int fib_sync_up(struct net_device *dev,
- 	}
- 
- 	prev_fi = NULL;
--	hash = fib_devindex_hashfn(dev->ifindex);
--	head = &fib_info_devhash[hash];
-+	head = fib_info_devhash_bucket(dev);
- 	ret = 0;
- 
- 	hlist_for_each_entry(nh, head, nh_hash) {
+ 	memset(r, 0, sizeof(*r));
+ 	r->overhead = conf->overhead;
++	r->mpu = conf->mpu;
+ 	r->rate_bytes_ps = max_t(u64, conf->rate, rate64);
+ 	r->linklayer = (conf->linklayer & TC_LINKLAYER_MASK);
+ 	r->mult = 1;
 
 
