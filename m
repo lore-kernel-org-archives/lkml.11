@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D22C7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAB35C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442062AbiAXUwm (ORCPT
+        id S1392082AbiAXUuZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:52:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35962 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384555AbiAXUaE (ORCPT
+        Mon, 24 Jan 2022 15:50:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48710 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345948AbiAXUWq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:04 -0500
+        Mon, 24 Jan 2022 15:22:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45351B8121A;
-        Mon, 24 Jan 2022 20:30:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74BBBC340E5;
-        Mon, 24 Jan 2022 20:29:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1FBEB61383;
+        Mon, 24 Jan 2022 20:22:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A3BC340E5;
+        Mon, 24 Jan 2022 20:22:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056200;
-        bh=0KD1eiKFQZ+15lvlwGjcpA2CZ9608oocxiXbhgHw+rM=;
+        s=korg; t=1643055764;
+        bh=LZ+oF8h5/aRb0d/1iD3kpr3uBL7mUhoFezCNIr6lF/E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gLC5f3Koh5ayJC2USpP6jgtjipH/3smluYrcUSBZX8++BXnmjvZiEUoKWNI0J5d8F
-         k7+g78oCxunBXwIXXjaApyf1D2DTjltW31NRsR4lazEjMBBPdcZICsClhS0IiSmQm0
-         9nn2yvJob1rCQxbJMrVAA9/Fc9vYykNSq+hyEqFs=
+        b=B0ZOxOyu4d7axJpWV5SanvvjU7DDeIlsikQAgal4Zo8sKRlkvH63HuOqEwowZRwrQ
+         kpsyyfhOOKzBJ6m5j1YbO1qp+yWhSYebTnvwvin7NrOSrz1HMffyTgy3tYS3IUTxwl
+         uzEHOzOP0QEicb8RZl2R3Ww73T7hyd4/XWk+LkIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 397/846] char/mwave: Adjust io port register size
-Date:   Mon, 24 Jan 2022 19:38:34 +0100
-Message-Id: <20220124184114.649441386@linuxfoundation.org>
+Subject: [PATCH 5.15 225/846] drm/msm/dsi: fix initialization in the bonded DSI case
+Date:   Mon, 24 Jan 2022 19:35:42 +0100
+Message-Id: <20220124184108.678922106@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,49 +49,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
+[ Upstream commit 92cb1bedde9dba78d802fe2510949743a2581aed ]
 
-Using MKWORD() on a byte-sized variable results in OOB read. Expand the
-size of the reserved area so both MKWORD and MKBYTE continue to work
-without overflow. Silences this warning on a -Warray-bounds build:
+Commit 739b4e7756d3 ("drm/msm/dsi: Fix an error code in
+msm_dsi_modeset_init()") changed msm_dsi_modeset_init() to return an
+error code in case msm_dsi_manager_validate_current_config() returns
+false. However this is not an error case, but a slave DSI of the bonded
+DSI link. In this case msm_dsi_modeset_init() should return 0, but just
+skip connector and bridge initialization.
 
-drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
-  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
-      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
-  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
-      |                                        ^~~~~
-drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
-  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
-      |                                         ^~~~~~
-drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
-  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
-      |                               ^~~~~~~~~~~~~
+To reduce possible confusion, drop the
+msm_dsi_manager_validate_current_config() function, and specif 'bonded
+&& !master' condition directly in the msm_dsi_modeset_init().
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 739b4e7756d3 ("drm/msm/dsi: Fix an error code in msm_dsi_modeset_init()")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20211125180114.561278-1-dmitry.baryshkov@linaro.org
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/mwave/3780i.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/msm/dsi/dsi.c         | 10 +++++++---
+ drivers/gpu/drm/msm/dsi/dsi.h         |  1 -
+ drivers/gpu/drm/msm/dsi/dsi_manager.c | 17 -----------------
+ 3 files changed, 7 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
-index 9ccb6b270b071..95164246afd1a 100644
---- a/drivers/char/mwave/3780i.h
-+++ b/drivers/char/mwave/3780i.h
-@@ -68,7 +68,7 @@ typedef struct {
- 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
- 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
- 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
--	unsigned char Reserved:5;	/* 0: Reserved */
-+	unsigned short Reserved:13;	/* 0: Reserved */
- } DSP_ISA_SLAVE_CONTROL;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi.c b/drivers/gpu/drm/msm/dsi/dsi.c
+index 75ae3008b68f4..fc280cc434943 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi.c
++++ b/drivers/gpu/drm/msm/dsi/dsi.c
+@@ -215,9 +215,13 @@ int msm_dsi_modeset_init(struct msm_dsi *msm_dsi, struct drm_device *dev,
+ 		goto fail;
+ 	}
  
+-	if (!msm_dsi_manager_validate_current_config(msm_dsi->id)) {
+-		ret = -EINVAL;
+-		goto fail;
++	if (msm_dsi_is_bonded_dsi(msm_dsi) &&
++	    !msm_dsi_is_master_dsi(msm_dsi)) {
++		/*
++		 * Do not return an eror here,
++		 * Just skip creating encoder/connector for the slave-DSI.
++		 */
++		return 0;
+ 	}
  
+ 	msm_dsi->encoder = encoder;
+diff --git a/drivers/gpu/drm/msm/dsi/dsi.h b/drivers/gpu/drm/msm/dsi/dsi.h
+index 569c8ff062ba4..a63666e59d19e 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi.h
++++ b/drivers/gpu/drm/msm/dsi/dsi.h
+@@ -82,7 +82,6 @@ int msm_dsi_manager_cmd_xfer(int id, const struct mipi_dsi_msg *msg);
+ bool msm_dsi_manager_cmd_xfer_trigger(int id, u32 dma_base, u32 len);
+ int msm_dsi_manager_register(struct msm_dsi *msm_dsi);
+ void msm_dsi_manager_unregister(struct msm_dsi *msm_dsi);
+-bool msm_dsi_manager_validate_current_config(u8 id);
+ void msm_dsi_manager_tpg_enable(void);
+ 
+ /* msm dsi */
+diff --git a/drivers/gpu/drm/msm/dsi/dsi_manager.c b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+index fb4ccffdcfe13..fa4c396df6a92 100644
+--- a/drivers/gpu/drm/msm/dsi/dsi_manager.c
++++ b/drivers/gpu/drm/msm/dsi/dsi_manager.c
+@@ -647,23 +647,6 @@ fail:
+ 	return ERR_PTR(ret);
+ }
+ 
+-bool msm_dsi_manager_validate_current_config(u8 id)
+-{
+-	bool is_bonded_dsi = IS_BONDED_DSI();
+-
+-	/*
+-	 * For bonded DSI, we only have one drm panel. For this
+-	 * use case, we register only one bridge/connector.
+-	 * Skip bridge/connector initialisation if it is
+-	 * slave-DSI for bonded DSI configuration.
+-	 */
+-	if (is_bonded_dsi && !IS_MASTER_DSI_LINK(id)) {
+-		DBG("Skip bridge registration for slave DSI->id: %d\n", id);
+-		return false;
+-	}
+-	return true;
+-}
+-
+ /* initialize bridge */
+ struct drm_bridge *msm_dsi_manager_bridge_init(u8 id)
+ {
 -- 
 2.34.1
 
