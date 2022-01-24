@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FDE2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C33AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374695AbiAYARm (ORCPT
+        id S2374714AbiAYARo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
+        Mon, 24 Jan 2022 19:17:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1851185AbiAXXcH (ORCPT
+        with ESMTP id S1851187AbiAXXcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:32:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F83C019B06;
-        Mon, 24 Jan 2022 11:52:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FA5C075966;
+        Mon, 24 Jan 2022 13:35:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FF4E6090B;
-        Mon, 24 Jan 2022 19:52:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACE2C340E5;
-        Mon, 24 Jan 2022 19:52:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 65E8E612D6;
+        Mon, 24 Jan 2022 21:35:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CA12C340E4;
+        Mon, 24 Jan 2022 21:35:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053932;
-        bh=l6Ni9v689sSDYi8RGWJ0Fvwu5bh71a7KQRIO9ThqCxY=;
+        s=korg; t=1643060130;
+        bh=LvKt4kNdalNrtHc1yjv9UoZIUONIbwelUZZZPp/IQas=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ja2INnCtpFJvoUFie1gNGt149zvQSihO5Vbq7VquOdPjSI3br1zTWqfkRTqYWsGxl
-         8SRJ6u15r8iIoxLaqywM3xaIcyOkwynbnQDJzLTdkbM15w9zAuUWWsj0xzI0Uuqzkz
-         M/0VdTQ10uCk5VZV7CPhHFK/+XYx00eq4gi+i0vY=
+        b=HDtjA3mIWLLOrBLrbuwxi0Mis/DNj+l3IbJ9Vl8+rkT5kPZ7pbPqhmndbtkuIQ+lN
+         GORxUFTvYsb7Pw6L2eMaGCALzF6GtBqAdI0Sjai05Jm1Cm4xkdv6gRvsChkmxm/GMJ
+         pbz+Q0QFgzSvsyZA83pRTfdpJcy9IudRj0T4Argg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 225/563] Bluetooth: L2CAP: uninitialized variables in l2cap_sock_setsockopt()
-Date:   Mon, 24 Jan 2022 19:39:50 +0100
-Message-Id: <20220124184032.232010791@linuxfoundation.org>
+        stable@vger.kernel.org, Andrey Ryabinin <arbn@yandex-team.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        Daniel Jordan <daniel.m.jordan@oracle.com>,
+        Tejun Heo <tj@kernel.org>
+Subject: [PATCH 5.16 0850/1039] cputime, cpuacct: Include guest time in user time in cpuacct.stat
+Date:   Mon, 24 Jan 2022 19:43:59 +0100
+Message-Id: <20220124184153.855085884@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,74 +51,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Andrey Ryabinin <arbn@yandex-team.com>
 
-[ Upstream commit 2b70d4f9b20635ac328836e50d183632e1930f94 ]
+commit 9731698ecb9c851f353ce2496292ff9fcea39dff upstream.
 
-The "opt" variable is a u32, but on some paths only the top bytes
-were initialized and the others contained random stack data.
+cpuacct.stat in no-root cgroups shows user time without guest time
+included int it. This doesn't match with user time shown in root
+cpuacct.stat and /proc/<pid>/stat. This also affects cgroup2's cpu.stat
+in the same way.
 
-Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Make account_guest_time() to add user time to cgroup's cpustat to
+fix this.
+
+Fixes: ef12fefabf94 ("cpuacct: add per-cgroup utime/stime statistics")
+Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reviewed-by: Daniel Jordan <daniel.m.jordan@oracle.com>
+Acked-by: Tejun Heo <tj@kernel.org>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20211115164607.23784-1-arbn@yandex-team.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/l2cap_sock.c | 14 ++++++++------
- 1 file changed, 8 insertions(+), 6 deletions(-)
+ kernel/sched/cputime.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index 251017c69ab7f..d2c6785205992 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -903,6 +903,8 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
- 	struct l2cap_conn *conn;
- 	int len, err = 0;
- 	u32 opt;
-+	u16 mtu;
-+	u8 mode;
+--- a/kernel/sched/cputime.c
++++ b/kernel/sched/cputime.c
+@@ -148,10 +148,10 @@ void account_guest_time(struct task_stru
  
- 	BT_DBG("sk %p", sk);
- 
-@@ -1085,16 +1087,16 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
- 			break;
- 		}
- 
--		if (copy_from_sockptr(&opt, optval, sizeof(u16))) {
-+		if (copy_from_sockptr(&mtu, optval, sizeof(u16))) {
- 			err = -EFAULT;
- 			break;
- 		}
- 
- 		if (chan->mode == L2CAP_MODE_EXT_FLOWCTL &&
- 		    sk->sk_state == BT_CONNECTED)
--			err = l2cap_chan_reconfigure(chan, opt);
-+			err = l2cap_chan_reconfigure(chan, mtu);
- 		else
--			chan->imtu = opt;
-+			chan->imtu = mtu;
- 
- 		break;
- 
-@@ -1116,14 +1118,14 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
- 			break;
- 		}
- 
--		if (copy_from_sockptr(&opt, optval, sizeof(u8))) {
-+		if (copy_from_sockptr(&mode, optval, sizeof(u8))) {
- 			err = -EFAULT;
- 			break;
- 		}
- 
--		BT_DBG("opt %u", opt);
-+		BT_DBG("mode %u", mode);
- 
--		err = l2cap_set_mode(chan, opt);
-+		err = l2cap_set_mode(chan, mode);
- 		if (err)
- 			break;
- 
--- 
-2.34.1
-
+ 	/* Add guest time to cpustat. */
+ 	if (task_nice(p) > 0) {
+-		cpustat[CPUTIME_NICE] += cputime;
++		task_group_account_field(p, CPUTIME_NICE, cputime);
+ 		cpustat[CPUTIME_GUEST_NICE] += cputime;
+ 	} else {
+-		cpustat[CPUTIME_USER] += cputime;
++		task_group_account_field(p, CPUTIME_USER, cputime);
+ 		cpustat[CPUTIME_GUEST] += cputime;
+ 	}
+ }
 
 
