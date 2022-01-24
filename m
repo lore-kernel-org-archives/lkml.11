@@ -2,92 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C082C46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 937A0C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848181AbiAXXVy (ORCPT
+        id S1848054AbiAXXVj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:21:54 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:5910 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1586017AbiAXWZc (ORCPT
+        Mon, 24 Jan 2022 18:21:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39072 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1586976AbiAXW1f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:25:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1643063133; x=1674599133;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=AKt8vr05GreDSyVNxjtV2CHg4TV7DId+cTaYdsIngFM=;
-  b=lFA0ga3fIn0Whf3GjFFAKnlAtWUyCyNOlAUjpA2wXM9iJd5E3L1xEWT4
-   R8qYHiefa6bTm2snI/tYDFajLWwdB3hgYeW+JCQK375t2tasL5NSUEQlB
-   jbJZxGaWqw+kHHSeZPQ5PmAPMJMYsZs7WY5hZjSt3IMexLpuie7oQ6ZVf
-   M=;
-X-IronPort-AV: E=Sophos;i="5.88,313,1635206400"; 
-   d="scan'208";a="171891279"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-pdx-2b-02ee77e7.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-33001.sea14.amazon.com with ESMTP; 24 Jan 2022 22:15:05 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-pdx-2b-02ee77e7.us-west-2.amazon.com (Postfix) with ESMTPS id E080F41997;
-        Mon, 24 Jan 2022 22:15:03 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 24 Jan 2022 22:15:01 +0000
-Received: from 88665a182662.ant.amazon.com (10.43.162.8) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.28; Mon, 24 Jan 2022 22:14:51 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <dave.hansen@intel.com>
-CC:     <benh@amazon.com>, <bp@alien8.de>, <dave.hansen@linux.intel.com>,
-        <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <mingo@redhat.com>,
-        <tglx@linutronix.de>, <x86@kernel.org>
-Subject: Re: [PATCH] x86/boot: Avoid redundant address overlap tests in memcpy().
-Date:   Tue, 25 Jan 2022 07:14:47 +0900
-Message-ID: <20220124221447.1030-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <bd7c111c-8bd4-9c4d-4715-c0fb5fd034ee@intel.com>
-References: <bd7c111c-8bd4-9c4d-4715-c0fb5fd034ee@intel.com>
+        Mon, 24 Jan 2022 17:27:35 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9549CC0E5303;
+        Mon, 24 Jan 2022 12:54:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5BEF1B8122A;
+        Mon, 24 Jan 2022 20:54:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F3D2C340E5;
+        Mon, 24 Jan 2022 20:54:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057684;
+        bh=PawTXDQsYbpchk/L0u350gN2qSbXLyEo+9hwZYC02lQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WY8KbOi71uuiPkVPjnA6DTBdv7HZnu5rbhNylLbxDEjzSyfZwabvIU6qwPy4Rihzz
+         /W2ZD9v8NJ1SQAMIJpzc/Na+E+ggWcjXMrHPUUkm3OOegRHa4Z+hIlqvr3b1bpN06z
+         HplnLwGwRO/GIEh0rpN4T3GOVm3PhxXJTi31Ed9E=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0044/1039] media: v4l2-ioctl.c: readbuffers depends on V4L2_CAP_READWRITE
+Date:   Mon, 24 Jan 2022 19:30:33 +0100
+Message-Id: <20220124184126.619934899@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.8]
-X-ClientProxiedBy: EX13D21UWB004.ant.amazon.com (10.43.161.221) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From:   Dave Hansen <dave.hansen@intel.com>
-Date:   Mon, 24 Jan 2022 09:38:40 -0800
-> On 1/22/22 17:58, Kuniyuki Iwashima wrote:
-> > -void *memmove(void *dest, const void *src, size_t n)
-> > +void *____memmove(void *dest, const void *src, size_t n)
-> >   {
-> >   	unsigned char *d = dest;
-> >   	const unsigned char *s = src;
-> >   
-> > -	if (d <= s || d - s >= n)
-> > -		return ____memcpy(dest, src, n);
-> > -
-> >   	while (n-- > 0)
-> >   		d[n] = s[n];
-> >   
-> >   	return dest;
-> >   }
-> 
-> The ___ naming is pretty cruel.  Could we call it memmove_no_overlap() 
-> or memmove_unsafe()?  Surely we can put some *useful* bytes in the name 
-> rather than padding it out with _'s.  No need to perpetuate the 
-> ____memcpy() naming.
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-Sure.  I will rename it to memmove_unsafe() because it supports another
-overlap case. (d > s)
+commit cd9d9377ed235b294a492a094e1666178a5e78fd upstream.
+
+If V4L2_CAP_READWRITE is not set, then readbuffers must be set to 0,
+otherwise v4l2-compliance will complain.
+
+A note on the Fixes tag below: this patch does not really fix that commit,
+but it can be applied from that commit onwards. For older code there is no
+guarantee that device_caps is set, so even though this patch would apply,
+it will not work reliably.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Fixes: 049e684f2de9 (media: v4l2-dev: fix WARN_ON(!vdev->device_caps))
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/media/v4l2-core/v4l2-ioctl.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+--- a/drivers/media/v4l2-core/v4l2-ioctl.c
++++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+@@ -2090,6 +2090,7 @@ static int v4l_prepare_buf(const struct
+ static int v4l_g_parm(const struct v4l2_ioctl_ops *ops,
+ 				struct file *file, void *fh, void *arg)
+ {
++	struct video_device *vfd = video_devdata(file);
+ 	struct v4l2_streamparm *p = arg;
+ 	v4l2_std_id std;
+ 	int ret = check_fmt(file, p->type);
+@@ -2101,7 +2102,8 @@ static int v4l_g_parm(const struct v4l2_
+ 	if (p->type != V4L2_BUF_TYPE_VIDEO_CAPTURE &&
+ 	    p->type != V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)
+ 		return -EINVAL;
+-	p->parm.capture.readbuffers = 2;
++	if (vfd->device_caps & V4L2_CAP_READWRITE)
++		p->parm.capture.readbuffers = 2;
+ 	ret = ops->vidioc_g_std(file, fh, &std);
+ 	if (ret == 0)
+ 		v4l2_video_std_frame_period(std, &p->parm.capture.timeperframe);
 
 
-> 
-> Also, is this worth the churn?  It probably saves less than 10 
-> instructions, all of which are ridiculously cheap.  Is there a *reason* 
-> for this other than being a pure cleanup?
-
-This is just for cleanup.
