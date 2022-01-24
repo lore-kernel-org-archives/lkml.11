@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0B2CC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D74E6C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383689AbiAXXF5 (ORCPT
+        id S1843755AbiAXXGK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:05:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37106 "EHLO
+        Mon, 24 Jan 2022 18:06:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583666AbiAXWTY (ORCPT
+        with ESMTP id S1381204AbiAXWTa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:19:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E8E2C06125A;
-        Mon, 24 Jan 2022 12:49:13 -0800 (PST)
+        Mon, 24 Jan 2022 17:19:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 904A2C0619CF;
+        Mon, 24 Jan 2022 12:49:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F05FE60C19;
-        Mon, 24 Jan 2022 20:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C90D9C340E5;
-        Mon, 24 Jan 2022 20:49:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4E9D4B811A9;
+        Mon, 24 Jan 2022 20:49:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71CD2C340E5;
+        Mon, 24 Jan 2022 20:49:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057352;
-        bh=vtrHks515mWWDB8VUuf53R07+1bjr6PyWKO1q/bUdAk=;
+        s=korg; t=1643057371;
+        bh=nCkMqPq7aczurCyrAgJsTR6iIJRd5PJT1ENTZ16rmAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XuYn9ko7T1riLHUCNxGTQx8tifdek2T39IJNT0CEODfrQp3UgBQTfHM+mpmNhndph
-         tHuYpKayrJFR521rwcUhVGsLFKK8GV6dVSd9vDhFlTWjnmSpKWkKxBT8gsJjdtb2Sl
-         FJ7tlJWKfEUO9KdVgSXzPB5CxIzSnXmPPd+FAFss=
+        b=SlUjwNoPgIH9GPDVpehCO/exdg90dAOOPhgy8fKGkVnczu4jNobVS834odNkRtmBs
+         iLa8b4df0WxuDLNCTt0ZM/hP9cOurXxWYsdvxNz4kn7zc5mZI64bCyg+KKX+KxcPFi
+         iREqIkIvg1drD83qs2QsSD5gdRFKbdwvXf1LJUok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.15 783/846] crypto: octeontx2 - uninitialized variable in kvf_limits_store()
-Date:   Mon, 24 Jan 2022 19:45:00 +0100
-Message-Id: <20220124184127.968997311@linuxfoundation.org>
+        stable@vger.kernel.org, Ye Bin <yebin10@huawei.com>,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>
+Subject: [PATCH 5.15 758/846] block: Fix fsync always failed if once failed
+Date:   Mon, 24 Jan 2022 19:44:35 +0100
+Message-Id: <20220124184127.118647249@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,39 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Ye Bin <yebin10@huawei.com>
 
-commit 0ea275df84c389e910a3575a9233075118c173ee upstream.
+commit 8a7518931baa8ea023700987f3db31cb0a80610b upstream.
 
-If kstrtoint() fails then "lfs_num" is uninitialized and the warning
-doesn't make any sense.  Just delete it.
+We do test with inject error fault base on v4.19, after test some time we found
+sync /dev/sda always failed.
+[root@localhost] sync /dev/sda
+sync: error syncing '/dev/sda': Input/output error
 
-Fixes: 8ec8015a3168 ("crypto: octeontx2 - add support to process the crypto request")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+scsi log as follows:
+[19069.812296] sd 0:0:0:0: [sda] tag#64 Send: scmd 0x00000000d03a0b6b
+[19069.812302] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
+[19069.812533] sd 0:0:0:0: [sda] tag#64 Done: SUCCESS Result: hostbyte=DID_OK driverbyte=DRIVER_OK
+[19069.812536] sd 0:0:0:0: [sda] tag#64 CDB: Synchronize Cache(10) 35 00 00 00 00 00 00 00 00 00
+[19069.812539] sd 0:0:0:0: [sda] tag#64 scsi host busy 1 failed 0
+[19069.812542] sd 0:0:0:0: Notifying upper driver of completion (result 0)
+[19069.812546] sd 0:0:0:0: [sda] tag#64 sd_done: completed 0 of 0 bytes
+[19069.812549] sd 0:0:0:0: [sda] tag#64 0 sectors total, 0 bytes done.
+[19069.812564] print_req_error: I/O error, dev sda, sector 0
+
+ftrace log as follows:
+ rep-306069 [007] .... 19654.923315: block_bio_queue: 8,0 FWS 0 + 0 [rep]
+ rep-306069 [007] .... 19654.923333: block_getrq: 8,0 FWS 0 + 0 [rep]
+ kworker/7:1H-250   [007] .... 19654.923352: block_rq_issue: 8,0 FF 0 () 0 + 0 [kworker/7:1H]
+ <idle>-0     [007] ..s. 19654.923562: block_rq_complete: 8,0 FF () 18446744073709551615 + 0 [0]
+ <idle>-0     [007] d.s. 19654.923576: block_rq_complete: 8,0 WS () 0 + 0 [-5]
+
+As 8d6996630c03 introduce 'fq->rq_status', this data only update when 'flush_rq'
+reference count isn't zero. If flush request once failed and record error code
+in 'fq->rq_status'. If there is no chance to update 'fq->rq_status',then do fsync
+will always failed.
+To address this issue reset 'fq->rq_status' after return error code to upper layer.
+
+Fixes: 8d6996630c03("block: fix null pointer dereference in blk_mq_rq_timed_out()")
+Signed-off-by: Ye Bin <yebin10@huawei.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/20211129012659.1553733-1-yebin10@huawei.com
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ block/blk-flush.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
-@@ -494,12 +494,11 @@ static ssize_t kvf_limits_store(struct d
- {
- 	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
- 	int lfs_num;
-+	int ret;
+--- a/block/blk-flush.c
++++ b/block/blk-flush.c
+@@ -235,8 +235,10 @@ static void flush_end_io(struct request
+ 	 * avoiding use-after-free.
+ 	 */
+ 	WRITE_ONCE(flush_rq->state, MQ_RQ_IDLE);
+-	if (fq->rq_status != BLK_STS_OK)
++	if (fq->rq_status != BLK_STS_OK) {
+ 		error = fq->rq_status;
++		fq->rq_status = BLK_STS_OK;
++	}
  
--	if (kstrtoint(buf, 0, &lfs_num)) {
--		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
--			lfs_num, num_online_cpus());
--		return -EINVAL;
--	}
-+	ret = kstrtoint(buf, 0, &lfs_num);
-+	if (ret)
-+		return ret;
- 	if (lfs_num < 1 || lfs_num > num_online_cpus()) {
- 		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
- 			lfs_num, num_online_cpus());
+ 	if (!q->elevator) {
+ 		flush_rq->tag = BLK_MQ_NO_TAG;
 
 
