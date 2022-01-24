@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1227AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F29C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:30:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240167AbiAXOaV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:30:21 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:42026 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238723AbiAXO3d (ORCPT
+        id S240251AbiAXOa2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:30:28 -0500
+Received: from mailout3.samsung.com ([203.254.224.33]:42116 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239792AbiAXO3s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:29:33 -0500
-Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220124142930epoutp02f36c3857285c75c1c5cb47fe9324dc98~NOzyd4Mae3161931619epoutp02j
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:29:30 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220124142930epoutp02f36c3857285c75c1c5cb47fe9324dc98~NOzyd4Mae3161931619epoutp02j
+        Mon, 24 Jan 2022 09:29:48 -0500
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220124142947epoutp034aad23fe1eacabdb9d3aa47e8ed86a4a~NO0ByqcN51245112451epoutp03k
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:29:47 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220124142947epoutp034aad23fe1eacabdb9d3aa47e8ed86a4a~NO0ByqcN51245112451epoutp03k
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1643034570;
-        bh=ZJVEujEapOwOL/s9rVEUimiTpeqc892oLUrwQ0tUa1k=;
+        s=mail20170921; t=1643034587;
+        bh=IsUOpJL8ombE3d2kJBRoIHDQ/zVrAi2acH1a4CUB5eU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OiRvhkK7RHMsUM1582GUgdKOh1y2m8rJuM5buY+UAUAG1iu3roD6zQhaV2GYI731c
-         ccncDsLtS5tihMoBkBtDc656oax1K8C/ZvCUOSd9jszmkP6hVxvxHyLEBZeW+yxza3
-         8rUlqNduFJ5Jbg5i59PT5WXVCASO0jvCq+uRhpA8=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
-        20220124142930epcas5p2f195b4f1f987528522a8c077840a7b56~NOzx6zvC50974109741epcas5p29;
-        Mon, 24 Jan 2022 14:29:30 +0000 (GMT)
+        b=GjACFRtpkpwqFyomcg2ehKtnqTR3FVnxw1/Xh2/DEodPwVB18FdgEcX81B3eV59uZ
+         3FRbiMFhDAzzhnP5F2LndZeTYqEm9HMSC2X0gojAaY5CqDCxi60malsnIGk9CISERw
+         XtrqB84+6vcWpV038pwtwIJ4KpUdtQgNTTo5ub7Q=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
+        20220124142946epcas5p1d3842843eb79bfa88ff7122523bcaa4f~NO0BVTesP3199131991epcas5p1N;
+        Mon, 24 Jan 2022 14:29:46 +0000 (GMT)
 Received: from epsmges5p1new.samsung.com (unknown [182.195.38.178]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4JjC6X2C3nz4x9Pp; Mon, 24 Jan
-        2022 14:29:24 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4JjC6t1c8dz4x9Pq; Mon, 24 Jan
+        2022 14:29:42 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
         epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        F9.8E.06423.4C7BEE16; Mon, 24 Jan 2022 23:29:24 +0900 (KST)
+        D3.9E.06423.6D7BEE16; Mon, 24 Jan 2022 23:29:42 +0900 (KST)
 Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTPA id
-        20220124142923epcas5p17cffd89f734eda4c7e9515ac4ec79fb5~NOzsJRfXr1531415314epcas5p1R;
-        Mon, 24 Jan 2022 14:29:23 +0000 (GMT)
+        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
+        20220124142941epcas5p4bbba53cfc2fc9862da9fd85d44de6e79~NOz8vEFZY0826308263epcas5p4H;
+        Mon, 24 Jan 2022 14:29:41 +0000 (GMT)
 Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
         epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220124142923epsmtrp23b6e6a7df82399f0f4536d0254214dc2~NOzsIKBur1656816568epsmtrp21;
-        Mon, 24 Jan 2022 14:29:23 +0000 (GMT)
-X-AuditID: b6c32a49-b01ff70000001917-5c-61eeb7c44940
+        20220124142941epsmtrp216dfff3f610ff97b180df1c80ca28831~NOz8uMpRN1656816568epsmtrp2-;
+        Mon, 24 Jan 2022 14:29:41 +0000 (GMT)
+X-AuditID: b6c32a49-b01ff70000001917-94-61eeb7d62b59
 Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
         epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        A3.EA.29871.3C7BEE16; Mon, 24 Jan 2022 23:29:23 +0900 (KST)
+        78.EA.29871.5D7BEE16; Mon, 24 Jan 2022 23:29:41 +0900 (KST)
 Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
         [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220124142921epsmtip195b36b2cbd0f8a04af5ba366f5c0f8f1~NOzpix5OP1063810638epsmtip1g;
-        Mon, 24 Jan 2022 14:29:20 +0000 (GMT)
+        20220124142938epsmtip1ed1f66c32c286ea1221781e0a581eeee~NOz6RpRND0831608316epsmtip1k;
+        Mon, 24 Jan 2022 14:29:38 +0000 (GMT)
 From:   Alim Akhtar <alim.akhtar@samsung.com>
 To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
@@ -57,265 +57,83 @@ Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
         robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
         s.nawrocki@samsung.com, linux-samsung-soc@vger.kernel.org,
         pankaj.dubey@samsung.com, sboyd@kernel.org,
-        Alim Akhtar <alim.akhtar@samsung.com>, linux-fsd@tesla.com,
-        Ajay Kumar <ajaykumar.rs@samsung.com>
-Subject: [PATCH v5 07/16] clk: samsung: fsd: Add cmu_fsys1 clock information
-Date:   Mon, 24 Jan 2022 19:46:35 +0530
-Message-Id: <20220124141644.71052-8-alim.akhtar@samsung.com>
+        Alim Akhtar <alim.akhtar@samsung.com>, linux-fsd@tesla.com
+Subject: [PATCH v5 11/16] dt-bindings: pinctrl: samsung: Add compatible for
+ Tesla FSD SoC
+Date:   Mon, 24 Jan 2022 19:46:39 +0530
+Message-Id: <20220124141644.71052-12-alim.akhtar@samsung.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220124141644.71052-1-alim.akhtar@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA0VSfVCTdRy/3/Nszwbc8Gla/gIVeIwUEmTJ5g+OGRfCPRkZnnV0dkVP7LnB
-        bWxrzyAhX4DSDJi8XJeAMAIDOyDeJPSQcbwFnjs1jjU6HQZBRhagUrsK5Nr2UP33/X6+n8/3
-        XYxLLUSAOFNnYo06RksRvoKe4bAdESOXF5koV6EPGlgaFKBpSw+BHleMitBSUwlAdSM3hahz
-        4U8Mfbp6EUNdsw4helhyV4hm7qeiid4aAlXe6sfQ9cllAjV8/bsInbKOiNDwbx8L0ZqjU4Bm
-        J1eJeCndamkF9MrfFYCuzjcTdFfzJwTtdPQR9KUvTtL2a4VC+mx3M6DXCmtF9HLXthTfI5q4
-        DJZRscZgVpeuV2Xq1Erq5cNpCWlyRZQsQhaD9lLBOiaLVVL7k1MikjK17qGo4BxGm+2GUhiO
-        o3bvizPqs01scIaeMykp1qDSGqINkRyTxWXr1JE61hQri4p6Xu4mvqPJeLSiMawcPtrwyyrI
-        B/YDRUAshmQ0/Hn89SLgK5aSVwFsH30o5J1HAPYXtGO84wKwvnzc7fh4FeV35nGPLSWtAC6c
-        CuBJH2FwrrNC5AkQ5HNw6ly3V7CJTILfF5zxZsLJL3FY0uzyBjaSyXClpFjk6UNAhkLnla0e
-        WELGQWftTwK+WBBs6RjwFvMhldBS7/LmgWSfGE7OfyvkSfvhTMXCumAjvD/WLeLtALi8aCX4
-        OTWwpHcPDx+DjZbRdfoLcMBeI/BQcDIMtvfu9sA46Q/NK3MYr5TAM6elPDsUfrj43boyEJYX
-        F683QMPpq3Uifg1lALY6z4EysLX6/6yfA9AMnmYNXJaa5eQGmY59/78rpeuzuoD3UcNfugKm
-        ph9EDgFMDIYAFOPUJkmeapGRSlRMbh5r1KcZs7UsNwTk7o2V4wFPpuvdn64zpcmiY6KiFQpF
-        dMwehYzaLLGpOxgpqWZMrIZlDazxXx0m9gnIx94YdzyO1ST740rNA4NctTfE2WfcckNvP+1j
-        TfzgVyzSFnI+jMx1mtGheN+8bbd3JVTfy73rx4ytvV35pn7fBeUJGBdyIfHHJnNZ7fayy7ab
-        OaY718PNSRdtiYMyrLUKb5D62UtfC885+cfssD02wVZzqcJ5cMOJym/eOz51z1zwor8qcEes
-        9cgT7Y6xXTslLW1PTVn9Jl4NUveVVRkONiqK15KRllTOUz1hP2woPppai1Ov+AkbJ1BQiPit
-        r0Lb2BupMtehpLampVKboLpK131s8zN+/fJ4Qt8yGDjZXTqxs0a7MNf4V/015bylzlFFcxm3
-        Z453vOu6VXTgs6Fnt6gpAZfByMJxI8f8A8S6hlIxBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrELMWRmVeSWpSXmKPExsWy7bCSnO7h7e8SDWb3aFkceH+QxeLBvG1s
-        Fn8nHWO3eL+sh9Fi/pFzrBYb3/5gspjyZzmTxabH11gtPvbcY7V4+Crc4vKuOWwWM87vY7I4
-        df0zm8WirV/YLVr3HmG3OPymndXi37WNLBaPr/9hcxDyWDNvDaPH71+TGD1mNfSyeWxa1cnm
-        cefaHjaPzUvqPa6caGL16NuyitHjX9Ncdo/Pm+QCuKK4bFJSczLLUov07RK4Mj79zi74HVyx
-        6OUfxgbGK15djJwcEgImEhNvv2AGsYUEdjNKfFxUDRGXlri+cQI7hC0ssfLfcyCbC6imiUli
-        za55rCAJNgFtibvTtzCB2CICHhJt/+4xgxQxC+xilujuPAGWEBbwkfjd0w3UzcHBIqAqcWeH
-        LEiYV8BG4s7cpywQC+QlVm84AHYEp4CtxLyF35hAyoWAas79VpnAyLeAkWEVo2RqQXFuem6x
-        YYFhXmq5XnFibnFpXrpecn7uJkZwNGhp7mDcvuqD3iFGJg7GQ4wSHMxKIrxVKe8ShXhTEiur
-        Uovy44tKc1KLDzFKc7AoifNe6DoZLySQnliSmp2aWpBaBJNl4uCUamCqujw3aa/NDqPikFkp
-        uVedVhlq3P/18+OEKZcnXvAWkjxV7NOuLlV6skmsOfWAsab8o7gTB1+syv164D7H77JOp8Co
-        6XsiVf/+KMr99cvt98JTXm8P84VnHTi6ePFakSWK/QrsrRcD9FdUCKU4OSdkbL5pfMh+t0HO
-        oSWa2WKzmHa+q88QYv675Y5p5dJD1bOOlW3lcVsQM81lddCkY013Px9fPFtC+kq0LF+Bt832
-        vd8nHtrQoNb34u5hpfoU24A+9q4MiYyUsjnbd82bNuNIvfn3oOD6AodKvvoW87bbPfkfGnUc
-        hYSs5vzcEn69sv/c4S+qZXm1r4waT52dOHuPlckzfdXpzXmv2ew7RP4psRRnJBpqMRcVJwIA
-        zTmCe/UCAAA=
-X-CMS-MailID: 20220124142923epcas5p17cffd89f734eda4c7e9515ac4ec79fb5
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprDJsWRmVeSWpSXmKPExsWy7bCmhu617e8SDb6vYLN4MG8bm8XfScfY
+        Ld4v62G0mH/kHKvFxrc/mCym/FnOZLHp8TVWi48991gtHr4Kt7i8aw6bxYzz+5gsTl3/zGax
+        aOsXdovWvUfYLQ6/aWe1+HdtI4vF4+t/2BwEPdbMW8Po8fvXJEaPWQ29bB6bVnWyedy5tofN
+        Y/OSeo8rJ5pYPfq2rGL0+Nc0l93j8ya5AK6obJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMD
+        Q11DSwtzJYW8xNxUWyUXnwBdt8wcoH+UFMoSc0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUp
+        OQUmBXrFibnFpXnpenmpJVaGBgZGpkCFCdkZuy49ZixYyV7x9cAZlgbGaWxdjJwcEgImEtPu
+        n2HvYuTiEBLYzShxbs4vFgjnE6PEhIXbWEGqhAS+MUrMW2MB07HvTisjRNFeRok3N1qg2luY
+        JM6u/ccCUsUmoC1xd/oWJhBbRMBN4kZjBxNIEbPAfyaJjT3LwJYLC0RLfJt4gBHEZhFQlZi5
+        /RdYA6+ArcS5xY3MEOvkJVZvOABmcwLF5y38BjZIQmALh8TGHSegilwkPj9dwAphC0u8Or6F
+        HcKWkvj8bi/QMg4gO1uiZ5cxRLhGYum8YywQtr3EgStzWEBKmAU0Jdbv0gcJMwvwSfT+fsIE
+        0ckr0dEmBFGtKtH87ipUp7TExO5uqKUeEicndEEDZQKjxIvbnxgnMMrOQpi6gJFxFaNkakFx
+        bnpqsWmBYV5qOTyikvNzNzGCk6mW5w7Guw8+6B1iZOJgPMQowcGsJMJblfIuUYg3JbGyKrUo
+        P76oNCe1+BCjKTDIJjJLiSbnA9N5Xkm8oYmlgYmZmZmJpbGZoZI47+n0DYlCAumJJanZqakF
+        qUUwfUwcnFINTJOuVpRXKVn7fRefOGmyyQ0r2yTNyWpTF2xbuOGX4J/8Hec8OBpa4s6+svc2
+        6skLU9Ay3Bh555qcyY8nuZ4Hs+W0Th08Kbuu9vAeTTvR+cu4+wukGuqvzjHcUy5/IvSkg3q3
+        ja6eUP3yv/kXnx156vp9/Sau6K316o/eNOvyMOxf6jWPlfuvSFbhOQXZ+ScFK9gMXtkVCoUo
+        Plt1rvnGdMmmCezP+KPFjlbMmGCs5+Vspf2jpEYi5c+HTQ1d55SkWkWfljHeyuOZ2vRJrGCP
+        bMY1G9OO+54mZxas3tFgpHrAeu+DnS89S0yDDPdn6v37OnPRhM+Mj/kWTDX+9Gq/0+YdGvkO
+        D9L+Rs/f/yDvuxJLcUaioRZzUXEiAGw+7bcvBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrALMWRmVeSWpSXmKPExsWy7bCSnO7V7e8SDea1yls8mLeNzeLvpGPs
+        Fu+X9TBazD9yjtVi49sfTBZT/ixnstj0+Bqrxceee6wWD1+FW1zeNYfNYsb5fUwWp65/ZrNY
+        tPULu0Xr3iPsFofftLNa/Lu2kcXi8fU/bA6CHmvmrWH0+P1rEqPHrIZeNo9NqzrZPO5c28Pm
+        sXlJvceVE02sHn1bVjF6/Guay+7xeZNcAFcUl01Kak5mWWqRvl0CV8auS48ZC1ayV3w9cIal
+        gXEaWxcjJ4eEgInEvjutjF2MXBxCArsZJWYd62SHSEhLXN84AcoWllj57zk7RFETk0R/ww2w
+        BJuAtsTd6VuYQGwRAQ+Jtn/3mEGKmAUmMkts3HuWBSQhLBApcWXqZjCbRUBVYub2X2ANvAK2
+        EucWNzJDbJCXWL3hAJjNCRSft/AbUA0H0DYbiXO/VSYw8i1gZFjFKJlaUJybnltsWGCYl1qu
+        V5yYW1yal66XnJ+7iREcCVqaOxi3r/qgd4iRiYPxEKMEB7OSCG9VyrtEId6UxMqq1KL8+KLS
+        nNTiQ4zSHCxK4rwXuk7GCwmkJ5akZqemFqQWwWSZODilGpiu6ire39N41lnmDdNKRwONlIDH
+        i3X+iXgx51wKl9w/PTIqX8jy98dTHTICbxWWaS8ufbuui3FXbe/jTtsUR7U7UUoBj1147Frr
+        P20Wrp96Nner0Udvb+kzypUrrtV6qbTUSfmGTXbO5PFYPeUy85vYneUz3zarmaVsOrtHM2jL
+        qpUf71rzPbxbtMS0/8fRjoZjudx8XrHcLyaZ7uiuLr79e6P+wd7+nxPNb5Y+U9OxtrS1vR+S
+        Zd0p7cgR9WP9kcfXrP5//tV2WNwqwUr51IXKU6/v5TWckXI4fa/m7+5ki1uas3winrw6Z3ry
+        5aqUubHXOSZkbJy/aXGc+5T4xo/6i/i8/xt4Wz/NPv6y4q8SS3FGoqEWc1FxIgALJyNP8wIA
+        AA==
+X-CMS-MailID: 20220124142941epcas5p4bbba53cfc2fc9862da9fd85d44de6e79
 X-Msg-Generator: CA
 Content-Type: text/plain; charset="utf-8"
 CMS-TYPE: 105P
 DLP-Filter: Pass
 X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220124142923epcas5p17cffd89f734eda4c7e9515ac4ec79fb5
+X-CMS-RootMailID: 20220124142941epcas5p4bbba53cfc2fc9862da9fd85d44de6e79
 References: <20220124141644.71052-1-alim.akhtar@samsung.com>
-        <CGME20220124142923epcas5p17cffd89f734eda4c7e9515ac4ec79fb5@epcas5p1.samsung.com>
+        <CGME20220124142941epcas5p4bbba53cfc2fc9862da9fd85d44de6e79@epcas5p4.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Adds cmu_fsys1 block clock information which are needed
-for PCIe IPs in block FSYS1.
+Add compatible for Tesla Full Self-Driving SoC. The
+pinctrl hardware IP is similar to what found on most of the
+Exynos series of SoC, so this new compatible is added in
+Samsung pinctrl binding.
 
 Cc: linux-fsd@tesla.com
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: Pankaj Dubey <pankaj.dubey@samsung.com>
-Signed-off-by: Ajay Kumar <ajaykumar.rs@samsung.com>
 Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
 ---
- drivers/clk/samsung/clk-fsd.c | 175 ++++++++++++++++++++++++++++++++++
- 1 file changed, 175 insertions(+)
+ Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/clk/samsung/clk-fsd.c b/drivers/clk/samsung/clk-fsd.c
-index 785c493be2b6..19c3ea35a6ea 100644
---- a/drivers/clk/samsung/clk-fsd.c
-+++ b/drivers/clk/samsung/clk-fsd.c
-@@ -972,6 +972,178 @@ static const struct samsung_cmu_info fsys0_cmu_info __initconst = {
- 	.clk_name		= "dout_cmu_fsys0_shared1div4",
- };
+diff --git a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+index 28f0851d07bb..989e48c051cf 100644
+--- a/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
++++ b/Documentation/devicetree/bindings/pinctrl/samsung,pinctrl.yaml
+@@ -56,6 +56,7 @@ properties:
+       - samsung,exynos7885-pinctrl
+       - samsung,exynos850-pinctrl
+       - samsung,exynosautov9-pinctrl
++      - tesla,fsd-pinctrl
  
-+/* Register Offset definitions for CMU_FSYS1 (0x16810000) */
-+#define PLL_CON0_ACLK_FSYS1_BUSP_MUX			0x100
-+#define PLL_CON0_PCLKL_FSYS1_BUSP_MUX			0x180
-+#define DIV_CLK_FSYS1_PHY0_OSCCLK			0x1800
-+#define DIV_CLK_FSYS1_PHY1_OSCCLK			0x1804
-+#define GAT_FSYS1_CMU_FSYS1_IPCLKPORT_PCLK	0x2000
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_AUXCLK		0x2004
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_SOC_REF_CLK	0x2008
-+#define GAT_FSYS1_PCIE_LINK1_IPCLKPORT_AUXCLK		0x200c
-+#define GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_REF_XTAL	0x202c
-+#define GAT_FSYS1_PHY0_OSCCLLK				0x2034
-+#define GAT_FSYS1_PHY1_OSCCLK				0x2038
-+#define GAT_FSYS1_AXI2APB_FSYS1_IPCLKPORT_ACLK		0x203c
-+#define GAT_FSYS1_BUS_D0_FSYS1_IPCLKPORT_MAINCLK	0x2040
-+#define GAT_FSYS1_BUS_S0_FSYS1_IPCLKPORT_M250CLK	0x2048
-+#define GAT_FSYS1_BUS_S0_FSYS1_IPCLKPORT_MAINCLK	0x204c
-+#define GAT_FSYS1_CPE425_0_FSYS1_IPCLKPORT_ACLK		0x2054
-+#define GAT_FSYS1_NS_BRDG_FSYS1_IPCLKPORT_CLK__PSOC_FSYS1__CLK_FSYS1_D0	0x205c
-+#define GAT_FSYS1_NS_BRDG_FSYS1_IPCLKPORT_CLK__PSOC_FSYS1__CLK_FSYS1_S0	0x2064
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_DBI_ACLK		0x206c
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_APB_CLK	0x2070
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_DRIVER_APB_CLK	0x2074
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_MSTR_ACLK	0x2078
-+#define GAT_FSYS1_PCIE_LINK0_IPCLKPORT_SLV_ACLK		0x207c
-+#define GAT_FSYS1_PCIE_LINK1_IPCLKPORT_DBI_ACLK		0x2080
-+#define GAT_FSYS1_PCIE_LINK1_IPCLKPORT_I_DRIVER_APB_CLK	0x2084
-+#define GAT_FSYS1_PCIE_LINK1_IPCLKPORT_MSTR_ACLK	0x2088
-+#define GAT_FSYS1_PCIE_LINK1_IPCLKPORT_SLV_ACLK		0x208c
-+#define GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_APB_CLK		0x20a4
-+#define GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_REF_SOC_PLL	0x20a8
-+#define GAT_FSYS1_SYSREG_FSYS1_IPCLKPORT_PCLK		0x20b4
-+#define GAT_FSYS1_TBU0_FSYS1_IPCLKPORT_ACLK		0x20b8
-+
-+static const unsigned long fsys1_clk_regs[] __initconst = {
-+	PLL_CON0_ACLK_FSYS1_BUSP_MUX,
-+	PLL_CON0_PCLKL_FSYS1_BUSP_MUX,
-+	DIV_CLK_FSYS1_PHY0_OSCCLK,
-+	DIV_CLK_FSYS1_PHY1_OSCCLK,
-+	GAT_FSYS1_CMU_FSYS1_IPCLKPORT_PCLK,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_AUXCLK,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_SOC_REF_CLK,
-+	GAT_FSYS1_PCIE_LINK1_IPCLKPORT_AUXCLK,
-+	GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_REF_XTAL,
-+	GAT_FSYS1_PHY0_OSCCLLK,
-+	GAT_FSYS1_PHY1_OSCCLK,
-+	GAT_FSYS1_AXI2APB_FSYS1_IPCLKPORT_ACLK,
-+	GAT_FSYS1_BUS_D0_FSYS1_IPCLKPORT_MAINCLK,
-+	GAT_FSYS1_BUS_S0_FSYS1_IPCLKPORT_M250CLK,
-+	GAT_FSYS1_BUS_S0_FSYS1_IPCLKPORT_MAINCLK,
-+	GAT_FSYS1_CPE425_0_FSYS1_IPCLKPORT_ACLK,
-+	GAT_FSYS1_NS_BRDG_FSYS1_IPCLKPORT_CLK__PSOC_FSYS1__CLK_FSYS1_D0,
-+	GAT_FSYS1_NS_BRDG_FSYS1_IPCLKPORT_CLK__PSOC_FSYS1__CLK_FSYS1_S0,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_DBI_ACLK,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_APB_CLK,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_DRIVER_APB_CLK,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_MSTR_ACLK,
-+	GAT_FSYS1_PCIE_LINK0_IPCLKPORT_SLV_ACLK,
-+	GAT_FSYS1_PCIE_LINK1_IPCLKPORT_DBI_ACLK,
-+	GAT_FSYS1_PCIE_LINK1_IPCLKPORT_I_DRIVER_APB_CLK,
-+	GAT_FSYS1_PCIE_LINK1_IPCLKPORT_MSTR_ACLK,
-+	GAT_FSYS1_PCIE_LINK1_IPCLKPORT_SLV_ACLK,
-+	GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_APB_CLK,
-+	GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_REF_SOC_PLL,
-+	GAT_FSYS1_SYSREG_FSYS1_IPCLKPORT_PCLK,
-+	GAT_FSYS1_TBU0_FSYS1_IPCLKPORT_ACLK,
-+};
-+
-+static const struct samsung_fixed_rate_clock fsys1_fixed_clks[] __initconst = {
-+	FRATE(0, "clk_fsys1_phy0_ref", NULL, 0, 100000000),
-+	FRATE(0, "clk_fsys1_phy1_ref", NULL, 0, 100000000),
-+};
-+
-+/* List of parent clocks for Muxes in CMU_FSYS1 */
-+PNAME(mout_fsys1_pclkl_fsys1_busp_mux_p) = { "fin_pll", "dout_cmu_fsys1_shared0div8" };
-+PNAME(mout_fsys1_aclk_fsys1_busp_mux_p) = { "fin_pll", "dout_cmu_fsys1_shared0div4" };
-+
-+static const struct samsung_mux_clock fsys1_mux_clks[] __initconst = {
-+	MUX(0, "mout_fsys1_pclkl_fsys1_busp_mux", mout_fsys1_pclkl_fsys1_busp_mux_p,
-+	    PLL_CON0_PCLKL_FSYS1_BUSP_MUX, 4, 1),
-+	MUX(0, "mout_fsys1_aclk_fsys1_busp_mux", mout_fsys1_aclk_fsys1_busp_mux_p,
-+	    PLL_CON0_ACLK_FSYS1_BUSP_MUX, 4, 1),
-+};
-+
-+static const struct samsung_div_clock fsys1_div_clks[] __initconst = {
-+	DIV(0, "dout_fsys1_clk_fsys1_phy0_oscclk", "fsys1_phy0_osccllk",
-+	    DIV_CLK_FSYS1_PHY0_OSCCLK, 0, 4),
-+	DIV(0, "dout_fsys1_clk_fsys1_phy1_oscclk", "fsys1_phy1_oscclk",
-+	    DIV_CLK_FSYS1_PHY1_OSCCLK, 0, 4),
-+};
-+
-+static const struct samsung_gate_clock fsys1_gate_clks[] __initconst = {
-+	GATE(0, "fsys1_cmu_fsys1_ipclkport_pclk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_CMU_FSYS1_IPCLKPORT_PCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_phy0_ipclkport_i_ref_xtal", "clk_fsys1_phy0_ref",
-+	     GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_REF_XTAL, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_phy0_osccllk", "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_PHY0_OSCCLLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_phy1_oscclk", "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_PHY1_OSCCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_axi2apb_fsys1_ipclkport_aclk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_AXI2APB_FSYS1_IPCLKPORT_ACLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_bus_d0_fsys1_ipclkport_mainclk", "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_BUS_D0_FSYS1_IPCLKPORT_MAINCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_bus_s0_fsys1_ipclkport_m250clk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_BUS_S0_FSYS1_IPCLKPORT_M250CLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_bus_s0_fsys1_ipclkport_mainclk", "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_BUS_S0_FSYS1_IPCLKPORT_MAINCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_cpe425_0_fsys1_ipclkport_aclk", "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_CPE425_0_FSYS1_IPCLKPORT_ACLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_ns_brdg_fsys1_ipclkport_clk__psoc_fsys1__clk_fsys1_d0",
-+	     "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_NS_BRDG_FSYS1_IPCLKPORT_CLK__PSOC_FSYS1__CLK_FSYS1_D0, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_ns_brdg_fsys1_ipclkport_clk__psoc_fsys1__clk_fsys1_s0",
-+	     "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_NS_BRDG_FSYS1_IPCLKPORT_CLK__PSOC_FSYS1__CLK_FSYS1_S0, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK0_IPCLKPORT_DBI_ACLK, "fsys1_pcie_link0_ipclkport_dbi_aclk",
-+	     "mout_fsys1_aclk_fsys1_busp_mux", GAT_FSYS1_PCIE_LINK0_IPCLKPORT_DBI_ACLK, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_link0_ipclkport_i_apb_clk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_APB_CLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_link0_ipclkport_i_soc_ref_clk", "fin_pll",
-+	     GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_SOC_REF_CLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_link0_ipclkport_i_driver_apb_clk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_PCIE_LINK0_IPCLKPORT_I_DRIVER_APB_CLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK0_IPCLKPORT_MSTR_ACLK, "fsys1_pcie_link0_ipclkport_mstr_aclk",
-+	     "mout_fsys1_aclk_fsys1_busp_mux", GAT_FSYS1_PCIE_LINK0_IPCLKPORT_MSTR_ACLK, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK0_IPCLKPORT_SLV_ACLK, "fsys1_pcie_link0_ipclkport_slv_aclk",
-+	     "mout_fsys1_aclk_fsys1_busp_mux", GAT_FSYS1_PCIE_LINK0_IPCLKPORT_SLV_ACLK, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK1_IPCLKPORT_DBI_ACLK, "fsys1_pcie_link1_ipclkport_dbi_aclk",
-+	     "mout_fsys1_aclk_fsys1_busp_mux", GAT_FSYS1_PCIE_LINK1_IPCLKPORT_DBI_ACLK, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_link1_ipclkport_i_driver_apb_clk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_PCIE_LINK1_IPCLKPORT_I_DRIVER_APB_CLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK1_IPCLKPORT_MSTR_ACLK, "fsys1_pcie_link1_ipclkport_mstr_aclk",
-+	     "mout_fsys1_aclk_fsys1_busp_mux", GAT_FSYS1_PCIE_LINK1_IPCLKPORT_MSTR_ACLK, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK1_IPCLKPORT_SLV_ACLK, "fsys1_pcie_link1_ipclkport_slv_aclk",
-+	     "mout_fsys1_aclk_fsys1_busp_mux", GAT_FSYS1_PCIE_LINK1_IPCLKPORT_SLV_ACLK, 21,
-+	     CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_phy0_ipclkport_i_apb_clk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_APB_CLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK0_IPCLKPORT_AUX_ACLK, "fsys1_pcie_link0_ipclkport_auxclk", "fin_pll",
-+	     GAT_FSYS1_PCIE_LINK0_IPCLKPORT_AUXCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(PCIE_LINK1_IPCLKPORT_AUX_ACLK, "fsys1_pcie_link1_ipclkport_auxclk", "fin_pll",
-+	     GAT_FSYS1_PCIE_LINK1_IPCLKPORT_AUXCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_pcie_phy0_ipclkport_i_ref_soc_pll", "dout_fsys1_clk_fsys1_phy0_oscclk",
-+	     GAT_FSYS1_PCIE_PHY0_IPCLKPORT_I_REF_SOC_PLL, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_sysreg_fsys1_ipclkport_pclk", "mout_fsys1_pclkl_fsys1_busp_mux",
-+	     GAT_FSYS1_SYSREG_FSYS1_IPCLKPORT_PCLK, 21, CLK_IGNORE_UNUSED, 0),
-+	GATE(0, "fsys1_tbu0_fsys1_ipclkport_aclk", "mout_fsys1_aclk_fsys1_busp_mux",
-+	     GAT_FSYS1_TBU0_FSYS1_IPCLKPORT_ACLK, 21, CLK_IGNORE_UNUSED, 0),
-+};
-+
-+static const struct samsung_cmu_info fsys1_cmu_info __initconst = {
-+	.mux_clks		= fsys1_mux_clks,
-+	.nr_mux_clks		= ARRAY_SIZE(fsys1_mux_clks),
-+	.div_clks		= fsys1_div_clks,
-+	.nr_div_clks		= ARRAY_SIZE(fsys1_div_clks),
-+	.gate_clks		= fsys1_gate_clks,
-+	.nr_gate_clks		= ARRAY_SIZE(fsys1_gate_clks),
-+	.fixed_clks		= fsys1_fixed_clks,
-+	.nr_fixed_clks		= ARRAY_SIZE(fsys1_fixed_clks),
-+	.nr_clk_ids		= FSYS1_NR_CLK,
-+	.clk_regs		= fsys1_clk_regs,
-+	.nr_clk_regs		= ARRAY_SIZE(fsys1_clk_regs),
-+	.clk_name		= "dout_cmu_fsys1_shared0div4",
-+};
-+
- /**
-  * fsd_cmu_probe - Probe function for FSD platform clocks
-  * @pdev: Pointer to platform device
-@@ -997,6 +1169,9 @@ static const struct of_device_id fsd_cmu_of_match[] = {
- 	}, {
- 		.compatible = "tesla,fsd-clock-fsys0",
- 		.data = &fsys0_cmu_info,
-+	}, {
-+		.compatible = "tesla,fsd-clock-fsys1",
-+		.data = &fsys1_cmu_info,
- 	}, {
- 	},
- };
+   interrupts:
+     description:
 -- 
 2.25.1
 
