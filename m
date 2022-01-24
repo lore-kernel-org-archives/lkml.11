@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDB0C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574670AbiAXVuC (ORCPT
+        id S1574731AbiAXVuK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:50:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34382 "EHLO
+        Mon, 24 Jan 2022 16:50:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34466 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376794AbiAXVN1 (ORCPT
+        with ESMTP id S1448674AbiAXVNf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:13:27 -0500
+        Mon, 24 Jan 2022 16:13:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03CA9B812A4;
-        Mon, 24 Jan 2022 21:13:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 177ECC340E8;
-        Mon, 24 Jan 2022 21:13:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B4BEB8122A;
+        Mon, 24 Jan 2022 21:13:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9090DC340E5;
+        Mon, 24 Jan 2022 21:13:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058800;
-        bh=nuteEGewQqTwcTFHFsQbW1oe/ul0Q5xnOiHBmfH1eRQ=;
+        s=korg; t=1643058813;
+        bh=F2oYiKHVZmI6LKK4R/SUjdr8SVXHmnrD7tlG1U1IfVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xwDtJxbbpjtj12xW19E5UwZL1z0pMTyPSLWsMQHl5wogFWXd7Y+aBVdQeZCni7ZrP
-         AgBpYcR1JVThl8mtiZqAh/i66l7DKcb4M/JYttWmsaa5OX2zdxXcia2iBUVCkj5cJ3
-         blIpUXH6mw6ZW7iN1v6i3p2t5216XfqM295VMSiM=
+        b=NSwfMPPMwYnSOxt0Qv6WsF8bFEgg3SkayQla1lVFSSg33DvoBtLANXmh9Di8iK4xQ
+         KvOIBg9BC1DPVJt4AYx//8ueu/hDN4su7kiVNsObBoWGP3CIaVNmpyTCpHBgl/4XQn
+         6lIExVLWflMGiGrBghxb1rkV1tADuyjYEjdaOdnI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0373/1039] bpf, sockmap: Fix return codes from tcp_bpf_recvmsg_parser()
-Date:   Mon, 24 Jan 2022 19:36:02 +0100
-Message-Id: <20220124184137.848364641@linuxfoundation.org>
+Subject: [PATCH 5.16 0377/1039] bpf: Fix SO_RCVBUF/SO_SNDBUF handling in _bpf_setsockopt().
+Date:   Mon, 24 Jan 2022 19:36:06 +0100
+Message-Id: <20220124184137.979604025@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,90 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John Fastabend <john.fastabend@gmail.com>
+From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
 
-[ Upstream commit 5b2c5540b8110eea0d67a78fb0ddb9654c58daeb ]
+[ Upstream commit 04c350b1ae6bdb12b84009a4d0bf5ab4e621c47b ]
 
-Applications can be confused slightly because we do not always return the
-same error code as expected, e.g. what the TCP stack normally returns. For
-example on a sock err sk->sk_err instead of returning the sock_error we
-return EAGAIN. This usually means the application will 'try again'
-instead of aborting immediately. Another example, when a shutdown event
-is received we should immediately abort instead of waiting for data when
-the user provides a timeout.
+The commit 4057765f2dee ("sock: consistent handling of extreme
+SO_SNDBUF/SO_RCVBUF values") added a change to prevent underflow
+in setsockopt() around SO_SNDBUF/SO_RCVBUF.
 
-These tend to not be fatal, applications usually recover, but introduces
-bogus errors to the user or introduces unexpected latency. Before
-'c5d2177a72a16' we fell back to the TCP stack when no data was available
-so we managed to catch many of the cases here, although with the extra
-latency cost of calling tcp_msg_wait_data() first.
+This patch adds the same change to _bpf_setsockopt().
 
-To fix lets duplicate the error handling in TCP stack into tcp_bpf so
-that we get the same error codes.
-
-These were found in our CI tests that run applications against sockmap
-and do longer lived testing, at least compared to test_sockmap that
-does short-lived ping/pong tests, and in some of our test clusters
-we deploy.
-
-Its non-trivial to do these in a shorter form CI tests that would be
-appropriate for BPF selftests, but we are looking into it so we can
-ensure this keeps working going forward. As a preview one idea is to
-pull in the packetdrill testing which catches some of this.
-
-Fixes: c5d2177a72a16 ("bpf, sockmap: Fix race in ingress receive verdict with redirect to self")
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20220104205918.286416-1-john.fastabend@gmail.com
+Fixes: 4057765f2dee ("sock: consistent handling of extreme SO_SNDBUF/SO_RCVBUF values")
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Link: https://lore.kernel.org/bpf/20220104013153.97906-2-kuniyu@amazon.co.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/tcp_bpf.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ net/core/filter.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index f70aa0932bd6c..9b9b02052fd36 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -196,12 +196,39 @@ msg_bytes_ready:
- 		long timeo;
- 		int data;
- 
-+		if (sock_flag(sk, SOCK_DONE))
-+			goto out;
-+
-+		if (sk->sk_err) {
-+			copied = sock_error(sk);
-+			goto out;
-+		}
-+
-+		if (sk->sk_shutdown & RCV_SHUTDOWN)
-+			goto out;
-+
-+		if (sk->sk_state == TCP_CLOSE) {
-+			copied = -ENOTCONN;
-+			goto out;
-+		}
-+
- 		timeo = sock_rcvtimeo(sk, nonblock);
-+		if (!timeo) {
-+			copied = -EAGAIN;
-+			goto out;
-+		}
-+
-+		if (signal_pending(current)) {
-+			copied = sock_intr_errno(timeo);
-+			goto out;
-+		}
-+
- 		data = tcp_msg_wait_data(sk, psock, timeo);
- 		if (data && !sk_psock_queue_empty(psock))
- 			goto msg_bytes_ready;
- 		copied = -EAGAIN;
- 	}
-+out:
- 	release_sock(sk);
- 	sk_psock_put(sk, psock);
- 	return copied;
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 6102f093d59a5..31147a4cfab30 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4742,12 +4742,14 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 		switch (optname) {
+ 		case SO_RCVBUF:
+ 			val = min_t(u32, val, sysctl_rmem_max);
++			val = min_t(int, val, INT_MAX / 2);
+ 			sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
+ 			WRITE_ONCE(sk->sk_rcvbuf,
+ 				   max_t(int, val * 2, SOCK_MIN_RCVBUF));
+ 			break;
+ 		case SO_SNDBUF:
+ 			val = min_t(u32, val, sysctl_wmem_max);
++			val = min_t(int, val, INT_MAX / 2);
+ 			sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+ 			WRITE_ONCE(sk->sk_sndbuf,
+ 				   max_t(int, val * 2, SOCK_MIN_SNDBUF));
 -- 
 2.34.1
 
