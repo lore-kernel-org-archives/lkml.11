@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AF97C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 351ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:57:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245734AbiAXS5l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:57:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54456 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242579AbiAXSzW (ORCPT
+        id S1343968AbiAXS5o (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:57:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344628AbiAXSyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:55:22 -0500
+        Mon, 24 Jan 2022 13:54:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6EF8C061365;
+        Mon, 24 Jan 2022 10:53:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 797BC61546;
-        Mon, 24 Jan 2022 18:55:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47CAFC340E5;
-        Mon, 24 Jan 2022 18:55:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4805161507;
+        Mon, 24 Jan 2022 18:53:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C909C340E8;
+        Mon, 24 Jan 2022 18:53:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050520;
-        bh=zI/1cUxs2Lx51Wv//L7ZwxnwEnotIG2j9eMjB/HmDbw=;
+        s=korg; t=1643050424;
+        bh=XyB6tBQRGSlyvJTRw3bhsJ6pQSHWxE71MEwmOka4C64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QI+9nn6GRqv3r7qUNv/7rKSx2bZEvVDlL7qI3WVanmQj7tXpQXeW1UdU/ewhOlLQv
-         P0EexLUEdI9ces1gqrqdTOk0AsVo91sgf8CyolC9APu2LyrduupommNlUC4Xol3AB0
-         twAbVFRpuEuhP8kfm6wANBEhQh9kCefNHzizmew4=
+        b=ztXXCONDJxHbAz0xjaZNkOICZr16176JPpD3IFaTvSPMSxR0Ckd26+D5n8R4YBWC4
+         myjeTNnfrHqtt0mixhgrsFaC423AHurWiGEhQFnhqLm90N/1nVAa/2xA8vHUBAhiBi
+         5ph3ev9WCgYxa2tm8Gdo9um2VWsvpfiTKN/Oa0d8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gang Li <ligang.bdlg@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        Hugh Dickins <hughd@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 4.9 028/157] shmem: fix a race between shmem_unused_huge_shrink and shmem_evict_inode
-Date:   Mon, 24 Jan 2022 19:41:58 +0100
-Message-Id: <20220124183933.687407653@linuxfoundation.org>
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.4 113/114] bcmgenet: add WOL IRQ check
+Date:   Mon, 24 Jan 2022 19:43:28 +0100
+Message-Id: <20220124183930.591414342@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
+References: <20220124183927.095545464@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,172 +50,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Gang Li <ligang.bdlg@bytedance.com>
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-commit 62c9827cbb996c2c04f615ecd783ce28bcea894b upstream.
+commit 9deb48b53e7f4056c2eaa2dc2ee3338df619e4f6 upstream.
 
-Fix a data race in commit 779750d20b93 ("shmem: split huge pages beyond
-i_size under memory pressure").
+The driver neglects to check the result of platform_get_irq_optional()'s
+call and blithely passes the negative error codes to devm_request_irq()
+(which takes *unsigned* IRQ #), causing it to fail with -EINVAL.
+Stop calling devm_request_irq() with the invalid IRQ #s.
 
-Here are call traces causing race:
-
-   Call Trace 1:
-     shmem_unused_huge_shrink+0x3ae/0x410
-     ? __list_lru_walk_one.isra.5+0x33/0x160
-     super_cache_scan+0x17c/0x190
-     shrink_slab.part.55+0x1ef/0x3f0
-     shrink_node+0x10e/0x330
-     kswapd+0x380/0x740
-     kthread+0xfc/0x130
-     ? mem_cgroup_shrink_node+0x170/0x170
-     ? kthread_create_on_node+0x70/0x70
-     ret_from_fork+0x1f/0x30
-
-   Call Trace 2:
-     shmem_evict_inode+0xd8/0x190
-     evict+0xbe/0x1c0
-     do_unlinkat+0x137/0x330
-     do_syscall_64+0x76/0x120
-     entry_SYSCALL_64_after_hwframe+0x3d/0xa2
-
-A simple explanation:
-
-Image there are 3 items in the local list (@list).  In the first
-traversal, A is not deleted from @list.
-
-  1)    A->B->C
-        ^
-        |
-        pos (leave)
-
-In the second traversal, B is deleted from @list.  Concurrently, A is
-deleted from @list through shmem_evict_inode() since last reference
-counter of inode is dropped by other thread.  Then the @list is corrupted.
-
-  2)    A->B->C
-        ^  ^
-        |  |
-     evict pos (drop)
-
-We should make sure the inode is either on the global list or deleted from
-any local list before iput().
-
-Fixed by moving inodes back to global list before we put them.
-
-[akpm@linux-foundation.org: coding style fixes]
-
-Link: https://lkml.kernel.org/r/20211125064502.99983-1-ligang.bdlg@bytedance.com
-Fixes: 779750d20b93 ("shmem: split huge pages beyond i_size under memory pressure")
-Signed-off-by: Gang Li <ligang.bdlg@bytedance.com>
-Reviewed-by: Muchun Song <songmuchun@bytedance.com>
-Acked-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Cc: Hugh Dickins <hughd@google.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 8562056f267d ("net: bcmgenet: request Wake-on-LAN interrupt")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- mm/shmem.c |   37 +++++++++++++++++++++----------------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/broadcom/genet/bcmgenet.c |   10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
---- a/mm/shmem.c
-+++ b/mm/shmem.c
-@@ -436,7 +436,7 @@ static unsigned long shmem_unused_huge_s
- 	struct shmem_inode_info *info;
- 	struct page *page;
- 	unsigned long batch = sc ? sc->nr_to_scan : 128;
--	int removed = 0, split = 0;
-+	int split = 0;
+--- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
++++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+@@ -3443,10 +3443,12 @@ static int bcmgenet_probe(struct platfor
  
- 	if (list_empty(&sbinfo->shrinklist))
- 		return SHRINK_STOP;
-@@ -451,7 +451,6 @@ static unsigned long shmem_unused_huge_s
- 		/* inode is about to be evicted */
- 		if (!inode) {
- 			list_del_init(&info->shrinklist);
--			removed++;
- 			goto next;
- 		}
+ 	/* Request the WOL interrupt and advertise suspend if available */
+ 	priv->wol_irq_disabled = true;
+-	err = devm_request_irq(&pdev->dev, priv->wol_irq, bcmgenet_wol_isr, 0,
+-			       dev->name, priv);
+-	if (!err)
+-		device_set_wakeup_capable(&pdev->dev, 1);
++	if (priv->wol_irq > 0) {
++		err = devm_request_irq(&pdev->dev, priv->wol_irq,
++				       bcmgenet_wol_isr, 0, dev->name, priv);
++		if (!err)
++			device_set_wakeup_capable(&pdev->dev, 1);
++	}
  
-@@ -459,12 +458,12 @@ static unsigned long shmem_unused_huge_s
- 		if (round_up(inode->i_size, PAGE_SIZE) ==
- 				round_up(inode->i_size, HPAGE_PMD_SIZE)) {
- 			list_move(&info->shrinklist, &to_remove);
--			removed++;
- 			goto next;
- 		}
- 
- 		list_move(&info->shrinklist, &list);
- next:
-+		sbinfo->shrinklist_len--;
- 		if (!--batch)
- 			break;
- 	}
-@@ -484,7 +483,7 @@ next:
- 		inode = &info->vfs_inode;
- 
- 		if (nr_to_split && split >= nr_to_split)
--			goto leave;
-+			goto move_back;
- 
- 		page = find_get_page(inode->i_mapping,
- 				(inode->i_size & HPAGE_PMD_MASK) >> PAGE_SHIFT);
-@@ -498,38 +497,44 @@ next:
- 		}
- 
- 		/*
--		 * Leave the inode on the list if we failed to lock
--		 * the page at this time.
-+		 * Move the inode on the list back to shrinklist if we failed
-+		 * to lock the page at this time.
- 		 *
- 		 * Waiting for the lock may lead to deadlock in the
- 		 * reclaim path.
- 		 */
- 		if (!trylock_page(page)) {
- 			put_page(page);
--			goto leave;
-+			goto move_back;
- 		}
- 
- 		ret = split_huge_page(page);
- 		unlock_page(page);
- 		put_page(page);
- 
--		/* If split failed leave the inode on the list */
-+		/* If split failed move the inode on the list back to shrinklist */
- 		if (ret)
--			goto leave;
-+			goto move_back;
- 
- 		split++;
- drop:
- 		list_del_init(&info->shrinklist);
--		removed++;
--leave:
-+		goto put;
-+move_back:
-+		/*
-+		 * Make sure the inode is either on the global list or deleted
-+		 * from any local list before iput() since it could be deleted
-+		 * in another thread once we put the inode (then the local list
-+		 * is corrupted).
-+		 */
-+		spin_lock(&sbinfo->shrinklist_lock);
-+		list_move(&info->shrinklist, &sbinfo->shrinklist);
-+		sbinfo->shrinklist_len++;
-+		spin_unlock(&sbinfo->shrinklist_lock);
-+put:
- 		iput(inode);
- 	}
- 
--	spin_lock(&sbinfo->shrinklist_lock);
--	list_splice_tail(&list, &sbinfo->shrinklist);
--	sbinfo->shrinklist_len -= removed;
--	spin_unlock(&sbinfo->shrinklist_lock);
--
- 	return split;
- }
- 
+ 	/* Set the needed headroom to account for any possible
+ 	 * features enabling/disabling at runtime
 
 
