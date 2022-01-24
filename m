@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 929FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C99C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354533AbiAXTgn (ORCPT
+        id S1354605AbiAXTgu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54902 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353001AbiAXTbr (ORCPT
+        Mon, 24 Jan 2022 14:36:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59192 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345297AbiAXTb4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:47 -0500
+        Mon, 24 Jan 2022 14:31:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 137A6B8119D;
-        Mon, 24 Jan 2022 19:31:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34DFDC340E5;
-        Mon, 24 Jan 2022 19:31:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E253361525;
+        Mon, 24 Jan 2022 19:31:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBA8BC340E5;
+        Mon, 24 Jan 2022 19:31:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052703;
-        bh=Qbnpal6S+UxOf65CG/ERZROcEXBzaAoH3S2RJUPcGq0=;
+        s=korg; t=1643052713;
+        bh=PULv7iKdPfd6CSRSOX+Xe6qW3RgjiLrKcgWi2KcRGZ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a5y9x4wjKBp9IaVu6k4YH7cwKd/bII3XiX8/e/GWxE5FF3u4383A5sm3+W74nC2U3
-         bqY8rTxVBgRp57fX1jPqNCnZIvJGPqVHnEZqpa9MiXZ7C43EKUrv1f/TxKhQ2d+6vS
-         exMVwbm+gM2IQDDR7MBfk8PJj8lQxPSphszlRa8w=
+        b=R43HKERE4xz9RuXOOxbyzDbUvuun0QwmUf4/7AaUvg4gkibvVeyUliwkDeB5xp33O
+         xcuN0wiTjCCaTjPgS7mfOdV2XrnYwV0/fscKoVm+77sB1ar2MPVzR93rWYfLOZOoAv
+         4WGvXmjBTagc9pdMJYy00jhlIUplF1YHFa/Y7F7s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        kernel test robot <lkp@intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 148/320] mips: lantiq: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:42:12 +0100
-Message-Id: <20220124183958.676737458@linuxfoundation.org>
+Subject: [PATCH 5.4 150/320] RDMA/cxgb4: Set queue pair state when being queried
+Date:   Mon, 24 Jan 2022 19:42:14 +0100
+Message-Id: <20220124183958.739216604@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,46 +48,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-[ Upstream commit 76f66dfd60dc5d2f9dec22d99091fea1035c5d03 ]
+[ Upstream commit e375b9c92985e409c4bb95dd43d34915ea7f5e28 ]
 
-Provide a simple implementation of clk_set_parent() in the lantiq
-subarch so that callers of it will build without errors.
+The API for ib_query_qp requires the driver to set cur_qp_state on return,
+add the missing set.
 
-Fixes these build errors:
-
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
-
-Fixes: 171bb2f19ed6 ("MIPS: Lantiq: Add initial support for Lantiq SoCs")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reported-by: kernel test robot <lkp@intel.com>
---to=linux-mips@vger.kernel.org --cc="John Crispin <john@phrozen.org>" --cc="Jonathan Cameron <jic23@kernel.org>" --cc="Russell King <linux@armlinux.org.uk>" --cc="Andy Shevchenko <andy.shevchenko@gmail.com>" --cc=alsa-devel@alsa-project.org --to="Thomas Bogendoerfer <tsbogend@alpha.franken.de>"
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Fixes: 67bbc05512d8 ("RDMA/cxgb4: Add query_qp support")
+Link: https://lore.kernel.org/r/20211220152530.60399-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/lantiq/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/infiniband/hw/cxgb4/qp.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/mips/lantiq/clk.c b/arch/mips/lantiq/clk.c
-index 4916cccf378fd..7a623684d9b5e 100644
---- a/arch/mips/lantiq/clk.c
-+++ b/arch/mips/lantiq/clk.c
-@@ -164,6 +164,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
- 
-+int clk_set_parent(struct clk *clk, struct clk *parent)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(clk_set_parent);
-+
- static inline u32 get_counter_resolution(void)
- {
- 	u32 res;
+diff --git a/drivers/infiniband/hw/cxgb4/qp.c b/drivers/infiniband/hw/cxgb4/qp.c
+index 3ac08f47a8ce4..b3fbafbf66555 100644
+--- a/drivers/infiniband/hw/cxgb4/qp.c
++++ b/drivers/infiniband/hw/cxgb4/qp.c
+@@ -2469,6 +2469,7 @@ int c4iw_ib_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
+ 	memset(attr, 0, sizeof(*attr));
+ 	memset(init_attr, 0, sizeof(*init_attr));
+ 	attr->qp_state = to_ib_qp_state(qhp->attr.state);
++	attr->cur_qp_state = to_ib_qp_state(qhp->attr.state);
+ 	init_attr->cap.max_send_wr = qhp->attr.sq_num_entries;
+ 	init_attr->cap.max_recv_wr = qhp->attr.rq_num_entries;
+ 	init_attr->cap.max_send_sge = qhp->attr.sq_max_sges;
 -- 
 2.34.1
 
