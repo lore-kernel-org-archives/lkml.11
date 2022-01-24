@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A540C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C369EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354500AbiAXUDF (ORCPT
+        id S1352499AbiAXUDO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:03:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54262 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345185AbiAXT0g (ORCPT
+        Mon, 24 Jan 2022 15:03:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238002AbiAXT01 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:26:36 -0500
+        Mon, 24 Jan 2022 14:26:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D845CC02B879;
+        Mon, 24 Jan 2022 11:12:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD54A614DC;
-        Mon, 24 Jan 2022 19:26:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C39EDC340EE;
-        Mon, 24 Jan 2022 19:26:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F81DB8121A;
+        Mon, 24 Jan 2022 19:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A88A7C340EA;
+        Mon, 24 Jan 2022 19:12:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052395;
-        bh=bfB2/RcW2K+xexjn5NVIMB7nOFtsU1aTuXcNAlD80bY=;
+        s=korg; t=1643051536;
+        bh=1IvSxe8xKZxSOH1osGJiqjMhR5Nf6Fmyo66KyHc0iLw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MqzU+wtmBNolgyk/XqOY5A1m9sJYf2czZjn3E+pLtUWGZ132sT5b9hC+4JLBXLx1e
-         uIRE+pEheD0DhfCx2tlV0VeBM02AnKzbScyQPtqU2wwEp2XDCWaPU8yJ0uQz00ABEb
-         bdD0HCH1kgy46lNgUJ9aikcZ5VloWGUTf7ZcsJFI=
+        b=syak8bdGY/9AFvq+ux/NiTyWrTjfrrMXzEN8qowHGjojSHZLN6ETSDD9+8Lh1f0Mw
+         ZDwHDo9yWOdeiqLYvaOZixGQu7aPcKT4W/q68nbcVlgPL6MsYdWLFaplKkb3uxEYoj
+         xyzRMwfu6KAUTVyaYoQY3+JM5Yucpe0+hTxIAbF4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 044/320] media: em28xx: fix memory leak in em28xx_init_dev
-Date:   Mon, 24 Jan 2022 19:40:28 +0100
-Message-Id: <20220124183955.247242999@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Michael Wakabayashi <mwakabayashi@vmware.com>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>
+Subject: [PATCH 4.14 186/186] NFSv4: Initialise connection to the server in nfs4_alloc_client()
+Date:   Mon, 24 Jan 2022 19:44:21 +0100
+Message-Id: <20220124183943.090675630@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,81 +50,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Trond Myklebust <trond.myklebust@hammerspace.com>
 
-[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
+commit dd99e9f98fbf423ff6d365b37a98e8879170f17c upstream.
 
-In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
-to deallocate the media_dev allocated in the em28xx_media_device_init.
+Set up the connection to the NFSv4 server in nfs4_alloc_client(), before
+we've added the struct nfs_client to the net-namespace's nfs_client_list
+so that a downed server won't cause other mounts to hang in the trunking
+detection code.
 
-Fix this by adding em28xx_unregister_media_device to free media_dev.
-
-BTW, this patch is tested in my local syzkaller instance, and it can
-prevent the memory leak from occurring again.
-
-CC: Pavel Skripkin <paskripkin@gmail.com>
-Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Reported-by: Michael Wakabayashi <mwakabayashi@vmware.com>
+Fixes: 5c6e5b60aae4 ("NFS: Fix an Oops in the pNFS files and flexfiles connection setup to the DS")
+Signed-off-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ fs/nfs/nfs4client.c |   82 ++++++++++++++++++++++++++--------------------------
+ 1 file changed, 42 insertions(+), 40 deletions(-)
 
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index 3e96b4b711d75..bfca9d0a1fe15 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -3515,8 +3515,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+--- a/fs/nfs/nfs4client.c
++++ b/fs/nfs/nfs4client.c
+@@ -177,8 +177,11 @@ void nfs40_shutdown_client(struct nfs_cl
  
- 	if (dev->is_audio_only) {
- 		retval = em28xx_audio_setup(dev);
--		if (retval)
--			return -ENODEV;
-+		if (retval) {
-+			retval = -ENODEV;
-+			goto err_deinit_media;
-+		}
- 		em28xx_init_extension(dev);
- 
- 		return 0;
-@@ -3535,7 +3537,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 		dev_err(&dev->intf->dev,
- 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
- 		       __func__, retval);
--		return retval;
-+		goto err_deinit_media;
- 	}
- 
- 	/* register i2c bus 1 */
-@@ -3551,9 +3553,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 				"%s: em28xx_i2c_register bus 1 - error [%d]!\n",
- 				__func__, retval);
- 
--			em28xx_i2c_unregister(dev, 0);
--
--			return retval;
-+			goto err_unreg_i2c;
- 		}
- 	}
- 
-@@ -3561,6 +3561,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 	em28xx_card_setup(dev);
- 
- 	return 0;
+ struct nfs_client *nfs4_alloc_client(const struct nfs_client_initdata *cl_init)
+ {
+-	int err;
++	char buf[INET6_ADDRSTRLEN + 1];
++	const char *ip_addr = cl_init->ip_addr;
+ 	struct nfs_client *clp = nfs_alloc_client(cl_init);
++	int err;
 +
-+err_unreg_i2c:
-+	em28xx_i2c_unregister(dev, 0);
-+err_deinit_media:
-+	em28xx_unregister_media_device(dev);
-+	return retval;
- }
+ 	if (IS_ERR(clp))
+ 		return clp;
  
- static int em28xx_duplicate_dev(struct em28xx *dev)
--- 
-2.34.1
-
+@@ -202,6 +205,44 @@ struct nfs_client *nfs4_alloc_client(con
+ #if IS_ENABLED(CONFIG_NFS_V4_1)
+ 	init_waitqueue_head(&clp->cl_lock_waitq);
+ #endif
++
++	if (cl_init->minorversion != 0)
++		__set_bit(NFS_CS_INFINITE_SLOTS, &clp->cl_flags);
++	__set_bit(NFS_CS_DISCRTRY, &clp->cl_flags);
++	__set_bit(NFS_CS_NO_RETRANS_TIMEOUT, &clp->cl_flags);
++
++	/*
++	 * Set up the connection to the server before we add add to the
++	 * global list.
++	 */
++	err = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_GSS_KRB5I);
++	if (err == -EINVAL)
++		err = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_UNIX);
++	if (err < 0)
++		goto error;
++
++	/* If no clientaddr= option was specified, find a usable cb address */
++	if (ip_addr == NULL) {
++		struct sockaddr_storage cb_addr;
++		struct sockaddr *sap = (struct sockaddr *)&cb_addr;
++
++		err = rpc_localaddr(clp->cl_rpcclient, sap, sizeof(cb_addr));
++		if (err < 0)
++			goto error;
++		err = rpc_ntop(sap, buf, sizeof(buf));
++		if (err < 0)
++			goto error;
++		ip_addr = (const char *)buf;
++	}
++	strlcpy(clp->cl_ipaddr, ip_addr, sizeof(clp->cl_ipaddr));
++
++	err = nfs_idmap_new(clp);
++	if (err < 0) {
++		dprintk("%s: failed to create idmapper. Error = %d\n",
++			__func__, err);
++		goto error;
++	}
++	__set_bit(NFS_CS_IDMAP, &clp->cl_res_state);
+ 	return clp;
+ 
+ error:
+@@ -354,8 +395,6 @@ static int nfs4_init_client_minor_versio
+ struct nfs_client *nfs4_init_client(struct nfs_client *clp,
+ 				    const struct nfs_client_initdata *cl_init)
+ {
+-	char buf[INET6_ADDRSTRLEN + 1];
+-	const char *ip_addr = cl_init->ip_addr;
+ 	struct nfs_client *old;
+ 	int error;
+ 
+@@ -363,43 +402,6 @@ struct nfs_client *nfs4_init_client(stru
+ 		/* the client is initialised already */
+ 		return clp;
+ 
+-	/* Check NFS protocol revision and initialize RPC op vector */
+-	clp->rpc_ops = &nfs_v4_clientops;
+-
+-	if (clp->cl_minorversion != 0)
+-		__set_bit(NFS_CS_INFINITE_SLOTS, &clp->cl_flags);
+-	__set_bit(NFS_CS_DISCRTRY, &clp->cl_flags);
+-	__set_bit(NFS_CS_NO_RETRANS_TIMEOUT, &clp->cl_flags);
+-
+-	error = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_GSS_KRB5I);
+-	if (error == -EINVAL)
+-		error = nfs_create_rpc_client(clp, cl_init, RPC_AUTH_UNIX);
+-	if (error < 0)
+-		goto error;
+-
+-	/* If no clientaddr= option was specified, find a usable cb address */
+-	if (ip_addr == NULL) {
+-		struct sockaddr_storage cb_addr;
+-		struct sockaddr *sap = (struct sockaddr *)&cb_addr;
+-
+-		error = rpc_localaddr(clp->cl_rpcclient, sap, sizeof(cb_addr));
+-		if (error < 0)
+-			goto error;
+-		error = rpc_ntop(sap, buf, sizeof(buf));
+-		if (error < 0)
+-			goto error;
+-		ip_addr = (const char *)buf;
+-	}
+-	strlcpy(clp->cl_ipaddr, ip_addr, sizeof(clp->cl_ipaddr));
+-
+-	error = nfs_idmap_new(clp);
+-	if (error < 0) {
+-		dprintk("%s: failed to create idmapper. Error = %d\n",
+-			__func__, error);
+-		goto error;
+-	}
+-	__set_bit(NFS_CS_IDMAP, &clp->cl_res_state);
+-
+ 	error = nfs4_init_client_minor_version(clp);
+ 	if (error < 0)
+ 		goto error;
 
 
