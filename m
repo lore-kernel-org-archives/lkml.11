@@ -2,30 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8361BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 695D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:03:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244938AbiAXSDK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:03:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244814AbiAXSC6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:02:58 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A934C06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:02:58 -0800 (PST)
+        id S235969AbiAXSDk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:03:40 -0500
+Received: from out2.migadu.com ([188.165.223.204]:12740 "EHLO out2.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241752AbiAXSDb (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:03:31 -0500
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643047376;
+        t=1643047409;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=PiyMHSnkvYvDw2LQdkJa/J+//+u8Wif2b5Y6jyI/vHU=;
-        b=T0BhkxS8FQtCOrCEEu43b/tiYymVHBuuhMlGSw9lgSOuRZ59FOHzvs9BRNnwju6wtuuQXG
-        vM+LbdKxr0GgY11GYgXTKVcHwMBt1+4QWdQGHmK0K9v/CqhYWsiLO6FG47PslOJQCL3xkO
-        dcoiVALdKidG+w5NsxE2ricY8hMXqoA=
+        bh=YUKFeRnU18yjbXq2i74hXRIrDf5f39WtjIbACz6CeBE=;
+        b=J6XktU+xPXb7/hqOznPmmk8IrMciRRvAVtXW14f6Swsgih0UTMGp1eHUnK4xP7tdxr1/8d
+        7cTW1hdQL8U8rB0JTUKu/IdX0PZzSIhY6GeGtgUERJwVqoglZ/lPq/ux8zxCuCe1rIeLMX
+        W5m16QZkztvby8QiMd+iT3SMJvlwk8c=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -43,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Evgenii Stepanov <eugenis@google.com>,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v6 04/39] kasan, page_alloc: simplify kasan_poison_pages call site
-Date:   Mon, 24 Jan 2022 19:02:12 +0100
-Message-Id: <ae4f9bcf071577258e786bcec4798c145d718c46.1643047180.git.andreyknvl@google.com>
+Subject: [PATCH v6 06/39] kasan: drop skip_kasan_poison variable in free_pages_prepare
+Date:   Mon, 24 Jan 2022 19:02:14 +0100
+Message-Id: <1d33212e79bc9ef0b4d3863f903875823e89046f.1643047180.git.andreyknvl@google.com>
 In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
 References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -58,58 +54,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Simplify the code around calling kasan_poison_pages() in
-free_pages_prepare().
-
-This patch does no functional changes.
+skip_kasan_poison is only used in a single place.
+Call should_skip_kasan_poison() directly for simplicity.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Reviewed-by: Alexander Potapenko <glider@google.com>
+Suggested-by: Marco Elver <elver@google.com>
 
 ---
 
 Changes v1->v2:
-- Don't reorder kasan_poison_pages() and free_pages_prepare().
+- Add this patch.
 ---
- mm/page_alloc.c | 18 +++++-------------
- 1 file changed, 5 insertions(+), 13 deletions(-)
+ mm/page_alloc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index e5f95c6ab0ac..60bc838a4d85 100644
+index f994fd68e3b1..8481420d2502 100644
 --- a/mm/page_alloc.c
 +++ b/mm/page_alloc.c
-@@ -1302,6 +1302,7 @@ static __always_inline bool free_pages_prepare(struct page *page,
+@@ -1301,7 +1301,6 @@ static __always_inline bool free_pages_prepare(struct page *page,
+ 			unsigned int order, bool check_free, fpi_t fpi_flags)
  {
  	int bad = 0;
- 	bool skip_kasan_poison = should_skip_kasan_poison(page, fpi_flags);
-+	bool init = want_init_on_free();
+-	bool skip_kasan_poison = should_skip_kasan_poison(page, fpi_flags);
+ 	bool init = want_init_on_free();
  
  	VM_BUG_ON_PAGE(PageTail(page), page);
- 
-@@ -1374,19 +1375,10 @@ static __always_inline bool free_pages_prepare(struct page *page,
+@@ -1375,7 +1374,7 @@ static __always_inline bool free_pages_prepare(struct page *page,
  	 * With hardware tag-based KASAN, memory tags must be set before the
  	 * page becomes unavailable via debug_pagealloc or arch_free_page.
  	 */
--	if (kasan_has_integrated_init()) {
--		bool init = want_init_on_free();
--
--		if (!skip_kasan_poison)
--			kasan_poison_pages(page, order, init);
--	} else {
--		bool init = want_init_on_free();
--
--		if (init)
--			kernel_init_free_pages(page, 1 << order);
--		if (!skip_kasan_poison)
--			kasan_poison_pages(page, order, init);
--	}
-+	if (init && !kasan_has_integrated_init())
-+		kernel_init_free_pages(page, 1 << order);
-+	if (!skip_kasan_poison)
-+		kasan_poison_pages(page, order, init);
+-	if (!skip_kasan_poison) {
++	if (!should_skip_kasan_poison(page, fpi_flags)) {
+ 		kasan_poison_pages(page, order, init);
  
- 	/*
- 	 * arch_free_page() can make the page's contents inaccessible.  s390
+ 		/* Memory is already initialized if KASAN did it internally. */
 -- 
 2.25.1
 
