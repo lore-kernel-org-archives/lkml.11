@@ -2,135 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A599AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3186C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383366AbiAXXEN (ORCPT
+        id S1383568AbiAXXEW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:04:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33676 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579156AbiAXWFE (ORCPT
+        Mon, 24 Jan 2022 18:04:22 -0500
+Received: from ip59.38.31.103.in-addr.arpa.unknwn.cloudhost.asia ([103.31.38.59]:48238
+        "EHLO gnuweeb.org" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1348958AbiAXWIe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:05:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35376C0C6847;
-        Mon, 24 Jan 2022 12:42:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD793B81061;
-        Mon, 24 Jan 2022 20:42:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD8ABC340E7;
-        Mon, 24 Jan 2022 20:42:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056923;
-        bh=vCWM391mahdHAJjL6H0oEHOo3B7sCwqL6vruq8eQ2u4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PPRCFVZ+a+S+XOJPh9mLHLkkGhbI4zrtsJmzdpdfCMbpPy0QgtWHKEHHH6WgIpwUs
-         hOZQFUsIgSFmQbSP+76wDVNTN5woS9Fm0KllfSch234eQWXxrXxINKmsaaxtambtaL
-         LdM7L7XKhd+R0HbCvZglekL3SSNIYgXbyEoq6QRo=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang.zhang1211@gmail.com>,
-        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 643/846] ALSA: seq: Set upper limit of processed events
-Date:   Mon, 24 Jan 2022 19:42:40 +0100
-Message-Id: <20220124184123.206812334@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 17:08:34 -0500
+Received: from [10.5.5.3] (unknown [68.183.184.174])
+        by gnuweeb.org (Postfix) with ESMTPSA id 21C0DC316C;
+        Mon, 24 Jan 2022 22:08:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=gnuweeb.org;
+        s=default; t=1643062112;
+        bh=zxxunHJMdrtLLW9Gj1MtrXIOO8UGQKHrxWPSXsEVrXE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=hz0g4K/xfkORh2e55UOv0F0+MwoNXnKbRWDbVEfYymEuHpJA0o+OVqZAOi+f9Obog
+         u9wAvZ4egvndPhyr9tAASg2ilf0rnRGIwzx+AsXBZ19lWce3VKMvgqeyADxd7dfWc3
+         C3mxO6xmZ++sTFqPlH5FM4zC9DlKgFuYXLr6b6K0dxCiZEmOsI7JL6EtvKgGhaAupP
+         PzzGHgzuZ48TcLP5j9mLPV5OGvFrqymJG+Rl8SP3jgUfmakXOiTqdNVkUxYdAEr3wy
+         t1u4T7rX13FrAr8ptO0vbLjcp/ClqTWfGvp+gYzRI0o+1ZJGHwKPI1dnL5RclkrbFv
+         JWZQC9GCqLZVQ==
+Message-ID: <3f08b8cf-a1dc-4d83-0de2-94203dff9a4c@gnuweeb.org>
+Date:   Tue, 25 Jan 2022 05:08:29 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v2] rcu: Add per-CPU rcuc task info to RCU CPU stall
+ warnings
+Content-Language: en-US
+To:     paulmck@kernel.org
+Cc:     Zqiang <qiang1.zhang@intel.com>, linux-kernel@vger.kernel.org
+References: <20220124103637.4001386-1-qiang1.zhang@intel.com>
+ <e7d56d70-3750-b83a-8c1c-99878722c805@gnuweeb.org>
+ <20220124164251.GF4285@paulmck-ThinkPad-P17-Gen-1>
+From:   Ammar Faizi <ammarfaizi2@gnuweeb.org>
+In-Reply-To: <20220124164251.GF4285@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+On 1/24/22 11:42 PM, Paul E. McKenney wrote:
+> On Mon, Jan 24, 2022 at 05:38:21PM +0700, Ammar Faizi wrote:
+>> [snip...]
+>> FWIW, this one makes more sense:
+>> ```
+>> static void rcuc_kthread_dump(struct rcu_data *rdp)
+>> {
+>> 	 int cpu;
+>> 	 unsigned long j;
+>> 	 struct task_struct *rcuc;
+>>
+>> 	 if (!rcu_is_rcuc_kthread_starving(rdp, &j))
+>> 		 return;
+>>
+>> 	 rcuc = rdp->rcu_cpu_kthread_task;
+>> 	 if (!rcuc)
+>> 		 return;
+>>
+>> 	 pr_err("%s kthread starved for %ld jiffies, stack dump:\n", rcuc->comm, j);
+> 
+> Thank you for looking this over and for the great feedback, Ammar!
+> 
+> I am also wondering why the above message should be printed when the
+> corresponding CPU is offline or idle.  Why not move the above pr_err()
+> line down to replace the pr_err() line below?
+> 
+> 							Thanx, Paul
 
-[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
+Hi Paul, Thank you for the review. Agree with that.
+Hopefully this one looks better (untested):
+```
+static void rcuc_kthread_dump(struct rcu_data *rdp)
+{
+	int cpu;
+	unsigned long j;
+	struct task_struct *rcuc;
 
-Currently ALSA sequencer core tries to process the queued events as
-much as possible when they become dispatchable.  If applications try
-to queue too massive events to be processed at the very same timing,
-the sequencer core would still try to process such all events, either
-in the interrupt context or via some notifier; in either away, it
-might be a cause of RCU stall or such problems.
+	rcuc = rdp->rcu_cpu_kthread_task;
+	if (!rcuc)
+		return;
 
-As a potential workaround for those problems, this patch adds the
-upper limit of the amount of events to be processed.  The remaining
-events are processed in the next batch, so they won't be lost.
+	cpu = task_cpu(rcuc);
+	if (cpu_is_offline(cpu) || idle_cpu(cpu))
+		return;
 
-For the time being, it's limited up to 1000 events per queue, which
-should be high enough for any normal usages.
+	if (!rcu_is_rcuc_kthread_starving(rdp, &j))
+		return;
 
-Reported-by: Zqiang <qiang.zhang1211@gmail.com>
-Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
-Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/core/seq/seq_queue.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+	pr_err("%s kthread starved for %ld jiffies\n", rcuc->comm, j);
+	sched_show_task(rcuc);
+	if (!trigger_single_cpu_backtrace(cpu))
+		dump_cpu_task(cpu);
+}
+```
 
-diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
-index d6c02dea976c8..bc933104c3eea 100644
---- a/sound/core/seq/seq_queue.c
-+++ b/sound/core/seq/seq_queue.c
-@@ -235,12 +235,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
- 
- /* -------------------------------------------------------- */
- 
-+#define MAX_CELL_PROCESSES_IN_QUEUE	1000
-+
- void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- {
- 	unsigned long flags;
- 	struct snd_seq_event_cell *cell;
- 	snd_seq_tick_time_t cur_tick;
- 	snd_seq_real_time_t cur_time;
-+	int processed = 0;
- 
- 	if (q == NULL)
- 		return;
-@@ -263,6 +266,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
- 	/* Process time queue... */
-@@ -272,14 +277,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
-+ out:
- 	/* free lock */
- 	spin_lock_irqsave(&q->check_lock, flags);
- 	if (q->check_again) {
- 		q->check_again = 0;
--		spin_unlock_irqrestore(&q->check_lock, flags);
--		goto __again;
-+		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
-+			spin_unlock_irqrestore(&q->check_lock, flags);
-+			goto __again;
-+		}
- 	}
- 	q->check_blocked = 0;
- 	spin_unlock_irqrestore(&q->check_lock, flags);
+Recall that dump_cpu_task looks like this:
+```
+void dump_cpu_task(int cpu)
+{
+	pr_info("Task dump for CPU %d:\n", cpu);
+	sched_show_task(cpu_curr(cpu));
+}
+```
+which already tells us it's a dump, so "stack dump" in the pr_err()
+can be omitted. Any comment, Zqiang?
+
 -- 
-2.34.1
-
-
-
+Ammar Faizi
