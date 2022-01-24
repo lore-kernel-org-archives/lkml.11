@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9971FC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF7CCC4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582898AbiAXWQF (ORCPT
+        id S1583082AbiAXWQZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:16:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53302 "EHLO
+        Mon, 24 Jan 2022 17:16:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1453889AbiAXVbI (ORCPT
+        with ESMTP id S1390804AbiAXVM6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:31:08 -0500
+        Mon, 24 Jan 2022 16:12:58 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13214C0A893A;
-        Mon, 24 Jan 2022 12:19:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92790C02980B;
+        Mon, 24 Jan 2022 12:09:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C43DCB8122C;
-        Mon, 24 Jan 2022 20:19:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A5AC340E5;
-        Mon, 24 Jan 2022 20:19:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 598C2B8119E;
+        Mon, 24 Jan 2022 20:09:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 808C7C340E7;
+        Mon, 24 Jan 2022 20:09:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055595;
-        bh=rISzfO/DwKslH0NWHGM+V6cir+6QSkvk9BZL5LLR0cQ=;
+        s=korg; t=1643054997;
+        bh=iVHyyH0Rl0ctyayqKyVIO5m9Sy/n8b+oFCc8GQ1GgAE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=afQGDGhPIvd4baQLstkA3So3yYzrp2EgZ40w0qtQy3AhXokzLwjrheqoOPND4plJU
-         FAaVFfFL0shr8aIhzbQ1oS9C+kgDvK8f4Dj9DOIiLBoal3mgkwqKwdbJ5RYFkkQkLI
-         wnRPS8DpuTuYOchKg3uNY6DtT3wBjr7pxWbIbAHg=
+        b=rcz0PK+s9cZn+dghSUMl/nkqCDgBzzglLUpAadaXZVFZ8JMQiFhF7+Y3VKweyb6sp
+         T9QQwZ+3mhDZBYIWEdVOx/5buP6wZB3Qr4o+HZkmRXX0Y0/+tMNRPF1ZV5/H/BKvTw
+         5l15DbK6W4EssT2o+Ou5KJR4UMNXc5uYX2l4K/uQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hou Tao <houtao1@huawei.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Martin KaFai Lau <kafai@fb.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 202/846] bpf: Disallow BPF_LOG_KERNEL log level for bpf(BPF_BTF_LOAD)
-Date:   Mon, 24 Jan 2022 19:35:19 +0100
-Message-Id: <20220124184107.906960330@linuxfoundation.org>
+        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: [PATCH 5.10 531/563] vdpa/mlx5: Fix wrong configuration of virtio_version_1_0
+Date:   Mon, 24 Jan 2022 19:44:56 +0100
+Message-Id: <20220124184042.812983165@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,81 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hou Tao <houtao1@huawei.com>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit 866de407444398bc8140ea70de1dba5f91cc34ac ]
+commit 97143b70aa847f2b0a1f959dde126b76ff7b5376 upstream.
 
-BPF_LOG_KERNEL is only used internally, so disallow bpf_btf_load()
-to set log level as BPF_LOG_KERNEL. The same checking has already
-been done in bpf_check(), so factor out a helper to check the
-validity of log attributes and use it in both places.
+Remove overriding of virtio_version_1_0 which forced the virtqueue
+object to version 1.
 
-Fixes: 8580ac9404f6 ("bpf: Process in-kernel BTF")
-Signed-off-by: Hou Tao <houtao1@huawei.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Link: https://lore.kernel.org/bpf/20211203053001.740945-1-houtao1@huawei.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Link: https://lore.kernel.org/r/20211230142024.142979-1-elic@nvidia.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/linux/bpf_verifier.h | 7 +++++++
- kernel/bpf/btf.c             | 3 +--
- kernel/bpf/verifier.c        | 6 +++---
- 3 files changed, 11 insertions(+), 5 deletions(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/include/linux/bpf_verifier.h b/include/linux/bpf_verifier.h
-index 5424124dbe365..364550dd19c4a 100644
---- a/include/linux/bpf_verifier.h
-+++ b/include/linux/bpf_verifier.h
-@@ -396,6 +396,13 @@ static inline bool bpf_verifier_log_needed(const struct bpf_verifier_log *log)
- 		 log->level == BPF_LOG_KERNEL);
- }
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -812,8 +812,6 @@ static int create_virtqueue(struct mlx5_
+ 	MLX5_SET(virtio_q, vq_ctx, umem_3_id, mvq->umem3.id);
+ 	MLX5_SET(virtio_q, vq_ctx, umem_3_size, mvq->umem3.size);
+ 	MLX5_SET(virtio_q, vq_ctx, pd, ndev->mvdev.res.pdn);
+-	if (MLX5_CAP_DEV_VDPA_EMULATION(ndev->mvdev.mdev, eth_frame_offload_type))
+-		MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0, 1);
  
-+static inline bool
-+bpf_verifier_log_attr_valid(const struct bpf_verifier_log *log)
-+{
-+	return log->len_total >= 128 && log->len_total <= UINT_MAX >> 2 &&
-+	       log->level && log->ubuf && !(log->level & ~BPF_LOG_MASK);
-+}
-+
- #define BPF_MAX_SUBPROGS 256
- 
- struct bpf_subprog_info {
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 79c0bcdcab842..b8ed4da63bc8c 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4332,8 +4332,7 @@ static struct btf *btf_parse(bpfptr_t btf_data, u32 btf_data_size,
- 		log->len_total = log_size;
- 
- 		/* log attributes have to be sane */
--		if (log->len_total < 128 || log->len_total > UINT_MAX >> 2 ||
--		    !log->level || !log->ubuf) {
-+		if (!bpf_verifier_log_attr_valid(log)) {
- 			err = -EINVAL;
- 			goto errout;
- 		}
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index b84e63d62b8af..18c75d6d98960 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -13759,11 +13759,11 @@ int bpf_check(struct bpf_prog **prog, union bpf_attr *attr, bpfptr_t uattr)
- 		log->ubuf = (char __user *) (unsigned long) attr->log_buf;
- 		log->len_total = attr->log_size;
- 
--		ret = -EINVAL;
- 		/* log attributes have to be sane */
--		if (log->len_total < 128 || log->len_total > UINT_MAX >> 2 ||
--		    !log->level || !log->ubuf || log->level & ~BPF_LOG_MASK)
-+		if (!bpf_verifier_log_attr_valid(log)) {
-+			ret = -EINVAL;
- 			goto err_unlock;
-+		}
- 	}
- 
- 	if (IS_ERR(btf_vmlinux)) {
--- 
-2.34.1
-
+ 	err = mlx5_cmd_exec(ndev->mvdev.mdev, in, inlen, out, sizeof(out));
+ 	if (err)
 
 
