@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41768C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:33:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94492C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356999AbiAXUdd (ORCPT
+        id S1357003AbiAXUdo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:33:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53858 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347605AbiAXUMY (ORCPT
+        Mon, 24 Jan 2022 15:33:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349334AbiAXUNj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:24 -0500
+        Mon, 24 Jan 2022 15:13:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C5B0C061765;
+        Mon, 24 Jan 2022 11:35:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 99FC9B811F9;
-        Mon, 24 Jan 2022 20:12:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0D02C340E8;
-        Mon, 24 Jan 2022 20:12:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BFB7614FC;
+        Mon, 24 Jan 2022 19:35:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3356C340E5;
+        Mon, 24 Jan 2022 19:35:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055141;
-        bh=lAgpecVtFPKqz8XYq912/7qZ284lwJXrzMb0Oc/wRyg=;
+        s=korg; t=1643052956;
+        bh=fqghv2tM9KQdZtwnpamw7ZoE6favq2oByT6WYmfaJKk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ao9EpMXyMpscYWR7BFyC1Pkc8iLUUtlPhzTluuJcY0zIqS+3LmaI3TLMriW0A+BRu
-         3HuWsawSjdrXRndWqXp8zFKE5/rTY98KQsx5QqigJ0eii3NN74rq6sFW59DFOh/lNZ
-         Kq54dM6BSzQ/6lvwH+bjoCLk3XhYZn2iucEN1lf4=
+        b=u4r6HlSDzXweTuTb2eNTILEfjgfGJ8oyVtGra3tkhSXsGLC8LjgIRcOMz6h2ZleiW
+         LRGQY4JHBlJEnuhjMzAz840sYAtzOqt72h0laZf1eeYzrl9g5eFIHXIygXFG9uUIr2
+         GlIUVcGNlxLSBurDZNUUh+lFvkpwpEMs14/2AYX8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kunyang Fan <Kunyang_Fan@aaeon.com.tw>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stable@vger.kernel.org
-Subject: [PATCH 5.15 055/846] iio: adc: ti-adc081c: Partial revert of removal of ACPI IDs
-Date:   Mon, 24 Jan 2022 19:32:52 +0100
-Message-Id: <20220124184102.867586321@linuxfoundation.org>
+        stable@vger.kernel.org, Nicholas Piggin <npiggin@gmail.com>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 228/320] powerpc/watchdog: Fix missed watchdog reset due to memory ordering race
+Date:   Mon, 24 Jan 2022 19:43:32 +0100
+Message-Id: <20220124184001.741509727@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,88 +51,110 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-commit c9791a94384af07592d29504004d2255dbaf8663 upstream.
+[ Upstream commit 5dad4ba68a2483fc80d70b9dc90bbe16e1f27263 ]
 
-Unfortuanately a non standards compliant ACPI ID is known to be
-in the wild on some AAEON boards.
+It is possible for all CPUs to miss the pending cpumask becoming clear,
+and then nobody resetting it, which will cause the lockup detector to
+stop working. It will eventually expire, but watchdog_smp_panic will
+avoid doing anything if the pending mask is clear and it will never be
+reset.
 
-Partly revert the removal of these IDs so that ADC081C will again
-work + add a comment to that affect for future reference.
+Order the cpumask clear vs the subsequent test to close this race.
 
-Whilst here use generic firmware properties rather than the ACPI
-specific handling previously found in this driver.
+Add an extra check for an empty pending mask when the watchdog fires and
+finds its bit still clear, to try to catch any other possible races or
+bugs here and keep the watchdog working. The extra test in
+arch_touch_nmi_watchdog is required to prevent the new warning from
+firing off.
 
-Reported-by: Kunyang Fan <Kunyang_Fan@aaeon.com.tw>
-Fixes: c458b7ca3fd0 ("iio:adc:ti-adc081c: Drop ACPI ids that seem very unlikely to be official.")
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-Tested-by: Kunyang Fan <Kunyang_Fan@aaeon.com.tw> #UP-extremei11
-Link: https://lore.kernel.org/r/20211205172728.2826512-1-jic23@kernel.org
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
+Debugged-by: Laurent Dufour <ldufour@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211110025056.2084347-2-npiggin@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ti-adc081c.c |   22 +++++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+ arch/powerpc/kernel/watchdog.c | 41 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
---- a/drivers/iio/adc/ti-adc081c.c
-+++ b/drivers/iio/adc/ti-adc081c.c
-@@ -19,6 +19,7 @@
- #include <linux/i2c.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/property.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-@@ -156,13 +157,16 @@ static int adc081c_probe(struct i2c_clie
+diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
+index af3c15a1d41eb..75b2a6c4db5a5 100644
+--- a/arch/powerpc/kernel/watchdog.c
++++ b/arch/powerpc/kernel/watchdog.c
+@@ -132,6 +132,10 @@ static void set_cpumask_stuck(const struct cpumask *cpumask, u64 tb)
  {
- 	struct iio_dev *iio;
- 	struct adc081c *adc;
--	struct adcxx1c_model *model;
-+	const struct adcxx1c_model *model;
- 	int err;
+ 	cpumask_or(&wd_smp_cpus_stuck, &wd_smp_cpus_stuck, cpumask);
+ 	cpumask_andnot(&wd_smp_cpus_pending, &wd_smp_cpus_pending, cpumask);
++	/*
++	 * See wd_smp_clear_cpu_pending()
++	 */
++	smp_mb();
+ 	if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 		wd_smp_last_reset_tb = tb;
+ 		cpumask_andnot(&wd_smp_cpus_pending,
+@@ -217,13 +221,44 @@ static void wd_smp_clear_cpu_pending(int cpu, u64 tb)
  
- 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
- 		return -EOPNOTSUPP;
- 
--	model = &adcxx1c_models[id->driver_data];
-+	if (dev_fwnode(&client->dev))
-+		model = device_get_match_data(&client->dev);
-+	else
-+		model = &adcxx1c_models[id->driver_data];
- 
- 	iio = devm_iio_device_alloc(&client->dev, sizeof(*adc));
- 	if (!iio)
-@@ -210,10 +214,17 @@ static const struct i2c_device_id adc081
- };
- MODULE_DEVICE_TABLE(i2c, adc081c_id);
- 
-+static const struct acpi_device_id adc081c_acpi_match[] = {
-+	/* Used on some AAEON boards */
-+	{ "ADC081C", (kernel_ulong_t)&adcxx1c_models[ADC081C] },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, adc081c_acpi_match);
+ 			cpumask_clear_cpu(cpu, &wd_smp_cpus_stuck);
+ 			wd_smp_unlock(&flags);
++		} else {
++			/*
++			 * The last CPU to clear pending should have reset the
++			 * watchdog so we generally should not find it empty
++			 * here if our CPU was clear. However it could happen
++			 * due to a rare race with another CPU taking the
++			 * last CPU out of the mask concurrently.
++			 *
++			 * We can't add a warning for it. But just in case
++			 * there is a problem with the watchdog that is causing
++			 * the mask to not be reset, try to kick it along here.
++			 */
++			if (unlikely(cpumask_empty(&wd_smp_cpus_pending)))
++				goto none_pending;
+ 		}
+ 		return;
+ 	}
 +
- static const struct of_device_id adc081c_of_match[] = {
--	{ .compatible = "ti,adc081c" },
--	{ .compatible = "ti,adc101c" },
--	{ .compatible = "ti,adc121c" },
-+	{ .compatible = "ti,adc081c", .data = &adcxx1c_models[ADC081C] },
-+	{ .compatible = "ti,adc101c", .data = &adcxx1c_models[ADC101C] },
-+	{ .compatible = "ti,adc121c", .data = &adcxx1c_models[ADC121C] },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, adc081c_of_match);
-@@ -222,6 +233,7 @@ static struct i2c_driver adc081c_driver
- 	.driver = {
- 		.name = "adc081c",
- 		.of_match_table = adc081c_of_match,
-+		.acpi_match_table = adc081c_acpi_match,
- 	},
- 	.probe = adc081c_probe,
- 	.id_table = adc081c_id,
+ 	cpumask_clear_cpu(cpu, &wd_smp_cpus_pending);
++
++	/*
++	 * Order the store to clear pending with the load(s) to check all
++	 * words in the pending mask to check they are all empty. This orders
++	 * with the same barrier on another CPU. This prevents two CPUs
++	 * clearing the last 2 pending bits, but neither seeing the other's
++	 * store when checking if the mask is empty, and missing an empty
++	 * mask, which ends with a false positive.
++	 */
++	smp_mb();
+ 	if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 		unsigned long flags;
+ 
++none_pending:
++		/*
++		 * Double check under lock because more than one CPU could see
++		 * a clear mask with the lockless check after clearing their
++		 * pending bits.
++		 */
+ 		wd_smp_lock(&flags);
+ 		if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 			wd_smp_last_reset_tb = tb;
+@@ -314,8 +349,12 @@ void arch_touch_nmi_watchdog(void)
+ {
+ 	unsigned long ticks = tb_ticks_per_usec * wd_timer_period_ms * 1000;
+ 	int cpu = smp_processor_id();
+-	u64 tb = get_tb();
++	u64 tb;
+ 
++	if (!cpumask_test_cpu(cpu, &watchdog_cpumask))
++		return;
++
++	tb = get_tb();
+ 	if (tb - per_cpu(wd_timer_tb, cpu) >= ticks) {
+ 		per_cpu(wd_timer_tb, cpu) = tb;
+ 		wd_smp_clear_cpu_pending(cpu, tb);
+-- 
+2.34.1
+
 
 
