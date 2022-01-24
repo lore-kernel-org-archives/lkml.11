@@ -2,276 +2,263 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94455C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B62BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235309AbiAXPDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:03:53 -0500
-Received: from mga03.intel.com ([134.134.136.65]:2612 "EHLO mga03.intel.com"
+        id S240411AbiAXPD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:03:56 -0500
+Received: from mga01.intel.com ([192.55.52.88]:64673 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240370AbiAXPCi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S240371AbiAXPCi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 10:02:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643036558; x=1674572558;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=cV4z4YKFQARzdqCciUMKqkAkSeqeXmSbqMOZknKC3MQ=;
-  b=TIk9eflzA74EsunZvCENBQ69CPndxp36jPqVUbKHn1wd0T+SHl3PuWMR
-   XNP7V4YVLRGubedXgJsBFU2HHIAo4jcb7mDebR0zsYr6KacZ6+B13vsCw
-   PEqjhgafm9ewUvf9elTrfGlKfyu3eBQUAvnnRbuRoS7p8rTlPUTucbyRB
-   d+VEIC7OoaRsIakSzAa3y+BWMBkHtB/unZGgSSOmGo4y919ASqMI+Zl1i
-   p/gpdw82pjcTXwXxJADs/chF7sPQVi+6+LuLPNoiAuPGxxht0oqI+iv+B
-   4avUhGK4tA7wRfBUNSfVJakI5FOFACHEthlP8OWarbGYLWu/rr3JCQbnK
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="246007654"
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=12MT7URXnDq/Fp4XFhkmyf3ldBVGzHv0vwmewAlkDXU=;
+  b=IPKhfZGutDbLgX1Gl6K7AHXxdRZiKGKCxsWmlR6uG19CVC2Rc1IH575a
+   vGgBmd51mXvuucgLWSIdKv/b4sl33QhDMrkKFoPwXS12mhqddAWNlTewi
+   Zh/8LvTCsa6YCkYAwxvD6UbMqmcMKribfOEa8VHdAGjChbc12ryon87Qq
+   zVHWingleh5M3cZtBvEZe0EXO7v0di4TZzLFIKoH8xVX6c9RdgkB3m0zk
+   aTXjMdyh1jOvWPWlU2oc8EZ8r1tNBvLJrZMH96B34Qkddo+64/GWFNjR/
+   /kQJvraHQWWAqedUQXBrWWYXL0QE+atahSbs4aLe2D5aFmbUgY4s5TBi8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270498703"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="246007654"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:26 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="270498703"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:37 -0800
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="596810315"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga004.fm.intel.com with ESMTP; 24 Jan 2022 07:02:20 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 27741BAF; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        Sean Christopherson <sean.j.christopherson@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv2 17/29] x86/acpi, x86/boot: Add multiprocessor wake-up support
-Date:   Mon, 24 Jan 2022 18:02:03 +0300
-Message-Id: <20220124150215.36893-18-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
+   d="scan'208";a="519972062"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:20 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nC0qE-00Dvkq-Jt;
+        Mon, 24 Jan 2022 17:01:10 +0200
+Date:   Mon, 24 Jan 2022 17:01:10 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        platform-driver-x86@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] driver core: platform: Rename
+ platform_get_irq_optional() to platform_get_irq_silent()
+Message-ID: <Ye6/NgfxsZnpXE09@smile.fi.intel.com>
+References: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+ <YeA7CjOyJFkpuhz/@sirena.org.uk>
+ <20220113194358.xnnbhsoyetihterb@pengutronix.de>
+ <YeF05vBOzkN+xYCq@smile.fi.intel.com>
+ <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
+ <YehdsUPiOTwgZywq@smile.fi.intel.com>
+ <20220120075718.5qtrpc543kkykaow@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220120075718.5qtrpc543kkykaow@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+On Thu, Jan 20, 2022 at 08:57:18AM +0100, Uwe Kleine-König wrote:
+> On Wed, Jan 19, 2022 at 08:51:29PM +0200, Andy Shevchenko wrote:
+> > On Sat, Jan 15, 2022 at 04:45:39PM +0100, Uwe Kleine-König wrote:
+> > > On Fri, Jan 14, 2022 at 03:04:38PM +0200, Andy Shevchenko wrote:
+> > > > On Thu, Jan 13, 2022 at 08:43:58PM +0100, Uwe Kleine-König wrote:
+> > > > > > It'd certainly be good to name anything that doesn't correspond to one
+> > > > > > of the existing semantics for the API (!) something different rather
+> > > > > > than adding yet another potentially overloaded meaning.
+> > > > > 
+> > > > > It seems we're (at least) three who agree about this. Here is a patch
+> > > > > fixing the name.
+> > > > 
+> > > > And similar number of people are on the other side.
+> > > 
+> > > If someone already opposed to the renaming (and not only the name) I
+> > > must have missed that.
+> > > 
+> > > So you think it's a good idea to keep the name
+> > > platform_get_irq_optional() despite the "not found" value returned by it
+> > > isn't usable as if it were a normal irq number?
+> > 
+> > I meant that on the other side people who are in favour of Sergey's patch.
+> > Since that I commented already that I opposed the renaming being a standalone
+> > change.
+> > 
+> > Do you agree that we have several issues with platform_get_irq*() APIs?
+> > 
+> > 1. The unfortunate naming
+> 
+> unfortunate naming for the currently implemented semantic, yes.
 
-TDX cannot use INIT/SIPI protocol to bring up secondary CPUs because it
-requires assistance from untrusted VMM.
+Yes.
 
-For platforms that do not support SIPI/INIT, ACPI defines a wakeup
-model (using mailbox) via MADT multiprocessor wakeup structure. More
-details about it can be found in ACPI specification v6.4, the section
-titled "Multiprocessor Wakeup Structure". If a platform firmware
-produces the multiprocessor wakeup structure, then OS may use this
-new mailbox-based mechanism to wake up the APs.
+> > 2. The vIRQ0 handling: a) WARN() followed by b) returned value 0
+> 
+> I'm happy with the vIRQ0 handling. Today platform_get_irq() and it's
+> silent variant returns either a valid and usuable irq number or a
+> negative error value. That's totally fine.
 
-Add ACPI MADT wake structure parsing support for x86 platform and if
-MADT wake table is present, update apic->wakeup_secondary_cpu_64 with
-new API which uses MADT wake mailbox to wake-up CPU.
+It might return 0.
+Actually it seems that the WARN() can only be issued in two cases:
+- SPARC with vIRQ0 in one of the array member
+- fallback to ACPI for GPIO IRQ resource with index 0
 
-Co-developed-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
----
- arch/x86/include/asm/apic.h |   5 ++
- arch/x86/kernel/acpi/boot.c | 114 ++++++++++++++++++++++++++++++++++++
- arch/x86/kernel/apic/apic.c |  10 ++++
- 3 files changed, 129 insertions(+)
+But the latter is bogus, because it would mean a bug in the ACPI code.
 
-diff --git a/arch/x86/include/asm/apic.h b/arch/x86/include/asm/apic.h
-index 35006e151774..bd8ae0a7010a 100644
---- a/arch/x86/include/asm/apic.h
-+++ b/arch/x86/include/asm/apic.h
-@@ -490,6 +490,11 @@ static inline unsigned int read_apic_id(void)
- 	return apic->get_apic_id(reg);
- }
- 
-+#ifdef CONFIG_X86_64
-+typedef int (*wakeup_cpu_handler)(int apicid, unsigned long start_eip);
-+extern void acpi_wake_cpu_handler_update(wakeup_cpu_handler handler);
-+#endif
-+
- extern int default_apic_id_valid(u32 apicid);
- extern int default_acpi_madt_oem_check(char *, char *);
- extern void default_setup_apic_routing(void);
-diff --git a/arch/x86/kernel/acpi/boot.c b/arch/x86/kernel/acpi/boot.c
-index 5b6d1a95776f..af204a217575 100644
---- a/arch/x86/kernel/acpi/boot.c
-+++ b/arch/x86/kernel/acpi/boot.c
-@@ -65,6 +65,15 @@ static u64 acpi_lapic_addr __initdata = APIC_DEFAULT_PHYS_BASE;
- static bool acpi_support_online_capable;
- #endif
- 
-+#ifdef CONFIG_X86_64
-+/* Physical address of the Multiprocessor Wakeup Structure mailbox */
-+static u64 acpi_mp_wake_mailbox_paddr;
-+/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
-+static struct acpi_madt_multiproc_wakeup_mailbox *acpi_mp_wake_mailbox;
-+/* Lock to protect mailbox (acpi_mp_wake_mailbox) from parallel access */
-+static DEFINE_SPINLOCK(mailbox_lock);
-+#endif
-+
- #ifdef CONFIG_X86_IO_APIC
- /*
-  * Locks related to IOAPIC hotplug
-@@ -336,6 +345,80 @@ acpi_parse_lapic_nmi(union acpi_subtable_headers * header, const unsigned long e
- 	return 0;
- }
- 
-+#ifdef CONFIG_X86_64
-+/* Virtual address of the Multiprocessor Wakeup Structure mailbox */
-+static int acpi_wakeup_cpu(int apicid, unsigned long start_ip)
-+{
-+	static physid_mask_t apic_id_wakemap = PHYSID_MASK_NONE;
-+	unsigned long flags;
-+	u8 timeout;
-+
-+	/* Remap mailbox memory only for the first call to acpi_wakeup_cpu() */
-+	if (physids_empty(apic_id_wakemap)) {
-+		acpi_mp_wake_mailbox = memremap(acpi_mp_wake_mailbox_paddr,
-+						sizeof(*acpi_mp_wake_mailbox),
-+						MEMREMAP_WB);
-+	}
-+
-+	/*
-+	 * According to the ACPI specification r6.4, section titled
-+	 * "Multiprocessor Wakeup Structure" the mailbox-based wakeup
-+	 * mechanism cannot be used more than once for the same CPU.
-+	 * Skip wakeups if they are attempted more than once.
-+	 */
-+	if (physid_isset(apicid, apic_id_wakemap)) {
-+		pr_err("CPU already awake (APIC ID %x), skipping wakeup\n",
-+		       apicid);
-+		return -EINVAL;
-+	}
-+
-+	spin_lock_irqsave(&mailbox_lock, flags);
-+
-+	/*
-+	 * Mailbox memory is shared between firmware and OS. Firmware will
-+	 * listen on mailbox command address, and once it receives the wakeup
-+	 * command, CPU associated with the given apicid will be booted.
-+	 *
-+	 * The value of apic_id and wakeup_vector has to be set before updating
-+	 * the wakeup command. To let compiler preserve order of writes, use
-+	 * smp_store_release.
-+	 */
-+	smp_store_release(&acpi_mp_wake_mailbox->apic_id, apicid);
-+	smp_store_release(&acpi_mp_wake_mailbox->wakeup_vector, start_ip);
-+	smp_store_release(&acpi_mp_wake_mailbox->command,
-+			  ACPI_MP_WAKE_COMMAND_WAKEUP);
-+
-+	/*
-+	 * After writing the wakeup command, wait for maximum timeout of 0xFF
-+	 * for firmware to reset the command address back zero to indicate
-+	 * the successful reception of command.
-+	 * NOTE: 0xFF as timeout value is decided based on our experiments.
-+	 *
-+	 * XXX: Change the timeout once ACPI specification comes up with
-+	 *      standard maximum timeout value.
-+	 */
-+	timeout = 0xFF;
-+	while (READ_ONCE(acpi_mp_wake_mailbox->command) && --timeout)
-+		cpu_relax();
-+
-+	/* If timed out (timeout == 0), return error */
-+	if (!timeout) {
-+		spin_unlock_irqrestore(&mailbox_lock, flags);
-+		return -EIO;
-+	}
-+
-+	/*
-+	 * If the CPU wakeup process is successful, store the
-+	 * status in apic_id_wakemap to prevent re-wakeup
-+	 * requests.
-+	 */
-+	physid_set(apicid, apic_id_wakemap);
-+
-+	spin_unlock_irqrestore(&mailbox_lock, flags);
-+
-+	return 0;
-+}
-+#endif
- #endif				/*CONFIG_X86_LOCAL_APIC */
- 
- #ifdef CONFIG_X86_IO_APIC
-@@ -1083,6 +1166,29 @@ static int __init acpi_parse_madt_lapic_entries(void)
- 	}
- 	return 0;
- }
-+
-+#ifdef CONFIG_X86_64
-+static int __init acpi_parse_mp_wake(union acpi_subtable_headers *header,
-+				     const unsigned long end)
-+{
-+	struct acpi_madt_multiproc_wakeup *mp_wake;
-+
-+	if (!IS_ENABLED(CONFIG_SMP))
-+		return -ENODEV;
-+
-+	mp_wake = (struct acpi_madt_multiproc_wakeup *)header;
-+	if (BAD_MADT_ENTRY(mp_wake, end))
-+		return -EINVAL;
-+
-+	acpi_table_print_madt_entry(&header->common);
-+
-+	acpi_mp_wake_mailbox_paddr = mp_wake->base_address;
-+
-+	acpi_wake_cpu_handler_update(acpi_wakeup_cpu);
-+
-+	return 0;
-+}
-+#endif				/* CONFIG_X86_64 */
- #endif				/* CONFIG_X86_LOCAL_APIC */
- 
- #ifdef	CONFIG_X86_IO_APIC
-@@ -1278,6 +1384,14 @@ static void __init acpi_process_madt(void)
- 
- 				smp_found_config = 1;
- 			}
-+
-+#ifdef CONFIG_X86_64
-+			/*
-+			 * Parse MADT MP Wake entry.
-+			 */
-+			acpi_table_parse_madt(ACPI_MADT_TYPE_MULTIPROC_WAKEUP,
-+					      acpi_parse_mp_wake, 1);
-+#endif
- 		}
- 		if (error == -EINVAL) {
- 			/*
-diff --git a/arch/x86/kernel/apic/apic.c b/arch/x86/kernel/apic/apic.c
-index b70344bf6600..3c8f2c797a98 100644
---- a/arch/x86/kernel/apic/apic.c
-+++ b/arch/x86/kernel/apic/apic.c
-@@ -2551,6 +2551,16 @@ u32 x86_msi_msg_get_destid(struct msi_msg *msg, bool extid)
- }
- EXPORT_SYMBOL_GPL(x86_msi_msg_get_destid);
- 
-+#ifdef CONFIG_X86_64
-+void __init acpi_wake_cpu_handler_update(wakeup_cpu_handler handler)
-+{
-+	struct apic **drv;
-+
-+	for (drv = __apicdrivers; drv < __apicdrivers_end; drv++)
-+		(*drv)->wakeup_secondary_cpu_64 = handler;
-+}
-+#endif
-+
- /*
-  * Override the generic EOI implementation with an optimized version.
-  * Only called during early boot when only one CPU is active and with
+The bottom line here is the SPARC case. Anybody familiar with the platform
+can shed a light on this. If there is no such case, we may remove warning
+along with ret = 0 case from platfrom_get_irq().
+
+> > 3. The specific cookie for "IRQ not found, while no error happened" case
+> 
+> Not sure what you mean here. I have no problem that a situation I can
+> cope with is called an error for the query function. I just do error
+> handling and continue happily. So the part "while no error happened" is
+> irrelevant to me.
+
+I meant that instead of using special error code, 0 is very much good for
+the cases when IRQ is not found. It allows to distinguish -ENXIO from the
+low layer from -ENXIO with this magic meaning.
+
+> Additionally I see the problems:
+> 
+> 4. The semantic as implemented in Sergey's patch isn't better than the
+> current one.
+
+I disagree on this. See above on why.
+
+> platform_get_irq*() is still considerably different from
+> (clk|gpiod)_get* because the not-found value for the _optional variant
+> isn't usuable for the irq case. For clk and gpio I get rid of a whole if
+> branch, for irq I only change the if-condition. (And if that change is
+> considered good or bad seems to be subjective.)
+
+You are mixing up two things:
+ - semantics of the pointer
+ - semantics of the cookie
+
+Like I said previously the mistake is in putting an equal sign between apples
+and oranges (or in terms of Python, which is a good example here, None and
+False objects, where in both case 0 is magic and Python `if X`, `while `X` will
+work in the same way, the `typeof(X)` is different semantically).
+
+> For the idea to add a warning to platform_get_irq_optional for all but
+> -ENXIO (and -EPROBE_DEFER), I see the problem:
+> 
+> 5. platform_get_irq*() issuing an error message is only correct most of
+> the time and given proper error handling in the caller (which might be
+> able to handle not only -ENXIO but maybe also -EINVAL[1]) the error message
+> is irritating. Today platform_get_irq() emits an error message for all
+> but -EPROBE_DEFER. As soon as we find a driver that handles -EINVAL we
+> need a function platform_get_irq_variant1 to be silent for -EINVAL,
+> -EPROBE_DEFER and -ENXIO (or platform_get_irq_variant2 that is only
+> silent for -EINVAL and -EPROBE_DEFER?)
+> 
+> IMHO a query function should always be silent and let the caller do the
+> error handling. And if it's only because
+> 
+> 	mydev: IRQ index 0 not found
+> 
+> is worse than
+> 
+> 	mydev: neither TX irq not a muxed RX/TX irq found
+> 
+> . Also "index 0" is irritating for devices that are expected to have
+> only a single irq (i.e. the majority of all devices).
+
+Yeah, ack the #5.
+
+> Yes, I admit, we can safe some code by pushing the error message in a
+> query function. But that doesn't only have advantages.
+
+> [1] Looking through the source I wonder: What are the errors that can happen
+>     in platform_get_irq*()? (calling everything but a valid irq number
+>     an error) Looking at many callers, they only seem to expect "not
+>     found" and some "probe defer" (even platform_get_irq() interprets
+>     everything but -EPROBE_DEFER as "IRQ index %u not found\n".)
+>     IMHO before we should consider to introduce a platform_get_irq*()
+>     variant with improved semantics, some cleanup in the internals of
+>     the irq lookup are necessary.
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
