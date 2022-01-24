@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB136C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B87C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347299AbiAXV0n (ORCPT
+        id S1349028AbiAXV0p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42292 "EHLO
+        Mon, 24 Jan 2022 16:26:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391136AbiAXUq7 (ORCPT
+        with ESMTP id S1391109AbiAXUq7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:46:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38380C0619CD;
-        Mon, 24 Jan 2022 11:57:23 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9271C0619C6;
+        Mon, 24 Jan 2022 11:57:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01A2EB8128F;
-        Mon, 24 Jan 2022 19:57:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DBBC33DA3;
-        Mon, 24 Jan 2022 19:57:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71790B81239;
+        Mon, 24 Jan 2022 19:57:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9ADE4C340E5;
+        Mon, 24 Jan 2022 19:57:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054240;
-        bh=e/pMVKumLe2FHFOwgK2m3U8iURjNJRFnpl9Hmy2/nEQ=;
+        s=korg; t=1643054222;
+        bh=bjnr579xE3xgyvjFIi7SCyvGueJvDxugpZ7TyGVGiLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wY6sXAsiJCr/+Sa/3mEg7RN8fC08hrtMERN+z/2JIG8MTwzJ8+Y4QGlVax1zjwrt5
-         Xxv5CklEJIv70W68kWph5nL9APbxJs3ZpAbBnEvHGDYpNwPDrHFccj7YQaQiwwFHI/
-         q9vmf/fGzgqIni8HA5VNu80EcD+wu6ICotjrP8Gk=
+        b=Pvq1A8wafWZLLr3CMt2WeRE9aPrW1A8M9xJ6pEsU85cksZQUcfU/8lc5z8erxWh+P
+         fSXf+A4yRHVU/Kmu+1ij3UHbmDync+UjcmrEfYpbpwflZ/TDV7ON5ZVSelU6rDFySE
+         GV5nGCPV89KSJh4roFnnVtYEdmJa42OcDNwlwbgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ammar Faizi <ammarfaizi2@gmail.com>,
-        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Dinh Nguyen <dinguyen@kernel.org>,
+        Borislav Petkov <bp@suse.de>,
+        Michal Simek <michal.simek@xilinx.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 291/563] powerpc/xive: Add missing null check after calling kmalloc
-Date:   Mon, 24 Jan 2022 19:40:56 +0100
-Message-Id: <20220124184034.517499362@linuxfoundation.org>
+Subject: [PATCH 5.10 317/563] EDAC/synopsys: Use the quirk for version instead of ddr version
+Date:   Mon, 24 Jan 2022 19:41:22 +0100
+Message-Id: <20220124184035.393469702@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,39 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammarfaizi2@gmail.com>
+From: Dinh Nguyen <dinguyen@kernel.org>
 
-[ Upstream commit 18dbfcdedc802f9500b2c29794f22a31d27639c0 ]
+[ Upstream commit bd1d6da17c296bd005bfa656952710d256e77dd3 ]
 
-Commit 930914b7d528fc ("powerpc/xive: Add a debugfs file to dump
-internal XIVE state") forgot to add a null check.
+Version 2.40a supports DDR_ECC_INTR_SUPPORT for a quirk, so use that
+quirk to determine a call to setup_address_map().
 
-Add it.
-
-Fixes: 930914b7d528fc6b0249bffc00564100bcf6ef75 ("powerpc/xive: Add a debugfs file to dump internal XIVE state")
-Signed-off-by: Ammar Faizi <ammarfaizi2@gmail.com>
-Reviewed-by: Cédric Le Goater <clg@kaod.org>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211226135314.251221-1-ammar.faizi@intel.com
+Signed-off-by: Dinh Nguyen <dinguyen@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Michal Simek <michal.simek@xilinx.com>
+Link: https://lkml.kernel.org/r/20211012190709.1504152-1-dinguyen@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/sysdev/xive/spapr.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/edac/synopsys_edac.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/sysdev/xive/spapr.c b/arch/powerpc/sysdev/xive/spapr.c
-index 1e3674d7ea7bc..b57eeaff7bb33 100644
---- a/arch/powerpc/sysdev/xive/spapr.c
-+++ b/arch/powerpc/sysdev/xive/spapr.c
-@@ -658,6 +658,9 @@ static int xive_spapr_debug_show(struct seq_file *m, void *private)
- 	struct xive_irq_bitmap *xibm;
- 	char *buf = kmalloc(PAGE_SIZE, GFP_KERNEL);
+diff --git a/drivers/edac/synopsys_edac.c b/drivers/edac/synopsys_edac.c
+index 1a801a5d3b08b..92906b56b1a2b 100644
+--- a/drivers/edac/synopsys_edac.c
++++ b/drivers/edac/synopsys_edac.c
+@@ -1351,8 +1351,7 @@ static int mc_probe(struct platform_device *pdev)
+ 		}
+ 	}
  
-+	if (!buf)
-+		return -ENOMEM;
-+
- 	list_for_each_entry(xibm, &xive_irq_bitmaps, list) {
- 		memset(buf, 0, PAGE_SIZE);
- 		bitmap_print_to_pagebuf(true, buf, xibm->bitmap, xibm->count);
+-	if (of_device_is_compatible(pdev->dev.of_node,
+-				    "xlnx,zynqmp-ddrc-2.40a"))
++	if (priv->p_data->quirks & DDR_ECC_INTR_SUPPORT)
+ 		setup_address_map(priv);
+ #endif
+ 
 -- 
 2.34.1
 
