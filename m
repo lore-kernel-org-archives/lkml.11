@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61DB6C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDCAC35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386151AbiAXUfN (ORCPT
+        id S1386305AbiAXUfX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        Mon, 24 Jan 2022 15:35:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354861AbiAXUMv (ORCPT
+        with ESMTP id S1344625AbiAXUNq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:51 -0500
+        Mon, 24 Jan 2022 15:13:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E95CDC028C2B;
-        Mon, 24 Jan 2022 11:34:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA60DC0604D6;
+        Mon, 24 Jan 2022 11:37:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 82F396141C;
-        Mon, 24 Jan 2022 19:34:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5CBA8C340E5;
-        Mon, 24 Jan 2022 19:34:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41C7A61515;
+        Mon, 24 Jan 2022 19:37:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27847C340E5;
+        Mon, 24 Jan 2022 19:37:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052844;
-        bh=XtiamZuhFQg/KSWaToglrULMfVhgN5zJmScIv/wuNgs=;
+        s=korg; t=1643053030;
+        bh=5vWYp7qQngVJfxFk9KUiSt3vvkHtUkiSXrq/kc/duEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JHhe+c84IR0fW7CDCPmKgZtgfCslukwlWYO6Kf8DAoQfWiiwrOezC99RPpMvGlhRS
-         SsVkdQ7NKh1iedZQAFet9EmWY+jDAAUo1j1x81m0OnZIDsoPjDCHiKmG3p6fCztPjH
-         FXzZyxZ+gr1ZcuYdtjhEkZXEi5pu0ULe5bJo3jWI=
+        b=clEYfLh8Wbn18xnBz484lDJNaAadC1LG2fsUvQKFTKUGQi/Y3qT6HQP0TQPT3qoPg
+         PsaTBeAdKcqkQWyTqjutf2kUliGltWL/MMjfUY6k09d5TxCG8ZApg9OVC83Qhgcy5x
+         a8e/ILj3xQvgv1LMOIwwfqmrxou5QspLtRU8c9UY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 192/320] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
-Date:   Mon, 24 Jan 2022 19:42:56 +0100
-Message-Id: <20220124184000.180649765@linuxfoundation.org>
+        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Subject: [PATCH 5.4 254/320] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
+Date:   Mon, 24 Jan 2022 19:43:58 +0100
+Message-Id: <20220124184002.631982996@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,57 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
+commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
 
-The mmc core takes a specific path to support initializing of a
-non-standard SDIO card. This is triggered by looking for the card-quirk,
-MMC_QUIRK_NONSTD_SDIO.
+With the introduction of 6GHz channels the scan guard timeout should
+be adjusted to account for the following extreme case:
 
-In mmc_sdio_init_card() this gets rather messy, as it causes the code to
-bail out earlier, compared to the usual path. This leads to that the OCR
-doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
-been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
-assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
+- All 6GHz channels are scanned passively: 58 channels.
+- The scan is fragmented with the following parameters: 3 fragments,
+  95 TUs suspend time, 44 TUs maximal out of channel time.
 
-To make the behaviour consistent, let's instead rely on the core to save
-the OCR in card->ocr during initialization.
+The above would result with scan time of more than 24 seconds. Thus,
+set the timeout to 30 seconds.
 
-Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/sdio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 0bf33786fc5c5..9e0791332ef38 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -626,6 +626,8 @@ try_again:
- 	if (host->ops->init_card)
- 		host->ops->init_card(host, card);
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -1700,7 +1700,7 @@ static int iwl_mvm_check_running_scans(s
+ 	return -EIO;
+ }
  
-+	card->ocr = ocr_card;
-+
- 	/*
- 	 * If the host and card support UHS-I mode request the card
- 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
-@@ -738,7 +740,7 @@ try_again:
- 			goto mismatch;
- 		}
- 	}
--	card->ocr = ocr_card;
-+
- 	mmc_fixup_device(card, sdio_fixup_methods);
+-#define SCAN_TIMEOUT 20000
++#define SCAN_TIMEOUT 30000
  
- 	if (card->type == MMC_TYPE_SD_COMBO) {
--- 
-2.34.1
-
+ void iwl_mvm_scan_timeout_wk(struct work_struct *work)
+ {
 
 
