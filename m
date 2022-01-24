@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E401C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EBF1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1312728AbiAYCnt (ORCPT
+        id S1312524AbiAYCnY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:43:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387510AbiAXUgx (ORCPT
+        Mon, 24 Jan 2022 21:43:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60122 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387352AbiAXUgr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:36:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04B17C02B8CC;
-        Mon, 24 Jan 2022 11:49:48 -0800 (PST)
+        Mon, 24 Jan 2022 15:36:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9648660989;
-        Mon, 24 Jan 2022 19:49:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F529C340E5;
-        Mon, 24 Jan 2022 19:49:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8214661382;
+        Mon, 24 Jan 2022 20:36:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC8AC340E5;
+        Mon, 24 Jan 2022 20:36:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053787;
-        bh=zC2koczZ0VUmYS5Z+Ioxhq+/po4DCrtzwVL/2B+YlmA=;
+        s=korg; t=1643056607;
+        bh=tgMxk0poZY5zYAaPiVwW6ZLGXckdFm/KF9btJSEKfHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LRoUY7tF+/fLueG1Q1hxyZGzmn82+Yz392E+dmd+hmswTjShoRR9Mgb0phEaDSGib
-         5XaesjozojW0o4LxDxZkc2SoidZ2ZcRUHf2tgaGIh4HVPtHq4gUZK4JMlHcjvd4d2h
-         BHIEm7+DD3ljEi7zFkItOxwnhhLrbWvFZBEfitOQ=
+        b=1aMcd/J/AQMt9nAq78ZyiFmQLYymWuoMhuC9T/8N5b0FuWkOi7+WC52VTxpQreQ0K
+         RB8S0fsTc+a3ONd1DtLncNLoV1wAZK9E5KbjV5oIosXmmz8Jsfoe7jMdA/cP1DweA8
+         dbYu87pgk23XrFHYmyyUuPMoD48aGdvsefctd5I4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Li Hua <hucool.lihua@huawei.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 145/563] sched/rt: Try to restart rt period timer when rt runtime exceeded
-Date:   Mon, 24 Jan 2022 19:38:30 +0100
-Message-Id: <20220124184029.412445053@linuxfoundation.org>
+Subject: [PATCH 5.15 507/846] rsi: Fix out-of-bounds read in rsi_read_pkt()
+Date:   Mon, 24 Jan 2022 19:40:24 +0100
+Message-Id: <20220124184118.520252591@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,97 +48,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li Hua <hucool.lihua@huawei.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 9b58e976b3b391c0cf02e038d53dd0478ed3013c ]
+[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
 
-When rt_runtime is modified from -1 to a valid control value, it may
-cause the task to be throttled all the time. Operations like the following
-will trigger the bug. E.g:
+rsi_get_* functions rely on an offset variable from usb
+input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+while 2-byte offset can be up to 0xFFFF. Thus a large offset
+can cause out-of-bounds read.
 
-  1. echo -1 > /proc/sys/kernel/sched_rt_runtime_us
-  2. Run a FIFO task named A that executes while(1)
-  3. echo 950000 > /proc/sys/kernel/sched_rt_runtime_us
+The patch adds a bound checking condition when rcv_pkt_len is 0,
+indicating it's USB. It's unclear whether this is triggerable
+from other type of bus. The following check might help in that case.
+offset > rcv_pkt_len - FRAME_DESC_SZ
 
-When rt_runtime is -1, The rt period timer will not be activated when task
-A enqueued. And then the task will be throttled after setting rt_runtime to
-950,000. The task will always be throttled because the rt period timer is
-not activated.
+The bug is trigerrable with conpromised/malfunctioning USB devices.
+I tested the patch with the crashing input and got no more bug report.
 
-Fixes: d0b27fa77854 ("sched: rt-group: synchonised bandwidth period")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Li Hua <hucool.lihua@huawei.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Link: https://lkml.kernel.org/r/20211203033618.11895-1-hucool.lihua@huawei.com
+Attached is the KASAN report from fuzzing.
+
+BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
+
+CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ __kasan_report.cold+0x37/0x7c
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ kasan_report+0xe/0x20
+ rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __wake_up_common+0x10b/0x520
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/sched/rt.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+ drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
+ drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/kernel/sched/rt.c b/kernel/sched/rt.c
-index b5cf418e2e3fe..41b14d9242039 100644
---- a/kernel/sched/rt.c
-+++ b/kernel/sched/rt.c
-@@ -52,11 +52,8 @@ void init_rt_bandwidth(struct rt_bandwidth *rt_b, u64 period, u64 runtime)
- 	rt_b->rt_period_timer.function = sched_rt_period_timer;
- }
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index f1bf71e6c6081..5d1490fc32db4 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -23,6 +23,7 @@
+ #include "rsi_common.h"
+ #include "rsi_coex.h"
+ #include "rsi_hal.h"
++#include "rsi_usb.h"
  
--static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
-+static inline void do_start_rt_bandwidth(struct rt_bandwidth *rt_b)
- {
--	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
--		return;
--
- 	raw_spin_lock(&rt_b->rt_runtime_lock);
- 	if (!rt_b->rt_period_active) {
- 		rt_b->rt_period_active = 1;
-@@ -75,6 +72,14 @@ static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
- 	raw_spin_unlock(&rt_b->rt_runtime_lock);
- }
+ u32 rsi_zone_enabled = /* INFO_ZONE |
+ 			INIT_ZONE |
+@@ -168,6 +169,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+ 		frame_desc = &rx_pkt[index];
+ 		actual_length = *(u16 *)&frame_desc[0];
+ 		offset = *(u16 *)&frame_desc[2];
++		if (!rcv_pkt_len && offset >
++			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
++			goto fail;
  
-+static void start_rt_bandwidth(struct rt_bandwidth *rt_b)
-+{
-+	if (!rt_bandwidth_enabled() || rt_b->rt_runtime == RUNTIME_INF)
-+		return;
+ 		queueno = rsi_get_queueno(frame_desc, offset);
+ 		length = rsi_get_length(frame_desc, offset);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 3cca1823c458a..66fe386ec9cc6 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -330,7 +330,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
+ 	struct sk_buff *skb;
+ 	u8 dword_align_bytes = 0;
+ 
+-#define RSI_MAX_RX_USB_PKT_SIZE	3000
+ 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
+ 	if (!skb)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
+index 254d19b664123..961851748bc4c 100644
+--- a/drivers/net/wireless/rsi/rsi_usb.h
++++ b/drivers/net/wireless/rsi/rsi_usb.h
+@@ -44,6 +44,8 @@
+ #define RSI_USB_BUF_SIZE	     4096
+ #define RSI_USB_CTRL_BUF_SIZE	     0x04
+ 
++#define RSI_MAX_RX_USB_PKT_SIZE	3000
 +
-+	do_start_rt_bandwidth(rt_b);
-+}
-+
- void init_rt_rq(struct rt_rq *rt_rq)
- {
- 	struct rt_prio_array *array;
-@@ -1022,13 +1027,17 @@ static void update_curr_rt(struct rq *rq)
- 
- 	for_each_sched_rt_entity(rt_se) {
- 		struct rt_rq *rt_rq = rt_rq_of_se(rt_se);
-+		int exceeded;
- 
- 		if (sched_rt_runtime(rt_rq) != RUNTIME_INF) {
- 			raw_spin_lock(&rt_rq->rt_runtime_lock);
- 			rt_rq->rt_time += delta_exec;
--			if (sched_rt_runtime_exceeded(rt_rq))
-+			exceeded = sched_rt_runtime_exceeded(rt_rq);
-+			if (exceeded)
- 				resched_curr(rq);
- 			raw_spin_unlock(&rt_rq->rt_runtime_lock);
-+			if (exceeded)
-+				do_start_rt_bandwidth(sched_rt_bandwidth(rt_rq));
- 		}
- 	}
- }
-@@ -2727,8 +2736,12 @@ static int sched_rt_global_validate(void)
- 
- static void sched_rt_do_global(void)
- {
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&def_rt_bandwidth.rt_runtime_lock, flags);
- 	def_rt_bandwidth.rt_runtime = global_rt_runtime();
- 	def_rt_bandwidth.rt_period = ns_to_ktime(global_rt_period());
-+	raw_spin_unlock_irqrestore(&def_rt_bandwidth.rt_runtime_lock, flags);
- }
- 
- int sched_rt_handler(struct ctl_table *table, int write, void *buffer,
+ struct rx_usb_ctrl_block {
+ 	u8 *data;
+ 	struct urb *rx_urb;
 -- 
 2.34.1
 
