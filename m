@@ -2,229 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB13C47084
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91ED7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385730AbiAXXyT (ORCPT
+        id S2367103AbiAXXyL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:54:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846507AbiAXXQK (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:16:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 705E3C0617AF;
-        Mon, 24 Jan 2022 13:25:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E7BCB80FA1;
-        Mon, 24 Jan 2022 21:25:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64EF2C340E4;
-        Mon, 24 Jan 2022 21:25:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059506;
-        bh=95GCpHGKqrDOnTHDjBov/AgE51i+C6JljTvU42fCrk4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z4NS6efURP0DlEy7fVX7+6b95kK3x930Tpc9r3mkRdBzpMtF7c7dDkVmWtTga40cg
-         PsQwXa86ubDQhaPxa/nwCSL1korZiQbo61LMEooWgWoASVeVJTm+drQwokBmC6FLRD
-         /ehP7Aj1FkXj8+3QfUb7B6EpkAgaT1qcyrMG+lNM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baochen Qiang <quic_bqiang@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0638/1039] ath11k: Avoid false DEADLOCK warning reported by lockdep
-Date:   Mon, 24 Jan 2022 19:40:27 +0100
-Message-Id: <20220124184146.802594787@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:54:11 -0500
+Received: from mail-am6eur05on2072.outbound.protection.outlook.com ([40.107.22.72]:63073
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1384512AbiAXXO6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 18:14:58 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DXsIk5W/4OczmSw+TZPLWYdiqieE1ScWkz2VPmdxkyhbQa3h4XtPpv2KFDRJ4GaRpGtgpGop6OpLMyF0waJCJv7eAW5qWpMcdUiCbOXfPbuIFbT6uXJDaLNy3fHLDwt+9vYAlS2J+6OXGvOCtk6YRLhtlhK5UI2LTWHq+gb3Glj9Ll4i3xijtWoAPtrX1bFadjGsMm5v4rf44dgjAFQdbBGyty49v5MpPi+8uwVetC1AfxMBTTb7wTXcjDhi3q/mW7xqv6FDqOAG6l9/zN8T4TA3JEUg1haFIXXKpbqb0A+0/+bHxWnqQes7LywzQKDQizJtKmqQef1+6widx8ixdQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=N1L5DnUBSNJZdfdh5//JaJM3c2zRAa/3IVJ88XXnw+M=;
+ b=f9yeYFxUGEWPaEvCke6wm0aNnEGL8drt4cIq8+sahZBeK35BDe5SgTYzAGueo2FSwVshZ2leRAXCgRB5QBiD3Nc2YkAGChjkgRvyoEx6DyA5SJ3347GwA4ughtZaElcygYg1v6O4ZdIlhFuK49Rpi9nKkXPWJUb6FuGFJpixdmAo1z7uREeN67RnNc0cne6i1KDriV2/DCREj0E3t/yxyiwaOJ90IHtHJZ9CxZfe/AvVSO8uqu6tspayeWlcIQPvwO2RMc9hxmnctCrcO8HIJ5f1xecwDgOWlVud8d5lcjlW6/17Ha7cMADCpKaedNnuCnbLndGZzeM3GmFc9lpdIg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N1L5DnUBSNJZdfdh5//JaJM3c2zRAa/3IVJ88XXnw+M=;
+ b=Bj21D8BEOwxmIEJLRiMzex/PWX3kfp8eYduVWQZaHeCtYDHEJ9EYiSULXdoBSGGm9M2/tSnMe5P4l0RvDnc1M0MS3EmF57wkqa/GubeL9s+rRw295/bMU2IttOdVD7m0UUbyhcUXLiMcx/fSb6P3jKpGV+xOrKp4vMdURS7e1z7NpQgiW08P4AxgzazWqouHOV6eR9BTQz/rtwKg+0cTJB8Pevw1H+H5LJlwOqMVsUL4rBk0QxMJKCE7rI/Vi0OihMWlLMezyg7GprM+DI+1qh9t2F5rQIUkdjKYohQe9O/2rXoNDAKPhXsCepmEcK3TJElHN34RJbzNKQgHRRzi0g==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by AM4PR0302MB2612.eurprd03.prod.outlook.com (2603:10a6:200:8e::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17; Mon, 24 Jan
+ 2022 23:14:55 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::2d1f:654e:f946:1a95]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::2d1f:654e:f946:1a95%6]) with mapi id 15.20.4909.017; Mon, 24 Jan 2022
+ 23:14:54 +0000
+Subject: Re: [PATCH v2 5/7] usb: dwc3: Add snps,ref-clock-frequency-hz
+ property for ACPI
+From:   Sean Anderson <sean.anderson@seco.com>
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Cc:     Felipe Balbi <balbi@kernel.org>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Baruch Siach <baruch@tkos.co.il>, Rob Herring <robh@kernel.org>
+References: <20220119002438.106079-1-sean.anderson@seco.com>
+ <20220119002438.106079-6-sean.anderson@seco.com>
+ <5275ea80-400e-d1de-f03e-c2ea81f959dc@synopsys.com>
+ <e808f3e2-55ad-e8bb-097c-81e4a82d0bb2@seco.com>
+Message-ID: <6ffae12d-3116-c4f2-09c3-32e448bb4717@seco.com>
+Date:   Mon, 24 Jan 2022 18:14:51 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <e808f3e2-55ad-e8bb-097c-81e4a82d0bb2@seco.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR08CA0029.namprd08.prod.outlook.com
+ (2603:10b6:208:239::34) To DB7PR03MB4523.eurprd03.prod.outlook.com
+ (2603:10a6:10:19::27)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 53683a96-2983-4c93-dd8b-08d9df8f54f1
+X-MS-TrafficTypeDiagnostic: AM4PR0302MB2612:EE_
+X-Microsoft-Antispam-PRVS: <AM4PR0302MB26123B69ABF81D7F4D3736CC965E9@AM4PR0302MB2612.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JEC5qFoifW64wi5zSkJ0p0yoSgNrVzQLa5GqNJ1JfLGTkjR2lDYw4mzwG1WOE9ly6OPfdeHslzi/RQ75A+i/B8/5lEel197WLxHvyRrbGEdtFybqDi9DXGVQfKccOx23MDGnIIHGOWhrEr7snTOD/rUQyK0NDFIs8lDIzSHW3wvAdlSETqpX6pA8vor9KVRsNQo8Uuq7knc7ohu9V2aTlIpiWx80zdbnMLGdavgqhNTOeuHP9uIe3abpCngRsyYpJSPXzzcwRjeRh4GkIMtdxPJafm763WZDbp9fOJav/xz6a6BQyGn+fkPKrLLYTonyLXNAX5XSjjMUx4HBN3MwnYyhzMkNTGEgVcWRt3JgD+wWIQUIwmqo5vzEQA/gUx7xzVJtn4uayOcGGzoc+U4LHPRhoh/LOpZGdphvJ2Qt2ZJ6CpAq6UMSlNa9XQBKAUK24Zs9QgjJeD9yv/hs7kW3+0Bz0ppr3F+iXuFVRGPtdzD5pruNXLQqzVHIZCLMdK4/Zj7z/Et5OkXZ3g3t5MRzgsDxLT/oVfyaptKu5h6I8mDnnTbJ5EuRvNoD1wSy3aG/fbpna9ULYopOeBUf/sJiIr45qcveQ13+LL3nEtAxhG9VYbPYujnPh56ANfg89V3RckhrE6++9rJ/hKeUke+LhC0K8mvGsZV+hgwMiMqp8qwyYPLPZDjeVE1in8Rd+t4oGstwZ2+pyaeujf5ffqDTmB7g2zy2nAnnlrwZLirb+NpZ7s9Dl5azx7s861dY/gc1EB1YAqEKVcVDTsyrhkAIK5IbCiAnnEIAn+wbaaNDE9P4uBxzFNEBd3LZb8ZFZrP+PDQmyoq6BEPygqFl+nGafYxZw0UXIe+qdIdHpmXyTvw=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6486002)(54906003)(5660300002)(110136005)(31686004)(86362001)(66946007)(316002)(66476007)(508600001)(6506007)(6512007)(8936002)(186003)(2906002)(966005)(52116002)(66556008)(38100700002)(38350700002)(26005)(36756003)(44832011)(2616005)(53546011)(31696002)(6666004)(83380400001)(4326008)(8676002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WHg2M003SkdFeEtXYnVmcnVqSFU1dUdZOUY4Z2NyUHVkbkErNEdFcXBWWkFh?=
+ =?utf-8?B?ckdoNFpBMDdFQzJKRXpCc0RBa2puNXA3NFV3bnArSHRxQldXS0lvTjArQWQz?=
+ =?utf-8?B?a2tDWElQRXBMMy9nMzNmeWNkbm9MNzV0K1VKZFhHODV5bjNVMU93eUxrRERG?=
+ =?utf-8?B?eWlXdS9oWGdUOTFJNzNicnZMYlhPbDhOblRUWmduaVJLTUF0YVgrNXc4dmFK?=
+ =?utf-8?B?TXVwQllHa2YrUDJ4OElXL3AxbHBGWERiamFyLzAyWlNJOHlqRThOWUoxUmVC?=
+ =?utf-8?B?TEZDV3VlMGF3bzAyQkZhdFY3SmlzMzROREh4dkdUeW5vMmM5VGtVS0s4NE5M?=
+ =?utf-8?B?RE9iam1oNGlHQ3BaeHowcHJuTGovUkM1Rnd0YWR6TEJaMWJJMkpZR1NrVFoz?=
+ =?utf-8?B?cDk1ODNNZHF1eTdqQnhMNTlPQWh5TG5FRzJsTnFFV1ljNVgzNDVRNlFWb2Y0?=
+ =?utf-8?B?VG9iNVNHRDQrTktHd3k5QURVbWtHYkRiWnNBVy9Eamw1NkRvZ0VWTnFyZE5E?=
+ =?utf-8?B?dXNKM0ZYd2NKcVhCTEVPdEoycVZ6NG1hR2tnT3hIYk9aMU9sUG1CM0dhcVFH?=
+ =?utf-8?B?cW1SU29SWm1RYk9yd1hrUUNza3pOY040T2JtT0ZwY2s2dGhhdkF0b28wdy94?=
+ =?utf-8?B?SVRMUmdsMFZSandzZXBidEtGdXJYRTBkNlFTdTlMZlVNemJLV0FWMHdMdWha?=
+ =?utf-8?B?WVZNMXFQMWYxNHRwTXRmekI2OHVCZmkvNXRISTl3ZVNzaGNOK3MybTUzRFFx?=
+ =?utf-8?B?dDE3UyttUk9SOWo2MmIvT0g2RzJnRXFmMnBHRjB3a2FzNUU2ODNyRkJ1VVZ1?=
+ =?utf-8?B?Q1daeVdaYmNCNTM2TThON2gvN0djK2pSZU1ESVkydVJZWXMwakZueDhoSTVw?=
+ =?utf-8?B?dVhZZUF3Q0NVWElGdUpETGFFTUliR0JKNENVM0Y5OXBkb0F2KzdacHE5ZDJY?=
+ =?utf-8?B?MmdzWGlHeVF5ajdJSmZxRG9CSWJ5eTdYbTZhZjlaTG5Pbk9sOGhkZ01yeXpi?=
+ =?utf-8?B?M2hqRzNqRjZGQmRGRUNPQ3ViMmpoZW84VVhRa3U5bzRoS2JuTGVJL1pnYjBr?=
+ =?utf-8?B?V3FtZUNldHlsTmZQMUJ0MW5QdUdndlJ5R2VVQmhERm5vR2cvYlZtUW9xc0VH?=
+ =?utf-8?B?ZURJNW9odjFrTmV1azd4VWJFUG5tYlIzalhhd2wwUEtOaHJIVUxIQVdRemV6?=
+ =?utf-8?B?cjJDa1o4ZllHdHRMUDZjeVRqYnFQMVg5N08rUzYxR0FtVG9rbGxYTUQ3dzA1?=
+ =?utf-8?B?K1NMZ1BzdE1OaUJaaEVzN2RyeDdLZXdZR0hXRUcyRXpFMkI1dkN2MVhGNDZ3?=
+ =?utf-8?B?NmJIcEtRb0lIcndaL2RWb1RzeVNCZmsreXo4YkJnNTM1ZDA1RkJVd3lpM3VE?=
+ =?utf-8?B?SUZ3UnlHRmZuV0drcXVheDAxOEdyNExHYkdrYWtRVjM0NERrUDhlTWpLZlJB?=
+ =?utf-8?B?QVMwalF0ODZaMHIxU2h3MVVqckZ4TUJ5a2V6RXNQNnNoRmlJM0gxNGpkL3g0?=
+ =?utf-8?B?WmNlRWxqWDQvWTh0b0hYNmRzYWVLNE85SDl4SmhiNGhyc1U0dGh1ODMxbTUv?=
+ =?utf-8?B?TVJwcFlSVE5YV0JmZXZkS3E5TC91Rno1c3NMV0xRUE9YclZ2NDRqcCs2S2RU?=
+ =?utf-8?B?L0xpdFk4WTdCWWVyTU9UTSs2OFNqK01VR0dtd2VKMENwSmdidmV6ZkVCWHpV?=
+ =?utf-8?B?bWZQcFg3OWVBSHZrK05Xd25Tenl3YThoUlFjdXNLK2lHc1RZNVM1Uk95azgz?=
+ =?utf-8?B?REswazBrUnhBWDRTSk5EbXZKVVpjbnlocHRDcDhHNCttR0hmcHAyRVFZSW03?=
+ =?utf-8?B?S1pkSTh2OE1OMXpWWlNreE9WanpaTjhnd0dnTHVUeXI2U0tWcXl4N25oK0E2?=
+ =?utf-8?B?ZnVLOHhPcWhjUWRGcHgvbzRlNmRnNlpHaU9iblhZT2RhOW93dHNXT0xGWXFP?=
+ =?utf-8?B?SzlGaHBwdTlVMHBBYVpsUUpyckVaQU9TbVVlbFZiTWdLNFNHajdLWE9jVUxx?=
+ =?utf-8?B?anpJOFVzd0VHVnNnd3Rxc2h1amRkVjdVb042RXoxc004emxiTldWTUJERmZh?=
+ =?utf-8?B?YUprL3pteS9LZzB1ZDNvZitwcmlWNmZkK2hVam50RUtNMkpKUGsvRkxQd08z?=
+ =?utf-8?B?SEl0UEVrdHpwcGVIdE9EYWt2aEtoNDV3SDZ2NzEzck85bEZrd3JrRzRnVklS?=
+ =?utf-8?Q?9Ctf1JOQAo74BSG3nUfzUHI=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 53683a96-2983-4c93-dd8b-08d9df8f54f1
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 23:14:54.9340
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: PXNc2hS1PxNTt9WCOg1SIZOG477G4CyJPayL85+/V3PZDddz8aPVzHBIm9dcbWZ51uMoo+Eti+rzv1wrwmKoUA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0302MB2612
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baochen Qiang <quic_bqiang@quicinc.com>
-
-[ Upstream commit 767c94caf0efad136157110787fe221b74cb5c8a ]
-
-With CONFIG_LOCKDEP=y and CONFIG_DEBUG_SPINLOCK=y, lockdep reports
-below warning:
-
-[  166.059415] ============================================
-[  166.059416] WARNING: possible recursive locking detected
-[  166.059418] 5.15.0-wt-ath+ #10 Tainted: G        W  O
-[  166.059420] --------------------------------------------
-[  166.059421] kworker/0:2/116 is trying to acquire lock:
-[  166.059423] ffff9905f2083160 (&srng->lock){+.-.}-{2:2}, at: ath11k_hal_reo_cmd_send+0x20/0x490 [ath11k]
-[  166.059440]
-               but task is already holding lock:
-[  166.059442] ffff9905f2083230 (&srng->lock){+.-.}-{2:2}, at: ath11k_dp_process_reo_status+0x95/0x2d0 [ath11k]
-[  166.059491]
-               other info that might help us debug this:
-[  166.059492]  Possible unsafe locking scenario:
-
-[  166.059493]        CPU0
-[  166.059494]        ----
-[  166.059495]   lock(&srng->lock);
-[  166.059498]   lock(&srng->lock);
-[  166.059500]
-                *** DEADLOCK ***
-
-[  166.059501]  May be due to missing lock nesting notation
-
-[  166.059502] 3 locks held by kworker/0:2/116:
-[  166.059504]  #0: ffff9905c0081548 ((wq_completion)events){+.+.}-{0:0}, at: process_one_work+0x1f6/0x660
-[  166.059511]  #1: ffff9d2400a5fe68 ((debug_obj_work).work){+.+.}-{0:0}, at: process_one_work+0x1f6/0x660
-[  166.059517]  #2: ffff9905f2083230 (&srng->lock){+.-.}-{2:2}, at: ath11k_dp_process_reo_status+0x95/0x2d0 [ath11k]
-[  166.059532]
-               stack backtrace:
-[  166.059534] CPU: 0 PID: 116 Comm: kworker/0:2 Kdump: loaded Tainted: G        W  O      5.15.0-wt-ath+ #10
-[  166.059537] Hardware name: Intel(R) Client Systems NUC8i7HVK/NUC8i7HVB, BIOS HNKBLi70.86A.0059.2019.1112.1124 11/12/2019
-[  166.059539] Workqueue: events free_obj_work
-[  166.059543] Call Trace:
-[  166.059545]  <IRQ>
-[  166.059547]  dump_stack_lvl+0x56/0x7b
-[  166.059552]  __lock_acquire+0xb9a/0x1a50
-[  166.059556]  lock_acquire+0x1e2/0x330
-[  166.059560]  ? ath11k_hal_reo_cmd_send+0x20/0x490 [ath11k]
-[  166.059571]  _raw_spin_lock_bh+0x33/0x70
-[  166.059574]  ? ath11k_hal_reo_cmd_send+0x20/0x490 [ath11k]
-[  166.059584]  ath11k_hal_reo_cmd_send+0x20/0x490 [ath11k]
-[  166.059594]  ath11k_dp_tx_send_reo_cmd+0x3f/0x130 [ath11k]
-[  166.059605]  ath11k_dp_rx_tid_del_func+0x221/0x370 [ath11k]
-[  166.059618]  ath11k_dp_process_reo_status+0x22f/0x2d0 [ath11k]
-[  166.059632]  ? ath11k_dp_service_srng+0x2ea/0x2f0 [ath11k]
-[  166.059643]  ath11k_dp_service_srng+0x2ea/0x2f0 [ath11k]
-[  166.059655]  ath11k_pci_ext_grp_napi_poll+0x1c/0x70 [ath11k_pci]
-[  166.059659]  __napi_poll+0x28/0x230
-[  166.059664]  net_rx_action+0x285/0x310
-[  166.059668]  __do_softirq+0xe6/0x4d2
-[  166.059672]  irq_exit_rcu+0xd2/0xf0
-[  166.059675]  common_interrupt+0xa5/0xc0
-[  166.059678]  </IRQ>
-[  166.059679]  <TASK>
-[  166.059680]  asm_common_interrupt+0x1e/0x40
-[  166.059683] RIP: 0010:_raw_spin_unlock_irqrestore+0x38/0x70
-[  166.059686] Code: 83 c7 18 e8 2a 95 43 ff 48 89 ef e8 22 d2 43 ff 81 e3 00 02 00 00 75 25 9c 58 f6 c4 02 75 2d 48 85 db 74 01 fb bf 01 00 00 00 <e8> 63 2e 40 ff 65 8b 05 8c 59 97 5c 85 c0 74 0a 5b 5d c3 e8 00 6a
-[  166.059689] RSP: 0018:ffff9d2400a5fca0 EFLAGS: 00000206
-[  166.059692] RAX: 0000000000000002 RBX: 0000000000000200 RCX: 0000000000000006
-[  166.059694] RDX: 0000000000000000 RSI: ffffffffa404879b RDI: 0000000000000001
-[  166.059696] RBP: ffff9905c0053000 R08: 0000000000000001 R09: 0000000000000001
-[  166.059698] R10: ffff9d2400a5fc50 R11: 0000000000000001 R12: ffffe186c41e2840
-[  166.059700] R13: 0000000000000001 R14: ffff9905c78a1c68 R15: 0000000000000001
-[  166.059704]  free_debug_processing+0x257/0x3d0
-[  166.059708]  ? free_obj_work+0x1f5/0x250
-[  166.059712]  __slab_free+0x374/0x5a0
-[  166.059718]  ? kmem_cache_free+0x2e1/0x370
-[  166.059721]  ? free_obj_work+0x1f5/0x250
-[  166.059724]  kmem_cache_free+0x2e1/0x370
-[  166.059727]  free_obj_work+0x1f5/0x250
-[  166.059731]  process_one_work+0x28b/0x660
-[  166.059735]  ? process_one_work+0x660/0x660
-[  166.059738]  worker_thread+0x37/0x390
-[  166.059741]  ? process_one_work+0x660/0x660
-[  166.059743]  kthread+0x176/0x1a0
-[  166.059746]  ? set_kthread_struct+0x40/0x40
-[  166.059749]  ret_from_fork+0x22/0x30
-[  166.059754]  </TASK>
-
-Since these two lockes are both initialized in ath11k_hal_srng_setup,
-they are assigned with the same key. As a result lockdep suspects that
-the task is trying to acquire the same lock (due to same key) while
-already holding it, and thus reports the DEADLOCK warning. However as
-they are different spinlock instances, the warning is false positive.
-
-On the other hand, even no dead lock indeed, this is a major issue for
-upstream regression testing as it disables lockdep functionality.
-
-Fix it by assigning separate lock class key for each srng->lock.
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-Signed-off-by: Baochen Qiang <quic_bqiang@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211209011949.151472-1-quic_bqiang@quicinc.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ath11k/hal.c | 22 ++++++++++++++++++++++
- drivers/net/wireless/ath/ath11k/hal.h |  2 ++
- 2 files changed, 24 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath11k/hal.c b/drivers/net/wireless/ath/ath11k/hal.c
-index f04edafbd0f15..1832d13654a87 100644
---- a/drivers/net/wireless/ath/ath11k/hal.c
-+++ b/drivers/net/wireless/ath/ath11k/hal.c
-@@ -971,6 +971,7 @@ int ath11k_hal_srng_setup(struct ath11k_base *ab, enum hal_ring_type type,
- 	srng->msi_data = params->msi_data;
- 	srng->initialized = 1;
- 	spin_lock_init(&srng->lock);
-+	lockdep_set_class(&srng->lock, hal->srng_key + ring_id);
- 
- 	for (i = 0; i < HAL_SRNG_NUM_REG_GRP; i++) {
- 		srng->hwreg_base[i] = srng_config->reg_start[i] +
-@@ -1257,6 +1258,24 @@ static int ath11k_hal_srng_create_config(struct ath11k_base *ab)
- 	return 0;
- }
- 
-+static void ath11k_hal_register_srng_key(struct ath11k_base *ab)
-+{
-+	struct ath11k_hal *hal = &ab->hal;
-+	u32 ring_id;
-+
-+	for (ring_id = 0; ring_id < HAL_SRNG_RING_ID_MAX; ring_id++)
-+		lockdep_register_key(hal->srng_key + ring_id);
-+}
-+
-+static void ath11k_hal_unregister_srng_key(struct ath11k_base *ab)
-+{
-+	struct ath11k_hal *hal = &ab->hal;
-+	u32 ring_id;
-+
-+	for (ring_id = 0; ring_id < HAL_SRNG_RING_ID_MAX; ring_id++)
-+		lockdep_unregister_key(hal->srng_key + ring_id);
-+}
-+
- int ath11k_hal_srng_init(struct ath11k_base *ab)
- {
- 	struct ath11k_hal *hal = &ab->hal;
-@@ -1276,6 +1295,8 @@ int ath11k_hal_srng_init(struct ath11k_base *ab)
- 	if (ret)
- 		goto err_free_cont_rdp;
- 
-+	ath11k_hal_register_srng_key(ab);
-+
- 	return 0;
- 
- err_free_cont_rdp:
-@@ -1290,6 +1311,7 @@ void ath11k_hal_srng_deinit(struct ath11k_base *ab)
- {
- 	struct ath11k_hal *hal = &ab->hal;
- 
-+	ath11k_hal_unregister_srng_key(ab);
- 	ath11k_hal_free_cont_rdp(ab);
- 	ath11k_hal_free_cont_wrp(ab);
- 	kfree(hal->srng_config);
-diff --git a/drivers/net/wireless/ath/ath11k/hal.h b/drivers/net/wireless/ath/ath11k/hal.h
-index 0f4f9ce74354b..a7d9b4c551ada 100644
---- a/drivers/net/wireless/ath/ath11k/hal.h
-+++ b/drivers/net/wireless/ath/ath11k/hal.h
-@@ -902,6 +902,8 @@ struct ath11k_hal {
- 	/* shadow register configuration */
- 	u32 shadow_reg_addr[HAL_SHADOW_NUM_REGS];
- 	int num_shadow_reg_configured;
-+
-+	struct lock_class_key srng_key[HAL_SRNG_RING_ID_MAX];
- };
- 
- u32 ath11k_hal_reo_qdesc_size(u32 ba_window_size, u8 tid);
--- 
-2.34.1
 
 
+On 1/24/22 6:07 PM, Sean Anderson wrote:
+> On 1/24/22 5:44 PM, Thinh Nguyen wrote:
+>> Sean Anderson wrote:
+>>> This property allows setting the reference clock frequency properly for
+>>> ACPI-based systems. It is not documented under dt-bindings, since it is
+>>> not intended for use on DT-based systems. DT-based systems should use
+>>> the clocks property instead.
+>>> 
+>>> Frequency is preferred over period since it has greater precision when
+>>> used in calculations.
+>>> 
+>>> Signed-off-by: Sean Anderson <sean.anderson@seco.com>
+>>> ---
+>>> 
+>>> Changes in v2:
+>>> - New
+>>> 
+>>>  drivers/usb/dwc3/core.c | 6 ++++--
+>>>  drivers/usb/dwc3/core.h | 4 +++-
+>>>  2 files changed, 7 insertions(+), 3 deletions(-)
+>>> 
+>>> diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+>>> index 883e119377f0..5f3dc5f6cbcb 100644
+>>> --- a/drivers/usb/dwc3/core.c
+>>> +++ b/drivers/usb/dwc3/core.c
+>>> @@ -350,8 +350,8 @@ static void dwc3_ref_clk_period(struct dwc3 *dwc)
+>>>  	u32 reg;
+>>>  	unsigned long decr, fladj, rate, period;
+>>>  
+>>> -	if (dwc->ref_clk) {
+>>> -		rate = clk_get_rate(dwc->ref_clk);
+>>> +	if (dwc->ref_clk || dwc->ref_clk_freq) {
+>>> +		rate = clk_get_rate(dwc->ref_clk) ?: dwc->ref_clk_freq;
+>>>  		if (!rate)
+>>>  			return;
+>>>  		period = NSEC_PER_SEC / rate;
+>>> @@ -1492,6 +1492,8 @@ static void dwc3_get_properties(struct dwc3 *dwc)
+>>>  				 &dwc->fladj);
+>>>  	device_property_read_u32(dev, "snps,ref-clock-period-ns",
+>>>  				 &dwc->ref_clk_per);
+>>> +	device_property_read_u32(dev, "snps,ref-clock-frequency-hz",
+>>> +				 &dwc->ref_clk_freq);
+>> 
+>> Please also document in dwc3 DT file whenever we add a new property.
+> 
+> This is intentionally undocumented, as noted in the commit message. 
+> Rob Herring has said that dt-bindings should only document properties
+> intended for device-tree.
 
+context: https://lore.kernel.org/all/20181219202734.GA31178@bogus/
+
+This patch was later resubmitted as 24bc6e68efa0 ("serial: sc16is7xx: 
+Respect clock-frequency property") without the dt-bindings documentation.
+
++CC Rob if he wants to comment on this specific situation.
+
+--Sean
