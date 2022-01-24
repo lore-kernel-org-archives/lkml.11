@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5989AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4943C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365159AbiAXXuU (ORCPT
+        id S2365337AbiAXXum (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:50:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        Mon, 24 Jan 2022 18:50:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1844736AbiAXXKO (ORCPT
+        with ESMTP id S1844845AbiAXXK3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:10:14 -0500
+        Mon, 24 Jan 2022 18:10:29 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0F14C09F83E;
-        Mon, 24 Jan 2022 13:18:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7BAC0A02A2;
+        Mon, 24 Jan 2022 13:18:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 96207B811FB;
-        Mon, 24 Jan 2022 21:18:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF5A4C340E4;
-        Mon, 24 Jan 2022 21:18:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73ADFB811A2;
+        Mon, 24 Jan 2022 21:18:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E53C340E4;
+        Mon, 24 Jan 2022 21:18:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059094;
-        bh=Wl7/FqyVESgtyk8MNTltFU21fmpFUMloKKngtNOgNRw=;
+        s=korg; t=1643059122;
+        bh=sucli1En9E5u5z1IFzbW2r+q38biCmwZYxb30OlR7yk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UZm/OClDDlGbuII0KT03mwHfmAUXFeytLEl3R59RXx+o1RX0qnLtd5Aszn/DQFPbx
-         oupujNGN1DERcIaM6nRvczs2+ITprqBgoT9mUe7/YlfhtTf5QhgW/n8KFVHzXQ0j2z
-         AwhaToa3EB9tRl2dKvuLza8qQLtEJXrvJEZ8sN5A=
+        b=kL7Fy10sQnqKnu4NDhJvaE4DxZVWJG24y0EnhlEPZd4Scp4yTesFemRAl3T3jkLlG
+         KOEaEMlJ8iXvYzLxh71pXZhDBfCAEMO4p0QvJrUjQE6LOJf4v7vlixr9sC18COdzg3
+         webFSXJboG2BrBFUN+SirGgk6w9GixAltKGXoBDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-efi@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Pingfan Liu <kernelfans@gmail.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
+        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
+        Sumanesh Samanta <sumanesh.samanta@broadcom.com>,
+        Bean Huo <beanhuo@micron.com>, Ming Lei <ming.lei@redhat.com>,
+        Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0502/1039] of: fdt: Aggregate the processing of "linux,usable-memory-range"
-Date:   Mon, 24 Jan 2022 19:38:11 +0100
-Message-Id: <20220124184142.136258100@linuxfoundation.org>
+Subject: [PATCH 5.16 0478/1039] scsi: core: Fix scsi_device_max_queue_depth()
+Date:   Mon, 24 Jan 2022 19:37:47 +0100
+Message-Id: <20220124184141.339832686@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -57,97 +53,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-[ Upstream commit 8347b41748c3019157312fbe7f8a6792ae396eb7 ]
+[ Upstream commit 4bc3bffc1a885eb5cb259e4a25146a4c7b1034e3 ]
 
-Currently, we parse the "linux,usable-memory-range" property in
-early_init_dt_scan_chosen(), to obtain the specified memory range of the
-crash kernel. We then reserve the required memory after
-early_init_dt_scan_memory() has identified all available physical memory.
-Because the two pieces of code are separated far, the readability and
-maintainability are reduced. So bring them together.
+The comment above scsi_device_max_queue_depth() and also the description of
+commit ca4453213951 ("scsi: core: Make sure sdev->queue_depth is <=
+max(shost->can_queue, 1024)") contradict the implementation of the function
+scsi_device_max_queue_depth(). Additionally, the maximum queue depth of a
+SCSI LUN never exceeds host->can_queue. Fix scsi_device_max_queue_depth()
+by changing max_t() into min_t().
 
-Suggested-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-(change the prototype of early_init_dt_check_for_usable_mem_range(), in
-order to use it outside)
-Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-Tested-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-Acked-by: John Donnelly <john.p.donnelly@oracle.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-To: devicetree@vger.kernel.org
-To: linux-efi@vger.kernel.org
-Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20211203231950.193369-2-bvanassche@acm.org
+Fixes: ca4453213951 ("scsi: core: Make sure sdev->queue_depth is <= max(shost->can_queue, 1024)")
+Cc: Hannes Reinecke <hare@suse.de>
+Cc: Sumanesh Samanta <sumanesh.samanta@broadcom.com>
+Tested-by: Bean Huo <beanhuo@micron.com>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Reviewed-by: Bean Huo <beanhuo@micron.com>
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/fdt.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ drivers/scsi/scsi.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index bdca35284cebd..5a238a933eb29 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -965,18 +965,22 @@ static void __init early_init_dt_check_for_elfcorehdr(unsigned long node)
- 		 elfcorehdr_addr, elfcorehdr_size);
- }
+diff --git a/drivers/scsi/scsi.c b/drivers/scsi/scsi.c
+index f6af1562cba49..10e5bffc34aaf 100644
+--- a/drivers/scsi/scsi.c
++++ b/drivers/scsi/scsi.c
+@@ -201,11 +201,11 @@ void scsi_finish_command(struct scsi_cmnd *cmd)
  
--static phys_addr_t cap_mem_addr;
--static phys_addr_t cap_mem_size;
-+static unsigned long chosen_node_offset = -FDT_ERR_NOTFOUND;
+ 
+ /*
+- * 1024 is big enough for saturating the fast scsi LUN now
++ * 1024 is big enough for saturating fast SCSI LUNs.
+  */
+ int scsi_device_max_queue_depth(struct scsi_device *sdev)
+ {
+-	return max_t(int, sdev->host->can_queue, 1024);
++	return min_t(int, sdev->host->can_queue, 1024);
+ }
  
  /**
-  * early_init_dt_check_for_usable_mem_range - Decode usable memory range
-  * location from flat tree
-- * @node: reference to node containing usable memory range location ('chosen')
-  */
--static void __init early_init_dt_check_for_usable_mem_range(unsigned long node)
-+static void __init early_init_dt_check_for_usable_mem_range(void)
- {
- 	const __be32 *prop;
- 	int len;
-+	phys_addr_t cap_mem_addr;
-+	phys_addr_t cap_mem_size;
-+	unsigned long node = chosen_node_offset;
-+
-+	if ((long)node < 0)
-+		return;
- 
- 	pr_debug("Looking for usable-memory-range property... ");
- 
-@@ -989,6 +993,8 @@ static void __init early_init_dt_check_for_usable_mem_range(unsigned long node)
- 
- 	pr_debug("cap_mem_start=%pa cap_mem_size=%pa\n", &cap_mem_addr,
- 		 &cap_mem_size);
-+
-+	memblock_cap_memory_range(cap_mem_addr, cap_mem_size);
- }
- 
- #ifdef CONFIG_SERIAL_EARLYCON
-@@ -1137,9 +1143,10 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
- 	    (strcmp(uname, "chosen") != 0 && strcmp(uname, "chosen@0") != 0))
- 		return 0;
- 
-+	chosen_node_offset = node;
-+
- 	early_init_dt_check_for_initrd(node);
- 	early_init_dt_check_for_elfcorehdr(node);
--	early_init_dt_check_for_usable_mem_range(node);
- 
- 	/* Retrieve command line */
- 	p = of_get_flat_dt_prop(node, "bootargs", &l);
-@@ -1275,7 +1282,7 @@ void __init early_init_dt_scan_nodes(void)
- 	of_scan_flat_dt(early_init_dt_scan_memory, NULL);
- 
- 	/* Handle linux,usable-memory-range property */
--	memblock_cap_memory_range(cap_mem_addr, cap_mem_size);
-+	early_init_dt_check_for_usable_mem_range();
- }
- 
- bool __init early_init_dt_scan(void *params)
 -- 
 2.34.1
 
