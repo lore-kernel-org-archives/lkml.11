@@ -2,96 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF44FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A339C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387219AbiAXUgk (ORCPT
+        id S1387292AbiAXUgo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:36:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39684 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347369AbiAXUMk (ORCPT
+        Mon, 24 Jan 2022 15:36:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358203AbiAXUNp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:40 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C44261446;
-        Mon, 24 Jan 2022 20:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF9AC340EC;
-        Mon, 24 Jan 2022 20:12:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643055159;
-        bh=YaKveBwpxFwRietemPz69WhA3Q6XcSoMygr0LTUe+c4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dzdSp0Q/0bEw3FZcskjmxWxEv4BUzUpUo927d5k7SvXXcPEyMGltnVzcvfNiEjqFr
-         yuVUkoOvuZKkm4rk50GKgf7+ncr9dn/XFDy7huf7kNMC77demCKwDc23kn+N6moIDe
-         ix6y3tsXqiDFDuPxyKg+eHyHEbuyp29CtpygcpNqu9soLQYt77DY/ZcZdo+mC5CJ+H
-         bnl4/ckal2VijVyUs/wyJplYBlARw5w960SEPbmzBtsWxqOh5wjyS9UmFmdLRPmZWu
-         ZfnnJmqp5tKpz89g05zaXlhT7KbeLH1CDbJ9RwtYrx4tTI2bYVWpOUhlrUfuxZTYpq
-         3ysRYa5uA/XDQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nC5hd-002Y3f-Nx; Mon, 24 Jan 2022 20:12:37 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Mark Rutland <mark.rutland@arm.com>, Will Deacon <will@kernel.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dougall <dougallj@gmail.com>, kernel-team@android.com
-Subject: [PATCH v4 07/10] arm64: dts: apple: Add t8303 PMU nodes
-Date:   Mon, 24 Jan 2022 20:12:28 +0000
-Message-Id: <20220124201231.298961-8-maz@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220124201231.298961-1-maz@kernel.org>
-References: <20220124201231.298961-1-maz@kernel.org>
+        Mon, 24 Jan 2022 15:13:45 -0500
+Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93DBEC0604D5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:37:11 -0800 (PST)
+Received: by mail-oo1-xc2c.google.com with SMTP id q145-20020a4a3397000000b002e85c7234b1so1449117ooq.8
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:37:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=OE7zpDJ/ImAr/I0egnBqJG8bk650Ar7DpEUyTPdTJtw=;
+        b=S8celvhQE9q1bVrsDARpFL2ugWnZwTBbS5TBo3ge8O3ANqZlz/LKKjwmwAAyYfL+53
+         BinD7Pbe4Z6hIVUdszsDpeVk4TVKG9cPqzfWIu70VfCiv/4vLUPApzaJZhZ4QPVK91Kd
+         CpfFLphYeYEIT62X+JtCQK18CcbJ9Zdm4JMDE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=OE7zpDJ/ImAr/I0egnBqJG8bk650Ar7DpEUyTPdTJtw=;
+        b=Gk75PQv2MIKTatFOTkeFL2ixDM5N0407ikpxJbm7jNY8gaJ8dM/Ryz6ZoL7ewGg/7Q
+         BvR7e389WBhx0EA1nUAiDwhCRh+fzWcqnbzP8AihcXEkNZkRLoHOH6JBsKjPFnbvVJ9J
+         LJ1+uAf91APgl0XZGhincUmhjgdC/gT7AtbEs23byDWY0jN8doMsPLB0TlFhWprKBb+Y
+         /IfD0Jc0QByHWEaJNghZeCwMOh0UWv248wjiBx865cnG/QCP5mqRs6GZ/i8/BXJt9KFb
+         Ci8wsehNFATbMbdEkY0WoAXRdWi+kYspjemARdKS7gPSMIJOkROofAUWmsBkOyHLPDq4
+         K0ig==
+X-Gm-Message-State: AOAM530SakFRqiatGQzEJVnsYP2+KNprIp2HeUYUg7+q6n7ejZLIYk6j
+        9h3NwcYPzl7RFviZqBsfbOwBwg+nmTEk9EszGpqmIw==
+X-Google-Smtp-Source: ABdhPJytm+GOXzINucfGcA+WQ9XKPuPqK22JwGD5fA+K100i2lRiCUy7M7FJjrzhXKMKZjBf8J4ppeFUksmNinWY2Ds=
+X-Received: by 2002:a4a:c118:: with SMTP id s24mr7146077oop.8.1643053030979;
+ Mon, 24 Jan 2022 11:37:10 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 24 Jan 2022 11:37:10 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, mark.rutland@arm.com, will@kernel.org, marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io, robh+dt@kernel.org, tglx@linutronix.de, dougallj@gmail.com, kernel-team@android.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+In-Reply-To: <20220124184437.9278-1-tdas@codeaurora.org>
+References: <20220124184437.9278-1-tdas@codeaurora.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 24 Jan 2022 11:37:10 -0800
+Message-ID: <CAE-0n50bTcjL9qAdfprs43fdfn1Ft=cnCRVp9XjQ+iw_f57SLQ@mail.gmail.com>
+Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add camcc clock node
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Taniya Das <tdas@codeaurora.org>
+Cc:     Douglas Anderson <dianders@chromium.org>,
+        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Advertise the two PMU nodes for the t8103 SoC.
+Quoting Taniya Das (2022-01-24 10:44:37)
+> Add the camera clock controller node for SC7280 SoC.
+>
+> Signed-off-by: Taniya Das <tdas@codeaurora.org>
+> ---
 
-Reviewed-by: Hector Martin <marcan@marcan.st>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
----
- arch/arm64/boot/dts/apple/t8103.dtsi | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/arch/arm64/boot/dts/apple/t8103.dtsi b/arch/arm64/boot/dts/apple/t8103.dtsi
-index ca856f9955d8..aa0768ecb800 100644
---- a/arch/arm64/boot/dts/apple/t8103.dtsi
-+++ b/arch/arm64/boot/dts/apple/t8103.dtsi
-@@ -97,6 +97,18 @@ timer {
- 			     <AIC_FIQ AIC_TMR_HV_VIRT IRQ_TYPE_LEVEL_HIGH>;
- 	};
- 
-+	pmu-e {
-+		compatible = "apple,icestorm-pmu";
-+		interrupt-parent = <&aic>;
-+		interrupts = <AIC_FIQ AIC_CPU_PMU_E IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+
-+	pmu-p {
-+		compatible = "apple,firestorm-pmu";
-+		interrupt-parent = <&aic>;
-+		interrupts = <AIC_FIQ AIC_CPU_PMU_P IRQ_TYPE_LEVEL_HIGH>;
-+	};
-+
- 	clkref: clock-ref {
- 		compatible = "fixed-clock";
- 		#clock-cells = <0>;
--- 
-2.30.2
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
