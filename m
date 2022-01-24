@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2544C35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1EDC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392442AbiAXUvO (ORCPT
+        id S1392464AbiAXUvQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:51:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51138 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383608AbiAXU11 (ORCPT
+        Mon, 24 Jan 2022 15:51:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34708 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383789AbiAXU1t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:27:27 -0500
+        Mon, 24 Jan 2022 15:27:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 090E361502;
-        Mon, 24 Jan 2022 20:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E01ABC340E5;
-        Mon, 24 Jan 2022 20:27:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2211EB8122C;
+        Mon, 24 Jan 2022 20:27:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C91C340E5;
+        Mon, 24 Jan 2022 20:27:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056046;
-        bh=zrfxcHLGusgtamEGQCTI+icznpvNbZqhf7dBNr17trg=;
+        s=korg; t=1643056066;
+        bh=utsPrtpcWIvwCt9tvxNIxDq0GM9C7hpc0Yc/H/vxqiE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wIfdRS8MWj1807QBkkKllAnKb7UOFUQ6bsy88P9nOTvhrBEgBR8N1jVQibXJMpA3+
-         jyHNSSzhr2pUIqr9n1kisynQ/VDnYb2SBcq4bN8jjR2IAqm7t0XlCaQOC0+UpXPnNe
-         D8A/BHwPTmaUaVJIsCO9nPkA4rVqAfF1Ci7Yaf38=
+        b=HtikcpBj34yj2nWAIPW0HTJhwF/GgtXpgLKK4DiSFgvckZuGTQf17yTFQE+Ms926Z
+         4dWhQOnwARdF9DZfmk/Hf4jFl7Egfemzbh2tuXjpFLeqYWhcuXIxHJS+EjqDo3k7W6
+         34DkSITV+iMk+gVq9QfIu4SCOMpVUqbKupCzMgP4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Chen Jun <chenjun102@huawei.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 352/846] octeontx2-af: Increment ptp refcount before use
-Date:   Mon, 24 Jan 2022 19:37:49 +0100
-Message-Id: <20220124184113.097587510@linuxfoundation.org>
+Subject: [PATCH 5.15 358/846] tpm: add request_locality before write TPM_INT_ENABLE
+Date:   Mon, 24 Jan 2022 19:37:55 +0100
+Message-Id: <20220124184113.281721674@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,35 +47,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Chen Jun <chenjun102@huawei.com>
 
-[ Upstream commit 93440f4888cf049dbd22b41aaf94d2e2153b3eb8 ]
+[ Upstream commit 0ef333f5ba7f24f5d8478425c163d3097f1c7afd ]
 
-Before using the ptp pci device by AF driver increment
-the reference count of it.
+Locality is not appropriately requested before writing the int mask.
+Add the missing boilerplate.
 
-Fixes: a8b90c9d26d6 ("octeontx2-af: Add PTP device id for CN10K and 95O silcons")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e6aef069b6e9 ("tpm_tis: convert to using locality callbacks")
+Signed-off-by: Chen Jun <chenjun102@huawei.com>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/ptp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/char/tpm/tpm_tis_core.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-index 9b8e59f4c206d..77cb52b80c60f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-@@ -85,6 +85,8 @@ struct ptp *ptp_get(void)
- 	/* Check driver is bound to PTP block */
- 	if (!ptp)
- 		ptp = ERR_PTR(-EPROBE_DEFER);
-+	else
-+		pci_dev_get(ptp->pdev);
+diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+index b2659a4c40168..e2df1098a812f 100644
+--- a/drivers/char/tpm/tpm_tis_core.c
++++ b/drivers/char/tpm/tpm_tis_core.c
+@@ -994,7 +994,15 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+ 	intmask |= TPM_INTF_CMD_READY_INT | TPM_INTF_LOCALITY_CHANGE_INT |
+ 		   TPM_INTF_DATA_AVAIL_INT | TPM_INTF_STS_VALID_INT;
+ 	intmask &= ~TPM_GLOBAL_INT_ENABLE;
++
++	rc = request_locality(chip, 0);
++	if (rc < 0) {
++		rc = -ENODEV;
++		goto out_err;
++	}
++
+ 	tpm_tis_write32(priv, TPM_INT_ENABLE(priv->locality), intmask);
++	release_locality(chip, 0);
  
- 	return ptp;
- }
+ 	rc = tpm_chip_start(chip);
+ 	if (rc)
 -- 
 2.34.1
 
