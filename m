@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5305CC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB1B9C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353843AbiAXTf2 (ORCPT
+        id S1353827AbiAXTf1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:28 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56252 "EHLO
+        Mon, 24 Jan 2022 14:35:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56514 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348432AbiAXT2h (ORCPT
+        with ESMTP id S1344466AbiAXT2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:28:37 -0500
+        Mon, 24 Jan 2022 14:28:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB53861488;
-        Mon, 24 Jan 2022 19:28:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87120C340E5;
-        Mon, 24 Jan 2022 19:28:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 804976129A;
+        Mon, 24 Jan 2022 19:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 64A69C340E5;
+        Mon, 24 Jan 2022 19:28:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052515;
-        bh=dqbWfEMlNE/Ni041E7Yb6Yct9cWyfdGrWOafYB2jzak=;
+        s=korg; t=1643052532;
+        bh=oZ9fV1EcOdeX0gDXQYcufvalv4b+Oij4mIKQz1XPDRc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=06DEDYjITSgUU2c0Yx2z00e8+8xIDS6eGTmnw2WSg5LqJ8ua6VDSQOVe6mrsFKT78
-         JyR6K/MfATqR6C2oNTB3435nb5pbgYT5ewL4eUMlx1s/Ae4j6srli+uYKT114x1JkM
-         OuDelCKLd3O/KHQH+x/P5ts4bUVs9iio97TCAUV0=
+        b=jjwZ4GHqZxfqIH0PPaUQqbvcoNXHlM5OiGxO5LOcE6CIUJ9Srw6nQSHT9zFCiJP18
+         ChrPAFaT6o7srHJl1PPvsOS1jbGT6Q1zu+p4JLGUnJ6hLZkgix48InUnBAyC/Y6d7O
+         qjbvwxsRqHhd/Lm2HPbrOkB7WwjVGC9eoQJBXfAU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
+        Eyal Birger <eyal.birger@gmail.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 084/320] media: msi001: fix possible null-ptr-deref in msi001_probe()
-Date:   Mon, 24 Jan 2022 19:41:08 +0100
-Message-Id: <20220124183956.605918298@linuxfoundation.org>
+Subject: [PATCH 5.4 089/320] xfrm: interface with if_id 0 should return error
+Date:   Mon, 24 Jan 2022 19:41:13 +0100
+Message-Id: <20220124183956.767515091@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,56 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Antony Antony <antony.antony@secunet.com>
 
-[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
+[ Upstream commit 8dce43919566f06e865f7e8949f5c10d8c2493f5 ]
 
-I got a null-ptr-deref report:
+xfrm interface if_id = 0 would cause xfrm policy lookup errors since
+Commit 9f8550e4bd9d.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000060
-...
-RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
-...
-Call Trace:
- msi001_probe+0x13b/0x24b [msi001]
- spi_probe+0xeb/0x130
-...
- do_syscall_64+0x35/0xb0
+Now explicitly fail to create an xfrm interface when if_id = 0
 
-In msi001_probe(), if the creation of control for bandwidth_auto
-fails, there will be a null-ptr-deref issue when it is used in
-v4l2_ctrl_auto_cluster().
+With this commit:
+ ip link add ipsec0  type xfrm dev lo  if_id 0
+ Error: if_id must be non zero.
 
-Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
+v1->v2 change:
+ - add Fixes: tag
 
-Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
-Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+Reviewed-by: Eyal Birger <eyal.birger@gmail.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/tuners/msi001.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/xfrm/xfrm_interface.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
-index 78e6fd600d8ef..44247049a3190 100644
---- a/drivers/media/tuners/msi001.c
-+++ b/drivers/media/tuners/msi001.c
-@@ -442,6 +442,13 @@ static int msi001_probe(struct spi_device *spi)
- 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
- 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
-+	if (dev->hdl.error) {
-+		ret = dev->hdl.error;
-+		dev_err(&spi->dev, "Could not initialize controls\n");
-+		/* control init failed, free handler */
-+		goto err_ctrl_handler_free;
+diff --git a/net/xfrm/xfrm_interface.c b/net/xfrm/xfrm_interface.c
+index 74e90d78c3b46..08343201513a9 100644
+--- a/net/xfrm/xfrm_interface.c
++++ b/net/xfrm/xfrm_interface.c
+@@ -659,11 +659,16 @@ static int xfrmi_newlink(struct net *src_net, struct net_device *dev,
+ 			struct netlink_ext_ack *extack)
+ {
+ 	struct net *net = dev_net(dev);
+-	struct xfrm_if_parms p;
++	struct xfrm_if_parms p = {};
+ 	struct xfrm_if *xi;
+ 	int err;
+ 
+ 	xfrmi_netlink_parms(data, &p);
++	if (!p.if_id) {
++		NL_SET_ERR_MSG(extack, "if_id must be non zero");
++		return -EINVAL;
 +	}
 +
- 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
- 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
+ 	xi = xfrmi_locate(net, &p);
+ 	if (xi)
+ 		return -EEXIST;
+@@ -688,7 +693,12 @@ static int xfrmi_changelink(struct net_device *dev, struct nlattr *tb[],
+ {
+ 	struct xfrm_if *xi = netdev_priv(dev);
+ 	struct net *net = xi->net;
+-	struct xfrm_if_parms p;
++	struct xfrm_if_parms p = {};
++
++	if (!p.if_id) {
++		NL_SET_ERR_MSG(extack, "if_id must be non zero");
++		return -EINVAL;
++	}
+ 
+ 	xfrmi_netlink_parms(data, &p);
+ 	xi = xfrmi_locate(net, &p);
 -- 
 2.34.1
 
