@@ -2,120 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 524F8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D01A7C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455738AbiAXVf7 (ORCPT
+        id S1455769AbiAXVgG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:35:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382881AbiAXUtE (ORCPT
+        Mon, 24 Jan 2022 16:36:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42824 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358918AbiAXUtD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:04 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0E67C08C5C5
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:58:05 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id v74so13827273pfc.1
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:58:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=HVGqPcoZ6tA4nJhZfd9qY6ac55uc9ZaTu5VnzL123sM=;
-        b=UoZnDRjvtwLGL+ZkFcMTRUht5RIXtnBkTp4T6OG0AtGfMmQrPFl9oEQK+LSaOTD9Ff
-         4IgMBC8I2mCMgPlfBJQkK3VHrxcha3AZYVFNAwOwcZzAmgea+bvbp1UehK004oOm9ZDt
-         2GdGVRW/O0rVSL0okB2EzJHABeN+B+OCzbNa37efKF4UpKfDdcUMbdtqli79nb1lYgdB
-         AhkzshqI36hc2fxfBmdAMwT8yif1sH38wALztzkS/dESmgamvc5nJuOU9Q76HPIk9AwX
-         7kdNVBsNmfqu7WibSmnqSXB8wzieNrEyCiyFmZxO0kIq6vvmJSYZRLX9BvSnuIltj+iS
-         aGpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=HVGqPcoZ6tA4nJhZfd9qY6ac55uc9ZaTu5VnzL123sM=;
-        b=0DEc5th54hqaY81mH2N2OQfc7tdkEIlcnU913iOGhVhu8HvPKPi42CxL2LFstGY5iv
-         XeIlE/OD03UFUrs0BhSqBhKiqYSutSczt6wjWBkZCrjQLTzCMWmaJLvtnpjVp8UwMdjb
-         Af2d09geHOlio30Llj2jqG+jjyfC2W5hEbwLfFNVVBu0CzzZtolkCU5rHZZ4Qaonier7
-         cL3myX7tQdrlT4DdOppEE2vXMA4Mq53PoFiau5G3XqOtz1IsLwVvvQSXQO4CmNclOBoP
-         q4SOhu7alzQM/Tb4WwsbsaAj1yXMQn5yMJsStqBIiDbwIIF/3xLjGdOoUVIV39RNKQ2q
-         593g==
-X-Gm-Message-State: AOAM530CeBJrT8yk+5AI8Zqd3EaLDDaZS/W+sfDTZ3gGf/N2pA6nRWds
-        D05uVWxPb/dmbwXuKE528Bx9SA==
-X-Google-Smtp-Source: ABdhPJx7U6j+SQSA5xpuk5vCxWu3Ky4xUij2eceN7DEhp+Ycho/C63+AuVhP3jpxuBCnbaR6tX0zww==
-X-Received: by 2002:a62:e210:0:b0:4c9:1cff:15cc with SMTP id a16-20020a62e210000000b004c91cff15ccmr2941028pfi.55.1643054285206;
-        Mon, 24 Jan 2022 11:58:05 -0800 (PST)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id x18sm12866584pgj.41.2022.01.24.11.58.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 11:58:04 -0800 (PST)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+        Mon, 24 Jan 2022 15:49:03 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F042660E8D;
+        Mon, 24 Jan 2022 20:49:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D4BC340E5;
+        Mon, 24 Jan 2022 20:48:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057340;
+        bh=kwp53B5aQK63xTNBGxMPd0Dfca1gi9Z5Waz2Qy/vQRM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=w21xIvLkGAcX2so7h8u6IJExhP4U1JA4F42m3X3HM8PzkC2duJlty96EMhFOlq9Gr
+         +y8ymZETLldd9a6mNhO42B/H5qbgLAtc96/LWmeGE1NswAnXVYxeO19iHVGW3or1gU
+         1hOZ789zYRdqMf1Dv6lPVgRr657cNLq0wvBvwuKQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V6 0/5] Use CCF to describe the UART baud rate clock
-In-Reply-To: <cc3b971f-c630-4ce2-e6dd-c13bcba89d22@amlogic.com>
-References: <20220118030911.12815-1-yu.tu@amlogic.com>
- <7hfspjqrn7.fsf@baylibre.com>
- <cc3b971f-c630-4ce2-e6dd-c13bcba89d22@amlogic.com>
-Date:   Mon, 24 Jan 2022 11:58:04 -0800
-Message-ID: <7hbl00ykhf.fsf@baylibre.com>
+        stable@vger.kernel.org, Hyeong-Jun Kim <hj514.kim@samsung.com>,
+        Sungjong Seo <sj1557.seo@samsung.com>,
+        Youngjin Gil <youngjin.gil@samsung.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.15 780/846] f2fs: compress: fix potential deadlock of compress file
+Date:   Mon, 24 Jan 2022 19:44:57 +0100
+Message-Id: <20220124184127.866064172@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Yu Tu <yu.tu@amlogic.com> writes:
+From: Hyeong-Jun Kim <hj514.kim@samsung.com>
 
-> Hi Kevin,
-> 	Thank you very much for your reply.
->
-> On 2022/1/20 6:37, Kevin Hilman wrote:
->> [ EXTERNAL EMAIL ]
->> 
->> Hello,
->> 
->> Yu Tu <yu.tu@amlogic.com> writes:
->> 
->>> Using the common Clock code to describe the UART baud rate
->>> clock makes it easier for the UART driver to be compatible
->>> with the baud rate requirements of the UART IP on different
->>> meson chips. Add Meson S4 SoC compatible.
->> 
->> Could you describe how this was tested and on which SoCs?  There seem to
->> be some changes in this series that might affect previous SoCs.
->> 
-> For me, the board starts normally and prints. My intention was to add 
-> the S4 SOC UART compatible, but for the S4 our baud rate clock is 
-> calculated at 12MHz by default.So a series of changes were made at your 
-> suggestion.
->
-> Since most SoCs are too old, I was able to find all the platforms myself 
-> such as Meson6, Meson8, Meson8b, GXL and so on. I only tested it with 
-> G12A and S4.But when I talked to Martin earlier he tried meson8b's log.
-> The test patch is in the attachment.
->
-> I have found that on some boards with this change, the initcall_debug 
-> Uart driver takes longer to initialize. Running the stty command to 
-> change the baud rate at the same time may cause a jam.
+commit 7377e853967ba45bf409e3b5536624d2cbc99f21 upstream.
 
-This kind of detail is important to document in the cover letter,
-including a bit more detail on how to reproduce so that other can help
-test or may have ideas for how to solve.
+There is a potential deadlock between writeback process and a process
+performing write_begin() or write_cache_pages() while trying to write
+same compress file, but not compressable, as below:
 
-> I'd love to know what else you suggest.
+[Process A] - doing checkpoint
+[Process B]                     [Process C]
+f2fs_write_cache_pages()
+- lock_page() [all pages in cluster, 0-31]
+- f2fs_write_multi_pages()
+ - f2fs_write_raw_pages()
+  - f2fs_write_single_data_page()
+   - f2fs_do_write_data_page()
+     - return -EAGAIN [f2fs_trylock_op() failed]
+   - unlock_page(page) [e.g., page 0]
+                                - generic_perform_write()
+                                 - f2fs_write_begin()
+                                  - f2fs_prepare_compress_overwrite()
+                                   - prepare_compress_overwrite()
+                                    - lock_page() [e.g., page 0]
+                                    - lock_page() [e.g., page 1]
+   - lock_page(page) [e.g., page 0]
 
-I don't expect you to be able to test on all SoCs, but just to list what
-SoCs and which boards you tested on.  This way, those who have other
-boards can help test and we can have a better idea of how this was
-tested before merging.
+Since there is no compress process, it is no longer necessary to hold
+locks on every pages in cluster within f2fs_write_raw_pages().
 
-Thanks,
+This patch changes f2fs_write_raw_pages() to release all locks first
+and then perform write same as the non-compress file in
+f2fs_write_cache_pages().
 
-Kevin
+Fixes: 4c8ff7095bef ("f2fs: support data compression")
+Signed-off-by: Hyeong-Jun Kim <hj514.kim@samsung.com>
+Signed-off-by: Sungjong Seo <sj1557.seo@samsung.com>
+Signed-off-by: Youngjin Gil <youngjin.gil@samsung.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ fs/f2fs/compress.c |   50 ++++++++++++++++++++++----------------------------
+ 1 file changed, 22 insertions(+), 28 deletions(-)
+
+--- a/fs/f2fs/compress.c
++++ b/fs/f2fs/compress.c
+@@ -1448,25 +1448,38 @@ static int f2fs_write_raw_pages(struct c
+ 					enum iostat_type io_type)
+ {
+ 	struct address_space *mapping = cc->inode->i_mapping;
+-	int _submitted, compr_blocks, ret;
+-	int i = -1, err = 0;
++	int _submitted, compr_blocks, ret, i;
+ 
+ 	compr_blocks = f2fs_compressed_blocks(cc);
+-	if (compr_blocks < 0) {
+-		err = compr_blocks;
+-		goto out_err;
++
++	for (i = 0; i < cc->cluster_size; i++) {
++		if (!cc->rpages[i])
++			continue;
++
++		redirty_page_for_writepage(wbc, cc->rpages[i]);
++		unlock_page(cc->rpages[i]);
+ 	}
+ 
++	if (compr_blocks < 0)
++		return compr_blocks;
++
+ 	for (i = 0; i < cc->cluster_size; i++) {
+ 		if (!cc->rpages[i])
+ 			continue;
+ retry_write:
++		lock_page(cc->rpages[i]);
++
+ 		if (cc->rpages[i]->mapping != mapping) {
++continue_unlock:
+ 			unlock_page(cc->rpages[i]);
+ 			continue;
+ 		}
+ 
+-		BUG_ON(!PageLocked(cc->rpages[i]));
++		if (!PageDirty(cc->rpages[i]))
++			goto continue_unlock;
++
++		if (!clear_page_dirty_for_io(cc->rpages[i]))
++			goto continue_unlock;
+ 
+ 		ret = f2fs_write_single_data_page(cc->rpages[i], &_submitted,
+ 						NULL, NULL, wbc, io_type,
+@@ -1481,26 +1494,15 @@ retry_write:
+ 				 * avoid deadlock caused by cluster update race
+ 				 * from foreground operation.
+ 				 */
+-				if (IS_NOQUOTA(cc->inode)) {
+-					err = 0;
+-					goto out_err;
+-				}
++				if (IS_NOQUOTA(cc->inode))
++					return 0;
+ 				ret = 0;
+ 				cond_resched();
+ 				congestion_wait(BLK_RW_ASYNC,
+ 						DEFAULT_IO_TIMEOUT);
+-				lock_page(cc->rpages[i]);
+-
+-				if (!PageDirty(cc->rpages[i])) {
+-					unlock_page(cc->rpages[i]);
+-					continue;
+-				}
+-
+-				clear_page_dirty_for_io(cc->rpages[i]);
+ 				goto retry_write;
+ 			}
+-			err = ret;
+-			goto out_err;
++			return ret;
+ 		}
+ 
+ 		*submitted += _submitted;
+@@ -1509,14 +1511,6 @@ retry_write:
+ 	f2fs_balance_fs(F2FS_M_SB(mapping), true);
+ 
+ 	return 0;
+-out_err:
+-	for (++i; i < cc->cluster_size; i++) {
+-		if (!cc->rpages[i])
+-			continue;
+-		redirty_page_for_writepage(wbc, cc->rpages[i]);
+-		unlock_page(cc->rpages[i]);
+-	}
+-	return err;
+ }
+ 
+ int f2fs_write_multi_pages(struct compress_ctx *cc,
+
+
