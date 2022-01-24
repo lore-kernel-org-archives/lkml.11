@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C6A0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A7C8C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573811AbiAXVp5 (ORCPT
+        id S1378694AbiAXVqJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33760 "EHLO
+        Mon, 24 Jan 2022 16:46:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33918 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448020AbiAXVLy (ORCPT
+        with ESMTP id S1448261AbiAXVMT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:54 -0500
+        Mon, 24 Jan 2022 16:12:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F31D6B8121C;
-        Mon, 24 Jan 2022 21:11:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D495C340E5;
-        Mon, 24 Jan 2022 21:11:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 48423B811FB;
+        Mon, 24 Jan 2022 21:12:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756C7C340E5;
+        Mon, 24 Jan 2022 21:12:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058711;
-        bh=AqUHJMQ2oY0NsP6WS7PPXKuOprmnYcXcK6FdrOhbVas=;
+        s=korg; t=1643058736;
+        bh=hMS3Pfo/RADStheTOI07FspzNnegx1/g9BH7Y01uFTg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PewUrMZpCqOV30LoK6McSnp1HXenZbUZpU/EZH9Z2Dz80cGj9sTsSnXSgwXz9lyNT
-         AACOs+vrgGvxmPXSeK48F/n4hXp9zgYzAP+4hQySTrER080KcxJ2w9WZBHTOCyAvnE
-         0puTROgrWaK9FwqwdC7GVaahhdeQWp2TTpo/08sI=
+        b=O/I9KwmMFVAtRNHA1mRkqoQO4cmWUJeR2Z69580OJh7UeGYhb3xoJ7WBy7Y9xXJ+8
+         ZDyaVCOREXW29/znMbStX0b34yMZY1ArTrHxzTDp9aK5lYyQaxt4ENJuwrEN1pkbOO
+         SJL16WeMfCX23a8PDBkDlRMOLzjX6pvMT/VldSKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Qiang Wang <wangqiang.wq.frank@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Hengqi Chen <hengqi.chen@gmail.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0378/1039] libbpf: Use probe_name for legacy kprobe
-Date:   Mon, 24 Jan 2022 19:36:07 +0100
-Message-Id: <20220124184138.019901056@linuxfoundation.org>
+Subject: [PATCH 5.16 0386/1039] Bluetooth: hci_bcm: Check for error irq
+Date:   Mon, 24 Jan 2022 19:36:15 +0100
+Message-Id: <20220124184138.292152168@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,39 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiang Wang <wangqiang.wq.frank@bytedance.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit 71cff670baff5cc6a6eeb0181e2cc55579c5e1e0 ]
+[ Upstream commit b38cd3b42fba66cc538edb9cf77e07881f43f8e2 ]
 
-Fix a bug in commit 46ed5fc33db9, which wrongly used the
-func_name instead of probe_name to register legacy kprobe.
+For the possible failure of the platform_get_irq(), the returned irq
+could be error number and will finally cause the failure of the
+request_irq().
+Consider that platform_get_irq() can now in certain cases return
+-EPROBE_DEFER, and the consequences of letting request_irq() effectively
+convert that into -EINVAL, even at probe time rather than later on.
+So it might be better to check just now.
 
-Fixes: 46ed5fc33db9 ("libbpf: Refactor and simplify legacy kprobe code")
-Co-developed-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Qiang Wang <wangqiang.wq.frank@bytedance.com>
-Signed-off-by: Chengming Zhou <zhouchengming@bytedance.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Tested-by: Hengqi Chen <hengqi.chen@gmail.com>
-Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
-Link: https://lore.kernel.org/bpf/20211227130713.66933-1-wangqiang.wq.frank@bytedance.com
+Fixes: 0395ffc1ee05 ("Bluetooth: hci_bcm: Add PM for BCM devices")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/bluetooth/hci_bcm.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index fd25e30e70cc2..2696f0b7f0acc 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -9769,7 +9769,7 @@ bpf_program__attach_kprobe_opts(const struct bpf_program *prog,
- 		gen_kprobe_legacy_event_name(probe_name, sizeof(probe_name),
- 					     func_name, offset);
+diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
+index ef54afa293574..7abf99f0ee399 100644
+--- a/drivers/bluetooth/hci_bcm.c
++++ b/drivers/bluetooth/hci_bcm.c
+@@ -1188,7 +1188,12 @@ static int bcm_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
--		legacy_probe = strdup(func_name);
-+		legacy_probe = strdup(probe_name);
- 		if (!legacy_probe)
- 			return libbpf_err_ptr(-ENOMEM);
+ 	dev->dev = &pdev->dev;
+-	dev->irq = platform_get_irq(pdev, 0);
++
++	ret = platform_get_irq(pdev, 0);
++	if (ret < 0)
++		return ret;
++
++	dev->irq = ret;
  
+ 	/* Initialize routing field to an unused value */
+ 	dev->pcm_int_params[0] = 0xff;
 -- 
 2.34.1
 
