@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC99C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A23DFC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1580533AbiAXWJ7 (ORCPT
+        id S1580550AbiAXWKK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:09:59 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37066 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448902AbiAXVOM (ORCPT
+        Mon, 24 Jan 2022 17:10:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34862 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345360AbiAXVOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:14:12 -0500
+        Mon, 24 Jan 2022 16:14:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 563066148B;
-        Mon, 24 Jan 2022 21:14:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CC6FC340E5;
-        Mon, 24 Jan 2022 21:14:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E247CB812A5;
+        Mon, 24 Jan 2022 21:14:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 005F3C340E5;
+        Mon, 24 Jan 2022 21:14:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058850;
-        bh=br5AcrBFtY1joqdyAs9YGFFLMk3rYlCqyHCcz2VHz0k=;
+        s=korg; t=1643058847;
+        bh=VhfLq6rswzGbOL/ljKj6bPc7+9MR7Lf4elfV0tKpNaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZtJcfE6dLT5uXD0cobMhB6toFjtos9FGy5QwwlDcqwCBmRkAIdS3GvGSfQG82KjXG
-         02yjf6iGlrcvHI5jOQPy1mccy6pwkBV5zv3Js41zv9LpOv6T0GupNfzIk2PkVlwRCN
-         Ss5uUzvfcu3K1txT4YTsFIR4Tm9sIDdKsJfGxU30=
+        b=kiqhslUg9G91Rkev+dFHHnkZHnNamJ7z0obY87r71QaNA9OW4a8/s0Ed/f6gvySrH
+         tzQWghOX+deUTdhRtMyjQseWOTLaqm5oiO/WcH6NtpQpHkZIX/op1QscM0z5uEdtp5
+         /rCAJXumfI8Vf70KkVDJ56sa52R/vI2EVW5h0mq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Subbaraya Sundeep <sbhatta@marvell.com>,
-        Sunil Goutham <sgoutham@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0423/1039] octeontx2-af: Increment ptp refcount before use
-Date:   Mon, 24 Jan 2022 19:36:52 +0100
-Message-Id: <20220124184139.523946948@linuxfoundation.org>
+Subject: [PATCH 5.16 0422/1039] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
+Date:   Mon, 24 Jan 2022 19:36:51 +0100
+Message-Id: <20220124184139.493000067@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,35 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Subbaraya Sundeep <sbhatta@marvell.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 93440f4888cf049dbd22b41aaf94d2e2153b3eb8 ]
+[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
 
-Before using the ptp pci device by AF driver increment
-the reference count of it.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for meson_spifc_probe.
 
-Fixes: a8b90c9d26d6 ("octeontx2-af: Add PTP device id for CN10K and 95O silcons")
-Signed-off-by: Subbaraya Sundeep <sbhatta@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/ptp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/spi/spi-meson-spifc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-index d6321de3cc171..e682b7bfde640 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/ptp.c
-@@ -60,6 +60,8 @@ struct ptp *ptp_get(void)
- 	/* Check driver is bound to PTP block */
- 	if (!ptp)
- 		ptp = ERR_PTR(-EPROBE_DEFER);
-+	else
-+		pci_dev_get(ptp->pdev);
- 
- 	return ptp;
- }
+diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
+index 8eca6f24cb799..c8ed7815c4ba6 100644
+--- a/drivers/spi/spi-meson-spifc.c
++++ b/drivers/spi/spi-meson-spifc.c
+@@ -349,6 +349,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
+ 	return 0;
+ out_clk:
+ 	clk_disable_unprepare(spifc->clk);
++	pm_runtime_disable(spifc->dev);
+ out_err:
+ 	spi_master_put(master);
+ 	return ret;
 -- 
 2.34.1
 
