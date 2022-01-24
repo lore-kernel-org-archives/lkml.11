@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DF1C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7870C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581461AbiAXWLy (ORCPT
+        id S1581525AbiAXWL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44732 "EHLO
+        Mon, 24 Jan 2022 17:11:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46924 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452725AbiAXV0W (ORCPT
+        with ESMTP id S1452794AbiAXV0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:26:22 -0500
+        Mon, 24 Jan 2022 16:26:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B57BE60C44;
-        Mon, 24 Jan 2022 21:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96497C340E4;
-        Mon, 24 Jan 2022 21:26:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1302661320;
+        Mon, 24 Jan 2022 21:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20732C340E4;
+        Mon, 24 Jan 2022 21:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059581;
-        bh=Dw55RYZD/DX3A6O8uk0ifo8PqWSjLQRn9YgpgdbiIv4=;
+        s=korg; t=1643059595;
+        bh=syKAXgGkNN/cd6e1sptDYNJgaiCH3RcEKn5+Joj72mU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zDRj38sS7wJolM/k8uFq+jJ0K4CBIFQyiqV22TFQ1oPdzllA66Qiuy+1pSjakejCT
-         NT4ppXrSraSO8lvbb22kP5n3jfjHoJV9KdexP9r1Ir+U5PCGbsOCclEeaiUDddw2pC
-         xMIDHOa3rUFCCchmeoTRsm6Y9jryzNBVqgcHBZcY=
+        b=WwL7mIcRKNrtdRnVhXugrE7R6u7XLI+qBs6BWTgZ/D3IQFdBisEBlgxpnBqdhyJdI
+         hETtNEJYu4nqYFijQ8INpb0BCw/lYycFgY/rKHcNiZ47Z8N0J5sl7Udymfuc5GOK1y
+         k8quSd+1LKbTms3RLOtgFvoZfLi/tul/s34h5bUc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Weili Qian <qianweili@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0664/1039] crypto: hisilicon/hpre - fix memory leak in hpre_curve25519_src_init()
-Date:   Mon, 24 Jan 2022 19:40:53 +0100
-Message-Id: <20220124184147.696415350@linuxfoundation.org>
+        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0669/1039] mt76: mt7615: fix possible deadlock while mt7615_register_ext_phy()
+Date:   Mon, 24 Jan 2022 19:40:58 +0100
+Message-Id: <20220124184147.862142126@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,34 +46,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weili Qian <qianweili@huawei.com>
+From: Peter Chiu <chui-hao.chiu@mediatek.com>
 
-[ Upstream commit 51fa916b81e5f406a74f14a31a3a228c3cc060ad ]
+[ Upstream commit 8c55516de3f9b76b9d9444e7890682ec2efc809f ]
 
-hpre_curve25519_src_init() allocates memory for 'ptr' before calling
-memcmp(). If memcmp() returns 0, the function will return '-EINVAL'
-without freeing memory.
+ieee80211_register_hw() is called with rtnl_lock held, and this could be
+caused lockdep from a work item that's on a workqueue that is flushed
+with the rtnl held.
 
-Signed-off-by: Weili Qian <qianweili@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Move mt7615_register_ext_phy() outside the init_work().
+
+Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/hpre/hpre_crypto.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_crypto.c b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-index a032c192ef1d6..7ba7641723a0b 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-@@ -1865,7 +1865,7 @@ static int hpre_curve25519_src_init(struct hpre_asym_request *hpre_req,
- 	 */
- 	if (memcmp(ptr, p, ctx->key_sz) == 0) {
- 		dev_err(dev, "gx is p!\n");
--		return -EINVAL;
-+		goto err;
- 	} else if (memcmp(ptr, p, ctx->key_sz) > 0) {
- 		hpre_curve25519_src_modulo_p(ptr);
- 	}
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
+index a2465b49ecd0c..87b4aa52ee0f9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
+@@ -28,8 +28,6 @@ static void mt7615_pci_init_work(struct work_struct *work)
+ 		return;
+ 
+ 	mt7615_init_work(dev);
+-	if (dev->dbdc_support)
+-		mt7615_register_ext_phy(dev);
+ }
+ 
+ static int mt7615_init_hardware(struct mt7615_dev *dev)
+@@ -160,6 +158,12 @@ int mt7615_register_device(struct mt7615_dev *dev)
+ 	mt7615_init_txpower(dev, &dev->mphy.sband_2g.sband);
+ 	mt7615_init_txpower(dev, &dev->mphy.sband_5g.sband);
+ 
++	if (dev->dbdc_support) {
++		ret = mt7615_register_ext_phy(dev);
++		if (ret)
++			return ret;
++	}
++
+ 	return mt7615_init_debugfs(dev);
+ }
+ 
 -- 
 2.34.1
 
