@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 430B7C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE9AC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1835330AbiAXWgH (ORCPT
+        id S1588891AbiAXWj7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:36:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55392 "EHLO
+        Mon, 24 Jan 2022 17:39:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456716AbiAXVjy (ORCPT
+        with ESMTP id S1457359AbiAXVlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4196C0419C7;
-        Mon, 24 Jan 2022 12:26:22 -0800 (PST)
+        Mon, 24 Jan 2022 16:41:31 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB227C07E321;
+        Mon, 24 Jan 2022 12:28:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42E02614ED;
-        Mon, 24 Jan 2022 20:26:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C07C340E5;
-        Mon, 24 Jan 2022 20:26:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8FDFAB80FA1;
+        Mon, 24 Jan 2022 20:28:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCAC3C340E5;
+        Mon, 24 Jan 2022 20:28:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055981;
-        bh=Qu5Alj4np2rsmPwZeeQ8YmvOKti3I/KQtYcIQZVE/lg=;
+        s=korg; t=1643056102;
+        bh=bxIi2xZ2w1xq56iz0Khve0LPSXIVSl9cFGc65n6xGTE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cBWmAsIB0uhTnSKpU4bHkxDbImc2CDTGLi+uMcC7dqv4zpzPk39Oc//9rDDX5HhDF
-         Tf4NOjds2I+UK1ydaJ1Pegz+XQE+WAKSbIPGu8y/MNPuKikZwpnpWIbn9r0h9KKskv
-         09/3zhIIQ9Le1zxfjX3Xevx8sbAO7CupipW1IR4U=
+        b=GxKWz9glmVejHzoolEV3Ky69W9w1GlUyxNhF+xL7r7oNIU0TkLR0juFQ9LcTcakQz
+         Gql7s135VWFf7KjFog07I8/NhqLwxxvqpZzz9r4cwOYQ4WyDpqQTIWk5EtOFMV21/U
+         6u41vSLzUjjRZcVWPHoj1PRWdvjRDJYh/SZAin+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arseny Demidov <a.demidov@yadro.com>,
-        Guenter Roeck <linux@roeck-us.net>,
+        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
+        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 297/846] hwmon: (mr75203) fix wrong power-up delay value
-Date:   Mon, 24 Jan 2022 19:36:54 +0100
-Message-Id: <20220124184111.157997827@linuxfoundation.org>
+Subject: [PATCH 5.15 372/846] ext4: avoid trim error on fs with small groups
+Date:   Mon, 24 Jan 2022 19:38:09 +0100
+Message-Id: <20220124184113.777312207@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,37 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arseny Demidov <arsdemal@gmail.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit a8d6d4992ad9d92356619ac372906bd29687bb46 ]
+[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
 
-In the file mr75203.c we have a macro named POWER_DELAY_CYCLE_256,
-the correct value should be 0x100. The register ip_tmr is expressed
-in units of IP clk cycles, in accordance with the datasheet.
-Typical power-up delays for Temperature Sensor are 256 cycles i.e. 0x100.
+A user reported FITRIM ioctl failing for him on ext4 on some devices
+without apparent reason.  After some debugging we've found out that
+these devices (being LVM volumes) report rather large discard
+granularity of 42MB and the filesystem had 1k blocksize and thus group
+size of 8MB. Because ext4 FITRIM implementation puts discard
+granularity into minlen, ext4_trim_fs() declared the trim request as
+invalid. However just silently doing nothing seems to be a more
+appropriate reaction to such combination of parameters since user did
+not specify anything wrong.
 
-Fixes: 9d823351a337 ("hwmon: Add hardware monitoring driver for Moortec MR75203 PVT controller")
-Signed-off-by: Arseny Demidov <a.demidov@yadro.com>
-Link: https://lore.kernel.org/r/20211219102239.1112-1-a.demidov@yadro.com
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+CC: Lukas Czerner <lczerner@redhat.com>
+Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
+Signed-off-by: Jan Kara <jack@suse.cz>
+Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwmon/mr75203.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/ext4/ioctl.c   | 2 --
+ fs/ext4/mballoc.c | 8 ++++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
-index 868243dba1ee0..1ba1e31459690 100644
---- a/drivers/hwmon/mr75203.c
-+++ b/drivers/hwmon/mr75203.c
-@@ -93,7 +93,7 @@
- #define VM_CH_REQ	BIT(21)
+diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
+index 606dee9e08a32..220a4c8178b5e 100644
+--- a/fs/ext4/ioctl.c
++++ b/fs/ext4/ioctl.c
+@@ -1117,8 +1117,6 @@ resizefs_out:
+ 		    sizeof(range)))
+ 			return -EFAULT;
  
- #define IP_TMR			0x05
--#define POWER_DELAY_CYCLE_256	0x80
-+#define POWER_DELAY_CYCLE_256	0x100
- #define POWER_DELAY_CYCLE_64	0x40
- 
- #define PVT_POLL_DELAY_US	20
+-		range.minlen = max((unsigned int)range.minlen,
+-				   q->limits.discard_granularity);
+ 		ret = ext4_trim_fs(sb, &range);
+ 		if (ret < 0)
+ 			return ret;
+diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
+index 72bfac2d6dce9..7174add7b1539 100644
+--- a/fs/ext4/mballoc.c
++++ b/fs/ext4/mballoc.c
+@@ -6405,6 +6405,7 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
+  */
+ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ {
++	struct request_queue *q = bdev_get_queue(sb->s_bdev);
+ 	struct ext4_group_info *grp;
+ 	ext4_group_t group, first_group, last_group;
+ 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
+@@ -6423,6 +6424,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
+ 	    start >= max_blks ||
+ 	    range->len < sb->s_blocksize)
+ 		return -EINVAL;
++	/* No point to try to trim less than discard granularity */
++	if (range->minlen < q->limits.discard_granularity) {
++		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
++			q->limits.discard_granularity >> sb->s_blocksize_bits);
++		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
++			goto out;
++	}
+ 	if (end >= max_blks)
+ 		end = max_blks - 1;
+ 	if (end <= first_data_blk)
 -- 
 2.34.1
 
