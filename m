@@ -2,113 +2,175 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63ACAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:27:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D12E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238283AbiAXO1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:27:33 -0500
-Received: from mga01.intel.com ([192.55.52.88]:61621 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238295AbiAXO1c (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:27:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643034452; x=1674570452;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=j2z/GmNDeCOiVJHcgh+l/bMe+jvLITsYaovOpxRgCec=;
-  b=hlMfD539qiMfRLYrQACYhf0nWfRfNUkr2TAb4mw/30hHw4H7POe4RZbb
-   mcTXVS5UtoVaMXJbz7KCDoUjKMi5WRpaYVf0lwYT69RbEzoE8kQWqwIK/
-   7vgKlLnzoX+fbO26sOhd9C3nQFtUgv73O242b34cu1tI4SbxnATe/YRji
-   x70OrswNfHKkPZD5EXJGKfiKC+u2shFeXCZGJ0mV5szoluBpIWItmS5ZY
-   dtiRZLzIkgCSfUVqKVPqtUg69i9zvRYqe7WMiG0MZJB3F2jz6FEMYjMlO
-   raN5BRBMOTDk1WIH4DUPzDcTX17TeVbA1aAAyrvopF9SiMXWVeIjJpUAa
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270491672"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="270491672"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:27:32 -0800
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="532093032"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 06:27:30 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1nC0IZ-00DvFO-6W;
-        Mon, 24 Jan 2022 16:26:23 +0200
-Date:   Mon, 24 Jan 2022 16:26:22 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Andy Shevchenko <andy@kernel.org>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>, Michal Hocko <mhocko@suse.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v2] lib/string_helpers: Use the given gfp flag when
- allocating memory
-Message-ID: <Ye63DkOZkBd2j+8+@smile.fi.intel.com>
-References: <1ec96b6e4f2e35599931d7516c6938c4a8845bf0.1642337606.git.christophe.jaillet@wanadoo.fr>
+        id S238399AbiAXO1w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:27:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29733 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238282AbiAXO1u (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 09:27:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643034469;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9k340GVErxn1t0TlYLSwG/7hBEZLmvh82s//i58t0Cw=;
+        b=JmDwuV2i44ZbMwHg7rP+EGP5cgY1rga1+qJG59N/ztg71v4DklaIrYEFtYYxxizbkgyT+o
+        76OtFLVB+ymVG1B5HZm1wYTTcGtoo+xrw2OsiadIxl7P4XbRhBdA6tyntmwc7B5yD42lOv
+        Z8MWmeiYKYz7W9EmkbbBGBRb5RwSp60=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-618-f6gny0V_Pru0EfehTHChmw-1; Mon, 24 Jan 2022 09:27:48 -0500
+X-MC-Unique: f6gny0V_Pru0EfehTHChmw-1
+Received: by mail-ed1-f72.google.com with SMTP id j10-20020a05640211ca00b003ff0e234fdfso13271106edw.0
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 06:27:48 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9k340GVErxn1t0TlYLSwG/7hBEZLmvh82s//i58t0Cw=;
+        b=IDBp5Njd/QXtFhHAoZQvPreCDbx80Y13hYIKGoF8OnQwZEMlPWvlL2D0MGRxpKP5eX
+         CSWeNEVA6ELhv8vtxZA3z5XR2QrVKCTjdOWQ8j/nG4esK6qsJ37cCGnl6FtZ4iNC/k7t
+         aebJnj8z/mSQeS6IZ2Ez4yguQcm75iqWLY2b68MUh1zCDbmMkSBN1cTMi63FxdZm6vmr
+         P7dSqkoSPFuwok4a5B9shjJ94LwW/XUzWehpqt4XAxwsMsTWzcsRLlJWsKTtowgU9phG
+         1GIKm6NgSPsoeKOeI64PovWjR8v9odBHxcP+xtXTBaPpa8lUdbEze3G22LzuLN+jhIp1
+         fePA==
+X-Gm-Message-State: AOAM531cJuRXVpwSlIVPhFDWMOoG1wRAuUf4Ac3XUIqybwi652hU+AhL
+        jucUMy45s8UHMBbI9dFRMF5N0+DA+1foeiINXujnhMId5FXBe78cPHYj7YGcH+HHbM6aZyEp/JJ
+        9RFPxLidcyW4Vh91MDNG8vX/1
+X-Received: by 2002:a17:906:4998:: with SMTP id p24mr12189407eju.131.1643034467140;
+        Mon, 24 Jan 2022 06:27:47 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyWOurFSSeIeQAhUSKWF98C8kAh7B+QNdoDL7iJF6pF9xcHVzODXrWVBS416HHEpJ35NfukTw==
+X-Received: by 2002:a17:906:4998:: with SMTP id p24mr12189392eju.131.1643034466892;
+        Mon, 24 Jan 2022 06:27:46 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id zm17sm3390653ejb.213.2022.01.24.06.27.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 06:27:46 -0800 (PST)
+Message-ID: <ca28b3eb-c06d-f8e3-c930-95da631e9a93@redhat.com>
+Date:   Mon, 24 Jan 2022 15:27:45 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1ec96b6e4f2e35599931d7516c6938c4a8845bf0.1642337606.git.christophe.jaillet@wanadoo.fr>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 2/2] i2c: designware: Add AMD PSP I2C bus support
+Content-Language: en-US
+To:     =?UTF-8?B?SmFuIETEhWJyb8Wb?= <jsd@semihalf.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Raul E Rangel <rrangel@chromium.org>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Grzegorz Jaszczyk <jaz@semihalf.com>, upstream@semihalf.com,
+        mario.limonciello@amd.com
+References: <20220120001621.705352-1-jsd@semihalf.com>
+ <20220120001621.705352-3-jsd@semihalf.com>
+ <a6e0fc62-4a2e-cd2b-557f-5e86088aeeb7@redhat.com>
+ <CAOtMz3NcMZsCMO+15wzzwvF44PqRmem1eP-rCbb+dCiaWiGKzA@mail.gmail.com>
+ <b30a212f-643d-c85d-6301-d92ee0adf098@redhat.com>
+ <CAOtMz3Om=R-mFbi-PRkB4zwO_j1Dc4QRH-Z0HDCk_XwWif7Pog@mail.gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <CAOtMz3Om=R-mFbi-PRkB4zwO_j1Dc4QRH-Z0HDCk_XwWif7Pog@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 01:53:37PM +0100, Christophe JAILLET wrote:
-> kstrdup_quotable_cmdline() and kstrdup_quotable_file() are given a gfp flag
-> that is passed and used for memory allocation in kstrdup_quotable() just a
-> few lines below.
-> 
-> It looks reasonable to use this gfp value for the buffer allocated and
-> freed in these functions as well.
+Hi,
 
-Acked-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+On 1/24/22 13:35, Jan Dąbroś wrote:
+> pt., 21 sty 2022 o 11:32 Hans de Goede <hdegoede@redhat.com> napisał(a):
+>>
+>> Hi Jan,
+>>
+>> On 1/21/22 10:59, Jan Dąbroś wrote:
 
-> Fixes: 0ee931c4e31a ("mm: treewide: remove GFP_TEMPORARY allocation flag")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> According to what I've found in 5.16, all callers use GFP_KERNEL, so this
-> patch should be a no-op.
-> But who knows how it will be used in the future. Better safe than sorry.
-> 
-> v2: Add the change for kstrdup_quotable_file()
-> ---
->  lib/string_helpers.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/lib/string_helpers.c b/lib/string_helpers.c
-> index 90f9f1b7afec..4433e486b725 100644
-> --- a/lib/string_helpers.c
-> +++ b/lib/string_helpers.c
-> @@ -624,7 +624,7 @@ char *kstrdup_quotable_cmdline(struct task_struct *task, gfp_t gfp)
->  	char *buffer, *quoted;
->  	int i, res;
->  
-> -	buffer = kmalloc(PAGE_SIZE, GFP_KERNEL);
-> +	buffer = kmalloc(PAGE_SIZE, gfp);
->  	if (!buffer)
->  		return NULL;
->  
-> @@ -660,7 +660,7 @@ char *kstrdup_quotable_file(struct file *file, gfp_t gfp)
->  		return kstrdup("<unknown>", gfp);
->  
->  	/* We add 11 spaces for ' (deleted)' to be appended */
-> -	temp = kmalloc(PATH_MAX + 11, GFP_KERNEL);
-> +	temp = kmalloc(PATH_MAX + 11, gfp);
->  	if (!temp)
->  		return kstrdup("<no_memory>", gfp);
->  
-> -- 
-> 2.32.0
-> 
+<snip>
 
--- 
-With Best Regards,
-Andy Shevchenko
+>>>> Also I don't think you are allowed to use the bus_locking code
+>>>> like this. The i2c bus-locking code is intended to deal with
+>>>> busses which have muxes in them, where the mux must be set
+>>>> to the right branch of the bus to reach the client and then
+>>>> not be changed during the transfer to that client.
+>>>>
+>>>> So i2c-client drivers are never supposed to directly call
+>>>> the bus-locking functions.
+>>>
+>>> I think you are not correct here. There are examples of i2c-clients
+>>> which are using i2c bus_locking for the purpose of locking adapter for
+>>> the bunch of i2c transactions.
+>>>
+>>> As an example let's take drivers/char/tpm/tpm_tis_i2c_cr50.c. It
+>>> operates in write-wait-read model and there is i2c_lock_bus() call
+>>> used to ensure that bus won't be released -
+>>> https://github.com/torvalds/linux/blob/master/drivers/char/tpm/tpm_tis_i2c_cr50.c#L202.
+>>>
+>>> Similar model is followed in drivers/char/tpm/tpm_i2c_infineon.c and
+>>> couple of other i2c-client drivers.
+>>
+>> Ah I see, interesting (live and learn).
+>>
+>> But this is then combined with using the special __i2c_transfer()
+>> function for the actual i2c reads/writes, since using the regular
+>> i2c_transfer() function after already taking the lock would deadlock.
+> 
+> Correct. In other words, if i2c-client wants to block the bus/adapter
+> for more than one transaction it must use some special methods. This
+> isn't changed with my patchset. If one is using "normal"
+> i2c_transfer(), we should be on the safe side, nothing will change
+> from the i2c-client point of view. The same if one is using
+> __i2c_transfer().
+> 
+>>
+>> There is a similar unlocked raw __i2c_smbus_xfer(), but as the
+>> comment in include/linux/i2c.h above the locked i2c_smbus_xfer() says:
+>>
+>> /* This is the very generalized SMBus access routine. You probably do not
+>>    want to use this, though; one of the functions below may be much easier,
+>>    and probably just as fast.
+>>    Note that we use i2c_adapter here, because you do not need a specific
+>>    smbus adapter to call this function. */
+>> s32 i2c_smbus_xfer(...);
+>>
+>> So in this case a driver cannot use the usual
+>> i2c_smbus_read_byte/word/byte_data/word_data() helpers and
+>> the same for writes. Also using an i2c_regmap (which is used
+>> in a ton of places like PMIC drivers) will not work this way.
+> 
+> Right, however this behavior is not altered by my patch. I just wanted
+> to ensure that drivers which are already using i2c bus_locking will
+> still work as expected.
 
+Ah I see, I thought that maybe you wanted to add extra i2c bus-locking
+calls to some drivers which don't have them yet to ensure that the
+AMD PSP semaphore would be hold over multiple transfers in
+drivers which don't do this yet.
+
+>> So yes you can use i2c_bus_lock() for this; but only if all the
+>> drivers where you want to do that limit themselves to
+>> __i2c_transfer() and __i2c_smbus_xfer() calls and/or are
+>> rewritten to only use those.
+> 
+> My goal is to not modify current behavior, that is - we don't need to
+> modify clients' drivers and extra quirks applied by amdpsp semaphore
+> will be "transparent" for them. IOW, switch from generic
+> i2c-designware to i2c-designware-amdpsp should be invisible from the
+> i2c bus perspective for i2c-clients.
+
+Ok, I believe everything is fine as is then. My worries where about
+extending the i2c bus-locking to more drivers, but if there are no
+plans for that then everything is good.
+
+Regards,
+
+Hans
 
