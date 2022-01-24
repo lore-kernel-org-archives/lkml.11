@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AE0C4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7F28C35271
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2371461AbiAYAII (ORCPT
+        id S2371043AbiAYAGw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:08:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51088 "EHLO
+        Mon, 24 Jan 2022 19:06:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1848385AbiAXXWY (ORCPT
+        with ESMTP id S1847038AbiAXXSV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:22:24 -0500
+        Mon, 24 Jan 2022 18:18:21 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B78DC01D7D8;
-        Mon, 24 Jan 2022 13:29:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2EFC06F8D5;
+        Mon, 24 Jan 2022 13:26:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B3C43B815A9;
-        Mon, 24 Jan 2022 21:29:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D841FC341CD;
-        Mon, 24 Jan 2022 21:29:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24019B81218;
+        Mon, 24 Jan 2022 21:26:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37CFCC340E4;
+        Mon, 24 Jan 2022 21:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059751;
-        bh=tSU0MFjA+b37pAV0ewReHHPuyh8v5uxwe8mm5fDoSuU=;
+        s=korg; t=1643059586;
+        bh=H2yZ85oZdClgDcogorKnikqYs9clriqltHq6+8eKhf4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NrWntcXY4qdBprKQ/xHRyZfsCj0fEzw20yMJJAOBftGxFOTpNaq1s6Tvu8K32ifIF
-         vJCgYT6gdn0SzXeDWpgXbmHWCLS/2boSrwROKE0yHc5qMKPMG+PVOIrWAvD5SZAdS1
-         zzsPruM5sf8+FEXZFAU3b+9vJn1A++hMYdAaRf4U=
+        b=qafCUr1A1e2l5mC3dgIR/+mBLC1JLwHbcwJd9d0j7O7V6fCJQJ7rKbSNmP9nzW6nl
+         mR86jzm0a65SGcc7RnCpxVMviPAqxbpxOOxs65JJUqJYO6eRfmBtmK46CWL0o2tBZu
+         00JDBd86kQZ+KcJunPgPcoQrnaDd/IOsdIK8yvrk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0720/1039] regulator: qcom_smd: Align probe function with rpmh-regulator
-Date:   Mon, 24 Jan 2022 19:41:49 +0100
-Message-Id: <20220124184149.533581730@linuxfoundation.org>
+Subject: [PATCH 5.16 0666/1039] PM: runtime: Add safety net to supplier device release
+Date:   Mon, 24 Jan 2022 19:40:55 +0100
+Message-Id: <20220124184147.764492642@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,168 +50,134 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
+[ Upstream commit d1579e61192e0e686faa4208500ef4c3b529b16c ]
 
-The RPMh regulator driver is much newer and gets more attention, which in
-consequence makes it do a few things better. Update qcom_smd-regulator's
-probe function to mimic what rpmh-regulator does to address a couple of
-issues:
+Because refcount_dec_not_one() returns true if the target refcount
+becomes saturated, it is generally unsafe to use its return value as
+a loop termination condition, but that is what happens when a device
+link's supplier device is released during runtime PM suspend
+operations and on device link removal.
 
-- Probe defer now works correctly, before it used to, well,
-  kinda just die.. This fixes reliable probing on (at least) PM8994,
-  because Linux apparently cannot deal with supply map dependencies yet..
+To address this, introduce pm_runtime_release_supplier() to be used
+in the above cases which will check the supplier device's runtime
+PM usage counter in addition to the refcount_dec_not_one() return
+value, so the loop can be terminated in case the rpm_active refcount
+value becomes invalid, and update the code in question to use it as
+appropriate.
 
-- Regulator data is now matched more sanely: regulator data is matched
-  against each individual regulator node name and throwing an -EINVAL if
-  data is missing, instead of just assuming everything is fine and
-  iterating over all subsequent array members.
+This change is not expected to have any visible functional impact.
 
-- status = "disabled" will now work for disabling individual regulators in
-  DT. Previously it didn't seem to do much if anything at all.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
- 1 file changed, 70 insertions(+), 30 deletions(-)
+ drivers/base/core.c          |  3 +--
+ drivers/base/power/runtime.c | 41 ++++++++++++++++++++++++++----------
+ include/linux/pm_runtime.h   |  3 +++
+ 3 files changed, 34 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index 8bac024dde8b4..9fc666107a06c 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -9,6 +9,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/driver.h>
-+#include <linux/regulator/of_regulator.h>
- #include <linux/soc/qcom/smd-rpm.h>
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index fd034d7424472..b191bd17de891 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -485,8 +485,7 @@ static void device_link_release_fn(struct work_struct *work)
+ 	/* Ensure that all references to the link object have been dropped. */
+ 	device_link_synchronize_removal();
  
- struct qcom_rpm_reg {
-@@ -1239,52 +1240,91 @@ static const struct of_device_id rpm_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, rpm_of_match);
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
  
--static int rpm_reg_probe(struct platform_device *pdev)
+ 	put_device(link->consumer);
+ 	put_device(link->supplier);
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index d504cd4ab3cbf..38c2e1892a00e 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -305,19 +305,40 @@ static int rpm_get_suppliers(struct device *dev)
+ 	return 0;
+ }
+ 
 +/**
-+ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
-+ * @vreg:		Pointer to the individual qcom_smd-regulator resource
-+ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
-+ * @node:		Pointer to the individual qcom_smd-regulator resource
-+ *			device node
-+ * @rpm:		Pointer to the rpm bus node
-+ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
-+ *			resources defined for the top level PMIC device
++ * pm_runtime_release_supplier - Drop references to device link's supplier.
++ * @link: Target device link.
++ * @check_idle: Whether or not to check if the supplier device is idle.
 + *
-+ * Return: 0 on success, errno on failure
++ * Drop all runtime PM references associated with @link to its supplier device
++ * and if @check_idle is set, check if that device is idle (and so it can be
++ * suspended).
 + */
-+static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
-+				   struct device_node *node, struct qcom_smd_rpm *rpm,
-+				   const struct rpm_regulator_data *pmic_rpm_data)
- {
--	const struct rpm_regulator_data *reg;
--	const struct of_device_id *match;
--	struct regulator_config config = { };
-+	struct regulator_config config = {};
-+	const struct rpm_regulator_data *rpm_data;
- 	struct regulator_dev *rdev;
-+	int ret;
++void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
++{
++	struct device *supplier = link->supplier;
 +
-+	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
-+		if (of_node_name_eq(node, rpm_data->name))
-+			break;
++	/*
++	 * The additional power.usage_count check is a safety net in case
++	 * the rpm_active refcount becomes saturated, in which case
++	 * refcount_dec_not_one() would return true forever, but it is not
++	 * strictly necessary.
++	 */
++	while (refcount_dec_not_one(&link->rpm_active) &&
++	       atomic_read(&supplier->power.usage_count) > 0)
++		pm_runtime_put_noidle(supplier);
 +
-+	if (!rpm_data->name) {
-+		dev_err(dev, "Unknown regulator %pOFn\n", node);
-+		return -EINVAL;
-+	}
-+
-+	vreg->dev	= dev;
-+	vreg->rpm	= rpm;
-+	vreg->type	= rpm_data->type;
-+	vreg->id	= rpm_data->id;
-+
-+	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
-+	vreg->desc.name = rpm_data->name;
-+	vreg->desc.supply_name = rpm_data->supply;
-+	vreg->desc.owner = THIS_MODULE;
-+	vreg->desc.type = REGULATOR_VOLTAGE;
-+	vreg->desc.of_match = rpm_data->name;
-+
-+	config.dev		= dev;
-+	config.of_node		= node;
-+	config.driver_data	= vreg;
-+
-+	rdev = devm_regulator_register(dev, &vreg->desc, &config);
-+	if (IS_ERR(rdev)) {
-+		ret = PTR_ERR(rdev);
-+		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
-+		return ret;
-+	}
-+
-+	return 0;
++	if (check_idle)
++		pm_request_idle(supplier);
 +}
 +
-+static int rpm_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct rpm_regulator_data *vreg_data;
-+	struct device_node *node;
- 	struct qcom_rpm_reg *vreg;
- 	struct qcom_smd_rpm *rpm;
-+	int ret;
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+ {
+ 	struct device_link *link;
  
- 	rpm = dev_get_drvdata(pdev->dev.parent);
- 	if (!rpm) {
--		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
-+		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
- 		return -ENODEV;
- 	}
- 
--	match = of_match_device(rpm_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "failed to match device\n");
-+	vreg_data = of_device_get_match_data(dev);
-+	if (!vreg_data)
- 		return -ENODEV;
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held()) {
+-
+-		while (refcount_dec_not_one(&link->rpm_active))
+-			pm_runtime_put_noidle(link->supplier);
+-
+-		if (try_to_suspend)
+-			pm_request_idle(link->supplier);
 -	}
++				device_links_read_lock_held())
++		pm_runtime_release_supplier(link, try_to_suspend);
+ }
  
--	for (reg = match->data; reg->name; reg++) {
-+	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
- 		if (!vreg)
- 			return -ENOMEM;
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1772,9 +1793,7 @@ void pm_runtime_drop_link(struct device_link *link)
+ 		return;
  
--		vreg->dev = &pdev->dev;
--		vreg->type = reg->type;
--		vreg->id = reg->id;
--		vreg->rpm = rpm;
+ 	pm_runtime_drop_link_count(link->consumer);
 -
--		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
--
--		vreg->desc.id = -1;
--		vreg->desc.owner = THIS_MODULE;
--		vreg->desc.type = REGULATOR_VOLTAGE;
--		vreg->desc.name = reg->name;
--		vreg->desc.supply_name = reg->supply;
--		vreg->desc.of_match = reg->name;
--
--		config.dev = &pdev->dev;
--		config.driver_data = vreg;
--		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
--		if (IS_ERR(rdev)) {
--			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
--			return PTR_ERR(rdev);
-+		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
-+
-+		if (ret < 0) {
-+			of_node_put(node);
-+			return ret;
- 		}
- 	}
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index eddd66d426caf..016de5776b6db 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -58,6 +58,7 @@ extern void pm_runtime_get_suppliers(struct device *dev);
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
++extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
+ 
+ extern int devm_pm_runtime_enable(struct device *dev);
+ 
+@@ -283,6 +284,8 @@ static inline void pm_runtime_get_suppliers(struct device *dev) {}
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
++static inline void pm_runtime_release_supplier(struct device_link *link,
++					       bool check_idle) {}
+ 
+ #endif /* !CONFIG_PM */
  
 -- 
 2.34.1
