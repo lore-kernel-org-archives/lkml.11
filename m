@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62207C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEA0C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352943AbiAXTbS (ORCPT
+        id S1352159AbiAXT3o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
+        Mon, 24 Jan 2022 14:29:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346817AbiAXTXY (ORCPT
+        with ESMTP id S1349159AbiAXTUX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:23:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE457C061243;
-        Mon, 24 Jan 2022 11:10:06 -0800 (PST)
+        Mon, 24 Jan 2022 14:20:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA375C02B8D0;
+        Mon, 24 Jan 2022 11:07:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FC1B60918;
-        Mon, 24 Jan 2022 19:10:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A7BBC340E5;
-        Mon, 24 Jan 2022 19:10:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6FC57B811FC;
+        Mon, 24 Jan 2022 19:07:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D0E8C340E5;
+        Mon, 24 Jan 2022 19:07:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051405;
-        bh=6yxjCLmz7FOBlTE/Tsexre3Bd4vbdy6BP/CvZlsRvK4=;
+        s=korg; t=1643051258;
+        bh=0ierq2hC0x5LeWSevBtfA0k91FVROzcHK/4VaadK2lE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xmiexJpiZXLqlVVSE05+l5LykwRZJQwquEB9IaZo3SOx3nA5tJCLFFaAQjvoj7bBy
-         zwh/zMLjejq1xwCFTFMDPxnFbANJkb8aReadWsCHTKP2R+S4L/EJspDDv73qCCmXsh
-         vYh4rfTPRDugeUPMqJKqozdjFxPY9vbEc4Qhm32M=
+        b=159D2yPGt7T19DHIDFY1oSc6eoeM83+9T/ZZ4XrqMCnzxvpELMCUD+9hixXFB8h2Q
+         lmaKI1cJzaZV9w1V6S51TKDFBnPg3y39rw5dxbMuKx2xop3AJARqssa7fUVkw0XTPB
+         L7wPaPr5g9NdvDdirBu4KQ4+HVoVguCkkg6WoK6A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Subject: [PATCH 4.14 152/186] drm/etnaviv: limit submit sizes
-Date:   Mon, 24 Jan 2022 19:43:47 +0100
-Message-Id: <20220124183941.992828598@linuxfoundation.org>
+        stable@vger.kernel.org, rkardell@mida.se,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 103/186] media: m920x: dont use stack on USB reads
+Date:   Mon, 24 Jan 2022 19:42:58 +0100
+Message-Id: <20220124183940.427295823@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -50,48 +50,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
+[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
 
-Currently we allow rediculous amounts of kernel memory being allocated
-via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
-some reasonable limits in to fix this.
+Using stack-allocated pointers for USB message data don't work.
+This driver is almost OK with that, except for the I2C read
+logic.
 
-The commandstream size is limited to 64KB, which was already a soft limit
-on older kernels after which the kernel only took submits on a best effort
-base, so there is no userspace that tries to submit commandstreams larger
-than this. Even if the whole commandstream is a single incrementing address
-load, the size limit also limits the number of potential relocs and
-referenced buffers to slightly under 64K, so use the same limit for those
-arguments. The performance monitoring infrastructure currently supports
-less than 50 performance counter signals, so limiting them to 128 on a
-single submit seems like a reasonably future-proof number for now. This
-number can be bumped if needed without breaking the interface.
+Fix it by using a temporary read buffer, just like on all other
+calls to m920x_read().
 
-Cc: stable@vger.kernel.org
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
+Reported-by: rkardell@mida.se
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-@@ -341,6 +341,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
- 		return -EINVAL;
- 	}
- 
-+	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
-+	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
-+		DRM_ERROR("submit arguments out of size limits\n");
-+		return -EINVAL;
-+	}
+diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
+index 32081c2ce0da8..8a43e2415686a 100644
+--- a/drivers/media/usb/dvb-usb/m920x.c
++++ b/drivers/media/usb/dvb-usb/m920x.c
+@@ -280,6 +280,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 			/* Should check for ack here, if we knew how. */
+ 		}
+ 		if (msg[i].flags & I2C_M_RD) {
++			char *read = kmalloc(1, GFP_KERNEL);
++			if (!read) {
++				ret = -ENOMEM;
++				kfree(read);
++				goto unlock;
++			}
 +
- 	/*
- 	 * Copy the command submission and bo array to kernel space in
- 	 * one go, and do this outside of any locks.
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction?
+ 				 * Send STOP, otherwise send ACK. */
+@@ -287,9 +294,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 
+ 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
+ 						      0x20 | stop,
+-						      &msg[i].buf[j], 1)) != 0)
++						      read, 1)) != 0)
+ 					goto unlock;
++				msg[i].buf[j] = read[0];
+ 			}
++
++			kfree(read);
+ 		} else {
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction? Then send STOP. */
+-- 
+2.34.1
+
 
 
