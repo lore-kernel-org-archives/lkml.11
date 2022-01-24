@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD168C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 680BEC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849295AbiAXXZY (ORCPT
+        id S1849435AbiAXXZt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
+        Mon, 24 Jan 2022 18:25:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587755AbiAXW3h (ORCPT
+        with ESMTP id S1581148AbiAXWLS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:29:37 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A699FC095410;
-        Mon, 24 Jan 2022 12:55:18 -0800 (PST)
+        Mon, 24 Jan 2022 17:11:18 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430BCC0DF2F1;
+        Mon, 24 Jan 2022 12:43:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D196B811FB;
-        Mon, 24 Jan 2022 20:55:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D9CC340E5;
-        Mon, 24 Jan 2022 20:55:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3E546090C;
+        Mon, 24 Jan 2022 20:43:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9F8C340E5;
+        Mon, 24 Jan 2022 20:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057716;
-        bh=IgHUHKKQzYCKAcKqsjwDkEbLcCrTpp0xgZ/idz6puKc=;
+        s=korg; t=1643057010;
+        bh=BsOquwzcCQW5R6uppJmiiyzG8hpOx4nUbKNuwlUKS3A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JXmLUO7tcuEqok3wReiCViXl0hkF4tlIKJBjOdoDTgmyNpiAa18fW+fmJ8oz2hLqX
-         ZJG59v3pNJC3IbYApdni3w1B6nC8j9mJMbNugezCKEnR/MhiWR5ovDUZlNNY1myabb
-         vV1tecXB7BfK8J+pfkYv1LrNyWZ/mgvQ1/ciOrfs=
+        b=slca4f3nvMem03wbe6K5ewPpg2GqldX9bWRw87wMFE09WrGa4Qt3HL9hQW7pAGo9I
+         OCEnE28xRe8yi98Zz1tE3+AwpT1k+op50/kLhKMDpHL2zOnK/DiJEzEnq2EAApzMIA
+         9pRfnSGlQLJn4DlIQ+YnNizDJgOmRHpapU743mrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.16 0012/1039] f2fs: fix to do sanity check on last xattr entry in __f2fs_setxattr()
-Date:   Mon, 24 Jan 2022 19:30:01 +0100
-Message-Id: <20220124184125.560804776@linuxfoundation.org>
+        stable@vger.kernel.org, Petr Cvachoucek <cvachoucek@gmail.com>,
+        Richard Weinberger <richard@nod.at>
+Subject: [PATCH 5.15 672/846] ubifs: Error path in ubifs_remount_rw() seems to wrongly free write buffers
+Date:   Mon, 24 Jan 2022 19:43:09 +0100
+Message-Id: <20220124184124.261949131@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,84 +49,105 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Petr Cvachoucek <cvachoucek@gmail.com>
 
-commit 645a3c40ca3d40cc32b4b5972bf2620f2eb5dba6 upstream.
+commit 3fea4d9d160186617ff40490ae01f4f4f36b28ff upstream.
 
-As Wenqing Liu reported in bugzilla:
+it seems freeing the write buffers in the error path of the
+ubifs_remount_rw() is wrong. It leads later to a kernel oops like this:
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215235
+[10016.431274] UBIFS (ubi0:0): start fixing up free space
+[10090.810042] UBIFS (ubi0:0): free space fixup complete
+[10090.814623] UBIFS error (ubi0:0 pid 512): ubifs_remount_fs: cannot
+spawn "ubifs_bgt0_0", error -4
+[10101.915108] UBIFS (ubi0:0): background thread "ubifs_bgt0_0" started,
+PID 517
+[10105.275498] Unable to handle kernel NULL pointer dereference at
+virtual address 0000000000000030
+[10105.284352] Mem abort info:
+[10105.287160]   ESR = 0x96000006
+[10105.290252]   EC = 0x25: DABT (current EL), IL = 32 bits
+[10105.295592]   SET = 0, FnV = 0
+[10105.298652]   EA = 0, S1PTW = 0
+[10105.301848] Data abort info:
+[10105.304723]   ISV = 0, ISS = 0x00000006
+[10105.308573]   CM = 0, WnR = 0
+[10105.311564] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000f03d1000
+[10105.318034] [0000000000000030] pgd=00000000f6cee003,
+pud=00000000f4884003, pmd=0000000000000000
+[10105.326783] Internal error: Oops: 96000006 [#1] PREEMPT SMP
+[10105.332355] Modules linked in: ath10k_pci ath10k_core ath mac80211
+libarc4 cfg80211 nvme nvme_core cryptodev(O)
+[10105.342468] CPU: 3 PID: 518 Comm: touch Tainted: G           O
+5.4.3 #1
+[10105.349517] Hardware name: HYPEX CPU (DT)
+[10105.353525] pstate: 40000005 (nZcv daif -PAN -UAO)
+[10105.358324] pc : atomic64_try_cmpxchg_acquire.constprop.22+0x8/0x34
+[10105.364596] lr : mutex_lock+0x1c/0x34
+[10105.368253] sp : ffff000075633aa0
+[10105.371563] x29: ffff000075633aa0 x28: 0000000000000001
+[10105.376874] x27: ffff000076fa80c8 x26: 0000000000000004
+[10105.382185] x25: 0000000000000030 x24: 0000000000000000
+[10105.387495] x23: 0000000000000000 x22: 0000000000000038
+[10105.392807] x21: 000000000000000c x20: ffff000076fa80c8
+[10105.398119] x19: ffff000076fa8000 x18: 0000000000000000
+[10105.403429] x17: 0000000000000000 x16: 0000000000000000
+[10105.408741] x15: 0000000000000000 x14: fefefefefefefeff
+[10105.414052] x13: 0000000000000000 x12: 0000000000000fe0
+[10105.419364] x11: 0000000000000fe0 x10: ffff000076709020
+[10105.424675] x9 : 0000000000000000 x8 : 00000000000000a0
+[10105.429986] x7 : ffff000076fa80f4 x6 : 0000000000000030
+[10105.435297] x5 : 0000000000000000 x4 : 0000000000000000
+[10105.440609] x3 : 0000000000000000 x2 : ffff00006f276040
+[10105.445920] x1 : ffff000075633ab8 x0 : 0000000000000030
+[10105.451232] Call trace:
+[10105.453676]  atomic64_try_cmpxchg_acquire.constprop.22+0x8/0x34
+[10105.459600]  ubifs_garbage_collect+0xb4/0x334
+[10105.463956]  ubifs_budget_space+0x398/0x458
+[10105.468139]  ubifs_create+0x50/0x180
+[10105.471712]  path_openat+0x6a0/0x9b0
+[10105.475284]  do_filp_open+0x34/0x7c
+[10105.478771]  do_sys_open+0x78/0xe4
+[10105.482170]  __arm64_sys_openat+0x1c/0x24
+[10105.486180]  el0_svc_handler+0x84/0xc8
+[10105.489928]  el0_svc+0x8/0xc
+[10105.492808] Code: 52800013 17fffffb d2800003 f9800011 (c85ffc05)
+[10105.498903] ---[ end trace 46b721d93267a586 ]---
 
-- Overview
-page fault in f2fs_setxattr() when mount and operate on corrupted image
+To reproduce the problem:
 
-- Reproduce
-tested on kernel 5.16-rc3, 5.15.X under root
+1. Filesystem initially mounted read-only, free space fixup flag set.
 
-1. unzip tmp7.zip
-2. ./single.sh f2fs 7
+2. mount -o remount,rw <mountpoint>
 
-Sometimes need to run the script several times
+3. it takes some time (free space fixup running)
+    ... try to terminate running mount by CTRL-C
+    ... does not respond, only after free space fixup is complete
+    ... then "ubifs_remount_fs: cannot spawn "ubifs_bgt0_0", error -4"
 
-- Kernel dump
-loop0: detected capacity change from 0 to 131072
-F2FS-fs (loop0): Found nat_bits in checkpoint
-F2FS-fs (loop0): Mounted with checkpoint version = 7548c2ee
-BUG: unable to handle page fault for address: ffffe47bc7123f48
-RIP: 0010:kfree+0x66/0x320
-Call Trace:
- __f2fs_setxattr+0x2aa/0xc00 [f2fs]
- f2fs_setxattr+0xfa/0x480 [f2fs]
- __f2fs_set_acl+0x19b/0x330 [f2fs]
- __vfs_removexattr+0x52/0x70
- __vfs_removexattr_locked+0xb1/0x140
- vfs_removexattr+0x56/0x100
- removexattr+0x57/0x80
- path_removexattr+0xa3/0xc0
- __x64_sys_removexattr+0x17/0x20
- do_syscall_64+0x37/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+4. mount -o remount,rw <mountpoint>
+    ... now finished instantly (fixup already done).
 
-The root cause is in __f2fs_setxattr(), we missed to do sanity check on
-last xattr entry, result in out-of-bound memory access during updating
-inconsistent xattr data of target inode.
+5. Create file or just unmount the filesystem and we get the oops.
 
-After the fix, it can detect such xattr inconsistency as below:
-
-F2FS-fs (loop11): inode (7) has invalid last xattr entry, entry_size: 60676
-F2FS-fs (loop11): inode (8) has corrupted xattr
-F2FS-fs (loop11): inode (8) has corrupted xattr
-F2FS-fs (loop11): inode (8) has invalid last xattr entry, entry_size: 47736
-
-Cc: stable@vger.kernel.org
-Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
-Signed-off-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: b50b9f408502 ("UBIFS: do not free write-buffers when in R/O mode")
+Signed-off-by: Petr Cvachoucek <cvachoucek@gmail.com>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/xattr.c |   11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ fs/ubifs/super.c |    1 -
+ 1 file changed, 1 deletion(-)
 
---- a/fs/f2fs/xattr.c
-+++ b/fs/f2fs/xattr.c
-@@ -684,8 +684,17 @@ static int __f2fs_setxattr(struct inode
+--- a/fs/ubifs/super.c
++++ b/fs/ubifs/super.c
+@@ -1853,7 +1853,6 @@ out:
+ 		kthread_stop(c->bgt);
+ 		c->bgt = NULL;
  	}
- 
- 	last = here;
--	while (!IS_XATTR_LAST_ENTRY(last))
-+	while (!IS_XATTR_LAST_ENTRY(last)) {
-+		if ((void *)(last) + sizeof(__u32) > last_base_addr ||
-+			(void *)XATTR_NEXT_ENTRY(last) > last_base_addr) {
-+			f2fs_err(F2FS_I_SB(inode), "inode (%lu) has invalid last xattr entry, entry_size: %zu",
-+					inode->i_ino, ENTRY_SIZE(last));
-+			set_sbi_flag(F2FS_I_SB(inode), SBI_NEED_FSCK);
-+			error = -EFSCORRUPTED;
-+			goto exit;
-+		}
- 		last = XATTR_NEXT_ENTRY(last);
-+	}
- 
- 	newsize = XATTR_ALIGN(sizeof(struct f2fs_xattr_entry) + len + size);
- 
+-	free_wbufs(c);
+ 	kfree(c->write_reserve_buf);
+ 	c->write_reserve_buf = NULL;
+ 	vfree(c->ileb_buf);
 
 
