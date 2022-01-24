@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 611C3C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4124C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387243AbiAXUgm (ORCPT
+        id S1387423AbiAXUgt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:36:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53954 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379766AbiAXUMk (ORCPT
+        Mon, 24 Jan 2022 15:36:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40908 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345402AbiAXUN6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:12:40 -0500
+        Mon, 24 Jan 2022 15:13:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5CB7AB81215;
-        Mon, 24 Jan 2022 20:12:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92983C340E8;
-        Mon, 24 Jan 2022 20:12:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDA8F61482;
+        Mon, 24 Jan 2022 20:13:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA139C340E7;
+        Mon, 24 Jan 2022 20:13:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055151;
-        bh=rKQhAgl7yFVxM0g7KAZgcV30xVzU86ro9qPVgo2ZozQ=;
+        s=korg; t=1643055237;
+        bh=5mn8xY2Rw2yKpuokmAWh9/JaNI4qxPL/snAS97h6juY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=py7oaLJpTFfbMF3aQBrkshRAQ90uVNMXmn772HiD2AtcT9uWLMusjMjSVmRG7nJGd
-         MBKq+UPpMW3PAfJV9CKgDVtU0IsZJoI4nmetzokeceyOvZltq7APTh//aj47OKPVaD
-         ztgDotWoqwbW5VvqL0cahjB08E2JHwiljTsoDpVc=
+        b=cI0bDlUuZR0NgZTk72RIYSfciu8BjPmrC31429nWYr5ywQfGUw3eA0gzJ2N4voD+8
+         f9vZET0DURUUaHAgihZVI5f0ETGi1J2eeumUID5E3gY+jIWFSAtv1XyhXY62Vs9S5b
+         KOzDODvhtF/Ug1fMweoQpJ4crBsc5araCiLh5ki8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bhaumik Bhatt <bbhatt@codeaurora.org>,
-        Hemant Kumar <hemantk@codeaurora.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.15 058/846] bus: mhi: pci_generic: Graceful shutdown on freeze
-Date:   Mon, 24 Jan 2022 19:32:55 +0100
-Message-Id: <20220124184102.967042847@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 086/846] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
+Date:   Mon, 24 Jan 2022 19:33:23 +0100
+Message-Id: <20220124184103.955444523@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,40 +48,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Loic Poulain <loic.poulain@linaro.org>
+From: Wang Hai <wanghai38@huawei.com>
 
-commit f77097ec8c0141a4b5cf3722a246be0cb5677e29 upstream.
+[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
 
-There is no reason for shutting down MHI ungracefully on freeze,
-this causes the MHI host stack & device stack to not be aligned
-anymore since the proper MHI reset sequence is not performed for
-ungraceful shutdown.
+I got a kernel BUG report when doing fault injection test:
 
-Link: https://lore.kernel.org/r/1635268180-13699-1-git-send-email-loic.poulain@linaro.org
-Fixes: 5f0c2ee1fe8d ("bus: mhi: pci-generic: Fix hibernation")
-Cc: stable@vger.kernel.org
-Suggested-by: Bhaumik Bhatt <bbhatt@codeaurora.org>
-Reviewed-by: Bhaumik Bhatt <bbhatt@codeaurora.org>
-Reviewed-by: Hemant Kumar <hemantk@codeaurora.org>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Link: https://lore.kernel.org/r/20211216081227.237749-3-manivannan.sadhasivam@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:45!
+...
+RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
+...
+Call Trace:
+ proto_unregister+0x83/0x220
+ cmtp_cleanup_sockets+0x37/0x40 [cmtp]
+ cmtp_exit+0xe/0x1f [cmtp]
+ do_syscall_64+0x35/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
+success. This will cause a kernel bug when accessing uncreated ctmp
+related data when the module exits.
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bus/mhi/pci_generic.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bluetooth/cmtp/core.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -1018,7 +1018,7 @@ static int __maybe_unused mhi_pci_freeze
- 	 * context.
- 	 */
- 	if (test_and_clear_bit(MHI_PCI_DEV_STARTED, &mhi_pdev->status)) {
--		mhi_power_down(mhi_cntrl, false);
-+		mhi_power_down(mhi_cntrl, true);
- 		mhi_unprepare_after_power_down(mhi_cntrl);
- 	}
+diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
+index 0a2d78e811cf5..83eb84e8e688f 100644
+--- a/net/bluetooth/cmtp/core.c
++++ b/net/bluetooth/cmtp/core.c
+@@ -501,9 +501,7 @@ static int __init cmtp_init(void)
+ {
+ 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
  
+-	cmtp_init_sockets();
+-
+-	return 0;
++	return cmtp_init_sockets();
+ }
+ 
+ static void __exit cmtp_exit(void)
+-- 
+2.34.1
+
 
 
