@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5890C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E38C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352468AbiAXTab (ORCPT
+        id S1352824AbiAXTbI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:30:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49494 "EHLO
+        Mon, 24 Jan 2022 14:31:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349827AbiAXTVY (ORCPT
+        with ESMTP id S1349989AbiAXTXA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:21:24 -0500
+        Mon, 24 Jan 2022 14:23:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7771BC02B853;
-        Mon, 24 Jan 2022 11:08:29 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C265C06138F;
+        Mon, 24 Jan 2022 11:09:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18F966124F;
-        Mon, 24 Jan 2022 19:08:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D244AC340E5;
-        Mon, 24 Jan 2022 19:08:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0C6F60B86;
+        Mon, 24 Jan 2022 19:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2A41C340E5;
+        Mon, 24 Jan 2022 19:09:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051308;
-        bh=aqE45ZncD4ShHp9LawZTZ++ERYNd1W4VEqKGNcMwVXY=;
+        s=korg; t=1643051353;
+        bh=eRQgN6+6B/sk/4CSMI+LPdFbwm4PJOHQJ/Ld8kx8M0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rrQx0qg5P3QhmQUlcX2HiUmdPQ87P226marZvuq1IaX6KOc65YKduU5G91aq1iD8I
-         MTbaeXFefcgRBqxIUd1lBO9eeC4fQEHHrdqWfbhdfC28QxLoBzzfRPKg5LqtMk+GJV
-         TiLvF+U3ZKDC/tF0HKgKKCTEp3QBzEOAaeluRdvA=
+        b=tvgDF5DmSdxdG1Cg9CJCdOXhLnknpb9+RHSXP0UbzXb4KUnm2qUiUU60EFon8a7+C
+         Dmzf5i3OAwVjO+/RUbh5QJ7ORntEn8euxaCHfMMFWGsbGTvDlY0qNkEMn9YAeqFr1s
+         MdMqZm79A1HHNLDu6tCoBfzs2ZU3ewVFAizPmwoQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Bob Moore <robert.moore@intel.com>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 121/186] ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
-Date:   Mon, 24 Jan 2022 19:43:16 +0100
-Message-Id: <20220124183941.004363663@linuxfoundation.org>
+Subject: [PATCH 4.14 134/186] powerpc/cell: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:43:29 +0100
+Message-Id: <20220124183941.420864123@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -52,80 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 1d4e0b3abb168b2ee1eca99c527cffa1b80b6161 ]
+[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
 
-ACPICA commit 3dd7e1f3996456ef81bfe14cba29860e8d42949e
+for_each_node_by_name performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-According to ACPI 6.4, Section 16.2, the CPU cache flushing is
-required on entering to S1, S2, and S3, but the ACPICA code
-flushes the CPU cache regardless of the sleep state.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-Blind cache flush on entering S5 causes problems for TDX.
+// <smpl>
+@@
+expression e,e1;
+local idexpression n;
+@@
 
-Flushing happens with WBINVD that is not supported in the TDX
-environment.
+ for_each_node_by_name(n, e1) {
+   ... when != of_node_put(n)
+       when != e = n
+(
+   return n;
+|
++  of_node_put(n);
+?  return ...;
+)
+   ...
+ }
+// </smpl>
 
-TDX only supports S5 and adjusting ACPICA code to conform to the
-spec more strictly fixes the issue.
-
-Link: https://github.com/acpica/acpica/commit/3dd7e1f3
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-[ rjw: Subject and changelog edits ]
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/hwesleep.c  | 4 +++-
- drivers/acpi/acpica/hwsleep.c   | 4 +++-
- drivers/acpi/acpica/hwxfsleep.c | 2 --
- 3 files changed, 6 insertions(+), 4 deletions(-)
+ arch/powerpc/platforms/cell/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/acpi/acpica/hwesleep.c b/drivers/acpi/acpica/hwesleep.c
-index 7f8c57177819f..45b392fa36657 100644
---- a/drivers/acpi/acpica/hwesleep.c
-+++ b/drivers/acpi/acpica/hwesleep.c
-@@ -138,7 +138,9 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
- 
- 	/* Flush caches, as per ACPI specification */
- 
--	ACPI_FLUSH_CPU_CACHE();
-+	if (sleep_state < ACPI_STATE_S4) {
-+		ACPI_FLUSH_CPU_CACHE();
-+	}
- 
- 	status = acpi_os_enter_sleep(sleep_state, sleep_control, 0);
- 	if (status == AE_CTRL_TERMINATE) {
-diff --git a/drivers/acpi/acpica/hwsleep.c b/drivers/acpi/acpica/hwsleep.c
-index 2c54d08b20ca6..9e50529bb3cc9 100644
---- a/drivers/acpi/acpica/hwsleep.c
-+++ b/drivers/acpi/acpica/hwsleep.c
-@@ -149,7 +149,9 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
- 
- 	/* Flush caches, as per ACPI specification */
- 
--	ACPI_FLUSH_CPU_CACHE();
-+	if (sleep_state < ACPI_STATE_S4) {
-+		ACPI_FLUSH_CPU_CACHE();
-+	}
- 
- 	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
- 	if (status == AE_CTRL_TERMINATE) {
-diff --git a/drivers/acpi/acpica/hwxfsleep.c b/drivers/acpi/acpica/hwxfsleep.c
-index 827c3242225d9..b3c7736611908 100644
---- a/drivers/acpi/acpica/hwxfsleep.c
-+++ b/drivers/acpi/acpica/hwxfsleep.c
-@@ -223,8 +223,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
- 		return_ACPI_STATUS(status);
- 	}
- 
--	ACPI_FLUSH_CPU_CACHE();
--
- 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
- 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
- 
+diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
+index 4b91ad08eefd9..c4f352387aec3 100644
+--- a/arch/powerpc/platforms/cell/iommu.c
++++ b/arch/powerpc/platforms/cell/iommu.c
+@@ -1088,6 +1088,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
+ 			if (hbase < dbase || (hend > (dbase + dsize))) {
+ 				pr_debug("iommu: hash window doesn't fit in"
+ 					 "real DMA window\n");
++				of_node_put(np);
+ 				return -1;
+ 			}
+ 		}
 -- 
 2.34.1
 
