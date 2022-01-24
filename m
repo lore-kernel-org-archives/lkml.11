@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1851FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4790DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345337AbiAXUMP (ORCPT
+        id S1347604AbiAXUMY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:12:15 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41276 "EHLO
+        Mon, 24 Jan 2022 15:12:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41452 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356179AbiAXTxn (ORCPT
+        with ESMTP id S1358063AbiAXTx6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:53:43 -0500
+        Mon, 24 Jan 2022 14:53:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 427D8B811F9;
-        Mon, 24 Jan 2022 19:53:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79E6CC340E7;
-        Mon, 24 Jan 2022 19:53:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 11214B8121C;
+        Mon, 24 Jan 2022 19:53:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28A77C340E5;
+        Mon, 24 Jan 2022 19:53:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054019;
-        bh=v/uAKWoENKRN5LqOTFj36NcBgFNJnU9A42i7wUgs0l8=;
+        s=korg; t=1643054034;
+        bh=1bb9Wix4RTwcEXFOmAXngaH3mepogma1vLiG3AebptE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2di109X09x2uw5MWWvhQAIoZ6whhU1Jl39tTPrjZFEPlzg+HWdxKN26vdDBiVetsr
-         PD1yQ+IMPsm3aAaVQBkPxoPtGEunE6YZnl8cQiS1smxAbmGcQ8lj2iWuUid8DjNIZ8
-         OVMv1BM3bEmQf2Dok8g/DoIRzk6idPMAP5St/ZUM=
+        b=loeyF9ill8TJsll04WbbIZmeTVryDWx0KGNBbWL5Tx5nelHaYQUHcviuq1i6JruvX
+         EBFUOICUle4CYMoYMvjbFqs1zCdeiu/jBsPfveWTCyfmFGTzviWRiD2KVKYw0rJhSD
+         X/CWnwlPaQ6ErnAa7S3WIjhkzgyuLA+BG13wD1rk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Michal Suchanek <msuchanek@suse.de>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 219/563] debugfs: lockdown: Allow reading debugfs files that are not world readable
-Date:   Mon, 24 Jan 2022 19:39:44 +0100
-Message-Id: <20220124184032.026535046@linuxfoundation.org>
+Subject: [PATCH 5.10 258/563] ALSA: usb-audio: Drop superfluous 0 in Presonus Studio 1810cs ID
+Date:   Mon, 24 Jan 2022 19:40:23 +0100
+Message-Id: <20220124184033.343663272@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,37 +46,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michal Suchanek <msuchanek@suse.de>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 358fcf5ddbec4e6706405847d6a666f5933a6c25 ]
+[ Upstream commit 1e583aef12aa74afd37c1418255cc4b74e023236 ]
 
-When the kernel is locked down the kernel allows reading only debugfs
-files with mode 444. Mode 400 is also valid but is not allowed.
+The vendor ID of Presonus Studio 1810c had a superfluous '0' in its
+USB ID.  Drop it.
 
-Make the 444 into a mask.
-
-Fixes: 5496197f9b08 ("debugfs: Restrict debugfs when the kernel is locked down")
-Signed-off-by: Michal Suchanek <msuchanek@suse.de>
-Link: https://lore.kernel.org/r/20220104170505.10248-1-msuchanek@suse.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8dc5efe3d17c ("ALSA: usb-audio: Add support for Presonus Studio 1810c")
+Link: https://lore.kernel.org/r/20211202083833.17784-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/debugfs/file.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/usb/format.c       | 2 +-
+ sound/usb/mixer_quirks.c | 2 +-
+ sound/usb/quirks.c       | 2 +-
+ 3 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/debugfs/file.c b/fs/debugfs/file.c
-index 3aa5eb9ce498e..96059af28f508 100644
---- a/fs/debugfs/file.c
-+++ b/fs/debugfs/file.c
-@@ -147,7 +147,7 @@ static int debugfs_locked_down(struct inode *inode,
- 			       struct file *filp,
- 			       const struct file_operations *real_fops)
- {
--	if ((inode->i_mode & 07777) == 0444 &&
-+	if ((inode->i_mode & 07777 & ~0444) == 0 &&
- 	    !(filp->f_mode & FMODE_WRITE) &&
- 	    !real_fops->unlocked_ioctl &&
- 	    !real_fops->compat_ioctl &&
+diff --git a/sound/usb/format.c b/sound/usb/format.c
+index 4693384db0695..e8a63ea2189d1 100644
+--- a/sound/usb/format.c
++++ b/sound/usb/format.c
+@@ -365,7 +365,7 @@ static int parse_uac2_sample_rate_range(struct snd_usb_audio *chip,
+ 		for (rate = min; rate <= max; rate += res) {
+ 
+ 			/* Filter out invalid rates on Presonus Studio 1810c */
+-			if (chip->usb_id == USB_ID(0x0194f, 0x010c) &&
++			if (chip->usb_id == USB_ID(0x194f, 0x010c) &&
+ 			    !s1810c_valid_sample_rate(fp, rate))
+ 				goto skip_rate;
+ 
+diff --git a/sound/usb/mixer_quirks.c b/sound/usb/mixer_quirks.c
+index 8297117f4766e..86fdd669f3fd7 100644
+--- a/sound/usb/mixer_quirks.c
++++ b/sound/usb/mixer_quirks.c
+@@ -3033,7 +3033,7 @@ int snd_usb_mixer_apply_create_quirk(struct usb_mixer_interface *mixer)
+ 		err = snd_rme_controls_create(mixer);
+ 		break;
+ 
+-	case USB_ID(0x0194f, 0x010c): /* Presonus Studio 1810c */
++	case USB_ID(0x194f, 0x010c): /* Presonus Studio 1810c */
+ 		err = snd_sc1810_init_mixer(mixer);
+ 		break;
+ 	case USB_ID(0x2a39, 0x3fb0): /* RME Babyface Pro FS */
+diff --git a/sound/usb/quirks.c b/sound/usb/quirks.c
+index 75d4d317b34b6..6333a2ecb848a 100644
+--- a/sound/usb/quirks.c
++++ b/sound/usb/quirks.c
+@@ -1310,7 +1310,7 @@ int snd_usb_apply_interface_quirk(struct snd_usb_audio *chip,
+ 	if (chip->usb_id == USB_ID(0x0763, 0x2012))
+ 		return fasttrackpro_skip_setting_quirk(chip, iface, altno);
+ 	/* presonus studio 1810c: skip altsets incompatible with device_setup */
+-	if (chip->usb_id == USB_ID(0x0194f, 0x010c))
++	if (chip->usb_id == USB_ID(0x194f, 0x010c))
+ 		return s1810c_skip_setting_quirk(chip, iface, altno);
+ 
+ 
 -- 
 2.34.1
 
