@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69406C3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F520C3526E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443135AbiAXU4V (ORCPT
+        id S1443055AbiAXU4N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
+        Mon, 24 Jan 2022 15:56:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385574AbiAXUdg (ORCPT
+        with ESMTP id S1385491AbiAXUd3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76D39C07E2AB;
-        Mon, 24 Jan 2022 11:46:49 -0800 (PST)
+        Mon, 24 Jan 2022 15:33:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34EF0C061366;
+        Mon, 24 Jan 2022 11:13:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 15C7261031;
-        Mon, 24 Jan 2022 19:46:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF094C340E7;
-        Mon, 24 Jan 2022 19:46:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E5700B811F9;
+        Mon, 24 Jan 2022 19:13:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 088EDC340E5;
+        Mon, 24 Jan 2022 19:13:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053608;
-        bh=v6/FXpNGzXAE6TYf3fSLBuAkE9l9oQwNd47fnT/FRjA=;
+        s=korg; t=1643051595;
+        bh=2Vc5uuT2sZZYyfYgafyeNPF3odAtR3w3IPP05lx1XxE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=omRAysdzy2nY/CC5ca+U1Sfgyzt+CE2lyN/T5Ky9CWbjXrYOs/cQvgAbqYDiOL84o
-         X3Rf4WEFChFi/zfwoG/3KMZtvP7sMuKbtfLbUXaXoXDDVcDrTsXWA2txFx+EF0UarK
-         nghcLMpLWMlpZ7siEwoU4tA6sJcSQ8Y/pHJq5P3g=
+        b=GZa4/994ccEa2soU0uAa7Ga+JachJxQlACjTn721WM3PrZkPId3+FnRpiWBYplR0Y
+         /j6XU44HBBvolVk1423uJ5XH+yythLQQDtPLo1y0jiZwB7tsClPbQp+1KU8c4qfczU
+         RqEIfEXW1jsW5z4JqTFv6NleQswx5NqCNA/F+/aQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        William Kucharski <william.kucharski@oracle.com>,
-        "Steven Rostedt (VMware)" <rostedt@goodmis.org>,
-        Tejun Heo <tj@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 120/563] cgroup: Trace event cgroup id fields should be u64
-Date:   Mon, 24 Jan 2022 19:38:05 +0100
-Message-Id: <20220124184028.564699291@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 4.19 025/239] HID: wacom: Avoid using stale array indicies to read contact count
+Date:   Mon, 24 Jan 2022 19:41:03 +0100
+Message-Id: <20220124183943.920097912@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,86 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: William Kucharski <william.kucharski@oracle.com>
+From: Jason Gerecke <killertofu@gmail.com>
 
-[ Upstream commit e14da77113bb890d7bf9e5d17031bdd476a7ce5e ]
+commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
 
-Various trace event fields that store cgroup IDs were declared as
-ints, but cgroup_id(() returns a u64 and the structures and associated
-TP_printk() calls were not updated to reflect this.
+If we ever see a touch report with contact count data we initialize
+several variables used to read the contact count in the pre-report
+phase. These variables are never reset if we process a report which
+doesn't contain a contact count, however. This can cause the pre-
+report function to trigger a read of arbitrary memory (e.g. NULL
+if we're lucky) and potentially crash the driver.
 
-Fixes: 743210386c03 ("cgroup: use cgrp->kn->id as the cgroup ID")
-Signed-off-by: William Kucharski <william.kucharski@oracle.com>
-Reviewed-by: Steven Rostedt (VMware) <rostedt@goodmis.org>
-Signed-off-by: Tejun Heo <tj@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This commit restores resetting of the variables back to default
+"none" values that were used prior to the commit mentioned
+below.
+
+Link: https://github.com/linuxwacom/input-wacom/issues/276
+Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/trace/events/cgroup.h | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/hid/wacom_wac.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/trace/events/cgroup.h b/include/trace/events/cgroup.h
-index 7f42a3de59e6b..dd7d7c9efecdf 100644
---- a/include/trace/events/cgroup.h
-+++ b/include/trace/events/cgroup.h
-@@ -59,8 +59,8 @@ DECLARE_EVENT_CLASS(cgroup,
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2610,6 +2610,10 @@ static void wacom_wac_finger_pre_report(
  
- 	TP_STRUCT__entry(
- 		__field(	int,		root			)
--		__field(	int,		id			)
- 		__field(	int,		level			)
-+		__field(	u64,		id			)
- 		__string(	path,		path			)
- 	),
+ 	hid_data->confidence = true;
  
-@@ -71,7 +71,7 @@ DECLARE_EVENT_CLASS(cgroup,
- 		__assign_str(path, path);
- 	),
- 
--	TP_printk("root=%d id=%d level=%d path=%s",
-+	TP_printk("root=%d id=%llu level=%d path=%s",
- 		  __entry->root, __entry->id, __entry->level, __get_str(path))
- );
- 
-@@ -126,8 +126,8 @@ DECLARE_EVENT_CLASS(cgroup_migrate,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		dst_root		)
--		__field(	int,		dst_id			)
- 		__field(	int,		dst_level		)
-+		__field(	u64,		dst_id			)
- 		__field(	int,		pid			)
- 		__string(	dst_path,	path			)
- 		__string(	comm,		task->comm		)
-@@ -142,7 +142,7 @@ DECLARE_EVENT_CLASS(cgroup_migrate,
- 		__assign_str(comm, task->comm);
- 	),
- 
--	TP_printk("dst_root=%d dst_id=%d dst_level=%d dst_path=%s pid=%d comm=%s",
-+	TP_printk("dst_root=%d dst_id=%llu dst_level=%d dst_path=%s pid=%d comm=%s",
- 		  __entry->dst_root, __entry->dst_id, __entry->dst_level,
- 		  __get_str(dst_path), __entry->pid, __get_str(comm))
- );
-@@ -171,8 +171,8 @@ DECLARE_EVENT_CLASS(cgroup_event,
- 
- 	TP_STRUCT__entry(
- 		__field(	int,		root			)
--		__field(	int,		id			)
- 		__field(	int,		level			)
-+		__field(	u64,		id			)
- 		__string(	path,		path			)
- 		__field(	int,		val			)
- 	),
-@@ -185,7 +185,7 @@ DECLARE_EVENT_CLASS(cgroup_event,
- 		__entry->val = val;
- 	),
- 
--	TP_printk("root=%d id=%d level=%d path=%s val=%d",
-+	TP_printk("root=%d id=%llu level=%d path=%s val=%d",
- 		  __entry->root, __entry->id, __entry->level, __get_str(path),
- 		  __entry->val)
- );
--- 
-2.34.1
-
++	hid_data->cc_report = 0;
++	hid_data->cc_index = -1;
++	hid_data->cc_value_index = -1;
++
+ 	for (i = 0; i < report->maxfield; i++) {
+ 		struct hid_field *field = report->field[i];
+ 		int j;
 
 
