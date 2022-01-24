@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25756C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093F5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359391AbiAXUJd (ORCPT
+        id S1376486AbiAXUJi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:09:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40382 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357849AbiAXTwD (ORCPT
+        Mon, 24 Jan 2022 15:09:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49566 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357858AbiAXTwF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:03 -0500
+        Mon, 24 Jan 2022 14:52:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3F61B810AF;
-        Mon, 24 Jan 2022 19:52:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DE4C340E5;
-        Mon, 24 Jan 2022 19:51:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 537D260FDD;
+        Mon, 24 Jan 2022 19:52:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28638C340E5;
+        Mon, 24 Jan 2022 19:52:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053920;
-        bh=oYl28Gp+li/lzw+XgswClzaXlPQR2fB04j5Ja2l+KmY=;
+        s=korg; t=1643053923;
+        bh=HQl6YcXziRLQm+WPUb+jMGqqFQhdR6u6srb+Q89n8GY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a5JJP5B93tlpnlxw603fT6HbrlhUHE25Ryz7rOuKal8XRsEq3akSe0+6llb4+MbjO
-         r3RGKmenrGWKIpPYUq8GTua9qtJWghIED08cjKjk7pqw1gmXkgw17f/kQRRIaBMwMJ
-         Io1wTwfVsT8e8km6tvd0maEOzJaMc+tApfG7j940=
+        b=BhE5ctBPU3hjE6SmCqotHh1FyhfELWhbKztH+EiCF93DyPSPq3Ko2c/Gs7/E2KGQm
+         fsPYbpS5wVFjdSYeDceUQyUkugvUQXj1W7GfWDH7z+A6Z7IbpZoZ+5g2EXm6Lz7jM/
+         pQmFOHDMm+l+Tbm2mta94shEh/yRBMx7HtAH4/7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maor Dickman <maord@nvidia.com>,
-        Roi Dayan <roid@nvidia.com>,
+        stable@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 221/563] net/mlx5e: Dont block routes with nexthop objects in SW
-Date:   Mon, 24 Jan 2022 19:39:46 +0100
-Message-Id: <20220124184032.088069192@linuxfoundation.org>
+Subject: [PATCH 5.10 222/563] Revert "net/mlx5e: Block offload of outer header csum for UDP tunnels"
+Date:   Mon, 24 Jan 2022 19:39:47 +0100
+Message-Id: <20220124184032.128483270@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,46 +48,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maor Dickman <maord@nvidia.com>
+From: Aya Levin <ayal@nvidia.com>
 
-[ Upstream commit 9e72a55a3c9d54b38a704bb7292d984574a81d9d ]
+[ Upstream commit 64050cdad0983ad8060e33c3f4b5aee2366bcebd ]
 
-Routes with nexthop objects is currently not supported by multipath offload
-and any attempts to use it is blocked, however this also block adding SW
-routes with nexthop.
+This reverts commit 6d6727dddc7f93fcc155cb8d0c49c29ae0e71122.
 
-Resolve this by returning NOTIFY_DONE instead of an error which will allow such
-a route to be created in SW but not offloaded.
+Although the NIC doesn't support offload of outer header CSUM, using
+gso_partial_features allows offloading the tunnel's segmentation. The
+driver relies on the stack CSUM calculation of the outer header. For
+this, NETIF_F_GSO_UDP_TUNNEL_CSUM must be a member of the device's
+features.
 
-This fix also solve an issue which block adding such routes on different devices
-due to missing check if the route FIB device is one of multipath devices.
-
-Fixes: 6a87afc072c3 ("mlx5: Fail attempts to use routes with nexthop objects")
-Signed-off-by: Maor Dickman <maord@nvidia.com>
-Reviewed-by: Roi Dayan <roid@nvidia.com>
+Fixes: 6d6727dddc7f ("net/mlx5e: Block offload of outer header csum for UDP tunnels")
+Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Gal Pressman <gal@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-index 15c3a9058e728..0f0d250bbc150 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
-@@ -265,10 +265,8 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
- 		fen_info = container_of(info, struct fib_entry_notifier_info,
- 					info);
- 		fi = fen_info->fi;
--		if (fi->nh) {
--			NL_SET_ERR_MSG_MOD(info->extack, "IPv4 route with nexthop objects is not supported");
--			return notifier_from_errno(-EINVAL);
--		}
-+		if (fi->nh)
-+			return NOTIFY_DONE;
- 		fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
- 		if (fib_dev != ldev->pf[MLX5_LAG_P1].netdev &&
- 		    fib_dev != ldev->pf[MLX5_LAG_P2].netdev) {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+index 2f6c3a5813ed1..16e98ac47624c 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -5024,9 +5024,13 @@ static void mlx5e_build_nic_netdev(struct net_device *netdev)
+ 	}
+ 
+ 	if (mlx5_vxlan_allowed(mdev->vxlan) || mlx5_geneve_tx_allowed(mdev)) {
+-		netdev->hw_features     |= NETIF_F_GSO_UDP_TUNNEL;
+-		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL;
+-		netdev->vlan_features |= NETIF_F_GSO_UDP_TUNNEL;
++		netdev->hw_features     |= NETIF_F_GSO_UDP_TUNNEL |
++					   NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		netdev->hw_enc_features |= NETIF_F_GSO_UDP_TUNNEL |
++					   NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		netdev->gso_partial_features = NETIF_F_GSO_UDP_TUNNEL_CSUM;
++		netdev->vlan_features |= NETIF_F_GSO_UDP_TUNNEL |
++					 NETIF_F_GSO_UDP_TUNNEL_CSUM;
+ 	}
+ 
+ 	if (mlx5e_tunnel_proto_supported(mdev, IPPROTO_GRE)) {
 -- 
 2.34.1
 
