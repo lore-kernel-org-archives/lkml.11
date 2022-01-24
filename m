@@ -2,165 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A631CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B98C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236260AbiAXI0b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:26:31 -0500
-Received: from mga03.intel.com ([134.134.136.65]:16043 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229800AbiAXI00 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:26:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643012786; x=1674548786;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Rux9J+VSLdbgWUxsBOOX1krXPu5RScfzXKkMHtGrIAA=;
-  b=jpDLzkj8skj+gKVyVCN7U1hrF+56398B9fX5G10KlwDgpAqvBHTO/j0M
-   abJPDe8LZGPhEgMdJgYv/s0MIUmKVUyceW2Z7vXUDj4D6Z60B4/MesQkM
-   A4TVO9YdbrYiwD0+ilHkY1FZ11xfOyHfsGZpXB5L+bDHroJ49foxaXL76
-   kt+WvEUisxH/Z6XKya5Xc+OEoGeTehNA8ZBhTxnlcTxs2FmO3O3cifRdV
-   2XeMNH5K4PdreMpONeEuWDuY70IiKf/MvRwol7fMH7vVOI7njkjXhf72S
-   ecZAcKPdutYK454pRlkGMW+goFcWgUyjkvfcK7i66LMHI/QPHA8C7PHaF
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245940051"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="245940051"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:26:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="695340539"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 24 Jan 2022 00:26:23 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBugA-000Hzt-GI; Mon, 24 Jan 2022 08:26:22 +0000
-Date:   Mon, 24 Jan 2022 16:25:22 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     NeilBrown <neilb@suse.de>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Chuck Lever <chuck.lever@oracle.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-nfs@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/23] MM: submit multipage reads for SWP_FS_OPS
- swap-space
-Message-ID: <202201241613.8J5z5arQ-lkp@intel.com>
-References: <164299611278.26253.14950274629759580371.stgit@noble.brown>
+        id S236300AbiAXI2B (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:28:01 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:61724 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229800AbiAXI17 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:27:59 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20O6BlsG027015;
+        Mon, 24 Jan 2022 08:27:58 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=co6v1iJyrw5RoBHR6948PCl2L9ngBnsKZHct6/xFYFM=;
+ b=h4vi6ektsrsdIjjFkIppS9v9ox5oIKRzaTPG71FaXxVtASyK+CLqXyNEy+tNQQZUeJNd
+ JlojvrQcgRw+l0s9Pr6wc0FHMvIWdnlIL23Yr0b31Rt9BIBAe4wwFxl1k1/TVy7OXHrl
+ 6hSFg5wwYv28ztkmpgkIX3YgEHIGepJ20FZkwBvtamdojmioXg8G/61j7hZJ6A+4Ak/F
+ H5gCru/mEy/mS7xDisV2PoHArtMW5NKezuDhha+fXrDV1Np54xcg4x1VMO0jTbDXd1SO
+ SfE8U6EBpzBYmbhu38LQKRsvk+c2VzZkG6KoBlxwS3Do3Pn0uXyMcG5OgkCH95rD4Q1v cg== 
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dspmmjbe2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Jan 2022 08:27:57 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20O8RIjY024015;
+        Mon, 24 Jan 2022 08:27:55 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04ams.nl.ibm.com with ESMTP id 3dr9j8sy98-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Jan 2022 08:27:55 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20O8Ro5t47579636
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 24 Jan 2022 08:27:50 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 46DDDAE055;
+        Mon, 24 Jan 2022 08:27:50 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 04B53AE045;
+        Mon, 24 Jan 2022 08:27:50 +0000 (GMT)
+Received: from [9.171.90.142] (unknown [9.171.90.142])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 24 Jan 2022 08:27:49 +0000 (GMT)
+Message-ID: <2537ad58-675f-c05d-04e4-07358e92c7c3@linux.ibm.com>
+Date:   Mon, 24 Jan 2022 09:27:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: arch/s390/lib/uaccess.c:65:15: error: variable 'spec' has
+ initializer but incomplete type
+Content-Language: en-US
+To:     kernel test robot <lkp@intel.com>, Nico Boehr <nrb@linux.ibm.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Heiko Carstens <hca@linux.ibm.com>
+References: <202201221613.fgIWUw0F-lkp@intel.com>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <202201221613.fgIWUw0F-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: YM53W-lSdip57FgQqRj0qRq8DWomRxDP
+X-Proofpoint-ORIG-GUID: YM53W-lSdip57FgQqRj0qRq8DWomRxDP
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <164299611278.26253.14950274629759580371.stgit@noble.brown>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-24_06,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 phishscore=0
+ impostorscore=0 bulkscore=0 malwarescore=0 spamscore=0 lowpriorityscore=0
+ mlxlogscore=999 priorityscore=1501 adultscore=0 clxscore=1011 mlxscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201240049
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi NeilBrown,
+On 1/22/22 09:42, kernel test robot wrote:
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   9b57f458985742bd1c585f4c7f36d04634ce1143
+> commit: 012a224e1fa31fc256aab921f691598e03db6018 s390/uaccess: introduce bit field for OAC specifier
+> date:   5 days ago
+> config: s390-randconfig-r033-20220120 (https://download.01.org/0day-ci/archive/20220122/202201221613.fgIWUw0F-lkp@intel.com/config)
+> compiler: s390-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=012a224e1fa31fc256aab921f691598e03db6018
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 012a224e1fa31fc256aab921f691598e03db6018
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=s390 SHELL=/bin/bash
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> All errors (new ones prefixed by >>):
+> 
+>    arch/s390/lib/uaccess.c: In function 'copy_from_user_mvcos':
+>>> arch/s390/lib/uaccess.c:65:15: error: variable 'spec' has initializer but incomplete type
+>       65 |         union oac spec = {
+>          |               ^~~
+>>> arch/s390/lib/uaccess.c:66:18: error: 'union oac' has no member named 'oac2'
+>       66 |                 .oac2.as = PSW_BITS_AS_SECONDARY,
+>          |                  ^~~~
+>    arch/s390/lib/uaccess.c:66:28: warning: excess elements in union initializer
+>       66 |                 .oac2.as = PSW_BITS_AS_SECONDARY,
+>          |                            ^~~~~~~~~~~~~~~~~~~~~
+>    arch/s390/lib/uaccess.c:66:28: note: (near initialization for 'spec')
+>    arch/s390/lib/uaccess.c:67:18: error: 'union oac' has no member named 'oac2'
+>       67 |                 .oac2.a = 1,
+>          |                  ^~~~
+>    arch/s390/lib/uaccess.c:67:27: warning: excess elements in union initializer
+>       67 |                 .oac2.a = 1,
+>          |                           ^
+>    arch/s390/lib/uaccess.c:67:27: note: (near initialization for 'spec')
+>>> arch/s390/lib/uaccess.c:65:19: error: storage size of 'spec' isn't known
+>       65 |         union oac spec = {
+>          |                   ^~~~
+>    arch/s390/lib/uaccess.c:65:19: warning: unused variable 'spec' [-Wunused-variable]
+>    arch/s390/lib/uaccess.c: In function 'copy_to_user_mvcos':
+>    arch/s390/lib/uaccess.c:142:15: error: variable 'spec' has initializer but incomplete type
+>      142 |         union oac spec = {
+>          |               ^~~
+>>> arch/s390/lib/uaccess.c:143:18: error: 'union oac' has no member named 'oac1'
+>      143 |                 .oac1.as = PSW_BITS_AS_SECONDARY,
+>          |                  ^~~~
+>    arch/s390/lib/uaccess.c:143:28: warning: excess elements in union initializer
+>      143 |                 .oac1.as = PSW_BITS_AS_SECONDARY,
+>          |                            ^~~~~~~~~~~~~~~~~~~~~
+>    arch/s390/lib/uaccess.c:143:28: note: (near initialization for 'spec')
+>    arch/s390/lib/uaccess.c:144:18: error: 'union oac' has no member named 'oac1'
+>      144 |                 .oac1.a = 1,
+>          |                  ^~~~
+>    arch/s390/lib/uaccess.c:144:27: warning: excess elements in union initializer
+>      144 |                 .oac1.a = 1,
+>          |                           ^
+>    arch/s390/lib/uaccess.c:144:27: note: (near initialization for 'spec')
+>    arch/s390/lib/uaccess.c:142:19: error: storage size of 'spec' isn't known
+>      142 |         union oac spec = {
+>          |                   ^~~~
+>    arch/s390/lib/uaccess.c:142:19: warning: unused variable 'spec' [-Wunused-variable]
+>    arch/s390/lib/uaccess.c: In function 'clear_user_mvcos':
+>    arch/s390/lib/uaccess.c:218:15: error: variable 'spec' has initializer but incomplete type
+>      218 |         union oac spec = {
+>          |               ^~~
+>    arch/s390/lib/uaccess.c:219:18: error: 'union oac' has no member named 'oac1'
+>      219 |                 .oac1.as = PSW_BITS_AS_SECONDARY,
+>          |                  ^~~~
+>    arch/s390/lib/uaccess.c:219:28: warning: excess elements in union initializer
+>      219 |                 .oac1.as = PSW_BITS_AS_SECONDARY,
+>          |                            ^~~~~~~~~~~~~~~~~~~~~
+>    arch/s390/lib/uaccess.c:219:28: note: (near initialization for 'spec')
+>    arch/s390/lib/uaccess.c:220:18: error: 'union oac' has no member named 'oac1'
+>      220 |                 .oac1.a = 1,
+>          |                  ^~~~
+>    arch/s390/lib/uaccess.c:220:27: warning: excess elements in union initializer
+>      220 |                 .oac1.a = 1,
+>          |                           ^
+>    arch/s390/lib/uaccess.c:220:27: note: (near initialization for 'spec')
+>    arch/s390/lib/uaccess.c:218:19: error: storage size of 'spec' isn't known
+>      218 |         union oac spec = {
+>          |                   ^~~~
+>    arch/s390/lib/uaccess.c:218:19: warning: unused variable 'spec' [-Wunused-variable]
 
-Thank you for the patch! Yet something to improve:
-
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.17-rc1 next-20220124]
-[cannot apply to trondmy-nfs/linux-next cifs/for-next hnaz-mm/master]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/NeilBrown/Repair-SWAP-over_NFS/20220124-115716
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git dd81e1c7d5fb126e5fbc5c9e334d7b3ec29a16a0
-config: powerpc-allnoconfig (https://download.01.org/0day-ci/archive/20220124/202201241613.8J5z5arQ-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/63bff668aa0537d7ccef9ed428809fc16c1a6b6c
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review NeilBrown/Repair-SWAP-over_NFS/20220124-115716
-        git checkout 63bff668aa0537d7ccef9ed428809fc16c1a6b6c
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All error/warnings (new ones prefixed by >>):
-
-   In file included from mm/vmscan.c:61:
-   mm/swap.h:66:40: warning: 'struct swap_iocb' declared inside parameter list will not be visible outside of this definition or declaration
-      66 |                                 struct swap_iocb **plug);
-         |                                        ^~~~~~~~~
->> mm/swap.h:67:1: error: expected identifier or '(' before '{' token
-      67 | {
-         | ^
-   mm/swap.h:65:19: warning: 'swap_readpage' declared 'static' but never defined [-Wunused-function]
-      65 | static inline int swap_readpage(struct page *page, bool do_poll,
-         |                   ^~~~~~~~~~~~~
---
-   In file included from mm/memory.c:89:
-   mm/swap.h:66:40: warning: 'struct swap_iocb' declared inside parameter list will not be visible outside of this definition or declaration
-      66 |                                 struct swap_iocb **plug);
-         |                                        ^~~~~~~~~
->> mm/swap.h:67:1: error: expected identifier or '(' before '{' token
-      67 | {
-         | ^
->> mm/swap.h:65:19: warning: 'swap_readpage' used but never defined
-      65 | static inline int swap_readpage(struct page *page, bool do_poll,
-         |                   ^~~~~~~~~~~~~
---
-   In file included from mm/page_alloc.c:84:
-   mm/swap.h:66:40: warning: 'struct swap_iocb' declared inside parameter list will not be visible outside of this definition or declaration
-      66 |                                 struct swap_iocb **plug);
-         |                                        ^~~~~~~~~
->> mm/swap.h:67:1: error: expected identifier or '(' before '{' token
-      67 | {
-         | ^
-   mm/page_alloc.c:3821:15: warning: no previous prototype for 'should_fail_alloc_page' [-Wmissing-prototypes]
-    3821 | noinline bool should_fail_alloc_page(gfp_t gfp_mask, unsigned int order)
-         |               ^~~~~~~~~~~~~~~~~~~~~~
-   In file included from mm/page_alloc.c:84:
-   mm/swap.h:65:19: warning: 'swap_readpage' declared 'static' but never defined [-Wunused-function]
-      65 | static inline int swap_readpage(struct page *page, bool do_poll,
-         |                   ^~~~~~~~~~~~~
-
-
-vim +67 mm/swap.h
-
-50dceef273a619 NeilBrown 2022-01-24  45  
-50dceef273a619 NeilBrown 2022-01-24  46  struct page *read_swap_cache_async(swp_entry_t, gfp_t,
-50dceef273a619 NeilBrown 2022-01-24  47  				   struct vm_area_struct *vma,
-50dceef273a619 NeilBrown 2022-01-24  48  				   unsigned long addr,
-63bff668aa0537 NeilBrown 2022-01-24  49  				   bool do_poll,
-63bff668aa0537 NeilBrown 2022-01-24  50  				   struct swap_iocb **plug);
-50dceef273a619 NeilBrown 2022-01-24  51  struct page *__read_swap_cache_async(swp_entry_t, gfp_t,
-50dceef273a619 NeilBrown 2022-01-24  52  				     struct vm_area_struct *vma,
-50dceef273a619 NeilBrown 2022-01-24  53  				     unsigned long addr,
-50dceef273a619 NeilBrown 2022-01-24  54  				     bool *new_page_allocated);
-50dceef273a619 NeilBrown 2022-01-24  55  struct page *swap_cluster_readahead(swp_entry_t entry, gfp_t flag,
-50dceef273a619 NeilBrown 2022-01-24  56  				    struct vm_fault *vmf);
-50dceef273a619 NeilBrown 2022-01-24  57  struct page *swapin_readahead(swp_entry_t entry, gfp_t flag,
-50dceef273a619 NeilBrown 2022-01-24  58  			      struct vm_fault *vmf);
-50dceef273a619 NeilBrown 2022-01-24  59  
-12cf545fe71035 NeilBrown 2022-01-24  60  static inline unsigned int page_swap_flags(struct page *page)
-12cf545fe71035 NeilBrown 2022-01-24  61  {
-12cf545fe71035 NeilBrown 2022-01-24  62  	return page_swap_info(page)->flags;
-12cf545fe71035 NeilBrown 2022-01-24  63  }
-50dceef273a619 NeilBrown 2022-01-24  64  #else /* CONFIG_SWAP */
-63bff668aa0537 NeilBrown 2022-01-24 @65  static inline int swap_readpage(struct page *page, bool do_poll,
-63bff668aa0537 NeilBrown 2022-01-24 @66  				struct swap_iocb **plug);
-50dceef273a619 NeilBrown 2022-01-24 @67  {
-50dceef273a619 NeilBrown 2022-01-24  68  	return 0;
-50dceef273a619 NeilBrown 2022-01-24  69  }
-50dceef273a619 NeilBrown 2022-01-24  70  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+This is caused by the union definition being covered by the #ifdef CONFIG_HAVE_MARCH_Z10_FEATURES.
