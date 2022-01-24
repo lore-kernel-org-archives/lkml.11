@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47E39C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A204C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388660AbiAXUto (ORCPT
+        id S1388883AbiAXUtq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:49:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382143AbiAXUZP (ORCPT
+        Mon, 24 Jan 2022 15:49:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51358 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382429AbiAXUZk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:25:15 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37741C0D9401;
-        Mon, 24 Jan 2022 11:41:08 -0800 (PST)
+        Mon, 24 Jan 2022 15:25:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00438B81188;
-        Mon, 24 Jan 2022 19:41:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D60FC340E7;
-        Mon, 24 Jan 2022 19:41:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB4E76091B;
+        Mon, 24 Jan 2022 20:25:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C17C3C340E5;
+        Mon, 24 Jan 2022 20:25:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053265;
-        bh=Hu92IHuIu7s4YMY6zsMPO0Pu53VdOmAY8WOxRWr2+s0=;
+        s=korg; t=1643055939;
+        bh=RLQt645kFXrizzQINI9AoTr4vJ0Bgr5GYFhh/k5hya0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jrcrmInZ3HwJ1sjuuco4N097n5uHUEszy7cEd8AyT5GoW/sWOX45lSeBL+/zM0pcl
-         NavxtRxMFYbjLzu7LLPVHqWU0DhXNWvxgcPDIL9uTmOJ/6B8UIOw5rTBINZ2CAs1KD
-         tIsVTYUr/cRKJYvUObzPv0S+QVMcvwImkgnpq4to=
+        b=AJl9AWFQj5o3/ufGPUWnTa8hmMKAZ0mPl6k63NHs+nc4fRXQ6gnW+YUYBHnboSMzs
+         YbMmoLgv/NobZSAuIM1l7UJ8as/iAEmpc3t8JcroFXks1MKlAo7C6Wti6+0IjDxL9d
+         pA4rHW3yrLteKgIADayVLlowW+Ox0GthshJQ0D/k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Andreas Oetken <andreas.oetken@siemens-energy.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 010/563] mtd: Fixed breaking list in __mtd_del_partition.
-Date:   Mon, 24 Jan 2022 19:36:15 +0100
-Message-Id: <20220124184024.772483033@linuxfoundation.org>
+        stable@vger.kernel.org, Miroslav Lichvar <mlichvar@redhat.com>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 316/846] net: fix SOF_TIMESTAMPING_BIND_PHC to work with multiple sockets
+Date:   Mon, 24 Jan 2022 19:37:13 +0100
+Message-Id: <20220124184111.808496307@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,34 +49,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andreas Oetken <ennoerlangen@gmail.com>
+From: Miroslav Lichvar <mlichvar@redhat.com>
 
-commit 2966daf7d253d9904b337b040dd7a43472858b8a upstream.
+[ Upstream commit 007747a984ea5e895b7d8b056b24ebf431e1e71d ]
 
-Not the child partition should be removed from the partition list
-but the partition itself. Otherwise the partition list gets broken
-and any subsequent remove operations leads to a kernel panic.
+When multiple sockets using the SOF_TIMESTAMPING_BIND_PHC flag received
+a packet with a hardware timestamp (e.g. multiple PTP instances in
+different PTP domains using the UDPv4/v6 multicast or L2 transport),
+the timestamps received on some sockets were corrupted due to repeated
+conversion of the same timestamp (by the same or different vclocks).
 
-Fixes: 46b5889cc2c5 ("mtd: implement proper partition handling")
-Signed-off-by: Andreas Oetken <andreas.oetken@siemens-energy.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211102172604.2921065-1-andreas.oetken@siemens-energy.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix ptp_convert_timestamp() to not modify the shared skb timestamp
+and return the converted timestamp as a ktime_t instead. If the
+conversion fails, return 0 to not confuse the application with
+timestamps corresponding to an unexpected PHC.
+
+Fixes: d7c088265588 ("net: socket: support hardware timestamp conversion to PHC bound")
+Signed-off-by: Miroslav Lichvar <mlichvar@redhat.com>
+Cc: Yangbo Lu <yangbo.lu@nxp.com>
+Cc: Richard Cochran <richardcochran@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/mtdpart.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/ptp/ptp_vclock.c         | 10 +++++-----
+ include/linux/ptp_clock_kernel.h | 12 +++++++-----
+ net/socket.c                     |  9 ++++++---
+ 3 files changed, 18 insertions(+), 13 deletions(-)
 
---- a/drivers/mtd/mtdpart.c
-+++ b/drivers/mtd/mtdpart.c
-@@ -313,7 +313,7 @@ static int __mtd_del_partition(struct mt
- 	if (err)
- 		return err;
+diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
+index baee0379482bc..ab1d233173e13 100644
+--- a/drivers/ptp/ptp_vclock.c
++++ b/drivers/ptp/ptp_vclock.c
+@@ -185,8 +185,8 @@ out:
+ }
+ EXPORT_SYMBOL(ptp_get_vclocks_index);
  
--	list_del(&child->part.node);
-+	list_del(&mtd->part.node);
- 	free_partition(mtd);
+-void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
+-			   int vclock_index)
++ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
++			      int vclock_index)
+ {
+ 	char name[PTP_CLOCK_NAME_LEN] = "";
+ 	struct ptp_vclock *vclock;
+@@ -198,12 +198,12 @@ void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
+ 	snprintf(name, PTP_CLOCK_NAME_LEN, "ptp%d", vclock_index);
+ 	dev = class_find_device_by_name(ptp_class, name);
+ 	if (!dev)
+-		return;
++		return 0;
  
- 	return 0;
+ 	ptp = dev_get_drvdata(dev);
+ 	if (!ptp->is_virtual_clock) {
+ 		put_device(dev);
+-		return;
++		return 0;
+ 	}
+ 
+ 	vclock = info_to_vclock(ptp->info);
+@@ -215,7 +215,7 @@ void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
+ 	spin_unlock_irqrestore(&vclock->lock, flags);
+ 
+ 	put_device(dev);
+-	hwtstamps->hwtstamp = ns_to_ktime(ns);
++	return ns_to_ktime(ns);
+ }
+ EXPORT_SYMBOL(ptp_convert_timestamp);
+ #endif
+diff --git a/include/linux/ptp_clock_kernel.h b/include/linux/ptp_clock_kernel.h
+index 2e5565067355b..554454cb86931 100644
+--- a/include/linux/ptp_clock_kernel.h
++++ b/include/linux/ptp_clock_kernel.h
+@@ -351,15 +351,17 @@ int ptp_get_vclocks_index(int pclock_index, int **vclock_index);
+  *
+  * @hwtstamps:    skb_shared_hwtstamps structure pointer
+  * @vclock_index: phc index of ptp vclock.
++ *
++ * Returns converted timestamp, or 0 on error.
+  */
+-void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
+-			   int vclock_index);
++ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
++			      int vclock_index);
+ #else
+ static inline int ptp_get_vclocks_index(int pclock_index, int **vclock_index)
+ { return 0; }
+-static inline void ptp_convert_timestamp(struct skb_shared_hwtstamps *hwtstamps,
+-					 int vclock_index)
+-{ }
++static inline ktime_t ptp_convert_timestamp(const struct skb_shared_hwtstamps *hwtstamps,
++					    int vclock_index)
++{ return 0; }
+ 
+ #endif
+ 
+diff --git a/net/socket.c b/net/socket.c
+index 7f64a6eccf63f..5053eb0100e48 100644
+--- a/net/socket.c
++++ b/net/socket.c
+@@ -829,6 +829,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+ 	int empty = 1, false_tstamp = 0;
+ 	struct skb_shared_hwtstamps *shhwtstamps =
+ 		skb_hwtstamps(skb);
++	ktime_t hwtstamp;
+ 
+ 	/* Race occurred between timestamp enabling and packet
+ 	   receiving.  Fill in the current time for now. */
+@@ -877,10 +878,12 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+ 	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+ 	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
+ 		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+-			ptp_convert_timestamp(shhwtstamps, sk->sk_bind_phc);
++			hwtstamp = ptp_convert_timestamp(shhwtstamps,
++							 sk->sk_bind_phc);
++		else
++			hwtstamp = shhwtstamps->hwtstamp;
+ 
+-		if (ktime_to_timespec64_cond(shhwtstamps->hwtstamp,
+-					     tss.ts + 2)) {
++		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
+ 			empty = 0;
+ 
+ 			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
+-- 
+2.34.1
+
 
 
