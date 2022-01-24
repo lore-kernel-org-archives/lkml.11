@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3738DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EB6C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412428AbiAYAg4 (ORCPT
+        id S3412410AbiAYAgx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:36:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58772 "EHLO
+        Mon, 24 Jan 2022 19:36:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2366246AbiAXXwd (ORCPT
+        with ESMTP id S2365364AbiAXXuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:52:33 -0500
+        Mon, 24 Jan 2022 18:50:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1B0C047CFC;
-        Mon, 24 Jan 2022 13:45:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E480C0FE6A7;
+        Mon, 24 Jan 2022 13:44:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C68B60917;
-        Mon, 24 Jan 2022 21:45:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 243C2C340E4;
-        Mon, 24 Jan 2022 21:45:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B11C561491;
+        Mon, 24 Jan 2022 21:44:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91751C340E4;
+        Mon, 24 Jan 2022 21:44:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060730;
-        bh=Fr/LKWtC4UyTPQgHsHi1fEAW/E12tFtoUubYw4q27BA=;
+        s=korg; t=1643060678;
+        bh=CqvvbWfk9xwC8WTepgsm14BUMfW2AL5e1e4ceJFL41U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HO/slpzrqBNDA/9Zn8+FjhamuHxH0vSK5IMXIv2W4xUARQCFvc4A/NHOcuztWcNph
-         NioWHizEP/8QSJguwrtULXW6/FVZdBBk/w2CsaV6aEeZp7QsPbVzTgX8G+60PsIGIO
-         8oWFJoZ3SwRShgIsKuMbdhwoLmMwBtddl0gs/1ac=
+        b=iWBhZzXJesCxojYqjf9lx32yL5ka+co20ZN7vQeUClCEwQ+b2iYFaMgJW8Vi7TUjG
+         inxB5h5tKnEaR7pDkdh2DK4m5K/qHWt9CRb6x5cFpxAdV4XynoewUj2dyp0UdYPhLO
+         aGqv1IeibNa2IX/qKBleI2AQL1nIztzEZ3GnWDYI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 1016/1039] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
-Date:   Mon, 24 Jan 2022 19:46:45 +0100
-Message-Id: <20220124184159.451000912@linuxfoundation.org>
+Subject: [PATCH 5.16 1028/1039] lib82596: Fix IRQ check in sni_82596_probe
+Date:   Mon, 24 Jan 2022 19:46:57 +0100
+Message-Id: <20220124184159.847083815@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,37 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 214b3369ab9b0a6f28d6c970220c209417edbc65 upstream.
+commit 99218cbf81bf21355a3de61cd46a706d36e900e6 upstream.
 
-Clang static analysis reports this problem
-mtk_eth_soc.c:394:7: warning: Branch condition evaluates
-  to a garbage value
-                if (err)
-                    ^~~
+platform_get_irq() returns negative error number instead 0 on failure.
+And the doc of platform_get_irq() provides a usage example:
 
-err is not initialized and only conditionally set.
-So intitialize err.
+    int irq = platform_get_irq(pdev, 0);
+    if (irq < 0)
+        return irq;
 
-Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
-Signed-off-by: Tom Rix <trix@redhat.com>
+Fix the check of return value to catch errors correctly.
+
+Fixes: 115978859272 ("i825xx: Move the Intel 82586/82593/82596 based drivers")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/i825xx/sni_82596.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -224,7 +224,7 @@ static void mtk_mac_config(struct phylin
- 					   phylink_config);
- 	struct mtk_eth *eth = mac->hw;
- 	u32 mcr_cur, mcr_new, sid, i;
--	int val, ge_mode, err;
-+	int val, ge_mode, err = 0;
+--- a/drivers/net/ethernet/i825xx/sni_82596.c
++++ b/drivers/net/ethernet/i825xx/sni_82596.c
+@@ -117,9 +117,10 @@ static int sni_82596_probe(struct platfo
+ 	netdevice->dev_addr[5] = readb(eth_addr + 0x06);
+ 	iounmap(eth_addr);
  
- 	/* MT76x8 has no hardware settings between for the MAC */
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
+-	if (!netdevice->irq) {
++	if (netdevice->irq < 0) {
+ 		printk(KERN_ERR "%s: IRQ not found for i82596 at 0x%lx\n",
+ 			__FILE__, netdevice->base_addr);
++		retval = netdevice->irq;
+ 		goto probe_failed;
+ 	}
+ 
 
 
