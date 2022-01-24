@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF6CAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2314C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587585AbiAXW2q (ORCPT
+        id S1587600AbiAXW2s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54868 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455575AbiAXVfk (ORCPT
+        Mon, 24 Jan 2022 17:28:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54792 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455746AbiAXVgC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C21AC05A187;
-        Mon, 24 Jan 2022 12:22:30 -0800 (PST)
+        Mon, 24 Jan 2022 16:36:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9BCF6091A;
-        Mon, 24 Jan 2022 20:22:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B32F4C340E5;
-        Mon, 24 Jan 2022 20:22:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFC3F61469;
+        Mon, 24 Jan 2022 21:36:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E717C340E4;
+        Mon, 24 Jan 2022 21:36:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055749;
-        bh=lb6Kubue1Vv0ruLYvBFVtEUjK0zirsjHHDVqCLIdZhQ=;
+        s=korg; t=1643060161;
+        bh=tCklUFkTz/9x3T08B8bbRuJKvWtGxMtJjmqMXxKUWro=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dQZfwFjMnVot3AFPe/Jkldi0GjAMuKR8QlduX6oZcPHoadHoktXR9w2oK7Q/g6YPn
-         mN/KF77qCz/mwR+OBXAjvRAvWuu95+iBjGgK3buax80DfDw2uOeXKUUmDkz+nrNb6z
-         Q0PrPm7qM5ZdVOoCbpWuHEbI48ys8/NvlEv8Tlxk=
+        b=R2Q4hGZ5Dd70ks7O5cYrnaejs5x+tzqbPPs2iGKQUoSodizmQcOafpJJlykg4K3wk
+         SkyOL1WeUzL2WsLF75MXem8h8CWrfiuS9dx79vATPQMyxH5mYyo+iPR8kHq1mpJ8Pa
+         TPMlVM3rwpln7cHPo/dgQ02utm8x9IIF8e2CX3YI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sricharan R <sricharan@codeaurora.org>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 252/846] arm64: dts: qcom: ipq6018: Fix gpio-ranges property
-Date:   Mon, 24 Jan 2022 19:36:09 +0100
-Message-Id: <20220124184109.635593689@linuxfoundation.org>
+        stable@vger.kernel.org, Ulf Hansson <ulf.hansson@linaro.org>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Thierry Reding <treding@nvidia.com>
+Subject: [PATCH 5.16 0859/1039] drm/tegra: submit: Add missing pm_runtime_mark_last_busy()
+Date:   Mon, 24 Jan 2022 19:44:08 +0100
+Message-Id: <20220124184154.165277301@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,41 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch@tkos.co.il>
+From: Dmitry Osipenko <digetx@gmail.com>
 
-[ Upstream commit 72cb4c48a46a7cfa58eb5842c0d3672ddd5bd9ad ]
+commit a21115dd38c6cf396ba39aefd561e7903ca6149d upstream.
 
-There must be three parameters in gpio-ranges property. Fixes this not
-very helpful error message:
+Runtime PM auto-suspension doesn't work without pm_runtime_mark_last_busy(),
+add it.
 
-  OF: /soc/pinctrl@1000000: (null) = 3 found 3
-
-Fixes: 1e8277854b49 ("arm64: dts: Add ipq6018 SoC and CP01 board support")
-Cc: Sricharan R <sricharan@codeaurora.org>
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-Tested-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/8a744cfd96aff5754bfdcf7298d208ddca5b319a.1638862030.git.baruch@tkos.co.il
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: <stable@vger.kernel.org>
+Reviewed-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/qcom/ipq6018.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/tegra/submit.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/ipq6018.dtsi b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-index 7b6205c180df1..ce4c2b4a5fc07 100644
---- a/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-+++ b/arch/arm64/boot/dts/qcom/ipq6018.dtsi
-@@ -221,7 +221,7 @@
- 			interrupts = <GIC_SPI 208 IRQ_TYPE_LEVEL_HIGH>;
- 			gpio-controller;
- 			#gpio-cells = <2>;
--			gpio-ranges = <&tlmm 0 80>;
-+			gpio-ranges = <&tlmm 0 0 80>;
- 			interrupt-controller;
- 			#interrupt-cells = <2>;
+--- a/drivers/gpu/drm/tegra/submit.c
++++ b/drivers/gpu/drm/tegra/submit.c
+@@ -475,8 +475,10 @@ static void release_job(struct host1x_jo
+ 	kfree(job_data->used_mappings);
+ 	kfree(job_data);
  
--- 
-2.34.1
-
+-	if (pm_runtime_enabled(client->base.dev))
++	if (pm_runtime_enabled(client->base.dev)) {
++		pm_runtime_mark_last_busy(client->base.dev);
+ 		pm_runtime_put_autosuspend(client->base.dev);
++	}
+ }
+ 
+ int tegra_drm_ioctl_channel_submit(struct drm_device *drm, void *data,
 
 
