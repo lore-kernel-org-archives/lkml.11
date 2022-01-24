@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE18FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FDE2C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374679AbiAYARk (ORCPT
+        id S2374695AbiAYARm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54272 "EHLO
+        Mon, 24 Jan 2022 19:17:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1851079AbiAXXbx (ORCPT
+        with ESMTP id S1851185AbiAXXcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:31:53 -0500
+        Mon, 24 Jan 2022 18:32:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4F3C075D05;
-        Mon, 24 Jan 2022 13:35:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0F83C019B06;
+        Mon, 24 Jan 2022 11:52:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFAEA614DA;
-        Mon, 24 Jan 2022 21:35:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F398EC340E4;
-        Mon, 24 Jan 2022 21:35:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7FF4E6090B;
+        Mon, 24 Jan 2022 19:52:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5ACE2C340E5;
+        Mon, 24 Jan 2022 19:52:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060112;
-        bh=Ss+KyW9+v4+zPtZvCbZxmRTFAjt5mNV30rcy4WIJht8=;
+        s=korg; t=1643053932;
+        bh=l6Ni9v689sSDYi8RGWJ0Fvwu5bh71a7KQRIO9ThqCxY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yWNekzEQUQtqfBF5fITcfnD2mTnVfsxE84QV8hBwtkOu3Eb9Ej9/1DpOpzmw+aksj
-         Nbkm6oyD1O4LwgU//ol81hQmwKtqbLk66WgCL/BawK3vTQJjVdg/Ou1qqfNAugcJOx
-         JYE08hIMDtx5J+DcfxD8xO5ltwKE8SXr1AeHrqts=
+        b=ja2INnCtpFJvoUFie1gNGt149zvQSihO5Vbq7VquOdPjSI3br1zTWqfkRTqYWsGxl
+         8SRJ6u15r8iIoxLaqywM3xaIcyOkwynbnQDJzLTdkbM15w9zAuUWWsj0xzI0Uuqzkz
+         M/0VdTQ10uCk5VZV7CPhHFK/+XYx00eq4gi+i0vY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Juergen Gross <jgross@suse.com>
-Subject: [PATCH 5.16 0844/1039] xen/gntdev: fix unmap notification order
-Date:   Mon, 24 Jan 2022 19:43:53 +0100
-Message-Id: <20220124184153.659861284@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 225/563] Bluetooth: L2CAP: uninitialized variables in l2cap_sock_setsockopt()
+Date:   Mon, 24 Jan 2022 19:39:50 +0100
+Message-Id: <20220124184032.232010791@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,62 +50,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit ce2f46f3531a03781181b7f4bd1ff9f8c5086e7e upstream.
+[ Upstream commit 2b70d4f9b20635ac328836e50d183632e1930f94 ]
 
-While working with Xen's libxenvchan library I have faced an issue with
-unmap notifications sent in wrong order if both UNMAP_NOTIFY_SEND_EVENT
-and UNMAP_NOTIFY_CLEAR_BYTE were requested: first we send an event channel
-notification and then clear the notification byte which renders in the below
-inconsistency (cli_live is the byte which was requested to be cleared on unmap):
+The "opt" variable is a u32, but on some paths only the top bytes
+were initialized and the others contained random stack data.
 
-[  444.514243] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
-libxenvchan_is_open cli_live 1
-[  444.515239] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
-
-Thus it is not possible to reliably implement the checks like
-- wait for the notification (UNMAP_NOTIFY_SEND_EVENT)
-- check the variable (UNMAP_NOTIFY_CLEAR_BYTE)
-because it is possible that the variable gets checked before it is cleared
-by the kernel.
-
-To fix that we need to re-order the notifications, so the variable is first
-gets cleared and then the event channel notification is sent.
-With this fix I can see the correct order of execution:
-
-[   54.522611] __unmap_grant_pages UNMAP_NOTIFY_CLEAR_BYTE at 14
-[   54.537966] gntdev_put_map UNMAP_NOTIFY_SEND_EVENT map->notify.event 6
-libxenvchan_is_open cli_live 0
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
-Reviewed-by: Boris Ostrovsky <boris.ostrovsky@oracle.com>
-Link: https://lore.kernel.org/r/20211210092817.580718-1-andr2000@gmail.com
-Signed-off-by: Juergen Gross <jgross@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/xen/gntdev.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/bluetooth/l2cap_sock.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
---- a/drivers/xen/gntdev.c
-+++ b/drivers/xen/gntdev.c
-@@ -250,13 +250,13 @@ void gntdev_put_map(struct gntdev_priv *
- 	if (!refcount_dec_and_test(&map->users))
- 		return;
+diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
+index 251017c69ab7f..d2c6785205992 100644
+--- a/net/bluetooth/l2cap_sock.c
++++ b/net/bluetooth/l2cap_sock.c
+@@ -903,6 +903,8 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
+ 	struct l2cap_conn *conn;
+ 	int len, err = 0;
+ 	u32 opt;
++	u16 mtu;
++	u8 mode;
  
-+	if (map->pages && !use_ptemod)
-+		unmap_grant_pages(map, 0, map->count);
-+
- 	if (map->notify.flags & UNMAP_NOTIFY_SEND_EVENT) {
- 		notify_remote_via_evtchn(map->notify.event);
- 		evtchn_put(map->notify.event);
- 	}
--
--	if (map->pages && !use_ptemod)
--		unmap_grant_pages(map, 0, map->count);
- 	gntdev_free_map(map);
- }
+ 	BT_DBG("sk %p", sk);
  
+@@ -1085,16 +1087,16 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
+ 			break;
+ 		}
+ 
+-		if (copy_from_sockptr(&opt, optval, sizeof(u16))) {
++		if (copy_from_sockptr(&mtu, optval, sizeof(u16))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
+ 
+ 		if (chan->mode == L2CAP_MODE_EXT_FLOWCTL &&
+ 		    sk->sk_state == BT_CONNECTED)
+-			err = l2cap_chan_reconfigure(chan, opt);
++			err = l2cap_chan_reconfigure(chan, mtu);
+ 		else
+-			chan->imtu = opt;
++			chan->imtu = mtu;
+ 
+ 		break;
+ 
+@@ -1116,14 +1118,14 @@ static int l2cap_sock_setsockopt(struct socket *sock, int level, int optname,
+ 			break;
+ 		}
+ 
+-		if (copy_from_sockptr(&opt, optval, sizeof(u8))) {
++		if (copy_from_sockptr(&mode, optval, sizeof(u8))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
+ 
+-		BT_DBG("opt %u", opt);
++		BT_DBG("mode %u", mode);
+ 
+-		err = l2cap_set_mode(chan, opt);
++		err = l2cap_set_mode(chan, mode);
+ 		if (err)
+ 			break;
+ 
+-- 
+2.34.1
+
 
 
