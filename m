@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ECBAC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C244DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345578AbiAXT1U (ORCPT
+        id S1347058AbiAXT10 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:27:20 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40686 "EHLO
+        Mon, 24 Jan 2022 14:27:26 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:43606 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348839AbiAXTTr (ORCPT
+        with ESMTP id S1347155AbiAXTSt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:19:47 -0500
+        Mon, 24 Jan 2022 14:18:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6C3FB8121B;
-        Mon, 24 Jan 2022 19:19:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9D03C340E8;
-        Mon, 24 Jan 2022 19:19:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BBDDB8121F;
+        Mon, 24 Jan 2022 19:18:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F7A6C340E5;
+        Mon, 24 Jan 2022 19:18:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051985;
-        bh=BiDawCDCR9XnHyP+jduSugMt5j1biVVhOqB9aUPbh90=;
+        s=korg; t=1643051927;
+        bh=5AK/ZD+OO4TiPDAZvOFjQFvLrOlNWLTVM/ikSQ8BP24=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2Xd9bBSJUhV6/nhZpBZKeD6y3PidL9tqTGDXlQDse8ATHomPVfG3gnQbKGx3uxXnk
-         aBBvQDuxnXk73pyRXYRhl1BismM+xH4s0mZc+f7qfJta4bLaxnmZamp/IrMvbykEaS
-         OkYW9I3WUFZ8FPY8LhruRfHWjPzAhbzca8LDIT3o=
+        b=W3/8hExv6fh0vWAT6WVi97xrVzev4OR5s5EP4u2PliM/VQyMOcOgpLiiuo8hLTU6t
+         PSnx1hPt4YOf950faLmg/BCFE9bPIsGux8Tshh07zriE5m1tIuktvTPSfvz/KrcRTp
+         DcVmi8IxTM2/VT6UPH+OTIokCHgUJvyyBIRGWbd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 151/239] audit: ensure userspace is penalized the same as the kernel when under pressure
-Date:   Mon, 24 Jan 2022 19:43:09 +0100
-Message-Id: <20220124183947.896612524@linuxfoundation.org>
+Subject: [PATCH 4.19 131/239] HSI: core: Fix return freed object in hsi_new_client
+Date:   Mon, 24 Jan 2022 19:42:49 +0100
+Message-Id: <20220124183947.273001947@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,68 +47,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit 8f110f530635af44fff1f4ee100ecef0bac62510 ]
+[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
 
-Due to the audit control mutex necessary for serializing audit
-userspace messages we haven't been able to block/penalize userspace
-processes that attempt to send audit records while the system is
-under audit pressure.  The result is that privileged userspace
-applications have a priority boost with respect to audit as they are
-not bound by the same audit queue throttling as the other tasks on
-the system.
+cl is freed on error of calling device_register, but this
+object is return later, which will cause uaf issue. Fix it
+by return NULL on error.
 
-This patch attempts to restore some balance to the system when under
-audit pressure by blocking these privileged userspace tasks after
-they have finished their audit processing, and dropped the audit
-control mutex, but before they return to userspace.
-
-Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ drivers/hsi/hsi_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 968921d376b98..c5e034fe14bbb 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -1528,6 +1528,20 @@ static void audit_receive(struct sk_buff  *skb)
- 		nlh = nlmsg_next(nlh, &len);
+diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
+index 71895da63810b..daf2de837a30a 100644
+--- a/drivers/hsi/hsi_core.c
++++ b/drivers/hsi/hsi_core.c
+@@ -115,6 +115,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
+ 	if (device_register(&cl->device) < 0) {
+ 		pr_err("hsi: failed to register client: %s\n", info->name);
+ 		put_device(&cl->device);
++		goto err;
  	}
- 	audit_ctl_unlock();
-+
-+	/* can't block with the ctrl lock, so penalize the sender now */
-+	if (audit_backlog_limit &&
-+	    (skb_queue_len(&audit_queue) > audit_backlog_limit)) {
-+		DECLARE_WAITQUEUE(wait, current);
-+
-+		/* wake kauditd to try and flush the queue */
-+		wake_up_interruptible(&kauditd_wait);
-+
-+		add_wait_queue_exclusive(&audit_backlog_wait, &wait);
-+		set_current_state(TASK_UNINTERRUPTIBLE);
-+		schedule_timeout(audit_backlog_wait_time);
-+		remove_wait_queue(&audit_backlog_wait, &wait);
-+	}
- }
  
- /* Run custom bind function on netlink socket group connect or bind requests. */
-@@ -1772,7 +1786,9 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
- 	 *    task_tgid_vnr() since auditd_pid is set in audit_receive_msg()
- 	 *    using a PID anchored in the caller's namespace
- 	 * 2. generator holding the audit_cmd_mutex - we don't want to block
--	 *    while holding the mutex */
-+	 *    while holding the mutex, although we do penalize the sender
-+	 *    later in audit_receive() when it is safe to block
-+	 */
- 	if (!(auditd_test_task(current) || audit_ctl_owner_current())) {
- 		long stime = audit_backlog_wait_time;
- 
+ 	return cl;
 -- 
 2.34.1
 
