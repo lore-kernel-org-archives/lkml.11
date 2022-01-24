@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DE8C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D61C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451019AbiAXVV6 (ORCPT
+        id S1450868AbiAXVVi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:21:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384555AbiAXUxH (ORCPT
+        Mon, 24 Jan 2022 16:21:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46710 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442133AbiAXUxW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:53:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18526C095417;
-        Mon, 24 Jan 2022 11:59:23 -0800 (PST)
+        Mon, 24 Jan 2022 15:53:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A9393611CD;
-        Mon, 24 Jan 2022 19:59:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE04C340E8;
-        Mon, 24 Jan 2022 19:59:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A956D611DA;
+        Mon, 24 Jan 2022 20:53:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EA6EC340E5;
+        Mon, 24 Jan 2022 20:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054362;
-        bh=VG1kD5DcqOtXZR9TY8TdK67T+wa/ynVIIQFX0eGJiCA=;
+        s=korg; t=1643057601;
+        bh=wKeoF4KVuNIMj/NAwyFfmj59Rac6LZagk23kK+eb/6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdBTVU2SarNGU6btRq3GAd3djc/m2wpRjN4WUU+Ug1EdyT8jXBOT27+mnCV+PcN3Q
-         jt9JW78i405YOXMxPT9bBxyqYMMXWBL9McFG9ypjscnIf9ku5l2qwpGNO+vZTSOrTF
-         GWqzs0HVcfjeenbFg1XN4VKSgvk+dOW2S7/EXw9k=
+        b=eZKdZV1WlkNIvqX+5ZAs4luAcCAaLsjgWTdC1vDy48F7jnP/XyoiN/95nZ3sstP0a
+         nMi2XbDqjzPUv3s7BSApnlJjwvvZJYf4BPsDqRhtTTXmmdfte7y/CMezOvTCi0IMSz
+         Htby/RpYg3pAe7NmMELuDMCvotoeJcsneatoXbUk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 365/563] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
-Date:   Mon, 24 Jan 2022 19:42:10 +0100
-Message-Id: <20220124184037.039837909@linuxfoundation.org>
+        stable@vger.kernel.org, Shyam Prasad N <sprasad@microsoft.com>,
+        Steve French <stfrench@microsoft.com>
+Subject: [PATCH 5.16 0009/1039] cifs: free ntlmsspblob allocated in negotiate
+Date:   Mon, 24 Jan 2022 19:29:58 +0100
+Message-Id: <20220124184125.451931499@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +46,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: Shyam Prasad N <sprasad@microsoft.com>
 
-[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
+commit e3548aaf41a200c2af359462be23bcdd76efd795 upstream.
 
-The mmc core takes a specific path to support initializing of a
-non-standard SDIO card. This is triggered by looking for the card-quirk,
-MMC_QUIRK_NONSTD_SDIO.
+One of my previous fixes:
+cifs: send workstation name during ntlmssp session setup
+...changed the prototype of build_ntlmssp_negotiate_blob
+from being allocated by the caller to being allocated within
+the function. The caller needs to free this object too.
+While SMB2 version of the caller did it, I forgot to free
+for the SMB1 version. Fixing that here.
 
-In mmc_sdio_init_card() this gets rather messy, as it causes the code to
-bail out earlier, compared to the usual path. This leads to that the OCR
-doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
-been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
-assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
-
-To make the behaviour consistent, let's instead rely on the core to save
-the OCR in card->ocr during initialization.
-
-Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 49bd49f983b5 ("cifs: send workstation name during ntlmssp session setup")
+Cc: stable@vger.kernel.org # 5.16
+Signed-off-by: Shyam Prasad N <sprasad@microsoft.com>
+Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mmc/core/sdio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/cifs/sess.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 1b0853a82189a..99a4ce68d82f1 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -708,6 +708,8 @@ try_again:
- 	if (host->ops->init_card)
- 		host->ops->init_card(host, card);
+--- a/fs/cifs/sess.c
++++ b/fs/cifs/sess.c
+@@ -1354,7 +1354,7 @@ sess_auth_rawntlmssp_negotiate(struct se
+ 				     &blob_len, ses,
+ 				     sess_data->nls_cp);
+ 	if (rc)
+-		goto out;
++		goto out_free_ntlmsspblob;
  
-+	card->ocr = ocr_card;
-+
- 	/*
- 	 * If the host and card support UHS-I mode request the card
- 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
-@@ -820,7 +822,7 @@ try_again:
- 			goto mismatch;
- 		}
+ 	sess_data->iov[1].iov_len = blob_len;
+ 	sess_data->iov[1].iov_base = ntlmsspblob;
+@@ -1362,7 +1362,7 @@ sess_auth_rawntlmssp_negotiate(struct se
+ 
+ 	rc = _sess_auth_rawntlmssp_assemble_req(sess_data);
+ 	if (rc)
+-		goto out;
++		goto out_free_ntlmsspblob;
+ 
+ 	rc = sess_sendreceive(sess_data);
+ 
+@@ -1376,14 +1376,14 @@ sess_auth_rawntlmssp_negotiate(struct se
+ 		rc = 0;
+ 
+ 	if (rc)
+-		goto out;
++		goto out_free_ntlmsspblob;
+ 
+ 	cifs_dbg(FYI, "rawntlmssp session setup challenge phase\n");
+ 
+ 	if (smb_buf->WordCount != 4) {
+ 		rc = -EIO;
+ 		cifs_dbg(VFS, "bad word count %d\n", smb_buf->WordCount);
+-		goto out;
++		goto out_free_ntlmsspblob;
  	}
--	card->ocr = ocr_card;
-+
- 	mmc_fixup_device(card, sdio_fixup_methods);
  
- 	if (card->type == MMC_TYPE_SD_COMBO) {
--- 
-2.34.1
-
+ 	ses->Suid = smb_buf->Uid;   /* UID left in wire format (le) */
+@@ -1397,10 +1397,13 @@ sess_auth_rawntlmssp_negotiate(struct se
+ 		cifs_dbg(VFS, "bad security blob length %d\n",
+ 				blob_len);
+ 		rc = -EINVAL;
+-		goto out;
++		goto out_free_ntlmsspblob;
+ 	}
+ 
+ 	rc = decode_ntlmssp_challenge(bcc_ptr, blob_len, ses);
++
++out_free_ntlmsspblob:
++	kfree(ntlmsspblob);
+ out:
+ 	sess_free_buffer(sess_data);
+ 
 
 
