@@ -2,90 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 895CBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 772B6C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587342AbiAXW2I (ORCPT
+        id S1587328AbiAXW2G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53850 "EHLO
+        Mon, 24 Jan 2022 17:28:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454648AbiAXVdT (ORCPT
+        with ESMTP id S1454662AbiAXVdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:33:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A855C075971;
-        Mon, 24 Jan 2022 12:21:25 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37246B81253;
-        Mon, 24 Jan 2022 20:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53A12C340E5;
-        Mon, 24 Jan 2022 20:21:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055683;
-        bh=1Xu0fY9+VgGKTdVcFCdBa37F4Om7SvBXrvrP+wodbko=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6A6IMiENEjyxqDeztiogxhFEVBZ2rp7HzIkkG1khmo8fC2CsCiwGKD0QZQzzaSct
-         RHcSfLJj1YbUtnhGIYkcYWGE8jJPGkI2Wx6Ad6N/W0agvdPHNrLw/VnOp7gqJibDsP
-         UDvdFjh7Ko6p9dEDXANEUP/df0Q00FJjSx15ZE8I=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 232/846] crypto: stm32/cryp - fix xts and race condition in crypto_engine requests
-Date:   Mon, 24 Jan 2022 19:35:49 +0100
-Message-Id: <20220124184108.938782772@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05800C07597B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:21:27 -0800 (PST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643055685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5FTeBFVoufuU7ZebHlDAFZY8PMUgfTQm18f5SfOHL8s=;
+        b=R1P7/uDqxqfBfk6N4xEy69WETfs1Jhu/2hRwCYOe8xPmYjIrg8SFqoZzucC0OcvPxGC7gE
+        5o4eT4spbf9a2ZqK7eh9QlzJNBKyf+ZApSxLDIzy/x5B94QW+Qz6zpqCKEdWp1IUDVNkXi
+        GYfV8E0MbwnGXMV3FJvetYWqtILk1ViWaKaz/QYbxXSq9U0fH7KpHObVTFwMWrGkAqCu/N
+        cl5gbESO88l9KqBeU+mOEeqASkjarlsDg43xmRuM8k87sqN3ZMUO/r1AZ7D/O7XYWNZ+yq
+        JSjH0RaYGsijeqNc8VmEpNnMPIpsZBmy23yo4XiUmbLqWnyg2sefiMDe1hbZ4Q==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643055685;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=5FTeBFVoufuU7ZebHlDAFZY8PMUgfTQm18f5SfOHL8s=;
+        b=hzlU/SjNn/fwwC/H/KRPQL79VdGm9mE7ZHkHxDA4MC0SLgFIgF2pfhSDFoTcrjigCCscSE
+        EYTOdPC2MJzUZHAw==
+To:     Fenghua Yu <fenghua.yu@intel.com>, Ingo Molnar <mingo@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>
+Cc:     iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Fenghua Yu <fenghua.yu@intel.com>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+In-Reply-To: <20211217220136.2762116-6-fenghua.yu@intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com>
+Date:   Mon, 24 Jan 2022 21:21:24 +0100
+Message-ID: <87ee4w6g1n.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+On Fri, Dec 17 2021 at 22:01, Fenghua Yu wrote:
+> diff --git a/drivers/iommu/iommu-sva-lib.c b/drivers/iommu/iommu-sva-lib.c
+> index bd41405d34e9..ee2294e02716 100644
+> --- a/drivers/iommu/iommu-sva-lib.c
+> +++ b/drivers/iommu/iommu-sva-lib.c
+> @@ -18,8 +18,7 @@ static DECLARE_IOASID_SET(iommu_sva_pasid);
+>   *
+>   * Try to allocate a PASID for this mm, or take a reference to the existing one
+>   * provided it fits within the [@min, @max] range. On success the PASID is
+> - * available in mm->pasid, and must be released with iommu_sva_free_pasid().
+> - * @min must be greater than 0, because 0 indicates an unused mm->pasid.
+> + * available in mm->pasid and will be available for the lifetime of the mm.
+>   *
+>   * Returns 0 on success and < 0 on error.
+>   */
+> @@ -33,38 +32,24 @@ int iommu_sva_alloc_pasid(struct mm_struct *mm, ioasid_t min, ioasid_t max)
+>  		return -EINVAL;
+>  
+>  	mutex_lock(&iommu_sva_lock);
+> -	if (mm->pasid) {
+> -		if (mm->pasid >= min && mm->pasid <= max)
+> -			ioasid_get(mm->pasid);
+> -		else
+> +	/* Is a PASID already associated with this mm? */
+> +	if (pasid_valid(mm->pasid)) {
+> +		if (mm->pasid < min || mm->pasid >= max)
+>  			ret = -EOVERFLOW;
+> -	} else {
+> -		pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+> -		if (pasid == INVALID_IOASID)
+> -			ret = -ENOMEM;
+> -		else
+> -			mm->pasid = pasid;
+> +		goto out;
+>  	}
+> +
+> +	pasid = ioasid_alloc(&iommu_sva_pasid, min, max, mm);
+> +	if (!pasid_valid(pasid))
+> +		ret = -ENOMEM;
+> +	else
+> +		mm_pasid_get(mm, pasid);
 
-[ Upstream commit d703c7a994ee34b7fa89baf21631fca0aa9f17fc ]
+Hrm. This is odd.
 
-Don't erase key:
-If key is erased before the crypto_finalize_.*_request() call, some
-pending process will run with a key={ 0 }.
-Moreover if the key is reset at end of request, it breaks xts chaining
-mode, as for last xts block (in case input len is not a multiple of
-block) a new AES request is started without calling again set_key().
+> +/* Associate a PASID with an mm_struct: */
+> +static inline void mm_pasid_get(struct mm_struct *mm, u32 pasid)
+> +{
+> +	mm->pasid = pasid;
+> +}
 
-Fixes: 9e054ec21ef8 ("crypto: stm32 - Support for STM32 CRYP crypto module")
+This does not get anything. It sets the allocated PASID in the mm. The
+refcount on the PASID was already taken by the allocation. So this
+should be mm_pasid_set() or mm_pasid_install(), right?
 
-Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/crypto/stm32/stm32-cryp.c | 2 --
- 1 file changed, 2 deletions(-)
+Thanks,
 
-diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
-index d13b262b36252..e2bcc4f98b0ae 100644
---- a/drivers/crypto/stm32/stm32-cryp.c
-+++ b/drivers/crypto/stm32/stm32-cryp.c
-@@ -674,8 +674,6 @@ static void stm32_cryp_finish_req(struct stm32_cryp *cryp, int err)
- 	else
- 		crypto_finalize_skcipher_request(cryp->engine, cryp->req,
- 						   err);
--
--	memset(cryp->ctx->key, 0, cryp->ctx->keylen);
- }
- 
- static int stm32_cryp_cpu_start(struct stm32_cryp *cryp)
--- 
-2.34.1
-
-
-
+        tglx
