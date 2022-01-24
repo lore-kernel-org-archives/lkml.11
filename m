@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3635C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5446C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457131AbiAXVlA (ORCPT
+        id S1457147AbiAXVlC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:00 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53558 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445345AbiAXVCw (ORCPT
+        Mon, 24 Jan 2022 16:41:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55262 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347028AbiAXVDC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:02:52 -0500
+        Mon, 24 Jan 2022 16:03:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7486F61320;
-        Mon, 24 Jan 2022 21:02:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F357C340E5;
-        Mon, 24 Jan 2022 21:02:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 67612B811FB;
+        Mon, 24 Jan 2022 21:03:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F133C340E5;
+        Mon, 24 Jan 2022 21:02:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058170;
-        bh=c119dTtFJ/UsDiNJRoA+V53VfW8MDbBahmzYfXdX0aE=;
+        s=korg; t=1643058180;
+        bh=r6PJTVbTgA7n2wSq8entt3xiWEWDnWuHPyVrqFfvuUQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0WUuNBlWta3mzI4mxH9Io1Q3rM2DbTuet8xmodACbe+Ud0fMJp3NSKJyuNtLUe17W
-         0rnK+OYQdaoZpPGBbQlYFRM/5o4VjMYxOlJjydn05NEZfYmNWTQ3EWMWE9+QIkp3u1
-         VJx9z5EQZ2NkWZ7j8XUPSy/pzF58NDokivxl8EtQ=
+        b=gjr/q4eJRij9zblNdQ/jOqW60PpN6pwa4UjJzwO5gI5aGGMgFS9D08MdmPJVF4F6J
+         uiNt77AefEr1LWDvB80ZtmXxadFsko9Vjlxj44KfUFQovmWSvhdshvuz35eutVtC2J
+         oT4LE7j3DdnfaHlLRFTa38EvBvQJDT/JYuONYnBw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Eirik Fuller <efuller@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Nicholas Piggin <npiggin@gmail.com>,
+        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
+        Martin Krastev <krastevm@vmware.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0203/1039] powerpc: Avoid discarding flags in system_call_exception()
-Date:   Mon, 24 Jan 2022 19:33:12 +0100
-Message-Id: <20220124184132.148938792@linuxfoundation.org>
+Subject: [PATCH 5.16 0206/1039] drm/vmwgfx: Remove the deprecated lower mem limit
+Date:   Mon, 24 Jan 2022 19:33:15 +0100
+Message-Id: <20220124184132.246155959@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,58 +47,186 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Rutland <mark.rutland@arm.com>
+From: Zack Rusin <zackr@vmware.com>
 
-[ Upstream commit 08b0af5b2affbe7419853e8dd1330e4b3fe27125 ]
+[ Upstream commit 826c387d015247df396a91eadbaca94f0394853c ]
 
-Some thread flags can be set remotely, and so even when IRQs are disabled,
-the flags can change under our feet. Thus, when setting flags we must use
-an atomic operation rather than a plain read-modify-write sequence, as a
-plain read-modify-write may discard flags which are concurrently set by a
-remote thread, e.g.
+TTM during the transition to the new page allocator lost the ability
+to constrain the allocations via the lower_mem_limit. The code has
+been unused since the change:
+256dd44bd897 ("drm/ttm: nuke old page allocator")
+and there's no reason to keep it.
 
-	// task A			// task B
-	tmp = A->thread_info.flags;
-					set_tsk_thread_flag(A, NEWFLAG_B);
-	tmp |= NEWFLAG_A;
-	A->thread_info.flags = tmp;
-
-arch/powerpc/kernel/interrupt.c's system_call_exception() sets
-_TIF_RESTOREALL in the thread info flags with a read-modify-write, which
-may result in other flags being discarded.
-
-Elsewhere in the file it uses clear_bits() to atomically remove flag bits,
-so use set_bits() here for consistency with those.
-
-There may be reasons (e.g. instrumentation) that prevent the use of
-set_thread_flag() and clear_thread_flag() here, which would otherwise be
-preferable.
-
-Fixes: ae7aaecc3f2f78b7 ("powerpc/64s: system call rfscv workaround for TM bugs")
-Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Cc: Eirik Fuller <efuller@redhat.com>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: Nicholas Piggin <npiggin@gmail.com>
-Link: https://lore.kernel.org/r/20211129130653.2037928-10-mark.rutland@arm.com
+Fixes: 256dd44bd897 ("drm/ttm: nuke old page allocator")
+Signed-off-by: Zack Rusin <zackr@vmware.com>
+Reviewed-by: Martin Krastev <krastevm@vmware.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211105193845.258816-2-zackr@vmware.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/interrupt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/vmwgfx/ttm_memory.c | 99 +----------------------------
+ drivers/gpu/drm/vmwgfx/ttm_memory.h |  6 +-
+ 2 files changed, 2 insertions(+), 103 deletions(-)
 
-diff --git a/arch/powerpc/kernel/interrupt.c b/arch/powerpc/kernel/interrupt.c
-index 835b626cd4760..df048e331cbfe 100644
---- a/arch/powerpc/kernel/interrupt.c
-+++ b/arch/powerpc/kernel/interrupt.c
-@@ -148,7 +148,7 @@ notrace long system_call_exception(long r3, long r4, long r5,
- 	 */
- 	if (IS_ENABLED(CONFIG_PPC_TRANSACTIONAL_MEM) &&
- 			unlikely(MSR_TM_TRANSACTIONAL(regs->msr)))
--		current_thread_info()->flags |= _TIF_RESTOREALL;
-+		set_bits(_TIF_RESTOREALL, &current_thread_info()->flags);
+diff --git a/drivers/gpu/drm/vmwgfx/ttm_memory.c b/drivers/gpu/drm/vmwgfx/ttm_memory.c
+index 7f7fe35fc21df..326d2d177c8bb 100644
+--- a/drivers/gpu/drm/vmwgfx/ttm_memory.c
++++ b/drivers/gpu/drm/vmwgfx/ttm_memory.c
+@@ -34,7 +34,6 @@
+ #include <linux/mm.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
+-#include <linux/swap.h>
  
- 	/*
- 	 * If the system call was made with a transaction active, doom it and
+ #include <drm/drm_device.h>
+ #include <drm/drm_file.h>
+@@ -173,69 +172,7 @@ static struct kobj_type ttm_mem_zone_kobj_type = {
+ 	.sysfs_ops = &ttm_mem_zone_ops,
+ 	.default_attrs = ttm_mem_zone_attrs,
+ };
+-
+-static struct attribute ttm_mem_global_lower_mem_limit = {
+-	.name = "lower_mem_limit",
+-	.mode = S_IRUGO | S_IWUSR
+-};
+-
+-static ssize_t ttm_mem_global_show(struct kobject *kobj,
+-				 struct attribute *attr,
+-				 char *buffer)
+-{
+-	struct ttm_mem_global *glob =
+-		container_of(kobj, struct ttm_mem_global, kobj);
+-	uint64_t val = 0;
+-
+-	spin_lock(&glob->lock);
+-	val = glob->lower_mem_limit;
+-	spin_unlock(&glob->lock);
+-	/* convert from number of pages to KB */
+-	val <<= (PAGE_SHIFT - 10);
+-	return snprintf(buffer, PAGE_SIZE, "%llu\n",
+-			(unsigned long long) val);
+-}
+-
+-static ssize_t ttm_mem_global_store(struct kobject *kobj,
+-				  struct attribute *attr,
+-				  const char *buffer,
+-				  size_t size)
+-{
+-	int chars;
+-	uint64_t val64;
+-	unsigned long val;
+-	struct ttm_mem_global *glob =
+-		container_of(kobj, struct ttm_mem_global, kobj);
+-
+-	chars = sscanf(buffer, "%lu", &val);
+-	if (chars == 0)
+-		return size;
+-
+-	val64 = val;
+-	/* convert from KB to number of pages */
+-	val64 >>= (PAGE_SHIFT - 10);
+-
+-	spin_lock(&glob->lock);
+-	glob->lower_mem_limit = val64;
+-	spin_unlock(&glob->lock);
+-
+-	return size;
+-}
+-
+-static struct attribute *ttm_mem_global_attrs[] = {
+-	&ttm_mem_global_lower_mem_limit,
+-	NULL
+-};
+-
+-static const struct sysfs_ops ttm_mem_global_ops = {
+-	.show = &ttm_mem_global_show,
+-	.store = &ttm_mem_global_store,
+-};
+-
+-static struct kobj_type ttm_mem_glob_kobj_type = {
+-	.sysfs_ops = &ttm_mem_global_ops,
+-	.default_attrs = ttm_mem_global_attrs,
+-};
++static struct kobj_type ttm_mem_glob_kobj_type = {0};
+ 
+ static bool ttm_zones_above_swap_target(struct ttm_mem_global *glob,
+ 					bool from_wq, uint64_t extra)
+@@ -435,11 +372,6 @@ int ttm_mem_global_init(struct ttm_mem_global *glob, struct device *dev)
+ 
+ 	si_meminfo(&si);
+ 
+-	spin_lock(&glob->lock);
+-	/* set it as 0 by default to keep original behavior of OOM */
+-	glob->lower_mem_limit = 0;
+-	spin_unlock(&glob->lock);
+-
+ 	ret = ttm_mem_init_kernel_zone(glob, &si);
+ 	if (unlikely(ret != 0))
+ 		goto out_no_zone;
+@@ -526,35 +458,6 @@ void ttm_mem_global_free(struct ttm_mem_global *glob,
+ }
+ EXPORT_SYMBOL(ttm_mem_global_free);
+ 
+-/*
+- * check if the available mem is under lower memory limit
+- *
+- * a. if no swap disk at all or free swap space is under swap_mem_limit
+- * but available system mem is bigger than sys_mem_limit, allow TTM
+- * allocation;
+- *
+- * b. if the available system mem is less than sys_mem_limit but free
+- * swap disk is bigger than swap_mem_limit, allow TTM allocation.
+- */
+-bool
+-ttm_check_under_lowerlimit(struct ttm_mem_global *glob,
+-			uint64_t num_pages,
+-			struct ttm_operation_ctx *ctx)
+-{
+-	int64_t available;
+-
+-	/* We allow over commit during suspend */
+-	if (ctx->force_alloc)
+-		return false;
+-
+-	available = get_nr_swap_pages() + si_mem_available();
+-	available -= num_pages;
+-	if (available < glob->lower_mem_limit)
+-		return true;
+-
+-	return false;
+-}
+-
+ static int ttm_mem_global_reserve(struct ttm_mem_global *glob,
+ 				  struct ttm_mem_zone *single_zone,
+ 				  uint64_t amount, bool reserve)
+diff --git a/drivers/gpu/drm/vmwgfx/ttm_memory.h b/drivers/gpu/drm/vmwgfx/ttm_memory.h
+index c50dba7744854..7b0d617ebcb1e 100644
+--- a/drivers/gpu/drm/vmwgfx/ttm_memory.h
++++ b/drivers/gpu/drm/vmwgfx/ttm_memory.h
+@@ -50,8 +50,6 @@
+  * @work: The workqueue callback for the shrink queue.
+  * @lock: Lock to protect the @shrink - and the memory accounting members,
+  * that is, essentially the whole structure with some exceptions.
+- * @lower_mem_limit: include lower limit of swap space and lower limit of
+- * system memory.
+  * @zones: Array of pointers to accounting zones.
+  * @num_zones: Number of populated entries in the @zones array.
+  * @zone_kernel: Pointer to the kernel zone.
+@@ -69,7 +67,6 @@ extern struct ttm_mem_global {
+ 	struct workqueue_struct *swap_queue;
+ 	struct work_struct work;
+ 	spinlock_t lock;
+-	uint64_t lower_mem_limit;
+ 	struct ttm_mem_zone *zones[TTM_MEM_MAX_ZONES];
+ 	unsigned int num_zones;
+ 	struct ttm_mem_zone *zone_kernel;
+@@ -91,6 +88,5 @@ int ttm_mem_global_alloc_page(struct ttm_mem_global *glob,
+ void ttm_mem_global_free_page(struct ttm_mem_global *glob,
+ 			      struct page *page, uint64_t size);
+ size_t ttm_round_pot(size_t size);
+-bool ttm_check_under_lowerlimit(struct ttm_mem_global *glob, uint64_t num_pages,
+-				struct ttm_operation_ctx *ctx);
++
+ #endif
 -- 
 2.34.1
 
