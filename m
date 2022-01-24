@@ -2,122 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D83F0C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 689BEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:06:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241364AbiAXRGV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:06:21 -0500
-Received: from mta-p5.oit.umn.edu ([134.84.196.205]:44980 "EHLO
-        mta-p5.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231960AbiAXRGT (ORCPT
+        id S243700AbiAXRGc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:06:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244124AbiAXREa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:06:19 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p5.oit.umn.edu (Postfix) with ESMTP id 4JjGbb0Bdvz9vFJR
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:06:19 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p5.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p5.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Eihr9kFL2Wj8 for <linux-kernel@vger.kernel.org>;
-        Mon, 24 Jan 2022 11:06:18 -0600 (CST)
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com [209.85.216.72])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p5.oit.umn.edu (Postfix) with ESMTPS id 4JjGbZ5FlBz9vFJM
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:06:18 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p5.oit.umn.edu 4JjGbZ5FlBz9vFJM
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p5.oit.umn.edu 4JjGbZ5FlBz9vFJM
-Received: by mail-pj1-f72.google.com with SMTP id k2-20020a17090a658200b001b399622095so231300pjj.9
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:06:18 -0800 (PST)
+        Mon, 24 Jan 2022 12:04:30 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAD2C061744;
+        Mon, 24 Jan 2022 09:04:29 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id v67so8295137oie.9;
+        Mon, 24 Jan 2022 09:04:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D23ajDKPfP8QvM0YyxuxxxoHL0XAqyQacaTbHEKBa1U=;
-        b=MmTL/cIojmZDn33VxiqZAJP6Nensh1IfyZjvD8gUhgT4jen9mvPfliWE5ilCkxYRhR
-         Zdf/gGZ0sbPinbGLHoAZKsdtaRAETLUMnP10tLyKqMQDmQxqQ3tNPUn9QoxmL7mpeJKB
-         BCZeDosFWW9qiZ7UXad8ceFZ/ApuNGdcn0y/Mc+e1PQZzAHDMrXrHumLEG7y8g7PTIjD
-         gbvDhgQUJEAa0EYVlUTDvXX3MVzH8f55U4Kn91Rx9tkZQgpv225mhqiQJ2RH6p7FURdf
-         kXqkcFj9oSveEaMwnQ3kTy7wvOx8i3JQQvSCskmPEmDhZXYkn8jlavnLLbmN+hKqUubQ
-         OkMw==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=E7Oz+OAUDPzcoErJ5LrjgeRbjicJzQkLP3fhGNuFgqc=;
+        b=dVPPVZHdsFuLVnFkMrORa4gA/eaYJ6iPt8ceenfYEwI73FAVpW9YkJ8/5Wm3Au7hEr
+         fvWyQr/6BB9z9H9YDWR46LqrLyNdUQ+6kiNEhwyezWSfPcx1uIn3XInrOWi2QOOOiH0I
+         HqksV1VnqQ/wkyDIyEp78mHK8dFixfTzUsQx4l53L830PISZPGMgR7zR/KvXy+CrRixL
+         OXgIKDEpfzp7G0THjPRlMHFE5PBYOHQSbscDm5YkcWSzkXtmesmlMjXqrqxbv1CFUnPZ
+         DmY3fF4PvuXJ1GQNtt1mPKVNyzLxTwPuzzeE08g6r4JPvhD0JiGpIoHe936jhq62JoiF
+         xpMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D23ajDKPfP8QvM0YyxuxxxoHL0XAqyQacaTbHEKBa1U=;
-        b=yhqTG1lLnagSw+iLR7DoZc4Fd2Or4JcUGNZ0NpW72/D61wyLFoT4IyZpeNpSpJEJDV
-         EQjpnERYeDPjidu4rfB3chQN3OaOj1yBjUaccxg5OApQtJWavfS07865zUHAh0Zd1Kux
-         xauWh3csUWvPEBpjCDzqeb0HVCFIcaJmiw11WKbN5qhsSusjchi5SdqmsBThEkmvfRkM
-         UqErCQyZKevHDY/w/f6ZM3KMifNTNAMjDW1hGrzJQyMAKNxzR6kz3ypDUFpOvMsRsZ/S
-         +95p5f+f/oH70l16HVj5N9XAhkufaEE7fZz2On+x2iClPCQfX+CrzkybuU9gXhnuYBpl
-         I8TQ==
-X-Gm-Message-State: AOAM5312E0UTRxCsgPvbyAVCtMC+Us3v4WSTO39dr5mOuMVW7jjTew4C
-        IbqVqiPzs5Uq6Hx1LeosyO7R1g+zSbLCbH7eViGudd4XDj30iLUrGWePocueOerHcIdj9TtMwJa
-        Adl5LPaDQoxFjJxNg0ttGO0WYpI/u
-X-Received: by 2002:a63:7f4d:: with SMTP id p13mr12133882pgn.29.1643043977988;
-        Mon, 24 Jan 2022 09:06:17 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyOz2vcm0FEUwbM7DjKGdskMrltoPSKvgeIgvjuXanLkMLB9W6kspX6OqX01eblMse7WXzwQw==
-X-Received: by 2002:a63:7f4d:: with SMTP id p13mr12133863pgn.29.1643043977708;
-        Mon, 24 Jan 2022 09:06:17 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.61.248])
-        by smtp.gmail.com with ESMTPSA id pi1sm6001094pjb.10.2022.01.24.09.06.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 09:06:17 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] media: media/pci: Fix a NULL pointer dereference in cx23885_417_register()
-Date:   Tue, 25 Jan 2022 01:06:10 +0800
-Message-Id: <20220124170611.58864-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=E7Oz+OAUDPzcoErJ5LrjgeRbjicJzQkLP3fhGNuFgqc=;
+        b=vhxeKrdwEvQrUhVIR0vhwhcrbw+o/nktq6SEyFkBsxqHFezXIDjW4wXUMY3pl7HaDb
+         yHoRFCzWMYiSTPQJ0UdE7KHekhNHNw1j9esYvl0/EGuY/UnOSPwmOIXJVfE69hR3LjnC
+         XHbJFdbDDecsmumECJAjTqcBtCGtKjLugh97+VRvmUzKK62OXDi0FJ+OP0li/YMwyLBc
+         qHzyBTZhPqj2lZv0ZCSYgVjrznFHpAdNWBZ2BOsBAPnmq1/DrO6+yJ8iO/Z9hVsRW60g
+         f01x2YQ7d6EtH7rfAmvw0es/oFx7qiL4Jp0tg6kcrFh9GWlMG9VQMlwtxx7JbNE0NmV/
+         eKxA==
+X-Gm-Message-State: AOAM533ogOVQJsK/DD/DowSOol4kdEFA32GMFVLBmGouEb4xly9bx2Ot
+        Lb99DAIZPPP8RxEoOFTc+4w6EMXipOIP8emRDNQ=
+X-Google-Smtp-Source: ABdhPJxCdwUU5AEjhEjKyYvW5Z3dZLxPGusPHNjSVUIUFWKpDwmjEoZshPQW3yrLe6MYUOFnPsbgwsI/ccSmRwbaZOw=
+X-Received: by 2002:a05:6808:68f:: with SMTP id k15mr2142619oig.5.1643043869133;
+ Mon, 24 Jan 2022 09:04:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <87ee57c8fu.fsf@turner.link> <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+ <87a6ftk9qy.fsf@dmarc-none.turner.link> <87zgnp96a4.fsf@turner.link>
+ <fc2b7593-db8f-091c-67a0-ae5ffce71700@leemhuis.info> <CADnq5_Nr5-FR2zP1ViVsD_ZMiW=UHC1wO8_HEGm26K_EG2KDoA@mail.gmail.com>
+ <87czkk1pmt.fsf@dmarc-none.turner.link> <BYAPR12MB46140BE09E37244AE129C01A975C9@BYAPR12MB4614.namprd12.prod.outlook.com>
+ <87sftfqwlx.fsf@dmarc-none.turner.link>
+In-Reply-To: <87sftfqwlx.fsf@dmarc-none.turner.link>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 24 Jan 2022 12:04:18 -0500
+Message-ID: <CADnq5_P5RAJxKWCQBmJae8eWjJ5_wPG01uJYOpXMGsieWqUDvw@mail.gmail.com>
+Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
+ PCI-passed-through to Windows VM
+To:     James Turner <linuxkernel.foss@dmarc-none.turner.link>
+Cc:     "Lazar, Lijo" <Lijo.Lazar@amd.com>,
+        Thorsten Leemhuis <regressions@leemhuis.info>,
+        "Deucher, Alexander" <Alexander.Deucher@amd.com>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        "Koenig, Christian" <Christian.Koenig@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In cx23885_417_register(), the return value of cx23885_video_dev_alloc() 
-is assigned to dev->v4l_device() and there is a dereference of it after
-that. the return value of cx23885_video_dev_alloc() could be NULL on 
-failure of allocation, which could lead to a NULL pointer dereference.
+On Sat, Jan 22, 2022 at 4:38 PM James Turner
+<linuxkernel.foss@dmarc-none.turner.link> wrote:
+>
+> Hi Lijo,
+>
+> > Could you provide the pp_dpm_* values in sysfs with and without the
+> > patch? Also, could you try forcing PCIE to gen3 (through pp_dpm_pcie)
+> > if it's not in gen3 when the issue happens?
+>
+> AFAICT, I can't access those values while the AMD GPU PCI devices are
+> bound to `vfio-pci`. However, I can at least access the link speed and
+> width elsewhere in sysfs. So, I gathered what information I could for
+> two different cases:
+>
+> - With the PCI devices bound to `vfio-pci`. With this configuration, I
+>   can start the VM, but the `pp_dpm_*` values are not available since
+>   the devices are bound to `vfio-pci` instead of `amdgpu`.
+>
+> - Without the PCI devices bound to `vfio-pci` (i.e. after removing the
+>   `vfio-pci.ids=...` kernel command line argument). With this
+>   configuration, I can access the `pp_dpm_*` values, since the PCI
+>   devices are bound to `amdgpu`. However, I cannot use the VM. If I try
+>   to start the VM, the display (both the external monitors attached to
+>   the AMD GPU and the built-in laptop display attached to the Intel
+>   iGPU) completely freezes.
+>
+> The output shown below was identical for both the good commit:
+> f1688bd69ec4 ("drm/amd/amdgpu:save psp ring wptr to avoid attack")
+> and the commit which introduced the issue:
+> f9b7f3703ff9 ("drm/amdgpu/acpi: make ATPX/ATCS structures global (v2)")
+>
+> Note that the PCI link speed increased to 8.0 GT/s when the GPU was
+> under heavy load for both versions, but the clock speeds of the GPU were
+> different under load. (For the good commit, it was 1295 MHz; for the bad
+> commit, it was 501 MHz.)
+>
 
-Fix this bug by adding a NULL check of dev->v4l_device.
+Are the ATIF and ATCS ACPI methods available in the guest VM?  They
+are required for this platform to work correctly from a power
+standpoint.  One thing that f9b7f3703ff9 did was to get those ACPI
+methods executed on certain platforms where they had not been
+previously due to a bug in the original implementation.  If the
+windows driver doesn't interact with them, it could cause performance
+issues.  It may have worked by accident before because the ACPI
+interfaces may not have been called, leading the windows driver to
+believe this was a standalone dGPU rather than one integrated into a
+power/thermal limited platform.
 
-This bug was found by a static analyzer.
+Alex
 
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
 
-Fixes: 453afdd9ce33 ("[media] cx23885: convert to vb2")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths 
-and confirms that the inconsistent operations are not recovered in the
-current function or the callers, so they constitute bugs. 
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
- drivers/media/pci/cx23885/cx23885-417.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/media/pci/cx23885/cx23885-417.c b/drivers/media/pci/cx23885/cx23885-417.c
-index 434677bd4ad1..fcc9c1117ed1 100644
---- a/drivers/media/pci/cx23885/cx23885-417.c
-+++ b/drivers/media/pci/cx23885/cx23885-417.c
-@@ -1521,6 +1521,8 @@ int cx23885_417_register(struct cx23885_dev *dev)
- 	/* Allocate and initialize V4L video device */
- 	dev->v4l_device = cx23885_video_dev_alloc(tsport,
- 		dev->pci, &cx23885_mpeg_template, "mpeg");
-+	if (!dev->v4l_device)
-+		return -ENOMEM;
- 	q = &dev->vb2_mpegq;
- 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
- 	q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF | VB2_READ;
--- 
-2.25.1
-
+>
+> # With the PCI devices bound to `vfio-pci`
+>
+> ## Before starting the VM
+>
+> % ls /sys/module/amdgpu/drivers/pci:amdgpu
+> module  bind  new_id  remove_id  uevent  unbind
+>
+> % find /sys/bus/pci/devices/0000:01:00.0/ -type f -name 'current_link*' -print -exec cat {} \;
+> /sys/bus/pci/devices/0000:01:00.0/current_link_width
+> 8
+> /sys/bus/pci/devices/0000:01:00.0/current_link_speed
+> 8.0 GT/s PCIe
+>
+> ## While running the VM, before placing the AMD GPU under heavy load
+>
+> % find /sys/bus/pci/devices/0000:01:00.0/ -type f -name 'current_link*' -print -exec cat {} \;
+> /sys/bus/pci/devices/0000:01:00.0/current_link_width
+> 8
+> /sys/bus/pci/devices/0000:01:00.0/current_link_speed
+> 2.5 GT/s PCIe
+>
+> ## While running the VM, with the AMD GPU under heavy load
+>
+> % find /sys/bus/pci/devices/0000:01:00.0/ -type f -name 'current_link*' -print -exec cat {} \;
+> /sys/bus/pci/devices/0000:01:00.0/current_link_width
+> 8
+> /sys/bus/pci/devices/0000:01:00.0/current_link_speed
+> 8.0 GT/s PCIe
+>
+> ## While running the VM, after stopping the heavy load on the AMD GPU
+>
+> % find /sys/bus/pci/devices/0000:01:00.0/ -type f -name 'current_link*' -print -exec cat {} \;
+> /sys/bus/pci/devices/0000:01:00.0/current_link_width
+> 8
+> /sys/bus/pci/devices/0000:01:00.0/current_link_speed
+> 2.5 GT/s PCIe
+>
+> ## After stopping the VM
+>
+> % find /sys/bus/pci/devices/0000:01:00.0/ -type f -name 'current_link*' -print -exec cat {} \;
+> /sys/bus/pci/devices/0000:01:00.0/current_link_width
+> 8
+> /sys/bus/pci/devices/0000:01:00.0/current_link_speed
+> 2.5 GT/s PCIe
+>
+>
+> # Without the PCI devices bound to `vfio-pci`
+>
+> % ls /sys/module/amdgpu/drivers/pci:amdgpu
+> 0000:01:00.0  module  bind  new_id  remove_id  uevent  unbind
+>
+> % for f in /sys/module/amdgpu/drivers/pci:amdgpu/*/pp_dpm_*; do echo "$f"; cat "$f"; echo; done
+> /sys/module/amdgpu/drivers/pci:amdgpu/0000:01:00.0/pp_dpm_mclk
+> 0: 300Mhz
+> 1: 625Mhz
+> 2: 1500Mhz *
+>
+> /sys/module/amdgpu/drivers/pci:amdgpu/0000:01:00.0/pp_dpm_pcie
+> 0: 2.5GT/s, x8
+> 1: 8.0GT/s, x16 *
+>
+> /sys/module/amdgpu/drivers/pci:amdgpu/0000:01:00.0/pp_dpm_sclk
+> 0: 214Mhz
+> 1: 501Mhz
+> 2: 850Mhz
+> 3: 1034Mhz
+> 4: 1144Mhz
+> 5: 1228Mhz
+> 6: 1275Mhz
+> 7: 1295Mhz *
+>
+> % find /sys/bus/pci/devices/0000:01:00.0/ -type f -name 'current_link*' -print -exec cat {} \;
+> /sys/bus/pci/devices/0000:01:00.0/current_link_width
+> 8
+> /sys/bus/pci/devices/0000:01:00.0/current_link_speed
+> 8.0 GT/s PCIe
+>
+>
+> James
