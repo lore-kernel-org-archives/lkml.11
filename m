@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1B92C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F07C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356088AbiAXTpM (ORCPT
+        id S1356027AbiAXTpE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:45:12 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58162 "EHLO
+        Mon, 24 Jan 2022 14:45:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58092 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354238AbiAXTgS (ORCPT
+        with ESMTP id S1354186AbiAXTgL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:36:18 -0500
+        Mon, 24 Jan 2022 14:36:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AD13B8123F;
-        Mon, 24 Jan 2022 19:36:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C1FCC340E5;
-        Mon, 24 Jan 2022 19:36:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8F29B8122F;
+        Mon, 24 Jan 2022 19:36:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0AE20C340E5;
+        Mon, 24 Jan 2022 19:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052974;
-        bh=Y9TME6GlDVGP6wYbQYgCTOaBbsZDcv5Z3Juog3mJdW4=;
+        s=korg; t=1643052968;
+        bh=sTCekZEw9uEAHrjdVyISUfUMGWrR2PuYEye6KgK+SL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z84osmP1Hq/rz7cZLGAYfAfeBHbq7mDXgbis3VgbkVwmEThBU1REOnfRltPaxWjm+
-         hcOd3PxV7uyN9HUdq7ABEDAng9kwrBuIJg7MPsgqGwz6Vy+q6dh7zudNOcPTHGUOiI
-         7sV+MOUX7Ml2XlS759bD44+n1UO/5bCh/1WzyAhc=
+        b=RSbWWf0elt2hxWRUfHajIgtQviTqewavZWRsjFhP9L5guZD8xudsDNBNK6mxSsIAA
+         tE7cj9p4P/OvvQN3HQ6xZjXnpp1GwBODe1apYJgDPKDs6p6q8w7dT5HitAwfpmGe0Z
+         mScAfNZmptIH145JJWQlb0zN1pdpYshEhY90CtHI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org,
+        Joakim Tjernlund <joakim.tjernlund@infinera.com>,
+        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 233/320] powerpc/powermac: Add missing lockdep_register_key()
-Date:   Mon, 24 Jan 2022 19:43:37 +0100
-Message-Id: <20220124184001.905370240@linuxfoundation.org>
+Subject: [PATCH 5.4 231/320] i2c: mpc: Correct I2C reset procedure
+Date:   Mon, 24 Jan 2022 19:43:35 +0100
+Message-Id: <20220124184001.845220854@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,59 +48,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
 
-[ Upstream commit df1f679d19edb9eeb67cc2f96b29375f21991945 ]
+[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
 
-KeyWest i2c @0xf8001003 irq 42 /uni-n@f8000000/i2c@f8001000
-BUG: key c2d00cbc has not been registered!
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(1)
-WARNING: CPU: 0 PID: 1 at kernel/locking/lockdep.c:4801 lockdep_init_map_type+0x4c0/0xb4c
-Modules linked in:
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.5-gentoo-PowerMacG4 #9
-NIP:  c01a9428 LR: c01a9428 CTR: 00000000
-REGS: e1033cf0 TRAP: 0700   Not tainted  (5.15.5-gentoo-PowerMacG4)
-MSR:  00029032 <EE,ME,IR,DR,RI>  CR: 24002002  XER: 00000000
+Current I2C reset procedure is broken in two ways:
+1) It only generate 1 START instead of 9 STARTs and STOP.
+2) It leaves the bus Busy so every I2C xfer after the first
+   fixup calls the reset routine again, for every xfer there after.
 
-GPR00: c01a9428 e1033db0 c2d1cf20 00000016 00000004 00000001 c01c0630 e1033a73
-GPR08: 00000000 00000000 00000000 e1033db0 24002004 00000000 f8729377 00000003
-GPR16: c1829a9c 00000000 18305357 c1416fc0 c1416f80 c006ac60 c2d00ca8 c1416f00
-GPR24: 00000000 c21586f0 c2160000 00000000 c2d00cbc c2170000 c216e1a0 c2160000
-NIP [c01a9428] lockdep_init_map_type+0x4c0/0xb4c
-LR [c01a9428] lockdep_init_map_type+0x4c0/0xb4c
-Call Trace:
-[e1033db0] [c01a9428] lockdep_init_map_type+0x4c0/0xb4c (unreliable)
-[e1033df0] [c1c177b8] kw_i2c_add+0x334/0x424
-[e1033e20] [c1c18294] pmac_i2c_init+0x9ec/0xa9c
-[e1033e80] [c1c1a790] smp_core99_probe+0xbc/0x35c
-[e1033eb0] [c1c03cb0] kernel_init_freeable+0x190/0x5a4
-[e1033f10] [c000946c] kernel_init+0x28/0x154
-[e1033f30] [c0035148] ret_from_kernel_thread+0x14/0x1c
+This fixes both errors.
 
-Add missing lockdep_register_key()
-
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/69e4f55565bb45ebb0843977801b245af0c666fe.1638264741.git.christophe.leroy@csgroup.eu
+Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powermac/low_i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
-index a366233d8ac2d..210435a43bf95 100644
---- a/arch/powerpc/platforms/powermac/low_i2c.c
-+++ b/arch/powerpc/platforms/powermac/low_i2c.c
-@@ -582,6 +582,7 @@ static void __init kw_i2c_add(struct pmac_i2c_host_kw *host,
- 	bus->close = kw_i2c_close;
- 	bus->xfer = kw_i2c_xfer;
- 	mutex_init(&bus->mutex);
-+	lockdep_register_key(&bus->lock_key);
- 	lockdep_set_class(&bus->mutex, &bus->lock_key);
- 	if (controller == busnode)
- 		bus->flags = pmac_i2c_multibus;
+diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
+index af349661fd769..8de8296d25831 100644
+--- a/drivers/i2c/busses/i2c-mpc.c
++++ b/drivers/i2c/busses/i2c-mpc.c
+@@ -105,23 +105,30 @@ static irqreturn_t mpc_i2c_isr(int irq, void *dev_id)
+ /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
+  * the bus, because it wants to send ACK.
+  * Following sequence of enabling/disabling and sending start/stop generates
+- * the 9 pulses, so it's all OK.
++ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
+  */
+ static void mpc_i2c_fixup(struct mpc_i2c *i2c)
+ {
+ 	int k;
+-	u32 delay_val = 1000000 / i2c->real_clk + 1;
+-
+-	if (delay_val < 2)
+-		delay_val = 2;
++	unsigned long flags;
+ 
+ 	for (k = 9; k; k--) {
+ 		writeccr(i2c, 0);
+-		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
++		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
++		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
++		readb(i2c->base + MPC_I2C_DR); /* init xfer */
++		udelay(15); /* let it hit the bus */
++		local_irq_save(flags); /* should not be delayed further */
++		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
+ 		readb(i2c->base + MPC_I2C_DR);
+-		writeccr(i2c, CCR_MEN);
+-		udelay(delay_val << 1);
++		if (k != 1)
++			udelay(5);
++		local_irq_restore(flags);
+ 	}
++	writeccr(i2c, CCR_MEN); /* Initiate STOP */
++	readb(i2c->base + MPC_I2C_DR);
++	udelay(15); /* Let STOP propagate */
++	writeccr(i2c, 0);
+ }
+ 
+ static int i2c_wait(struct mpc_i2c *i2c, unsigned timeout, int writing)
 -- 
 2.34.1
 
