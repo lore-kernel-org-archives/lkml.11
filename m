@@ -2,48 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63423C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:34:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1CEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588846AbiAXWeF (ORCPT
+        id S1588877AbiAXWeR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:34:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456634AbiAXVjk (ORCPT
+        Mon, 24 Jan 2022 17:34:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51144 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456516AbiAXVj0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:39:40 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480A1C0417D1;
-        Mon, 24 Jan 2022 12:25:12 -0800 (PST)
+        Mon, 24 Jan 2022 16:39:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 109DBB8121C;
-        Mon, 24 Jan 2022 20:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3772EC340E8;
-        Mon, 24 Jan 2022 20:25:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA597B8121C;
+        Mon, 24 Jan 2022 21:39:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22A8BC340E4;
+        Mon, 24 Jan 2022 21:39:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055909;
-        bh=1HJTEdJbsETCywUzoAM7MoH5oDIbZRr8IH9m9qAdEXg=;
+        s=korg; t=1643060363;
+        bh=x7S04SykEtkNO6jyz+/ia/IfgXn8OU6ejHj5ebXM5TE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wTJtQ3hYqOAWfbkDg0PIKzYuFXjniqjFTSCAL+6XY3uWPKjNt8T7F4wHmOkyHDPHr
-         JIze8UJ6rsX5KsbtU9kFG2t6zEt5L/5QqXKLUDEMR7LRe8KXpeAMFWXoAUihfZEhyZ
-         aUZeHhYptoHx8k/HYrRrbRxzBe859vj7vTwyH0Fw=
+        b=fQLJ1GsVFYJCvPI7lxgqGbnHA6/NQTnycWzOSkw6+J1/QBT5jLh2gpDindsoUINZH
+         2g1KikLyWJ4vf0YGDRsD7YHF7cP1SPnMYGn11iKmsgkfmHl5VfmhyP1yHPSM+VCyC4
+         KU49ZW9IBeZ08zobOMXOwLND2RmE7XbaF5h7wdi4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 307/846] net: dsa: fix incorrect function pointer check for MRP ring roles
-Date:   Mon, 24 Jan 2022 19:37:04 +0100
-Message-Id: <20220124184111.499495647@linuxfoundation.org>
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.16 0923/1039] dmaengine: uniphier-xdmac: Fix type of address variables
+Date:   Mon, 24 Jan 2022 19:45:12 +0100
+Message-Id: <20220124184156.323754976@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,54 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-[ Upstream commit ff91e1b68490b97c18c649b769618815eb945f11 ]
+commit 105a8c525675bb7d4d64871f9b2edf39460de881 upstream.
 
-The cross-chip notifier boilerplate code meant to check the presence of
-ds->ops->port_mrp_add_ring_role before calling it, but checked
-ds->ops->port_mrp_add instead, before calling
-ds->ops->port_mrp_add_ring_role.
+The variables src_addr and dst_addr handle DMA addresses, so these should
+be declared as dma_addr_t.
 
-Therefore, a driver which implements one operation but not the other
-would trigger a NULL pointer dereference.
-
-There isn't any such driver in DSA yet, so there is no reason to
-backport the change. Issue found through code inspection.
-
-Cc: Horatiu Vultur <horatiu.vultur@microchip.com>
-Fixes: c595c4330da0 ("net: dsa: add MRP support")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 667b9251440b ("dmaengine: uniphier-xdmac: Add UniPhier external DMA controller driver")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1639456963-10232-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/dsa/switch.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/dma/uniphier-xdmac.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 44558fbdc65b3..fb69f2f14234e 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -644,7 +644,7 @@ static int
- dsa_switch_mrp_add_ring_role(struct dsa_switch *ds,
- 			     struct dsa_notifier_mrp_ring_role_info *info)
+--- a/drivers/dma/uniphier-xdmac.c
++++ b/drivers/dma/uniphier-xdmac.c
+@@ -131,8 +131,9 @@ uniphier_xdmac_next_desc(struct uniphier
+ static void uniphier_xdmac_chan_start(struct uniphier_xdmac_chan *xc,
+ 				      struct uniphier_xdmac_desc *xd)
  {
--	if (!ds->ops->port_mrp_add)
-+	if (!ds->ops->port_mrp_add_ring_role)
- 		return -EOPNOTSUPP;
+-	u32 src_mode, src_addr, src_width;
+-	u32 dst_mode, dst_addr, dst_width;
++	u32 src_mode, src_width;
++	u32 dst_mode, dst_width;
++	dma_addr_t src_addr, dst_addr;
+ 	u32 val, its, tnum;
+ 	enum dma_slave_buswidth buswidth;
  
- 	if (ds->index == info->sw_index)
-@@ -658,7 +658,7 @@ static int
- dsa_switch_mrp_del_ring_role(struct dsa_switch *ds,
- 			     struct dsa_notifier_mrp_ring_role_info *info)
- {
--	if (!ds->ops->port_mrp_del)
-+	if (!ds->ops->port_mrp_del_ring_role)
- 		return -EOPNOTSUPP;
- 
- 	if (ds->index == info->sw_index)
--- 
-2.34.1
-
 
 
