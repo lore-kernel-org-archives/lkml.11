@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A51CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3067FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347511AbiAXTcC (ORCPT
+        id S1347684AbiAXTcK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:32:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52656 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345874AbiAXTYV (ORCPT
+        Mon, 24 Jan 2022 14:32:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349951AbiAXTW5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:24:21 -0500
+        Mon, 24 Jan 2022 14:22:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C66DC02B86C;
+        Mon, 24 Jan 2022 11:09:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97B7F61447;
-        Mon, 24 Jan 2022 19:24:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58207C340E5;
-        Mon, 24 Jan 2022 19:24:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28ABCB8121A;
+        Mon, 24 Jan 2022 19:09:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C622C340E5;
+        Mon, 24 Jan 2022 19:09:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052260;
-        bh=hHYPuzQMlbi5BWrijAFproJ8AIh6hz9KF3iVdpWexwk=;
+        s=korg; t=1643051340;
+        bh=535P58qQQMlgifpA4Bz4L7KolFZusa+CO+JXI12ywE4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jfTKlzHoNe7TQ130Uz55/1uhmoaqc1+qecy2drWgt0ypQnnEuWG7sNPzpWD7366eW
-         kiKPTO8XXs412t53ubLcGkefeonZgLUZu59OCaaEHGCBwNabDRp0RLXjgeMo8zW7KU
-         IxHq3xjh1338Ou/R+i5/lMDhryOOqoDuDAEx28f4=
+        b=ksIyQIioefIFVym+cB6seS6T547OTUcFloVT0lTygzRONA5lR50moNvxv9Ush1Z5Z
+         v79lNLofo29RchaGdik/f+8PA+PBnFkLivlURRPna/tLZX7LLBw+2UquEwSrQBmpck
+         lpN6s5SecR1S83DEJR02cK4zA1mCqMyhFHlXQ574=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yixing Liu <liuyixing1@huawei.com>,
-        Wenpeng Liang <liangwenpeng@huawei.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 4.19 215/239] RDMA/hns: Modify the mapping attribute of doorbell to device
-Date:   Mon, 24 Jan 2022 19:44:13 +0100
-Message-Id: <20220124183949.946783914@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 130/186] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 24 Jan 2022 19:43:25 +0100
+Message-Id: <20220124183941.290412780@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,33 +49,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yixing Liu <liuyixing1@huawei.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit 39d5534b1302189c809e90641ffae8cbdc42a8fc upstream.
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-It is more general for ARM device drivers to use the device attribute to
-map PCI BAR spaces.
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211206133652.27476-1-liangwenpeng@huawei.com
-Signed-off-by: Yixing Liu <liuyixing1@huawei.com>
-Signed-off-by: Wenpeng Liang <liangwenpeng@huawei.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
+
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
+
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -432,7 +432,7 @@ static int hns_roce_mmap(struct ib_ucont
- 		return -EINVAL;
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 16ce187390d8b..5f9a52883bc05 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2361,7 +2361,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
  
- 	if (vma->vm_pgoff == 0) {
--		vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
-+		vma->vm_page_prot = pgprot_device(vma->vm_page_prot);
- 		if (io_remap_pfn_range(vma, vma->vm_start,
- 				       to_hr_ucontext(context)->uar.pfn,
- 				       PAGE_SIZE, vma->vm_page_prot))
+ 		/*
+-- 
+2.34.1
+
 
 
