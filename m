@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB82BC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B735C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573646AbiAXVp2 (ORCPT
+        id S1573715AbiAXVpl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446768AbiAXVJW (ORCPT
+        Mon, 24 Jan 2022 16:45:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59654 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1447046AbiAXVJ5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E68C02B87B;
-        Mon, 24 Jan 2022 12:08:44 -0800 (PST)
+        Mon, 24 Jan 2022 16:09:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D3C960FEA;
-        Mon, 24 Jan 2022 20:08:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92FD2C340E5;
-        Mon, 24 Jan 2022 20:08:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1977EB81233;
+        Mon, 24 Jan 2022 21:09:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36667C340E5;
+        Mon, 24 Jan 2022 21:09:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054923;
-        bh=m7+b9VcktRHgCdFUxLCkctlmFH1mbIqL1qYB29VHNVQ=;
+        s=korg; t=1643058593;
+        bh=2/G4H/z6ZjT0mBnaR+ViTzd1dhM7FMwdV/1uFN7ooNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m791pyJEKT/nvEqPY2/FtDAe867OPv3EhMYshJjNi4lqr6DTKociTRJH7FUJPzlJY
-         F6NbGYqZ5X/L1FWMEh2C05yerr9VVqE2GcrNdaAyKQlWtIzjyVzjNRE4auynDiM+7U
-         XMJ7Sc26FhC1bd6ydRdQPNXNH2TrewgmXTKhwRWM=
+        b=gW2jXS0E5vEYhGBBlfSjBAePFWVzSJ/t1Xy4ACmz2ozVrdjqu2ylaEdCfDP5p3rem
+         383vHHcvNwhzeQc3hCjIclr7CygIzM292I8VLoaq4Q9rsfgh4b382UCDI1Zexqi5Rm
+         0vi1SgkXJpMVgyNu6ZZld/E0vy9GyQzLj7jAv+Fc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.10 548/563] arm64: dts: qcom: msm8996: drop not documented adreno properties
-Date:   Mon, 24 Jan 2022 19:45:13 +0100
-Message-Id: <20220124184043.386258247@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0306/1039] arm64: dts: marvell: cn9130: enable CP0 GPIO controllers
+Date:   Mon, 24 Jan 2022 19:34:55 +0100
+Message-Id: <20220124184135.596706810@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: David Heidelberg <david@ixit.cz>
+From: Robert Marko <robert.marko@sartura.hr>
 
-commit c41910f257a22dc406c60d8826b4a3b5398003a3 upstream.
+[ Upstream commit 0734f8311ce72c9041e5142769eff2083889c172 ]
 
-These properties aren't documented nor implemented in the driver.
-Drop them.
+CN9130 has a built-in CP115 which has 2 GPIO controllers, but unlike in
+Armada 7k and 8k both are left disabled by the SoC DTSI.
 
-Fixes warnings as:
-$ make dtbs_check DT_SCHEMA_FILES=Documentation/devicetree/bindings/display/msm/gpu.yaml
-...
-arch/arm64/boot/dts/qcom/msm8996-mtp.dt.yaml: gpu@b00000: 'qcom,gpu-quirk-fault-detect-mask', 'qcom,gpu-quirk-two-pass-use-wfi' do not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: Documentation/devicetree/bindings/display/msm/gpu.yaml
-...
+This first of all makes no sense as they are always present due to being
+SoC built-in and its an issue as boards like CN9130-CRB use the CPO GPIO2
+pins for regulators and SD card support without enabling them first.
 
-Fixes: 69cc3114ab0f ("arm64: dts: Add Adreno GPU definitions")
-Signed-off-by: David Heidelberg <david@ixit.cz>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211030100413.28370-1-david@ixit.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+So, enable both of them like Armada 7k and 8k do.
+
+Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/msm8996.dtsi |    3 ---
- 1 file changed, 3 deletions(-)
+ arch/arm64/boot/dts/marvell/cn9130.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
---- a/arch/arm64/boot/dts/qcom/msm8996.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8996.dtsi
-@@ -645,9 +645,6 @@
- 			nvmem-cells = <&gpu_speed_bin>;
- 			nvmem-cell-names = "speed_bin";
- 
--			qcom,gpu-quirk-two-pass-use-wfi;
--			qcom,gpu-quirk-fault-detect-mask;
--
- 			operating-points-v2 = <&gpu_opp_table>;
- 
- 			gpu_opp_table: opp-table {
+diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
+index 71769ac7f0585..327b04134134f 100644
+--- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
++++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
+@@ -42,3 +42,11 @@
+ #undef CP11X_PCIE0_BASE
+ #undef CP11X_PCIE1_BASE
+ #undef CP11X_PCIE2_BASE
++
++&cp0_gpio1 {
++	status = "okay";
++};
++
++&cp0_gpio2 {
++	status = "okay";
++};
+-- 
+2.34.1
+
 
 
