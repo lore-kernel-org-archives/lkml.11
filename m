@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2619BC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A468C41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314754AbiAYCvk (ORCPT
+        id S1314603AbiAYCvR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:51:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
+        Mon, 24 Jan 2022 21:51:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349192AbiAXVFL (ORCPT
+        with ESMTP id S1353993AbiAXVFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:05:11 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88E51C068095;
-        Mon, 24 Jan 2022 12:04:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 114FCC068099;
+        Mon, 24 Jan 2022 12:05:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 47A4AB810BD;
-        Mon, 24 Jan 2022 20:04:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B043C340E5;
-        Mon, 24 Jan 2022 20:04:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2758B8122A;
+        Mon, 24 Jan 2022 20:05:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E68B6C340E5;
+        Mon, 24 Jan 2022 20:05:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054690;
-        bh=wDexgYPxIcnur2R9Xoptda8AzH+1e7S/lnUXV2G5T8c=;
+        s=korg; t=1643054720;
+        bh=rk21zKQ+j7Sr59F2dIE7knXhtPu1glCcJYXJODTUaGo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t8Gt+/5H+srMlqfDqVng6zkDZ3tegF1h5D7ng1+IKyXBfsv6dc64Gn6q8NRL5jQaq
-         XolpjB5KicjxezAPUq0wGbQx/LLpfKH0lZiEoBvVo11ch+JfHnTC4JlGHe0/6ksye9
-         kyIKVkhx+VHgZ5DqUrsfKBciSMR2fWIotY+0jQ08=
+        b=zYKkBWbDB6ykUwPIfScWgyK5lusvuVdKGcMs+T+lY3EPBbcJtHnejQ5I8xqRUMTmb
+         BsKTx4pSLRgryGS3H5JHsCZpDhcJ+PtBMBqVwLn5qSMxoKElrbie6fd7d+b4qp5rzN
+         Qj3ptbBr08GRDQKuX7C+Jq/EwgKCs93ox9twBBag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>,
-        syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
-Subject: [PATCH 5.10 472/563] ext4: make sure to reset inode lockdep class when quota enabling fails
-Date:   Mon, 24 Jan 2022 19:43:57 +0100
-Message-Id: <20220124184040.797286521@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Lukas Czerner <lczerner@redhat.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.10 481/563] ext4: destroy ext4_fc_dentry_cachep kmemcache on module removal
+Date:   Mon, 24 Jan 2022 19:44:06 +0100
+Message-Id: <20220124184041.094594379@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,49 +52,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 
-commit 4013d47a5307fdb5c13370b5392498b00fedd274 upstream.
+commit ab047d516dea72f011c15c04a929851e4d053109 upstream.
 
-When we succeed in enabling some quota type but fail to enable another
-one with quota feature, we correctly disable all enabled quota types.
-However we forget to reset i_data_sem lockdep class. When the inode gets
-freed and reused, it will inherit this lockdep class (i_data_sem is
-initialized only when a slab is created) and thus eventually lockdep
-barfs about possible deadlocks.
+The kmemcache for ext4_fc_dentry_cachep remains registered after module
+removal.
 
-Reported-and-tested-by: syzbot+3b6f9218b1301ddda3e2@syzkaller.appspotmail.com
-Signed-off-by: Jan Kara <jack@suse.cz>
-Cc: stable@kernel.org
-Link: https://lore.kernel.org/r/20211007155336.12493-3-jack@suse.cz
+Destroy ext4_fc_dentry_cachep kmemcache on module removal.
+
+Fixes: aa75f4d3daaeb ("ext4: main fast-commit commit path")
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Reviewed-by: Lukas Czerner <lczerner@redhat.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20211110134640.lyku5vklvdndw6uk@linutronix.de
+Link: https://lore.kernel.org/r/YbiK3JetFFl08bd7@linutronix.de
+Link: https://lore.kernel.org/r/20211223164436.2628390-1-bigeasy@linutronix.de
 Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/super.c |   13 ++++++++++++-
- 1 file changed, 12 insertions(+), 1 deletion(-)
+ fs/ext4/ext4.h        |    1 +
+ fs/ext4/fast_commit.c |    5 +++++
+ fs/ext4/super.c       |    2 ++
+ 3 files changed, 8 insertions(+)
 
+--- a/fs/ext4/ext4.h
++++ b/fs/ext4/ext4.h
+@@ -2778,6 +2778,7 @@ bool ext4_fc_replay_check_excluded(struc
+ void ext4_fc_replay_cleanup(struct super_block *sb);
+ int ext4_fc_commit(journal_t *journal, tid_t commit_tid);
+ int __init ext4_fc_init_dentry_cache(void);
++void ext4_fc_destroy_dentry_cache(void);
+ 
+ /* mballoc.c */
+ extern const struct seq_operations ext4_mb_seq_groups_ops;
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -2169,3 +2169,8 @@ int __init ext4_fc_init_dentry_cache(voi
+ 
+ 	return 0;
+ }
++
++void ext4_fc_destroy_dentry_cache(void)
++{
++	kmem_cache_destroy(ext4_fc_dentry_cachep);
++}
 --- a/fs/ext4/super.c
 +++ b/fs/ext4/super.c
-@@ -6427,8 +6427,19 @@ static int ext4_enable_quotas(struct sup
- 					"Failed to enable quota tracking "
- 					"(type=%d, err=%d). Please run "
- 					"e2fsck to fix.", type, err);
--				for (type--; type >= 0; type--)
-+				for (type--; type >= 0; type--) {
-+					struct inode *inode;
-+
-+					inode = sb_dqopt(sb)->files[type];
-+					if (inode)
-+						inode = igrab(inode);
- 					dquot_quota_off(sb, type);
-+					if (inode) {
-+						lockdep_set_quota_inode(inode,
-+							I_DATA_SEM_NORMAL);
-+						iput(inode);
-+					}
-+				}
- 
- 				return err;
- 			}
+@@ -6729,6 +6729,7 @@ static int __init ext4_init_fs(void)
+ out:
+ 	unregister_as_ext2();
+ 	unregister_as_ext3();
++	ext4_fc_destroy_dentry_cache();
+ out05:
+ 	destroy_inodecache();
+ out1:
+@@ -6755,6 +6756,7 @@ static void __exit ext4_exit_fs(void)
+ 	unregister_as_ext2();
+ 	unregister_as_ext3();
+ 	unregister_filesystem(&ext4_fs_type);
++	ext4_fc_destroy_dentry_cache();
+ 	destroy_inodecache();
+ 	ext4_exit_mballoc();
+ 	ext4_exit_sysfs();
 
 
