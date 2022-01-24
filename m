@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00DC1C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF349C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421742AbiAYC1g (ORCPT
+        id S3421704AbiAYC1d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358987AbiAXUH2 (ORCPT
+        Mon, 24 Jan 2022 21:27:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33974 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349172AbiAXUHM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:07:28 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03066C029805;
-        Mon, 24 Jan 2022 11:32:32 -0800 (PST)
+        Mon, 24 Jan 2022 15:07:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 982436141C;
-        Mon, 24 Jan 2022 19:32:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B623C340E5;
-        Mon, 24 Jan 2022 19:32:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9B906131D;
+        Mon, 24 Jan 2022 20:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83EFFC340E5;
+        Mon, 24 Jan 2022 20:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052751;
-        bh=dxlHkkDhrDWGJRS2ZBt0S7lqBxv/VVktAClM8xc6FqM=;
+        s=korg; t=1643054831;
+        bh=bTFoX/N6uoPeZfsGy7J1VXRKpnYHbB47AS5vmroa+hU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZBCa+mn/l0J15JxuxJlC/+Iwdu4JrlGU9itMzeXnfOnaT4LpUeTmJBNcaNZXHrNfl
-         NiRD8OCcgo4RADfduaf0sou6ae7GVqeZmLdlUk1xB7tPTaN+brD0SWjihOtCgSc+q2
-         oquZ+gMFCMU6ZnXyAU6LfdiRfIKHzieToLWh3dlI=
+        b=0e67oGZvX7TN207OLwdKmtS5tHUErLOlU4wRRl48B/6ntRMp/RDlY0trDrDpYW3bK
+         d0rw2ArRXY5AbWqTSXU6wzHjF1CoI36B6j4pXZ1hm7vba1Jr69FET8dajqZRwwxwhk
+         0edQpd4Z0laz/KMG/vhY81O2GcbFF0wkwwL2cWKQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Simon Ser <contact@emersion.fr>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 161/320] drm: panel-orientation-quirks: Add quirk for the Lenovo Yoga Book X91F/L
-Date:   Mon, 24 Jan 2022 19:42:25 +0100
-Message-Id: <20220124183959.121870623@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.10 517/563] clk: Emit a stern warning with writable debugfs enabled
+Date:   Mon, 24 Jan 2022 19:44:42 +0100
+Message-Id: <20220124184042.331859164@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,42 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Stephen Boyd <sboyd@kernel.org>
 
-[ Upstream commit bc30c3b0c8a1904d83d5f0d60fb8650a334b207b ]
+commit 489a71964f9d74e697a12cd0ace20ed829eb1f93 upstream.
 
-The Lenovo Yoga Book X91F/L uses a panel which has been mounted
-90 degrees rotated. Add a quirk for this.
+We don't want vendors to be enabling this part of the clk code and
+shipping it to customers. Exposing the ability to change clk frequencies
+and parents via debugfs is potentially damaging to the system if folks
+don't know what they're doing. Emit a strong warning so that the message
+is clear: don't enable this outside of development systems.
 
-Cc: Yauhen Kharuzhy <jekhor@gmail.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Acked-by: Simon Ser <contact@emersion.fr>
-Tested-by: Yauhen Kharuzhy <jekhor@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211106130227.11927-1-hdegoede@redhat.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 37215da5553e ("clk: Add support for setting clk_rate via debugfs")
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20211210014237.2130300-1-sboyd@kernel.org
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/clk/clk.c |   18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-index a950d5db211c5..9d1bd8f491ad7 100644
---- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
-+++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
-@@ -248,6 +248,12 @@ static const struct dmi_system_id orientation_data[] = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad D330-10IGM"),
- 		},
- 		.driver_data = (void *)&lcd1200x1920_rightside_up,
-+	}, {	/* Lenovo Yoga Book X90F / X91F / X91L */
-+		.matches = {
-+		  /* Non exact match to match all versions */
-+		  DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
-+		},
-+		.driver_data = (void *)&lcd1200x1920_rightside_up,
- 	}, {	/* OneGX1 Pro */
- 		.matches = {
- 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SYSTEM_MANUFACTURER"),
--- 
-2.34.1
-
+--- a/drivers/clk/clk.c
++++ b/drivers/clk/clk.c
+@@ -3314,6 +3314,24 @@ static int __init clk_debug_init(void)
+ {
+ 	struct clk_core *core;
+ 
++#ifdef CLOCK_ALLOW_WRITE_DEBUGFS
++	pr_warn("\n");
++	pr_warn("********************************************************************\n");
++	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
++	pr_warn("**                                                                **\n");
++	pr_warn("**  WRITEABLE clk DebugFS SUPPORT HAS BEEN ENABLED IN THIS KERNEL **\n");
++	pr_warn("**                                                                **\n");
++	pr_warn("** This means that this kernel is built to expose clk operations  **\n");
++	pr_warn("** such as parent or rate setting, enabling, disabling, etc.      **\n");
++	pr_warn("** to userspace, which may compromise security on your system.    **\n");
++	pr_warn("**                                                                **\n");
++	pr_warn("** If you see this message and you are not debugging the          **\n");
++	pr_warn("** kernel, report this immediately to your vendor!                **\n");
++	pr_warn("**                                                                **\n");
++	pr_warn("**     NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE           **\n");
++	pr_warn("********************************************************************\n");
++#endif
++
+ 	rootdir = debugfs_create_dir("clk", NULL);
+ 
+ 	debugfs_create_file("clk_summary", 0444, rootdir, &all_lists,
 
 
