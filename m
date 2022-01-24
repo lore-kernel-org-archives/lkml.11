@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB392C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 178C8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840810AbiAXWz1 (ORCPT
+        id S1347438AbiAXWzq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58050 "EHLO
+        Mon, 24 Jan 2022 17:55:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576067AbiAXVxA (ORCPT
+        with ESMTP id S1575985AbiAXVwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:53:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95FA1C08B4F0;
-        Mon, 24 Jan 2022 12:34:20 -0800 (PST)
+        Mon, 24 Jan 2022 16:52:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D382C0939A3;
+        Mon, 24 Jan 2022 12:34:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3A2F6B81229;
-        Mon, 24 Jan 2022 20:34:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D487C340EA;
-        Mon, 24 Jan 2022 20:34:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC51761507;
+        Mon, 24 Jan 2022 20:34:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90761C340E5;
+        Mon, 24 Jan 2022 20:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056459;
-        bh=EgN3WYwHQlO/nVftIjAlxl6B3bD+NtPV1F3G+g/3siQ=;
+        s=korg; t=1643056441;
+        bh=1eGvT1lId2539jG7iFL1ASpJvwAMqNQSqRD+eUPISvY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vmM3VDNGjnV2O953gjsZ9D6jDCzRGMzgShqxOUj94OP1i8OdKokL9lYuGUoQbcIVL
-         51Up6KGIsFgVro8RCjlMP5l08LrLx+Qy6htmRF6xA1NXxYEsD3I6PGMkilzqAAgeqp
-         BeFKdM22xPq/yzajNE9dN8JYZkLYzEuvf9fMuf0A=
+        b=u6ir2J6ZG7Ma5dR1WReeGq8QOESkMgk6/881d0bZX0T16zaUqCNOqmDzo5K7WeR02
+         202iXUEtxIfOQHU9hzVe7QrRu2k1pXn7djX+kK+9doUt0ud6ArNc3soJPf5eSOHnt8
+         2L8Lkr2o9asPWC+A9dn85PHhOexOlr/RFVSAaXeE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 491/846] arm64: dts: qcom: sm8350: Shorten camera-thermal-bottom name
-Date:   Mon, 24 Jan 2022 19:40:08 +0100
-Message-Id: <20220124184117.950649359@linuxfoundation.org>
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 486/846] HID: apple: Do not reset quirks when the Fn key is not found
+Date:   Mon, 24 Jan 2022 19:40:03 +0100
+Message-Id: <20220124184117.778553740@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,35 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit f52dd33943ca5f84ae76890f352f6d9e12512c3f ]
+[ Upstream commit a5fe7864d8ada170f19cc47d176bf8260ffb4263 ]
 
-Thermal zone names should not be longer than 20 names, which is indicated by
-a message at boot. Change "camera-thermal-bottom" to "cam-thermal-bottom" to
-fix it.
+When a keyboard without a function key is detected, instead of removing
+all quirks, remove only the APPLE_HAS_FN quirk.
 
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211114012755.112226-6-konrad.dybcio@somainline.org
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
+ drivers/hid/hid-apple.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-index e91cd8a5e5356..296ffb0e9888c 100644
---- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
-@@ -2185,7 +2185,7 @@
- 			};
- 		};
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 6ccfa0cb997ab..b683c0e8557d4 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -429,7 +429,7 @@ static int apple_input_configured(struct hid_device *hdev,
  
--		camera-thermal-bottom {
-+		cam-thermal-bottom {
- 			polling-delay-passive = <250>;
- 			polling-delay = <1000>;
+ 	if ((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) {
+ 		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
+-		asc->quirks = 0;
++		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
  
+ 	return 0;
 -- 
 2.34.1
 
