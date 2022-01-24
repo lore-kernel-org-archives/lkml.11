@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5DAC3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49A08C3526C
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367858AbiAXX4m (ORCPT
+        id S2367560AbiAXXzv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
+        Mon, 24 Jan 2022 18:55:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846416AbiAXXPz (ORCPT
+        with ESMTP id S1846539AbiAXXQT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:15:55 -0500
+        Mon, 24 Jan 2022 18:16:19 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D25C0604CF;
-        Mon, 24 Jan 2022 13:24:08 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAAA2C09425A;
+        Mon, 24 Jan 2022 11:48:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 00622614C9;
-        Mon, 24 Jan 2022 21:24:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7FA4C340E4;
-        Mon, 24 Jan 2022 21:24:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 86A4F61523;
+        Mon, 24 Jan 2022 19:48:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C56EC340E5;
+        Mon, 24 Jan 2022 19:48:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059447;
-        bh=REBuG4OoCqpO2dEgywiMEnlKX2lH4hWXFOcoOtaLmws=;
+        s=korg; t=1643053708;
+        bh=Y/PntOGbeKcLkcguD4MJEGdYfgJmLyuZlGDpwaQ0Bg0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kqBIs3K9j84lHej5as9GL+6WVJSycKSmxuAcTRR0T0lx4NhT4mMF07BvgjsNx58mF
-         PUfwTf2Zw13BYolNN4Nt6OO4hC6Rd0Q9eVWpHSL5wkBRx5z1tsj9+fUFuasAXZbO+m
-         xdnv5Iwgc00+ED6VNRax7p1gs/djwWobx6WwxcGY=
+        b=WSWoQNzauf1IPAHuR7RiWReDobLQ/HuT+ZXPaFUp2EVIABorKWJqSkja3IIEwAquS
+         +jyNLl66GY8WCkLzTmCla1WZSMzznHzNYYgzFADVUnqp4r97oay4PK6LdLNJ1Qsxj1
+         GVFuhi3+gdVoy5xtRH8vqZ8LYJT0e2hdZRp+MhIQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Martin Leung <Martin.Leung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0586/1039] drm/amd/display: add else to avoid double destroy clk_mgr
-Date:   Mon, 24 Jan 2022 19:39:35 +0100
-Message-Id: <20220124184145.038092690@linuxfoundation.org>
+Subject: [PATCH 5.10 152/563] selftests: harness: avoid false negatives if test has no ASSERTs
+Date:   Mon, 24 Jan 2022 19:38:37 +0100
+Message-Id: <20220124184029.661119362@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,38 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Leung <Martin.Leung@amd.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 11dff0e871037a6ad978e52f826a2eb7f5fb274a ]
+[ Upstream commit 3abedf4646fdc0036fcb8ebbc3b600667167fafe ]
 
-[Why & How]
-when changing some code we accidentally
-changed else if-> if. reverting that.
+Test can fail either immediately when ASSERT() failed or at the
+end if one or more EXPECT() was not met. The exact return code
+is decided based on the number of successful ASSERT()s.
 
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: Martin Leung <Martin.Leung@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+If test has no ASSERT()s, however, the return code will be 0,
+as if the test did not fail. Start counting ASSERT()s from 1.
+
+Fixes: 369130b63178 ("selftests: Enhance kselftest_harness.h to print which assert failed")
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ tools/testing/selftests/kselftest_harness.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
-index 26f96ee324729..9200c8ce02ba9 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
-@@ -308,8 +308,7 @@ void dc_destroy_clk_mgr(struct clk_mgr *clk_mgr_base)
- 	case FAMILY_NV:
- 		if (ASICREV_IS_SIENNA_CICHLID_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
- 			dcn3_clk_mgr_destroy(clk_mgr);
--		}
--		if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
-+		} else if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
- 			dcn3_clk_mgr_destroy(clk_mgr);
- 		}
- 		if (ASICREV_IS_BEIGE_GOBY_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
+diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
+index edce85420d193..5ecb9718e1616 100644
+--- a/tools/testing/selftests/kselftest_harness.h
++++ b/tools/testing/selftests/kselftest_harness.h
+@@ -965,7 +965,7 @@ void __run_test(struct __fixture_metadata *f,
+ 	t->passed = 1;
+ 	t->skip = 0;
+ 	t->trigger = 0;
+-	t->step = 0;
++	t->step = 1;
+ 	t->no_print = 0;
+ 	memset(t->results->reason, 0, sizeof(t->results->reason));
+ 
 -- 
 2.34.1
 
