@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 787FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39203C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355462AbiAXUNk (ORCPT
+        id S1345061AbiAXUN5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:13:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50616 "EHLO
+        Mon, 24 Jan 2022 15:13:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50796 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351901AbiAXTxQ (ORCPT
+        with ESMTP id S1357960AbiAXTxe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:53:16 -0500
+        Mon, 24 Jan 2022 14:53:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 548E660B56;
-        Mon, 24 Jan 2022 19:53:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31441C340E5;
-        Mon, 24 Jan 2022 19:53:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9E15760B4E;
+        Mon, 24 Jan 2022 19:53:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84346C340E5;
+        Mon, 24 Jan 2022 19:53:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053994;
-        bh=3xWET1iBUs7ti7fNEsXZBvabZF6fE/iIgtcF6eHBmr0=;
+        s=korg; t=1643054013;
+        bh=8aVxZ5d5NrDI04qkthgBcQyo7elCVhjuzYezjAPXQhc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c7FqEgNeLNf+mxj876lNS1BIooXR8wW0/KRW3g0jwoefgBEHov7bnawZ0F34mU2Su
-         3pJ7+34dC5u0en3kPo5BUV9/LUmbuX6voaLxO10ryEgfuLS6ZE+Qg1PRwFFCX4grOL
-         nJSXbr/zSOgbNRx70St5dMuvc75Cq2s3+9LW/H/Y=
+        b=EaxsCXgW171F81HsvzjrHnjvw08riLDToP+0usNo6/egZVZXBIq/ACZY5uPXfSx3q
+         /PiuLz5Sj7ZFf1/re9tKYOZk8G4i98XN4l/+/utUojdTffhnbNxy0QiQ963ifFo3d9
+         KFfWiEqnyXeVSavXYSAPqRfdjCUk2VDwG8gd05HM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 243/563] RDMA/hns: Validate the pkey index
-Date:   Mon, 24 Jan 2022 19:40:08 +0100
-Message-Id: <20220124184032.833457825@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 217/563] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_huion_init
+Date:   Mon, 24 Jan 2022 19:39:42 +0100
+Message-Id: <20220124184031.956289046@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,35 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
+[ Upstream commit ff6b548afe4d9d1ff3a0f6ef79e8cbca25d8f905 ]
 
-Before query pkey, make sure that the queried index is valid.
+The function performs a check on its input parameters, however, the
+hdev parameter is used before the check.
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Initialize the stack variables after checking the input parameters to
+avoid a possible NULL pointer dereference.
+
+Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
+Addresses-Coverity-ID: 1443804 ("Null pointer dereference")
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/hid/hid-uclogic-params.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
-index ba65823a5c0bb..c0249e4874a96 100644
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -279,6 +279,9 @@ static enum rdma_link_layer hns_roce_get_link_layer(struct ib_device *device,
- static int hns_roce_query_pkey(struct ib_device *ib_dev, u8 port, u16 index,
- 			       u16 *pkey)
+diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
+index a751c9a49360f..df12178a80da5 100644
+--- a/drivers/hid/hid-uclogic-params.c
++++ b/drivers/hid/hid-uclogic-params.c
+@@ -707,9 +707,9 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
+ 				     struct hid_device *hdev)
  {
-+	if (index > 0)
-+		return -EINVAL;
-+
- 	*pkey = PKEY_ID;
+ 	int rc;
+-	struct usb_device *udev = hid_to_usb_dev(hdev);
+-	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
+-	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
++	struct usb_device *udev;
++	struct usb_interface *iface;
++	__u8 bInterfaceNumber;
+ 	bool found;
+ 	/* The resulting parameters (noop) */
+ 	struct uclogic_params p = {0, };
+@@ -723,6 +723,10 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
+ 		goto cleanup;
+ 	}
  
- 	return 0;
++	udev = hid_to_usb_dev(hdev);
++	iface = to_usb_interface(hdev->dev.parent);
++	bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
++
+ 	/* If it's not a pen interface */
+ 	if (bInterfaceNumber != 0) {
+ 		/* TODO: Consider marking the interface invalid */
 -- 
 2.34.1
 
