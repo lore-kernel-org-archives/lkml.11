@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2A2DC3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06EC0C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842645AbiAXXCU (ORCPT
+        id S1842964AbiAXXDB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:02:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58570 "EHLO
+        Mon, 24 Jan 2022 18:03:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456427AbiAXVzC (ORCPT
+        with ESMTP id S1574933AbiAXV7G (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:02 -0500
+        Mon, 24 Jan 2022 16:59:06 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A21C07E28E;
-        Mon, 24 Jan 2022 12:35:46 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DEFC02B8C4;
+        Mon, 24 Jan 2022 12:39:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7F655B80FA1;
-        Mon, 24 Jan 2022 20:35:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A68D3C340E5;
-        Mon, 24 Jan 2022 20:35:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAA7EB811FB;
+        Mon, 24 Jan 2022 20:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01E93C340E5;
+        Mon, 24 Jan 2022 20:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056544;
-        bh=OzfIY9xRVRlOTpRoanuZo2T6HA3to4jATFB0/K4WRxs=;
+        s=korg; t=1643056757;
+        bh=RrkQfr1N8/D9I56nK7YQ11YiOSyDN+pImc2mLPrVi0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YrsoDINTgSwlrg/k8j36Qy/MlRyFdh5o5rmFA2VWTaGblOBykvit46GIcKr6lP8r+
-         tyV29stQZmltgaK2i64MhsnO+XTXwsAdaBZCfv4xTZegkAMqmAC/ErlFbVjL1hsYSz
-         qoTqtIr6cCQ8aYcng+Yfvd1KTeWcaoxJtqjIZu5M=
+        b=Nt6oV2pOroFqKlgSmfNrX5gI+VLaoGd2p40qcLR0SalB0bi2/6HS4EbTbDdHH6yYe
+         WfKoSLewVg0jiPGOKzrvJikjo6z4G8DjH63ICwI7aWqdFlsoCYgMzvkxDmLzkc0RXu
+         PjKPXdgU4ofuumxBwc5YXXOJJ53y/dzDEOXuLhEE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
-        Xiongwei Song <sxwjean@gmail.com>,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 520/846] floppy: Add max size check for user space request
-Date:   Mon, 24 Jan 2022 19:40:37 +0100
-Message-Id: <20220124184118.952832171@linuxfoundation.org>
+        stable@vger.kernel.org, Lenny Szubowicz <lszubowi@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 591/846] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
+Date:   Mon, 24 Jan 2022 19:41:48 +0100
+Message-Id: <20220124184121.419404333@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,80 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
+[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
 
-We need to check the max request size that is from user space before
-allocating pages. If the request size exceeds the limit, return -EINVAL.
-This check can avoid the warning below from page allocator.
+ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
 
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
-Modules linked in:
-CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
-Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
-RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
-R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
-FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
- __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
- raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
- raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
- fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
- fd_ioctl drivers/block/floppy.c:3555 [inline]
- fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
- compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
- __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
+acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
+obtain return_desc which may require additional resolution with
+the help of acpi_ex_read_data_from_field (). If the latter fails,
+the reference counter of the original return_desc is decremented
+which is incorrect, because acpi_ns_get_attached_object () does not
+increment the reference counter of the object returned by it.
 
-Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+This issue may lead to premature deletion of the attached object
+while it is still attached and a use-after-free and crash in the
+host OS.  For example, this may happen when on evaluation of ref_of()
+a local region field where there is no registered handler for the
+given Operation Region.
+
+Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
+after a acpi_ex_read_data_from_field () failure.
+
+Link: https://github.com/acpica/acpica/commit/d984f120
+Link: https://github.com/acpica/acpica/pull/685
+Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/acpi/acpica/exoparg1.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index f50bbaba5762c..4a6a74177b3c9 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -3080,6 +3080,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
- 	}
- }
+diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
+index b639e930d6429..44b7c350ed5ca 100644
+--- a/drivers/acpi/acpica/exoparg1.c
++++ b/drivers/acpi/acpica/exoparg1.c
+@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
+ 						    (walk_state, return_desc,
+ 						     &temp_desc);
+ 						if (ACPI_FAILURE(status)) {
+-							goto cleanup;
++							return_ACPI_STATUS
++							    (status);
+ 						}
  
-+#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
-+
- static int raw_cmd_copyin(int cmd, void __user *param,
- 				 struct floppy_raw_cmd **rcmd)
- {
-@@ -3107,7 +3109,7 @@ loop:
- 	ptr->resultcode = 0;
- 
- 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
--		if (ptr->length <= 0)
-+		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
- 			return -EINVAL;
- 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
- 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
+ 						return_desc = temp_desc;
 -- 
 2.34.1
 
