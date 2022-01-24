@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7DFC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5579C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352144AbiAXTwh (ORCPT
+        id S1352354AbiAXTwu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:52:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33804 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355453AbiAXTlY (ORCPT
+        Mon, 24 Jan 2022 14:52:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344119AbiAXTmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:24 -0500
+        Mon, 24 Jan 2022 14:42:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D9FC08ED7B;
+        Mon, 24 Jan 2022 11:21:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 35FDBB8122A;
-        Mon, 24 Jan 2022 19:41:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9099EC340E5;
-        Mon, 24 Jan 2022 19:41:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AAE1B811F9;
+        Mon, 24 Jan 2022 19:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EE5CC340E7;
+        Mon, 24 Jan 2022 19:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053280;
-        bh=oBieQZ3SwdWDNJAbWyZOdHNTR2Z5uh3/Q1LKFni/fOI=;
+        s=korg; t=1643052100;
+        bh=Lnom6LnckZNdK5Md7AfhpynDWEz288hE0TFhXJoixF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H040+lF+JPzXkXO4p86+BqVwTAwGcA0p1ZEcoZL/etVns62zScvRey3eYZdoUldgT
-         0XkdRN6AEQM4A+THy8GUkLN/u33FYkVnAbuZB29cTA8u67kiipzb4dacW+nH4MT5Tp
-         jZm91U1l+rQiyGeq9G3Dydu17MLb888K7WoMxa/s=
+        b=NZjy21PMEgm2npwtewDk8SC6egkU2ziG1P36bn4hffw5PA0E67DX0nAsF+KoLkqL5
+         qXqTlHZLGZ3+jYnWgEATtMCnidVmJ/2e+rMdcad4wxdSlIID0DteNcnS4dlFmTeHmD
+         vJLNnPtUmdurbe69cGsAqbdLwQXdlmAyIpOpnwAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedirhan KURT <windowz414@gnuweeb.org>,
-        Louvian Lyndal <louvianlyndal@gmail.com>,
-        Peter Cordes <peter@cordes.ca>,
-        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
-        Willy Tarreau <w@1wt.eu>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.10 015/563] tools/nolibc: x86-64: Fix startup code bug
-Date:   Mon, 24 Jan 2022 19:36:20 +0100
-Message-Id: <20220124184024.942825013@linuxfoundation.org>
+        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
+        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 190/239] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
+Date:   Mon, 24 Jan 2022 19:43:48 +0100
+Message-Id: <20220124183949.154249958@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,97 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
 
-commit 937ed91c712273131de6d2a02caafd3ee84e0c72 upstream.
+[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
 
-Before this patch, the `_start` function looks like this:
-```
-0000000000001170 <_start>:
-    1170:	pop    %rdi
-    1171:	mov    %rsp,%rsi
-    1174:	lea    0x8(%rsi,%rdi,8),%rdx
-    1179:	and    $0xfffffffffffffff0,%rsp
-    117d:	sub    $0x8,%rsp
-    1181:	call   1000 <main>
-    1186:	movzbq %al,%rdi
-    118a:	mov    $0x3c,%rax
-    1191:	syscall
-    1193:	hlt
-    1194:	data16 cs nopw 0x0(%rax,%rax,1)
-    119f:	nop
-```
-Note the "and" to %rsp with $-16, it makes the %rsp be 16-byte aligned,
-but then there is a "sub" with $0x8 which makes the %rsp no longer
-16-byte aligned, then it calls main. That's the bug!
+The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
+It's better to have same data type in struct dw_scl_sda_cfg as well.
 
-What actually the x86-64 System V ABI mandates is that right before the
-"call", the %rsp must be 16-byte aligned, not after the "call". So the
-"sub" with $0x8 here breaks the alignment. Remove it.
-
-An example where this rule matters is when the callee needs to align
-its stack at 16-byte for aligned move instruction, like `movdqa` and
-`movaps`. If the callee can't align its stack properly, it will result
-in segmentation fault.
-
-x86-64 System V ABI also mandates the deepest stack frame should be
-zero. Just to be safe, let's zero the %rbp on startup as the content
-of %rbp may be unspecified when the program starts. Now it looks like
-this:
-```
-0000000000001170 <_start>:
-    1170:	pop    %rdi
-    1171:	mov    %rsp,%rsi
-    1174:	lea    0x8(%rsi,%rdi,8),%rdx
-    1179:	xor    %ebp,%ebp                # zero the %rbp
-    117b:	and    $0xfffffffffffffff0,%rsp # align the %rsp
-    117f:	call   1000 <main>
-    1184:	movzbq %al,%rdi
-    1188:	mov    $0x3c,%rax
-    118f:	syscall
-    1191:	hlt
-    1192:	data16 cs nopw 0x0(%rax,%rax,1)
-    119d:	nopl   (%rax)
-```
-
-Cc: Bedirhan KURT <windowz414@gnuweeb.org>
-Cc: Louvian Lyndal <louvianlyndal@gmail.com>
-Reported-by: Peter Cordes <peter@cordes.ca>
-Signed-off-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
-[wt: I did this on purpose due to a misunderstanding of the spec, other
-     archs will thus have to be rechecked, particularly i386]
-Cc: stable@vger.kernel.org
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/include/nolibc/nolibc.h |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -422,14 +422,20 @@ struct stat {
- })
+diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
+index d50f804872149..4e6b3fb01c7a6 100644
+--- a/drivers/i2c/busses/i2c-designware-pcidrv.c
++++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
+@@ -36,10 +36,10 @@ enum dw_pci_ctl_id_t {
+ };
  
- /* startup code */
-+/*
-+ * x86-64 System V ABI mandates:
-+ * 1) %rsp must be 16-byte aligned right before the function call.
-+ * 2) The deepest stack frame should be zero (the %rbp).
-+ *
-+ */
- asm(".section .text\n"
-     ".global _start\n"
-     "_start:\n"
-     "pop %rdi\n"                // argc   (first arg, %rdi)
-     "mov %rsp, %rsi\n"          // argv[] (second arg, %rsi)
-     "lea 8(%rsi,%rdi,8),%rdx\n" // then a NULL then envp (third arg, %rdx)
--    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned when
--    "sub $8, %rsp\n"            // entering the callee
-+    "xor %ebp, %ebp\n"          // zero the stack frame
-+    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
-     "call main\n"               // main() returns the status code, we'll exit with it.
-     "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
-     "mov $60, %rax\n"           // NR_exit == 60
+ struct dw_scl_sda_cfg {
+-	u32 ss_hcnt;
+-	u32 fs_hcnt;
+-	u32 ss_lcnt;
+-	u32 fs_lcnt;
++	u16 ss_hcnt;
++	u16 fs_hcnt;
++	u16 ss_lcnt;
++	u16 fs_lcnt;
+ 	u32 sda_hold;
+ };
+ 
+-- 
+2.34.1
+
 
 
