@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79851C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A45B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379225AbiAXUKi (ORCPT
+        id S1355044AbiAXUKm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351785AbiAXTwp (ORCPT
+        Mon, 24 Jan 2022 15:10:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50274 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352389AbiAXTwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:45 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61491C06138F;
-        Mon, 24 Jan 2022 11:25:47 -0800 (PST)
+        Mon, 24 Jan 2022 14:52:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8DD61488;
-        Mon, 24 Jan 2022 19:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB123C340EA;
-        Mon, 24 Jan 2022 19:25:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E600D60916;
+        Mon, 24 Jan 2022 19:52:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D049AC340E5;
+        Mon, 24 Jan 2022 19:52:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052346;
-        bh=g7mHWUR/GWhbjh5JLbfZd53yt1tiPR9RD2IitNW5qzU=;
+        s=korg; t=1643053972;
+        bh=Otfz0U8maTLEn+Irs0y44lE82ilMaXIVy8OqHKRQp7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MuJdjbRHGUjmYqj6yGR/wDkd++ODSmiRmUs1li60fZBCcmzA/wi7YgteNmmImkrWV
-         2Bn9bOIZWssiXQoqccL093ml5Fsb4ndQ/JjR2rZwbVpnjq1o7CB+j53qazAWFrGehy
-         xSd2+METCPxJIV0jQOStDvcFMSALIhmUki4mT03E=
+        b=MjFgCH6xCGUNGpd3TD/LFWfAIvJ+bwd44q3FSHsEdUl5ox264i91o1lI2kTzAfIDv
+         FYFzxOlF0ki7GmpAb6WkIvR5l51QkgUqSMXAzrDcQo8vFelGObUHePvatNaRrItcTq
+         4mM67mUhQOHi8JsExcFtZGTvG0eUn7ZAm1CZXSu0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Christian Eggers <ceggers@arri.de>, Han Xu <han.xu@nxp.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.4 007/320] mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings
-Date:   Mon, 24 Jan 2022 19:39:51 +0100
-Message-Id: <20220124183954.021297586@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 237/563] net: mcs7830: handle usb read errors properly
+Date:   Mon, 24 Jan 2022 19:40:02 +0100
+Message-Id: <20220124184032.642319486@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,103 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Eggers <ceggers@arri.de>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-commit f53d4c109a666bf1a4883b45d546fba079258717 upstream.
+[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
 
-gpmi_io clock needs to be gated off when changing the parent/dividers of
-enfc_clk_root (i.MX6Q/i.MX6UL) respectively qspi2_clk_root (i.MX6SX).
-Otherwise this rate change can lead to an unresponsive GPMI core which
-results in DMA timeouts and failed driver probe:
+Syzbot reported uninit value in mcs7830_bind(). The problem was in
+missing validation check for bytes read via usbnet_read_cmd().
 
-[    4.072318] gpmi-nand 112000.gpmi-nand: DMA timeout, last DMA
-...
-[    4.370355] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -110
-...
-[    4.375988] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -22
-[    4.381524] gpmi-nand 112000.gpmi-nand: Error in ECC-based read: -22
-[    4.387988] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -22
-[    4.393535] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -22
-...
+usbnet_read_cmd() internally calls usb_control_msg(), that returns
+number of bytes read. Code should validate that requested number of bytes
+was actually read.
 
-Other than stated in i.MX 6 erratum ERR007117, it should be sufficient
-to gate only gpmi_io because all other bch/nand clocks are derived from
-different clock roots.
+So, this patch adds missing size validation check inside
+mcs7830_get_reg() to prevent uninit value bugs
 
-The i.MX6 reference manuals state that changing clock muxers can cause
-glitches but are silent about changing dividers. But tests showed that
-these glitches can definitely happen on i.MX6ULL. For i.MX7D/8MM in turn,
-the manual guarantees that no glitches can happen when changing
-dividers.
-
-Co-developed-by: Stefan Riedmueller <s.riedmueller@phytec.de>
-Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: stable@vger.kernel.org
-Acked-by: Han Xu <han.xu@nxp.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-2-ceggers@arri.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |   28 +++++++++++++++++++++++++---
- 1 file changed, 25 insertions(+), 3 deletions(-)
+ drivers/net/usb/mcs7830.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -710,14 +710,32 @@ static void gpmi_nfc_compute_timings(str
- 			      (use_half_period ? BM_GPMI_CTRL1_HALF_PERIOD : 0);
- }
+diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
+index 09bfa6a4dfbc1..7e40e2e2f3723 100644
+--- a/drivers/net/usb/mcs7830.c
++++ b/drivers/net/usb/mcs7830.c
+@@ -108,8 +108,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
  
--static void gpmi_nfc_apply_timings(struct gpmi_nand_data *this)
-+static int gpmi_nfc_apply_timings(struct gpmi_nand_data *this)
+ static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
  {
- 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
- 	struct resources *r = &this->resources;
- 	void __iomem *gpmi_regs = r->gpmi_regs;
- 	unsigned int dll_wait_time_us;
+-	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
+-				0x0000, index, data, size);
 +	int ret;
 +
-+	/* Clock dividers do NOT guarantee a clean clock signal on its output
-+	 * during the change of the divide factor on i.MX6Q/UL/SX. On i.MX7/8,
-+	 * all clock dividers provide these guarantee.
-+	 */
-+	if (GPMI_IS_MX6Q(this) || GPMI_IS_MX6SX(this))
-+		clk_disable_unprepare(r->clock[0]);
-+
-+	ret = clk_set_rate(r->clock[0], hw->clk_rate);
-+	if (ret) {
-+		dev_err(this->dev, "cannot set clock rate to %lu Hz: %d\n", hw->clk_rate, ret);
++	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
++			      0x0000, index, data, size);
++	if (ret < 0)
 +		return ret;
-+	}
- 
--	clk_set_rate(r->clock[0], hw->clk_rate);
-+	if (GPMI_IS_MX6Q(this) || GPMI_IS_MX6SX(this)) {
-+		ret = clk_prepare_enable(r->clock[0]);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	writel(hw->timing0, gpmi_regs + HW_GPMI_TIMING0);
- 	writel(hw->timing1, gpmi_regs + HW_GPMI_TIMING1);
-@@ -736,6 +754,8 @@ static void gpmi_nfc_apply_timings(struc
- 
- 	/* Wait for the DLL to settle. */
- 	udelay(dll_wait_time_us);
++	else if (ret < size)
++		return -ENODATA;
 +
-+	return 0;
++	return ret;
  }
  
- static int gpmi_setup_data_interface(struct nand_chip *chip, int chipnr,
-@@ -2429,7 +2449,9 @@ static int gpmi_nfc_exec_op(struct nand_
- 	 */
- 	if (this->hw.must_apply_timings) {
- 		this->hw.must_apply_timings = false;
--		gpmi_nfc_apply_timings(this);
-+		ret = gpmi_nfc_apply_timings(this);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
+ static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
+-- 
+2.34.1
+
 
 
