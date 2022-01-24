@@ -2,70 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 359F5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A168FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443202AbiAXU4a (ORCPT
+        id S1443370AbiAXU4p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:30 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:46478 "EHLO
-        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385536AbiAXUde (ORCPT
+        Mon, 24 Jan 2022 15:56:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39390 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348276AbiAXUeT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:34 -0500
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-X-isilmar-external: YES
-Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id 35D0920140A;
-        Mon, 24 Jan 2022 20:33:30 +0000 (UTC)
-Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id 3E81B809C2; Mon, 24 Jan 2022 21:30:02 +0100 (CET)
-From:   Dominik Brodowski <linux@dominikbrodowski.net>
-To:     Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        "Jason A . Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH 1/6] hw_random: explicit ordering of initcalls
-Date:   Mon, 24 Jan 2022 21:29:46 +0100
-Message-Id: <20220124202951.28579-1-linux@dominikbrodowski.net>
+        Mon, 24 Jan 2022 15:34:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76045C07E2BC;
+        Mon, 24 Jan 2022 11:48:05 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F81DB811FB;
+        Mon, 24 Jan 2022 19:48:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699C7C340E5;
+        Mon, 24 Jan 2022 19:48:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053683;
+        bh=fntRpshkPH1kBf19IZiQRtlhXjIeJ4hCEiSlfehiMwY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=U23bKL5fsGRndt9amdc0pDIfynUYC9QYRnJJPSZ3uKfFiABYw9n26Rhx98iBKPKI+
+         YiNRoFemHLboxzkIFqOjbKoYtQaJjoDhfAxo9Wj2gezFN+P040wAEZykp/r2FlDrUq
+         d8yPhiKKSnX2frzHsG6hB/PULz9LBFvlj0VWiPF4=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 110/563] media: si470x-i2c: fix possible memory leak in si470x_i2c_probe()
+Date:   Mon, 24 Jan 2022 19:37:55 +0100
+Message-Id: <20220124184028.219961437@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hw-random device drivers depend on the hw-random core being
-initialized. Make this ordering explicit, also for the case
-these drivers are built-in. As the core itself depends on
-misc_register() which is set up at subsys_initcall time,
-advance the initialization of the core (only) to the
-fs_initcall() level.
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-Cc: Matt Mackall <mpm@selenic.com>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+[ Upstream commit ef054e345ed8c79ce1121a3599b5a2dfd78e57a0 ]
+
+n the 'radio->hdl.error' error handling, ctrl handler allocated by
+v4l2_ctrl_new_std() does not released, and caused memory leak as
+follows:
+
+unreferenced object 0xffff888033d54200 (size 256):
+  comm "i2c-si470x-19", pid 909, jiffies 4294914203 (age 8.072s)
+  hex dump (first 32 bytes):
+    e8 69 11 03 80 88 ff ff 00 46 d5 33 80 88 ff ff  .i.......F.3....
+    10 42 d5 33 80 88 ff ff 10 42 d5 33 80 88 ff ff  .B.3.....B.3....
+  backtrace:
+    [<00000000086bd4ed>] __kmalloc_node+0x1eb/0x360
+    [<00000000bdb68871>] kvmalloc_node+0x66/0x120
+    [<00000000fac74e4c>] v4l2_ctrl_new+0x7b9/0x1c60 [videodev]
+    [<00000000693bf940>] v4l2_ctrl_new_std+0x19b/0x270 [videodev]
+    [<00000000c0cb91bc>] si470x_i2c_probe+0x2d3/0x9a0 [radio_si470x_i2c]
+    [<0000000056a6f01f>] i2c_device_probe+0x4d8/0xbe0
+
+Fix the error handling path to avoid memory leak.
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 8c081b6f9a9b ("media: radio: Critical v4l2 registration...")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/hw_random/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/radio/si470x/radio-si470x-i2c.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
-index a3db27916256..e860e044b19e 100644
---- a/drivers/char/hw_random/core.c
-+++ b/drivers/char/hw_random/core.c
-@@ -638,7 +638,7 @@ static void __exit hwrng_modexit(void)
- 	unregister_miscdev();
- }
+diff --git a/drivers/media/radio/si470x/radio-si470x-i2c.c b/drivers/media/radio/si470x/radio-si470x-i2c.c
+index a972c0705ac79..76d39e2e87706 100644
+--- a/drivers/media/radio/si470x/radio-si470x-i2c.c
++++ b/drivers/media/radio/si470x/radio-si470x-i2c.c
+@@ -368,7 +368,7 @@ static int si470x_i2c_probe(struct i2c_client *client)
+ 	if (radio->hdl.error) {
+ 		retval = radio->hdl.error;
+ 		dev_err(&client->dev, "couldn't register control\n");
+-		goto err_dev;
++		goto err_all;
+ 	}
  
--module_init(hwrng_modinit);
-+fs_initcall(hwrng_modinit); /* depends on misc_register() */
- module_exit(hwrng_modexit);
- 
- MODULE_DESCRIPTION("H/W Random Number Generator (RNG) driver");
+ 	/* video device initialization */
+@@ -463,7 +463,6 @@ static int si470x_i2c_probe(struct i2c_client *client)
+ 	return 0;
+ err_all:
+ 	v4l2_ctrl_handler_free(&radio->hdl);
+-err_dev:
+ 	v4l2_device_unregister(&radio->v4l2_dev);
+ err_initial:
+ 	return retval;
 -- 
 2.34.1
+
+
 
