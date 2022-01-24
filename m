@@ -2,113 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0445BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3148C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:02:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244829AbiAXSBO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:01:14 -0500
-Received: from mga05.intel.com ([192.55.52.43]:37762 "EHLO mga05.intel.com"
+        id S235799AbiAXSC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:02:56 -0500
+Received: from foss.arm.com ([217.140.110.172]:42958 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244853AbiAXSAj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:00:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643047239; x=1674583239;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=CNrKOx69eGmZ3K24njISK38bi6jWQ4/aJUl4ds2Q64o=;
-  b=lpplnq9ZraUq2IUgH394GMZmMuZ3Q1W+XuqpXvRsyzm9tUtphpqxYc2f
-   mgLZUkY9jfvTO+2DVa0BjEf5fxX4YyR3DF0Csl0OKmUo1gO+O+fuEpBty
-   HBFuSV2vV9AD7DQGvNhHq1pfQUd5okOhOv6K9aroiTIJoiKjwFFmH6PVq
-   aKQe6A0buznioDFzlEoddl02IPd+4TP1hCgVn4nZ6+F+c5Vv5IWCVBptp
-   od6YQybGF79kdBw7THo7YDwrMwBTaMXaH8t4S+XWBWWnv2NidpcxIxEpO
-   LRJdpPB69yIBueFobesiJygsWJ2EaZOqeBs1qtYPU/QsmxHJjrUXXHgcR
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="332462054"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="332462054"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 10:00:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="617333123"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 24 Jan 2022 10:00:29 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 751A49E7; Mon, 24 Jan 2022 20:00:42 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-mtd@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-usb@vger.kernel.org
-Cc:     Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Andreas Noever <andreas.noever@gmail.com>,
-        Michael Jamet <michael.jamet@intel.com>,
-        Yehezkel Bernat <YehezkelShB@gmail.com>
-Subject: [PATCH v2 4/5] mtd: core: Drop duplicate NULL checks around nvmem_unregister()
-Date:   Mon, 24 Jan 2022 20:00:39 +0200
-Message-Id: <20220124180040.50660-4-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
-References: <20220124180040.50660-1-andriy.shevchenko@linux.intel.com>
+        id S235628AbiAXSCy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 13:02:54 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 231BAD6E;
+        Mon, 24 Jan 2022 10:02:54 -0800 (PST)
+Received: from [10.57.39.131] (unknown [10.57.39.131])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7EFFA3F766;
+        Mon, 24 Jan 2022 10:02:52 -0800 (PST)
+Subject: Re: [RFC V1 08/11] arm64/perf: Enable branch stack sampling
+To:     Anshuman Khandual <anshuman.khandual@arm.com>,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Cc:     Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        linux-perf-users@vger.kernel.org
+References: <1642998653-21377-1-git-send-email-anshuman.khandual@arm.com>
+ <1642998653-21377-9-git-send-email-anshuman.khandual@arm.com>
+From:   James Clark <james.clark@arm.com>
+Message-ID: <741d159d-fce4-377e-8817-f8a6462f3a71@arm.com>
+Date:   Mon, 24 Jan 2022 18:02:51 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1642998653-21377-9-git-send-email-anshuman.khandual@arm.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since nvmem_unregister() checks for NULL, no need to repeat in
-the caller. Drop duplicate NULL checks.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Acked-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
-v2: added tag (Miquel)
- drivers/mtd/mtdcore.c | 13 ++++---------
- 1 file changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/mtd/mtdcore.c b/drivers/mtd/mtdcore.c
-index 70f492dce158..010ffc34532a 100644
---- a/drivers/mtd/mtdcore.c
-+++ b/drivers/mtd/mtdcore.c
-@@ -742,8 +742,7 @@ int del_mtd_device(struct mtd_info *mtd)
- 		debugfs_remove_recursive(mtd->dbg.dfs_dir);
- 
- 		/* Try to remove the NVMEM provider */
--		if (mtd->nvmem)
--			nvmem_unregister(mtd->nvmem);
-+		nvmem_unregister(mtd->nvmem);
- 
- 		device_unregister(&mtd->dev);
- 
-@@ -921,8 +920,7 @@ static int mtd_otp_nvmem_add(struct mtd_info *mtd)
- 	return 0;
- 
- err:
--	if (mtd->otp_user_nvmem)
--		nvmem_unregister(mtd->otp_user_nvmem);
-+	nvmem_unregister(mtd->otp_user_nvmem);
- 	return err;
- }
- 
-@@ -1026,11 +1024,8 @@ int mtd_device_unregister(struct mtd_info *master)
- 		memset(&master->reboot_notifier, 0, sizeof(master->reboot_notifier));
- 	}
- 
--	if (master->otp_user_nvmem)
--		nvmem_unregister(master->otp_user_nvmem);
--
--	if (master->otp_factory_nvmem)
--		nvmem_unregister(master->otp_factory_nvmem);
-+	nvmem_unregister(master->otp_user_nvmem);
-+	nvmem_unregister(master->otp_factory_nvmem);
- 
- 	err = del_mtd_partitions(master);
- 	if (err)
--- 
-2.34.1
+On 24/01/2022 04:30, Anshuman Khandual wrote:
+> Now that all the required pieces are already in place, just enable the perf
+> branch stack sampling support on arm64 platform, by removing the gate which
+> blocks it in armpmu_event_init().
+> 
+> Cc: Mark Rutland <mark.rutland@arm.com>
+> Cc: Will Deacon <will@kernel.org>
+> Cc: Catalin Marinas <catalin.marinas@arm.com>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Signed-off-by: Anshuman Khandual <anshuman.khandual@arm.com>
+> ---
+>  drivers/perf/arm_pmu.c | 25 ++++++++++++++++++++++---
+>  1 file changed, 22 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/perf/arm_pmu.c b/drivers/perf/arm_pmu.c
+> index 0800c8858ed8..2117bf5d3232 100644
+> --- a/drivers/perf/arm_pmu.c
+> +++ b/drivers/perf/arm_pmu.c
+> @@ -537,9 +537,28 @@ static int armpmu_event_init(struct perf_event *event)
+>  		!cpumask_test_cpu(event->cpu, &armpmu->supported_cpus))
+>  		return -ENOENT;
+>  
+> -	/* does not support taken branch sampling */
+> -	if (has_branch_stack(event))
+> -		return -EOPNOTSUPP;
+> +	if (has_branch_stack(event)) {
+> +		/*
+> +		 * BRBE support is absent. Select CONFIG_ARM_BRBE_PMU
+> +		 * in the config, before branch stack sampling events
+> +		 * can be requested.
+> +		 */
+> +		if (!IS_ENABLED(CONFIG_ARM_BRBE_PMU)) {
+> +			pr_warn_once("BRBE is disabled, select CONFIG_ARM_BRBE_PMU\n");
+> +			return -EOPNOTSUPP;
+> +		}
+> +
+> +		/*
+> +		 * Branch stack sampling event can not be supported in
+> +		 * case either the required driver itself is absent or
+> +		 * BRBE buffer, is not supported. Besides checking for
+> +		 * the callback prevents a crash in case it's absent.
+> +		 */
+> +		if (!armpmu->brbe_supported || !armpmu->brbe_supported(event)) {
+> +			pr_warn_once("BRBE is not supported\n");
+> +			return -EOPNOTSUPP;
 
+brbe_supported() returns false for one permission case, rather than a "not supported" case
+so EOPNOTSUPP is the wrong thing to return here for this case otherwise it makes perf
+print confusing error messages. 
+
+The brbe_supported() function needs to be split into two, one that handles support and one
+that handles permissions and different errors need to be reported. Here is the permission
+bit from that function:
+
+  +	if (event->attr.branch_sample_type & PERF_SAMPLE_BRANCH_KERNEL) {
+  +		if (!perfmon_capable()) {
+  +			pr_warn_once("does not have permission for kernel branch filter\n");
+  +			return false;
+  +		}
+  +	}
+
+> +		}
+> +	}
+>  
+>  	if (armpmu->map_event(event) == -ENOENT)
+>  		return -ENOENT;
+> 
