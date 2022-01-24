@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E89DEC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35FCC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575002AbiAXVux (ORCPT
+        id S1575024AbiAXVuz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:50:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49382 "EHLO
+        Mon, 24 Jan 2022 16:50:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449098AbiAXVOx (ORCPT
+        with ESMTP id S1449145AbiAXVO6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:14:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 801ECC09F494;
-        Mon, 24 Jan 2022 12:11:10 -0800 (PST)
+        Mon, 24 Jan 2022 16:14:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B691C06E027;
+        Mon, 24 Jan 2022 12:11:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36980B81229;
-        Mon, 24 Jan 2022 20:11:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D299C340E5;
-        Mon, 24 Jan 2022 20:11:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B47B6091A;
+        Mon, 24 Jan 2022 20:11:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5AA6C340E5;
+        Mon, 24 Jan 2022 20:11:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055067;
-        bh=NhTprGcyprwLpWfIqENv8mq2r3cv0BORHm4H5znzBLM=;
+        s=korg; t=1643055098;
+        bh=MXPVVBYHEXHFo4yE+Xal95RCl5qOtXe7FpJ1wCoXn6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D3hlJMWHY40D9ibSVQlXZSgchKjH6GXakgqvb5RMnegX3yPbx6GxEMRZQLwq+8Vp2
-         vaGzYFveQT/uHj+EKnpH1QLly05zeAPaGH6n88mhuiHYcrDfoqypU3zuTtX962KNCh
-         aztTCL3c23py+jZx3G89G4bbngvFKrIrmcgnjjnQ=
+        b=QW1X4c01vcnN+kOknMDZ2ROHTZAnJgESMi8jNjU2hd5hxKys4B8+i2SA/B8vg8PjO
+         BxMGMJZbxsAysWW0iErg3EpL6J+2OXVji1LUfL/h1PQ36JkCh1XIQ7UPtlMg+Kg7hQ
+         ipPtNu+5RXPeo7xJmm6NyeGLt0qPVTjfU/X8dXCE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
-        Willy Tarreau <w@1wt.eu>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.15 030/846] tools/nolibc: i386: fix initial stack alignment
-Date:   Mon, 24 Jan 2022 19:32:27 +0100
-Message-Id: <20220124184101.963330674@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>
+Subject: [PATCH 5.15 008/846] ALSA: core: Fix SSID quirk lookup for subvendor=0
+Date:   Mon, 24 Jan 2022 19:32:05 +0100
+Message-Id: <20220124184101.185913749@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,51 +48,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Willy Tarreau <w@1wt.eu>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit ebbe0d8a449d183fa43b42d84fcb248e25303985 upstream.
+commit 5576c4f24c56722a2d9fb9c447d896e5b312078b upstream.
 
-After re-checking in the spec and comparing stack offsets with glibc,
-The last pushed argument must be 16-byte aligned (i.e. aligned before the
-call) so that in the callee esp+4 is multiple of 16, so the principle is
-the 32-bit equivalent to what Ammar fixed for x86_64. It's possible that
-32-bit code using SSE2 or MMX could have been affected. In addition the
-frame pointer ought to be zero at the deepest level.
+Some weird devices set the codec SSID vendor ID 0, and
+snd_pci_quirk_lookup_id() loop aborts at the point although it should
+still try matching with the SSID device ID.  This resulted in a
+missing quirk for some old Macs.
 
-Link: https://gitlab.com/x86-psABIs/i386-ABI/-/wikis/Intel386-psABI
-Cc: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
-Cc: stable@vger.kernel.org
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Fix the loop termination condition to check both subvendor and
+subdevice.
+
+Fixes: 73355ddd8775 ("ALSA: hda: Code refactoring snd_hda_pick_fixup()")
+Cc: <stable@vger.kernel.org>
+BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=215495
+Link: https://lore.kernel.org/r/20220116082838.19382-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/include/nolibc/nolibc.h |   10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ sound/core/misc.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -583,13 +583,21 @@ struct sys_stat_struct {
- })
+--- a/sound/core/misc.c
++++ b/sound/core/misc.c
+@@ -112,7 +112,7 @@ snd_pci_quirk_lookup_id(u16 vendor, u16
+ {
+ 	const struct snd_pci_quirk *q;
  
- /* startup code */
-+/*
-+ * i386 System V ABI mandates:
-+ * 1) last pushed argument must be 16-byte aligned.
-+ * 2) The deepest stack frame should be set to zero
-+ *
-+ */
- asm(".section .text\n"
-     ".global _start\n"
-     "_start:\n"
-     "pop %eax\n"                // argc   (first arg, %eax)
-     "mov %esp, %ebx\n"          // argv[] (second arg, %ebx)
-     "lea 4(%ebx,%eax,4),%ecx\n" // then a NULL then envp (third arg, %ecx)
--    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned when
-+    "xor %ebp, %ebp\n"          // zero the stack frame
-+    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned before
-+    "sub $4, %esp\n"            // the call instruction (args are aligned)
-     "push %ecx\n"               // push all registers on the stack so that we
-     "push %ebx\n"               // support both regparm and plain stack modes
-     "push %eax\n"
+-	for (q = list; q->subvendor; q++) {
++	for (q = list; q->subvendor || q->subdevice; q++) {
+ 		if (q->subvendor != vendor)
+ 			continue;
+ 		if (!q->subdevice ||
 
 
