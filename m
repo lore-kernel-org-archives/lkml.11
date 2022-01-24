@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27C62C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6482DC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410600AbiAYA3h (ORCPT
+        id S3410683AbiAYA3p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
+        Mon, 24 Jan 2022 19:29:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455589AbiAXVfl (ORCPT
+        with ESMTP id S2363445AbiAXXoc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:41 -0500
+        Mon, 24 Jan 2022 18:44:32 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AB8C05A18D;
-        Mon, 24 Jan 2022 12:22:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A77DC0BD117;
+        Mon, 24 Jan 2022 13:39:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3E6FB81229;
-        Mon, 24 Jan 2022 20:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E64C340E7;
-        Mon, 24 Jan 2022 20:22:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3E73B8105C;
+        Mon, 24 Jan 2022 21:39:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F36E4C340E4;
+        Mon, 24 Jan 2022 21:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055761;
-        bh=HIJPQXpptUIZttKFu5fOZy1HsJKci1+54dMn02YSuhM=;
+        s=korg; t=1643060357;
+        bh=Tw+KMUhqIdOfNxHiKbccYBjOLfhTZO6kFMaB64mcMAM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHAluQ7Gc4woojq6xGxgis4dkJxahNhCWb7G/4i5DiGkNH9gCXKiS4AAUL9tC/KZc
-         a3gW1aTmk8XxjEo11O/pfDdunUGtwq6qjbOYGjbKNJlrQjraEztZ+1LdQsl4yH8LMA
-         6nvLewX51fojKGHw/eyojcHy0Ct2BMhURGlCQ8O4=
+        b=GqJIAN/6zzHF7gJSRrB67gVZimiKfE6tw6o5JChZzKH+VUDOsMKtyutwCDUOYMase
+         /XwKmB2vX8Ld9N4xWfPMnYvBhZckjoIW9gcnxDIK/JyHHSX2TmPGftN6WK72JcPnk8
+         QQoWYH9BYFbqIHaZ+9CaCA28jraUkTpKj9cPfBok=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 224/846] wcn36xx: Fix max channels retrieval
-Date:   Mon, 24 Jan 2022 19:35:41 +0100
-Message-Id: <20220124184108.648801216@linuxfoundation.org>
+        stable@vger.kernel.org, Alex Deucher <alexander.deucher@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Subject: [PATCH 5.16 0904/1039] drm/amdgpu/display: Only set vblank_disable_immediate when PSR is not enabled
+Date:   Mon, 24 Jan 2022 19:44:53 +0100
+Message-Id: <20220124184155.680939976@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,48 +50,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Loic Poulain <loic.poulain@linaro.org>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-[ Upstream commit 09cab4308bf9b8076ee4a3c56015daf9ef9cb23e ]
+commit 70897848730470cc477d5d89e6222c0f6a9ac173 upstream.
 
-Kernel test robot reported:drivers/net/wireless/ath/wcn36xx/smd.c:943:33:
-   sparse: sparse: cast truncates bits from constant value (780 becomes 80)
+[Why]
+PSR currently relies on the kernel's delayed vblank on/off mechanism
+as an implicit bufferring mechanism to prevent excessive entry/exit.
 
-The 'channels' field is not a simple u8 array but an array of
-channel_params. Using sizeof for retrieving the max number of
-channels is then wrong.
+Without this delay the user experience is impacted since it can take
+a few frames to enter/exit.
 
-In practice, it was not an issue, because the sizeof returned
-value is 780, which is truncated in min_t (u8) to 80, which is
-the value we expect...
+[How]
+Only allow vblank disable immediate for DC when psr is not supported.
 
-Fix that properly using ARRAY_SIZE instead of sizeof.
+Leave a TODO indicating that this support should be extended in the
+future to delay independent of the vblank interrupt.
 
-Fixes: d707f812bb05 ("wcn36xx: Channel list update before hardware scan")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1638435732-14657-1-git-send-email-loic.poulain@linaro.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 92020e81ddbeac ("drm/amdgpu/display: set vblank_disable_immediate for DC")
+
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/wcn36xx/smd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |   11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index 0ebef42feb695..c056fae1d6418 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -943,7 +943,7 @@ int wcn36xx_smd_update_channel_list(struct wcn36xx *wcn, struct cfg80211_scan_re
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -1598,9 +1598,6 @@ static int amdgpu_dm_init(struct amdgpu_
+ 	adev_to_drm(adev)->mode_config.cursor_width = adev->dm.dc->caps.max_cursor_size;
+ 	adev_to_drm(adev)->mode_config.cursor_height = adev->dm.dc->caps.max_cursor_size;
  
- 	INIT_HAL_MSG((*msg_body), WCN36XX_HAL_UPDATE_CHANNEL_LIST_REQ);
+-	/* Disable vblank IRQs aggressively for power-saving */
+-	adev_to_drm(adev)->vblank_disable_immediate = true;
+-
+ 	if (drm_vblank_init(adev_to_drm(adev), adev->dm.display_indexes_num)) {
+ 		DRM_ERROR(
+ 		"amdgpu: failed to initialize sw for display support.\n");
+@@ -4285,6 +4282,14 @@ static int amdgpu_dm_initialize_drm_devi
  
--	msg_body->num_channel = min_t(u8, req->n_channels, sizeof(msg_body->channels));
-+	msg_body->num_channel = min_t(u8, req->n_channels, ARRAY_SIZE(msg_body->channels));
- 	for (i = 0; i < msg_body->num_channel; i++) {
- 		struct wcn36xx_hal_channel_param *param = &msg_body->channels[i];
- 		u32 min_power = WCN36XX_HAL_DEFAULT_MIN_POWER;
--- 
-2.34.1
-
+ 	}
+ 
++	/*
++	 * Disable vblank IRQs aggressively for power-saving.
++	 *
++	 * TODO: Fix vblank control helpers to delay PSR entry to allow this when PSR
++	 * is also supported.
++	 */
++	adev_to_drm(adev)->vblank_disable_immediate = !psr_feature_enabled;
++
+ 	/* Software is initialized. Now we can register interrupt handlers. */
+ 	switch (adev->asic_type) {
+ #if defined(CONFIG_DRM_AMD_DC_SI)
 
 
