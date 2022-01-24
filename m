@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F3A7C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7678BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573180AbiAXVom (ORCPT
+        id S1573281AbiAXVoq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:44:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60548 "EHLO
+        Mon, 24 Jan 2022 16:44:46 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59964 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447263AbiAXVKU (ORCPT
+        with ESMTP id S1446212AbiAXVHf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:10:20 -0500
+        Mon, 24 Jan 2022 16:07:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E691261471;
-        Mon, 24 Jan 2022 21:10:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C965CC340E5;
-        Mon, 24 Jan 2022 21:10:17 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C957561425;
+        Mon, 24 Jan 2022 21:07:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5C2BC340E8;
+        Mon, 24 Jan 2022 21:07:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058618;
-        bh=O3rKWbRYROdrjBDmKSVUoul83ssFRlJvdg9Jkqbc8ek=;
+        s=korg; t=1643058454;
+        bh=DX+nFBJs/yKtyiEOKkXjDicl5+9iBgWUYkW0pg5pwmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dLEfl6T/auMPx3D5OKUPTSKuk6SEjjwXRV963OnudoxQ+f1UGhtb0sipZKcaoPSp3
-         k5Gkb3Li1p0iOSO5o/oftAdjk2URuj1psXbjHLwBYk3HJYHT9MTZZ8stDPRfFoyh7c
-         mHycLR5Ro2rPCmlbMGIrYir0J5ZUC43Sl6RMQIuE=
+        b=UcgmLeFWWARiCVxFiKjehv0+7jlcStqKEQpK2lCe+2iBhCoQUI32I8JwZpwSNJHXa
+         hItF1jcvXxOHRqMdrcExSM6lbcuNpjQrCPeV98piGGe6yurFG3ea5/pqdvQ9SZaUkU
+         2YaRmLCwWtWFcOjFU09v/79TQjdpat2xO3V+h84I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Steev Klimaszewski <steev@kali.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0348/1039] backlight: qcom-wled: Use cpu_to_le16 macro to perform conversion
-Date:   Mon, 24 Jan 2022 19:35:37 +0100
-Message-Id: <20220124184136.991896518@linuxfoundation.org>
+Subject: [PATCH 5.16 0293/1039] arm64: dts: qcom: c630: Fix soundcard setup
+Date:   Mon, 24 Jan 2022 19:34:42 +0100
+Message-Id: <20220124184135.128752743@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,94 +49,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marijn Suijten <marijn.suijten@somainline.org>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit 0a139358548968b2ff308257b4fbeec7badcc3e1 ]
+[ Upstream commit c02b360ca67ebeb9de07b47b2fe53f964c2561d1 ]
 
-The kernel already provides appropriate primitives to perform endianness
-conversion which should be used in favour of manual bit-wrangling.
+Currently Soundcard has 1 rx device for headset and SoundWire Speaker Playback.
 
-Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211115203459.1634079-4-marijn.suijten@somainline.org
+This setup has issues, ex if we try to play on headset the audio stream is
+also sent to SoundWire Speakers and we will hear sound in both headsets and speakers.
+
+Make a separate device for Speakers and Headset so that the streams are
+different and handled properly.
+
+Fixes: 45021d35fcb2 ("arm64: dts: qcom: c630: Enable audio support")
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Tested-by: Steev Klimaszewski <steev@kali.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211209175342.20386-2-srinivas.kandagatla@linaro.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/video/backlight/qcom-wled.c | 23 +++++++++++------------
- 1 file changed, 11 insertions(+), 12 deletions(-)
+ .../boot/dts/qcom/sdm850-lenovo-yoga-c630.dts | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
-index c057368e5056e..5306b06044b4f 100644
---- a/drivers/video/backlight/qcom-wled.c
-+++ b/drivers/video/backlight/qcom-wled.c
-@@ -231,14 +231,14 @@ struct wled {
- static int wled3_set_brightness(struct wled *wled, u16 brightness)
- {
- 	int rc, i;
--	u8 v[2];
-+	__le16 v;
+diff --git a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+index d6b2ba4396f68..2e882a977e2c4 100644
+--- a/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
++++ b/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dts
+@@ -523,6 +523,10 @@
+ 	dai@1 {
+ 		reg = <1>;
+ 	};
++
++	dai@2 {
++		reg = <2>;
++	};
+ };
  
--	v[0] = brightness & 0xff;
--	v[1] = (brightness >> 8) & 0xf;
-+	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
+ &sound {
+@@ -535,6 +539,7 @@
+ 		"SpkrLeft IN", "SPK1 OUT",
+ 		"SpkrRight IN", "SPK2 OUT",
+ 		"MM_DL1",  "MultiMedia1 Playback",
++		"MM_DL3",  "MultiMedia3 Playback",
+ 		"MultiMedia2 Capture", "MM_UL2";
  
- 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
- 		rc = regmap_bulk_write(wled->regmap, wled->ctrl_addr +
--				       WLED3_SINK_REG_BRIGHT(i), v, 2);
-+				       WLED3_SINK_REG_BRIGHT(i),
-+				       &v, sizeof(v));
- 		if (rc < 0)
- 			return rc;
- 	}
-@@ -250,18 +250,18 @@ static int wled4_set_brightness(struct wled *wled, u16 brightness)
- {
- 	int rc, i;
- 	u16 low_limit = wled->max_brightness * 4 / 1000;
--	u8 v[2];
-+	__le16 v;
+ 	mm1-dai-link {
+@@ -551,6 +556,13 @@
+ 		};
+ 	};
  
- 	/* WLED4's lower limit of operation is 0.4% */
- 	if (brightness > 0 && brightness < low_limit)
- 		brightness = low_limit;
++	mm3-dai-link {
++		link-name = "MultiMedia3";
++		cpu {
++			sound-dai = <&q6asmdai  MSM_FRONTEND_DAI_MULTIMEDIA3>;
++		};
++	};
++
+ 	slim-dai-link {
+ 		link-name = "SLIM Playback";
+ 		cpu {
+@@ -580,6 +592,21 @@
+ 			sound-dai = <&wcd9340 1>;
+ 		};
+ 	};
++
++	slim-wcd-dai-link {
++		link-name = "SLIM WCD Playback";
++		cpu {
++			sound-dai = <&q6afedai SLIMBUS_1_RX>;
++		};
++
++		platform {
++			sound-dai = <&q6routing>;
++		};
++
++		codec {
++			sound-dai =  <&wcd9340 2>;
++		};
++	};
+ };
  
--	v[0] = brightness & 0xff;
--	v[1] = (brightness >> 8) & 0xf;
-+	v = cpu_to_le16(brightness & WLED3_SINK_REG_BRIGHT_MAX);
- 
- 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
- 		rc = regmap_bulk_write(wled->regmap, wled->sink_addr +
--				       WLED4_SINK_REG_BRIGHT(i), v, 2);
-+				       WLED4_SINK_REG_BRIGHT(i),
-+				       &v, sizeof(v));
- 		if (rc < 0)
- 			return rc;
- 	}
-@@ -273,21 +273,20 @@ static int wled5_set_brightness(struct wled *wled, u16 brightness)
- {
- 	int rc, offset;
- 	u16 low_limit = wled->max_brightness * 1 / 1000;
--	u8 v[2];
-+	__le16 v;
- 
- 	/* WLED5's lower limit is 0.1% */
- 	if (brightness < low_limit)
- 		brightness = low_limit;
- 
--	v[0] = brightness & 0xff;
--	v[1] = (brightness >> 8) & 0x7f;
-+	v = cpu_to_le16(brightness & WLED5_SINK_REG_BRIGHT_MAX_15B);
- 
- 	offset = (wled->cfg.mod_sel == MOD_A) ?
- 		  WLED5_SINK_REG_MOD_A_BRIGHTNESS_LSB :
- 		  WLED5_SINK_REG_MOD_B_BRIGHTNESS_LSB;
- 
- 	rc = regmap_bulk_write(wled->regmap, wled->sink_addr + offset,
--			       v, 2);
-+			       &v, sizeof(v));
- 	return rc;
- }
- 
+ &tlmm {
 -- 
 2.34.1
 
