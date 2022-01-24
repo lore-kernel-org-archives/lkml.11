@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D01CC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F27B9C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422068AbiAYCaF (ORCPT
+        id S3422045AbiAYCaB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:30:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37336 "EHLO
+        Mon, 24 Jan 2022 21:30:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36582 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379254AbiAXUK5 (ORCPT
+        with ESMTP id S1378794AbiAXUJv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:10:57 -0500
+        Mon, 24 Jan 2022 15:09:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 560D261028;
-        Mon, 24 Jan 2022 20:10:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBADC340E5;
-        Mon, 24 Jan 2022 20:10:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5621F6136F;
+        Mon, 24 Jan 2022 20:09:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F58DC340E5;
+        Mon, 24 Jan 2022 20:09:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055055;
-        bh=QjAv+mVi3dI62MzHUFz7B9G4FS95ehWT/yUknSVrAwU=;
+        s=korg; t=1643054990;
+        bh=ZJUZG0M+EAzk8WRfF9nqPauGl/R5HVk9Iof7QH3bIac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oovzwR4ZTDkLv/HqiGl0Q8ZtufrG2ZBMys4FEiSdCoOdhfGsk6dAT8wdlRPLSo2hh
-         xd/fUQWSze1MUoRObt8G/ZaRwz1Ml2TSjad9kB6L6I3mbnpSU/mZ4OCbDL14MOt9g0
-         F9rdv4TaN8tLCrh9XZB9DU6eBm1gKnA4SMUNr1v4=
+        b=PojPSSQsFl4wv6+XNElg9rV2IwILkaFEXSl6JSlCNdImVuofUutU4pr0w8YFL74mh
+         mpU3ej8ZXfixaMbbwqo3IW+oSlttm8nw1DgrhkcgGdHO2Znq5FPTbq+YECduohEp5u
+         vRgEErbtbmI5N+u1V33Jf/1U1mw8fAyINh6qq9HU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
-        Alexandre Ghiti <alex@ghiti.fr>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.15 026/846] riscv: mm: fix wrong phys_ram_base value for RV64
-Date:   Mon, 24 Jan 2022 19:32:23 +0100
-Message-Id: <20220124184101.822048720@linuxfoundation.org>
+        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.10 539/563] perf script: Fix hex dump character output
+Date:   Mon, 24 Jan 2022 19:45:04 +0100
+Message-Id: <20220124184043.078437690@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,36 +47,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jisheng Zhang <jszhang@kernel.org>
+From: Adrian Hunter <adrian.hunter@intel.com>
 
-commit b0fd4b1bf995172b9efcee23600d4f69571c321c upstream.
+commit 62942e9fda9fd1def10ffcbd5e1c025b3c9eec17 upstream.
 
-Currently, if 64BIT and !XIP_KERNEL, the phys_ram_base is always 0,
-no matter the real start of dram reported by memblock is.
+Using grep -C with perf script -D can give erroneous results as grep loses
+lines due to non-printable characters, for example, below the 0020, 0060
+and 0070 lines are missing:
 
-Fixes: 6d7f91d914bc ("riscv: Get rid of CONFIG_PHYS_RAM_BASE in kernel physical address conversion")
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-Reviewed-by: Alexandre Ghiti <alex@ghiti.fr>
-Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+ $ perf script -D | grep -C10 AUX | head
+ .  0010:  08 00 00 00 00 00 00 00 1f 00 00 00 00 00 00 00  ................
+ .  0030:  01 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00  ................
+ .  0040:  00 08 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0050:  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+ .  0080:  02 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 00  ................
+ .  0090:  00 00 00 00 00 00 00 00                          ........
+
+ 0 0 0x450 [0x98]: PERF_RECORD_AUXTRACE_INFO type: 1
+   PMU Type            8
+   Time Shift          31
+
+perf's isprint() is a custom implementation from the kernel, but the
+kernel's _ctype appears to include characters from Latin-1 Supplement which
+is not compatible with, for example, UTF-8. Fix by checking also isascii().
+
+After:
+
+ $ tools/perf/perf script -D | grep -C10 AUX | head
+ .  0010:  08 00 00 00 00 00 00 00 1f 00 00 00 00 00 00 00  ................
+ .  0020:  03 84 32 2f 00 00 00 00 63 7c 4f d2 fa ff ff ff  ..2/....c|O.....
+ .  0030:  01 00 00 00 00 00 00 00 00 04 00 00 00 00 00 00  ................
+ .  0040:  00 08 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0050:  00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+ .  0060:  00 02 00 00 00 00 00 00 00 c0 03 00 00 00 00 00  ................
+ .  0070:  e2 00 00 00 00 00 00 00 02 00 00 00 00 00 00 00  ................
+ .  0080:  02 00 00 00 00 00 00 00 1b 00 00 00 00 00 00 00  ................
+ .  0090:  00 00 00 00 00 00 00 00                          ........
+
+Fixes: 3052ba56bcb58904 ("tools perf: Move from sane_ctype.h obtained from git to the Linux's original")
+Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Link: http://lore.kernel.org/lkml/20220112085057.277205-1-adrian.hunter@intel.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/mm/init.c |    2 +-
+ tools/perf/util/debug.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/arch/riscv/mm/init.c
-+++ b/arch/riscv/mm/init.c
-@@ -187,10 +187,10 @@ static void __init setup_bootmem(void)
- 
- 
- 	phys_ram_end = memblock_end_of_DRAM();
--#ifndef CONFIG_64BIT
- #ifndef CONFIG_XIP_KERNEL
- 	phys_ram_base = memblock_start_of_DRAM();
- #endif
-+#ifndef CONFIG_64BIT
- 	/*
- 	 * memblock allocator is not aware of the fact that last 4K bytes of
- 	 * the addressable memory can not be mapped because of IS_ERR_VALUE
+--- a/tools/perf/util/debug.c
++++ b/tools/perf/util/debug.c
+@@ -145,7 +145,7 @@ static int trace_event_printer(enum bina
+ 		break;
+ 	case BINARY_PRINT_CHAR_DATA:
+ 		printed += color_fprintf(fp, color, "%c",
+-			      isprint(ch) ? ch : '.');
++			      isprint(ch) && isascii(ch) ? ch : '.');
+ 		break;
+ 	case BINARY_PRINT_CHAR_PAD:
+ 		printed += color_fprintf(fp, color, " ");
 
 
