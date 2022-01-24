@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5C67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A49B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383520AbiAXU1U (ORCPT
+        id S1383939AbiAXU2C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:27:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346363AbiAXTvz (ORCPT
+        Mon, 24 Jan 2022 15:28:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33364 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377796AbiAXUF7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:51:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 788B9C04188F;
-        Mon, 24 Jan 2022 11:24:36 -0800 (PST)
+        Mon, 24 Jan 2022 15:05:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 155E5612FA;
-        Mon, 24 Jan 2022 19:24:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9A21C340E5;
-        Mon, 24 Jan 2022 19:24:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C2BDB6091B;
+        Mon, 24 Jan 2022 20:05:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99B8FC340E5;
+        Mon, 24 Jan 2022 20:05:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052275;
-        bh=SkxgkeQKtRzsXP4qhrbvLWmh+8iL7PKLaOqj4Z1DGOc=;
+        s=korg; t=1643054758;
+        bh=/CkJZbBS/noqHTVzt9gb1OaMJAK407vUfQxtvkkrFfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0EP+NX0BFVNgRJecxkiojmdn4SmuxlNK3evvGjtS3IuXAd5lRmkxoEAj1DNCEIORL
-         0oxOhnCJapbfE1z66DJpM/jiMCFTEXdo5CtmH8dw0+1DOc+l8JedxuduZ8KElCVKc1
-         +Ad3ly447unj1T1usWN5nZV0QFvGPif3Dmkm5OdA=
+        b=wAwHlTmaQnsPmk55EKQYBpKpnuPCN3JKIy+dULsAwiOvk1knLAdz8+VuH/8fAf806
+         buzxp1eFG2+uHeXjBX5v6+MbF4qtKhiadRlvByV9tvy1GcYfXEDBLaoGW5E1Q2Z0Qa
+         TZGtTEAatBHuhv5TtXIjKJZFQkVZkCuOxAPVPHS4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 220/239] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
-Date:   Mon, 24 Jan 2022 19:44:18 +0100
-Message-Id: <20220124183950.104279032@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.10 492/563] Documentation: ACPI: Fix data node reference documentation
+Date:   Mon, 24 Jan 2022 19:44:17 +0100
+Message-Id: <20220124184041.459814937@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,36 +48,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 3f7c239c7844d2044ed399399d97a5f1c6008e1b upstream.
+commit a11174952205d082f1658fab4314f0caf706e0a8 upstream.
 
-As reported by sparse: In the remove path, the driver would attempt to
-unmap its own priv pointer - instead of the io memory that it mapped
-in probe.
+The data node reference documentation was missing a package that must
+contain the property values, instead property name and multiple values
+being present in a single package. This is not aligned with the _DSD
+spec.
 
-Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fix it by adding the package for the values.
+
+Also add the missing "reg" properties to two numbered nodes.
+
+Fixes: b10134a3643d ("ACPI: property: Document hierarchical data extension references")
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/xgmac_mdio.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/firmware-guide/acpi/dsd/data-node-references.rst |   10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -301,9 +301,10 @@ err_ioremap:
- static int xgmac_mdio_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mdio_fsl_priv *priv = bus->priv;
+--- a/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
++++ b/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
+@@ -5,7 +5,7 @@
+ Referencing hierarchical data nodes
+ ===================================
  
- 	mdiobus_unregister(bus);
--	iounmap(bus->priv);
-+	iounmap(priv->mdio_base);
- 	mdiobus_free(bus);
+-:Copyright: |copy| 2018 Intel Corporation
++:Copyright: |copy| 2018, 2021 Intel Corporation
+ :Author: Sakari Ailus <sakari.ailus@linux.intel.com>
  
- 	return 0;
+ ACPI in general allows referring to device objects in the tree only.
+@@ -52,12 +52,14 @@ the ANOD object which is also the final
+ 	    Name (NOD0, Package() {
+ 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+ 		Package () {
++		    Package () { "reg", 0 },
+ 		    Package () { "random-property", 3 },
+ 		}
+ 	    })
+ 	    Name (NOD1, Package() {
+ 		ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
+ 		Package () {
++		    Package () { "reg", 1 },
+ 		    Package () { "anothernode", "ANOD" },
+ 		}
+ 	    })
+@@ -74,7 +76,11 @@ the ANOD object which is also the final
+ 	    Name (_DSD, Package () {
+ 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+ 		Package () {
+-		    Package () { "reference", ^DEV0, "node@1", "anothernode" },
++		    Package () {
++			"reference", Package () {
++			    ^DEV0, "node@1", "anothernode"
++			}
++		    },
+ 		}
+ 	    })
+ 	}
 
 
