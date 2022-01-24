@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45E76C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA105C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373195AbiAYANT (ORCPT
+        id S2372977AbiAYAMt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:13:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53794 "EHLO
+        Mon, 24 Jan 2022 19:12:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1850382AbiAXX3w (ORCPT
+        with ESMTP id S1849686AbiAXX02 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:29:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD16C0A8880;
-        Mon, 24 Jan 2022 13:34:32 -0800 (PST)
+        Mon, 24 Jan 2022 18:26:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4698C02B850;
+        Mon, 24 Jan 2022 11:51:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D639614CB;
-        Mon, 24 Jan 2022 21:34:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7DA0C340E4;
-        Mon, 24 Jan 2022 21:34:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 62736B811F3;
+        Mon, 24 Jan 2022 19:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9190AC340E5;
+        Mon, 24 Jan 2022 19:51:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060071;
-        bh=7DerX0b8DALAtu6wevcGsJHv/dcYVQh4/h5h4IeCgWI=;
+        s=korg; t=1643053878;
+        bh=uZdjnvYVh5IOLTVLrRpVEx2N2444vhjRxBkWWJxrb8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hU0UN28UAz0bk/y0EyLR65JG//bYGiiHiev/4UbrxCoOlPTa7KJE0dPx29G/AVNgi
-         LlIu/Cb9iUNVrfjE4BKgSqrvqDZ0UKf16qgBLYmql+kAcWLkA9Kwn393kpC9pDhedP
-         UqqWbWGQCjkAypm5fc+u6LlRVjL3IrHCRKhhaLNM=
+        b=eWx+7w4j4QHNnqUL5scAumNWSVkPtVVTWnm4NchvK5pZxgSNKi40Paf8tDcMKRxou
+         2vE72MatsHAp17zyBQnDHpqfoAiUtyr/j4v0auqU065FTiHCAKMQxpEhLp6xNDz9Us
+         Whk3/OMhw1LY4jvzzEoojpF2R5UzPs6I2msEnXVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Masami Hiramatsu <mhiramat@kernel.org>,
-        Xiaoke Wang <xkernel.wang@foxmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0828/1039] tracing/probes: check the return value of kstrndup() for pbuf
-Date:   Mon, 24 Jan 2022 19:43:37 +0100
-Message-Id: <20220124184153.119249971@linuxfoundation.org>
+Subject: [PATCH 5.10 205/563] bpf: Dont promote bogus looking registers after null check.
+Date:   Mon, 24 Jan 2022 19:39:30 +0100
+Message-Id: <20220124184031.520807730@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,38 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiaoke Wang <xkernel.wang@foxmail.com>
+From: Daniel Borkmann <daniel@iogearbox.net>
 
-[ Upstream commit 1c1857d400355e96f0fe8b32adc6fa7594d03b52 ]
+[ Upstream commit e60b0d12a95dcf16a63225cead4541567f5cb517 ]
 
-kstrndup() is a memory allocation-related function, it returns NULL when
-some internal memory errors happen. It is better to check the return
-value of it so to catch the memory error in time.
+If we ever get to a point again where we convert a bogus looking <ptr>_or_null
+typed register containing a non-zero fixed or variable offset, then lets not
+reset these bounds to zero since they are not and also don't promote the register
+to a <ptr> type, but instead leave it as <ptr>_or_null. Converting to a unknown
+register could be an avenue as well, but then if we run into this case it would
+allow to leak a kernel pointer this way.
 
-Link: https://lkml.kernel.org/r/tencent_4D6E270731456EB88712ED7F13883C334906@qq.com
-
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Fixes: a42e3c4de964 ("tracing/probe: Add immediate string parameter support")
-Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
-Signed-off-by: Steven Rostedt <rostedt@goodmis.org>
+Fixes: f1174f77b50c ("bpf/verifier: rework value tracking")
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/trace_probe.c | 2 ++
- 1 file changed, 2 insertions(+)
+ kernel/bpf/verifier.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/trace/trace_probe.c b/kernel/trace/trace_probe.c
-index 3ed2a3f372972..bb4605b60de79 100644
---- a/kernel/trace/trace_probe.c
-+++ b/kernel/trace/trace_probe.c
-@@ -356,6 +356,8 @@ static int __parse_imm_string(char *str, char **pbuf, int offs)
- 		return -EINVAL;
- 	}
- 	*pbuf = kstrndup(str, len - 1, GFP_KERNEL);
-+	if (!*pbuf)
-+		return -ENOMEM;
- 	return 0;
- }
- 
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index c623c3e549210..015bf2ba4a0b6 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -7725,15 +7725,15 @@ static void mark_ptr_or_null_reg(struct bpf_func_state *state,
+ {
+ 	if (reg_type_may_be_null(reg->type) && reg->id == id &&
+ 	    !WARN_ON_ONCE(!reg->id)) {
+-		/* Old offset (both fixed and variable parts) should
+-		 * have been known-zero, because we don't allow pointer
+-		 * arithmetic on pointers that might be NULL.
+-		 */
+ 		if (WARN_ON_ONCE(reg->smin_value || reg->smax_value ||
+ 				 !tnum_equals_const(reg->var_off, 0) ||
+ 				 reg->off)) {
+-			__mark_reg_known_zero(reg);
+-			reg->off = 0;
++			/* Old offset (both fixed and variable parts) should
++			 * have been known-zero, because we don't allow pointer
++			 * arithmetic on pointers that might be NULL. If we
++			 * see this happening, don't convert the register.
++			 */
++			return;
+ 		}
+ 		if (is_null) {
+ 			reg->type = SCALAR_VALUE;
 -- 
 2.34.1
 
