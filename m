@@ -2,95 +2,116 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:44:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF2C3C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:45:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232906AbiAXIod (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:44:33 -0500
-Received: from mga09.intel.com ([134.134.136.24]:62581 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242266AbiAXIm1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:42:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643013747; x=1674549747;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=Y+XqUkFbrC3xNp4+likfQxgrMPkd8q8VKsUjVkQGOV8=;
-  b=TqRf4hBS/7yN+SPj0AhyuZblvIRiS1EibLQPZuTnFX05oqL2FqD1WuEb
-   ZyDmjQ3D78GPu0kFjgcB2fIZYYVmV/JiV05jOl870ZOUNnWJExV8CLvRy
-   k01aLilvDAir1EBsme46A7lXdhpQCxL2ZflEd8Hy41H68vUaPc0RFK7nN
-   iyWsRRvJDo1GIqUegT5y8jvVEIX+VWcTXMDqjtnSUOI9Aj2BwtcGlQRth
-   FvAq7VVDOJaYYEHWhib1HAuE/SjsGLEonAWOv6cfjDxaS7boGdY/6Qu1d
-   /wH1rIY8R/YoiAGc1F7Ein37fnNnxzGrW9p/qRtvu4cDXs+8N/ietktr+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245778409"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="245778409"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:42:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627417093"
-Received: from ahunter-desktop.fi.intel.com ([10.237.72.92])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 00:42:25 -0800
-From:   Adrian Hunter <adrian.hunter@intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Andi Kleen <ak@linux.intel.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 10/25] perf tools: Define Intel PT iflag synthesized event
-Date:   Mon, 24 Jan 2022 10:41:46 +0200
-Message-Id: <20220124084201.2699795-11-adrian.hunter@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124084201.2699795-1-adrian.hunter@intel.com>
-References: <20220124084201.2699795-1-adrian.hunter@intel.com>
+        id S236175AbiAXIpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:45:12 -0500
+Received: from mail-ua1-f46.google.com ([209.85.222.46]:35717 "EHLO
+        mail-ua1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229550AbiAXIpL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:45:11 -0500
+Received: by mail-ua1-f46.google.com with SMTP id m90so29601709uam.2
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 00:45:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X6Gpa+U3Jnjel5sEtCrAt9uAbw7/60/ytFCn45HA+eA=;
+        b=1xULPvOpolDRcrDsyfpmFvZ9YcJW//lTBwTQAJdyAk24rdsJSKnGo9Ir1G6zVYyrii
+         MRAXLxeB9VV4s5oD1aFv7mH76JBq/kuclJe09Yku36ea4Hdsz5z2oD8eBfESzKpH6zJ2
+         fof3IM/rRl714C484W7ZJj6Az0lDrxhEJ8yia9TMZvcWDRAbCeZo1WrmU+Kitoast1US
+         9GVMXySPT3fJ3Ra2889Ut63d2LbCE4WueRbLt9ZlNjyBRJpAIt5voc0LeAJsvsQYd4Gz
+         dJqFF/M54/r6ZYsJJZe3b1g4yoO6PLshoYrKPsX92BQWsFpUlHbyLQIxEUWyVVFRVdER
+         h5+g==
+X-Gm-Message-State: AOAM533BKxyHBHTMfOxV7IUoSF2vR4rV1ZxO18CgYh44EQXDDJDclvFJ
+        VxBkPZaVawGxq1muNzkhjNkcZs8WzX6D3g==
+X-Google-Smtp-Source: ABdhPJwlJWlbd8Yi24txkseog2LcudscDn3eWF5zABvYUdFSbaf5qXxqYx4ojqHKoNIVbAnjJRCdqA==
+X-Received: by 2002:a05:6102:3ed2:: with SMTP id n18mr5526509vsv.72.1643013910245;
+        Mon, 24 Jan 2022 00:45:10 -0800 (PST)
+Received: from mail-ua1-f42.google.com (mail-ua1-f42.google.com. [209.85.222.42])
+        by smtp.gmail.com with ESMTPSA id q4sm1007607vke.15.2022.01.24.00.45.09
+        for <linux-kernel@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 00:45:10 -0800 (PST)
+Received: by mail-ua1-f42.google.com with SMTP id u6so29632871uaq.0
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 00:45:09 -0800 (PST)
+X-Received: by 2002:ab0:2991:: with SMTP id u17mr708394uap.89.1643013909629;
+ Mon, 24 Jan 2022 00:45:09 -0800 (PST)
 MIME-Version: 1.0
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki, Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Content-Transfer-Encoding: 8bit
+References: <20210913054915.GA3631@lst.de> <20220120075233.GA4777@lst.de> <20220121104006.7e51367a@canb.auug.org.au>
+In-Reply-To: <20220121104006.7e51367a@canb.auug.org.au>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 24 Jan 2022 09:44:58 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVua+YmzHxHqUfopARs-A+8f74iLAPPBJ33iCv0QqP=_g@mail.gmail.com>
+Message-ID: <CAMuHMdVua+YmzHxHqUfopARs-A+8f74iLAPPBJ33iCv0QqP=_g@mail.gmail.com>
+Subject: Re: h8300 pull request for 5.14-rc?
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Christoph Hellwig <hch@lst.de>,
+        Yoshinori Sato <ysato@users.sourceforge.jp>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Similar to other Intel PT synth events, define a structure to hold
-information about a change to the interrupt flag.
+On Sat, Jan 22, 2022 at 1:25 AM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> On Thu, 20 Jan 2022 08:52:33 +0100 Christoph Hellwig <hch@lst.de> wrote:
+> > On Mon, Sep 13, 2021 at 07:49:15AM +0200, Christoph Hellwig wrote:
+> > > what happened to the h8300 pull request with the set_fs() removal that
+> > > is in linux-next?
+> >
+> > Given that we're at the end of yet another merge window:  what is the
+> > status of the h8300 tree?  As far as I can tell the last pull request
+> > was in July 2019, and it has commit since just after that.
+>
+> The h8300-next branch (which is what I merge into linux-next) has some
+> more commits, but even there the last commit is from Aug 2021.  It also
+> has a lot of old back merges of Linus' tree, and so probably needs a
+> good clean.
 
-Signed-off-by: Adrian Hunter <adrian.hunter@intel.com>
----
- tools/perf/util/event.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+Indeed.
 
-diff --git a/tools/perf/util/event.h b/tools/perf/util/event.h
-index 27ea7bd93df5..9354619953e9 100644
---- a/tools/perf/util/event.h
-+++ b/tools/perf/util/event.h
-@@ -183,6 +183,7 @@ enum perf_synth_id {
- 	PERF_SYNTH_INTEL_CBR,
- 	PERF_SYNTH_INTEL_PSB,
- 	PERF_SYNTH_INTEL_EVT,
-+	PERF_SYNTH_INTEL_IFLAG_CHG,
- };
- 
- /*
-@@ -308,6 +309,18 @@ struct perf_synth_intel_evt {
- 	struct perf_synth_intel_evd evd[];
- };
- 
-+struct perf_synth_intel_iflag_chg {
-+	u32 padding;
-+	union {
-+		struct {
-+			u32	iflag		:  1,
-+				via_branch	:  1;
-+		};
-+		u32	flags;
-+	};
-+	u64	branch_ip; /* If via_branch */
-+};
-+
- /*
-  * raw_data is always 4 bytes from an 8-byte boundary, so subtract 4 to get
-  * 8-byte alignment.
--- 
-2.25.1
+$ git cherry -v v5.17-rc1 uclinux-h8/h8300-next
++ caf3f4bdb535f73c6e7b828bc98097f275f819bb h8300: fix memset return value.
++ 3e138fe1a4fb6aa834b46529e4faaee4ce2d5505 h8300: Add missing symbol
+"BOOT_LINK_OFFSET"
++ ece7be2c964c2aa5015e74628ca33c03a5ff4e47 h8300: move definition of
+__kernel_size_t etc. to posix_types.h
++ de98871736825349b367275b0790e42ea4157350 h8300: move definition of
+__kernel_size_t etc. to posix_types.h
++ 5d90be1ecf44a116b503649e67e952a7ec070745 h8300: Fix BOOT_LINK_OFFSET
++ b2c03bb18a6dd957130ad8a37f660030e4b7932a smc91x: remove GPIOLIB dependency.
++ 2fdf50bd510fd183ee89e4fdea52e7474ed9709c sh-sci: 8bit register fix.
++ 04fffbe01d2df57e600da35d3f31e3cca8ee14f4 h8300: update dts.
++ 951261bc483479d4c18ee435c35f94cccd659012 h8300_timer8: fix count mode.
++ 2c496a11304da8263e1dce9bdcef1ce04c027414 irq-renesas-h8s: fix
+interrupt handling.
++ 8bd55b5fce8011d0026f7d233f7b45788f01ad0c irq-renesas-h8300h: Fix
+external interrupt contorol.
++ beab3d5cb0e14e6397c4e596b3dbf1d36bf49d06 irq-renesas-h8s: Fix
+external interrupt control.
++ 35b34568912cb19c53b83d6daba96fe960941279 h8300: dts: Fix /chosen:stdout-path
++ 8808515be0ed4e33de9bfdc65f4c1b547ee11065 h8300: Replace
+<linux/clk-provider.h> by <linux/of_clk.h>
++ 81dd24966885113968dc5599b9b371b60c3bf7b2 h8300: remove memory.c
++ 1ec10274d436fbe77b821fbdf095b45d0888e46d h8300: don't implement set_fs
 
+Some of these are fixes that need more explanation.
+Others should be posted to public lists, and go in through a different tree
+(if accepted).
+Some are +2-year old fixes (perhaps I should send mine to akpm?).
+The last two are Christoph's set_fs() work.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
