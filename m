@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9AF7C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC014C3526D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445600AbiAXVEa (ORCPT
+        id S1445716AbiAXVEr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:04:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44408 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352807AbiAXUmo (ORCPT
+        Mon, 24 Jan 2022 16:04:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41672 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389727AbiAXUm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:44 -0500
+        Mon, 24 Jan 2022 15:42:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC286C049676;
+        Mon, 24 Jan 2022 11:53:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EFC25B81253;
-        Mon, 24 Jan 2022 20:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20EEEC340E5;
-        Mon, 24 Jan 2022 20:42:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A5F2CB81188;
+        Mon, 24 Jan 2022 19:52:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E12FBC340E5;
+        Mon, 24 Jan 2022 19:52:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056960;
-        bh=vqm+l+et8fHmf+ZDrFYxAyjLbW9sX4AdX0B4LSjo1aY=;
+        s=korg; t=1643053978;
+        bh=7mscifVvvB0xHnK3gXnTZrnfXZXBS3/hJzrI3nhj9xI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r/QOS8WQ/ayX8x7vNQ6g4w5KWYlhhXLTU46Oyk7m3f9rDvbGYDbolLnhKMLDBJwJ5
-         UYd50OLeludeIxRU+qMiABN7Dpk3xCJkBNZwJeEj1z6qr2oM0LXVVM9Pisasa08kFw
-         eW8d2nyX+nQ5LQwf18tr1XoGB6AzvqfiLWzaOafE=
+        b=d6NCjsd4n0fR1T1T2YeQjxyQUeAMOvV0SXfQ3KdqTthPRcb6u94/VS3dyMURLgjfx
+         pio5Bedq2oazpcPO6xh/dn10wJfEcAnxestncfSgQsr2ZkaQuPTRLvsvQtk75l+w7r
+         6vK3tm9MKQqCpivJXDxbKXuYAN5cbX9jbxYMSzK0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 657/846] ASoC: mediatek: mt8192-mt6359: fix device_node leak
-Date:   Mon, 24 Jan 2022 19:42:54 +0100
-Message-Id: <20220124184123.711611479@linuxfoundation.org>
+Subject: [PATCH 5.10 239/563] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:40:04 +0100
+Message-Id: <20220124184032.702292214@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,40 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@google.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 4e28491a7a198c668437f2be8a91a76aa52f20eb ]
+[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
 
-The of_parse_phandle() document:
-    >>> Use of_node_put() on it when done.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-The driver didn't call of_node_put().  Fixes the leak.
-
-Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
-Link: https://lore.kernel.org/r/20211214040028.2992627-1-tzungbi@google.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
+Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ sound/core/jack.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-index a606133951b70..24a5d0adec1ba 100644
---- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-+++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-@@ -1172,7 +1172,11 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
- 		return ret;
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index d6502dff247a8..dc2e06ae24149 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -54,10 +54,13 @@ static int snd_jack_dev_free(struct snd_device *device)
+ 	struct snd_card *card = device->card;
+ 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
+ 
++	down_write(&card->controls_rwsem);
+ 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
+ 		list_del_init(&jack_kctl->list);
+ 		snd_ctl_remove(card, jack_kctl->kctl);
  	}
- 
--	return devm_snd_soc_register_card(&pdev->dev, card);
-+	ret = devm_snd_soc_register_card(&pdev->dev, card);
++	up_write(&card->controls_rwsem);
 +
-+	of_node_put(platform_node);
-+	of_node_put(hdmi_codec);
-+	return ret;
- }
+ 	if (jack->private_free)
+ 		jack->private_free(jack);
  
- #ifdef CONFIG_OF
 -- 
 2.34.1
 
