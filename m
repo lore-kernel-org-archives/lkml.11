@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED1EC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9840FC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843184AbiAXXDa (ORCPT
+        id S1843397AbiAXXDz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:03:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60034 "EHLO
+        Mon, 24 Jan 2022 18:03:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577873AbiAXWBL (ORCPT
+        with ESMTP id S1457894AbiAXVzG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:01:11 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BAA8C024150;
-        Mon, 24 Jan 2022 12:41:07 -0800 (PST)
+        Mon, 24 Jan 2022 16:55:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0085C07E2A4;
+        Mon, 24 Jan 2022 12:36:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A476BB8105C;
-        Mon, 24 Jan 2022 20:41:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA6A4C340E5;
-        Mon, 24 Jan 2022 20:41:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9178961535;
+        Mon, 24 Jan 2022 20:36:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CDAAC340E5;
+        Mon, 24 Jan 2022 20:36:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056865;
-        bh=noPkjLggVRzhHtJtUyyY8AiSqQGvqU0JZkwRb0GYV3U=;
+        s=korg; t=1643056598;
+        bh=cIVsYXY5t94PiqfXWViR/Oi0njjK/oBXtpCVnbK2xrY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rpzgN1I8k+DJlBzQYaWTUsM2x7OxqyVd5fhcKp4q0UwxwPZ+lTaen4u1Ej7xbsqGE
-         WRsg9pVDQ54zr8Qq6TwtyWq7uI9jjUT82HAP5FSK+le+KRh6bJ4yRMX8JkWQJtOmvv
-         Suw7ADGPwGjKgV5C7G1o5C7+J3TOgnFf0nSH9Mh8=
+        b=vDCuDoLYb1l6mtmbdUKZ45Jml+amoKLjOYlekNvNdBMRp04LIqFRneVNFau08DQPi
+         ymUUJ4Uhu2/qgbr0g7d/kzOZTxdacLYIKC2H8hu6Zw0H2f6Ry/Yexv+haBVzDi1A2p
+         B5ZVoRrkGQGKceZ5Ik6p7n9uE9na2MaYJAI+nRrA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Tom Lendacky <thomas.lendacky@amd.com>,
+        "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 626/846] powerpc/btext: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:42:23 +0100
-Message-Id: <20220124184122.631542189@linuxfoundation.org>
+Subject: [PATCH 5.15 536/846] net: phy: prefer 1000baseT over 1000baseKX
+Date:   Mon, 24 Jan 2022 19:40:53 +0100
+Message-Id: <20220124184119.489770077@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,61 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit a1d2b210ffa52d60acabbf7b6af3ef7e1e69cda0 ]
+[ Upstream commit f20f94f7f52c4685c81754f489ffcc72186e8bdb ]
 
-for_each_node_by_type performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+The PHY settings table is supposed to be sorted by descending match
+priority - in other words, earlier entries are preferred over later
+entries.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+The order of 1000baseKX/Full and 1000baseT/Full is such that we
+prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
+a lot rarer than 1000baseT/Full, and thus is much less likely to
+be preferred.
 
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
+This causes phylink problems - it means a fixed link specifying a
+speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
+rather than 1000baseT/Full as would be expected - and since we offer
+userspace a software emulation of a conventional copper PHY, we want
+to offer copper modes in preference to anything else. However, we do
+still want to allow the rarer modes as well.
 
- for_each_node_by_type(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
+Hence, let's reorder these two modes to prefer copper.
 
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-6-git-send-email-Julia.Lawall@lip6.fr
+Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+Link: https://lore.kernel.org/r/E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/btext.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/btext.c b/arch/powerpc/kernel/btext.c
-index 803c2a45b22ac..1cffb5e7c38d6 100644
---- a/arch/powerpc/kernel/btext.c
-+++ b/arch/powerpc/kernel/btext.c
-@@ -241,8 +241,10 @@ int __init btext_find_display(int allow_nonstdout)
- 			rc = btext_initialize(np);
- 			printk("result: %d\n", rc);
- 		}
--		if (rc == 0)
-+		if (rc == 0) {
-+			of_node_put(np);
- 			break;
-+		}
- 	}
- 	return rc;
- }
+diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
+index 2870c33b8975d..271fc01f7f7fd 100644
+--- a/drivers/net/phy/phy-core.c
++++ b/drivers/net/phy/phy-core.c
+@@ -162,11 +162,11 @@ static const struct phy_setting settings[] = {
+ 	PHY_SETTING(   2500, FULL,   2500baseT_Full		),
+ 	PHY_SETTING(   2500, FULL,   2500baseX_Full		),
+ 	/* 1G */
+-	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
+ 	PHY_SETTING(   1000, FULL,   1000baseT_Full		),
+ 	PHY_SETTING(   1000, HALF,   1000baseT_Half		),
+ 	PHY_SETTING(   1000, FULL,   1000baseT1_Full		),
+ 	PHY_SETTING(   1000, FULL,   1000baseX_Full		),
++	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
+ 	/* 100M */
+ 	PHY_SETTING(    100, FULL,    100baseT_Full		),
+ 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
 -- 
 2.34.1
 
