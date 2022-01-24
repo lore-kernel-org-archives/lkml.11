@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DBAC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4175C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359367AbiAXT7g (ORCPT
+        id S1359451AbiAXT7o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:59:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355439AbiAXTlX (ORCPT
+        Mon, 24 Jan 2022 14:59:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33536 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355396AbiAXTlP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:41:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16EE0C06176F;
-        Mon, 24 Jan 2022 11:21:25 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2E16B8121A;
-        Mon, 24 Jan 2022 19:21:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8D72C340E5;
-        Mon, 24 Jan 2022 19:21:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 476F9B81188;
+        Mon, 24 Jan 2022 19:41:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71137C340E5;
+        Mon, 24 Jan 2022 19:41:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052083;
-        bh=A9QrOZZOs90LBJJ2cTE2RJkFHsE+7U4j+ayQc02i0ss=;
+        s=korg; t=1643053272;
+        bh=zzKbzuFubpHHemI4OYJIDmPJ6QVU/JspdXhTqkh54ZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y19p9JZogE0hMwG3lk1sXqNowAB0lYq0xoUWVA06S1MEFHsMcDrbBw2jewb2FyBFz
-         wq5stcFXxyJFbMKMVhQ+cB894mL7wBuHEJZoSCPzNh6f0/uQLEQwLK+yO+BGdyaE/1
-         RfRg34Fl4O6jHFYfgpWCfkXniw5KZg2X/kr3VBi0=
+        b=r42CB+yRBaSLtLXxwqHD8ZzoHHei3Bfz8XEqz7tQH5+J7NNp9ShGtWuI/wDbb4sRc
+         kV5z+zl7VYqSG27/2tIGjCbAzenfTqxuLE/kXbgw7FkluYUynRTgIF/v6d27NybeI5
+         q1yBkd48Fp3/0uI1loz6aqVsqAQEbjUjPw8PAeoU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 141/239] net-sysfs: update the queue counts in the unregistration path
-Date:   Mon, 24 Jan 2022 19:42:59 +0100
-Message-Id: <20220124183947.587473748@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.10 012/563] mtd: rawnand: davinci: Avoid duplicated page read
+Date:   Mon, 24 Jan 2022 19:36:17 +0100
+Message-Id: <20220124184024.842019649@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,38 +46,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antoine Tenart <atenart@kernel.org>
+From: Paul Cercueil <paul@crapouillou.net>
 
-[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
+commit 9c9d709965385de5a99f84b14bd5860e1541729e upstream.
 
-When updating Rx and Tx queue kobjects, the queue count should always be
-updated to match the queue kobjects count. This was not done in the net
-device unregistration path, fix it. Tracking all queue count updates
-will allow in a following up patch to detect illegal updates.
+The function nand_davinci_read_page_hwecc_oob_first() first reads the
+OOB data, extracts the ECC information, programs the ECC hardware before
+reading the actual data in a loop.
 
-Signed-off-by: Antoine Tenart <atenart@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Right after the OOB data was read, it called nand_read_page_op() to
+reset the read cursor to the beginning of the page. This caused the
+first page to be read twice: in that call, and later in the loop.
+
+Address that issue by changing the call to nand_read_page_op() to
+nand_change_read_column_op(), which will only reset the read cursor.
+
+Cc: <stable@vger.kernel.org> # v5.2
+Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-2-paul@crapouillou.net
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/net-sysfs.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/mtd/nand/raw/davinci_nand.c |    3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
-index fe0d255d66c8b..e5dc04cb55992 100644
---- a/net/core/net-sysfs.c
-+++ b/net/core/net-sysfs.c
-@@ -1616,6 +1616,9 @@ static void remove_queue_kobjects(struct net_device *dev)
+--- a/drivers/mtd/nand/raw/davinci_nand.c
++++ b/drivers/mtd/nand/raw/davinci_nand.c
+@@ -401,7 +401,8 @@ static int nand_davinci_read_page_hwecc_
+ 	if (ret)
+ 		return ret;
  
- 	net_rx_queue_update_kobjects(dev, real_rx, 0);
- 	netdev_queue_update_kobjects(dev, real_tx, 0);
-+
-+	dev->real_num_rx_queues = 0;
-+	dev->real_num_tx_queues = 0;
- #ifdef CONFIG_SYSFS
- 	kset_unregister(dev->queues_kset);
- #endif
--- 
-2.34.1
-
+-	ret = nand_read_page_op(chip, page, 0, NULL, 0);
++	/* Move read cursor to start of page */
++	ret = nand_change_read_column_op(chip, 0, NULL, 0, false);
+ 	if (ret)
+ 		return ret;
+ 
 
 
