@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939BEC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D01C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345966AbiAXTEv (ORCPT
+        id S1346021AbiAXTE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:04:51 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56714 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245463AbiAXS5l (ORCPT
+        Mon, 24 Jan 2022 14:04:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56126 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344165AbiAXS6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:41 -0500
+        Mon, 24 Jan 2022 13:58:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17F9F6153A;
-        Mon, 24 Jan 2022 18:57:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2359C340E5;
-        Mon, 24 Jan 2022 18:57:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E94A4B8122F;
+        Mon, 24 Jan 2022 18:58:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26A08C340E5;
+        Mon, 24 Jan 2022 18:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050660;
-        bh=9ZnAhV7QLSl4tRYWVnlLpmppsIYCvGjGJBqgxDy0hwg=;
+        s=korg; t=1643050698;
+        bh=+0PMCPFJn7nX+bXhEzg0RONY2GIh1YcE9doSXyviagA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TMD+evnF53eZEs3UnfqerAqzbc6CyDO0TigejtgXDEPNr/bj+b7SrsbH2vgROGX8j
-         UGFgXGDcl9i0udRcY+UcQIbuE+ud9dHggKJdXKyOwMbkmEhWThBU5bxHCjGB2bIw0K
-         Ag3WFwBJf7ZsdFpJUl8yarCBPlDHKL89DEu0aH0Y=
+        b=iTnQ6D00rw2cKE0/1U+7ujWlhFa98V8fKTRMrejd0ceHu5LzeQRnT9mNOlIP/Nu46
+         BuQ4I3tZNPJCDaanz7vQhAZeFlVosc0DOLDga+SN9TD5iFrY7u1+IjGdZBA9mw0N0R
+         IW0ipgYfSIJ72WfuF7VPvhM9wfrk4N0LiQjJx2uI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 071/157] mips: bcm63xx: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:42:41 +0100
-Message-Id: <20220124183935.047540583@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 077/157] HID: apple: Do not reset quirks when the Fn key is not found
+Date:   Mon, 24 Jan 2022 19:42:47 +0100
+Message-Id: <20220124183935.228809192@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,46 +47,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
+[ Upstream commit a5fe7864d8ada170f19cc47d176bf8260ffb4263 ]
 
-The MIPS BMC63XX subarch does not provide/support clk_set_parent().
-This causes build errors in a few drivers, so add a simple implementation
-of that function so that callers of it will build without errors.
+When a keyboard without a function key is detected, instead of removing
+all quirks, remove only the APPLE_HAS_FN quirk.
 
-Fixes these build errors:
-
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
-
-Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/bcm63xx/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/hid/hid-apple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
-index 4f375050ab8e9..3be875a45c834 100644
---- a/arch/mips/bcm63xx/clk.c
-+++ b/arch/mips/bcm63xx/clk.c
-@@ -342,6 +342,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 149902619cbc8..0074091c27aa2 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -390,7 +390,7 @@ static int apple_input_configured(struct hid_device *hdev,
  
-+int clk_set_parent(struct clk *clk, struct clk *parent)
-+{
-+	return 0;
-+}
-+EXPORT_SYMBOL(clk_set_parent);
-+
- unsigned long clk_get_rate(struct clk *clk)
- {
- 	return clk->rate;
+ 	if ((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) {
+ 		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
+-		asc->quirks = 0;
++		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
+ 
+ 	return 0;
 -- 
 2.34.1
 
