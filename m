@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC72FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E39CFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:56:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840775AbiAXWzW (ORCPT
+        id S1840900AbiAXWzm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:55:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59064 "EHLO
+        Mon, 24 Jan 2022 17:55:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576071AbiAXVxA (ORCPT
+        with ESMTP id S1576003AbiAXVwv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:53:00 -0500
+        Mon, 24 Jan 2022 16:52:51 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B16F2C08B4F3;
-        Mon, 24 Jan 2022 12:34:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DE9AC0939AD;
+        Mon, 24 Jan 2022 12:34:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5136861382;
-        Mon, 24 Jan 2022 20:34:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38CA8C340E5;
-        Mon, 24 Jan 2022 20:34:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B16746152F;
+        Mon, 24 Jan 2022 20:34:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95F9FC340E5;
+        Mon, 24 Jan 2022 20:34:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056461;
-        bh=EQRRA9PuObldp87ocMm+5sG91qe7TgelMcXd6092xrw=;
+        s=korg; t=1643056450;
+        bh=qB3Fi/c2OFkg4thTeRXKRkzxotAB/uDfhq1PIFW3rw8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JI523BxM06FS6j51Yw+hSEzodWAEK2QrECHzwcWG2QkhWtll3bw0V9WR2zVAwoAoQ
-         QVKsNJvtwpp/gCDKh6QIUJhR8S172mOH30DDIOh1nIifQeIzuXKnj9uzn9hHewxvf7
-         JK3RVbnc2gqsD3tmeqh+2/+6/nlWG8u9n//DoDOk=
+        b=fNNjEJp4EO+B58is/Ox61WeIUbdfZKQ4J4PISkYl5XQ0oHnvFRNoaibyhQdi11s4k
+         XXS4gCQWobptKE7r5lyWdweKlGbJ7pc7t5Jv/0GPNmyjtSO3+yYsbkpnrsFZxR0f1p
+         Fg9bWSSo3Rn21Jla7ieYAZ+XVcfJ0TZ2Hnxbc7ts=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Peng Fan <peng.fan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Jiri Olsa <jolsa@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 492/846] soc: imx: gpcv2: Synchronously suspend MIX domains
-Date:   Mon, 24 Jan 2022 19:40:09 +0100
-Message-Id: <20220124184117.981890388@linuxfoundation.org>
+Subject: [PATCH 5.15 488/846] libbpf: Accommodate DWARF/compiler bug with duplicated structs
+Date:   Mon, 24 Jan 2022 19:40:05 +0100
+Message-Id: <20220124184117.847023427@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -53,43 +51,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marek Vasut <marex@denx.de>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit f756f435f7dd823f2d4bd593ce1bf3168def1308 ]
+[ Upstream commit efdd3eb8015e7447095f02a26eaabd164cd18004 ]
 
-In case the following power domain sequence happens, iMX8M Mini always hangs:
-  gpumix:on -> gpu:on -> gpu:off -> gpu:on
-This is likely due to another quirk of the GPC block. This situation can be
-prevented by always synchronously powering off both the domain and MIX domain.
-Make it so. This turns the aforementioned sequence into:
-  gpumix:on -> gpu:on -> gpu:off -> gpumix:off -> gpumix:on -> gpu:on
+According to [0], compilers sometimes might produce duplicate DWARF
+definitions for exactly the same struct/union within the same
+compilation unit (CU). We've had similar issues with identical arrays
+and handled them with a similar workaround in 6b6e6b1d09aa ("libbpf:
+Accomodate DWARF/compiler bug with duplicated identical arrays"). Do the
+same for struct/union by ensuring that two structs/unions are exactly
+the same, down to the integer values of field referenced type IDs.
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Frieder Schrempf <frieder.schrempf@kontron.de>
-Cc: Lucas Stach <l.stach@pengutronix.de>
-Cc: NXP Linux Team <linux-imx@nxp.com>
-Cc: Peng Fan <peng.fan@nxp.com>
-Cc: Shawn Guo <shawnguo@kernel.org>
-Acked-by: Lucas Stach <l.stach@pengutronix.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Solving this more generically (allowing referenced types to be
+equivalent, but using different type IDs, all within a single CU)
+requires a huge complexity increase to handle many-to-many mappings
+between canonidal and candidate type graphs. Before we invest in that,
+let's see if this approach handles all the instances of this issue in
+practice. Thankfully it's pretty rare, it seems.
+
+  [0] https://lore.kernel.org/bpf/YXr2NFlJTAhHdZqq@krava/
+
+Reported-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211117194114.347675-1-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/imx/gpcv2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/btf.c | 45 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
-index 8b7a01773aec2..b4aa28420f2a8 100644
---- a/drivers/soc/imx/gpcv2.c
-+++ b/drivers/soc/imx/gpcv2.c
-@@ -369,7 +369,7 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
- 		}
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 5fa64a7f0dda8..5f3d20ae66d56 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -3358,8 +3358,8 @@ static long btf_hash_struct(struct btf_type *t)
+ }
+ 
+ /*
+- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
+- * IDs. This check is performed during type graph equivalence check and
++ * Check structural compatibility of two STRUCTs/UNIONs, ignoring referenced
++ * type IDs. This check is performed during type graph equivalence check and
+  * referenced types equivalence is checked separately.
+  */
+ static bool btf_shallow_equal_struct(struct btf_type *t1, struct btf_type *t2)
+@@ -3730,6 +3730,31 @@ static int btf_dedup_identical_arrays(struct btf_dedup *d, __u32 id1, __u32 id2)
+ 	return btf_equal_array(t1, t2);
+ }
+ 
++/* Check if given two types are identical STRUCT/UNION definitions */
++static bool btf_dedup_identical_structs(struct btf_dedup *d, __u32 id1, __u32 id2)
++{
++	const struct btf_member *m1, *m2;
++	struct btf_type *t1, *t2;
++	int n, i;
++
++	t1 = btf_type_by_id(d->btf, id1);
++	t2 = btf_type_by_id(d->btf, id2);
++
++	if (!btf_is_composite(t1) || btf_kind(t1) != btf_kind(t2))
++		return false;
++
++	if (!btf_shallow_equal_struct(t1, t2))
++		return false;
++
++	m1 = btf_members(t1);
++	m2 = btf_members(t2);
++	for (i = 0, n = btf_vlen(t1); i < n; i++, m1++, m2++) {
++		if (m1->type != m2->type)
++			return false;
++	}
++	return true;
++}
++
+ /*
+  * Check equivalence of BTF type graph formed by candidate struct/union (we'll
+  * call it "candidate graph" in this description for brevity) to a type graph
+@@ -3841,6 +3866,8 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+ 
+ 	hypot_type_id = d->hypot_map[canon_id];
+ 	if (hypot_type_id <= BTF_MAX_NR_TYPES) {
++		if (hypot_type_id == cand_id)
++			return 1;
+ 		/* In some cases compiler will generate different DWARF types
+ 		 * for *identical* array type definitions and use them for
+ 		 * different fields within the *same* struct. This breaks type
+@@ -3849,8 +3876,18 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+ 		 * types within a single CU. So work around that by explicitly
+ 		 * allowing identical array types here.
+ 		 */
+-		return hypot_type_id == cand_id ||
+-		       btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
++		if (btf_dedup_identical_arrays(d, hypot_type_id, cand_id))
++			return 1;
++		/* It turns out that similar situation can happen with
++		 * struct/union sometimes, sigh... Handle the case where
++		 * structs/unions are exactly the same, down to the referenced
++		 * type IDs. Anything more complicated (e.g., if referenced
++		 * types are different, but equivalent) is *way more*
++		 * complicated and requires a many-to-many equivalence mapping.
++		 */
++		if (btf_dedup_identical_structs(d, hypot_type_id, cand_id))
++			return 1;
++		return 0;
  	}
  
--	pm_runtime_put(domain->dev);
-+	pm_runtime_put_sync_suspend(domain->dev);
- 
- 	return 0;
- 
+ 	if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
 -- 
 2.34.1
 
