@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4975BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A1C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351581AbiAXT1e (ORCPT
+        id S1351654AbiAXT1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:27:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44614 "EHLO
+        Mon, 24 Jan 2022 14:27:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44216 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345934AbiAXTRi (ORCPT
+        with ESMTP id S1347648AbiAXTRB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:17:38 -0500
+        Mon, 24 Jan 2022 14:17:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ED9946133D;
-        Mon, 24 Jan 2022 19:17:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F6FC340E7;
-        Mon, 24 Jan 2022 19:17:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E920260917;
+        Mon, 24 Jan 2022 19:17:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7865C340E5;
+        Mon, 24 Jan 2022 19:16:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051857;
-        bh=2tlDt6Cs63ivblVqNROf09tHbLBAy/Z87u2ytLnMtfQ=;
+        s=korg; t=1643051820;
+        bh=gUBygmoEBQDPFQekCp2li5xY7NKosJ7ZgGesRhBIraQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PLqsANrBh7VYOfKK+WRqn46qVeBQVTUSTFCpvOmLy7MwiQGONovCxMbpSQbJnGWoH
-         G8wNys9l2lpeBCqeBu5MrY+hXHI8JA2cVNZX943eKCn+TA/Vn3KUb8l6A9O/MTCkxC
-         YWCtWpwKx3KWMUvFHBuJxRAsZ3YosphQF1uLhCdM=
+        b=SPRna9w79WLkd2jSwZBHZ5yA5EdfPbtr1bM3jd3rrE9iO7R8V0FhG/yf7y+GA0mHf
+         iUGT/4uP6lj+yFSNQsybHiAWzK2TZ8HRcOjpc9X//DZdJghZUmXcndmouiiTXHpHfc
+         ygLCwgvUVASEmje6E1NEmFAUylAAanIC7CNu18Hs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 076/239] media: msi001: fix possible null-ptr-deref in msi001_probe()
-Date:   Mon, 24 Jan 2022 19:41:54 +0100
-Message-Id: <20220124183945.536846034@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 097/239] net: mcs7830: handle usb read errors properly
+Date:   Mon, 24 Jan 2022 19:42:15 +0100
+Message-Id: <20220124183946.190555778@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,56 +49,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
+[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
 
-I got a null-ptr-deref report:
+Syzbot reported uninit value in mcs7830_bind(). The problem was in
+missing validation check for bytes read via usbnet_read_cmd().
 
-BUG: kernel NULL pointer dereference, address: 0000000000000060
-...
-RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
-...
-Call Trace:
- msi001_probe+0x13b/0x24b [msi001]
- spi_probe+0xeb/0x130
-...
- do_syscall_64+0x35/0xb0
+usbnet_read_cmd() internally calls usb_control_msg(), that returns
+number of bytes read. Code should validate that requested number of bytes
+was actually read.
 
-In msi001_probe(), if the creation of control for bandwidth_auto
-fails, there will be a null-ptr-deref issue when it is used in
-v4l2_ctrl_auto_cluster().
+So, this patch adds missing size validation check inside
+mcs7830_get_reg() to prevent uninit value bugs
 
-Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
-
-Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
-Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/tuners/msi001.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/net/usb/mcs7830.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
-index 5de6ed7287085..13ffe196b7a42 100644
---- a/drivers/media/tuners/msi001.c
-+++ b/drivers/media/tuners/msi001.c
-@@ -451,6 +451,13 @@ static int msi001_probe(struct spi_device *spi)
- 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
- 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
-+	if (dev->hdl.error) {
-+		ret = dev->hdl.error;
-+		dev_err(&spi->dev, "Could not initialize controls\n");
-+		/* control init failed, free handler */
-+		goto err_ctrl_handler_free;
-+	}
+diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
+index 5a47e5510ca82..c0f52a622964f 100644
+--- a/drivers/net/usb/mcs7830.c
++++ b/drivers/net/usb/mcs7830.c
+@@ -121,8 +121,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
+ 
+ static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
+ {
+-	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
+-				0x0000, index, data, size);
++	int ret;
 +
- 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
- 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
++	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
++			      0x0000, index, data, size);
++	if (ret < 0)
++		return ret;
++	else if (ret < size)
++		return -ENODATA;
++
++	return ret;
+ }
+ 
+ static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
 -- 
 2.34.1
 
