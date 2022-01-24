@@ -2,105 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8E38C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF54CC433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352824AbiAXTbI (ORCPT
+        id S1352773AbiAXTbD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
+        Mon, 24 Jan 2022 14:31:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349989AbiAXTXA (ORCPT
+        with ESMTP id S1345150AbiAXTWY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:23:00 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C265C06138F;
-        Mon, 24 Jan 2022 11:09:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0C6F60B86;
-        Mon, 24 Jan 2022 19:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2A41C340E5;
-        Mon, 24 Jan 2022 19:09:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051353;
-        bh=eRQgN6+6B/sk/4CSMI+LPdFbwm4PJOHQJ/Ld8kx8M0M=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tvgDF5DmSdxdG1Cg9CJCdOXhLnknpb9+RHSXP0UbzXb4KUnm2qUiUU60EFon8a7+C
-         Dmzf5i3OAwVjO+/RUbh5QJ7ORntEn8euxaCHfMMFWGsbGTvDlY0qNkEMn9YAeqFr1s
-         MdMqZm79A1HHNLDu6tCoBfzs2ZU3ewVFAizPmwoQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 134/186] powerpc/cell: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:29 +0100
-Message-Id: <20220124183941.420864123@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 14:22:24 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D79C02B861
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:08:43 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id v74so13701174pfc.1
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:08:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rVsQvo+ZjtK46Xp9A91RBZT4Worccr7KUw8/eqjUom4=;
+        b=oBwmdtH13x9b6kAQu+AfvDYJoAIzyE+GKZg3N4sPHI6da5W4ZAw0iucdO03Hsjwk6P
+         CxBAQ3AdTNCbqMwBxdqC2VysY9FZyaT/nmnwtCR1kaN7E/e+uRBV766ByYloQunh0WvK
+         kNP8Nb4DjJK1oMj+xMboRHrl/r4uYzKGxpFYlaI4AaPfXU00JRGG+WhsLeyq0fjWERzq
+         +xOrVG4tdVVa0Fv3m7HtNGGNlIEdZqSS8l/dxo9SW6E01VQA5b5rMLSz1Bek8egU8muk
+         MBNeMStA5TimanH4T9D+u0ruY5E4N8jzcQAqZxcFWA3M7ELce0p3WnkldfQG4796IoxW
+         phvQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rVsQvo+ZjtK46Xp9A91RBZT4Worccr7KUw8/eqjUom4=;
+        b=1Fp9+/72hMuupp+Ece1Yw7Lb+Ik1jgRBVi2RS4TI4zLWJjwijyVB9XFKtvbcm8xPd3
+         va3xKOUvnp+FzsUNtQrsxmMMdZxsi+7W48mORZ4Y4f3Blu1dj0TQXzYEBGSvtiOESdyN
+         0MHFcBJAjJ2kMBM8ByyipBah6kqCp7q1gVKGcA4S/etlZZhhRzQgLExTfnwJvlxvu3iI
+         sv6JsrvTkoWbpVqAgyME8NZf7c8QdGoALjt7KQy6ZRQT8ae2QczXdupDMYLWUgnLVHI9
+         4WRm7I0nWq6dQ8246xHGmn4fS1LvVPFoyE93RlQKemjH/7QDos1UDlQh+kfgMrCMBwB7
+         XV6w==
+X-Gm-Message-State: AOAM532JCmULGt9M5OkkMNxQPjWxXDoLF9GJ5dy3ryMq9nABJsVkfb2F
+        aQDPkX5NHwy0rQnvunQVwnY0+Q==
+X-Google-Smtp-Source: ABdhPJxGnukKA6tJEogfNC/QfbWw1VjuOOgZ06J37PBc5sW91RZk/AE0UMR+mdF9nkRQtPlsnbtgzw==
+X-Received: by 2002:a63:ad42:: with SMTP id y2mr12736198pgo.386.1643051322966;
+        Mon, 24 Jan 2022 11:08:42 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id g21sm2080660pfc.11.2022.01.24.11.08.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 11:08:42 -0800 (PST)
+Date:   Mon, 24 Jan 2022 19:08:38 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] KVM: x86: Use memcmp in kvm_cpuid_check_equal()
+Message-ID: <Ye75NpxFoOwCi23e@google.com>
+References: <20220124103606.2630588-1-vkuznets@redhat.com>
+ <20220124103606.2630588-3-vkuznets@redhat.com>
+ <95f63ed6-743b-3547-dda1-4fe83bc39070@redhat.com>
+ <87bl01i2zl.fsf@redhat.com>
+ <Ye7ZQJ6NYoZqK9yk@google.com>
+ <979883b4-8fcd-7488-0313-de6348863b21@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <979883b4-8fcd-7488-0313-de6348863b21@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+On Mon, Jan 24, 2022, Paolo Bonzini wrote:
+> On 1/24/22 17:52, Sean Christopherson wrote:
+> > On Mon, Jan 24, 2022, Vitaly Kuznetsov wrote:
+> > > Paolo Bonzini <pbonzini@redhat.com> writes:
+> > > > > +	if (memcmp(e2, vcpu->arch.cpuid_entries, nent * sizeof(*e2)))
+> > > > > +		return -EINVAL;
+> > > > 
+> > > > Hmm, not sure about that due to the padding in struct kvm_cpuid_entry2.
+> > > >    It might break userspace that isn't too careful about zeroing it.
+> > 
+> > Given that we already are fully committed to potentially breaking userspace by
+> > disallowing KVM_SET_CPUID{2} after KVM_RUN, we might as well get greedy.
+> 
+> Hmm, I thought this series was because we were _not_ fully committed. :)
 
-[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
-
-for_each_node_by_name performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
-
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
-
-// <smpl>
-@@
-expression e,e1;
-local idexpression n;
-@@
-
- for_each_node_by_name(n, e1) {
-   ... when != of_node_put(n)
-       when != e = n
-(
-   return n;
-|
-+  of_node_put(n);
-?  return ...;
-)
-   ...
- }
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/platforms/cell/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
-index 4b91ad08eefd9..c4f352387aec3 100644
---- a/arch/powerpc/platforms/cell/iommu.c
-+++ b/arch/powerpc/platforms/cell/iommu.c
-@@ -1088,6 +1088,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
- 			if (hbase < dbase || (hend > (dbase + dsize))) {
- 				pr_debug("iommu: hash window doesn't fit in"
- 					 "real DMA window\n");
-+				of_node_put(np);
- 				return -1;
- 			}
- 		}
--- 
-2.34.1
-
-
-
+We're fully committed in the sense that we know disallowing KVM_SET_CPUID2 after
+KVM_RUN broke at least one use case, and instead of reverting we are doubling down
+and adding more KVM code/complexity to grandfather in that one use case.  There's
+no guarantee that there aren't other use cases that will break, but haven't been
+reported simply because their users haven't yet moved to a 5.16 kernel.
