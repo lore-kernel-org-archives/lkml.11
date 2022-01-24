@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F6CC2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F73C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443513AbiAXU5J (ORCPT
+        id S1443536AbiAXU5O (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:57:09 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60122 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386157AbiAXUfO (ORCPT
+        Mon, 24 Jan 2022 15:57:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39748 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1386440AbiAXUfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:35:14 -0500
+        Mon, 24 Jan 2022 15:35:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54643C02C308;
+        Mon, 24 Jan 2022 11:48:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C0421614EC;
-        Mon, 24 Jan 2022 20:35:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD7A0C340E5;
-        Mon, 24 Jan 2022 20:35:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 111B9B8122A;
+        Mon, 24 Jan 2022 19:48:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2DCFAC340E7;
+        Mon, 24 Jan 2022 19:48:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056513;
-        bh=2tE7hxKGMOMC5KAqc0el4iqpnPASZIZxwjjzSAZrSyQ=;
+        s=korg; t=1643053729;
+        bh=Yp1NnFfvlH+1ASCwb2Hc7AdUpcyrvhhExdH1MabsrVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Qpcn1vb+lppcwXAYOytUGjM5XuAkX14mbqsDVWrykDVY513ZQBw5LlezNiyj+sUex
-         TxH+ZnFIqm4+xjIgolOeYEizI7ka4hltYwwFVub6DiywF8Co3D0//Fjc12cssM+J9P
-         jHR0Nv2UiC77dHXQpD7ta4rKlI9ufilxfLlAEFH8=
+        b=Re8pzJ5qsdd6Si+w4sXiRmwzAOLqOLAhxtB4X99mO6WfcSizoPfrKgoHc4U9ztXO+
+         Ey5qkzr/OQLL47Z+RkdZKxVKiJesKO2JuCa5DpiaVUtkQa/+Z0osfZT3htz8Hrf5ys
+         oX6VSLBagNl/N5EhjXVhe1N8nJGntQnJjcPrNMYs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Hengqi Chen <hengqi.chen@gmail.com>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 467/846] selftests/bpf: Destroy XDP link correctly
-Date:   Mon, 24 Jan 2022 19:39:44 +0100
-Message-Id: <20220124184117.088239073@linuxfoundation.org>
+Subject: [PATCH 5.10 141/563] media: dib8000: Fix a memleak in dib8000_init()
+Date:   Mon, 24 Jan 2022 19:38:26 +0100
+Message-Id: <20220124184029.274901219@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,37 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit f91231eeeed752119f49eb6620cae44ec745a007 ]
+[ Upstream commit 8dbdcc7269a83305ee9d677b75064d3530a48ee2 ]
 
-bpf_link__detach() was confused with bpf_link__destroy() and leaves
-leaked FD in the process. Fix the problem.
+In dib8000_init(), the variable fe is not freed or passed out on the
+failure of dib8000_identify(&state->i2c), which could lead to a memleak.
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
-Link: https://lore.kernel.org/bpf/20211107165521.9240-9-andrii@kernel.org
+Fix this bug by adding a kfree of fe in the error path.
+
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_DVB_DIB8000=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: 77e2c0f5d471 ("V4L/DVB (12900): DiB8000: added support for DiBcom ISDB-T/ISDB-Tsb demodulator DiB8000")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/dvb-frontends/dib8000.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-index 59adb4715394f..3c85247f96f95 100644
---- a/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-+++ b/tools/testing/selftests/bpf/prog_tests/migrate_reuseport.c
-@@ -204,8 +204,8 @@ static int pass_ack(struct migrate_reuseport_test_case *test_case)
- {
- 	int err;
+diff --git a/drivers/media/dvb-frontends/dib8000.c b/drivers/media/dvb-frontends/dib8000.c
+index bb02354a48b81..d67f2dd997d06 100644
+--- a/drivers/media/dvb-frontends/dib8000.c
++++ b/drivers/media/dvb-frontends/dib8000.c
+@@ -4473,8 +4473,10 @@ static struct dvb_frontend *dib8000_init(struct i2c_adapter *i2c_adap, u8 i2c_ad
  
--	err = bpf_link__detach(test_case->link);
--	if (!ASSERT_OK(err, "bpf_link__detach"))
-+	err = bpf_link__destroy(test_case->link);
-+	if (!ASSERT_OK(err, "bpf_link__destroy"))
- 		return -1;
+ 	state->timf_default = cfg->pll->timf;
  
- 	test_case->link = NULL;
+-	if (dib8000_identify(&state->i2c) == 0)
++	if (dib8000_identify(&state->i2c) == 0) {
++		kfree(fe);
+ 		goto error;
++	}
+ 
+ 	dibx000_init_i2c_master(&state->i2c_master, DIB8000, state->i2c.adap, state->i2c.addr);
+ 
 -- 
 2.34.1
 
