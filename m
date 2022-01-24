@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ECCC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A152C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388523AbiAXUjF (ORCPT
+        id S1388535AbiAXUjL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:39:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57132 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349285AbiAXURw (ORCPT
+        Mon, 24 Jan 2022 15:39:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355301AbiAXUSF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:17:52 -0500
+        Mon, 24 Jan 2022 15:18:05 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1B85C0A893D;
+        Mon, 24 Jan 2022 11:38:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26F55B812AA;
-        Mon, 24 Jan 2022 20:17:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BF32C340E5;
-        Mon, 24 Jan 2022 20:17:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5043F6153A;
+        Mon, 24 Jan 2022 19:38:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2318AC340E5;
+        Mon, 24 Jan 2022 19:38:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055469;
-        bh=RQ5Ca9+CytE6FpXfdzRkzs6Fgfx0IT5jkMAAFnh6LJY=;
+        s=korg; t=1643053109;
+        bh=khj1TPKAGtqZ8SRnFW3L1kpEHrsWYchWuXRxLdSbLMw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SeGqEkZA2sNUb0CfgaymO3RUZORy1vcCqHfyzZCOSjvqkyNO2Q3IK61+25x2JtrkL
-         uvKxnW6ZyBSq0uQNvd4cFPN9MNFgKweAEkUtrlcIzgfiq6lkPORZkVqdW6Rjr32+jk
-         qvlqnTzPDq296ZIaaDhqwLxrRUZvyWpMg+5xW3iM=
+        b=pyl1MVjUxR8JMIfZNRyFtJZXhWi7AdZoaeF95FqTu152HIJ27N8dPJ+yBqowcZufK
+         eOpHzIh1qIOan2nYGZn7bpP4r0n0wDbpgvUfZQ8n8KFgDpcVYVQkDfpbxB/8wUe+Ny
+         BJZss1dW0+oR295n6S6s7dcqsGdHvZsLVkzjIGZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 162/846] media: i2c: ov8865: Fix lockdep error
-Date:   Mon, 24 Jan 2022 19:34:39 +0100
-Message-Id: <20220124184106.572115467@linuxfoundation.org>
+        stable@vger.kernel.org, Zqiang <qiang.zhang1211@gmail.com>,
+        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 237/320] ALSA: seq: Set upper limit of processed events
+Date:   Mon, 24 Jan 2022 19:43:41 +0100
+Message-Id: <20220124184002.049031441@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +50,87 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 6e1c9bc9ae96e57bcd8807174f2c0f44f9ef7938 ]
+[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
 
-ov8865_state_init() calls ov8865_state_mipi_configure() which uses
-__v4l2_ctrl_s_ctrl[_int64](). This means that sensor->mutex (which
-is also sensor->ctrls.handler.lock) must be locked before calling
-ov8865_state_init().
+Currently ALSA sequencer core tries to process the queued events as
+much as possible when they become dispatchable.  If applications try
+to queue too massive events to be processed at the very same timing,
+the sequencer core would still try to process such all events, either
+in the interrupt context or via some notifier; in either away, it
+might be a cause of RCU stall or such problems.
 
-Note ov8865_state_mipi_configure() is also used in other places where
-the lock is already held so it cannot be changed itself.
+As a potential workaround for those problems, this patch adds the
+upper limit of the amount of events to be processed.  The remaining
+events are processed in the next batch, so they won't be lost.
 
-This fixes the following lockdep kernel WARN:
+For the time being, it's limited up to 1000 events per queue, which
+should be high enough for any normal usages.
 
-[   13.233421] WARNING: CPU: 0 PID: 8 at drivers/media/v4l2-core/v4l2-ctrls-api.c:833 __v4l2_ctrl_s_ctrl+0x4d/0x60 [videodev]
-...
-[   13.234063] Call Trace:
-[   13.234074]  ov8865_state_configure+0x98b/0xc00 [ov8865]
-[   13.234095]  ov8865_probe+0x4b1/0x54c [ov8865]
-[   13.234117]  i2c_device_probe+0x13c/0x2d0
-
-Fixes: 11c0d8fdccc5 ("media: i2c: Add support for the OV8865 image sensor")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-by: Zqiang <qiang.zhang1211@gmail.com>
+Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
+Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov8865.c |    2 ++
- 1 file changed, 2 insertions(+)
+ sound/core/seq/seq_queue.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
---- a/drivers/media/i2c/ov8865.c
-+++ b/drivers/media/i2c/ov8865.c
-@@ -2893,7 +2893,9 @@ static int ov8865_probe(struct i2c_clien
- 	if (ret)
- 		goto error_mutex;
+diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
+index 71a6ea62c3be7..4ff0b927230c2 100644
+--- a/sound/core/seq/seq_queue.c
++++ b/sound/core/seq/seq_queue.c
+@@ -234,12 +234,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
  
-+	mutex_lock(&sensor->mutex);
- 	ret = ov8865_state_init(sensor);
-+	mutex_unlock(&sensor->mutex);
- 	if (ret)
- 		goto error_ctrls;
+ /* -------------------------------------------------------- */
  
++#define MAX_CELL_PROCESSES_IN_QUEUE	1000
++
+ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ {
+ 	unsigned long flags;
+ 	struct snd_seq_event_cell *cell;
+ 	snd_seq_tick_time_t cur_tick;
+ 	snd_seq_real_time_t cur_time;
++	int processed = 0;
+ 
+ 	if (q == NULL)
+ 		return;
+@@ -262,6 +265,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ 		if (!cell)
+ 			break;
+ 		snd_seq_dispatch_event(cell, atomic, hop);
++		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
++			goto out; /* the rest processed at the next batch */
+ 	}
+ 
+ 	/* Process time queue... */
+@@ -271,14 +276,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ 		if (!cell)
+ 			break;
+ 		snd_seq_dispatch_event(cell, atomic, hop);
++		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
++			goto out; /* the rest processed at the next batch */
+ 	}
+ 
++ out:
+ 	/* free lock */
+ 	spin_lock_irqsave(&q->check_lock, flags);
+ 	if (q->check_again) {
+ 		q->check_again = 0;
+-		spin_unlock_irqrestore(&q->check_lock, flags);
+-		goto __again;
++		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
++			spin_unlock_irqrestore(&q->check_lock, flags);
++			goto __again;
++		}
+ 	}
+ 	q->check_blocked = 0;
+ 	spin_unlock_irqrestore(&q->check_lock, flags);
+-- 
+2.34.1
+
 
 
