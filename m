@@ -2,117 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA2D1C3526E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19806C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:59:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846001AbiAXX6B (ORCPT
+        id S2368256AbiAXX6i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:58:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50450 "EHLO
+        Mon, 24 Jan 2022 18:58:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847427AbiAXXTr (ORCPT
+        with ESMTP id S1847630AbiAXXUO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:19:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4708C06F8F3;
-        Mon, 24 Jan 2022 13:27:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5682F614FA;
-        Mon, 24 Jan 2022 21:27:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37E1BC340E8;
-        Mon, 24 Jan 2022 21:27:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059633;
-        bh=gdRe4QpHk0RWhNXsg0cQ8r/uaUlLlCnuVFMUVDFrVS4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bL6y+2c+RTAlxEA+TNPhSJHMCULbebhiNOWUTpAUNgxd9DPl+OtGxSfYbvlxSiSfQ
-         Ls2GLGu7wI4tnQmhKDGOKSJtTr8FdUMva5weLCyTu0HjNb4uQ0a8Xx0l/6ER1JoPFK
-         gX2huGEO9mkDDyykzlSU31TuJE/JvBTCldD3ARg4=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0681/1039] iwlwifi: fix leaks/bad data after failed firmware load
-Date:   Mon, 24 Jan 2022 19:41:10 +0100
-Message-Id: <20220124184148.254769778@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:20:14 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8343C08E90D
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:27:55 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id jx6so25175898ejb.0
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:27:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=paul-moore-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RYjOggTIatflhN2tcFQRaqqDoiv4Tn5RiFVJCwGLqbw=;
+        b=3gh94fdxPP1DWGi6gOuYZrgk2uf3k5hBepC1rTfdXAfdOBNwWYVRFT+7VJ//ZBKj48
+         9cUBdcc1L83luJV4tNyo6xJ2NhDMZh+fGByJMZOR/E6OGpvhKXMfLugkrlVdTOH56MDo
+         53GnLKtMZ1UmD6cNG2HLa7dp6n40gG/YORbut8GypvyjOFtcXXVbFmRUkHhk5gGPcxEp
+         Dgpu/Tpnuc1tgVySpXrEXV2khVCSkxu0v94hJwxyVmROc7D4gXyjwSOqfPqFfbNilXgd
+         1HKCc/J/SbsB8BIH3KWfAuFdAb4ahrykJGfJjcwv72KNRdT+NPieaA//XGgx9ofoPnqK
+         CFVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RYjOggTIatflhN2tcFQRaqqDoiv4Tn5RiFVJCwGLqbw=;
+        b=Ond3R3yGJOvfD6L7hHgYe9amG0jeG/t4+ecfWUzco0rSMvzOSxKMCvk4WTnWyMAGaG
+         SbUF+KbQXh9tdSLheu1wpOQ8R+R3/oN3JwQfhbIbJ9s56sxq3yvJidTIGJhz5Wh6jXP7
+         suHyg3OlzzQnF/IKrQHDZ3vJk5X5ttIztc1CB0kMxSNTNIJ3RUmlwpZZrEwZTCGtXfji
+         JiyxZkRKa/Bz7NHS0mB26e1A2tJfRSjVYWQo9fYMXzPbmN5qmv2IeJkGA5OIiU2vwqYZ
+         +v/tAFBqeDZxFAmxs2MP7ef4LZ8k7ovnjhM+M3EriA+6AFDlQj+YLyoEGNql/lvKcwRN
+         TmoQ==
+X-Gm-Message-State: AOAM530hMOLTcMGDmm91j1sv8I2IzM1+2+3/fXiJaLKLOT4Uwfv7r01X
+        bizXtInrbSJqK2SotwNvtcoKgQSYpcwkWJipiphn
+X-Google-Smtp-Source: ABdhPJzYbZvpioE6dEHN6JXBqwOIehEPUtOGXhvu9h/22uwOkXqdsmf4vjBbxGP53yiW7luwQlXcqdOThz5giAMUPiM=
+X-Received: by 2002:a17:907:968d:: with SMTP id hd13mr4919050ejc.12.1643059674146;
+ Mon, 24 Jan 2022 13:27:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220120214948.3637895-1-smayhew@redhat.com> <20220120214948.3637895-2-smayhew@redhat.com>
+In-Reply-To: <20220120214948.3637895-2-smayhew@redhat.com>
+From:   Paul Moore <paul@paul-moore.com>
+Date:   Mon, 24 Jan 2022 16:27:43 -0500
+Message-ID: <CAHC9VhT2RhnXtK3aQuDCFUr5qayH25G8HHjRTJzhWM3H41YNog@mail.gmail.com>
+Subject: Re: [PATCH RFC v2 1/2] selinux: Fix selinux_sb_mnt_opts_compat()
+To:     Scott Mayhew <smayhew@redhat.com>
+Cc:     selinux@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+On Thu, Jan 20, 2022 at 4:50 PM Scott Mayhew <smayhew@redhat.com> wrote:
+>
+> selinux_sb_mnt_opts_compat() is called under the sb_lock spinlock and
+> shouldn't be performing any memory allocations.  Fix this by parsing the
+> sids at the same time we're chopping up the security mount options
+> string and then using the pre-parsed sids when doing the comparison.
+>
+> Fixes: cc274ae7763d ("selinux: fix sleeping function called from invalid context")
+> Fixes: 69c4a42d72eb ("lsm,selinux: add new hook to compare new mount to an existing mount")
+> Signed-off-by: Scott Mayhew <smayhew@redhat.com>
+> ---
+>  security/selinux/hooks.c | 112 ++++++++++++++++++++++++++-------------
+>  1 file changed, 76 insertions(+), 36 deletions(-)
+>
+> diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+> index 5b6895e4fc29..f27ca9e870c0 100644
+> --- a/security/selinux/hooks.c
+> +++ b/security/selinux/hooks.c
+> @@ -342,6 +342,11 @@ static void inode_free_security(struct inode *inode)
+>
+>  struct selinux_mnt_opts {
+>         const char *fscontext, *context, *rootcontext, *defcontext;
+> +       u32 fscontext_sid;
+> +       u32 context_sid;
+> +       u32 rootcontext_sid;
+> +       u32 defcontext_sid;
+> +       unsigned short preparsed;
+>  };
 
-[ Upstream commit ab07506b0454bea606095951e19e72c282bfbb42 ]
+Is the preparsed field strictly necessary?  Can't we just write the
+code to assume that if a given SID field is not SECSID_NULL then it is
+valid/preparsed?
 
-If firmware load fails after having loaded some parts of the
-firmware, e.g. the IML image, then this would leak. For the
-host command list we'd end up running into a WARN on the next
-attempt to load another firmware image.
+> @@ -598,12 +603,11 @@ static int bad_option(struct superblock_security_struct *sbsec, char flag,
+>         return 0;
+>  }
+>
+> -static int parse_sid(struct super_block *sb, const char *s, u32 *sid,
+> -                    gfp_t gfp)
+> +static int parse_sid(struct super_block *sb, const char *s, u32 *sid)
+>  {
+>         int rc = security_context_str_to_sid(&selinux_state, s,
+> -                                            sid, gfp);
+> -       if (rc)
+> +                                            sid, GFP_KERNEL);
+> +       if (rc && sb != NULL)
+>                 pr_warn("SELinux: security_context_str_to_sid"
+>                        "(%s) failed for (dev %s, type %s) errno=%d\n",
+>                        s, sb->s_id, sb->s_type->name, rc);
 
-Fix this by calling iwl_dealloc_ucode() on failures, and make
-that also clear the data so we start fresh on the next round.
+It seems like it would still be useful to see the warning even when sb
+is NULL, wouldn't you say?  How about something like this:
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210110539.1f742f0eb58a.I1315f22f6aa632d94ae2069f85e1bca5e734dce0@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+  if (rc)
+    pr_warn("SELinux: blah blah blah (dev %s, type %s) blah blah\n",
+            (sb ? sb->s_id : "?"),
+            (sb ? sb->s_type->name : "?"));
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index 5cec467b995bb..ad94526a4e1e7 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -130,6 +130,9 @@ static void iwl_dealloc_ucode(struct iwl_drv *drv)
- 
- 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
- 		iwl_free_fw_img(drv, drv->fw.img + i);
-+
-+	/* clear the data for the aborted load case */
-+	memset(&drv->fw, 0, sizeof(drv->fw));
- }
- 
- static int iwl_alloc_fw_desc(struct iwl_drv *drv, struct fw_desc *desc,
-@@ -1375,6 +1378,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	int i;
- 	bool load_module = false;
- 	bool usniffer_images = false;
-+	bool failure = true;
- 
- 	fw->ucode_capa.max_probe_length = IWL_DEFAULT_MAX_PROBE_LENGTH;
- 	fw->ucode_capa.standard_phy_calibration_size =
-@@ -1644,6 +1648,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 				op->name, err);
- #endif
- 	}
-+	failure = false;
- 	goto free;
- 
-  try_again:
-@@ -1659,6 +1664,9 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-  free:
-+	if (failure)
-+		iwl_dealloc_ucode(drv);
-+
- 	if (pieces) {
- 		for (i = 0; i < ARRAY_SIZE(pieces->img); i++)
- 			kfree(pieces->img[i].sec);
+> @@ -976,6 +976,9 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+>  {
+>         struct selinux_mnt_opts *opts = *mnt_opts;
+>         bool is_alloc_opts = false;
+> +       bool preparse_sid = false;
+> +       u32 sid;
+> +       int rc;
+>
+>         if (token == Opt_seclabel)
+>                 /* eaten and completely ignored */
+> @@ -991,26 +994,57 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+>                 is_alloc_opts = true;
+>         }
+>
+> +       if (selinux_initialized(&selinux_state))
+> +               preparse_sid = true;
+
+Since there is no looping in selinux_add_opt, and you can only specify
+one token/option for a given call to this function, it seems like we
+can do away with preparse_sid and just do the selinux_initialized(...)
+check directly in the code below, yes?
+
+>         switch (token) {
+>         case Opt_context:
+>                 if (opts->context || opts->defcontext)
+>                         goto err;
+>                 opts->context = s;
+> +               if (preparse_sid) {
+> +                       rc = parse_sid(NULL, s, &sid);
+> +                       if (rc == 0) {
+> +                               opts->context_sid = sid;
+> +                               opts->preparsed |= CONTEXT_MNT;
+> +                       }
+> +               }
+
+Is there a reason why we need a dedicated sid variable as opposed to
+passing opt->context_sid as the parameter?  For example:
+
+  rc = parse_sid(NULL, s, &opts->context_sid);
+
 -- 
-2.34.1
-
-
-
+paul moore
+paul-moore.com
