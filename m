@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ADC5C4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D83DBC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380163AbiAXUPt (ORCPT
+        id S1380124AbiAXUPm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:15:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42774 "EHLO
+        Mon, 24 Jan 2022 15:15:42 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42022 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359078AbiAXT4T (ORCPT
+        with ESMTP id S1358383AbiAXTzF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:56:19 -0500
+        Mon, 24 Jan 2022 14:55:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36882B80FA1;
-        Mon, 24 Jan 2022 19:56:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 609C8C340E5;
-        Mon, 24 Jan 2022 19:56:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19B5AB8121A;
+        Mon, 24 Jan 2022 19:55:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 406E1C340E8;
+        Mon, 24 Jan 2022 19:55:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054177;
-        bh=z9Xl0iPAzJD3iaKf5VYmbyxLHCGM/Ya1QMtZ25AxyiM=;
+        s=korg; t=1643054102;
+        bh=FefeJGsmeNMUxg0X1ZZOUXPj77eqdLaMeq6xYH64748=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AatUUandzzMuOyC2mo9IVIb5iOdkUWAWHH2Dzo2CElXtqso4TM3+fd+B4HnKCnwSr
-         8VUN3SMCH2WMkZbKyJufVP2m2Lw9mj1x8OkvTv28nouIwpNfYzTKEWbxtObxnPP+yH
-         G2xxxHoY1fiEZZt0ZBBZCb2UNidR6LmBe4n0x6oY=
+        b=JHp0tFJOEBM3/RboI3dqOTOZ7hmS9/BGJ4SkKRaYL1xR45xu1z0mEmbV1qlr4LXiL
+         GdRew3WpuEI5vnTCDkcbb7ciCN1QtsFswjKKezeXWvf/hMQNFRSQ5WvI2rB3Vdx/Br
+         5kMBCOS0h5DcNbUCcDd02B4seHfOJ5LmUS8RDeQs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 303/563] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 24 Jan 2022 19:41:08 +0100
-Message-Id: <20220124184034.924621595@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 278/563] iommu/amd: Restore GA log/tail pointer on host resume
+Date:   Mon, 24 Jan 2022 19:40:43 +0100
+Message-Id: <20220124184034.055626385@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,61 +46,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit a8d4a37d1bb93608501d0d0545f902061152669a ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+This will give IOMMU GA log a chance to work after resume
+from s3/s4.
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+Fixes: 8bda0cfbdc1a6 ("iommu/amd: Detect and initialize guest vAPIC log")
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
-
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
-
-This was NOT tested on a real device.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20211123161038.48009-2-mlevitsk@redhat.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iommu/amd/init.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 49cc4b7ed5163..1baec4b412c8d 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index c82f8ab4783c0..3f31a52f7044f 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -805,16 +805,27 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ {
+ #ifdef CONFIG_IRQ_REMAP
+ 	u32 status, i;
++	u64 entry;
+ 
+ 	if (!iommu->ga_log)
+ 		return -EINVAL;
+ 
+-	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+-
+ 	/* Check if already running */
+-	if (status & (MMIO_STATUS_GALOG_RUN_MASK))
++	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
++	if (WARN_ON(status & (MMIO_STATUS_GALOG_RUN_MASK)))
+ 		return 0;
+ 
++	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
++	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
++		    &entry, sizeof(entry));
++	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
++		 (BIT_ULL(52)-1)) & ~7ULL;
++	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
++		    &entry, sizeof(entry));
++	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
++	writel(0x00, iommu->mmio_base + MMIO_GA_TAIL_OFFSET);
++
++
+ 	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
+ 	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
+ 
+@@ -824,7 +835,7 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ 			break;
+ 	}
+ 
+-	if (i >= LOOP_TIMEOUT)
++	if (WARN_ON(i >= LOOP_TIMEOUT))
+ 		return -EINVAL;
+ #endif /* CONFIG_IRQ_REMAP */
+ 	return 0;
+@@ -833,8 +844,6 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ static int iommu_init_ga_log(struct amd_iommu *iommu)
+ {
+ #ifdef CONFIG_IRQ_REMAP
+-	u64 entry;
+-
+ 	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+ 		return 0;
+ 
+@@ -848,16 +857,6 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
+ 	if (!iommu->ga_log_tail)
+ 		goto err_out;
+ 
+-	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
+-	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
+-		    &entry, sizeof(entry));
+-	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
+-		 (BIT_ULL(52)-1)) & ~7ULL;
+-	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
+-		    &entry, sizeof(entry));
+-	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
+-	writel(0x00, iommu->mmio_base + MMIO_GA_TAIL_OFFSET);
+-
+ 	return 0;
+ err_out:
+ 	free_ga_log(iommu);
 -- 
 2.34.1
 
