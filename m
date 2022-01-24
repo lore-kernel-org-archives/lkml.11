@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61288C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FF1AC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840075AbiAXWwd (ORCPT
+        id S1840087AbiAXWwf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52686 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573520AbiAXVpF (ORCPT
+        Mon, 24 Jan 2022 17:52:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60776 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573576AbiAXVpP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:45:05 -0500
+        Mon, 24 Jan 2022 16:45:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0E54B811A9;
-        Mon, 24 Jan 2022 21:45:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6216C340E4;
-        Mon, 24 Jan 2022 21:45:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9867961320;
+        Mon, 24 Jan 2022 21:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B57C340E4;
+        Mon, 24 Jan 2022 21:45:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060702;
-        bh=oA0SrxgSf2DHn1f9C5JzgLmAYlmqZ8cXWCLRmdb5jC4=;
+        s=korg; t=1643060715;
+        bh=TomM5/zNbvP8Y6ADovDptTISBPYpvN9S8HOB+kRGEio=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DZ2b1LZ6nOzTUqF7SoZ8nfn8dQg0gkRV/JK1FdrjtPN62WwJk6z9WtgLMtLiQeCYq
-         tzftQnpVolJgZdtmW4jbExgs93q0DY7sywmyzj3hPoAO/yfIe4d3ap8FWouLlN3huT
-         1z1xqHRBm29f1Y60VlxQqarnOf1o+mCReTAj7mdw=
+        b=n129BOGy76FWKo/8wfPtTDuPRJyc9K/sb/3N13LdsMCxyQvq1vMZU5rKci5cnND4a
+         3DTrRiebPmGMiHlL6rYlDa/CV1U45GHU+zVboB6iSVXRFKwAEH/5P3hz9VwGvVpBB5
+         9MeGuXvrvEn+X6mrqT8jDnRs06b86eGo6hvDQH0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 1035/1039] KVM: selftests: Test KVM_SET_CPUID2 after KVM_RUN
-Date:   Mon, 24 Jan 2022 19:47:04 +0100
-Message-Id: <20220124184200.082019564@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 1012/1039] net: mscc: ocelot: dont let phylink re-enable TX PAUSE on the NPI port
+Date:   Mon, 24 Jan 2022 19:46:41 +0100
+Message-Id: <20220124184159.306281184@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,149 +48,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit ecebb966acaab2466d9857d1cc435ee1fc9eee50 upstream.
+commit 33cb0ff30cff104e753f7882c99e54cf67ea7903 upstream.
 
-KVM forbids KVM_SET_CPUID2 after KVM_RUN was performed on a vCPU unless
-the supplied CPUID data is equal to what was previously set. Test this.
+Since commit b39648079db4 ("net: mscc: ocelot: disable flow control on
+NPI interface"), flow control should be disabled on the DSA CPU port
+when used in NPI mode.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220117150542.2176196-5-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+However, the commit blamed in the Fixes: tag below broke this, because
+it allowed felix_phylink_mac_link_up() to overwrite SYS_PAUSE_CFG_PAUSE_ENA
+for the DSA CPU port.
+
+This issue became noticeable since the device tree update from commit
+8fcea7be5736 ("arm64: dts: ls1028a: mark internal links between Felix
+and ENETC as capable of flow control").
+
+The solution is to check whether this is the currently configured NPI
+port from ocelot_phylink_mac_link_up(), and to not modify the statically
+disabled PAUSE frame transmission if it is.
+
+When the port is configured for lossless mode as opposed to tail drop
+mode, but the link partner (DSA master) doesn't observe the transmitted
+PAUSE frames, the switch termination throughput is much worse, as can be
+seen below.
+
+Before:
+
+root@debian:~# iperf3 -c 192.168.100.2
+Connecting to host 192.168.100.2, port 5201
+[  5] local 192.168.100.1 port 37504 connected to 192.168.100.2 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  28.4 MBytes   238 Mbits/sec  357   22.6 KBytes
+[  5]   1.00-2.00   sec  33.6 MBytes   282 Mbits/sec  426   19.8 KBytes
+[  5]   2.00-3.00   sec  34.0 MBytes   285 Mbits/sec  343   21.2 KBytes
+[  5]   3.00-4.00   sec  32.9 MBytes   276 Mbits/sec  354   22.6 KBytes
+[  5]   4.00-5.00   sec  32.3 MBytes   271 Mbits/sec  297   18.4 KBytes
+^C[  5]   5.00-5.06   sec  2.05 MBytes   270 Mbits/sec   45   19.8 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-5.06   sec   163 MBytes   271 Mbits/sec  1822             sender
+[  5]   0.00-5.06   sec  0.00 Bytes  0.00 bits/sec                  receiver
+
+After:
+
+root@debian:~# iperf3 -c 192.168.100.2
+Connecting to host 192.168.100.2, port 5201
+[  5] local 192.168.100.1 port 49470 connected to 192.168.100.2 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   112 MBytes   941 Mbits/sec  259    143 KBytes
+[  5]   1.00-2.00   sec   110 MBytes   920 Mbits/sec  329    144 KBytes
+[  5]   2.00-3.00   sec   112 MBytes   936 Mbits/sec  255    144 KBytes
+[  5]   3.00-4.00   sec   110 MBytes   927 Mbits/sec  355    105 KBytes
+[  5]   4.00-5.00   sec   110 MBytes   926 Mbits/sec  350    156 KBytes
+[  5]   5.00-6.00   sec   110 MBytes   925 Mbits/sec  305    148 KBytes
+[  5]   6.00-7.00   sec   110 MBytes   924 Mbits/sec  320    143 KBytes
+[  5]   7.00-8.00   sec   110 MBytes   925 Mbits/sec  273   97.6 KBytes
+[  5]   8.00-9.00   sec   109 MBytes   913 Mbits/sec  299    141 KBytes
+[  5]   9.00-10.00  sec   110 MBytes   922 Mbits/sec  287    146 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.08 GBytes   926 Mbits/sec  3032             sender
+[  5]   0.00-10.00  sec  1.08 GBytes   925 Mbits/sec                  receiver
+
+Fixes: de274be32cb2 ("net: dsa: felix: set TX flow control according to the phylink_mac_link_up resolution")
+Reported-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/testing/selftests/kvm/include/x86_64/processor.h |    7 +++
- tools/testing/selftests/kvm/lib/x86_64/processor.c     |   33 ++++++++++++++---
- tools/testing/selftests/kvm/x86_64/cpuid_test.c        |   30 +++++++++++++++
- 3 files changed, 66 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/tools/testing/selftests/kvm/include/x86_64/processor.h
-+++ b/tools/testing/selftests/kvm/include/x86_64/processor.h
-@@ -358,6 +358,8 @@ uint64_t kvm_get_feature_msr(uint64_t ms
- struct kvm_cpuid2 *kvm_get_supported_cpuid(void);
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -692,7 +692,10 @@ void ocelot_phylink_mac_link_up(struct o
  
- struct kvm_cpuid2 *vcpu_get_cpuid(struct kvm_vm *vm, uint32_t vcpuid);
-+int __vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
-+		     struct kvm_cpuid2 *cpuid);
- void vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
- 		    struct kvm_cpuid2 *cpuid);
+ 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
  
-@@ -402,6 +404,11 @@ void vm_set_page_table_entry(struct kvm_
- 			     uint64_t pte);
+-	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, tx_pause);
++	/* Don't attempt to send PAUSE frames on the NPI port, it's broken */
++	if (port != ocelot->npi)
++		ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA,
++				    tx_pause);
  
- /*
-+ * get_cpuid() - find matching CPUID entry and return pointer to it.
-+ */
-+struct kvm_cpuid_entry2 *get_cpuid(struct kvm_cpuid2 *cpuid, uint32_t function,
-+				   uint32_t index);
-+/*
-  * set_cpuid() - overwrites a matching cpuid entry with the provided value.
-  *		 matches based on ent->function && ent->index. returns true
-  *		 if a match was found and successfully overwritten.
---- a/tools/testing/selftests/kvm/lib/x86_64/processor.c
-+++ b/tools/testing/selftests/kvm/lib/x86_64/processor.c
-@@ -847,6 +847,17 @@ kvm_get_supported_cpuid_index(uint32_t f
- 	return entry;
- }
- 
-+
-+int __vcpu_set_cpuid(struct kvm_vm *vm, uint32_t vcpuid,
-+		     struct kvm_cpuid2 *cpuid)
-+{
-+	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
-+
-+	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
-+
-+	return ioctl(vcpu->fd, KVM_SET_CPUID2, cpuid);
-+}
-+
- /*
-  * VM VCPU CPUID Set
-  *
-@@ -864,12 +875,9 @@ kvm_get_supported_cpuid_index(uint32_t f
- void vcpu_set_cpuid(struct kvm_vm *vm,
- 		uint32_t vcpuid, struct kvm_cpuid2 *cpuid)
- {
--	struct vcpu *vcpu = vcpu_find(vm, vcpuid);
- 	int rc;
- 
--	TEST_ASSERT(vcpu != NULL, "vcpu not found, vcpuid: %u", vcpuid);
--
--	rc = ioctl(vcpu->fd, KVM_SET_CPUID2, cpuid);
-+	rc = __vcpu_set_cpuid(vm, vcpuid, cpuid);
- 	TEST_ASSERT(rc == 0, "KVM_SET_CPUID2 failed, rc: %i errno: %i",
- 		    rc, errno);
- 
-@@ -1337,6 +1345,23 @@ void assert_on_unhandled_exception(struc
- 	}
- }
- 
-+struct kvm_cpuid_entry2 *get_cpuid(struct kvm_cpuid2 *cpuid, uint32_t function,
-+				   uint32_t index)
-+{
-+	int i;
-+
-+	for (i = 0; i < cpuid->nent; i++) {
-+		struct kvm_cpuid_entry2 *cur = &cpuid->entries[i];
-+
-+		if (cur->function == function && cur->index == index)
-+			return cur;
-+	}
-+
-+	TEST_FAIL("CPUID function 0x%x index 0x%x not found ", function, index);
-+
-+	return NULL;
-+}
-+
- bool set_cpuid(struct kvm_cpuid2 *cpuid,
- 	       struct kvm_cpuid_entry2 *ent)
- {
---- a/tools/testing/selftests/kvm/x86_64/cpuid_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
-@@ -154,6 +154,34 @@ struct kvm_cpuid2 *vcpu_alloc_cpuid(stru
- 	return guest_cpuids;
- }
- 
-+static void set_cpuid_after_run(struct kvm_vm *vm, struct kvm_cpuid2 *cpuid)
-+{
-+	struct kvm_cpuid_entry2 *ent;
-+	int rc;
-+	u32 eax, ebx, x;
-+
-+	/* Setting unmodified CPUID is allowed */
-+	rc = __vcpu_set_cpuid(vm, VCPU_ID, cpuid);
-+	TEST_ASSERT(!rc, "Setting unmodified CPUID after KVM_RUN failed: %d", rc);
-+
-+	/* Changing CPU features is forbidden */
-+	ent = get_cpuid(cpuid, 0x7, 0);
-+	ebx = ent->ebx;
-+	ent->ebx--;
-+	rc = __vcpu_set_cpuid(vm, VCPU_ID, cpuid);
-+	TEST_ASSERT(rc, "Changing CPU features should fail");
-+	ent->ebx = ebx;
-+
-+	/* Changing MAXPHYADDR is forbidden */
-+	ent = get_cpuid(cpuid, 0x80000008, 0);
-+	eax = ent->eax;
-+	x = eax & 0xff;
-+	ent->eax = (eax & ~0xffu) | (x - 1);
-+	rc = __vcpu_set_cpuid(vm, VCPU_ID, cpuid);
-+	TEST_ASSERT(rc, "Changing MAXPHYADDR should fail");
-+	ent->eax = eax;
-+}
-+
- int main(void)
- {
- 	struct kvm_cpuid2 *supp_cpuid, *cpuid2;
-@@ -175,5 +203,7 @@ int main(void)
- 	for (stage = 0; stage < 3; stage++)
- 		run_vcpu(vm, VCPU_ID, stage);
- 
-+	set_cpuid_after_run(vm, cpuid2);
-+
- 	kvm_vm_free(vm);
- }
+ 	/* Undo the effects of ocelot_phylink_mac_link_down:
+ 	 * enable MAC module
 
 
