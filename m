@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D436FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78265C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:40:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354829AbiAXTjZ (ORCPT
+        id S1354877AbiAXTjd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:39:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56494 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344850AbiAXTdj (ORCPT
+        Mon, 24 Jan 2022 14:39:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:32808 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350901AbiAXTdx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:33:39 -0500
+        Mon, 24 Jan 2022 14:33:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23DE3B8123D;
-        Mon, 24 Jan 2022 19:33:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F510C340E5;
-        Mon, 24 Jan 2022 19:33:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5183F61488;
+        Mon, 24 Jan 2022 19:33:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25EB0C340E5;
+        Mon, 24 Jan 2022 19:33:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052816;
-        bh=7j+0EPOqfiwnmF3g644Ln5eT1H0VN4xpzPxlRMVwvho=;
+        s=korg; t=1643052832;
+        bh=tZM5TML74UbfSY7dpcQg47KWZMIdishfAIuWtvqaerk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vomeabqA3rckczLurFNX8K4qDeCEO7pHxJL+dFcHDp0N1RpIYxFP/gJ70dmEGvm1Z
-         qMGyVfBYQPDGYAUZkhnSHELlA75DCtv4301WNnKn5vs7LcxxBLTe2l9DJ0ceGZav4d
-         WN4ZkZIqP6dbSDEWDEFCzUUvkXJTyFCPCqOAnywM=
+        b=XyS/jJCEXFQxvrCr/DY6Ulf9zZ+7hlFhckzP+6ORs7HzQJtOMleBApEENWrcbBDUp
+         qCmA4W5QXFTXxJRc2QWuEGZdMTJAep/vto6FVFhlHmlAIw1p0uK+v4mIu3EdxuPKjw
+         GWTmPQNIWfXhkEnheBuLI0cm2jgzzyvKgShtiQMI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 184/320] x86/mce: Mark mce_panic() noinstr
-Date:   Mon, 24 Jan 2022 19:42:48 +0100
-Message-Id: <20220124183959.914729760@linuxfoundation.org>
+Subject: [PATCH 5.4 188/320] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Mon, 24 Jan 2022 19:42:52 +0100
+Message-Id: <20220124184000.041545255@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,67 +48,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
+[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
 
-And allow instrumentation inside it because it does calls to other
-facilities which will not be tagged noinstr.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-Fixes
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ net/core/filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index c2a9762d278dd..290d64e04ab20 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -310,11 +310,17 @@ static void wait_for_panic(void)
- 	panic("Panicing machine check CPU died");
- }
- 
--static void mce_panic(const char *msg, struct mce *final, char *exp)
-+static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
+diff --git a/net/core/filter.c b/net/core/filter.c
+index b90c0b5a10112..92ce4d46f02e4 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -6912,9 +6912,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
  {
--	int apei_err = 0;
- 	struct llist_node *pending;
- 	struct mce_evt_llist *l;
-+	int apei_err = 0;
-+
-+	/*
-+	 * Allow instrumentation around external facilities usage. Not that it
-+	 * matters a whole lot since the machine is going to panic anyway.
-+	 */
-+	instrumentation_begin();
+ 	const u32 act_max = XDP_REDIRECT;
  
- 	if (!fake_panic) {
- 		/*
-@@ -329,7 +335,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 	} else {
- 		/* Don't log too much for fake panic */
- 		if (atomic_inc_return(&mce_fake_panicked) > 1)
--			return;
-+			goto out;
- 	}
- 	pending = mce_gen_pool_prepare_records();
- 	/* First print corrected ones that are still unlogged */
-@@ -367,6 +373,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 		panic(msg);
- 	} else
- 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
-+
-+out:
-+	instrumentation_end();
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
  }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
  
- /* Support code for software error injection */
 -- 
 2.34.1
 
