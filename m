@@ -2,40 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D16FBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8649C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242524AbiAXTIB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:08:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57470 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344597AbiAXTBn (ORCPT
+        id S238294AbiAXTIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:08:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60634 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344711AbiAXTB4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:01:43 -0500
+        Mon, 24 Jan 2022 14:01:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 07F33B8123D;
-        Mon, 24 Jan 2022 19:01:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3907BC340E5;
-        Mon, 24 Jan 2022 19:01:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BCD260918;
+        Mon, 24 Jan 2022 19:01:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF714C340E5;
+        Mon, 24 Jan 2022 19:01:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050900;
-        bh=GmG+/voixByuzyHwsMFBsuj2PX+ZSiBIZM0+gB8/Sjg=;
+        s=korg; t=1643050914;
+        bh=fPduRhDomwXOHZBVoIJNXQf0d40yj/fwjhlZgy8WlxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eqiRpQTAu0D67xHnugDBo0GEuNdZMYaEsqwqxT6WeEC641xHrn6+FtbSov/Cb+hPd
-         YSo+9sZCDcHm3/ufBp04Hj1zYSfWalCkDFxIUcyQ/WShFKr21b/NI6GfoGJJ/Epzrg
-         ZNnhcJzetHzdqQ7ypN7vPT+OFLHbSPeENO/VDFsI=
+        b=waP01q/7BUrsTkSsnR8Zd4EqY6HBcBRY9UyzWJWMZqlSSpHX7zWG0m93tZXx+Akh4
+         uiLKB7xK1vw1GG4AyfCE43xj/iqzdmDJGlRCskGYSG/zI/MJlWlsGmwVkkZf+m27Jk
+         40GEXcFNEdcEKlIC+zSvqSTuzGyjGKm68lZCm0Zg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        Christoph Hellwig <hch@lst.de>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 116/157] scsi: sr: Dont use GFP_DMA
-Date:   Mon, 24 Jan 2022 19:43:26 +0100
-Message-Id: <20220124183936.462228849@linuxfoundation.org>
+        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Subject: [PATCH 4.9 120/157] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
+Date:   Mon, 24 Jan 2022 19:43:30 +0100
+Message-Id: <20220124183936.584785900@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,61 +45,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
+commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
 
-The allocated buffers are used as a command payload, for which the block
-layer and/or DMA API do the proper bounce buffering if needed.
+With the introduction of 6GHz channels the scan guard timeout should
+be adjusted to account for the following extreme case:
 
-Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
-Reported-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+- All 6GHz channels are scanned passively: 58 channels.
+- The scan is fragmented with the following parameters: 3 fragments,
+  95 TUs suspend time, 44 TUs maximal out of channel time.
+
+The above would result with scan time of more than 24 seconds. Thus,
+set the timeout to 30 seconds.
+
+Cc: stable@vger.kernel.org
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/sr.c        | 2 +-
- drivers/scsi/sr_vendor.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index 9b63e46edffcc..a2a4c6e22c68d 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -882,7 +882,7 @@ static void get_capabilities(struct scsi_cd *cd)
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
+@@ -1260,7 +1260,7 @@ static int iwl_mvm_check_running_scans(s
+ 	return -EIO;
+ }
  
+-#define SCAN_TIMEOUT 20000
++#define SCAN_TIMEOUT 30000
  
- 	/* allocate transfer buffer */
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer) {
- 		sr_printk(KERN_ERR, cd, "out of memory.\n");
- 		return;
-diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
-index 11a238cb22223..629bfe1b20263 100644
---- a/drivers/scsi/sr_vendor.c
-+++ b/drivers/scsi/sr_vendor.c
-@@ -118,7 +118,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
- 		density = (blocklength > 2048) ? 0x81 : 0x83;
- #endif
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -166,7 +166,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
- 	if (cd->cdi.mask & CDC_MULTI_SESSION)
- 		return 0;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
--- 
-2.34.1
-
+ void iwl_mvm_scan_timeout_wk(struct work_struct *work)
+ {
 
 
