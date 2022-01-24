@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C53A5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 169AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451223AbiAXVW2 (ORCPT
+        id S1451292AbiAXVWh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359074AbiAXUxE (ORCPT
+        Mon, 24 Jan 2022 16:22:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48582 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442625AbiAXUzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:53:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE82C047CC4;
-        Mon, 24 Jan 2022 11:59:09 -0800 (PST)
+        Mon, 24 Jan 2022 15:55:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20FC5B8119D;
-        Mon, 24 Jan 2022 19:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57BF5C340E5;
-        Mon, 24 Jan 2022 19:59:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0CAC60907;
+        Mon, 24 Jan 2022 20:54:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C08FC340E5;
+        Mon, 24 Jan 2022 20:54:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054346;
-        bh=SR6/RHYzbaW8Yv7fuCZxeBV3M2Vgut2hDG7UGkgolbU=;
+        s=korg; t=1643057699;
+        bh=es4VFNe9AaDnfs8Ou0sM7tYhD3qSg6+pBgcbz0bHUXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MyNuvCNmd1ej8A/oVZUaPAvKWj2XeGKtjDYg8CZnqNJrB68kSDlKkhGTUID4yPwyE
-         0Kd4gRmPP9eTQM73BbuwKkiyGBtLyAuVaTtG/G1sINqb/XdRonC8qoyLQ2FrXQ9OSc
-         nNPuVu8Mu4Z0szHzL7AnnFMDBwSmM+MiERE6U1Ss=
+        b=eOFEioLRvKZRrpQVJTK6iY5yci28mjq6ud+kMPO9vQGMux3YZ8ujs5bM42JAPOFXR
+         i4nnPyomHNBljIhWzUbACq9+kw033RwNfgp0EYOti3JBwoqGrb+jzA4IjR6ckItuqg
+         rykPACYds5XvfDHAnu8cr9hlMQgUTwJ2bwR+qOA8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 326/563] HSI: core: Fix return freed object in hsi_new_client
-Date:   Mon, 24 Jan 2022 19:41:31 +0100
-Message-Id: <20220124184035.707047298@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andreas Oetken <andreas.oetken@siemens-energy.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.16 0017/1039] mtd: Fixed breaking list in __mtd_del_partition.
+Date:   Mon, 24 Jan 2022 19:30:06 +0100
+Message-Id: <20220124184125.723087290@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +47,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Andreas Oetken <ennoerlangen@gmail.com>
 
-[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
+commit 2966daf7d253d9904b337b040dd7a43472858b8a upstream.
 
-cl is freed on error of calling device_register, but this
-object is return later, which will cause uaf issue. Fix it
-by return NULL on error.
+Not the child partition should be removed from the partition list
+but the partition itself. Otherwise the partition list gets broken
+and any subsequent remove operations leads to a kernel panic.
 
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 46b5889cc2c5 ("mtd: implement proper partition handling")
+Signed-off-by: Andreas Oetken <andreas.oetken@siemens-energy.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211102172604.2921065-1-andreas.oetken@siemens-energy.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hsi/hsi_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/mtd/mtdpart.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
-index a5f92e2889cb8..a330f58d45fc6 100644
---- a/drivers/hsi/hsi_core.c
-+++ b/drivers/hsi/hsi_core.c
-@@ -102,6 +102,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
- 	if (device_register(&cl->device) < 0) {
- 		pr_err("hsi: failed to register client: %s\n", info->name);
- 		put_device(&cl->device);
-+		goto err;
- 	}
+--- a/drivers/mtd/mtdpart.c
++++ b/drivers/mtd/mtdpart.c
+@@ -312,7 +312,7 @@ static int __mtd_del_partition(struct mt
+ 	if (err)
+ 		return err;
  
- 	return cl;
--- 
-2.34.1
-
+-	list_del(&child->part.node);
++	list_del(&mtd->part.node);
+ 	free_partition(mtd);
+ 
+ 	return 0;
 
 
