@@ -2,106 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE4C0C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE7AC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239509AbiAXMVr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:21:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        id S239788AbiAXMVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:21:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238418AbiAXMVl (ORCPT
+        with ESMTP id S239407AbiAXMVp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:21:41 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 540DCC061747;
-        Mon, 24 Jan 2022 04:21:41 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id p125so15248907pga.2;
-        Mon, 24 Jan 2022 04:21:41 -0800 (PST)
+        Mon, 24 Jan 2022 07:21:45 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5325C06173B;
+        Mon, 24 Jan 2022 04:21:44 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id a13so13231251wrh.9;
+        Mon, 24 Jan 2022 04:21:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=lfYwGFrcApR91yKlfTGniS6H/vaqpvMlgwfQqesbDaY=;
-        b=ZYtJ1r8pGQLCubOfmcazDt25V3T+i4wn2EWuZacDmJHrAjyGg5AE3coBBRn0O1+Kf4
-         rNjh/0474kK3lnOeMAjcAO5Rc7DH80+aXNXLhRExyQJTjHwg9/kz4F99kiFiZD6FGsdK
-         reUDYZNnQhsVkLZv3BWdhxxSremyVBo95Ej3w4etK9t8qDQQSgjgKyIe8xJeam/qQCeG
-         KzXPv5cyOv2NRabd4uuub2NzV9XzeH0rY9j16G7Ej7gF9s7+wvYJh3PCdq5zfSrMQK68
-         tzOUGxmQW+vbbvGWx8IJMbN8vV24dm7OYNiSxgwkpDzGRw4gEA0NndpcAkt7IiHRX9XK
-         i3GQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yNk3iptcaf318dqFvmgFI2Cy5wTzaw5Fh5cUP/iskfI=;
+        b=MzO9AUc2ANAyPODg7OE6uf3n3mk8jAUUPoucXqJIgb8W5HF3uINCqAKFWGOfc/howo
+         dZvdbFPLMKwN5ZmLKaUYyYrxw7pG87h0sCgUqaFFXaA8Gy+0d91NBChxVDZaUs3ri1ug
+         2u84lJUDxeV6AyifKzjZadF3iLiDH1yhfzOmCrhV+f9i0CUkfirDpurTgpOBcYhXGEIh
+         Tq7xrRFoNhnW0tdF4Fk/QG4kwzedYtal6sXiweCv7vL5x0//SCXHFVfGZuL6B8WodgHe
+         kDuXT8vHwvWDzBiGAko57Noxy2Iw70ZQEZhbs+GYrgsoJXDTGQwBX+8Rc4J31DQ8xDex
+         yHwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lfYwGFrcApR91yKlfTGniS6H/vaqpvMlgwfQqesbDaY=;
-        b=ni18pxesA9NjG+c0voiWlRTBC0EcPR1Rz5aYVPeU6EwkKb6t8Vy2BVFpXttIL+FoQM
-         u9tFd9LOlRapIlXVz33nWEKGpF4DQ0YGdjCYsH0cUiJQKcFyFBrqZ/QzzebF4eRY6E4R
-         aAFwHEhw1z4ao0nzGuunKKn5lzVEoWnK2ofVAICBxEW+PYmiLNXBAkrnzO3EGoeSCVk3
-         SAPyNHcw4RYnhlKYsuEaS0aeHeux09eVFuvMls0jU/sCbsI7Zfb8QtwWRb/Fc5hhy+1r
-         ZV0dS0YIBFSIzMKFx9Eon0qfyRFn3WvA6wg5dHfxrADsiKTQhpBRi9LmE9tio6ORXAvE
-         qdDg==
-X-Gm-Message-State: AOAM530QaQ4TISy22Rl9clCNDKZiVrWew7AADGf2k8orUi7yAo6yLMts
-        hEzIBihvQwUxSkFaws/+iXY=
-X-Google-Smtp-Source: ABdhPJzBoYPfrNNVVtAKwdcvzQwrYHlcJ59dn/C0mk10FiOIwCvx9bWf24iH2magER9hvPbA6cr4zA==
-X-Received: by 2002:a63:91c2:: with SMTP id l185mr9855325pge.157.1643026900649;
-        Mon, 24 Jan 2022 04:21:40 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id pc7sm14519645pjb.0.2022.01.24.04.21.38
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yNk3iptcaf318dqFvmgFI2Cy5wTzaw5Fh5cUP/iskfI=;
+        b=QwjR+VnNIwW2Kx5aPe5T+6ELdX4iw4uST4tztY/jP4YI08HXf4K5MUyWkp1AjaXh4c
+         B2gILsRPAZeeHS/tMRYXWlEs988TvEgRv56odtJFcPN89hrwf8p3caN4iPhRYVJ0dQcC
+         XK6/L+cZRQ24ngRxFzKuUqPoahN9cObIl2djDrvX5+OJH4+Kj72bKez7Sv7dtid/A1kd
+         YScDL3Jk/hcL0mjwBTCGN8FRg1A4zMrs9lry2kc/gNIQgGx6B7q29nPGJS+Yeyh3of3S
+         6cosPfSG6CkkMw2o5VzedVachxswbR1AYKeDFiQ+7OT0R8P+bk5f6Xit1BCHUsIfdUXo
+         NWIg==
+X-Gm-Message-State: AOAM533bJSOq1qdtPG/89CUJ6VcgW0ZwtHtzuuHgFdHWLXlVvCiw5+v2
+        Z/0xu2NEHDNNlr6ck6p630cwFyO9pRU=
+X-Google-Smtp-Source: ABdhPJxpFZOXc2gQIkGEiuUZRHxO0E1YI7AvQ9fqIfJ4409KMCRS1KZ2BLTx5rAooWuz0vvYxMIg2A==
+X-Received: by 2002:adf:f90c:: with SMTP id b12mr14161536wrr.379.1643026903103;
+        Mon, 24 Jan 2022 04:21:43 -0800 (PST)
+Received: from localhost.localdomain.at (62-178-82-229.cable.dynamic.surfer.at. [62.178.82.229])
+        by smtp.gmail.com with ESMTPSA id w8sm13984499wre.83.2022.01.24.04.21.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 04:21:40 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     "Md. Haris Iqbal" <haris.iqbal@ionos.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Danil Kipnis <danil.kipnis@cloud.ionos.com>,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH v2] RDMA/rtrs: Fix double free in alloc_clt
-Date:   Mon, 24 Jan 2022 12:21:35 +0000
-Message-Id: <20220124122135.5745-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Mon, 24 Jan 2022 04:21:42 -0800 (PST)
+From:   Christian Gmeiner <christian.gmeiner@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Christian Gmeiner <christian.gmeiner@gmail.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Tom Joseph <tjoseph@cadence.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        linux-omap@vger.kernel.org, linux-pci@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH] Revert "PCI: j721e: Drop redundant struct device *"
+Date:   Mon, 24 Jan 2022 13:21:22 +0100
+Message-Id: <20220124122132.435743-1-christian.gmeiner@gmail.com>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Callback function rtrs_clt_dev_release() in put_device()
-calls kfree(clt); to free memory. We shouldn't call kfree(clt) again.
+This reverts commit 19e863828acf6d8ac8475ba1fd93c0fe17fdc4ef.
 
-Fixes: 6a98d71daea1 ("RDMA/rtrs: client: main functionality")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-Changes in v2:
-- call free_percpu() before put_device() to avoid UAF.
----
- drivers/infiniband/ulp/rtrs/rtrs-clt.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+Fixes the following oops:
+ Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
+ Internal error: Oops: 96000004 [#1] PREEMPT SMP
+ Modules linked in:
+ CPU: 1 PID: 7 Comm: kworker/u4:0 Not tainted 5.17.0-rc1-00086-ge38b27816fea-dirty #71
+ Hardware name: CPE0108 (DT)
+ Workqueue: events_unbound deferred_probe_work_func
+ pstate: 20000005 (nzCv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+ pc : j721e_pcie_probe+0x184/0x600
+ lr : j721e_pcie_probe+0x170/0x600
+ sp : ffff80000957bae0
+ x29: ffff80000957bae0 x28: ffff800009357000 x27: ffff00000000c078
+ x26: ffff00003fe047a8 x25: 0000000000000000 x24: ffff0000000f5280
+ x23: ffff800008c98f78 x22: ffff800008f90ff0 x21: ffff000000231410
+ x20: ffff000002ef2780 x19: 0000000000000021 x18: 0000000000000001
+ x17: 0000000000000000 x16: 0000000000058c00 x15: ffffffffffffffff
+ x14: ffffffffffffffff x13: 0000000000000010 x12: 0101010101010101
+ x11: 0000000000000040 x10: ffff8000093e06c8 x9 : ffff8000093e06c0
+ x8 : ffff000000400270 x7 : 0000000000000000 x6 : ffff000000231590
+ x5 : ffff80000957b9e0 x4 : 0000000000000000 x3 : ffff0000002314f4
+ x2 : 0000000000000000 x1 : ffff0000000f5280 x0 : 0000000000000000
+ Call trace:
+  j721e_pcie_probe+0x184/0x600
+  platform_probe+0x68/0xe0
+  really_probe+0x144/0x320
+  __driver_probe_device+0xc4/0xe0
+  driver_probe_device+0x7c/0x110
+  __device_attach_driver+0x90/0xe0
+  bus_for_each_drv+0x78/0xd0
+  __device_attach+0xf0/0x150
+  device_initial_probe+0x14/0x20
+  bus_probe_device+0x9c/0xb0
+  deferred_probe_work_func+0x88/0xc0
+  process_one_work+0x1bc/0x340
+  worker_thread+0x1f8/0x420
+  kthread+0x110/0x120
+  ret_from_fork+0x10/0x20
+ Code: f9400280 a90573fb d0005396 913fc2d6 (f9400800)
 
-diff --git a/drivers/infiniband/ulp/rtrs/rtrs-clt.c b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-index 7c3f98e57889..aff04f566304 100644
---- a/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-+++ b/drivers/infiniband/ulp/rtrs/rtrs-clt.c
-@@ -2739,10 +2739,8 @@ static struct rtrs_clt_sess *alloc_clt(const char *sessname, size_t paths_num,
- 	 */
- 	dev_set_uevent_suppress(&clt->dev, true);
- 	err = device_register(&clt->dev);
--	if (err) {
--		put_device(&clt->dev);
--		goto err;
--	}
-+	if (err)
-+		goto err_register;
+Fixes: 19e863828acf ("PCI: j721e: Drop redundant struct device *")
+Signed-off-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+---
+ drivers/pci/controller/cadence/pci-j721e.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/pci/controller/cadence/pci-j721e.c b/drivers/pci/controller/cadence/pci-j721e.c
+index 489586a4cdc7..cd43d1898482 100644
+--- a/drivers/pci/controller/cadence/pci-j721e.c
++++ b/drivers/pci/controller/cadence/pci-j721e.c
+@@ -51,10 +51,11 @@ enum link_status {
+ #define MAX_LANES			2
  
- 	clt->kobj_paths = kobject_create_and_add("paths", &clt->dev.kobj);
- 	if (!clt->kobj_paths) {
-@@ -2764,6 +2762,11 @@ static struct rtrs_clt_sess *alloc_clt(const char *sessname, size_t paths_num,
- err:
- 	free_percpu(clt->pcpu_path);
- 	kfree(clt);
-+	goto ret;
-+err_register:
-+	free_percpu(clt->pcpu_path);
-+	put_device(&clt->dev);
-+ret:
- 	return ERR_PTR(err);
- }
+ struct j721e_pcie {
+-	struct cdns_pcie	*cdns_pcie;
++	struct device		*dev;
+ 	struct clk		*refclk;
+ 	u32			mode;
+ 	u32			num_lanes;
++	struct cdns_pcie	*cdns_pcie;
+ 	void __iomem		*user_cfg_base;
+ 	void __iomem		*intd_cfg_base;
+ 	u32			linkdown_irq_regfield;
+@@ -98,7 +99,7 @@ static inline void j721e_pcie_intd_writel(struct j721e_pcie *pcie, u32 offset,
+ static irqreturn_t j721e_pcie_link_irq_handler(int irq, void *priv)
+ {
+ 	struct j721e_pcie *pcie = priv;
+-	struct device *dev = pcie->cdns_pcie->dev;
++	struct device *dev = pcie->dev;
+ 	u32 reg;
+ 
+ 	reg = j721e_pcie_intd_readl(pcie, STATUS_REG_SYS_2);
+@@ -164,7 +165,7 @@ static const struct cdns_pcie_ops j721e_pcie_ops = {
+ static int j721e_pcie_set_mode(struct j721e_pcie *pcie, struct regmap *syscon,
+ 			       unsigned int offset)
+ {
+-	struct device *dev = pcie->cdns_pcie->dev;
++	struct device *dev = pcie->dev;
+ 	u32 mask = J721E_MODE_RC;
+ 	u32 mode = pcie->mode;
+ 	u32 val = 0;
+@@ -183,7 +184,7 @@ static int j721e_pcie_set_mode(struct j721e_pcie *pcie, struct regmap *syscon,
+ static int j721e_pcie_set_link_speed(struct j721e_pcie *pcie,
+ 				     struct regmap *syscon, unsigned int offset)
+ {
+-	struct device *dev = pcie->cdns_pcie->dev;
++	struct device *dev = pcie->dev;
+ 	struct device_node *np = dev->of_node;
+ 	int link_speed;
+ 	u32 val = 0;
+@@ -204,7 +205,7 @@ static int j721e_pcie_set_link_speed(struct j721e_pcie *pcie,
+ static int j721e_pcie_set_lane_count(struct j721e_pcie *pcie,
+ 				     struct regmap *syscon, unsigned int offset)
+ {
+-	struct device *dev = pcie->cdns_pcie->dev;
++	struct device *dev = pcie->dev;
+ 	u32 lanes = pcie->num_lanes;
+ 	u32 val = 0;
+ 	int ret;
+@@ -219,7 +220,7 @@ static int j721e_pcie_set_lane_count(struct j721e_pcie *pcie,
+ 
+ static int j721e_pcie_ctrl_init(struct j721e_pcie *pcie)
+ {
+-	struct device *dev = pcie->cdns_pcie->dev;
++	struct device *dev = pcie->dev;
+ 	struct device_node *node = dev->of_node;
+ 	struct of_phandle_args args;
+ 	unsigned int offset = 0;
+@@ -376,6 +377,7 @@ static int j721e_pcie_probe(struct platform_device *pdev)
+ 	if (!pcie)
+ 		return -ENOMEM;
+ 
++	pcie->dev = dev;
+ 	pcie->mode = mode;
+ 	pcie->linkdown_irq_regfield = data->linkdown_irq_regfield;
  
 -- 
-2.17.1
+2.34.1
 
