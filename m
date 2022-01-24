@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BABD6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71193C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359420AbiAXT7l (ORCPT
+        id S1359539AbiAXT7s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:59:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347778AbiAXTnx (ORCPT
+        Mon, 24 Jan 2022 14:59:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33092 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349371AbiAXTlC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:43:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D772AC02C30A;
-        Mon, 24 Jan 2022 11:22:19 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 74ED161491;
-        Mon, 24 Jan 2022 19:22:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 481EBC340EF;
-        Mon, 24 Jan 2022 19:22:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E673DB811FB;
+        Mon, 24 Jan 2022 19:41:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27AD1C36AE9;
+        Mon, 24 Jan 2022 19:40:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052138;
-        bh=QAW+5nGZUHNDtS8WUTH89x+IqYTXaclC0CdjyXIXtTg=;
+        s=korg; t=1643053259;
+        bh=GmbIhl0GKXFYcgNw3rnSAj5/45aGoCjBXjN0MRLk7Lo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ga2rGNlxH94QVeRSRtIhhPIwv23HCcPTkQJa04XHbUHhla79z2NO1qR18H2gmp98Z
-         fHVJMOueUCEd5p50DbBf5Al1YTJZDbzyLQa8TRgibvEtxFlx1iQXy1VC5lNUjrs36Q
-         51SK+MdMC+fCSp88C22BtQ8WXOYugNN7eo1C7JEc=
+        b=bXxMZnrTkPQ+k5ajnsQ5e2GetsyFeqBOe379YUa0QGlYUaT3rfE+Is7qRCz9H6tbH
+         OBLGYZSJD4M/7lNfulV7+7i+GCmnP5aY14j6uT+M5InAs616+a9j1VMIr8EdSs8jPk
+         FDi8TZ85HKKCod21N4KVtLym8o7eDnTvB2GWOZuo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Subject: [PATCH 4.19 201/239] drm/etnaviv: limit submit sizes
-Date:   Mon, 24 Jan 2022 19:43:59 +0100
-Message-Id: <20220124183949.502885321@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.4 308/320] dmaengine: at_xdmac: Fix lld view setting
+Date:   Mon, 24 Jan 2022 19:44:52 +0100
+Message-Id: <20220124184004.418436997@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,48 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
+commit 1385eb4d14d447cc5d744bc2ac34f43be66c9963 upstream.
 
-Currently we allow rediculous amounts of kernel memory being allocated
-via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
-some reasonable limits in to fix this.
+AT_XDMAC_CNDC_NDVIEW_NDV3 was set even for AT_XDMAC_MBR_UBC_NDV2,
+because of the wrong bit handling. Fix it.
 
-The commandstream size is limited to 64KB, which was already a soft limit
-on older kernels after which the kernel only took submits on a best effort
-base, so there is no userspace that tries to submit commandstreams larger
-than this. Even if the whole commandstream is a single incrementing address
-load, the size limit also limits the number of potential relocs and
-referenced buffers to slightly under 64K, so use the same limit for those
-arguments. The performance monitoring infrastructure currently supports
-less than 50 performance counter signals, so limiting them to 128 on a
-single submit seems like a reasonably future-proof number for now. This
-number can be bumped if needed without breaking the interface.
-
-Cc: stable@vger.kernel.org
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Fixes: ee0fe35c8dcd ("dmaengine: xdmac: Handle descriptor's view 3 registers")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-10-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/dma/at_xdmac.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-@@ -444,6 +444,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
- 		return -EINVAL;
- 	}
- 
-+	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
-+	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
-+		DRM_ERROR("submit arguments out of size limits\n");
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * Copy the command submission and bo array to kernel space in
- 	 * one go, and do this outside of any locks.
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -89,6 +89,7 @@
+ #define		AT_XDMAC_CNDC_NDE		(0x1 << 0)		/* Channel x Next Descriptor Enable */
+ #define		AT_XDMAC_CNDC_NDSUP		(0x1 << 1)		/* Channel x Next Descriptor Source Update */
+ #define		AT_XDMAC_CNDC_NDDUP		(0x1 << 2)		/* Channel x Next Descriptor Destination Update */
++#define		AT_XDMAC_CNDC_NDVIEW_MASK	GENMASK(28, 27)
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV0	(0x0 << 3)		/* Channel x Next Descriptor View 0 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV1	(0x1 << 3)		/* Channel x Next Descriptor View 1 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV2	(0x2 << 3)		/* Channel x Next Descriptor View 2 */
+@@ -353,7 +354,8 @@ static void at_xdmac_start_xfer(struct a
+ 	 */
+ 	if (at_xdmac_chan_is_cyclic(atchan))
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV1;
+-	else if (first->lld.mbr_ubc & AT_XDMAC_MBR_UBC_NDV3)
++	else if ((first->lld.mbr_ubc &
++		  AT_XDMAC_CNDC_NDVIEW_MASK) == AT_XDMAC_MBR_UBC_NDV3)
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV3;
+ 	else
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV2;
 
 
