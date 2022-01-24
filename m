@@ -2,95 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FEEAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:22:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE9CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244221AbiAXUWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:22:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
+        id S1347352AbiAXUW6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:22:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356421AbiAXUEB (ORCPT
+        with ESMTP id S1376330AbiAXUBY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:04:01 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5433C02B744;
-        Mon, 24 Jan 2022 11:30:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
-        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=NapAq0upa/xBbdyBqNdIKWsoXhhYnY7MaFwJ0hBc1gQ=; b=XCCZ+iqpLLRJJjGyeS+6bUL9ce
-        kqx71LzsFHLHQlEeDPymTFu7GqIoJvaBvlsN0iXwxiULvVp33rTGhJr5/n0QOnH5Cn9b2IwkkSIHd
-        mnATGZg7DrWmDpgDYRLzgETPROWfwiqO6PWq0f9a4Ab2gQVI1bhap975hG1f6bgc3Az7vSx4Vr6jz
-        7V5qh5gnQhBdc/lYwHbJkGzBMKvnFN5i4iN6d17IEKrvW3kTdna/7Yq7f3d0Shog6c7kLLE5RA/pc
-        bHB2hEOuBBgf+XOZ31iuiEtYwniv9U2B/XLcDfEMiGW8EFFFifEwHpSRW+vdV37n82dxxhCdk4b58
-        Wt3OLIRQ==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nC52k-003FFE-Pd; Mon, 24 Jan 2022 19:30:23 +0000
-Message-ID: <0ab7e64d-54ab-ed9d-ed23-75c6902cca25@infradead.org>
-Date:   Mon, 24 Jan 2022 11:30:15 -0800
+        Mon, 24 Jan 2022 15:01:24 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA885C055AB2;
+        Mon, 24 Jan 2022 11:28:43 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64CA7B8123D;
+        Mon, 24 Jan 2022 19:28:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756A8C340E5;
+        Mon, 24 Jan 2022 19:28:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643052521;
+        bh=aLxp9MG1FvXaB/4/0PbB5rq6RL/Jlk7y49FhlN07VPw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Pv/yinmDaYuVNA3OZeY751J75/xwZlux5ewd2GhSDXsAhrKHlSR08uzbISxH1FrZi
+         0KdhUdP5qHQvjElcYr0I+o/PMYmPt+/0neVU06EFTyT8+4XW82Gk/k4lQ7pNP8W9ue
+         YJDqEAMxoGY8Af+R49mWrfvni0/GU+XrIOb+3pDU=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Abhinav Kumar <quic_abhinavk@quicinc.com>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 086/320] drm/msm/dpu: fix safe status debugfs file
+Date:   Mon, 24 Jan 2022 19:41:10 +0100
+Message-Id: <20220124183956.668770381@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH -next] exit: export make_task_dead()
-Content-Language: en-US
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        linux-ia64@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        kernel test robot <lkp@intel.com>
-References: <20220122174834.6493-1-rdunlap@infradead.org>
- <Ye5vR609miJCKdYa@infradead.org>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <Ye5vR609miJCKdYa@infradead.org>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
+[ Upstream commit f31b0e24d31e18b4503eeaf0032baeacc0beaff6 ]
 
-On 1/24/22 01:20, Christoph Hellwig wrote:
-> On Sat, Jan 22, 2022 at 09:48:34AM -0800, Randy Dunlap wrote:
->> In a config file from "kernel test robot <lkp@intel.com>" for a
->> different problem, this linker error was exposed when
->> CONFIG_IA64_MCA_RECOVERY=m.
->>
->> We could either export make_task_dead() or restrict IA64_MCA_RECOVERY
->> to a bool Kconfig symbol instead of a tristate symbol, so go with the
+Make safe_status debugfs fs file actually return safe status rather than
+danger status data.
 
-OK, I'll send a patch to do ^^^that^^^ instead.
+Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
+Link: https://lore.kernel.org/r/20211201222633.2476780-3-dmitry.baryshkov@linaro.org
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
->> EXPORT_SYMBOL() path.
->>
->> Fixes this build error:
->>
->> ERROR: modpost: "make_task_dead" [arch/ia64/kernel/mca_recovery.ko] undefined!
->>
->> Fixes: 0e25498f8cd4 ("exit: Add and use make_task_dead.")
->> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
->> Cc: "Eric W. Biederman" <ebiederm@xmission.com>
->> Cc: linux-ia64@vger.kernel.org
->> Cc: Tony Luck <tony.luck@intel.com>
->> Cc: kernel test robot <lkp@intel.com>
->> ---
->>  kernel/exit.c |    1 +
->>  1 file changed, 1 insertion(+)
->>
->> --- linux-next-20220121.orig/kernel/exit.c
->> +++ linux-next-20220121/kernel/exit.c
->> @@ -896,6 +896,7 @@ void __noreturn make_task_dead(int signr
->>  
->>  	do_exit(signr);
->>  }
->> +EXPORT_SYMBOL(make_task_dead);
-> 
-> EXPORT_SYMBOL_GPL and restricted, please.
-> 
-> Or even better: force the mca recovery code to be built in.
-
-thanks.
+diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+index 58b0485dc3750..72f487692adbb 100644
+--- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
++++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
+@@ -88,8 +88,8 @@ static int _dpu_danger_signal_status(struct seq_file *s,
+ 					&status);
+ 	} else {
+ 		seq_puts(s, "\nSafe signal status:\n");
+-		if (kms->hw_mdp->ops.get_danger_status)
+-			kms->hw_mdp->ops.get_danger_status(kms->hw_mdp,
++		if (kms->hw_mdp->ops.get_safe_status)
++			kms->hw_mdp->ops.get_safe_status(kms->hw_mdp,
+ 					&status);
+ 	}
+ 	pm_runtime_put_sync(&kms->pdev->dev);
 -- 
-~Randy
+2.34.1
+
+
+
