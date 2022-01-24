@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA66DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:17:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C290EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:18:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377201AbiAXVRq (ORCPT
+        id S1376934AbiAXVRz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:17:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40992 "EHLO
+        Mon, 24 Jan 2022 16:17:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41702 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391376AbiAXUre (ORCPT
+        with ESMTP id S1391315AbiAXUrW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:47:34 -0500
+        Mon, 24 Jan 2022 15:47:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BAB256091C;
-        Mon, 24 Jan 2022 20:47:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CA5C340E5;
-        Mon, 24 Jan 2022 20:47:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5F016090B;
+        Mon, 24 Jan 2022 20:47:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83905C340E5;
+        Mon, 24 Jan 2022 20:47:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057253;
-        bh=Antf7KcBY+HfiVXLoKbVf/51D5YjFk/qLW/H9j6QwKc=;
+        s=korg; t=1643057241;
+        bh=T4NY8zqPRR6WKhwieFaRIRF4HrYhvq77oMAZe4cIyL0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zPKh79mJkM+f3dfJziDvOXDrwhzxm7mJ81RtDZVeZcJcq88fSGGs4CXQQPnZTvISG
-         PjjplhUxe7u5EEcS02ZbSixqb0oxJawaTw85PZg4L16Hx80o6YRymtdfKkT5oq0k5l
-         4mFOPggx0u3XlxKdI2PexU+YVKGQF9jD2I+eyYwY=
+        b=shyYPXjlfq6rsmTsceKWJXQK4J0R2WHwOXP3zDq4+Zv+F3CV7WPnjMrQwHy3opGjF
+         XAYsD1+xY9X8zUokM6IRuv6bWGU0cxKYPnecFR502u99FqT0an591Ap2RAJiovyhwk
+         SKoB/gu4O0IiNzKfo4jQu5Bz3aI9JHWtEfULTUmY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lucas Van <lucas.van@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 750/846] dmaengine: idxd: fix wq settings post wq disable
-Date:   Mon, 24 Jan 2022 19:44:27 +0100
-Message-Id: <20220124184126.854133181@linuxfoundation.org>
+        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>
+Subject: [PATCH 5.15 746/846] scsi: core: Show SCMD_LAST in text form
+Date:   Mon, 24 Jan 2022 19:44:23 +0100
+Message-Id: <20220124184126.716497653@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,62 +46,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Jiang <dave.jiang@intel.com>
+From: Bart Van Assche <bvanassche@acm.org>
 
-commit 0f225705cf6536826318180831e18a74595efc8d upstream.
+commit 3369046e54ca8f82e0cb17740643da2d80d3cfa8 upstream.
 
-By the spec, wq size and group association is not changeable unless device
-is disabled. Exclude clearing the shadow copy on wq disable/reset. This
-allows wq type to be changed after disable to be re-enabled.
+The SCSI debugfs code supports showing information about pending commands,
+including translating SCSI command flags from numeric into text format.
+Also convert the SCMD_LAST flag from numeric into text form.
 
-Move the size and group association to its own cleanup and only call it
-during device disable.
-
-Fixes: 0dcfe41e9a4c ("dmanegine: idxd: cleanup all device related bits after disabling device")
-Reported-by: Lucas Van <lucas.van@intel.com>
-Tested-by: Lucas Van <lucas.van@intel.com>
-Signed-off-by: Dave Jiang <dave.jiang@intel.com>
-Link: https://lore.kernel.org/r/163951291732.2987775.13576571320501115257.stgit@djiang5-desk3.ch.intel.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Link: https://lore.kernel.org/r/20211129194609.3466071-4-bvanassche@acm.org
+Fixes: 8930a6c20791 ("scsi: core: add support for request batching")
+Signed-off-by: Bart Van Assche <bvanassche@acm.org>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/idxd/device.c |   12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/scsi/scsi_debugfs.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/dma/idxd/device.c
-+++ b/drivers/dma/idxd/device.c
-@@ -394,8 +394,6 @@ static void idxd_wq_disable_cleanup(stru
- 	lockdep_assert_held(&wq->wq_lock);
- 	memset(wq->wqcfg, 0, idxd->wqcfg_size);
- 	wq->type = IDXD_WQT_NONE;
--	wq->size = 0;
--	wq->group = NULL;
- 	wq->threshold = 0;
- 	wq->priority = 0;
- 	wq->ats_dis = 0;
-@@ -404,6 +402,15 @@ static void idxd_wq_disable_cleanup(stru
- 	memset(wq->name, 0, WQ_NAME_SIZE);
- }
+--- a/drivers/scsi/scsi_debugfs.c
++++ b/drivers/scsi/scsi_debugfs.c
+@@ -9,6 +9,7 @@
+ static const char *const scsi_cmd_flags[] = {
+ 	SCSI_CMD_FLAG_NAME(TAGGED),
+ 	SCSI_CMD_FLAG_NAME(INITIALIZED),
++	SCSI_CMD_FLAG_NAME(LAST),
+ };
+ #undef SCSI_CMD_FLAG_NAME
  
-+static void idxd_wq_device_reset_cleanup(struct idxd_wq *wq)
-+{
-+	lockdep_assert_held(&wq->wq_lock);
-+
-+	idxd_wq_disable_cleanup(wq);
-+	wq->size = 0;
-+	wq->group = NULL;
-+}
-+
- static void idxd_wq_ref_release(struct percpu_ref *ref)
- {
- 	struct idxd_wq *wq = container_of(ref, struct idxd_wq, wq_active);
-@@ -711,6 +718,7 @@ static void idxd_device_wqs_clear_state(
- 
- 		if (wq->state == IDXD_WQ_ENABLED) {
- 			idxd_wq_disable_cleanup(wq);
-+			idxd_wq_device_reset_cleanup(wq);
- 			wq->state = IDXD_WQ_DISABLED;
- 		}
- 	}
 
 
