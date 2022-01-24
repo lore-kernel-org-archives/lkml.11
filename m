@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE3EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E154AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583840AbiAXWTh (ORCPT
+        id S1583955AbiAXWTo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:19:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48578 "EHLO
+        Mon, 24 Jan 2022 17:19:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447539AbiAXVK5 (ORCPT
+        with ESMTP id S1447471AbiAXVKy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:10:57 -0500
+        Mon, 24 Jan 2022 16:10:54 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3219CC09D32A;
-        Mon, 24 Jan 2022 12:09:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7A59C09D30D;
+        Mon, 24 Jan 2022 12:08:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CA7D1B8122C;
-        Mon, 24 Jan 2022 20:09:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBA89C340E5;
-        Mon, 24 Jan 2022 20:09:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C8B3B8122A;
+        Mon, 24 Jan 2022 20:08:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95FF8C340E5;
+        Mon, 24 Jan 2022 20:08:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054944;
-        bh=Asg+7LepYHNGSHDvbNOVUOCVw+w7ba8PdA/sQW8ZIuI=;
+        s=korg; t=1643054932;
+        bh=OLGhyBE3yYUeUqi46/+gVKgkTva0eh9cbOByjskd/PM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1Z1jHidpspH3FYrc3AOg7VfQ4IqayJ+8OOQVilSA63hRaZKVAi2YyBjkVNPgS/4+T
-         met1ag8czJIWef85O6vP/mnkQbzSjmKcekIvnD9qlYP5sbGKT12TTkTuVlvErkC/4S
-         ALFmsf7F3Lzm7mFv13cispONCBE1FKzamr8wENvo=
+        b=VFJorSzUtNIUiTxCS1mkwybUhV5w+kj6oM8eon23ji2rSd4daQOG8gVGvLeECVzZ6
+         exM+YXJkhisifPUQ7Q86Y3YzpLWqniMenFQeizB3Iw4DwNUsrlfQHz8RwW19oR/SDY
+         0d3VEgmNCi+bXRrg77shwUEUzDAYlsyP2BlGFxzA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 554/563] net: mscc: ocelot: fix using match before it is set
-Date:   Mon, 24 Jan 2022 19:45:19 +0100
-Message-Id: <20220124184043.599259878@linuxfoundation.org>
+        stable@vger.kernel.org, Balbir Singh <bsingharora@gmail.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>
+Subject: [PATCH 5.10 533/563] taskstats: Cleanup the use of task->exit_code
+Date:   Mon, 24 Jan 2022 19:44:58 +0100
+Message-Id: <20220124184042.881061424@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,57 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Eric W. Biederman <ebiederm@xmission.com>
 
-commit baa59504c1cd0cca7d41954a45ee0b3dc78e41a0 upstream.
+commit 1b5a42d9c85f0e731f01c8d1129001fd8531a8a0 upstream.
 
-Clang static analysis reports this issue
-ocelot_flower.c:563:8: warning: 1st function call argument
-  is an uninitialized value
-    !is_zero_ether_addr(match.mask->dst)) {
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In the function bacct_add_task the code reading task->exit_code was
+introduced in commit f3cef7a99469 ("[PATCH] csa: basic accounting over
+taskstats"), and it is not entirely clear what the taskstats interface
+is trying to return as only returning the exit_code of the first task
+in a process doesn't make a lot of sense.
 
-The variable match is used before it is set.  So move the
-block.
+As best as I can figure the intent is to return task->exit_code after
+a task exits.  The field is returned with per task fields, so the
+exit_code of the entire process is not wanted.  Only the value of the
+first task is returned so this is not a useful way to get the per task
+ptrace stop code.  The ordinary case of returning this value is
+returning after a task exits, which also precludes use for getting
+a ptrace value.
 
-Fixes: 75944fda1dfe ("net: mscc: ocelot: offload ingress skbedit and vlan actions to VCAP IS1")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+It is common to for the first task of a process to also be the last
+task of a process so this field may have done something reasonable by
+accident in testing.
+
+Make ac_exitcode a reliable per task value by always returning it for
+every exited task.
+
+Setting ac_exitcode in a sensible mannter makes it possible to continue
+to provide this value going forward.
+
+Cc: Balbir Singh <bsingharora@gmail.com>
+Fixes: f3cef7a99469 ("[PATCH] csa: basic accounting over taskstats")
+Link: https://lkml.kernel.org/r/20220103213312.9144-5-ebiederm@xmission.com
+Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mscc/ocelot_flower.c |   15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
+ kernel/tsacct.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -462,13 +462,6 @@ ocelot_flower_parse_key(struct ocelot *o
- 			return -EOPNOTSUPP;
- 		}
+--- a/kernel/tsacct.c
++++ b/kernel/tsacct.c
+@@ -38,11 +38,10 @@ void bacct_add_tsk(struct user_namespace
+ 	stats->ac_btime = clamp_t(time64_t, btime, 0, U32_MAX);
+ 	stats->ac_btime64 = btime;
  
--		if (filter->block_id == VCAP_IS1 &&
--		    !is_zero_ether_addr(match.mask->dst)) {
--			NL_SET_ERR_MSG_MOD(extack,
--					   "Key type S1_NORMAL cannot match on destination MAC");
--			return -EOPNOTSUPP;
--		}
--
- 		/* The hw support mac matches only for MAC_ETYPE key,
- 		 * therefore if other matches(port, tcp flags, etc) are added
- 		 * then just bail out
-@@ -483,6 +476,14 @@ ocelot_flower_parse_key(struct ocelot *o
- 			return -EOPNOTSUPP;
- 
- 		flow_rule_match_eth_addrs(rule, &match);
-+
-+		if (filter->block_id == VCAP_IS1 &&
-+		    !is_zero_ether_addr(match.mask->dst)) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "Key type S1_NORMAL cannot match on destination MAC");
-+			return -EOPNOTSUPP;
-+		}
-+
- 		filter->key_type = OCELOT_VCAP_KEY_ETYPE;
- 		ether_addr_copy(filter->key.etype.dmac.value,
- 				match.key->dst);
+-	if (thread_group_leader(tsk)) {
++	if (tsk->flags & PF_EXITING)
+ 		stats->ac_exitcode = tsk->exit_code;
+-		if (tsk->flags & PF_FORKNOEXEC)
+-			stats->ac_flag |= AFORK;
+-	}
++	if (thread_group_leader(tsk) && (tsk->flags & PF_FORKNOEXEC))
++		stats->ac_flag |= AFORK;
+ 	if (tsk->flags & PF_SUPERPRIV)
+ 		stats->ac_flag |= ASU;
+ 	if (tsk->flags & PF_DUMPCORE)
 
 
