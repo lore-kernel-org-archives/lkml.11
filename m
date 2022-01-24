@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE9CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94119C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347352AbiAXUW6 (ORCPT
+        id S1354799AbiAXUXD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:22:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376330AbiAXUBY (ORCPT
+        Mon, 24 Jan 2022 15:23:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57884 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356460AbiAXUBW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA885C055AB2;
-        Mon, 24 Jan 2022 11:28:43 -0800 (PST)
+        Mon, 24 Jan 2022 15:01:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 64CA7B8123D;
-        Mon, 24 Jan 2022 19:28:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 756A8C340E5;
-        Mon, 24 Jan 2022 19:28:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BA5146091B;
+        Mon, 24 Jan 2022 20:01:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8213DC340E5;
+        Mon, 24 Jan 2022 20:01:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052521;
-        bh=aLxp9MG1FvXaB/4/0PbB5rq6RL/Jlk7y49FhlN07VPw=;
+        s=korg; t=1643054481;
+        bh=ttfyB81yNQlMenIPGF8dZQXmiBNmpBeJ8w+ZiOjs+5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pv/yinmDaYuVNA3OZeY751J75/xwZlux5ewd2GhSDXsAhrKHlSR08uzbISxH1FrZi
-         0KdhUdP5qHQvjElcYr0I+o/PMYmPt+/0neVU06EFTyT8+4XW82Gk/k4lQ7pNP8W9ue
-         YJDqEAMxoGY8Af+R49mWrfvni0/GU+XrIOb+3pDU=
+        b=QVobm+CrnqTJFJfcOo8leq2yvbbbC3sknlInPUL8l9/xi9BH90jkqcKJodLBdnrCS
+         Ylfid4tnaOoaN0DWGuNfNZd/g7GLiI6xIgqRe8sRyt6ZasDEf3g2rqr7g18dtosWx6
+         kHzCHdnqqiNoBDuGMpLjEFXV5RFyYaTAhKFIv9cw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 086/320] drm/msm/dpu: fix safe status debugfs file
-Date:   Mon, 24 Jan 2022 19:41:10 +0100
-Message-Id: <20220124183956.668770381@linuxfoundation.org>
+Subject: [PATCH 5.10 404/563] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 24 Jan 2022 19:42:49 +0100
+Message-Id: <20220124184038.419766592@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,39 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit f31b0e24d31e18b4503eeaf0032baeacc0beaff6 ]
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-Make safe_status debugfs fs file actually return safe status rather than
-danger status data.
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-Fixes: 25fdd5933e4c ("drm/msm: Add SDM845 DPU support")
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Abhinav Kumar <quic_abhinavk@quicinc.com>
-Link: https://lore.kernel.org/r/20211201222633.2476780-3-dmitry.baryshkov@linaro.org
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
+
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
+
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-index 58b0485dc3750..72f487692adbb 100644
---- a/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-+++ b/drivers/gpu/drm/msm/disp/dpu1/dpu_kms.c
-@@ -88,8 +88,8 @@ static int _dpu_danger_signal_status(struct seq_file *s,
- 					&status);
- 	} else {
- 		seq_puts(s, "\nSafe signal status:\n");
--		if (kms->hw_mdp->ops.get_danger_status)
--			kms->hw_mdp->ops.get_danger_status(kms->hw_mdp,
-+		if (kms->hw_mdp->ops.get_safe_status)
-+			kms->hw_mdp->ops.get_safe_status(kms->hw_mdp,
- 					&status);
- 	}
- 	pm_runtime_put_sync(&kms->pdev->dev);
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index 046bedca7b8f5..55108db5b64bf 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2414,7 +2414,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 		/*
 -- 
 2.34.1
 
