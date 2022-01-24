@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE91C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C506C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410543AbiAYA3a (ORCPT
+        id S3410641AbiAYA3k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:29:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54920 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348012AbiAXVgU (ORCPT
+        Mon, 24 Jan 2022 19:29:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45920 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454930AbiAXVeP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:36:20 -0500
+        Mon, 24 Jan 2022 16:34:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 72129612E5;
-        Mon, 24 Jan 2022 21:36:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D0CEC340E4;
-        Mon, 24 Jan 2022 21:36:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC226B81257;
+        Mon, 24 Jan 2022 21:34:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02FBDC340E4;
+        Mon, 24 Jan 2022 21:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060178;
-        bh=YljHBSu8U7fYgPuBxiqBxuJLS3a+IyXUlt9fCs6zb+E=;
+        s=korg; t=1643060044;
+        bh=PuPDInC1r/GLcY+Vi+sQObVdNBoB1cbEQ8SKVAlGUU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jhdVyAGHnYKXW+kAhEHKAXx7nmvKruB8Tph6SxwiYUsxSax1a4SonaGZDLkdDdG1o
-         TVwWEWmAtr8eOfMDgk0GPE3cLMJa9hxZp8gLqN6yay2nEKwPQwOhFWq9M3lzCoz4TO
-         pZWy2J+hycw03cwwntdc9qxpmG7GAHwtreoU+j9k=
+        b=V2UAReNXan+TmlkIrx4VZj6ZYo1NdeshC46cTh6x5ry9jtGg2X5XaRxHcTag4njXk
+         Z6FbmBmsNK/bZbClHDmajnH4F3WZrJQ27h2zLp3WLKEx1xi5afJ3BXd++RQ9akBgKg
+         Yms/TgNhwfs9dQl4DXdgLsDdoLOScyx3zo7LFJf4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>
-Subject: [PATCH 5.16 0864/1039] parisc: Fix lpa and lpa_user defines
-Date:   Mon, 24 Jan 2022 19:44:13 +0100
-Message-Id: <20220124184154.337574400@linuxfoundation.org>
+        stable@vger.kernel.org, Wesley Sheng <wesley.sheng@microchip.com>,
+        Kelvin Cao <kelvin.cao@microchip.com>,
+        Jon Mason <jdmason@kudzu.us>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0820/1039] ntb_hw_switchtec: Fix bug with more than 32 partitions
+Date:   Mon, 24 Jan 2022 19:43:29 +0100
+Message-Id: <20220124184152.866189101@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,84 +47,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Wesley Sheng <wesley.sheng@microchip.com>
 
-commit db19c6f1a2a353cc8dec35b4789733a3cf6e2838 upstream.
+[ Upstream commit 7ff351c86b6b258f387502ab2c9b9d04f82c1c3d ]
 
-While working on the rewrite to the light-weight syscall and futex code, I
-experimented with using a hash index based on the user physical address of
-atomic variable. This exposed two problems with the lpa and lpa_user defines.
+Switchtec could support as mush as 48 partitions, but ffs & fls are
+for 32 bit argument, in case of partition index larger than 31, the
+current code could not parse the peer partition index correctly.
+Change to the 64 bit version __ffs64 & fls64 accordingly to fix this
+bug.
 
-Because of the copy instruction, the pa argument needs to be an early clobber
-argument. This prevents gcc from allocating the va and pa arguments to the same
-register.
-
-Secondly, the lpa instruction can cause a page fault so we need to catch
-exceptions.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Fixes: 116d753308cf ("parisc: Use lpa instruction to load physical addresses in driver code")
-Signed-off-by: Helge Deller <deller@gmx.de>
-Cc: stable@vger.kernel.org # v5.2+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3df54c870f52 ("ntb_hw_switchtec: Allow using Switchtec NTB in multi-partition setups")
+Signed-off-by: Wesley Sheng <wesley.sheng@microchip.com>
+Signed-off-by: Kelvin Cao <kelvin.cao@microchip.com>
+Signed-off-by: Jon Mason <jdmason@kudzu.us>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/include/asm/special_insns.h |   44 +++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 20 deletions(-)
+ drivers/ntb/hw/mscc/ntb_hw_switchtec.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
---- a/arch/parisc/include/asm/special_insns.h
-+++ b/arch/parisc/include/asm/special_insns.h
-@@ -2,28 +2,32 @@
- #ifndef __PARISC_SPECIAL_INSNS_H
- #define __PARISC_SPECIAL_INSNS_H
+diff --git a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
+index 6603c77c0a848..ec9cb6c81edae 100644
+--- a/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
++++ b/drivers/ntb/hw/mscc/ntb_hw_switchtec.c
+@@ -840,7 +840,6 @@ static int switchtec_ntb_init_sndev(struct switchtec_ntb *sndev)
+ 	u64 tpart_vec;
+ 	int self;
+ 	u64 part_map;
+-	int bit;
  
--#define lpa(va)	({			\
--	unsigned long pa;		\
--	__asm__ __volatile__(		\
--		"copy %%r0,%0\n\t"	\
--		"lpa %%r0(%1),%0"	\
--		: "=r" (pa)		\
--		: "r" (va)		\
--		: "memory"		\
--	);				\
--	pa;				\
-+#define lpa(va)	({					\
-+	unsigned long pa;				\
-+	__asm__ __volatile__(				\
-+		"copy %%r0,%0\n"			\
-+		"8:\tlpa %%r0(%1),%0\n"			\
-+		"9:\n"					\
-+		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
-+		: "=&r" (pa)				\
-+		: "r" (va)				\
-+		: "memory"				\
-+	);						\
-+	pa;						\
- })
+ 	sndev->ntb.pdev = sndev->stdev->pdev;
+ 	sndev->ntb.topo = NTB_TOPO_SWITCH;
+@@ -861,29 +860,28 @@ static int switchtec_ntb_init_sndev(struct switchtec_ntb *sndev)
+ 	part_map = ioread64(&sndev->mmio_ntb->ep_map);
+ 	part_map &= ~(1 << sndev->self_partition);
  
--#define lpa_user(va)	({		\
--	unsigned long pa;		\
--	__asm__ __volatile__(		\
--		"copy %%r0,%0\n\t"	\
--		"lpa %%r0(%%sr3,%1),%0"	\
--		: "=r" (pa)		\
--		: "r" (va)		\
--		: "memory"		\
--	);				\
--	pa;				\
-+#define lpa_user(va)	({				\
-+	unsigned long pa;				\
-+	__asm__ __volatile__(				\
-+		"copy %%r0,%0\n"			\
-+		"8:\tlpa %%r0(%%sr3,%1),%0\n"		\
-+		"9:\n"					\
-+		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
-+		: "=&r" (pa)				\
-+		: "r" (va)				\
-+		: "memory"				\
-+	);						\
-+	pa;						\
- })
+-	if (!ffs(tpart_vec)) {
++	if (!tpart_vec) {
+ 		if (sndev->stdev->partition_count != 2) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"ntb target partition not defined\n");
+ 			return -ENODEV;
+ 		}
  
- #define mfctl(reg)	({		\
+-		bit = ffs(part_map);
+-		if (!bit) {
++		if (!part_map) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"peer partition is not NT partition\n");
+ 			return -ENODEV;
+ 		}
+ 
+-		sndev->peer_partition = bit - 1;
++		sndev->peer_partition = __ffs64(part_map);
+ 	} else {
+-		if (ffs(tpart_vec) != fls(tpart_vec)) {
++		if (__ffs64(tpart_vec) != (fls64(tpart_vec) - 1)) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"ntb driver only supports 1 pair of 1-1 ntb mapping\n");
+ 			return -ENODEV;
+ 		}
+ 
+-		sndev->peer_partition = ffs(tpart_vec) - 1;
++		sndev->peer_partition = __ffs64(tpart_vec);
+ 		if (!(part_map & (1ULL << sndev->peer_partition))) {
+ 			dev_err(&sndev->stdev->dev,
+ 				"ntb target partition is not NT partition\n");
+-- 
+2.34.1
+
 
 
