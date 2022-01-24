@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88E17C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF2DC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354723AbiAXTh1 (ORCPT
+        id S1354779AbiAXTh4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:37:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59616 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347861AbiAXTcS (ORCPT
+        Mon, 24 Jan 2022 14:37:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53106 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347734AbiAXTc1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:32:18 -0500
+        Mon, 24 Jan 2022 14:32:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 083D2C061749;
+        Mon, 24 Jan 2022 11:15:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D124660917;
-        Mon, 24 Jan 2022 19:32:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93AC9C340E5;
-        Mon, 24 Jan 2022 19:32:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1520B81223;
+        Mon, 24 Jan 2022 19:15:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6426C340E5;
+        Mon, 24 Jan 2022 19:15:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052732;
-        bh=dR6pZiRW7TNa1iTDp9N7qtUKzFnTqgXitlsxGEtbyDs=;
+        s=korg; t=1643051717;
+        bh=A2NvKwd73D8pQ6vaWh6pCK/nGc+b3GhvLNFIRFxwTA0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z3r2198i9+pWn/1JH8EF5GEqD7y+KsbTDGYOl9zX24vHx3UBKV+qeWeUy1r7YcGIB
-         QGheXIRI824mgW0d/VYpueE/b/IXTOH2vYrZH5In/A2rEi7UKGusYcnWkEoDXk1xal
-         2r91mxHweo1l6eCuqlHDpa6VsqRfoVeKggZrAQg4=
+        b=baQgDcUWgb4my/afV8ynTlk1AWFntrjWTFC2iTsCezzB7XS1dKjNQb37omgdhXzHj
+         rxwmplQn4MvrIRwCD8aKGW29ECiYXX6qeFDRSLISnFefWJvb9QMKTFvt8yRUM0gdaz
+         6uMxgn+iSfE+SSzev7kakLKknRka3vYIQ6B7fE+s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 156/320] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 24 Jan 2022 19:42:20 +0100
-Message-Id: <20220124183958.932774879@linuxfoundation.org>
+Subject: [PATCH 4.19 064/239] drm/amdgpu: Fix a NULL pointer dereference in amdgpu_connector_lcd_native_mode()
+Date:   Mon, 24 Jan 2022 19:41:42 +0100
+Message-Id: <20220124183945.169579704@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,61 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit b220110e4cd442156f36e1d9b4914bb9e87b0d00 ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+In amdgpu_connector_lcd_native_mode(), the return value of
+drm_mode_duplicate() is assigned to mode, and there is a dereference
+of it in amdgpu_connector_lcd_native_mode(), which will lead to a NULL
+pointer dereference on failure of drm_mode_duplicate().
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+Fix this bug add a check of mode.
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
-This was NOT tested on a real device.
+Builds with CONFIG_DRM_AMDGPU=m show no new warnings, and
+our static analyzer no longer warns about this code.
 
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Fixes: d38ceaf99ed0 ("drm/amdgpu: add core driver (v4)")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 4c57e79e5779a..58e189ec672f9 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
+index e1be3fd4d7a45..3e4305c3c9831 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_connectors.c
+@@ -388,6 +388,9 @@ amdgpu_connector_lcd_native_mode(struct drm_encoder *encoder)
+ 	    native_mode->vdisplay != 0 &&
+ 	    native_mode->clock != 0) {
+ 		mode = drm_mode_duplicate(dev, native_mode);
++		if (!mode)
++			return NULL;
++
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		drm_mode_set_name(mode);
+ 
+@@ -402,6 +405,9 @@ amdgpu_connector_lcd_native_mode(struct drm_encoder *encoder)
+ 		 * simpler.
+ 		 */
+ 		mode = drm_cvt_mode(dev, native_mode->hdisplay, native_mode->vdisplay, 60, true, false, false);
++		if (!mode)
++			return NULL;
++
+ 		mode->type = DRM_MODE_TYPE_PREFERRED | DRM_MODE_TYPE_DRIVER;
+ 		DRM_DEBUG_KMS("Adding cvt approximation of native panel mode %s\n", mode->name);
+ 	}
 -- 
 2.34.1
 
