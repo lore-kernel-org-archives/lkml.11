@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F1F0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A612BC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422647AbiAYCbp (ORCPT
+        id S3422629AbiAYCbn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58810 "EHLO
+        Mon, 24 Jan 2022 21:31:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58646 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381432AbiAXUUT (ORCPT
+        with ESMTP id S1381297AbiAXUUE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:20:19 -0500
+        Mon, 24 Jan 2022 15:20:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7E062B8121C;
-        Mon, 24 Jan 2022 20:20:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A8D9C340E5;
-        Mon, 24 Jan 2022 20:20:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE45CB81229;
+        Mon, 24 Jan 2022 20:20:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11758C340E5;
+        Mon, 24 Jan 2022 20:20:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055617;
-        bh=MONWWN5Pw6rnKPiBEgg31qpoflv/TBpsiZxOuGbiM5U=;
+        s=korg; t=1643055601;
+        bh=16LNaUCzIzb/T+JoyZ/ziwN0gPqMj0yFnQdm07T7pxI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kg3R5esM/WAn8Ee8IpdxAdNChw8OZJabuEFCNJ52mDX384F4n+oq6o4Mx4s5iiDVw
-         IRC4GTGK4wHzKZAwUnArwxSsynmtjBGXJgEQU8rhq/THID55os9Ccub558jH/2yvUl
-         SIDQh4SdQYIBHD6/MXdgdWNp2QYiK20ANHKM43+U=
+        b=odIllL/oIMYA1Wwy7XpPMuuTD2i+OoGpRsmUYks9YswxsW3mJ34q0EtglKPQ2txf8
+         d5jrquT0BVPzlaRW/clfxuUUNXEXPu0xxUNr9CVSmORvh+uTDG4XIXPRtg0SgCIU5d
+         AmV0BusbLt5vzKwasyqp7sgUbshEYm+l0o6YQz4Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        stable@vger.kernel.org, Reiji Watanabe <reijiw@google.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 209/846] samples: bpf: Fix unknown warning group build warning on Clang
-Date:   Mon, 24 Jan 2022 19:35:26 +0100
-Message-Id: <20220124184108.131751511@linuxfoundation.org>
+Subject: [PATCH 5.15 204/846] arm64: clear_page() shouldnt use DC ZVA when DCZID_EL0.DZP == 1
+Date:   Mon, 24 Jan 2022 19:35:21 +0100
+Message-Id: <20220124184107.969459458@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,47 +48,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Lobakin <alexandr.lobakin@intel.com>
+From: Reiji Watanabe <reijiw@google.com>
 
-[ Upstream commit 6f670d06e47c774bc065aaa84a527a4838f34bd8 ]
+[ Upstream commit f0616abd4e67143b45b04b565839148458857347 ]
 
-Clang doesn't have 'stringop-truncation' group like GCC does, and
-complains about it when building samples which use xdp_sample_user
-infra:
+Currently, clear_page() uses DC ZVA instruction unconditionally.  But it
+should make sure that DCZID_EL0.DZP, which indicates whether or not use
+of DC ZVA instruction is prohibited, is zero when using the instruction.
+Use STNP instead when DCZID_EL0.DZP == 1.
 
- samples/bpf/xdp_sample_user.h:48:32: warning: unknown warning group '-Wstringop-truncation', ignored [-Wunknown-warning-option]
- #pragma GCC diagnostic ignored "-Wstringop-truncation"
-                                ^
-[ repeat ]
-
-Those are harmless, but avoidable when guarding it with ifdef.
-I could guard push/pop as well, but this would require one more
-ifdef cruft around a single line which I don't think is reasonable.
-
-Fixes: 156f886cf697 ("samples: bpf: Add basic infrastructure for XDP samples")
-Signed-off-by: Alexander Lobakin <alexandr.lobakin@intel.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Link: https://lore.kernel.org/bpf/20211203195004.5803-3-alexandr.lobakin@intel.com
+Fixes: f27bb139c387 ("arm64: Miscellaneous library functions")
+Signed-off-by: Reiji Watanabe <reijiw@google.com>
+Reviewed-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/20211206004736.1520989-2-reijiw@google.com
+Signed-off-by: Catalin Marinas <catalin.marinas@arm.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/xdp_sample_user.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/arm64/lib/clear_page.S | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/samples/bpf/xdp_sample_user.h b/samples/bpf/xdp_sample_user.h
-index d97465ff8c62c..5f44b877ecf5f 100644
---- a/samples/bpf/xdp_sample_user.h
-+++ b/samples/bpf/xdp_sample_user.h
-@@ -45,7 +45,9 @@ const char *get_driver_name(int ifindex);
- int get_mac_addr(int ifindex, void *mac_addr);
- 
- #pragma GCC diagnostic push
-+#ifndef __clang__
- #pragma GCC diagnostic ignored "-Wstringop-truncation"
-+#endif
- __attribute__((unused))
- static inline char *safe_strncpy(char *dst, const char *src, size_t size)
- {
+diff --git a/arch/arm64/lib/clear_page.S b/arch/arm64/lib/clear_page.S
+index b84b179edba3a..1fd5d790ab800 100644
+--- a/arch/arm64/lib/clear_page.S
++++ b/arch/arm64/lib/clear_page.S
+@@ -16,6 +16,7 @@
+  */
+ SYM_FUNC_START_PI(clear_page)
+ 	mrs	x1, dczid_el0
++	tbnz	x1, #4, 2f	/* Branch if DC ZVA is prohibited */
+ 	and	w1, w1, #0xf
+ 	mov	x2, #4
+ 	lsl	x1, x2, x1
+@@ -25,5 +26,14 @@ SYM_FUNC_START_PI(clear_page)
+ 	tst	x0, #(PAGE_SIZE - 1)
+ 	b.ne	1b
+ 	ret
++
++2:	stnp	xzr, xzr, [x0]
++	stnp	xzr, xzr, [x0, #16]
++	stnp	xzr, xzr, [x0, #32]
++	stnp	xzr, xzr, [x0, #48]
++	add	x0, x0, #64
++	tst	x0, #(PAGE_SIZE - 1)
++	b.ne	2b
++	ret
+ SYM_FUNC_END_PI(clear_page)
+ EXPORT_SYMBOL(clear_page)
 -- 
 2.34.1
 
