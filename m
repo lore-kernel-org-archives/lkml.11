@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51D6EC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6930CC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359768AbiAXWNC (ORCPT
+        id S1380574AbiAXWNG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:13:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50556 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442444AbiAXV3f (ORCPT
+        Mon, 24 Jan 2022 17:13:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45014 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453432AbiAXVaJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:29:35 -0500
+        Mon, 24 Jan 2022 16:30:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44EB461320;
-        Mon, 24 Jan 2022 21:29:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3089FC340E4;
-        Mon, 24 Jan 2022 21:29:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BB83B81057;
+        Mon, 24 Jan 2022 21:30:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 780C6C340E4;
+        Mon, 24 Jan 2022 21:30:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059774;
-        bh=hY4UWMyFSq0Q4bgph2NQBK7SyoqPgPe9sNmHDQXYo1o=;
+        s=korg; t=1643059807;
+        bh=KWoGejEVrZUfkV1DJjO87i+BhLl7v3X3Zk9ndV6PkeM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qhpAuxy3N/XCubNi1O8kk+FbRLJT08L9Ln4z0WQzYKNFGVezusoITVJhohW2AjSR9
-         VhAjP1P3UBA0CK90uUyMUajWOMBuGkrjyHvgjqmxQPVpx2t57aXo/y/RLc7Nuur9lj
-         lJu7klDTqJ98NF2BE4MZEZpo4ywjfSNPQNUwcve4=
+        b=PtP9TKmsI7oRGIQ1JXQgkaaq3Ta/Z+DYhqtH7OSdeIxpe9r/GcMwQgARM5/vptU4o
+         SnnmZr7lXTlSgjuCOsh/IHt0x3Tsspsx9z6KDzwztnmORy7i2x30yVCtMAv91kLyWO
+         2gPOGbIZ0JRbs4x2Rw5VBa+bI0cPgZgTN4LZ1SLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark Langsdorf <mlangsdo@redhat.com>,
-        Bob Moore <robert.moore@intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0696/1039] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
-Date:   Mon, 24 Jan 2022 19:41:25 +0100
-Message-Id: <20220124184148.736451659@linuxfoundation.org>
+Subject: [PATCH 5.16 0741/1039] powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
+Date:   Mon, 24 Jan 2022 19:42:10 +0100
+Message-Id: <20220124184150.241591333@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,54 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Langsdorf <mlangsdo@redhat.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
+[ Upstream commit a4ac0d249a5db80e79d573db9e4ad29354b643a8 ]
 
-ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
+setup_profiling_timer() is only needed when CONFIG_PROFILING is enabled.
 
-The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
-test that size is small enough to not cause an overflow when
-applied to a 32-bit integer.
+Fixes the following W=1 warning when CONFIG_PROFILING=n:
+  linux/arch/powerpc/kernel/smp.c:1638:5: error: no previous prototype for ‘setup_profiling_timer’
 
-Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
-ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
-redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
-
-This was inititally reported on Linux where a size of 102 in
-ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
-initialization code.
-
-Link: https://github.com/acpica/acpica/commit/bc02c76d
-Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211124093254.1054750-5-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/acpi/actypes.h | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ arch/powerpc/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
-index ff8b3c913f217..248242dca28d3 100644
---- a/include/acpi/actypes.h
-+++ b/include/acpi/actypes.h
-@@ -536,8 +536,14 @@ typedef u64 acpi_integer;
-  * Can be used with access_width of struct acpi_generic_address and access_size of
-  * struct acpi_resource_generic_register.
-  */
--#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
--#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
-+#define ACPI_ACCESS_BIT_SHIFT		2
-+#define ACPI_ACCESS_BYTE_SHIFT		-1
-+#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
-+#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
-+#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
-+#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
-+#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
-+#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index c23ee842c4c33..aee3a7119f977 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -1635,10 +1635,12 @@ void start_secondary(void *unused)
+ 	BUG();
+ }
  
- /*******************************************************************************
-  *
++#ifdef CONFIG_PROFILING
+ int setup_profiling_timer(unsigned int multiplier)
+ {
+ 	return 0;
+ }
++#endif
+ 
+ static void fixup_topology(void)
+ {
 -- 
 2.34.1
 
