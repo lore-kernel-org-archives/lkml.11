@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AF2AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2908EC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:22:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381412AbiAXUWe (ORCPT
+        id S1381421AbiAXUWl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:22:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55976 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376418AbiAXUBp (ORCPT
+        Mon, 24 Jan 2022 15:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60758 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359502AbiAXUEB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:45 -0500
+        Mon, 24 Jan 2022 15:04:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB183C02B745;
+        Mon, 24 Jan 2022 11:30:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D428B60B02;
-        Mon, 24 Jan 2022 20:01:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0F48C340E5;
-        Mon, 24 Jan 2022 20:01:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 78651612A5;
+        Mon, 24 Jan 2022 19:30:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 270B9C340E5;
+        Mon, 24 Jan 2022 19:30:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054503;
-        bh=KUsfQVHU2x96z/Fe4VrNN/7LI2bKQv8NRmV2m8PqQuE=;
+        s=korg; t=1643052625;
+        bh=Otfz0U8maTLEn+Irs0y44lE82ilMaXIVy8OqHKRQp7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oHEai0rpA7pett1FSC9hPjUEYlNQ/BOR00pWng9gLjXe+rY+w7sGwfN3y5M5FqlX2
-         X8u57kcoajv0ockHnXEjmQ1hkkNOSZQIek6Nsi9rUweYIXVyuXOldpxSiJbgGC3WlI
-         BePyvDH4/g76Tfk0YlO8baXEubIyHleGOJoGWRps=
+        b=x8j55t85zem42R5ZQP7MP6I84aIQmNy7oLgvmPMN6MRVLjLiBri5feAnPtB2IvkAe
+         LK7D9VUjaiygkN8TG0SJFbL23hI0XyDW16WsL/SlluSD8K88sR+79QzbrN9U3O1p+Y
+         SjmS9z9Qodpc84YgBKZBRblvfA2lfzD3J1u4Yye8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 410/563] powerpc/powernv: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:42:55 +0100
-Message-Id: <20220124184038.625401716@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Subject: [PATCH 5.4 121/320] net: mcs7830: handle usb read errors properly
+Date:   Mon, 24 Jan 2022 19:41:45 +0100
+Message-Id: <20220124183957.797813600@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,57 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Pavel Skripkin <paskripkin@gmail.com>
 
-[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
+[ Upstream commit d668769eb9c52b150753f1653f7f5a0aeb8239d2 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Syzbot reported uninit value in mcs7830_bind(). The problem was in
+missing validation check for bytes read via usbnet_read_cmd().
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+usbnet_read_cmd() internally calls usb_control_msg(), that returns
+number of bytes read. Code should validate that requested number of bytes
+was actually read.
 
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
+So, this patch adds missing size validation check inside
+mcs7830_get_reg() to prevent uninit value bugs
 
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
+Reported-and-tested-by: syzbot+003c0a286b9af5412510@syzkaller.appspotmail.com
+Fixes: 2a36d7083438 ("USB: driver for mcs7830 (aka DeLOCK) USB ethernet adapter")
+Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Link: https://lore.kernel.org/r/20220106225716.7425-1-paskripkin@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/usb/mcs7830.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
-index 608569082ba0b..123a0e799b7bd 100644
---- a/arch/powerpc/platforms/powernv/opal-lpc.c
-+++ b/arch/powerpc/platforms/powernv/opal-lpc.c
-@@ -396,6 +396,7 @@ void __init opal_lpc_init(void)
- 		if (!of_get_property(np, "primary", NULL))
- 			continue;
- 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
-+		of_node_put(np);
- 		break;
- 	}
- 	if (opal_lpc_chip_id < 0)
+diff --git a/drivers/net/usb/mcs7830.c b/drivers/net/usb/mcs7830.c
+index 09bfa6a4dfbc1..7e40e2e2f3723 100644
+--- a/drivers/net/usb/mcs7830.c
++++ b/drivers/net/usb/mcs7830.c
+@@ -108,8 +108,16 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
+ 
+ static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
+ {
+-	return usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
+-				0x0000, index, data, size);
++	int ret;
++
++	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
++			      0x0000, index, data, size);
++	if (ret < 0)
++		return ret;
++	else if (ret < size)
++		return -ENODATA;
++
++	return ret;
+ }
+ 
+ static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
 -- 
 2.34.1
 
