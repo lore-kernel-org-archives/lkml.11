@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE7CC35268
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4B99C3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353604AbiAXTfC (ORCPT
+        id S1347410AbiAXThO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49556 "EHLO
+        Mon, 24 Jan 2022 14:37:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55356 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344211AbiAXT03 (ORCPT
+        with ESMTP id S1347717AbiAXTcL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:26:29 -0500
+        Mon, 24 Jan 2022 14:32:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6ACDEB8121C;
-        Mon, 24 Jan 2022 19:26:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 972DFC340E5;
-        Mon, 24 Jan 2022 19:26:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 31972B8122C;
+        Mon, 24 Jan 2022 19:32:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 578C8C340E5;
+        Mon, 24 Jan 2022 19:32:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052386;
-        bh=66NPtosod8Ok5mYiep4rLe3S9UA9BN0GARK4K96mHsY=;
+        s=korg; t=1643052728;
+        bh=0Qm+dWNT8phmQ4tU5kIS5Fv5RyW+rZO78HIgmJ65jAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lUdz36eQJpaXpLwP6XDhLOCzBux5uTlixxai62XjPd0WJvj8ZA34eItYI5/wW5CY1
-         fWO5piRWzGdMbUapeEOs7ukRqC//JMBZRnXtjgps4Kik1hRXomcvc8ugIUWGgwb1Ld
-         4b5xr7WaEWATKJyk52wBbvhende++zsuMGpJK3Bw=
+        b=YWMVb79GFm4XZ+8BeXOZEaf+Thcyo4n3U1GUR3Key/R5+qhSlw+xTAPRrhDQeXCSp
+         Ahd0H38mcdCrfD6emf8RMrwzQTogvefL7/y/3qHRrQRZaWuNzlmO40EeiuxruS4sVV
+         gPHHLlCZp8T4Bngbe9X+b+XYeWDjaNBHV13JH5Hk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 042/320] media: videobuf2: Fix the size printk format
-Date:   Mon, 24 Jan 2022 19:40:26 +0100
-Message-Id: <20220124183955.184939952@linuxfoundation.org>
+        stable@vger.kernel.org, Vasily Khoruzhick <anarsoul@gmail.com>,
+        Roman Stratiienko <r.stratiienko@gmail.com>,
+        Qiang Yu <yuq825@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 155/320] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
+Date:   Mon, 24 Jan 2022 19:42:19 +0100
+Message-Id: <20220124183958.901709370@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,48 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Qiang Yu <yuq825@gmail.com>
 
-[ Upstream commit c9ee220d76775e42f35d634479c978d9350077d3 ]
+[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
 
-Since the type of parameter size is unsigned long,
-it should printk by %lu, instead of %ld, fix it.
+Otherwise get following warning:
 
-Fixes: 7952be9b6ece ("media: drivers/media/common/videobuf2: rename from videobuf")
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
+
+See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
+
+Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Signed-off-by: Qiang Yu <yuq825@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/videobuf2/videobuf2-dma-contig.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/lima/lima_device.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index 44cd0e530bbd3..093ebe6f279f7 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -154,7 +154,7 @@ static void *vb2_dc_alloc(struct device *dev, unsigned long attrs,
- 	buf->cookie = dma_alloc_attrs(dev, size, &buf->dma_addr,
- 					GFP_KERNEL | gfp_flags, buf->attrs);
- 	if (!buf->cookie) {
--		dev_err(dev, "dma_alloc_coherent of size %ld failed\n", size);
-+		dev_err(dev, "dma_alloc_coherent of size %lu failed\n", size);
- 		kfree(buf);
- 		return ERR_PTR(-ENOMEM);
- 	}
-@@ -200,9 +200,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
+diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
+index d86b8d81a483a..155971c57b2d5 100644
+--- a/drivers/gpu/drm/lima/lima_device.c
++++ b/drivers/gpu/drm/lima/lima_device.c
+@@ -293,6 +293,7 @@ int lima_device_init(struct lima_device *ldev)
+ 	struct resource *res;
  
- 	vma->vm_ops->open(vma);
+ 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
++	dma_set_max_seg_size(ldev->dev, UINT_MAX);
  
--	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %ld\n",
--		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
--		buf->size);
-+	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %lu\n",
-+		 __func__, (unsigned long)buf->dma_addr, vma->vm_start,
-+		 buf->size);
- 
- 	return 0;
- }
+ 	err = lima_clk_init(ldev);
+ 	if (err)
 -- 
 2.34.1
 
