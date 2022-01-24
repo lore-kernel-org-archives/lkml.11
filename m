@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBCCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 847A7C35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349120AbiAXTUQ (ORCPT
+        id S1349291AbiAXTUc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37860 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344749AbiAXTMB (ORCPT
+        Mon, 24 Jan 2022 14:20:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347729AbiAXTLG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:12:01 -0500
+        Mon, 24 Jan 2022 14:11:06 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03CB1C08E859;
+        Mon, 24 Jan 2022 11:02:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DBE260B86;
-        Mon, 24 Jan 2022 19:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20256C340E5;
-        Mon, 24 Jan 2022 19:11:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9753660BA1;
+        Mon, 24 Jan 2022 19:02:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC85C340E5;
+        Mon, 24 Jan 2022 19:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051520;
-        bh=tKj4Kkf+G5JYmjrwLFve0RgOclpjWKePgs1gs4EF3Sc=;
+        s=korg; t=1643050952;
+        bh=lLizqx2R7dEZHunY5+u8UHZgY3PhUH6NOT0/2mmLldk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TfMi8kDwQ9nO1aP8dPAPofOEZLrHpCt9F1QL0d/r3GkURQo5kFnTqS+kaX3a46VDw
-         AuAJUvGqKAlk3jdknvYoX2esB7FbMwQlLOIVhAIfwJ5tVOdPz+fcZwAC6od1RnBcyr
-         ZbNmtLfj0DKXNxrJ3ADnW5xpuEiTCSKaB+gaSInc=
+        b=2GPPgn8T+zqhbrrJdteiZRalR3kG6OFIyyOBEcpe5N3BTN6bjIHxi/ce+A+VykPm8
+         VFunTvtr/g0UqRQuwrN1tXJkbMpIYQhjjq8t7L0Gbtg3Tc1WAvisId1xO2ZJ8Zz4ip
+         y1S6vJXV57Pkema3aM4n0F2oPqmXrw4NVUK0kNlM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Dave Airlie <airlied@redhat.com>,
+        Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
         Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.14 181/186] drm/ttm/nouveau: dont call tt destroy callback on alloc failure.
-Date:   Mon, 24 Jan 2022 19:44:16 +0100
-Message-Id: <20220124183942.928229926@linuxfoundation.org>
+Subject: [PATCH 4.9 156/157] KVM: Use kvm_pfn_t for local PFN variable in hva_to_pfn_remapped()
+Date:   Mon, 24 Jan 2022 19:44:06 +0100
+Message-Id: <20220124183937.704306868@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,68 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Airlie <airlied@redhat.com>
+From: Sean Christopherson <seanjc@google.com>
 
-commit 5de5b6ecf97a021f29403aa272cb4e03318ef586 upstream.
+commit a9545779ee9e9e103648f6f2552e73cfe808d0f4 upstream.
 
-This is confusing, and from my reading of all the drivers only
-nouveau got this right.
+Use kvm_pfn_t, a.k.a. u64, for the local 'pfn' variable when retrieving
+a so called "remapped" hva/pfn pair.  In theory, the hva could resolve to
+a pfn in high memory on a 32-bit kernel.
 
-Just make the API act under driver control of it's own allocation
-failing, and don't call destroy, if the page table fails to
-create there is nothing to cleanup here.
+This bug was inadvertantly exposed by commit bd2fae8da794 ("KVM: do not
+assume PTE is writable after follow_pfn"), which added an error PFN value
+to the mix, causing gcc to comlain about overflowing the unsigned long.
 
-(I'm willing to believe I've missed something here, so please
-review deeply).
+  arch/x86/kvm/../../../virt/kvm/kvm_main.c: In function ‘hva_to_pfn_remapped’:
+  include/linux/kvm_host.h:89:30: error: conversion from ‘long long unsigned int’
+                                  to ‘long unsigned int’ changes value from
+                                  ‘9218868437227405314’ to ‘2’ [-Werror=overflow]
+   89 | #define KVM_PFN_ERR_RO_FAULT (KVM_PFN_ERR_MASK + 2)
+      |                              ^
+virt/kvm/kvm_main.c:1935:9: note: in expansion of macro ‘KVM_PFN_ERR_RO_FAULT’
 
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Dave Airlie <airlied@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20200728041736.20689-1-airlied@gmail.com
-[bwh: Backported to 4.14:
- - Drop change in ttm_sg_tt_init()
- - Adjust context]
+Cc: stable@vger.kernel.org
+Fixes: add6a0cd1c5b ("KVM: MMU: try to fix up page faults before giving up")
+Signed-off-by: Sean Christopherson <seanjc@google.com>
+Message-Id: <20210208201940.1258328-1-seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/nouveau/nouveau_sgdma.c |    9 +++------
- drivers/gpu/drm/ttm/ttm_tt.c            |    2 --
- 2 files changed, 3 insertions(+), 8 deletions(-)
+ virt/kvm/kvm_main.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-+++ b/drivers/gpu/drm/nouveau/nouveau_sgdma.c
-@@ -106,12 +106,9 @@ nouveau_sgdma_create_ttm(struct ttm_bo_d
- 	else
- 		nvbe->ttm.ttm.func = &nv50_sgdma_backend;
- 
--	if (ttm_dma_tt_init(&nvbe->ttm, bdev, size, page_flags, dummy_read_page))
--		/*
--		 * A failing ttm_dma_tt_init() will call ttm_tt_destroy()
--		 * and thus our nouveau_sgdma_destroy() hook, so we don't need
--		 * to free nvbe here.
--		 */
-+	if (ttm_dma_tt_init(&nvbe->ttm, bdev, size, page_flags, dummy_read_page)) {
-+		kfree(nvbe);
- 		return NULL;
-+	}
- 	return &nvbe->ttm.ttm;
- }
---- a/drivers/gpu/drm/ttm/ttm_tt.c
-+++ b/drivers/gpu/drm/ttm/ttm_tt.c
-@@ -199,7 +199,6 @@ int ttm_tt_init(struct ttm_tt *ttm, stru
- 
- 	ttm_tt_alloc_page_directory(ttm);
- 	if (!ttm->pages) {
--		ttm_tt_destroy(ttm);
- 		pr_err("Failed allocating page table\n");
- 		return -ENOMEM;
- 	}
-@@ -232,7 +231,6 @@ int ttm_dma_tt_init(struct ttm_dma_tt *t
- 	INIT_LIST_HEAD(&ttm_dma->pages_list);
- 	ttm_dma_tt_alloc_page_directory(ttm_dma);
- 	if (!ttm->pages) {
--		ttm_tt_destroy(ttm);
- 		pr_err("Failed allocating page table\n");
- 		return -ENOMEM;
- 	}
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1518,7 +1518,7 @@ static int hva_to_pfn_remapped(struct vm
+ 			       bool write_fault, bool *writable,
+ 			       kvm_pfn_t *p_pfn)
+ {
+-	unsigned long pfn;
++	kvm_pfn_t pfn;
+ 	pte_t *ptep;
+ 	spinlock_t *ptl;
+ 	int r;
 
 
