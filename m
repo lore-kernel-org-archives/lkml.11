@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A676C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40FB5C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354056AbiAXTfw (ORCPT
+        id S1354073AbiAXTf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56854 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239424AbiAXT3T (ORCPT
+        Mon, 24 Jan 2022 14:35:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52128 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348122AbiAXT3a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:19 -0500
+        Mon, 24 Jan 2022 14:29:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8334961318;
-        Mon, 24 Jan 2022 19:29:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63496C340E7;
-        Mon, 24 Jan 2022 19:29:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2A2F3B81232;
+        Mon, 24 Jan 2022 19:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AF6C340E5;
+        Mon, 24 Jan 2022 19:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052558;
-        bh=5+WVR8/VwfqjhVkSmEbR7E7LpMZedr93a/vPe4N8MMs=;
+        s=korg; t=1643052566;
+        bh=Kld7CYDt2mevVIhsIFjhJ24FekgJ91SGTvQxVwukp8M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kJ8waSCWfU6vQ58frZU4U2+Mfr0m+u7N6kbJJusUA63Sj+ipcwHdKVY4xTsNS0QFK
-         EofTPDmq6T/xFeDajnYHU/irdS2urNuyNcU4xU/7e/PSO8jeTS+OJKqtsaWvZfOoPU
-         TZNZNPPCfwnZjoqvCtaf9oaUml/hAIR/sJbhqcYk=
+        b=2JeXP8IxrU5DVFQ4ej/QHUWKSWqRLTv2CUK37GPlzQJiCmCK3anqrisFo8M+Ulg9i
+         MBP/sDKptYDyZgGjClcyD4r2xYGR8WleBO8Z+xqJP3p3OrzX1N6dXiVdxVD5ptkK4v
+         zTQDuSk9tiWm5X8LtkUKBlxL4qtQuY+6bh7Fy7ao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 066/320] tty: serial: uartlite: allow 64 bit address
-Date:   Mon, 24 Jan 2022 19:40:50 +0100
-Message-Id: <20220124183955.969344022@linuxfoundation.org>
+Subject: [PATCH 5.4 059/320] media: venus: core: Fix a resource leak in the error handling path of venus_probe()
+Date:   Mon, 24 Jan 2022 19:40:43 +0100
+Message-Id: <20220124183955.745569890@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,37 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lizhi Hou <lizhi.hou@xilinx.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 3672fb65155530b5eea6225685c75329b6debec3 ]
+[ Upstream commit 8cc7a1b2aca067397a016cdb971a5e6ad9b640c7 ]
 
-The base address of uartlite registers could be 64 bit address which is from
-device resource. When ulite_probe() calls ulite_assign(), this 64 bit
-address is casted to 32-bit. The fix is to replace "u32" type with
-"phys_addr_t" type for the base address in ulite_assign() argument list.
+A successful 'of_platform_populate()' call should be balanced by a
+corresponding 'of_platform_depopulate()' call in the error handling path
+of the probe, as already done in the remove function.
 
-Fixes: 8fa7b6100693 ("[POWERPC] Uartlite: Separate the bus binding from the driver proper")
-Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
-Link: https://lore.kernel.org/r/20211129202302.1319033-1-lizhi.hou@xilinx.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+A successful 'venus_firmware_init()' call should be balanced by a
+corresponding 'venus_firmware_deinit()' call in the error handling path
+of the probe, as already done in the remove function.
+
+Update the error handling path accordingly.
+
+Fixes: f9799fcce4bb ("media: venus: firmware: register separate platform_device for firmware loader")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/uartlite.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/qcom/venus/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
-index 56066d93a65b8..9a4049c894f7a 100644
---- a/drivers/tty/serial/uartlite.c
-+++ b/drivers/tty/serial/uartlite.c
-@@ -618,7 +618,7 @@ static struct uart_driver ulite_uart_driver = {
-  *
-  * Returns: 0 on success, <0 otherwise
-  */
--static int ulite_assign(struct device *dev, int id, u32 base, int irq,
-+static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
- 			struct uartlite_data *pdata)
- {
- 	struct uart_port *port;
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index bbc430a003443..7b52d3e5d3f89 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -289,11 +289,11 @@ static int venus_probe(struct platform_device *pdev)
+ 
+ 	ret = venus_firmware_init(core);
+ 	if (ret)
+-		goto err_runtime_disable;
++		goto err_of_depopulate;
+ 
+ 	ret = venus_boot(core);
+ 	if (ret)
+-		goto err_runtime_disable;
++		goto err_firmware_deinit;
+ 
+ 	ret = hfi_core_resume(core, true);
+ 	if (ret)
+@@ -329,6 +329,10 @@ err_core_deinit:
+ 	hfi_core_deinit(core, false);
+ err_venus_shutdown:
+ 	venus_shutdown(core);
++err_firmware_deinit:
++	venus_firmware_deinit(core);
++err_of_depopulate:
++	of_platform_depopulate(dev);
+ err_runtime_disable:
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_set_suspended(dev);
 -- 
 2.34.1
 
