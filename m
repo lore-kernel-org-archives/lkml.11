@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1837C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1357FC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2372605AbiAYAME (ORCPT
+        id S2372654AbiAYAMI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:12:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
+        Mon, 24 Jan 2022 19:12:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1849510AbiAXX0B (ORCPT
+        with ESMTP id S1849615AbiAXX0Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:26:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF09FC073232;
-        Mon, 24 Jan 2022 13:29:56 -0800 (PST)
+        Mon, 24 Jan 2022 18:26:16 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62D50C01D7E8;
+        Mon, 24 Jan 2022 13:30:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 87718B8105C;
-        Mon, 24 Jan 2022 21:29:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B616CC340E4;
-        Mon, 24 Jan 2022 21:29:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0050561028;
+        Mon, 24 Jan 2022 21:30:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D80A9C340E4;
+        Mon, 24 Jan 2022 21:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059795;
-        bh=noPkjLggVRzhHtJtUyyY8AiSqQGvqU0JZkwRb0GYV3U=;
+        s=korg; t=1643059827;
+        bh=6YKiuUS8IB5VXSiZrYfnABL7p33uLb807OzSPrmlgRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pxv8rjPpV/6ZrQ5boOZf2hsy7EPGobqRaLYBOJxilQB7Jz7O4DN00LU+lFWBOOuH+
-         YILReWVU4I9AxjfzYpbPAJQU+rn1QB8shop4E/ReJwOvNqyDJEEyzp5yxht4T/P1pS
-         nd935g9MHZz92Ozhd8HjZa6oSHoanFX5NDp50ckg=
+        b=cx/ch0OTCEOhJbwGd1ToMSX1kL5NNtM7BtykpSMa2oQCS+OI84mWejURG9RX/uDsm
+         2PdG7vEuCIZClAwe7SvF3+qp5RAdEG2hoVlQydsyOTlgwWjymz9v2EvIEhxlvQWlyb
+         jVpCteBCtCPlSosvGbt8x2J3S1fPY69RBaqqAKEw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0737/1039] powerpc/btext: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:42:06 +0100
-Message-Id: <20220124184150.101609634@linuxfoundation.org>
+Subject: [PATCH 5.16 0747/1039] w1: Misuse of get_user()/put_user() reported by sparse
+Date:   Mon, 24 Jan 2022 19:42:16 +0100
+Message-Id: <20220124184150.438766576@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,61 +50,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit a1d2b210ffa52d60acabbf7b6af3ef7e1e69cda0 ]
+[ Upstream commit 33dc3e3e99e626ce51f462d883b05856c6c30b1d ]
 
-for_each_node_by_type performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+sparse warnings: (new ones prefixed by >>)
+>> drivers/w1/slaves/w1_ds28e04.c:342:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char [noderef] __user *_pu_addr @@     got char *buf @@
+   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     expected char [noderef] __user *_pu_addr
+   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     got char *buf
+>> drivers/w1/slaves/w1_ds28e04.c:356:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char const [noderef] __user *_gu_addr @@     got char const *buf @@
+   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     expected char const [noderef] __user *_gu_addr
+   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     got char const *buf
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+The buffer buf is a failsafe buffer in kernel space, it's not user
+memory hence doesn't deserve the use of get_user() or put_user().
 
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
+Access 'buf' content directly.
 
- for_each_node_by_type(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-6-git-send-email-Julia.Lawall@lip6.fr
+Link: https://lore.kernel.org/lkml/202111190526.K5vb7NWC-lkp@intel.com/T/
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Link: https://lore.kernel.org/r/d14ed8d71ad4372e6839ae427f91441d3ba0e94d.1637946316.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/btext.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/w1/slaves/w1_ds28e04.c | 26 ++++++--------------------
+ 1 file changed, 6 insertions(+), 20 deletions(-)
 
-diff --git a/arch/powerpc/kernel/btext.c b/arch/powerpc/kernel/btext.c
-index 803c2a45b22ac..1cffb5e7c38d6 100644
---- a/arch/powerpc/kernel/btext.c
-+++ b/arch/powerpc/kernel/btext.c
-@@ -241,8 +241,10 @@ int __init btext_find_display(int allow_nonstdout)
- 			rc = btext_initialize(np);
- 			printk("result: %d\n", rc);
- 		}
--		if (rc == 0)
-+		if (rc == 0) {
-+			of_node_put(np);
- 			break;
-+		}
- 	}
- 	return rc;
+diff --git a/drivers/w1/slaves/w1_ds28e04.c b/drivers/w1/slaves/w1_ds28e04.c
+index e4f336111edc6..6cef6e2edb892 100644
+--- a/drivers/w1/slaves/w1_ds28e04.c
++++ b/drivers/w1/slaves/w1_ds28e04.c
+@@ -32,7 +32,7 @@ static int w1_strong_pullup = 1;
+ module_param_named(strong_pullup, w1_strong_pullup, int, 0);
+ 
+ /* enable/disable CRC checking on DS28E04-100 memory accesses */
+-static char w1_enable_crccheck = 1;
++static bool w1_enable_crccheck = true;
+ 
+ #define W1_EEPROM_SIZE		512
+ #define W1_PAGE_COUNT		16
+@@ -339,32 +339,18 @@ static BIN_ATTR_RW(pio, 1);
+ static ssize_t crccheck_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+-	if (put_user(w1_enable_crccheck + 0x30, buf))
+-		return -EFAULT;
+-
+-	return sizeof(w1_enable_crccheck);
++	return sysfs_emit(buf, "%d\n", w1_enable_crccheck);
  }
+ 
+ static ssize_t crccheck_store(struct device *dev, struct device_attribute *attr,
+ 			      const char *buf, size_t count)
+ {
+-	char val;
+-
+-	if (count != 1 || !buf)
+-		return -EINVAL;
++	int err = kstrtobool(buf, &w1_enable_crccheck);
+ 
+-	if (get_user(val, buf))
+-		return -EFAULT;
++	if (err)
++		return err;
+ 
+-	/* convert to decimal */
+-	val = val - 0x30;
+-	if (val != 0 && val != 1)
+-		return -EINVAL;
+-
+-	/* set the new value */
+-	w1_enable_crccheck = val;
+-
+-	return sizeof(w1_enable_crccheck);
++	return count;
+ }
+ 
+ static DEVICE_ATTR_RW(crccheck);
 -- 
 2.34.1
 
