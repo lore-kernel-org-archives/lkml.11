@@ -2,39 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35589C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7604DC3526E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581260AbiAXWLa (ORCPT
+        id S1581409AbiAXWLo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:11:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41240 "EHLO
+        Mon, 24 Jan 2022 17:11:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40648 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452346AbiAXVZR (ORCPT
+        with ESMTP id S1452646AbiAXV0C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:25:17 -0500
+        Mon, 24 Jan 2022 16:26:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 459ABB811FB;
-        Mon, 24 Jan 2022 21:25:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7276BC340E4;
-        Mon, 24 Jan 2022 21:25:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BA4F8B81061;
+        Mon, 24 Jan 2022 21:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE4FBC340E4;
+        Mon, 24 Jan 2022 21:25:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059513;
-        bh=DcWAn2JPOmd7HM4LptMNGkIDWokyu5A3HOzLpIINlwI=;
+        s=korg; t=1643059560;
+        bh=02LVYUDW/mrOuwuMTZ8bCkojsOTTzLhDWhfOpPkpTUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=igMRjpDy0dDrG7eYEl2vIOL4kqSnB0PL7LsnLpwUuL6Y4c68Ji2OXuO4toShG2ATN
-         kMyJnbauFhhVkHDWF6Entks63tpoxhWMYAlGNhSG5PNEhjza8mpSvl2gORz3yyf0zI
-         4Jy9XfgHTiU/Q01wMV/HQI0DYXAx1gcMuWner80c=
+        b=yC07YOnhMlQ3Fm93NDeAhkzLk4r8QqqwpC/cqUZD/eYmhRCHugdXta8g7Uxq3AUQS
+         lC4rmMqhc4UMu4xOkfdDrPcqCqVHppOSLBYdw1c9OT+MVf/gf+qyYEgqolufPaVq7Q
+         jKk1PABQNzq5+SMWdGCp7Mjdg9x5R0F4/QgZE6J0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Maximilian Ernestus <maximilian@ernestus.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0640/1039] x86/mce: Allow instrumentation during task work queueing
-Date:   Mon, 24 Jan 2022 19:40:29 +0100
-Message-Id: <20220124184146.865221335@linuxfoundation.org>
+Subject: [PATCH 5.16 0624/1039] iwlwifi: mvm: synchronize with FW after multicast commands
+Date:   Mon, 24 Jan 2022 19:40:13 +0100
+Message-Id: <20220124184146.311973043@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,50 +50,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 4fbce464db81a42f9a57ee242d6150ec7f996415 ]
+[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
 
-Fixes
+If userspace installs a lot of multicast groups very quickly, then
+we may run out of command queue space as we send the updates in an
+asynchronous fashion (due to locking concerns), and the CPU can
+create them faster than the firmware can process them. This is true
+even when mac80211 has a work struct that gets scheduled.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xdb1: call to queue_task_work() leaves .noinstr.text section
+Fix this by synchronizing with the firmware after sending all those
+commands - outside of the iteration we can send a synchronous echo
+command that just has the effect of the CPU waiting for the prior
+asynchronous commands to finish. This also will cause fewer of the
+commands to be sent to the firmware overall, because the work will
+only run once when rescheduled multiple times while it's running.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-6-bp@alien8.de
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
+Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 6ed365337a3b1..70ec5685906b2 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1454,6 +1454,14 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 	if (worst != MCE_AR_SEVERITY && !kill_current_task)
- 		goto out;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index 897e3b91ddb2f..9c5c10908f013 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -1688,6 +1688,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	struct iwl_mvm_mc_iter_data iter_data = {
+ 		.mvm = mvm,
+ 	};
++	int ret;
  
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+@@ -1697,6 +1698,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	ieee80211_iterate_active_interfaces_atomic(
+ 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
+ 		iwl_mvm_mc_iface_iterator, &iter_data);
++
 +	/*
-+	 * Enable instrumentation around the external facilities like
-+	 * task_work_add() (via queue_task_work()), fixup_exception() etc.
-+	 * For now, that is. Fixing this properly would need a lot more involved
-+	 * reorganization.
++	 * Send a (synchronous) ech command so that we wait for the
++	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
++	 * the interface iterator. Otherwise, we might get here over
++	 * and over again (by userspace just sending a lot of these)
++	 * and the CPU can send them faster than the firmware can
++	 * process them.
++	 * Note that the CPU is still faster - but with this we'll
++	 * actually send fewer commands overall because the CPU will
++	 * not schedule the work in mac80211 as frequently if it's
++	 * still running when rescheduled (possibly multiple times).
 +	 */
-+	instrumentation_begin();
-+
- 	/* Fault was in user mode and we need to take some action */
- 	if ((m.cs & 3) == 3) {
- 		/* If this triggers there is no way to recover. Die hard. */
-@@ -1482,6 +1490,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 		if (m.kflags & MCE_IN_KERNEL_COPYIN)
- 			queue_task_work(&m, msg, kill_me_never);
- 	}
-+
-+	instrumentation_end();
-+
- out:
- 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
++	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
++	if (ret)
++		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
  }
+ 
+ static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
 -- 
 2.34.1
 
