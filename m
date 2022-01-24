@@ -2,90 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C683C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:38:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E48CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:38:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2360898AbiAXXil (ORCPT
+        id S2360990AbiAXXix (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:38:41 -0500
-Received: from mail-lf1-f54.google.com ([209.85.167.54]:44659 "EHLO
-        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1842011AbiAXXAi (ORCPT
+        Mon, 24 Jan 2022 18:38:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382562AbiAXW6F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:00:38 -0500
-Received: by mail-lf1-f54.google.com with SMTP id u14so22099497lfo.11;
-        Mon, 24 Jan 2022 15:00:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TonNysDZMx9C4Dgz002yU+hZtY7UFn20FRBn7HwXRao=;
-        b=zJeZXL4lEtXd51yhNP4Dt8NLrpOgKtwtkuVhFgMcSeY3lJUm/fx6E5JHiyV0IGv5Bh
-         6JZ1PiIh06FdTyZ1LD8xsguOBmpG7eVO+VNBWGPR0wQZ7/8nvrulNgKd9EH6NypN016B
-         k49qrM7qWUsvn4fDiGduiMdmg4ED37TNTErJljOjdwxsi6DVhhigpDHLe0xhrNvLFzzU
-         s+8YHebAxzDyw0RuRGz3dTeX5bg+6ETw0sDXXU6kJyhbIzaQkIUvSClOhzitqa+x/hI0
-         tlcvnpY38RPzZQviZy8rDWekcfQ96DuF2BM/bf6yfxon95iGdlxCuKSskC5qKoZmmYr5
-         H9Kw==
-X-Gm-Message-State: AOAM533JDGhIvNv7AG2xKTnwbPGy/uUEqAp9TolZi7e3ELRz44tjdTdu
-        eIoEyGsmCFTQ4zTqAIvXec8BBHH1+XwCJIDgRoX7g+kjEf3wfQ==
-X-Google-Smtp-Source: ABdhPJwUnhDVJOnLtC1IiX8E70tZTGNmcoWs3IFq1spDSkVkBLWmAMy/FESSLlhmgEkEjLfuy96nEV5Lp6wBMpR5v3o=
-X-Received: by 2002:a05:6512:6c1:: with SMTP id u1mr14221835lff.9.1643065235474;
- Mon, 24 Jan 2022 15:00:35 -0800 (PST)
+        Mon, 24 Jan 2022 17:58:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B0EC02B742;
+        Mon, 24 Jan 2022 13:13:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFD5FB8122A;
+        Mon, 24 Jan 2022 21:13:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6214C340E5;
+        Mon, 24 Jan 2022 21:13:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058791;
+        bh=1nFGUXS5uHMg5lFL3K/RPXk6Rgm9bRxx6BTr9LD/yQA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kzA2QvwqLtIk8l6BmVKnZPvCQqBt2LTV9cFtLXACODwAsScw6msWlZwMVc5/7Cf9O
+         UEoMfNwMzkNewsbnmhQyQz/XMdD5NWJctgVrkFLteFuDvNl6SbuZIgD6uywYgLJkbn
+         Os9INxLbbQe37LSWI5cytpc6ME/JH0rGbwrkaqzI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0402/1039] spi: qcom: geni: set the error code for gpi transfer
+Date:   Mon, 24 Jan 2022 19:36:31 +0100
+Message-Id: <20220124184138.825523450@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <CABXGCsNb22JCJ4AyR1sYqFtF4QUnvM3B2zQcc1svcm2mquWxoA@mail.gmail.com>
- <YeUvvIaVJnJrrpYe@kuha.fi.intel.com> <CABXGCsO5PYBuZ11YR16NLLa0H07Jom1JQhWHFuETfotfBfzkMw@mail.gmail.com>
- <YeVQsRp7aDMcQKs7@kuha.fi.intel.com> <CABXGCsMWXFFQY3L8ixK9K-gYX41_gTjqHRBXNp6gDpUgdnvFfg@mail.gmail.com>
- <YeVfYOhxGTgg8VpZ@kuha.fi.intel.com> <CABXGCsOwsP7NJ67oyK3HPs2EarSJKLB9EVW7oEh+8bAFihSa8g@mail.gmail.com>
- <Yea8p1b/sZYKNGaB@kuha.fi.intel.com> <YebBq/WDeYCIvwYw@kuha.fi.intel.com> <CANcMJZDrs418aUoVS4CijQFqgAW3pCbfm_NUCmx+T7HNoiMVnQ@mail.gmail.com>
-In-Reply-To: <CANcMJZDrs418aUoVS4CijQFqgAW3pCbfm_NUCmx+T7HNoiMVnQ@mail.gmail.com>
-From:   Len Brown <lenb@kernel.org>
-Date:   Mon, 24 Jan 2022 18:00:24 -0500
-Message-ID: <CAJvTdKnMKdQ6KJe63phZ87kJz2SjeQoNTHqajSfv4RJo6+Y6jw@mail.gmail.com>
-Subject: Re: [Bug][5.17-rc0] Between commits daadb3bd0e8d and 455e73a07f6e,
- the kernel stops loading on my devices.
-To:     John Stultz <john.stultz@linaro.org>
-Cc:     Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        rafael.j.wysocki@intel.com, linux-usb@vger.kernel.org,
-        YongQin Liu <yongqin.liu@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tested-by: Len Brown <len.brown@intelcom>
+From: Vinod Koul <vkoul@kernel.org>
 
-The typec_link_ports crash goes away w/ the 2nd patch.
+[ Upstream commit 74b86d6af81be73bb74995ebeba74417e84b6b6f ]
 
-https://bugzilla.kernel.org/show_bug.cgi?id=215529
+Before we invoke spi_finalize_current_transfer() in
+spi_gsi_callback_result() we should set the spi->cur_msg->status as
+appropriate (0 for success, error otherwise).
 
-On Fri, Jan 21, 2022 at 4:33 PM John Stultz <john.stultz@linaro.org> wrote:
->
-> On Thu, Jan 20, 2022 at 3:27 AM Heikki Krogerus
-> <heikki.krogerus@linux.intel.com> wrote:
-> > On Tue, Jan 18, 2022 at 03:12:10PM +0200, Heikki Krogerus wrote:
-> > > I can reproduce this one by simply not creating the component list in
-> > > the code. That function - component_master_add_with_match() - can't
-> > > handle situation where the list is empty. I'll prepare the fix.
-> >
-> > I'm again attaching the proposed fix, just to see if it also gets
-> > corrupted. Can you test does it fix this issue?
-> > You need to apply it on top of the previous one.
->
-> We've been hitting the null pointer crash from
-> component_master_add_with_match() regression as well on the hikey960
-> board.
->
-> The patch you attached resolves the issue. It would be great to see it
-> merged upstream soon!
->
-> Tested-by: John Stultz <john.stultz@linaro.org>
->
-> thanks
-> -john
+The helps to return error on transfer and not wait till it timesout on
+error
 
+Fixes: b59c122484ec ("spi: spi-geni-qcom: Add support for GPI dma")
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
+Link: https://lore.kernel.org/r/20220103071118.27220-1-vkoul@kernel.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/spi/spi-geni-qcom.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-
+diff --git a/drivers/spi/spi-geni-qcom.c b/drivers/spi/spi-geni-qcom.c
+index e2affaee4e769..69e71aac85129 100644
+--- a/drivers/spi/spi-geni-qcom.c
++++ b/drivers/spi/spi-geni-qcom.c
+@@ -350,17 +350,21 @@ spi_gsi_callback_result(void *cb, const struct dmaengine_result *result)
+ {
+ 	struct spi_master *spi = cb;
+ 
++	spi->cur_msg->status = -EIO;
+ 	if (result->result != DMA_TRANS_NOERROR) {
+ 		dev_err(&spi->dev, "DMA txn failed: %d\n", result->result);
++		spi_finalize_current_transfer(spi);
+ 		return;
+ 	}
+ 
+ 	if (!result->residue) {
++		spi->cur_msg->status = 0;
+ 		dev_dbg(&spi->dev, "DMA txn completed\n");
+-		spi_finalize_current_transfer(spi);
+ 	} else {
+ 		dev_err(&spi->dev, "DMA xfer has pending: %d\n", result->residue);
+ 	}
++
++	spi_finalize_current_transfer(spi);
+ }
+ 
+ static int setup_gsi_xfer(struct spi_transfer *xfer, struct spi_geni_master *mas,
 -- 
-Len Brown, Intel Open Source Technology Center
+2.34.1
+
+
+
