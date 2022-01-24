@@ -2,176 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA71C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:15:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF029C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 14:17:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233808AbiAXOP4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 09:15:56 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:36740 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232281AbiAXOPy (ORCPT
+        id S235187AbiAXORn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 09:17:43 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:7548 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S232833AbiAXORl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 09:15:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643033754;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RciwqzeDbH0CGDVReWAFXEpNAbekgSr4/yuLqwM5lq0=;
-        b=aKrGyd4ZM0Stn1bFmaT2Y9ckUzsj4oldeDYqi/292jLjjO/Cj9Mit9w+2wvYSvwFqiX3mZ
-        PDZm9LJzOugRRDF9QUHRlFGCKNNtcZNBBMLchhElSTWe8BbsOICASKTPAmetc6uBoIGYRo
-        UYYthj8A/jTpqGmRHzVd50Oxj5rBo1Y=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-592-Lme9-j8yOG-N8Ayxbv9tLw-1; Mon, 24 Jan 2022 09:15:49 -0500
-X-MC-Unique: Lme9-j8yOG-N8Ayxbv9tLw-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2B524809CD9;
-        Mon, 24 Jan 2022 14:15:46 +0000 (UTC)
-Received: from localhost (ovpn-12-40.pek2.redhat.com [10.72.12.40])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 444BE7E23D;
-        Mon, 24 Jan 2022 14:15:42 +0000 (UTC)
-Date:   Mon, 24 Jan 2022 22:15:39 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     "d.hatayama@fujitsu.com" <d.hatayama@fujitsu.com>
-Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Petr Mladek <pmladek@suse.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        Will Deacon <will@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        John Ogness <john.ogness@linutronix.de>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juergen Gross <jgross@suse.com>,
-        "mikelley@microsoft.com" <mikelley@microsoft.com>
-Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
-Message-ID: <20220124141539.GC8305@MiWiFi-R3L-srv>
-References: <20220108153451.195121-1-gpiccoli@igalia.com>
- <Yel8WQiBn/HNQN83@alley>
- <ccd9332e-2917-3020-3590-447fa660ff56@igalia.com>
- <20220122105514.GA18258@MiWiFi-R3L-srv>
- <TYAPR01MB650732FAB4E24D839DFF9EFD955E9@TYAPR01MB6507.jpnprd01.prod.outlook.com>
+        Mon, 24 Jan 2022 09:17:41 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20OE920E001541;
+        Mon, 24 Jan 2022 14:17:31 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Nw62k+FAGSdTVRnssM8mPgxjxGT4YA7v7qk+wWhXApE=;
+ b=k5J11Zz/l0/V/YH0bx8kRtQf0dquMKuO+6+lxah08aUtJ3FYbB9xb2C6/U3W0ogC7Vl/
+ qG4Cma++HzBb1z+7cJP1KOongBNfsAlXNYjBPLEFqOgyrFH8Z77kW/puJd3+ZmRz7ceI
+ 86EsWIlMMuSxJFAMT259kBFP8js5EcM8s3o7BMikU+/YC4cMMssGumAOanxbRhC3OSwb
+ kNV4TaBAONBMS6bn3UDVOONKFuNS1DgTNR2ZdjUtsovE91xkaruLAMlvfYYUeNa5ZzGQ
+ 9PJbJWxCbafz+5W//2J8XQKFVOeP9lcBpfLn3+FsOLOJaStZQYPHdua4klShCWyMRc7G 4w== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dsvdujdmx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Jan 2022 14:17:31 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20OEEuNQ002674;
+        Mon, 24 Jan 2022 14:17:30 GMT
+Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
+        by ppma02dal.us.ibm.com with ESMTP id 3dr9j9xev8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 24 Jan 2022 14:17:30 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20OEHTG546072174
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 24 Jan 2022 14:17:29 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 31CF52806D;
+        Mon, 24 Jan 2022 14:17:29 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 218B928071;
+        Mon, 24 Jan 2022 14:17:28 +0000 (GMT)
+Received: from [9.163.14.245] (unknown [9.163.14.245])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 24 Jan 2022 14:17:27 +0000 (GMT)
+Message-ID: <4637aaa9-5a6f-dcd6-897f-d7b9de1f963a@linux.ibm.com>
+Date:   Mon, 24 Jan 2022 08:17:27 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <TYAPR01MB650732FAB4E24D839DFF9EFD955E9@TYAPR01MB6507.jpnprd01.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v3 2/2] fsi: sbefifo: Implement
+ FSI_SBEFIFO_READ_TIMEOUT_SECONDS ioctl
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>, Jeremy Kerr <jk@ozlabs.org>,
+        Alistar Popple <alistair@popple.id.au>,
+        Amitay Isaacs <amitay@ozlabs.org>
+Cc:     linux-fsi@lists.ozlabs.org, linux-kernel@vger.kernel.org
+References: <20220121053816.82253-1-joel@jms.id.au>
+ <20220121053816.82253-3-joel@jms.id.au>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <20220121053816.82253-3-joel@jms.id.au>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: wm0HU9D8zKJrJdtRPEMZ0TknyamU0H9v
+X-Proofpoint-ORIG-GUID: wm0HU9D8zKJrJdtRPEMZ0TknyamU0H9v
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-24_07,2022-01-24_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ phishscore=0 mlxlogscore=999 spamscore=0 impostorscore=0
+ lowpriorityscore=0 malwarescore=0 clxscore=1011 mlxscore=0 adultscore=0
+ bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201240094
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 01/24/22 at 11:43am, d.hatayama@fujitsu.com wrote:
-> 
-> > On 01/21/22 at 05:31pm, Guilherme G. Piccoli wrote:
-> > ......
-> > > > IMHO, the right solution is to split the callbacks into 2 or more
-> > > > notifier list. Then we might rework panic() to do:
-> > > >
-> > > > void panic(void)
-> > > > {
-> > > >     [...]
-> > > >
-> > > >     /* stop watchdogs + extra info */
-> > > >     atomic_notifier_call_chain(&panic_disable_watchdogs_notifier_list, 0, buf);
-> > > >     atomic_notifier_call_chain(&panic_info_notifier_list, 0, buf);
-> > > >     panic_print_sys_info();
-> > > >
-> > > >     /* crash_kexec + kmsg_dump in configurable order */
-> > > >     if (!_crash_kexec_post_kmsg_dump) {
-> > > >             __crash_kexec(NULL);
-> > > >             smp_send_stop();
-> > > >     } else {
-> > > >             crash_smp_send_stop();
-> > > >     }
-> > > >
-> > > >     kmsg_dump();
-> > > >     if (_crash_kexec_post_kmsg_dump)
-> > > >             __crash_kexec(NULL);
-> > > >
-> > > >     /* infinite loop or reboot */
-> > > >     atomic_notifier_call_chain(&panic_hypervisor_notifier_list, 0, buf);
-> > > >     atomic_notifier_call_chain(&panic_rest_notifier_list, 0, buf);
-> > > >
-> > > >     console_flush_on_panic(CONSOLE_FLUSH_PENDING);
-> > > > [...]
-> > > > Two notifier lists might be enough in the above scenario. I would call
-> > > > them:
-> > > >
-> > > >     panic_pre_dump_notifier_list
-> > > >     panic_post_dump_notifier_list
-> > > >
-> > > >
-> > > > It is a real solution that will help everyone. It is more complicated now
-> > > > but it will makes things much easier in the long term. And it might be done
-> > > > step by step:
-> > > >
-> > > >      1. introduce the two notifier lists
-> > > >      2. convert all users: one by one
-> > > >      3. remove the original notifier list when there is no user
-> > >
-> > > That's a great idea! I'm into it, if we have a consensus. The thing that
-> > > scares me most here is that this is a big change and consumes time to
-> > > implement - I'd not risk such time if somebody is really against that.
-> > > So, let's see more opinions, maybe the kdump maintainers have good input.
-> > 
-> > I am fine with it. As long as thing is made clear, glad to see code is
-> > refactored to be more understandable and improved. Earlier, during several
-> > rounds of discussion between you and Petr, seveal pitfalls have been
-> > pointed out and avoided.
-> > 
-> > Meanwhile, I would suggest Masa and HATAYAMA to help give input about
-> > panic_notifier usage and refactory. AFAIK, they contributed code and use
-> > panic_notifier in their product or environment a lot, that will be very
-> > helpful to get the first hand information from them.
-> > 
-> > Hi Masa, HATAYANA,
-> > 
-> > Any comment on this? (Please ignore this if it's not in your care.)
-> > 
-> 
-> Thanks for CCing to me. I like this patch set. I have same motivation.
-> 
-> For example, when I used crash_kexec_post_notifiers, I sometimes ran into
-> deadlock in printk's exclusion logic during the call of panic notifiers since
-> kaslr outputs kernel offset at panic by dump_kernel_offset() via panic notifers
-> (although this might never happen now thanks to lockless implementation).
-> 
-> The problem is that in the current design, we have to run all the
-> tasks registered, although most of them are actually unnecessary for
-> other users' requirements. Each user wants to call only their own handlers
-> in order to keep kdump as reliable as possible.
 
-If I unerstand you correclty, you are expressing your favour to the
-panic_notifier filter this patch adds. I personally like it very much
-either because I know users only expect to run those one or several
-handlers they added or cared about, from discussing reported cases
-realted to them, just as you said.
+On 1/20/22 23:38, Joel Stanley wrote:
+> From: Amitay Isaacs <amitay@ozlabs.org>
+>
+> FSI_SBEFIFO_READ_TIMEOUT_SECONDS ioctl sets the read timeout (in
+> seconds) for the response received by sbefifo device from sbe.  The
+> timeout affects only the read operation on current sbefifo device fd.
+>
+> Certain SBE operations can take long time to complete and the default
+> timeout of 10 seconds might not be sufficient to start receiving
+> response from SBE.  In such cases, allow the timeout to be set to the
+> maximum of 120 seconds.
+>
+> The kernel does not contain the definition of the various SBE
+> operations, so we must expose an interface to userspace to set the
+> timeout for the given operation.
 
-Now comments to patch lean to split and classify the current panic
-notifiers list into two or several sub-lists and execute them in
-different order. I think this improvement will benefit people who
-defaults to execute all panic notifiers, while the panic notifier
-fileter is also very helpful if can be added.
 
-Hope I got you right, HATAYAMA. And thanks a lot for your quick
-response.
+Reviewed-by: Eddie James <eajames@linux.ibm.com>
 
+
+>
+> Signed-off-by: Amitay Isaacs <amitay@ozlabs.org>
+> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> ---
+> v3:
+>    - Clarify why this is an ioctl and not hardcoded in the kernel
+>    - Add seconds to the name
+> ---
+>   drivers/fsi/fsi-sbefifo.c | 49 +++++++++++++++++++++++++++++++++++++++
+>   include/uapi/linux/fsi.h  | 14 +++++++++++
+>   2 files changed, 63 insertions(+)
+>
+> diff --git a/drivers/fsi/fsi-sbefifo.c b/drivers/fsi/fsi-sbefifo.c
+> index 1e9b326e8f67..f52a912cdf16 100644
+> --- a/drivers/fsi/fsi-sbefifo.c
+> +++ b/drivers/fsi/fsi-sbefifo.c
+> @@ -32,6 +32,8 @@
+>   #include <linux/vmalloc.h>
+>   #include <linux/mm.h>
+>   
+> +#include <uapi/linux/fsi.h>
+> +
+>   /*
+>    * The SBEFIFO is a pipe-like FSI device for communicating with
+>    * the self boot engine on POWER processors.
+> @@ -134,6 +136,7 @@ struct sbefifo_user {
+>   	void			*cmd_page;
+>   	void			*pending_cmd;
+>   	size_t			pending_len;
+> +	u32			read_timeout_ms;
+>   };
+>   
+>   static DEFINE_MUTEX(sbefifo_ffdc_mutex);
+> @@ -796,6 +799,7 @@ static int sbefifo_user_open(struct inode *inode, struct file *file)
+>   		return -ENOMEM;
+>   	}
+>   	mutex_init(&user->file_lock);
+> +	user->read_timeout_ms = SBEFIFO_TIMEOUT_START_RSP;
+>   
+>   	return 0;
+>   }
+> @@ -838,7 +842,9 @@ static ssize_t sbefifo_user_read(struct file *file, char __user *buf,
+>   	rc = mutex_lock_interruptible(&sbefifo->lock);
+>   	if (rc)
+>   		goto bail;
+> +	sbefifo->timeout_start_rsp_ms = user->read_timeout_ms;
+>   	rc = __sbefifo_submit(sbefifo, user->pending_cmd, cmd_len, &resp_iter);
+> +	sbefifo->timeout_start_rsp_ms = SBEFIFO_TIMEOUT_START_RSP;
+>   	mutex_unlock(&sbefifo->lock);
+>   	if (rc < 0)
+>   		goto bail;
+> @@ -928,12 +934,55 @@ static int sbefifo_user_release(struct inode *inode, struct file *file)
+>   	return 0;
+>   }
+>   
+> +static int sbefifo_read_timeout(struct sbefifo_user *user, void __user *argp)
+> +{
+> +	struct device *dev = &user->sbefifo->dev;
+> +	u32 timeout;
+> +
+> +	if (get_user(timeout, (__u32 __user *)argp))
+> +		return -EFAULT;
+> +
+> +	if (timeout == 0) {
+> +		user->read_timeout_ms = SBEFIFO_TIMEOUT_START_RSP;
+> +		dev_dbg(dev, "Timeout reset to %d\n", user->read_timeout_ms);
+> +		return 0;
+> +	}
+> +
+> +	if (timeout < 10 || timeout > 120)
+> +		return -EINVAL;
+> +
+> +	user->read_timeout_ms = timeout * 1000; /* user timeout is in sec */
+> +
+> +	dev_dbg(dev, "Timeout set to %d\n", user->read_timeout_ms);
+> +
+> +	return 0;
+> +}
+> +
+> +static long sbefifo_user_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+> +{
+> +	struct sbefifo_user *user = file->private_data;
+> +	int rc = -ENOTTY;
+> +
+> +	if (!user)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&user->file_lock);
+> +	switch (cmd) {
+> +	case FSI_SBEFIFO_READ_TIMEOUT_SECONDS:
+> +		rc = sbefifo_read_timeout(user, (void __user *)arg);
+> +		break;
+> +	}
+> +	mutex_unlock(&user->file_lock);
+> +	return rc;
+> +}
+> +
+>   static const struct file_operations sbefifo_fops = {
+>   	.owner		= THIS_MODULE,
+>   	.open		= sbefifo_user_open,
+>   	.read		= sbefifo_user_read,
+>   	.write		= sbefifo_user_write,
+>   	.release	= sbefifo_user_release,
+> +	.unlocked_ioctl = sbefifo_user_ioctl,
+>   };
+>   
+>   static void sbefifo_free(struct device *dev)
+> diff --git a/include/uapi/linux/fsi.h b/include/uapi/linux/fsi.h
+> index da577ecd90e7..b2f1977378c7 100644
+> --- a/include/uapi/linux/fsi.h
+> +++ b/include/uapi/linux/fsi.h
+> @@ -55,4 +55,18 @@ struct scom_access {
+>   #define FSI_SCOM_WRITE	_IOWR('s', 0x02, struct scom_access)
+>   #define FSI_SCOM_RESET	_IOW('s', 0x03, __u32)
+>   
+> +/*
+> + * /dev/sbefifo* ioctl interface
+> + */
+> +
+> +/**
+> + * FSI_SBEFIFO_READ_TIMEOUT sets the read timeout for response from SBE.
+> + *
+> + * The read timeout is specified in seconds.  The minimum value of read
+> + * timeout is 10 seconds (default) and the maximum value of read timeout is
+> + * 120 seconds.  A read timeout of 0 will reset the value to the default of
+> + * (10 seconds).
+> + */
+> +#define FSI_SBEFIFO_READ_TIMEOUT_SECONDS	_IOW('s', 0x00, __u32)
+> +
+>   #endif /* _UAPI_LINUX_FSI_H */
