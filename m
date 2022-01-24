@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A33AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 188E8C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378956AbiAXUKG (ORCPT
+        id S1379057AbiAXUKQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:06 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40510 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347194AbiAXTwS (ORCPT
+        Mon, 24 Jan 2022 15:10:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47446 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351696AbiAXTwi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:18 -0500
+        Mon, 24 Jan 2022 14:52:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57CB7B81229;
-        Mon, 24 Jan 2022 19:52:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 803C6C340E5;
-        Mon, 24 Jan 2022 19:52:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E7FB60920;
+        Mon, 24 Jan 2022 19:52:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BC24C340E5;
+        Mon, 24 Jan 2022 19:52:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053936;
-        bh=VhfLq6rswzGbOL/ljKj6bPc7+9MR7Lf4elfV0tKpNaM=;
+        s=korg; t=1643053957;
+        bh=zspjBTPA65ubtgbkRw3QgH1nHju9jZUDsFEcbrEiT9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hp2MrEqEVppltJlTAPKfVIEBcbOflbGbEJeCtuFwTRQ1uBmEaFi02I2qzkYPnOnuA
-         WXErqvIYpkgBpdFnncHgkoi3NEQ1sJM5kSWfRN8qk0FhggaPBsx8SUtYB46xwx9KcV
-         VndzBCLoGOIfRv1oBehZGBIxs6ZI2dYzOcD8NhU4=
+        b=Z8HfIj9VkZrmyCnYROBtyVinJBCr3DBldeKOkGeLt3C/Mhi+MVlStMTHRUuSddhnq
+         VzOfjwguvCx2sH0A0PTvxVPW1+HkYI+RlHVXFKHF2xmqlacTQG1//Vj+1TIQuKRPLd
+         mesF016zkwbHL/lpmAQlggQBd7NCvmmrf7s+Fks4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org,
+        Christophe Jaillet <christophe.jaillet@wanadoo.fr>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 226/563] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
-Date:   Mon, 24 Jan 2022 19:39:51 +0100
-Message-Id: <20220124184032.264663766@linuxfoundation.org>
+Subject: [PATCH 5.10 232/563] tpm_tis: Fix an error handling path in tpm_tis_core_init()
+Date:   Mon, 24 Jan 2022 19:39:57 +0100
+Message-Id: <20220124184032.471516850@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,35 +48,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Christophe Jaillet <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
+[ Upstream commit e96d52822f5ac0a25de78f95cd23421bcbc93584 ]
 
-If the probe fails, we should use pm_runtime_disable() to balance
-pm_runtime_enable().
-Add missing pm_runtime_disable() for meson_spifc_probe.
+Commit 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent
+queries") has moved some code around without updating the error handling
+path.
 
-Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+This is now pointless to 'goto out_err' when neither 'clk_enable()' nor
+'ioremap()' have been called yet.
+
+Make a direct return instead to avoid undoing things that have not been
+done.
+
+Fixes: 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent queries")
+Signed-off-by: Christophe Jaillet <christophe.jaillet@wanadoo.fr>
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/spi/spi-meson-spifc.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/char/tpm/tpm_tis_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
-index 8eca6f24cb799..c8ed7815c4ba6 100644
---- a/drivers/spi/spi-meson-spifc.c
-+++ b/drivers/spi/spi-meson-spifc.c
-@@ -349,6 +349,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
- 	return 0;
- out_clk:
- 	clk_disable_unprepare(spifc->clk);
-+	pm_runtime_disable(spifc->dev);
- out_err:
- 	spi_master_put(master);
- 	return ret;
+diff --git a/drivers/char/tpm/tpm_tis_core.c b/drivers/char/tpm/tpm_tis_core.c
+index e2df1098a812f..36d1ad8f479d7 100644
+--- a/drivers/char/tpm/tpm_tis_core.c
++++ b/drivers/char/tpm/tpm_tis_core.c
+@@ -952,7 +952,7 @@ int tpm_tis_core_init(struct device *dev, struct tpm_tis_data *priv, int irq,
+ 
+ 	rc = tpm_tis_read32(priv, TPM_DID_VID(0), &vendor);
+ 	if (rc < 0)
+-		goto out_err;
++		return rc;
+ 
+ 	priv->manufacturer_id = vendor;
+ 
 -- 
 2.34.1
 
