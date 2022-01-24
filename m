@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0BF7C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 827CCC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422846AbiAYCcQ (ORCPT
+        id S3422806AbiAYCcM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59406 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356881AbiAXUVT (ORCPT
+        Mon, 24 Jan 2022 21:32:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47144 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380340AbiAXUVJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:21:19 -0500
+        Mon, 24 Jan 2022 15:21:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1B892B8119E;
-        Mon, 24 Jan 2022 20:21:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50745C340E7;
-        Mon, 24 Jan 2022 20:21:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FA6D61233;
+        Mon, 24 Jan 2022 20:21:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487A0C340E7;
+        Mon, 24 Jan 2022 20:21:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055676;
-        bh=qNBywZO7Q40NSzdO4zwsqXT66WdGUyNv/559Vflwzns=;
+        s=korg; t=1643055667;
+        bh=z2Lk3Y7qtlsFod4BlQ5zakyhSX2kYedjVU7vDnFZYew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wMPO5aJM8mh02WfGsrVrnI5wFiHEIAj6ho2HuRxeOOfEf4ihCyZc17Ds4BjuLQeVg
-         LJ58JP5QUeXXN93YJ3P3VBfY94C+mDfVtCp1Rve0LWpnDYaIyP25zbuMJ+Nw0BKXGm
-         Xb6Bsd8Rkq5GCiQ+XrtNS25N3c4JFmxFkppwYfCM=
+        b=dH9OS99q+208Ib/6eFcc0GAhxARffYaO1YdwTgpDV2g66I0Ua5scXGf1/ofbFeKYL
+         5XkWztbFrOQRb+Um1xD9paG0HJv+kFBdWjrHXPTbOZpW8+SkVfDRYyGm2nQJKe0nR6
+         wjuo2sVv93UwvfdjVRx2tUfYVvPJqNqRe74btn7U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 230/846] selftests: harness: avoid false negatives if test has no ASSERTs
-Date:   Mon, 24 Jan 2022 19:35:47 +0100
-Message-Id: <20220124184108.860093984@linuxfoundation.org>
+Subject: [PATCH 5.15 227/846] xfrm: fix a small bug in xfrm_sa_len()
+Date:   Mon, 24 Jan 2022 19:35:44 +0100
+Message-Id: <20220124184108.752445388@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,38 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 3abedf4646fdc0036fcb8ebbc3b600667167fafe ]
+[ Upstream commit 7770a39d7c63faec6c4f33666d49a8cb664d0482 ]
 
-Test can fail either immediately when ASSERT() failed or at the
-end if one or more EXPECT() was not met. The exact return code
-is decided based on the number of successful ASSERT()s.
+copy_user_offload() will actually push a struct struct xfrm_user_offload,
+which is different than (struct xfrm_state *)->xso
+(struct xfrm_state_offload)
 
-If test has no ASSERT()s, however, the return code will be 0,
-as if the test did not fail. Start counting ASSERT()s from 1.
-
-Fixes: 369130b63178 ("selftests: Enhance kselftest_harness.h to print which assert failed")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Fixes: d77e38e612a01 ("xfrm: Add an IPsec hardware offloading API")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/kselftest_harness.h | 2 +-
+ net/xfrm/xfrm_user.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/kselftest_harness.h b/tools/testing/selftests/kselftest_harness.h
-index ae0f0f33b2a6e..79a182cfa43ad 100644
---- a/tools/testing/selftests/kselftest_harness.h
-+++ b/tools/testing/selftests/kselftest_harness.h
-@@ -969,7 +969,7 @@ void __run_test(struct __fixture_metadata *f,
- 	t->passed = 1;
- 	t->skip = 0;
- 	t->trigger = 0;
--	t->step = 0;
-+	t->step = 1;
- 	t->no_print = 0;
- 	memset(t->results->reason, 0, sizeof(t->results->reason));
- 
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 3a3cb09eec122..11574314de09f 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -3058,7 +3058,7 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
+ 	if (x->props.extra_flags)
+ 		l += nla_total_size(sizeof(x->props.extra_flags));
+ 	if (x->xso.dev)
+-		 l += nla_total_size(sizeof(x->xso));
++		 l += nla_total_size(sizeof(struct xfrm_user_offload));
+ 	if (x->props.smark.v | x->props.smark.m) {
+ 		l += nla_total_size(sizeof(x->props.smark.v));
+ 		l += nla_total_size(sizeof(x->props.smark.m));
 -- 
 2.34.1
 
