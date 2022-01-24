@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A58C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE9DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384834AbiAXUai (ORCPT
+        id S1384804AbiAXUae (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:30:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37168 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379242AbiAXUKr (ORCPT
+        Mon, 24 Jan 2022 15:30:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52138 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243916AbiAXUKt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:10:47 -0500
+        Mon, 24 Jan 2022 15:10:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 22B586090B;
-        Mon, 24 Jan 2022 20:10:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0B60C340E5;
-        Mon, 24 Jan 2022 20:10:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E57BB811FB;
+        Mon, 24 Jan 2022 20:10:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6131C340E5;
+        Mon, 24 Jan 2022 20:10:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055046;
-        bh=/GYrC+HBo36Zytf1mlcSf2lAscO9v2G3xF7pkIcsPd0=;
+        s=korg; t=1643055043;
+        bh=7lLkkm2hMmoAH1d6/BJ0zjj/pNAbPcKrce/ofU2nTdc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DMo5txy8Mr7PqCgJyVcFeXkV+RR5XTWeNy8qOU68oi2HzqIG+3MqWLqWoEna4mTaY
-         LRkZnxG5lR6NVDjGhIdV01LeHEWDCR4InXZ3ysu90QjNCWU/UOdfHl2l0dVERs4Tbo
-         DQv1IqiI+QDHQQlY9GM2JZL4jPuJW6LAjFyHGa4U=
+        b=XpYPZGxWKXgV9fBNoHjBM6Bgw8t2N0serTXXEKNhT9Y2LTP6aWeuoXielv5eLz4KY
+         S7+8HA3GaEwWByg5ncOk0BKEYXH1JzUrH22ZuEnnmj8160Xy5OAHvuTRE3JIRJShHV
+         iUhJOlGJCPBWBlnxvkvwx3P5ztUSXAFIll2uwQWA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.15 006/846] HID: wacom: Ignore the confidence flag when a touch is removed
-Date:   Mon, 24 Jan 2022 19:32:03 +0100
-Message-Id: <20220124184101.114647887@linuxfoundation.org>
+        stable@vger.kernel.org, Nick Kossifidis <mick@ics.forth.gr>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 023/846] riscv: try to allocate crashkern region from 32bit addressible memory
+Date:   Mon, 24 Jan 2022 19:32:20 +0100
+Message-Id: <20220124184101.723193388@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,80 +46,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Nick Kossifidis <mick@ics.forth.gr>
 
-commit df03e9bd6d4806619b4cdc91a3d7695818a8e2b7 upstream.
+commit decf89f86ecd3c3c3de81c562010d5797bea3de1 upstream.
 
-AES hardware may internally re-classify a contact that it thought was
-intentional as a palm. Intentional contacts are reported as "down" with
-the confidence bit set. When this re-classification occurs, however, the
-state transitions to "up" with the confidence bit cleared. This kind of
-transition appears to be legal according to Microsoft docs, but we do
-not handle it correctly. Because the confidence bit is clear, we don't
-call `wacom_wac_finger_slot` and update userspace. This causes hung
-touches that confuse userspace and interfere with pen arbitration.
+When allocating crash kernel region without explicitly specifying its
+base address/size, memblock_phys_alloc_range will attempt to allocate
+memory top to bottom (memblock.bottom_up is false), so the crash
+kernel region will end up in highmem on 64bit systems. This way
+swiotlb can't work on the crash kernel, since there won't be any
+32bit addressible memory available for the bounce buffers.
 
-This commit adds a special case to ignore the confidence flag if a contact
-is reported as removed. This ensures we do not leave a hung touch if one
-of these re-classification events occured. Ideally we'd have some way to
-also let userspace know that the touch has been re-classified as a palm
-and needs to be canceled, but that's not possible right now :)
+Try to allocate 32bit addressible memory if available, for the
+crash kernel by restricting the top search address to be less
+than SZ_4G. If that fails fallback to the previous behavior.
 
-Link: https://github.com/linuxwacom/input-wacom/issues/288
-Fixes: 7fb0413baa7f (HID: wacom: Use "Confidence" flag to prevent reporting invalid contacts)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+I tested this on HiFive Unmatched where the pci-e controller needs
+swiotlb to work, with this patch it's possible to access the pci-e
+controller on crash kernel and mount the rootfs from the nvme.
+
+Signed-off-by: Nick Kossifidis <mick@ics.forth.gr>
+Fixes: e53d28180d4d ("RISC-V: Add kdump support")
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_wac.c |   29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ arch/riscv/mm/init.c |   17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2588,6 +2588,24 @@ static void wacom_wac_finger_slot(struct
- 	}
- }
- 
-+static bool wacom_wac_slot_is_active(struct input_dev *dev, int key)
-+{
-+	struct input_mt *mt = dev->mt;
-+	struct input_mt_slot *s;
-+
-+	if (!mt)
-+		return false;
-+
-+	for (s = mt->slots; s != mt->slots + mt->num_slots; s++) {
-+		if (s->key == key &&
-+			input_mt_get_value(s, ABS_MT_TRACKING_ID) >= 0) {
-+			return true;
-+		}
-+	}
-+
-+	return false;
-+}
-+
- static void wacom_wac_finger_event(struct hid_device *hdev,
- 		struct hid_field *field, struct hid_usage *usage, __s32 value)
- {
-@@ -2638,9 +2656,14 @@ static void wacom_wac_finger_event(struc
- 	}
- 
- 	if (usage->usage_index + 1 == field->report_count) {
--		if (equivalent_usage == wacom_wac->hid_data.last_slot_field &&
--		    wacom_wac->hid_data.confidence)
--			wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
-+		if (equivalent_usage == wacom_wac->hid_data.last_slot_field) {
-+			bool touch_removed = wacom_wac_slot_is_active(wacom_wac->touch_input,
-+				wacom_wac->hid_data.id) && !wacom_wac->hid_data.tipswitch;
-+
-+			if (wacom_wac->hid_data.confidence || touch_removed) {
-+				wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
-+			}
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -813,13 +813,22 @@ static void __init reserve_crashkernel(v
+ 	/*
+ 	 * Current riscv boot protocol requires 2MB alignment for
+ 	 * RV64 and 4MB alignment for RV32 (hugepage size)
++	 *
++	 * Try to alloc from 32bit addressible physical memory so that
++	 * swiotlb can work on the crash kernel.
+ 	 */
+ 	crash_base = memblock_phys_alloc_range(crash_size, PMD_SIZE,
+-					       search_start, search_end);
++					       search_start,
++					       min(search_end, (unsigned long) SZ_4G));
+ 	if (crash_base == 0) {
+-		pr_warn("crashkernel: couldn't allocate %lldKB\n",
+-			crash_size >> 10);
+-		return;
++		/* Try again without restricting region to 32bit addressible memory */
++		crash_base = memblock_phys_alloc_range(crash_size, PMD_SIZE,
++						search_start, search_end);
++		if (crash_base == 0) {
++			pr_warn("crashkernel: couldn't allocate %lldKB\n",
++				crash_size >> 10);
++			return;
 +		}
  	}
- }
  
+ 	pr_info("crashkernel: reserved 0x%016llx - 0x%016llx (%lld MB)\n",
 
 
