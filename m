@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C33AC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86330C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374714AbiAYARo (ORCPT
+        id S1387785AbiAYARt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54338 "EHLO
+        Mon, 24 Jan 2022 19:17:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1851187AbiAXXcH (ORCPT
+        with ESMTP id S1851179AbiAXXcH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:32:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6FA5C075966;
-        Mon, 24 Jan 2022 13:35:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B6BC075D0F;
+        Mon, 24 Jan 2022 13:35:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 65E8E612D6;
-        Mon, 24 Jan 2022 21:35:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CA12C340E4;
-        Mon, 24 Jan 2022 21:35:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C97D6614DA;
+        Mon, 24 Jan 2022 21:35:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A85BAC340E4;
+        Mon, 24 Jan 2022 21:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060130;
-        bh=LvKt4kNdalNrtHc1yjv9UoZIUONIbwelUZZZPp/IQas=;
+        s=korg; t=1643060118;
+        bh=96rE6TDrpIIZ1lVQxWZtDllQnUUU4B7R+pVb1uXRYLE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDtjA3mIWLLOrBLrbuwxi0Mis/DNj+l3IbJ9Vl8+rkT5kPZ7pbPqhmndbtkuIQ+lN
-         GORxUFTvYsb7Pw6L2eMaGCALzF6GtBqAdI0Sjai05Jm1Cm4xkdv6gRvsChkmxm/GMJ
-         pbz+Q0QFgzSvsyZA83pRTfdpJcy9IudRj0T4Argg=
+        b=1fueOis4oiOLchMyxq7SMGBxnkkC2+IZXDsoCNes8CI9xASljuP/SZAvNIAdGlq/S
+         aQFFrzwBNtAhpeEJLdx8lmd7S7FLnSfq8YUVYJvE5Q2ffFiq56d3o7annZeS6xisjG
+         LrUTxqBG826EnvuVEQaMs4F92JS7qCqYG5I4ixDs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Ryabinin <arbn@yandex-team.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Daniel Jordan <daniel.m.jordan@oracle.com>,
-        Tejun Heo <tj@kernel.org>
-Subject: [PATCH 5.16 0850/1039] cputime, cpuacct: Include guest time in user time in cpuacct.stat
-Date:   Mon, 24 Jan 2022 19:43:59 +0100
-Message-Id: <20220124184153.855085884@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        syzbot+a437546ec71b04dfb5ac@syzkaller.appspotmail.com,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.16 0846/1039] HID: magicmouse: Fix an error handling path in magicmouse_probe()
+Date:   Mon, 24 Jan 2022 19:43:55 +0100
+Message-Id: <20220124184153.721264012@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,44 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Ryabinin <arbn@yandex-team.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 9731698ecb9c851f353ce2496292ff9fcea39dff upstream.
+commit 33812fc7c8d77a43b7e2bf36a0d5a57c277a4b0c upstream.
 
-cpuacct.stat in no-root cgroups shows user time without guest time
-included int it. This doesn't match with user time shown in root
-cpuacct.stat and /proc/<pid>/stat. This also affects cgroup2's cpu.stat
-in the same way.
+If the timer introduced by the commit below is started, then it must be
+deleted in the error handling of the probe. Otherwise it would trigger
+once the driver is no more.
 
-Make account_guest_time() to add user time to cgroup's cpustat to
-fix this.
-
-Fixes: ef12fefabf94 ("cpuacct: add per-cgroup utime/stime statistics")
-Signed-off-by: Andrey Ryabinin <arbn@yandex-team.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Reviewed-by: Daniel Jordan <daniel.m.jordan@oracle.com>
-Acked-by: Tejun Heo <tj@kernel.org>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20211115164607.23784-1-arbn@yandex-team.com
+Fixes: 0b91b4e4dae6 ("HID: magicmouse: Report battery level over USB")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Tested-by: José Expósito <jose.exposito89@gmail.com>
+Reported-by: <syzbot+a437546ec71b04dfb5ac@syzkaller.appspotmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/sched/cputime.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/hid-magicmouse.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/kernel/sched/cputime.c
-+++ b/kernel/sched/cputime.c
-@@ -148,10 +148,10 @@ void account_guest_time(struct task_stru
+--- a/drivers/hid/hid-magicmouse.c
++++ b/drivers/hid/hid-magicmouse.c
+@@ -873,6 +873,7 @@ static int magicmouse_probe(struct hid_d
  
- 	/* Add guest time to cpustat. */
- 	if (task_nice(p) > 0) {
--		cpustat[CPUTIME_NICE] += cputime;
-+		task_group_account_field(p, CPUTIME_NICE, cputime);
- 		cpustat[CPUTIME_GUEST_NICE] += cputime;
- 	} else {
--		cpustat[CPUTIME_USER] += cputime;
-+		task_group_account_field(p, CPUTIME_USER, cputime);
- 		cpustat[CPUTIME_GUEST] += cputime;
- 	}
+ 	return 0;
+ err_stop_hw:
++	del_timer_sync(&msc->battery_timer);
+ 	hid_hw_stop(hdev);
+ 	return ret;
  }
 
 
