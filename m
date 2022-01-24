@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D99AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:19:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7728C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:19:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381114AbiAXUSz (ORCPT
+        id S1352849AbiAXUTH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:18:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46498 "EHLO
+        Mon, 24 Jan 2022 15:19:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46698 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376391AbiAXUBm (ORCPT
+        with ESMTP id S1353278AbiAXUBt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:42 -0500
+        Mon, 24 Jan 2022 15:01:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FBF6B811FB;
-        Mon, 24 Jan 2022 20:01:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F42EC340E5;
-        Mon, 24 Jan 2022 20:01:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE0E1B81249;
+        Mon, 24 Jan 2022 20:01:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA4EAC340E5;
+        Mon, 24 Jan 2022 20:01:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054497;
-        bh=Csfys2uwM396iME7raG1/d7q99Qkj/wQ1zHtdVop2hQ=;
+        s=korg; t=1643054506;
+        bh=ZQuvwUhzXDZlVRJIFeNsyD+aS4ESV6Ln/kKFVT98EhI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IKTw90tYXDjExGfaPa6oXiue1DhraGiv/b33D3RhBBbpaakWEUwGWHNQpVvk7KJgw
-         TQ4K1TChHyx+R4oy0lHzvaIcChYMUyKKsRJunEvrXWsT7sF4byNXlDg5VFMQ+bhdla
-         D62WFwL9oInsVF+z4gFZeCqi7W332PLfGHy8Yb04=
+        b=Duy8CZdr3sGVuqUEmdFoFyd2xAB1wPLBWO29NcGymlIihikzAZ4OsTy+jcu3XtSGj
+         67C7gGPMWmcj2Jhj+jTddMzRLRsMeQSpQRtTijzgx8S6qKtOFcRpA5etV9ZQP5VX0V
+         s19O3q4J0ir0H2JGUOXQdG20BhALRKQbi/RSWOSg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marina Nikolic <Marina.Nikolic@amd.com>,
-        Evan Quan <evan.quan@amd.com>, Lijo Lazar <lijo.lazar@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 391/563] amdgpu/pm: Make sysfs pm attributes as read-only for VFs
-Date:   Mon, 24 Jan 2022 19:42:36 +0100
-Message-Id: <20220124184037.956883483@linuxfoundation.org>
+Subject: [PATCH 5.10 411/563] powerpc/cell: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:42:56 +0100
+Message-Id: <20220124184038.658328650@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,53 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marina Nikolic <Marina.Nikolic@amd.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 11c9cc95f818f0f187e9b579a7f136f532b42445 ]
+[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
 
-== Description ==
-Setting values of pm attributes through sysfs
-should not be allowed in SRIOV mode.
-These calls will not be processed by FW anyway,
-but error handling on sysfs level should be improved.
+for_each_node_by_name performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-== Changes ==
-This patch prohibits performing of all set commands
-in SRIOV mode on sysfs level.
-It offers better error handling as calls that are
-not allowed will not be propagated further.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-== Test ==
-Writing to any sysfs file in passthrough mode will succeed.
-Writing to any sysfs file in ONEVF mode will yield error:
-"calling process does not have sufficient permission to execute a command".
+// <smpl>
+@@
+expression e,e1;
+local idexpression n;
+@@
 
-Signed-off-by: Marina Nikolic <Marina.Nikolic@amd.com>
-Acked-by: Evan Quan <evan.quan@amd.com>
-Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+ for_each_node_by_name(n, e1) {
+   ... when != of_node_put(n)
+       when != e = n
+(
+   return n;
+|
++  of_node_put(n);
+?  return ...;
+)
+   ...
+ }
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/pm/amdgpu_pm.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/powerpc/platforms/cell/iommu.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-index 9f383b9041d28..49109614510b8 100644
---- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-+++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
-@@ -2098,6 +2098,12 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
+diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
+index 2124831cf57c0..d04079b34d7c2 100644
+--- a/arch/powerpc/platforms/cell/iommu.c
++++ b/arch/powerpc/platforms/cell/iommu.c
+@@ -976,6 +976,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
+ 			if (hbase < dbase || (hend > (dbase + dsize))) {
+ 				pr_debug("iommu: hash window doesn't fit in"
+ 					 "real DMA window\n");
++				of_node_put(np);
+ 				return -1;
+ 			}
  		}
- 	}
- 
-+	/* setting should not be allowed from VF */
-+	if (amdgpu_sriov_vf(adev)) {
-+		dev_attr->attr.mode &= ~S_IWUGO;
-+		dev_attr->store = NULL;
-+	}
-+
- #undef DEVICE_ATTR_IS
- 
- 	return 0;
 -- 
 2.34.1
 
