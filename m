@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B8FC47082
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A818C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358916AbiAXT4B (ORCPT
+        id S1358648AbiAXTze (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41648 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235574AbiAXToK (ORCPT
+        Mon, 24 Jan 2022 14:55:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55250 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349088AbiAXTlA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:10 -0500
+        Mon, 24 Jan 2022 14:41:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D4DDC07A96E;
+        Mon, 24 Jan 2022 11:20:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A13F1612E9;
-        Mon, 24 Jan 2022 19:44:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CBE4C340E5;
-        Mon, 24 Jan 2022 19:44:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B27060010;
+        Mon, 24 Jan 2022 19:20:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F165BC340E8;
+        Mon, 24 Jan 2022 19:20:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053449;
-        bh=M0w/j3fopbUJv1GW0IRWTpurdgBProxxkpcgN9gt3wY=;
+        s=korg; t=1643052019;
+        bh=7z0emsLHzxyyyK8JWHHyYkGDcaTiOkQ8xx+Sr2z/9nk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HAuGK29lqpbxv+5TyZE5aeUnMFZaQf4KYCa7gH7EH7b0D/U2quGTIv6kQ+/sjN8w4
-         g0QkOOcUDq93Q/KxAR2sYe/361j6TcATIRMpChkHyWfwHJW90UYPS27jlS3aMXQSVe
-         hXtn8jAKSGnH2ytX+mbZxsIWSCLpyyYtDKE9nWos=
+        b=ufSMoEWayBjVU7LYzvDVhxIOdo/qMLbNEqCLP7fo+cWLBEyDe9SePQMcqM7vgvUFs
+         XDlwxbatxuK6iDdJSKVNZiTmnUPRvynKIznBAEC/ms81syrw/vXygVBjpJZs3+g4wb
+         c3x36aJPq9V7bsje+qr/Ba9Zgt0gk7L0EUPyW6sQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org,
+        Mark Asselstine <mark.asselstine@windriver.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 067/563] media: atomisp: fix inverted logic in buffers_needed()
-Date:   Mon, 24 Jan 2022 19:37:12 +0100
-Message-Id: <20220124184026.731329166@linuxfoundation.org>
+Subject: [PATCH 4.19 161/239] ACPICA: Utilities: Avoid deleting the same object twice in a row
+Date:   Mon, 24 Jan 2022 19:43:19 +0100
+Message-Id: <20220124183948.217644407@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,47 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit e1921cd14640f0f4d1fad5eb8e448c58a536415d ]
+[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
 
-When config.mode is IA_CSS_INPUT_MODE_BUFFERED_SENSOR, it rather needs
-buffers. Fix it by inverting the return value.
+ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
 
-Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+If original_count is 0 in acpi_ut_update_ref_count (),
+acpi_ut_delete_internal_obj () is invoked for the target object, which is
+incorrect, because that object has been deleted once already and the
+memory allocated to store it may have been reclaimed and allocated
+for a different purpose by the host OS.  Moreover, a confusing debug
+message following the "Reference Count is already zero, cannot
+decrement" warning is printed in that case.
+
+To fix this issue, make acpi_ut_update_ref_count () return after finding
+that original_count is 0 and printing the above warning.
+
+Link: https://github.com/acpica/acpica/commit/c11af67d
+Link: https://github.com/acpica/acpica/pull/652
+Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/sh_css_mipi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/acpi/acpica/utdelete.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-index d5ae7f0b5864b..e18c0cfb4ce3a 100644
---- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-@@ -389,17 +389,17 @@ static bool buffers_needed(struct ia_css_pipe *pipe)
- {
- 	if (!IS_ISP2401) {
- 		if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR)
--			return false;
--		else
- 			return true;
-+		else
-+			return false;
- 	}
+diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
+index 0dc8dea815823..db79a826e6b8d 100644
+--- a/drivers/acpi/acpica/utdelete.c
++++ b/drivers/acpi/acpica/utdelete.c
+@@ -410,6 +410,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
+ 			ACPI_WARNING((AE_INFO,
+ 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
+ 				      object));
++			return;
+ 		}
  
- 	if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR ||
- 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG ||
- 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_PRBS)
--		return false;
-+		return true;
- 
--	return true;
-+	return false;
- }
- 
- int
+ 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_ALLOCATIONS,
 -- 
 2.34.1
 
