@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3BC1C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3651C4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421323AbiAYC0n (ORCPT
+        id S3421220AbiAYC0b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38584 "EHLO
+        Mon, 24 Jan 2022 21:26:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38346 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355704AbiAXTtL (ORCPT
+        with ESMTP id S1348252AbiAXTsr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:49:11 -0500
+        Mon, 24 Jan 2022 14:48:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 70291B8121C;
-        Mon, 24 Jan 2022 19:49:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98068C340E5;
-        Mon, 24 Jan 2022 19:49:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF7D9B811F3;
+        Mon, 24 Jan 2022 19:48:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82EB3C340E7;
+        Mon, 24 Jan 2022 19:48:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053748;
-        bh=dqbWfEMlNE/Ni041E7Yb6Yct9cWyfdGrWOafYB2jzak=;
+        s=korg; t=1643053723;
+        bh=SW3LaOTkedTk7adcIdVcisEywFdafNAxlRBLboYCbE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nQ1X82DEufzGluepNQ7xT4TQDkp1BsveTbz9jF5alwWhU848KHF8qY+EcXckdeyFQ
-         459/RqjPvhHjUqz7baBaOwHPJvaCXRuv08Scf/5f9vZ4BlepQypCUL1IzKMKUKcUYo
-         oMH3ln2dHS9lFlp/mFwhI6ohiFrOhcGvg7+354Uw=
+        b=fVlkDS7q14p6OMljUSKcEZMsX+qlyQXnl9Z9XclEV+AlhAFGw7IUx4VvLhMg5BBs4
+         pNKbbnA8oE6QLFpj8jhtG0zB9+pseEc4knOrMRMDDTBDHZxULWMbRiU9F9OonsneIl
+         48eYAcl1F/K2uV/m6g2JcMnwmtGKUB72iYnSKq2M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 164/563] media: msi001: fix possible null-ptr-deref in msi001_probe()
-Date:   Mon, 24 Jan 2022 19:38:49 +0100
-Message-Id: <20220124184030.067356671@linuxfoundation.org>
+Subject: [PATCH 5.10 157/563] crypto: stm32/cryp - fix double pm exit
+Date:   Mon, 24 Jan 2022 19:38:42 +0100
+Message-Id: <20220124184029.822661198@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,56 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit 3d5831a40d3464eea158180eb12cbd81c5edfb6a ]
+[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
 
-I got a null-ptr-deref report:
+Delete extraneous lines in probe error handling code: pm was
+disabled twice.
 
-BUG: kernel NULL pointer dereference, address: 0000000000000060
-...
-RIP: 0010:v4l2_ctrl_auto_cluster+0x57/0x270
-...
-Call Trace:
- msi001_probe+0x13b/0x24b [msi001]
- spi_probe+0xeb/0x130
-...
- do_syscall_64+0x35/0xb0
+Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
 
-In msi001_probe(), if the creation of control for bandwidth_auto
-fails, there will be a null-ptr-deref issue when it is used in
-v4l2_ctrl_auto_cluster().
-
-Check dev->hdl.error before v4l2_ctrl_auto_cluster() to fix this bug.
-
-Link: https://lore.kernel.org/linux-media/20211026112348.2878040-1-wanghai38@huawei.com
-Fixes: 93203dd6c7c4 ("[media] msi001: Mirics MSi001 silicon tuner driver")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/tuners/msi001.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/media/tuners/msi001.c b/drivers/media/tuners/msi001.c
-index 78e6fd600d8ef..44247049a3190 100644
---- a/drivers/media/tuners/msi001.c
-+++ b/drivers/media/tuners/msi001.c
-@@ -442,6 +442,13 @@ static int msi001_probe(struct spi_device *spi)
- 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
- 	dev->bandwidth = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_BANDWIDTH, 200000, 8000000, 1, 200000);
-+	if (dev->hdl.error) {
-+		ret = dev->hdl.error;
-+		dev_err(&spi->dev, "Could not initialize controls\n");
-+		/* control init failed, free handler */
-+		goto err_ctrl_handler_free;
-+	}
-+
- 	v4l2_ctrl_auto_cluster(2, &dev->bandwidth_auto, 0, false);
- 	dev->lna_gain = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
- 			V4L2_CID_RF_TUNER_LNA_GAIN, 0, 1, 1, 1);
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index fd7fb73a4d450..061db567908ae 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -2134,8 +2134,6 @@ err_engine1:
+ 	list_del(&cryp->list);
+ 	spin_unlock(&cryp_list.lock);
+ 
+-	pm_runtime_disable(dev);
+-	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_put_noidle(dev);
+ 
 -- 
 2.34.1
 
