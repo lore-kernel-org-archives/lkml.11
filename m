@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA910C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA765C35274
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452995AbiAXV1e (ORCPT
+        id S1452478AbiAXVZn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:27:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47092 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390938AbiAXUqn (ORCPT
+        Mon, 24 Jan 2022 16:25:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50964 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444177AbiAXVAM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:43 -0500
+        Mon, 24 Jan 2022 16:00:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5DA10B8123D;
-        Mon, 24 Jan 2022 20:46:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CE8C340E5;
-        Mon, 24 Jan 2022 20:46:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8690660916;
+        Mon, 24 Jan 2022 21:00:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A4FBC340E5;
+        Mon, 24 Jan 2022 21:00:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057201;
-        bh=ynCVUXTQ7FnnlhknExewIhvw4SXgBbC5W0Plz7G5ZNs=;
+        s=korg; t=1643058012;
+        bh=bTwDCjyp1FfNlpPdJ01CRAf9JzQtnnaDyzG6MorJD20=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=srDVuuyNBbYlpjn2mrRpu515XXJs5t5vp3S4uBFnB3KCnkI9cH6bGp8UOa+ko8EBr
-         W5t8g8REr2uUyYVnFvMbdknLCSUL05NV7iacVvZCdPy7E8AwvCYO5sSfAT+Fna0U0t
-         PBm6XOnHSxnnXZpnHTRTB7knEI85JLnTiCMpE5hk=
+        b=XXQIHGeLBZkm7hOdrbkTwjs0R/nYoBsOz1m65fFkyiELlgecuYFYjCmJy89nKcH2j
+         ob7odbtOAdsK9i5FsgaIQ2u0l/tOAUXIMoNfxLhyYufvsPrNZgr6AjlYPgDgoy1M6p
+         juLOGvfQq9H5fQGw2Mghi7QSNaPvI+TurUtRN/Jo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 735/846] media: correct MEDIA_TEST_SUPPORT help text
-Date:   Mon, 24 Jan 2022 19:44:12 +0100
-Message-Id: <20220124184126.358105808@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0151/1039] drm/vboxvideo: fix a NULL vs IS_ERR() check
+Date:   Mon, 24 Jan 2022 19:32:20 +0100
+Message-Id: <20220124184130.236313729@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,37 +47,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-commit 09f4d1513267d0ab712f5d29e7bd136535748709 upstream.
+[ Upstream commit cebbb5c46d0cb0615fd0c62dea9b44273d0a9780 ]
 
-Fix grammar/wording in the help text for MEDIA_TEST_SUPPORT.
+The devm_gen_pool_create() function never returns NULL, it returns
+error pointers.
 
-Fixes: 4b32216adb01 ("media: split test drivers from platform directory")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4cc9b565454b ("drm/vboxvideo: Use devm_gen_pool_create")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211118111233.GA1147@kili
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/Kconfig |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/vboxvideo/vbox_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/media/Kconfig
-+++ b/drivers/media/Kconfig
-@@ -141,10 +141,10 @@ config MEDIA_TEST_SUPPORT
- 	prompt "Test drivers" if MEDIA_SUPPORT_FILTER
- 	default y if !MEDIA_SUPPORT_FILTER
- 	help
--	  Those drivers should not be used on production Kernels, but
--	  can be useful on debug ones. It enables several dummy drivers
--	  that simulate a real hardware. Very useful to test userspace
--	  applications and to validate if the subsystem core is doesn't
-+	  These drivers should not be used on production kernels, but
-+	  can be useful on debug ones. This option enables several dummy drivers
-+	  that simulate real hardware. Very useful to test userspace
-+	  applications and to validate if the subsystem core doesn't
- 	  have regressions.
+diff --git a/drivers/gpu/drm/vboxvideo/vbox_main.c b/drivers/gpu/drm/vboxvideo/vbox_main.c
+index f28779715ccda..c9e8b3a63c621 100644
+--- a/drivers/gpu/drm/vboxvideo/vbox_main.c
++++ b/drivers/gpu/drm/vboxvideo/vbox_main.c
+@@ -127,8 +127,8 @@ int vbox_hw_init(struct vbox_private *vbox)
+ 	/* Create guest-heap mem-pool use 2^4 = 16 byte chunks */
+ 	vbox->guest_pool = devm_gen_pool_create(vbox->ddev.dev, 4, -1,
+ 						"vboxvideo-accel");
+-	if (!vbox->guest_pool)
+-		return -ENOMEM;
++	if (IS_ERR(vbox->guest_pool))
++		return PTR_ERR(vbox->guest_pool);
  
- 	  Say Y if you want to use some virtual test driver.
+ 	ret = gen_pool_add_virt(vbox->guest_pool,
+ 				(unsigned long)vbox->guest_heap,
+-- 
+2.34.1
+
 
 
