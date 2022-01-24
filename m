@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50114C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D1FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352598AbiAXTap (ORCPT
+        id S1352625AbiAXTat (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:30:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42540 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343636AbiAXTV3 (ORCPT
+        Mon, 24 Jan 2022 14:30:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347729AbiAXTVk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:21:29 -0500
+        Mon, 24 Jan 2022 14:21:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3A47C02B85B;
+        Mon, 24 Jan 2022 11:08:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90A1EB8121A;
-        Mon, 24 Jan 2022 19:21:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8A54C340E5;
-        Mon, 24 Jan 2022 19:21:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F0BBB811FC;
+        Mon, 24 Jan 2022 19:08:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68C2CC340E5;
+        Mon, 24 Jan 2022 19:08:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052086;
-        bh=1rb8EM3XDFWr+VyTcb3Rfus7JTqCNfeY0zVb9E/f6mQ=;
+        s=korg; t=1643051315;
+        bh=LqoSMc1RpwTe7F3/upaq0t9gP0hc4FWfCx3wkogjeWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Tpg51rJ8glNdt6DyvsTDgA4/8dGNkx2DZpTaoaWUFJX8YURP7cYvB2VP0RedTkqfG
-         Sd3jCbNjaInUACjSIrTXB4MpEjug8DBdzDsECLsL/OYZO+D6lCFitZ0E+8nRBK9EGB
-         lDGL1ZJnYpTz3yvMLN3ZfUoY3nN1bHE4fpvi69qI=
+        b=l26TkjK9FocOzRAPOgWE7SiZLKHNHw0vUhqvGzOZaSlAi3Oq/5vVgV5o6GR/MEv++
+         ojhLyovjXZ4WPjsvKW8cq8ul1ohHCyBlrqi91bXtFfxyE1ncuL/IyD0Pq558oJ21a6
+         lzVuAsvJ9bIvNQHRKGfgqM9G50r5nAN3DnsFEsIc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
-        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 177/239] parisc: Avoid calling faulthandler_disabled() twice
-Date:   Mon, 24 Jan 2022 19:43:35 +0100
-Message-Id: <20220124183948.728992883@linuxfoundation.org>
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 123/186] btrfs: remove BUG_ON(!eie) in find_parent_nodes
+Date:   Mon, 24 Jan 2022 19:43:18 +0100
+Message-Id: <20220124183941.069900901@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,51 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: John David Anglin <dave.anglin@bell.net>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
+[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
 
-In handle_interruption(), we call faulthandler_disabled() to check whether the
-fault handler is not disabled. If the fault handler is disabled, we immediately
-call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
-do_page_fault() attempts to fixup the exception by jumping to no_context:
+If we're looking for leafs that point to a data extent we want to record
+the extent items that point at our bytenr.  At this point we have the
+reference and we know for a fact that this leaf should have a reference
+to our bytenr.  However if there's some sort of corruption we may not
+find any references to our leaf, and thus could end up with eie == NULL.
+Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
+mortals.
 
-no_context:
-
-        if (!user_mode(regs) && fixup_exception(regs)) {
-                return;
-        }
-
-        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
-
-Apart from the error messages, the two blocks of code perform the same
-function.
-
-We can avoid two calls to faulthandler_disabled() by a simple revision
-to the code in handle_interruption().
-
-Note: I didn't try to fix the formatting of this code block.
-
-Signed-off-by: John David Anglin <dave.anglin@bell.net>
-Signed-off-by: Helge Deller <deller@gmx.de>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/parisc/kernel/traps.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/backref.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
-index abeb5321a83fc..d7a66d8525091 100644
---- a/arch/parisc/kernel/traps.c
-+++ b/arch/parisc/kernel/traps.c
-@@ -750,7 +750,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
- 	     * unless pagefault_disable() was called before.
- 	     */
- 
--	    if (fault_space == 0 && !faulthandler_disabled())
-+	    if (faulthandler_disabled() || fault_space == 0)
- 	    {
- 		/* Clean up and return if in exception table. */
- 		if (fixup_exception(regs))
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index f2c2ac3343bac..58dc96d7ecafa 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1315,10 +1315,18 @@ again:
+ 				goto out;
+ 			if (!ret && extent_item_pos) {
+ 				/*
+-				 * we've recorded that parent, so we must extend
+-				 * its inode list here
++				 * We've recorded that parent, so we must extend
++				 * its inode list here.
++				 *
++				 * However if there was corruption we may not
++				 * have found an eie, return an error in this
++				 * case.
+ 				 */
+-				BUG_ON(!eie);
++				ASSERT(eie);
++				if (!eie) {
++					ret = -EUCLEAN;
++					goto out;
++				}
+ 				while (eie->next)
+ 					eie = eie->next;
+ 				eie->next = ref->inode_list;
 -- 
 2.34.1
 
