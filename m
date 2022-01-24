@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB81C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 888C3C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457099AbiAXVky (ORCPT
+        id S1457193AbiAXVlJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:40:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56160 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445320AbiAXVCs (ORCPT
+        Mon, 24 Jan 2022 16:41:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445466AbiAXVDi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:02:48 -0500
+        Mon, 24 Jan 2022 16:03:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184A1C068083;
+        Mon, 24 Jan 2022 12:04:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4C690B81057;
-        Mon, 24 Jan 2022 21:02:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70613C340E5;
-        Mon, 24 Jan 2022 21:02:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A983E60FEA;
+        Mon, 24 Jan 2022 20:04:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67DA3C340E7;
+        Mon, 24 Jan 2022 20:04:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058165;
-        bh=MMPMmtVSLrtuyr7cLejn7b26l10ZVjMuBWZcYg26WQE=;
+        s=korg; t=1643054644;
+        bh=A2EUI144kMYsLayEJBAsTA84cPoFnieVulthcDcdZcE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ft1zlP+JT9w94b5TJ+snE25Sy8phg8EBFwdWdLDsRCPfaKaoO7fZIgZXRLb3jt8kO
-         7p1YtwrTZK947uTrXGo7T+JET16eQ77X/lC7cJP/XF0CCcZ9XVfxhrOh7eQzl9DxgR
-         s9pq5F4yfMq8VsxpYp6VCd2Ns4Xr7RISZfqfyYzI=
+        b=QN20Q08l/ulH2jwDs6tYhK8rSb6xKLVQHNwLEqlHfaiRKTtPjHzEfiVEXgIc0srkK
+         B6g4oLXSDqBAQh0991bXHYpVmx5tptN1ReIe0IOJlvGMsvJnVemOSCFAklQqMEpcTY
+         OgCH/jLgK0iWz7fKEnUStBEI87VjxS17bKZSyxwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
-        Nechama Kraus <nechamax.kraus@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0201/1039] igc: AF_XDP zero-copy metadata adjust breaks SKBs on XDP_PASS
-Date:   Mon, 24 Jan 2022 19:33:10 +0100
-Message-Id: <20220124184132.088197008@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>
+Subject: [PATCH 5.10 455/563] drm/etnaviv: limit submit sizes
+Date:   Mon, 24 Jan 2022 19:43:40 +0100
+Message-Id: <20220124184040.184257696@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,48 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jesper Dangaard Brouer <brouer@redhat.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-[ Upstream commit 4fa8fcd3440101dbacf4fae91de69877ef751977 ]
+commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
 
-Driver already implicitly supports XDP metadata access in AF_XDP
-zero-copy mode, as xsk_buff_pool's xp_alloc() naturally set xdp_buff
-data_meta equal data.
+Currently we allow rediculous amounts of kernel memory being allocated
+via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
+some reasonable limits in to fix this.
 
-This works fine for XDP and AF_XDP, but if a BPF-prog adjust via
-bpf_xdp_adjust_meta() and choose to call XDP_PASS, then igc function
-igc_construct_skb_zc() will construct an invalid SKB packet. The
-function correctly include the xdp->data_meta area in the memcpy, but
-forgot to pull header to take metasize into account.
+The commandstream size is limited to 64KB, which was already a soft limit
+on older kernels after which the kernel only took submits on a best effort
+base, so there is no userspace that tries to submit commandstreams larger
+than this. Even if the whole commandstream is a single incrementing address
+load, the size limit also limits the number of potential relocs and
+referenced buffers to slightly under 64K, so use the same limit for those
+arguments. The performance monitoring infrastructure currently supports
+less than 50 performance counter signals, so limiting them to 128 on a
+single submit seems like a reasonably future-proof number for now. This
+number can be bumped if needed without breaking the interface.
 
-Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
-Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index d28a80a009537..d83e665b3a4f2 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -2448,8 +2448,10 @@ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
+@@ -469,6 +469,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
+ 		return -EINVAL;
+ 	}
  
- 	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
- 	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
--	if (metasize)
-+	if (metasize) {
- 		skb_metadata_set(skb, metasize);
-+		__skb_pull(skb, metasize);
++	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
++	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
++		DRM_ERROR("submit arguments out of size limits\n");
++		return -EINVAL;
 +	}
- 
- 	return skb;
- }
--- 
-2.34.1
-
++
+ 	/*
+ 	 * Copy the command submission and bo array to kernel space in
+ 	 * one go, and do this outside of any locks.
 
 
