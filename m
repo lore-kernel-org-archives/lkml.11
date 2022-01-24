@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7634C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA84C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343512AbiAXUMy (ORCPT
+        id S1345625AbiAXUM6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:12:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41656 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347076AbiAXTyT (ORCPT
+        Mon, 24 Jan 2022 15:12:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352162AbiAXTwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:54:19 -0500
+        Mon, 24 Jan 2022 14:52:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64FBBC06138D;
+        Mon, 24 Jan 2022 11:25:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DF6AB81239;
-        Mon, 24 Jan 2022 19:54:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7F2AC340E5;
-        Mon, 24 Jan 2022 19:54:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E3CE761483;
+        Mon, 24 Jan 2022 19:25:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7846C340E5;
+        Mon, 24 Jan 2022 19:25:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054056;
-        bh=kQeVpgjXMWBkDkt3qPRgjWIZf9hgcZyZSnVYNAKMg0U=;
+        s=korg; t=1643052340;
+        bh=u6nSHTuDbL91DdQvhZ4DmRvheXbvt0w7vmlU89qohGs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N2ClNA0/MBMVsoksSHrWeCDzauK+90quhQU53DSnmEf2xikH/KOPN9rc7nMyKXdqn
-         tlEozhIaNYUsINy8tUhFcvMBXMrxSKSIFn7n/zFWLSd9YzfBEGa0VLFlINwZGClz8i
-         w/6vfNRZHsTTh+xRtMRSEqD19O8JUBrlE6tP2eVE=
+        b=OGYWWyaTzjLIXRv6iDCK2q2H3gHgA2wT3ahF4y93aHqzl78+NuEkeKMjlgL9MkBZe
+         luMgGR9oKg+GPTP8PkGS4BFdAasYfNz499EvLDSxrHXFid6h1gBzi7qqGVuUDPnqxA
+         GUKTbe2K3fPF0M06rPhDfyIYcv3dZ0H/f/CFO60Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        =?UTF-8?q?Michal=20Kalderon=C2=A0?= <michal.kalderon@marvell.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 265/563] RDMA/qedr: Fix reporting max_{send/recv}_wr attrs
-Date:   Mon, 24 Jan 2022 19:40:30 +0100
-Message-Id: <20220124184033.600036014@linuxfoundation.org>
+        stable@vger.kernel.org, Chao Yu <chao@kernel.org>,
+        Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.4 005/320] f2fs: fix to do sanity check in is_alive()
+Date:   Mon, 24 Jan 2022 19:39:49 +0100
+Message-Id: <20220124183953.946694335@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,46 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Chao Yu <chao@kernel.org>
 
-[ Upstream commit b1a4da64bfc189510e08df1ccb1c589e667dc7a3 ]
+commit 77900c45ee5cd5da63bd4d818a41dbdf367e81cd upstream.
 
-Fix the wrongly reported max_send_wr and max_recv_wr attributes for user
-QP by making sure to save their valuse on QP creation, so when query QP is
-called the attributes will be reported correctly.
+In fuzzed image, SSA table may indicate that a data block belongs to
+invalid node, which node ID is out-of-range (0, 1, 2 or max_nid), in
+order to avoid migrating inconsistent data in such corrupted image,
+let's do sanity check anyway before data block migration.
 
-Fixes: cecbcddf6461 ("qedr: Add support for QP verbs")
-Link: https://lore.kernel.org/r/20211206201314.124947-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Acked-by: Michal Kalderon <michal.kalderon@marvell.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: stable@vger.kernel.org
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/infiniband/hw/qedr/verbs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/f2fs/gc.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/infiniband/hw/qedr/verbs.c b/drivers/infiniband/hw/qedr/verbs.c
-index 16d5283651894..eeb87f31cd252 100644
---- a/drivers/infiniband/hw/qedr/verbs.c
-+++ b/drivers/infiniband/hw/qedr/verbs.c
-@@ -1918,6 +1918,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
- 	/* db offset was calculated in copy_qp_uresp, now set in the user q */
- 	if (qedr_qp_has_sq(qp)) {
- 		qp->usq.db_addr = ctx->dpi_addr + uresp.sq_db_offset;
-+		qp->sq.max_wr = attrs->cap.max_send_wr;
- 		rc = qedr_db_recovery_add(dev, qp->usq.db_addr,
- 					  &qp->usq.db_rec_data->db_data,
- 					  DB_REC_WIDTH_32B,
-@@ -1928,6 +1929,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
+--- a/fs/f2fs/gc.c
++++ b/fs/f2fs/gc.c
+@@ -633,6 +633,9 @@ static bool is_alive(struct f2fs_sb_info
+ 		set_sbi_flag(sbi, SBI_NEED_FSCK);
+ 	}
  
- 	if (qedr_qp_has_rq(qp)) {
- 		qp->urq.db_addr = ctx->dpi_addr + uresp.rq_db_offset;
-+		qp->rq.max_wr = attrs->cap.max_recv_wr;
- 		rc = qedr_db_recovery_add(dev, qp->urq.db_addr,
- 					  &qp->urq.db_rec_data->db_data,
- 					  DB_REC_WIDTH_32B,
--- 
-2.34.1
-
++	if (f2fs_check_nid_range(sbi, dni->ino))
++		return false;
++
+ 	*nofs = ofs_of_node(node_page);
+ 	source_blkaddr = datablock_addr(NULL, node_page, ofs_in_node);
+ 	f2fs_put_page(node_page, 1);
 
 
