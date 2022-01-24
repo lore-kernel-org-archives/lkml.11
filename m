@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1376FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37019C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449724AbiAXVQE (ORCPT
+        id S1449141AbiAXVO6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:16:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43554 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389657AbiAXUtt (ORCPT
+        Mon, 24 Jan 2022 16:14:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46552 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391365AbiAXUrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:49 -0500
+        Mon, 24 Jan 2022 15:47:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5777C60C11;
-        Mon, 24 Jan 2022 20:49:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 305DCC340E5;
-        Mon, 24 Jan 2022 20:49:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 79C0BB81218;
+        Mon, 24 Jan 2022 20:47:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85AC8C340E5;
+        Mon, 24 Jan 2022 20:47:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057388;
-        bh=EjBx6VLc9soLrs83ucHSAMI+i/H49AZLt1t7DcmUv5c=;
+        s=korg; t=1643057250;
+        bh=x7S04SykEtkNO6jyz+/ia/IfgXn8OU6ejHj5ebXM5TE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a3joNH5qfKCFxgDqQUKXDOWnkfyfYUDcU/oNBuGUxfs7i70ZRcpqjEESEc+WDokSm
-         lXtx40UnMoTKitH6/Qy4RNr8I17DLN67i2P1NLW/hVaP6XlXgaV+2DRLLnHnIOndzH
-         OD/nQu2CTUdR1kaf+SJmf6piA5zLQcZNNUmB1zlE=
+        b=tJFua6t6a3RYgoRVtmbYmPhGvaDHMrbPfJ4ZwEjOXKEaTtceAstv9ecsILRvCEfNX
+         b200FjfI3YyiBUpMiY6PG23ZtSz1C1jsUvXJaqb9nDVakckUXZEp0ss+AIqe9cCdEq
+         VrLzfnsqzzGTOOiBfXRFBVK5mxqkHIwZFOlZA09s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 797/846] net: axienet: fix number of TX ring slots for available check
-Date:   Mon, 24 Jan 2022 19:45:14 +0100
-Message-Id: <20220124184128.446665823@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 749/846] dmaengine: uniphier-xdmac: Fix type of address variables
+Date:   Mon, 24 Jan 2022 19:44:26 +0100
+Message-Id: <20220124184126.819817518@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,41 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit aba57a823d2985a2cc8c74a2535f3a88e68d9424 upstream.
+commit 105a8c525675bb7d4d64871f9b2edf39460de881 upstream.
 
-The check for the number of available TX ring slots was off by 1 since a
-slot is required for the skb header as well as each fragment. This could
-result in overwriting a TX ring slot that was still in use.
+The variables src_addr and dst_addr handle DMA addresses, so these should
+be declared as dma_addr_t.
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 667b9251440b ("dmaengine: uniphier-xdmac: Add UniPhier external DMA controller driver")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1639456963-10232-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/dma/uniphier-xdmac.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -747,7 +747,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 	num_frag = skb_shinfo(skb)->nr_frags;
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+--- a/drivers/dma/uniphier-xdmac.c
++++ b/drivers/dma/uniphier-xdmac.c
+@@ -131,8 +131,9 @@ uniphier_xdmac_next_desc(struct uniphier
+ static void uniphier_xdmac_chan_start(struct uniphier_xdmac_chan *xc,
+ 				      struct uniphier_xdmac_desc *xd)
+ {
+-	u32 src_mode, src_addr, src_width;
+-	u32 dst_mode, dst_addr, dst_width;
++	u32 src_mode, src_width;
++	u32 dst_mode, dst_width;
++	dma_addr_t src_addr, dst_addr;
+ 	u32 val, its, tnum;
+ 	enum dma_slave_buswidth buswidth;
  
--	if (axienet_check_tx_bd_space(lp, num_frag)) {
-+	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
- 		if (netif_queue_stopped(ndev))
- 			return NETDEV_TX_BUSY;
- 
-@@ -757,7 +757,7 @@ axienet_start_xmit(struct sk_buff *skb,
- 		smp_mb();
- 
- 		/* Space might have just been freed - check again */
--		if (axienet_check_tx_bd_space(lp, num_frag))
-+		if (axienet_check_tx_bd_space(lp, num_frag + 1))
- 			return NETDEV_TX_BUSY;
- 
- 		netif_wake_queue(ndev);
 
 
