@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F144C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3927CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:48:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355875AbiAXTot (ORCPT
+        id S1355909AbiAXTox (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:44:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33930 "EHLO
+        Mon, 24 Jan 2022 14:44:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33890 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353941AbiAXTfg (ORCPT
+        with ESMTP id S1353906AbiAXTfd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:35:36 -0500
+        Mon, 24 Jan 2022 14:35:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2342961502;
-        Mon, 24 Jan 2022 19:35:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 032ECC340E5;
-        Mon, 24 Jan 2022 19:35:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ED8C3614B8;
+        Mon, 24 Jan 2022 19:35:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC55DC340E5;
+        Mon, 24 Jan 2022 19:35:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052935;
-        bh=3/QdR6SGlH1mYgnJ4NwJ66sQHw5xtbVGngxoo/WjW6Q=;
+        s=korg; t=1643052932;
+        bh=9RyE6ZLi77tUv4uCLRdOWWqq4WpjHFSm/tVZXOPXU14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jBfhDZJ9p+km6S4QYFs4gMnrcHK2YMjq3uIWADZf2tO5BSk35IpkpI9sUb64jKs58
-         jvaie+Vv/vv/DrJr6FlJtl2kt/FjZ/ekIkRWJW0ERErNKFH2iCZVJtOJysryORZ/mI
-         bGc1hfMaLzCRJJVIVWOZN1Pp0SJ948B3ZWAnOMMc=
+        b=gfoWxPA4qGCPDv3SG5RlfrDbEbKT76GEyTOtRS8D0YjDjTB1dYOp8mDLnpvF4PoVc
+         yoDqmvQRAWTxbwEDwBIs6MCvb//IdkIj2QhLcbxECRcWBri+ZVD7YbzVCfODMEgpE9
+         jqsxwOy69Aq0KqW4uHtNYIGuy8NaqApLxLiomer8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
+        stable@vger.kernel.org,
+        Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
+        Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 221/320] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 24 Jan 2022 19:43:25 +0100
-Message-Id: <20220124184001.178038152@linuxfoundation.org>
+Subject: [PATCH 5.4 203/320] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
+Date:   Mon, 24 Jan 2022 19:43:07 +0100
+Message-Id: <20220124184000.541931930@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,51 +48,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
 
-[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
 
-struct uart_port contains a cached copy of the Modem Control signals.
-It is used to skip register writes in uart_update_mctrl() if the new
-signal state equals the old signal state.  It also avoids a register
-read to obtain the current state of output signals.
+GC task can deadlock in read_cache_page() because it may attempt
+to release a page that is actually allocated by another task in
+jffs2_write_begin().
+The reason is that in jffs2_write_begin() there is a small window
+a cache page is allocated for use but not set Uptodate yet.
 
-When a uart_port is registered, uart_configure_port() changes signal
-state but neglects to keep the cached copy in sync.  That may cause
-a subsequent register write to be incorrectly skipped.  Fix it before
-it trips somebody up.
+This ends up with a deadlock between two tasks:
+1) A task (e.g. file copy)
+   - jffs2_write_begin() locks a cache page
+   - jffs2_write_end() tries to lock "alloc_sem" from
+	 jffs2_reserve_space() <-- STUCK
+2) GC task (jffs2_gcd_mtd3)
+   - jffs2_garbage_collect_pass() locks "alloc_sem"
+   - try to lock the same cache page in read_cache_page() <-- STUCK
 
-This behavior has been present ever since the serial core was introduced
-in 2002:
-https://git.kernel.org/history/history/c/33c0d1b0c3eb
+So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
+while reading data in a cache page.
 
-So far it was never an issue because the cached copy is initialized to 0
-by kzalloc() and when uart_configure_port() is executed, at most DTR has
-been set by uart_set_options() or sunsu_console_setup().  Therefore,
-a stable designation seems unnecessary.
-
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
+ 1 file changed, 25 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index aad640b9e3f4b..c8a047ba76ebe 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2395,7 +2395,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+		port->mctrl &= TIOCM_DTR;
-+		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
+diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
+index f8fb89b10227c..34880a4c21732 100644
+--- a/fs/jffs2/file.c
++++ b/fs/jffs2/file.c
+@@ -135,20 +135,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 	struct page *pg;
+ 	struct inode *inode = mapping->host;
+ 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
++	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 	pgoff_t index = pos >> PAGE_SHIFT;
+ 	uint32_t pageofs = index << PAGE_SHIFT;
+ 	int ret = 0;
  
- 		/*
+-	pg = grab_cache_page_write_begin(mapping, index, flags);
+-	if (!pg)
+-		return -ENOMEM;
+-	*pagep = pg;
+-
+ 	jffs2_dbg(1, "%s()\n", __func__);
+ 
+ 	if (pageofs > inode->i_size) {
+ 		/* Make new hole frag from old EOF to new page */
+-		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 		struct jffs2_raw_inode ri;
+ 		struct jffs2_full_dnode *fn;
+ 		uint32_t alloc_len;
+@@ -159,7 +154,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
+ 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
+ 		if (ret)
+-			goto out_page;
++			goto out_err;
+ 
+ 		mutex_lock(&f->sem);
+ 		memset(&ri, 0, sizeof(ri));
+@@ -189,7 +184,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			ret = PTR_ERR(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
+ 		if (f->metadata) {
+@@ -204,13 +199,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			jffs2_free_full_dnode(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		jffs2_complete_reservation(c);
+ 		inode->i_size = pageofs;
+ 		mutex_unlock(&f->sem);
+ 	}
+ 
++	/*
++	 * While getting a page and reading data in, lock c->alloc_sem until
++	 * the page is Uptodate. Otherwise GC task may attempt to read the same
++	 * page in read_cache_page(), which causes a deadlock.
++	 */
++	mutex_lock(&c->alloc_sem);
++	pg = grab_cache_page_write_begin(mapping, index, flags);
++	if (!pg) {
++		ret = -ENOMEM;
++		goto release_sem;
++	}
++	*pagep = pg;
++
+ 	/*
+ 	 * Read in the page if it wasn't already present. Cannot optimize away
+ 	 * the whole page write case until jffs2_write_end can handle the
+@@ -220,15 +228,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		mutex_lock(&f->sem);
+ 		ret = jffs2_do_readpage_nolock(inode, pg);
+ 		mutex_unlock(&f->sem);
+-		if (ret)
+-			goto out_page;
++		if (ret) {
++			unlock_page(pg);
++			put_page(pg);
++			goto release_sem;
++		}
+ 	}
+ 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
+-	return ret;
+ 
+-out_page:
+-	unlock_page(pg);
+-	put_page(pg);
++release_sem:
++	mutex_unlock(&c->alloc_sem);
++out_err:
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
