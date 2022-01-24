@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F34BC35274
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA572C35273
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575352AbiAXVvb (ORCPT
+        id S1575319AbiAXVv0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:51:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39510 "EHLO
+        Mon, 24 Jan 2022 16:51:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39072 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389657AbiAXVQp (ORCPT
+        with ESMTP id S1346359AbiAXVQW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:16:45 -0500
+        Mon, 24 Jan 2022 16:16:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B4CBC612E9;
-        Mon, 24 Jan 2022 21:16:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0E13C340E4;
-        Mon, 24 Jan 2022 21:16:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2757161469;
+        Mon, 24 Jan 2022 21:16:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC54FC340E4;
+        Mon, 24 Jan 2022 21:16:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059000;
-        bh=0KD1eiKFQZ+15lvlwGjcpA2CZ9608oocxiXbhgHw+rM=;
+        s=korg; t=1643058976;
+        bh=uthVye0iwSuswlGwFuQRe9N7bDcMWWKiC6t7peSk9s0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0GTUC07Rmybk5wv02//X2Inmzn27CN5fQvh6j5UiGhXzhJj5BWn78gqXmOq3nUyU
-         sONXiDH//x35cG+CigXPfbY5gtvvp+NxcrlHvq4R6V1MCKCr9bNfMQ1W64Kyc44xBR
-         akJYWKbN9Zn2BDd7RhlVEIoOeRysLMywqYjrvBeI=
+        b=nnFxNtC1kIUZa/GDiZQzsUTlVh3QRJGzEP5m8K5Oi8CvDHv03E/dOZefJDsns3yoS
+         q1RAxssVZgMZH/tBX/ttyE2euODaFEwGytkHfL4XpBDv48Af/l5lQrsMIVw1AlsAQi
+         9LWC0GHRoTucc6QheYzN9dQU+5VKbQx+bK1dCOac=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0470/1039] char/mwave: Adjust io port register size
-Date:   Mon, 24 Jan 2022 19:37:39 +0100
-Message-Id: <20220124184141.076124919@linuxfoundation.org>
+Subject: [PATCH 5.16 0463/1039] powerpc/modules: Dont WARN on first module allocation attempt
+Date:   Mon, 24 Jan 2022 19:37:32 +0100
+Message-Id: <20220124184140.843266216@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,49 +48,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
+[ Upstream commit f1797e4de1146009c888bcf8b6bb6648d55394f1 ]
 
-Using MKWORD() on a byte-sized variable results in OOB read. Expand the
-size of the reserved area so both MKWORD and MKBYTE continue to work
-without overflow. Silences this warning on a -Warray-bounds build:
+module_alloc() first tries to allocate module text within 24 bits direct
+jump from kernel text, and tries a wider allocation if first one fails.
 
-drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
-  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
-      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
-  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
-      |                                        ^~~~~
-drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
-  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
-      |                                         ^~~~~~
-drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
-  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
-      |                               ^~~~~~~~~~~~~
+When first allocation fails the following is observed in kernel logs:
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+  vmap allocation for size 2400256 failed: use vmalloc=<size> to increase size
+  systemd-udevd: vmalloc error: size 2395133, vm_struct allocation failed, mode:0xcc0(GFP_KERNEL), nodemask=(null)
+  CPU: 0 PID: 127 Comm: systemd-udevd Tainted: G        W         5.15.5-gentoo-PowerMacG4 #9
+  Call Trace:
+  [e2a53a50] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
+  [e2a53a70] [c0540128] warn_alloc+0x11c/0x2b4
+  [e2a53b50] [c0531be8] __vmalloc_node_range+0xd8/0x64c
+  [e2a53c10] [c00338c0] module_alloc+0xa0/0xac
+  [e2a53c40] [c027a368] load_module+0x2ae0/0x8148
+  [e2a53e30] [c027fc78] sys_finit_module+0xfc/0x130
+  [e2a53f30] [c0035098] ret_from_syscall+0x0/0x28
+  ...
+
+Add __GFP_NOWARN flag to first allocation so that no warning appears
+when it fails.
+
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Fixes: 2ec13df16704 ("powerpc/modules: Load modules closer to kernel text")
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/93c9b84d6ec76aaf7b4f03468e22433a6d308674.1638267035.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/mwave/3780i.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/powerpc/kernel/module.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
-index 9ccb6b270b071..95164246afd1a 100644
---- a/drivers/char/mwave/3780i.h
-+++ b/drivers/char/mwave/3780i.h
-@@ -68,7 +68,7 @@ typedef struct {
- 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
- 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
- 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
--	unsigned char Reserved:5;	/* 0: Reserved */
-+	unsigned short Reserved:13;	/* 0: Reserved */
- } DSP_ISA_SLAVE_CONTROL;
+diff --git a/arch/powerpc/kernel/module.c b/arch/powerpc/kernel/module.c
+index ed04a3ba66fe8..40a583e9d3c70 100644
+--- a/arch/powerpc/kernel/module.c
++++ b/arch/powerpc/kernel/module.c
+@@ -90,16 +90,17 @@ int module_finalize(const Elf_Ehdr *hdr,
+ }
  
+ static __always_inline void *
+-__module_alloc(unsigned long size, unsigned long start, unsigned long end)
++__module_alloc(unsigned long size, unsigned long start, unsigned long end, bool nowarn)
+ {
+ 	pgprot_t prot = strict_module_rwx_enabled() ? PAGE_KERNEL : PAGE_KERNEL_EXEC;
++	gfp_t gfp = GFP_KERNEL | (nowarn ? __GFP_NOWARN : 0);
  
+ 	/*
+ 	 * Don't do huge page allocations for modules yet until more testing
+ 	 * is done. STRICT_MODULE_RWX may require extra work to support this
+ 	 * too.
+ 	 */
+-	return __vmalloc_node_range(size, 1, start, end, GFP_KERNEL, prot,
++	return __vmalloc_node_range(size, 1, start, end, gfp, prot,
+ 				    VM_FLUSH_RESET_PERMS | VM_NO_HUGE_VMAP,
+ 				    NUMA_NO_NODE, __builtin_return_address(0));
+ }
+@@ -114,13 +115,13 @@ void *module_alloc(unsigned long size)
+ 
+ 	/* First try within 32M limit from _etext to avoid branch trampolines */
+ 	if (MODULES_VADDR < PAGE_OFFSET && MODULES_END > limit)
+-		ptr = __module_alloc(size, limit, MODULES_END);
++		ptr = __module_alloc(size, limit, MODULES_END, true);
+ 
+ 	if (!ptr)
+-		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END);
++		ptr = __module_alloc(size, MODULES_VADDR, MODULES_END, false);
+ 
+ 	return ptr;
+ #else
+-	return __module_alloc(size, VMALLOC_START, VMALLOC_END);
++	return __module_alloc(size, VMALLOC_START, VMALLOC_END, false);
+ #endif
+ }
 -- 
 2.34.1
 
