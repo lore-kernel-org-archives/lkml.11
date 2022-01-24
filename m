@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C3FCC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 731F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:33:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3411305AbiAYAc5 (ORCPT
+        id S1390647AbiAYAdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:32:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48032 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455782AbiAXVgQ (ORCPT
+        Mon, 24 Jan 2022 19:33:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455411AbiAXVfX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:36:16 -0500
+        Mon, 24 Jan 2022 16:35:23 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B05BC0BD105;
+        Mon, 24 Jan 2022 12:22:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46D50B81233;
-        Mon, 24 Jan 2022 21:36:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63AD5C340E4;
-        Mon, 24 Jan 2022 21:36:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 17EEBB8122D;
+        Mon, 24 Jan 2022 20:22:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31565C340E5;
+        Mon, 24 Jan 2022 20:22:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060173;
-        bh=xI5hEJ3lhDIHA1QI9owRidjMV8Rm3Aur9/+X8usPUKA=;
+        s=korg; t=1643055736;
+        bh=fbwYxUYlvTYPzaUQAL027dB4qyx/sJYlFcXuAvJKKXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c9gSHT6RFJqkagUTkO5V6rLHtk5AikfZPhghrWzP6PU/+q6zkiUpvw3Fl2YtFy2fK
-         Wi4BI50lf3tvgM3C53BkJeWkTdnv4+mJSbxgeA0m7+FGbbPzwZgOfcIhF/uyr/mA8S
-         Ly0FJeTmEDCFW+vz7lnjwSSWJHDnEMvpwg1sg+3U=
+        b=tffNzc9B7EEdiXo9kqoSLr2Fs0DAxNmFjPoED9YjQsh+kZqt3kDFZmlYxaWacOCa4
+         i4zCiRgifH8m1Te9CnAvz1vgeaDB8JrWkvao0vcsv7R+bf901d1nTGREze4vQ+vHKL
+         FqyroEImBdLxfz6CXjxAtsLDpPbzcqaxF3vI5CCk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Nathan E. Egge" <unlord@xiph.org>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>
-Subject: [PATCH 5.16 0862/1039] drm/nouveau/kms/nv04: use vzalloc for nv04_display
-Date:   Mon, 24 Jan 2022 19:44:11 +0100
-Message-Id: <20220124184154.268640046@linuxfoundation.org>
+        stable@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 248/846] net: dsa: hellcreek: Add STP forwarding rule
+Date:   Mon, 24 Jan 2022 19:36:05 +0100
+Message-Id: <20220124184109.501854158@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,45 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilia Mirkin <imirkin@alum.mit.edu>
+From: Kurt Kanzenbach <kurt@linutronix.de>
 
-commit bd6e07e72f37f34535bec7eebc807e5fcfe37b43 upstream.
+[ Upstream commit b7ade35eb53a2455f737a623c24e4b24455b2271 ]
 
-The struct is giant, and triggers an order-7 allocation (512K). There is
-no reason for this to be kmalloc-type memory, so switch to vmalloc. This
-should help loading nouveau on low-memory and/or long-running systems.
+Treat STP as management traffic. STP traffic is designated for the CPU port
+only. In addition, STP traffic has to pass blocked ports.
 
-Reported-by: Nathan E. Egge <unlord@xiph.org>
-Signed-off-by: Ilia Mirkin <imirkin@alum.mit.edu>
-Cc: stable@vger.kernel.org
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: e4b27ebc780f ("net: dsa: Add DSA driver for Hirschmann Hellcreek switches")
+Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/nouveau/dispnv04/disp.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/hirschmann/hellcreek.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/gpu/drm/nouveau/dispnv04/disp.c
-+++ b/drivers/gpu/drm/nouveau/dispnv04/disp.c
-@@ -205,7 +205,7 @@ nv04_display_destroy(struct drm_device *
- 	nvif_notify_dtor(&disp->flip);
+diff --git a/drivers/net/dsa/hirschmann/hellcreek.c b/drivers/net/dsa/hirschmann/hellcreek.c
+index 2afd6a4f02b88..1469e41f2045a 100644
+--- a/drivers/net/dsa/hirschmann/hellcreek.c
++++ b/drivers/net/dsa/hirschmann/hellcreek.c
+@@ -1074,6 +1074,17 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+ 		.reprio_en    = 1,
+ 	};
++	static struct hellcreek_fdb_entry stp = {
++		/* MAC: 01-80-C2-00-00-00 */
++		.mac	      = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 },
++		.portmask     = 0x03,	/* Management ports */
++		.age	      = 0,
++		.is_obt	      = 0,
++		.pass_blocked = 1,
++		.is_static    = 1,
++		.reprio_tc    = 6,
++		.reprio_en    = 1,
++	};
+ 	int ret;
  
- 	nouveau_display(dev)->priv = NULL;
--	kfree(disp);
-+	vfree(disp);
+ 	mutex_lock(&hellcreek->reg_lock);
+@@ -1081,6 +1092,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
+ 	if (ret)
+ 		goto out;
+ 	ret = __hellcreek_fdb_add(hellcreek, &p2p);
++	if (ret)
++		goto out;
++	ret = __hellcreek_fdb_add(hellcreek, &stp);
+ out:
+ 	mutex_unlock(&hellcreek->reg_lock);
  
- 	nvif_object_unmap(&drm->client.device.object);
- }
-@@ -223,7 +223,7 @@ nv04_display_create(struct drm_device *d
- 	struct nv04_display *disp;
- 	int i, ret;
- 
--	disp = kzalloc(sizeof(*disp), GFP_KERNEL);
-+	disp = vzalloc(sizeof(*disp));
- 	if (!disp)
- 		return -ENOMEM;
- 
+-- 
+2.34.1
+
 
 
