@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9650C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32555C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573697AbiAXVph (ORCPT
+        id S1573818AbiAXVp7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33594 "EHLO
+        Mon, 24 Jan 2022 16:45:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35314 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446928AbiAXVJl (ORCPT
+        with ESMTP id S1448078AbiAXVL6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:41 -0500
+        Mon, 24 Jan 2022 16:11:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6EE6761425;
-        Mon, 24 Jan 2022 21:09:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C8E9C340E5;
-        Mon, 24 Jan 2022 21:09:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C34E61425;
+        Mon, 24 Jan 2022 21:11:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D23C340E5;
+        Mon, 24 Jan 2022 21:11:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058580;
-        bh=pz99iXBwo3/nLwZ7y8IoW/K4Ck88weGFXJ6wv6u8PWo=;
+        s=korg; t=1643058717;
+        bh=GLTJnZCfJHVaIC+X5HqOOgqv8U5UHQODi6Ql/8KIEXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OsSD/CJqRLRjhnkAjc6Sh6xUmk1qvsjKPGCq8sUtIXNB85K3ezAhzEw7bDr3v42mC
-         khazCC62FiB2OiNtMKmtU8QtZwiEbV25zaFdvKg1pvY7UktnpllMVOdtG9ia6Gb1V+
-         A3GmHjHnXSz/Vm4kiTgTMkXkcCVt7C1nyzeVXKyk=
+        b=ddhQHlqBz55A3ML4VUAeeJ021W9lf4R1LqhoDrIfKYxO3n+h3qwVraNO5Uv22cLfx
+         KxOpkQd7eaDeCCxmcHROXMpram2N/iW2CF8LWZ4CG1ESEoH5bpJu4A50n965SQNW88
+         52VyjV1k93XuBtSditIwDKdKOuYge/dn3IoNSw5g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Antony Antony <antony.antony@secunet.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
+        stable@vger.kernel.org, etkaar <lists.netfilter.org@prvy.eu>,
+        Florian Westphal <fw@strlen.de>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0302/1039] xfrm: state and policy should fail if XFRMA_IF_ID 0
-Date:   Mon, 24 Jan 2022 19:34:51 +0100
-Message-Id: <20220124184135.467108892@linuxfoundation.org>
+Subject: [PATCH 5.16 0380/1039] netfilter: nft_set_pipapo: allocate pcpu scratch maps on clone
+Date:   Mon, 24 Jan 2022 19:36:09 +0100
+Message-Id: <20220124184138.086534019@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,82 +49,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Antony Antony <antony.antony@secunet.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit 68ac0f3810e76a853b5f7b90601a05c3048b8b54 ]
+[ Upstream commit 23c54263efd7cb605e2f7af72717a2a951999217 ]
 
-xfrm ineterface does not allow xfrm if_id = 0
-fail to create or update xfrm state and policy.
+This is needed in case a new transaction is made that doesn't insert any
+new elements into an already existing set.
 
-With this commit:
- ip xfrm policy add src 192.0.2.1 dst 192.0.2.2 dir out if_id 0
- RTNETLINK answers: Invalid argument
+Else, after second 'nft -f ruleset.txt', lookups in such a set will fail
+because ->lookup() encounters raw_cpu_ptr(m->scratch) == NULL.
 
- ip xfrm state add src 192.0.2.1 dst 192.0.2.2 proto esp spi 1 \
-            reqid 1 mode tunnel aead 'rfc4106(gcm(aes))' \
-            0x1111111111111111111111111111111111111111 96 if_id 0
- RTNETLINK answers: Invalid argument
+For the initial rule load, insertion of elements takes care of the
+allocation, but for rule reloads this isn't guaranteed: we might not
+have additions to the set.
 
-v1->v2 change:
- - add Fixes: tag
-
-Fixes: 9f8550e4bd9d ("xfrm: fix disable_xfrm sysctl when used on xfrm interfaces")
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Fixes: 3c4287f62044a90e ("nf_tables: Add set type for arbitrary concatenation of ranges")
+Reported-by: etkaar <lists.netfilter.org@prvy.eu>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_user.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
+ net/netfilter/nft_set_pipapo.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 0a2d2bae28316..b571892fe10f5 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -621,8 +621,13 @@ static struct xfrm_state *xfrm_state_construct(struct net *net,
+diff --git a/net/netfilter/nft_set_pipapo.c b/net/netfilter/nft_set_pipapo.c
+index dce866d93feed..2c8051d8cca69 100644
+--- a/net/netfilter/nft_set_pipapo.c
++++ b/net/netfilter/nft_set_pipapo.c
+@@ -1290,6 +1290,11 @@ static struct nft_pipapo_match *pipapo_clone(struct nft_pipapo_match *old)
+ 	if (!new->scratch_aligned)
+ 		goto out_scratch;
+ #endif
++	for_each_possible_cpu(i)
++		*per_cpu_ptr(new->scratch, i) = NULL;
++
++	if (pipapo_realloc_scratch(new, old->bsize_max))
++		goto out_scratch_realloc;
  
- 	xfrm_smark_init(attrs, &x->props.smark);
+ 	rcu_head_init(&new->rcu);
  
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		x->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!x->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	err = __xfrm_init_state(x, false, attrs[XFRMA_OFFLOAD_DEV]);
- 	if (err)
-@@ -1413,8 +1418,13 @@ static int xfrm_alloc_userspi(struct sk_buff *skb, struct nlmsghdr *nlh,
- 
- 	mark = xfrm_mark_get(attrs, &m);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!if_id) {
-+			err = -EINVAL;
-+			goto out_noput;
-+		}
-+	}
- 
- 	if (p->info.seq) {
- 		x = xfrm_find_acq_byseq(net, mark, p->info.seq);
-@@ -1727,8 +1737,13 @@ static struct xfrm_policy *xfrm_policy_construct(struct net *net, struct xfrm_us
- 
- 	xfrm_mark_get(attrs, &xp->mark);
- 
--	if (attrs[XFRMA_IF_ID])
-+	if (attrs[XFRMA_IF_ID]) {
- 		xp->if_id = nla_get_u32(attrs[XFRMA_IF_ID]);
-+		if (!xp->if_id) {
-+			err = -EINVAL;
-+			goto error;
-+		}
-+	}
- 
- 	return xp;
-  error:
+@@ -1334,6 +1339,9 @@ out_lt:
+ 		kvfree(dst->lt);
+ 		dst--;
+ 	}
++out_scratch_realloc:
++	for_each_possible_cpu(i)
++		kfree(*per_cpu_ptr(new->scratch, i));
+ #ifdef NFT_PIPAPO_ALIGN
+ 	free_percpu(new->scratch_aligned);
+ #endif
 -- 
 2.34.1
 
