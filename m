@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF240C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 392D1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2371220AbiAYAHO (ORCPT
+        id S2371294AbiAYAH1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:07:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50552 "EHLO
+        Mon, 24 Jan 2022 19:07:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582576AbiAXXSL (ORCPT
+        with ESMTP id S1384835AbiAXXR5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:18:11 -0500
+        Mon, 24 Jan 2022 18:17:57 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B154C07A978;
-        Mon, 24 Jan 2022 11:43:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD13AC07E29D;
+        Mon, 24 Jan 2022 11:45:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 03036B811F3;
-        Mon, 24 Jan 2022 19:43:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37959C340E5;
-        Mon, 24 Jan 2022 19:43:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 532CFB811F9;
+        Mon, 24 Jan 2022 19:45:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96353C340E7;
+        Mon, 24 Jan 2022 19:45:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053412;
-        bh=XF7IXFHWIZ5snVq0dmj81vyVcFGPfrqkqClUT0lXLl4=;
+        s=korg; t=1643053537;
+        bh=zLZtC7ypmlhH1omlZOAIcSh+uqnfUwqd1cdnR2k5tXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZHXJ7nHnt9yqtzEglR0rabHAW5v/7cX0yV4WRDPDAQp1yhn8xB3TLHYIr+68ZdSr
-         dvSIlDSS8LCKQpowpXlqdT3E163UPqp/0/mxOpu6pPBsCGyXmN+B5/5tQK2nV9fzWK
-         qhClpHVrs2G/UyIdm3H/iXQBNVZC53/v+lA33Low=
+        b=XAwG/kpC3nqnV8BAj6RaC34rh20c/qVQ0Iu00D5xToecRFIG7nbSwojILj3zrLuBa
+         Jp3yankdjIq/QPgB6lnWo6mzr1u1ncwP1gG7yYsOI/BNU4J5zXytQaoiNYCTQOp373
+         2hqfJG0ByNgYTtuQHBpNFNtnQypypcKbUwdi8uJI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Bryan ODonoghue <bryan.odonoghue@linaro.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
+        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 056/563] wcn36xx: Indicate beacon not connection loss on MISSED_BEACON_IND
-Date:   Mon, 24 Jan 2022 19:37:01 +0100
-Message-Id: <20220124184026.349185407@linuxfoundation.org>
+Subject: [PATCH 5.10 097/563] ARM: dts: stm32: fix dtbs_check warning on ili9341 dts binding on stm32f429 disco
+Date:   Mon, 24 Jan 2022 19:37:42 +0100
+Message-Id: <20220124184027.754939919@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,49 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
+From: Dillon Min <dillon.minfei@gmail.com>
 
-[ Upstream commit 588b45c88ae130fe373a8c50edaf54735c3f4fe3 ]
+[ Upstream commit b046049e59dca5e5830dc75ed16acf7657a95161 ]
 
-Firmware can trigger a missed beacon indication, this is not the same as a
-lost signal.
+Since the compatible string defined from ilitek,ili9341.yaml is
+"st,sf-tc240t-9370-t", "ilitek,ili9341"
 
-Flag to Linux the missed beacon and let the WiFi stack decide for itself if
-the link is up or down by sending its own probe to determine this.
+so, append "ilitek,ili9341" to avoid the below dtbs_check warning.
 
-We should only be signalling the link is lost when the firmware indicates
+arch/arm/boot/dts/stm32f429-disco.dt.yaml: display@1: compatible:
+['st,sf-tc240t-9370-t'] is too short
 
-Fixes: 8e84c2582169 ("wcn36xx: mac80211 driver for Qualcomm WCN3660/WCN3680 hardware")
-Signed-off-by: Bryan O'Donoghue <bryan.odonoghue@linaro.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211027232529.657764-1-bryan.odonoghue@linaro.org
+Fixes: a726e2f000ec ("ARM: dts: stm32: enable ltdc binding with ili9341, gyro l3gd20 on stm32429-disco board")
+Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/wcn36xx/smd.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/stm32f429-disco.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/wcn36xx/smd.c b/drivers/net/wireless/ath/wcn36xx/smd.c
-index ad312e17f7a3c..7f00cb6f5e16b 100644
---- a/drivers/net/wireless/ath/wcn36xx/smd.c
-+++ b/drivers/net/wireless/ath/wcn36xx/smd.c
-@@ -2607,7 +2607,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    tmp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 		}
- 		return 0;
- 	}
-@@ -2622,7 +2622,7 @@ static int wcn36xx_smd_missed_beacon_ind(struct wcn36xx *wcn,
- 			wcn36xx_dbg(WCN36XX_DBG_HAL, "beacon missed bss_index %d\n",
- 				    rsp->bss_index);
- 			vif = wcn36xx_priv_to_vif(tmp);
--			ieee80211_connection_loss(vif);
-+			ieee80211_beacon_loss(vif);
- 			return 0;
- 		}
- 	}
+diff --git a/arch/arm/boot/dts/stm32f429-disco.dts b/arch/arm/boot/dts/stm32f429-disco.dts
+index 075ac57d0bf4a..6435e099c6326 100644
+--- a/arch/arm/boot/dts/stm32f429-disco.dts
++++ b/arch/arm/boot/dts/stm32f429-disco.dts
+@@ -192,7 +192,7 @@
+ 
+ 	display: display@1{
+ 		/* Connect panel-ilitek-9341 to ltdc */
+-		compatible = "st,sf-tc240t-9370-t";
++		compatible = "st,sf-tc240t-9370-t", "ilitek,ili9341";
+ 		reg = <1>;
+ 		spi-3wire;
+ 		spi-max-frequency = <10000000>;
 -- 
 2.34.1
 
