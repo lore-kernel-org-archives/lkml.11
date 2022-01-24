@@ -2,84 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6621EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4AEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447658AbiAXVLN (ORCPT
+        id S1447722AbiAXVLW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:11:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38522 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345050AbiAXUnA (ORCPT
+        Mon, 24 Jan 2022 16:11:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358210AbiAXUn6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:43:00 -0500
+        Mon, 24 Jan 2022 15:43:58 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E270EC04188A;
+        Mon, 24 Jan 2022 11:53:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CEFF960918;
-        Mon, 24 Jan 2022 20:42:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B821C340F1;
-        Mon, 24 Jan 2022 20:42:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056979;
-        bh=AGVkdtvLj/AXz77WxRuV1yF6BCr8p0lcB/5+6NNM0k0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=T8faB9MBpX3o/DfbmqHJS8JI3LPUbkIXDxcpiB8Joi5ZbjqokPVNZvBrLnuVpSLvr
-         ATlSnrPLFrH/IVTRagKm4Jiel8MSP6O7DFvL0ThO3Kpmc+uE9vQzyeShDYNzwvY38e
-         qQMcstWi93ehdF/oBDpW8B3ZvXn5byrUQ3CIMkOE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 663/846] mailbox: change mailbox-mpfs compatible string
-Date:   Mon, 24 Jan 2022 19:43:00 +0100
-Message-Id: <20220124184123.941645276@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        by ams.source.kernel.org (Postfix) with ESMTPS id AA40CB810BD;
+        Mon, 24 Jan 2022 19:53:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C97C340E5;
+        Mon, 24 Jan 2022 19:53:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643054021;
+        bh=yLbz/AC2wjap7OdNsxdmDXBEPOrm5DJ62HNkpKHDaRE=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=YqP+5Pu8CLPGLQYonv8c5mI2Wp6Turrr2DjU4sM5owJF/mETT2Y3RvkrrfSMAhUK3
+         QcCdA7tDxRBj6ZBuxFD315wp5Hsv+1lPeSvDH2xoHVGtOXwFhpFEyjMZbLWr3TX+gZ
+         AaJ+6bctkogAfKT2Q4HXAnzAdbeRHEA9uZ+hnt163ovtT2IwYFCruVHwMq59L4WYst
+         vEos8xNT4eX7/HE8IHVMQFU7TKiZyHTWc82s4kIRkIeyTiSe49MaLVqLwM7BOm69Nb
+         5MmcjYS6JFe3icdc9Lvanvyju1XBpw15/OZX/HNxXMCphCIVSb6yuT2RkhoFUE9/0P
+         u3vWaw7IKw94A==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220124165316.55449-1-zhou1615@umn.edu>
+References: <20220124165316.55449-1-zhou1615@umn.edu>
+Subject: Re: [PATCH] clk: socfpga: Fix a memory leak bug in socfpga_gate_init()
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     kjlu@umn.edu, Dinh Nguyen <dinguyen@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-clk@vger.kernel.org, linux-kernel@vger.kernel.org
+To:     zhou1615@umn.edu
+Date:   Mon, 24 Jan 2022 11:53:39 -0800
+User-Agent: alot/0.10
+Message-Id: <20220124195341.50C97C340E5@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+Quoting Zhou Qingyang (2022-01-24 08:53:16)
+> diff --git a/drivers/clk/socfpga/clk-gate.c b/drivers/clk/socfpga/clk-gat=
+e.c
+> index 53d6e3ec4309..0ca5e0000925 100644
+> --- a/drivers/clk/socfpga/clk-gate.c
+> +++ b/drivers/clk/socfpga/clk-gate.c
+> @@ -188,8 +188,10 @@ void __init socfpga_gate_init(struct device_node *no=
+de)
+>                 return;
+> =20
+>         ops =3D kmemdup(&gateclk_ops, sizeof(gateclk_ops), GFP_KERNEL);
+> -       if (WARN_ON(!ops))
+> +       if (WARN_ON(!ops)) {
 
-[ Upstream commit f10b1fc0161cd99e54c5687fcc63368aa255e05e ]
+A WARN_ON() after an allocation failure will lead to double stacktraces.
+Can you remove the WARN_ON()?
 
-The Polarfire SoC is currently using two different compatible string
-prefixes. Fix this by changing "polarfire-soc-*" strings to "mpfs-*" in
-its system controller in order to match the compatible string used in
-the soc binding and device tree.
+Furthermore, it looks like 'ops' is never freed on failure in this
+function. Did the SA tool figure that out? There are more problems with
+this function and error paths. Seems like nobody cares.
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/mailbox/mailbox-mpfs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/mailbox/mailbox-mpfs.c b/drivers/mailbox/mailbox-mpfs.c
-index 0d6e2231a2c75..4e34854d12389 100644
---- a/drivers/mailbox/mailbox-mpfs.c
-+++ b/drivers/mailbox/mailbox-mpfs.c
-@@ -232,7 +232,7 @@ static int mpfs_mbox_probe(struct platform_device *pdev)
- }
- 
- static const struct of_device_id mpfs_mbox_of_match[] = {
--	{.compatible = "microchip,polarfire-soc-mailbox", },
-+	{.compatible = "microchip,mpfs-mailbox", },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, mpfs_mbox_of_match);
--- 
-2.34.1
-
-
-
+> +               kfree(socfpga_clk);
+>                 return;
+> +       }
+>
