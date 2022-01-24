@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 572A4C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9F5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444891AbiAXVBn (ORCPT
+        id S1444923AbiAXVBo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40788 "EHLO
+        Mon, 24 Jan 2022 16:01:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40916 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388174AbiAXUiQ (ORCPT
+        with ESMTP id S1350736AbiAXUi3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:38:16 -0500
+        Mon, 24 Jan 2022 15:38:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B45DFB80FA1;
-        Mon, 24 Jan 2022 20:38:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA563C340E5;
-        Mon, 24 Jan 2022 20:38:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 342EEB8121C;
+        Mon, 24 Jan 2022 20:38:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6741BC340E5;
+        Mon, 24 Jan 2022 20:38:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056693;
-        bh=RrUyY9uG7ZVfU+KF3Jfwg3xQPcg+XRDfLecSIqdmf5w=;
+        s=korg; t=1643056706;
+        bh=sr+Q2oFR8CNiUVEfQQFtfRQdkcamxTQq3ai2GqUz1MU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kEDrvfHoxUVkaxwJyknSQ/9yvGNFzxa0bQeUvvJ9SSPOb5WomTbj4BdQd1kTPegeA
-         wSbtzJgiUM6+K8CmwOQxvOXEB5bf29G4su1GKeaQe7ZLUJNTv/WgpLuJgTOkv3+Ecr
-         gmkxhjE7dlCx/3IhRqze6eCD6sUWecQnqVc8PNcA=
+        b=KA3iYrfD0R4MA/miYrHmdgiH7Y9brudjEjFtTtjcGHjRRvJx56o56A3HmPTMc9H38
+         T1fj6f3HGckoXlLo8uRu6vF/si6eIytUC251gpVVNBVG0qpBTXexwf7MYq9YNtGpQE
+         h4cVSv1BYm+pOVYpJ9lt9LFp/UOl/cq2ye4p3Ns4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xing Song <xing.song@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 568/846] mt76: do not pass the received frame with decryption error
-Date:   Mon, 24 Jan 2022 19:41:25 +0100
-Message-Id: <20220124184120.626138799@linuxfoundation.org>
+        stable@vger.kernel.org, Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 572/846] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
+Date:   Mon, 24 Jan 2022 19:41:29 +0100
+Message-Id: <20220124184120.775904541@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,113 +47,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xing Song <xing.song@mediatek.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit dd28dea52ad9376d2b243a8981726646e1f60b1a ]
+[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
 
-MAC80211 doesn't care any decryption error in 802.3 path, so received
-frame will be dropped if HW tell us that the cipher configuration is not
-matched as well as the header has been translated to 802.3. This case only
-appears when IEEE80211_FCTL_PROTECTED is 0 and cipher suit is not none in
-the corresponding HW entry.
+Large pkt_len can lead to out-out-bound memcpy. Current
+ath9k_hif_usb_rx_stream allows combining the content of two urb
+inputs to one pkt. The first input can indicate the size of the
+pkt. Any remaining size is saved in hif_dev->rx_remain_len.
+While processing the next input, memcpy is used with rx_remain_len.
 
-The received frame is only reported to monitor interface if HW decryption
-block tell us there is ICV error or CCMP/BIP/WPI MIC error. Note in this
-case the reported frame is decrypted 802.11 frame and the payload may be
-malformed due to mismatched key.
+4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
+maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
+pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
 
-Signed-off-by: Xing Song <xing.song@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
+
+CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
+BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
+Workqueue: events request_firmware_work_func
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ __kasan_report.cold+0x37/0x7c
+ ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ kasan_report+0xe/0x20
+ check_memory_region+0x15a/0x1d0
+ memcpy+0x20/0x50
+ ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
+ ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __usb_unanchor_urb+0x12f/0x210
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+
+I found the bug using a custome USBFuzz port. It's a research work
+to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
+providing hand-crafted usb descriptors to QEMU.
+
+After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
+emulation, I found the KASAN report. The bug is triggerable whenever
+pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
+to test the driver works when applying the patch.
+
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7603/mac.c | 4 ++++
- drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 9 ++++++++-
- drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 9 ++++++++-
- drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 9 ++++++++-
- 4 files changed, 28 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
-index 3972c56136a20..65f1f2bb80835 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
-@@ -525,6 +525,10 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
- 	if (rxd2 & MT_RXD2_NORMAL_TKIP_MIC_ERR)
- 		status->flag |= RX_FLAG_MMIC_ERROR;
+diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
+index 860da13bfb6ac..f06eec99de688 100644
+--- a/drivers/net/wireless/ath/ath9k/hif_usb.c
++++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
+@@ -590,6 +590,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
+ 			return;
+ 		}
  
-+	/* ICV error or CCMP/BIP/WPI MIC error */
-+	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
-+		status->flag |= RX_FLAG_ONLY_MONITOR;
++		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
++			dev_err(&hif_dev->udev->dev,
++				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
++			RX_STAT_INC(skb_dropped);
++			return;
++		}
 +
- 	if (FIELD_GET(MT_RXD2_NORMAL_SEC_MODE, rxd2) != 0 &&
- 	    !(rxd2 & (MT_RXD2_NORMAL_CLM | MT_RXD2_NORMAL_CM))) {
- 		status->flag |= RX_FLAG_DECRYPTED;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index 5455231f51881..f2704149834a0 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -286,9 +286,16 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
- 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
- 		return -EINVAL;
- 
-+	hdr_trans = rxd1 & MT_RXD1_NORMAL_HDR_TRANS;
-+	if (hdr_trans && (rxd2 & MT_RXD2_NORMAL_CM))
-+		return -EINVAL;
-+
-+	/* ICV error or CCMP/BIP/WPI MIC error */
-+	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
-+		status->flag |= RX_FLAG_ONLY_MONITOR;
-+
- 	unicast = (rxd1 & MT_RXD1_NORMAL_ADDR_TYPE) == MT_RXD1_NORMAL_U2M;
- 	idx = FIELD_GET(MT_RXD2_NORMAL_WLAN_IDX, rxd2);
--	hdr_trans = rxd1 & MT_RXD1_NORMAL_HDR_TRANS;
- 	status->wcid = mt7615_rx_get_wcid(dev, idx, unicast);
- 
- 	if (status->wcid) {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-index bbc996f86b5c3..ff613d7056119 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
-@@ -349,9 +349,16 @@ mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
- 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
- 		return -EINVAL;
- 
-+	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
-+	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
-+		return -EINVAL;
-+
-+	/* ICV error or CCMP/BIP/WPI MIC error */
-+	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
-+		status->flag |= RX_FLAG_ONLY_MONITOR;
-+
- 	unicast = FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, rxd3) == MT_RXD3_NORMAL_U2M;
- 	idx = FIELD_GET(MT_RXD1_NORMAL_WLAN_IDX, rxd1);
--	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
- 	status->wcid = mt7915_rx_get_wcid(dev, idx, unicast);
- 
- 	if (status->wcid) {
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-index 8a16f3f4d5253..04a288029c98e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
-@@ -383,10 +383,17 @@ int mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
- 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
- 		return -EINVAL;
- 
-+	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
-+	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
-+		return -EINVAL;
-+
-+	/* ICV error or CCMP/BIP/WPI MIC error */
-+	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
-+		status->flag |= RX_FLAG_ONLY_MONITOR;
-+
- 	chfreq = FIELD_GET(MT_RXD3_NORMAL_CH_FREQ, rxd3);
- 	unicast = FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, rxd3) == MT_RXD3_NORMAL_U2M;
- 	idx = FIELD_GET(MT_RXD1_NORMAL_WLAN_IDX, rxd1);
--	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
- 	status->wcid = mt7921_rx_get_wcid(dev, idx, unicast);
- 
- 	if (status->wcid) {
+ 		pad_len = 4 - (pkt_len & 0x3);
+ 		if (pad_len == 4)
+ 			pad_len = 0;
 -- 
 2.34.1
 
