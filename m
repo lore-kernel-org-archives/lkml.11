@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F5E2C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8DCCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1453358AbiAXVaB (ORCPT
+        id S1453469AbiAXVaN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:30:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53780 "EHLO
+        Mon, 24 Jan 2022 16:30:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52026 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351712AbiAXU6k (ORCPT
+        with ESMTP id S1441813AbiAXU6g (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:40 -0500
+        Mon, 24 Jan 2022 15:58:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DE176B80FA3;
-        Mon, 24 Jan 2022 20:58:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B7EC340E5;
-        Mon, 24 Jan 2022 20:58:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96842B815A5;
+        Mon, 24 Jan 2022 20:58:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B19B2C33E20;
+        Mon, 24 Jan 2022 20:58:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057917;
-        bh=H/tPH33St1gFh5Gacd8JGf5OOGlFWqNnI4EL4xPm4mc=;
+        s=korg; t=1643057908;
+        bh=N+i2Ktt5HSL7SoYdHLmIVc6uikYJLYEZ1wvPI4WY1uA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y6IpuxcqUKo+tbME8rB3FYVLQiNP4zQg4smodf5haiY0iF73X4MjgOK6sDn0YgiIX
-         RJ06sGW91aN/q5jPiu138DMLVCZekNtlDqWXqHYoOJKW/iLtSP6Ey9VfQ/pIHu1Wl6
-         X6HRSE68t1s2hv9ugt4NWWlmZ586GSwVkLU04M6M=
+        b=LTxNAC/fEcNO5+tEPnkGRkjYC747g+1/bvQrjbQfiPEcaA5apksh2lt0+xhTvOAaJ
+         VsuC7m3mKCdbv1R8MqmArApmbzXSmynq+164suNBpC7bSRWIt7naXX1lwtkykfJrmF
+         y+69gcuzLk+DtMbYmPwoYQPVKgQSdm83l74mIPdM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        stable@vger.kernel.org, Quentin Monnet <quentin@isovalent.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0088/1039] drm/panel: kingdisplay-kd097d04: Delete panel on attach() failure
-Date:   Mon, 24 Jan 2022 19:31:17 +0100
-Message-Id: <20220124184128.118355347@linuxfoundation.org>
+Subject: [PATCH 5.16 0117/1039] bpftool: Fix memory leak in prog_dump()
+Date:   Mon, 24 Jan 2022 19:31:46 +0100
+Message-Id: <20220124184129.076854913@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,42 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Quentin Monnet <quentin@isovalent.com>
 
-[ Upstream commit 5f31dbeae8a88f31c3eb4eb526ab4807c40da241 ]
+[ Upstream commit ebbd7f64a3fbe9e0f235e39fc244ee9735e2a52a ]
 
-If we fail to attach (e.g., because 1 of 2 dual-DSI controllers aren't
-ready), we leave a dangling drm_panel reference to freed memory. Clean
-that up on failure.
+Following the extraction of prog_dump() from do_dump(), the struct btf
+allocated in prog_dump() is no longer freed on error; the struct
+bpf_prog_linfo is not freed at all. Make sure we release them before
+exiting the function.
 
-Fixes: 2a994cbed6b2 ("drm/panel: Add Kingdisplay KD097D04 panel driver")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210923173336.1.Icb4d9dbc1817f4e826361a4f1cea7461541668f0@changeid
+Fixes: ec2025095cf6 ("bpftool: Match several programs with same tag")
+Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211110114632.24537-2-quentin@isovalent.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ tools/bpf/bpftool/prog.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c b/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
-index 86e4213e8bb13..daccb1fd5fdad 100644
---- a/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
-+++ b/drivers/gpu/drm/panel/panel-kingdisplay-kd097d04.c
-@@ -406,7 +406,13 @@ static int kingdisplay_panel_probe(struct mipi_dsi_device *dsi)
- 	if (err < 0)
- 		return err;
+diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+index 515d229526026..6ccd17b8eb560 100644
+--- a/tools/bpf/bpftool/prog.c
++++ b/tools/bpf/bpftool/prog.c
+@@ -639,8 +639,8 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 	char func_sig[1024];
+ 	unsigned char *buf;
+ 	__u32 member_len;
++	int fd, err = -1;
+ 	ssize_t n;
+-	int fd;
  
--	return mipi_dsi_attach(dsi);
-+	err = mipi_dsi_attach(dsi);
-+	if (err < 0) {
-+		kingdisplay_panel_del(kingdisplay);
-+		return err;
-+	}
-+
-+	return 0;
+ 	if (mode == DUMP_JITED) {
+ 		if (info->jited_prog_len == 0 || !info->jited_prog_insns) {
+@@ -679,7 +679,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		if (fd < 0) {
+ 			p_err("can't open file %s: %s", filepath,
+ 			      strerror(errno));
+-			return -1;
++			goto exit_free;
+ 		}
+ 
+ 		n = write(fd, buf, member_len);
+@@ -687,7 +687,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		if (n != (ssize_t)member_len) {
+ 			p_err("error writing output file: %s",
+ 			      n < 0 ? strerror(errno) : "short write");
+-			return -1;
++			goto exit_free;
+ 		}
+ 
+ 		if (json_output)
+@@ -701,7 +701,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 						     info->netns_ino,
+ 						     &disasm_opt);
+ 			if (!name)
+-				return -1;
++				goto exit_free;
+ 		}
+ 
+ 		if (info->nr_jited_func_lens && info->jited_func_lens) {
+@@ -796,9 +796,12 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
+ 		kernel_syms_destroy(&dd);
+ 	}
+ 
+-	btf__free(btf);
++	err = 0;
+ 
+-	return 0;
++exit_free:
++	btf__free(btf);
++	bpf_prog_linfo__free(prog_linfo);
++	return err;
  }
  
- static int kingdisplay_panel_remove(struct mipi_dsi_device *dsi)
+ static int do_dump(int argc, char **argv)
 -- 
 2.34.1
 
