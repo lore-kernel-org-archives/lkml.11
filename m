@@ -2,47 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4225EC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5D44C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450326AbiAXVUP (ORCPT
+        id S1450043AbiAXVTj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:20:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392365AbiAXUvE (ORCPT
+        Mon, 24 Jan 2022 16:19:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44502 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1392408AbiAXUvK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98AFBC054325;
-        Mon, 24 Jan 2022 11:58:24 -0800 (PST)
+        Mon, 24 Jan 2022 15:51:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 577B5B8119D;
-        Mon, 24 Jan 2022 19:58:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6AD0BC340E5;
-        Mon, 24 Jan 2022 19:58:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2663860C44;
+        Mon, 24 Jan 2022 20:51:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6E5AC340E5;
+        Mon, 24 Jan 2022 20:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054302;
-        bh=JjoTPxcrsm13yYDz2X0aCGOrakWj/cvM4DjQzFBa75A=;
+        s=korg; t=1643057467;
+        bh=fhcehs13K324S4NcYX+VvjBRl1SSEGNfMfH7EvgCHdk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uEvl33PG4PPhjxI0aEAMSxO9ikEBrIAAZuf3SNDRDbIh9df/u5cbxO3NYbiN24y6s
-         zjic6cIYomUy+OTLpXJPA4R/5jk4YUEHeSyGGJIpqt2UkMF/y9iWss0cqEPDLuQ1rE
-         bUyCoKwojDCLiifVYZ+Zm6rotJzy7fPsJAWEWceQ=
+        b=C7kLsUK20rDWue9Uyg1ZVFrQZ7nwBRiLVWup05cwTaffk4DFKiQhByxotCWEQpsKG
+         BMFWgwW5wPbLWy9Lb9N+nRRfkG/R8nJk2+/Am5UfWDvwEcC4vKVa2jslN5J8NhQ4I7
+         RFWWsyWZ/2lhgaasPBJyExU1gOzRawFEcjdSs+Qk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 344/563] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:41:49 +0100
-Message-Id: <20220124184036.320287570@linuxfoundation.org>
+        stable@vger.kernel.org, James Clark <james.clark@arm.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>,
+        Adrian Bunk <bunk@debian.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Branislav Rankov <branislav.rankov@arm.com>,
+        Diederik de Haas <didi.debian@cknow.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.15 821/846] perf tools: Drop requirement for libstdc++.so for libopencsd check
+Date:   Mon, 24 Jan 2022 19:45:38 +0100
+Message-Id: <20220124184129.225160788@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,73 +55,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Uwe Kleine-König <uwe@kleine-koenig.org>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+commit ed17b1914978eddb2b01f2d34577f1c82518c650 upstream.
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+It's possible to link against libopencsd_c_api without having
+libstdc++.so available, only libstdc++.so.6.0.28 (or whatever version is
+in use) needs to be available. The same holds true for libopencsd.so.
+When -lstdc++ (or -lopencsd) is explicitly passed to the linker however
+the .so file must be available.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
+So wrap adding the dependencies into a check for static linking that
+actually requires adding them all. The same construct is already used
+for some other tests in the same file to reduce dependencies in the
+dynamic linking case.
 
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
-
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 573cf5c9a152 ("perf build: Add missing -lstdc++ when linking with libopencsd")
+Reviewed-by: James Clark <james.clark@arm.com>
+Signed-off-by: Uwe Kleine-König <uwe@kleine-koenig.org>
+Cc: Adrian Bunk <bunk@debian.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Branislav Rankov <branislav.rankov@arm.com>
+Cc: Diederik de Haas <didi.debian@cknow.org>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Link: https://lore.kernel.org/all/20211203210544.1137935-1-uwe@kleine-koenig.org
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ tools/perf/Makefile.config |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index 39d14c179d229..2eb4bee16b71f 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
- 
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
--- 
-2.34.1
-
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -143,7 +143,10 @@ FEATURE_CHECK_LDFLAGS-libcrypto = -lcryp
+ ifdef CSINCLUDES
+   LIBOPENCSD_CFLAGS := -I$(CSINCLUDES)
+ endif
+-OPENCSDLIBS := -lopencsd_c_api -lopencsd -lstdc++
++OPENCSDLIBS := -lopencsd_c_api
++ifeq ($(findstring -static,${LDFLAGS}),-static)
++  OPENCSDLIBS += -lopencsd -lstdc++
++endif
+ ifdef CSLIBS
+   LIBOPENCSD_LDFLAGS := -L$(CSLIBS)
+ endif
 
 
