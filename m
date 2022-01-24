@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49B2C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85BE3C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383939AbiAXU2C (ORCPT
+        id S1383756AbiAXU1o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33364 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377796AbiAXUF7 (ORCPT
+        Mon, 24 Jan 2022 15:27:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48610 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377263AbiAXUFO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:05:59 -0500
+        Mon, 24 Jan 2022 15:05:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2BDB6091B;
-        Mon, 24 Jan 2022 20:05:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99B8FC340E5;
-        Mon, 24 Jan 2022 20:05:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D531B8121A;
+        Mon, 24 Jan 2022 20:05:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95D57C340E5;
+        Mon, 24 Jan 2022 20:05:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054758;
-        bh=/CkJZbBS/noqHTVzt9gb1OaMJAK407vUfQxtvkkrFfs=;
+        s=korg; t=1643054711;
+        bh=2XGr8Nu1tgEUWl+Pl/DqQYYE7vo3QJeprvUIV3btP9Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wAwHlTmaQnsPmk55EKQYBpKpnuPCN3JKIy+dULsAwiOvk1knLAdz8+VuH/8fAf806
-         buzxp1eFG2+uHeXjBX5v6+MbF4qtKhiadRlvByV9tvy1GcYfXEDBLaoGW5E1Q2Z0Qa
-         TZGtTEAatBHuhv5TtXIjKJZFQkVZkCuOxAPVPHS4=
+        b=dFefzcEOh4IyYDEIaFySWQ370mk42avSkVSfC4KQa/qLp/Lj4OMSiOjul5FVpjvd6
+         ugwPERCKO+2w4rTU8yMfBot1cItOvjQSGMiLBjpC6CWGDXQifMDdi3soIe7QiEdkdR
+         X8EAYGHC09UPd6xeo2fhdIaFUiwFWHlqlypDO4/8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.10 492/563] Documentation: ACPI: Fix data node reference documentation
-Date:   Mon, 24 Jan 2022 19:44:17 +0100
-Message-Id: <20220124184041.459814937@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.10 479/563] ext4: use ext4_ext_remove_space() for fast commit replay delete range
+Date:   Mon, 24 Jan 2022 19:44:04 +0100
+Message-Id: <20220124184041.031457527@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,66 +47,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit a11174952205d082f1658fab4314f0caf706e0a8 upstream.
+commit 0b5b5a62b945a141e64011b2f90ee7e46f14be98 upstream.
 
-The data node reference documentation was missing a package that must
-contain the property values, instead property name and multiple values
-being present in a single package. This is not aligned with the _DSD
-spec.
+For now ,we use ext4_punch_hole() during fast commit replay delete range
+procedure. But it will be affected by inode->i_size, which may not
+correct during fast commit replay procedure. The following test will
+failed.
 
-Fix it by adding the package for the values.
+-create & write foo (len 1000K)
+-falloc FALLOC_FL_ZERO_RANGE foo (range 400K - 600K)
+-create & fsync bar
+-falloc FALLOC_FL_PUNCH_HOLE foo (range 300K-500K)
+-fsync foo
+-crash before a full commit
 
-Also add the missing "reg" properties to two numbered nodes.
+After the fast_commit reply procedure, the range 400K-500K will not be
+removed. Because in this case, when calling ext4_punch_hole() the
+inode->i_size is 0, and it just retruns with doing nothing.
 
-Fixes: b10134a3643d ("ACPI: property: Document hierarchical data extension references")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Change to use ext4_ext_remove_space() instead of ext4_punch_hole()
+to remove blocks of inode directly.
+
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20211223032337.5198-2-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/firmware-guide/acpi/dsd/data-node-references.rst |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ fs/ext4/fast_commit.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
-+++ b/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
-@@ -5,7 +5,7 @@
- Referencing hierarchical data nodes
- ===================================
- 
--:Copyright: |copy| 2018 Intel Corporation
-+:Copyright: |copy| 2018, 2021 Intel Corporation
- :Author: Sakari Ailus <sakari.ailus@linux.intel.com>
- 
- ACPI in general allows referring to device objects in the tree only.
-@@ -52,12 +52,14 @@ the ANOD object which is also the final
- 	    Name (NOD0, Package() {
- 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
- 		Package () {
-+		    Package () { "reg", 0 },
- 		    Package () { "random-property", 3 },
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -1764,11 +1764,14 @@ ext4_fc_replay_del_range(struct super_bl
  		}
- 	    })
- 	    Name (NOD1, Package() {
- 		ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
- 		Package () {
-+		    Package () { "reg", 1 },
- 		    Package () { "anothernode", "ANOD" },
- 		}
- 	    })
-@@ -74,7 +76,11 @@ the ANOD object which is also the final
- 	    Name (_DSD, Package () {
- 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
- 		Package () {
--		    Package () { "reference", ^DEV0, "node@1", "anothernode" },
-+		    Package () {
-+			"reference", Package () {
-+			    ^DEV0, "node@1", "anothernode"
-+			}
-+		    },
- 		}
- 	    })
  	}
+ 
+-	ret = ext4_punch_hole(inode,
+-		le32_to_cpu(lrange.fc_lblk) << sb->s_blocksize_bits,
+-		le32_to_cpu(lrange.fc_len) <<  sb->s_blocksize_bits);
+-	if (ret)
+-		jbd_debug(1, "ext4_punch_hole returned %d", ret);
++	down_write(&EXT4_I(inode)->i_data_sem);
++	ret = ext4_ext_remove_space(inode, lrange.fc_lblk,
++				lrange.fc_lblk + lrange.fc_len - 1);
++	up_write(&EXT4_I(inode)->i_data_sem);
++	if (ret) {
++		iput(inode);
++		return 0;
++	}
+ 	ext4_ext_replay_shrink_inode(inode,
+ 		i_size_read(inode) >> sb->s_blocksize_bits);
+ 	ext4_mark_inode_dirty(NULL, inode);
 
 
