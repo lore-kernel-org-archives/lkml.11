@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE58BC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27FCC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576655AbiAXVzj (ORCPT
+        id S1576640AbiAXVzg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:55:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51524 "EHLO
+        Mon, 24 Jan 2022 16:55:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51528 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450848AbiAXVVf (ORCPT
+        with ESMTP id S1450847AbiAXVVf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:21:35 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11DC5C0604DB;
-        Mon, 24 Jan 2022 12:16:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA1FC0604DC;
+        Mon, 24 Jan 2022 12:16:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C51CFB8122F;
-        Mon, 24 Jan 2022 20:16:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06FD8C340E5;
-        Mon, 24 Jan 2022 20:15:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95B25B8122A;
+        Mon, 24 Jan 2022 20:16:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02DC2C340E5;
+        Mon, 24 Jan 2022 20:16:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055359;
-        bh=IGQ79+0mpLsLx4VvMW/Aa9wP8BnjBB2PhCNUg0bhnrg=;
+        s=korg; t=1643055368;
+        bh=RaMl5+ISXyTRiKTb8Ed11NgVfcYQt+qBb892HL6Q3T4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1IwviWoj1hevjRqkf0U8WLKLkvHXNIAitY+aIjuSKyADdSGe4AIq8vFOxqBJOAvzM
-         o/ZrjrBAnF92O3UzryUldUDEb35iuLjfGKknX65S6zAwnoTN6WJg0L62d0UIRWQkxr
-         5j+hQA1d7PWHFhQvSv7m39mSQnNsC44l5tr7IVx0=
+        b=kJ8laAa6YE94NZWFmubzh1aio0qEdqigYEW8v2jCMysJ5Wa/dRGo/QM4sRPikxnJ+
+         AX6W7gOThZ2MW86rn5txYbqBf0WgPF2WWqTXfq8xpZy8IE5qjgMzGWbwxeemhp0c74
+         0n0BUYQR2b7CFnBeNSkK+c0bLyK7Hkysp7Z3rpl8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>,
-        syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Subject: [PATCH 5.15 126/846] Bluetooth: stop proccessing malicious adv data
-Date:   Mon, 24 Jan 2022 19:34:03 +0100
-Message-Id: <20220124184105.320087206@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Venkateswara Naralasetty <vnaralas@codeaurora.org>,
+        Sven Eckelmann <sven@narfation.org>,
+        Karthikeyan Kathirvel <kathirve@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 129/846] ath11k: reset RSN/WPA present state for open BSS
+Date:   Mon, 24 Jan 2022 19:34:06 +0100
+Message-Id: <20220124184105.443452636@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,52 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavel Skripkin <paskripkin@gmail.com>
+From: Karthikeyan Kathirvel <kathirve@codeaurora.org>
 
-[ Upstream commit 3a56ef719f0b9682afb8a86d64b2399e36faa4e6 ]
+[ Upstream commit 64bc3aa02ae78b1fcb1b850e0eb1f0622002bfaa ]
 
-Syzbot reported slab-out-of-bounds read in hci_le_adv_report_evt(). The
-problem was in missing validaion check.
+The ath11k driver is caching the information about RSN/WPA IE in the
+configured beacon template. The cached information is used during
+associations to figure out whether 4-way PKT/2-way GTK peer flags need to
+be set or not.
 
-We should check if data is not malicious and we can read next data block.
-If we won't check ptr validness, code can read a way beyond skb->end and
-it can cause problems, of course.
+But the code never cleared the state when no such IE was found. This can
+for example happen when moving from an WPA/RSN to an open setup. The
+(seemingly connected) peer was then not able to communicate over the
+link because the firmware assumed a different (encryption enabled) state
+for the peer.
 
-Fixes: e95beb414168 ("Bluetooth: hci_le_adv_report_evt code refactoring")
-Reported-and-tested-by: syzbot+e3fcb9c4f3c2a931dc40@syzkaller.appspotmail.com
-Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Tested-on: IPQ6018 hw1.0 AHB WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
+
+Fixes: 01e34233c645 ("ath11k: fix wmi peer flags in peer assoc command")
+Cc: Venkateswara Naralasetty <vnaralas@codeaurora.org>
+Reported-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Karthikeyan Kathirvel <kathirve@codeaurora.org>
+[sven@narfation.org: split into separate patches, clean up commit message]
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211115100441.33771-2-sven@narfation.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_event.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/bluetooth/hci_event.c b/net/bluetooth/hci_event.c
-index 0bca035bf2dcc..50d1d62c15ec8 100644
---- a/net/bluetooth/hci_event.c
-+++ b/net/bluetooth/hci_event.c
-@@ -5780,7 +5780,8 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		struct hci_ev_le_advertising_info *ev = ptr;
- 		s8 rssi;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index aac10740f5752..2df60c74809d3 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -767,11 +767,15 @@ static int ath11k_mac_setup_bcn_tmpl(struct ath11k_vif *arvif)
  
--		if (ev->length <= HCI_MAX_AD_LENGTH) {
-+		if (ev->length <= HCI_MAX_AD_LENGTH &&
-+		    ev->data + ev->length <= skb_tail_pointer(skb)) {
- 			rssi = ev->data[ev->length];
- 			process_adv_report(hdev, ev->evt_type, &ev->bdaddr,
- 					   ev->bdaddr_type, NULL, 0, rssi,
-@@ -5790,6 +5791,11 @@ static void hci_le_adv_report_evt(struct hci_dev *hdev, struct sk_buff *skb)
- 		}
+ 	if (cfg80211_find_ie(WLAN_EID_RSN, ies, (skb_tail_pointer(bcn) - ies)))
+ 		arvif->rsnie_present = true;
++	else
++		arvif->rsnie_present = false;
  
- 		ptr += sizeof(*ev) + ev->length + 1;
-+
-+		if (ptr > (void *) skb_tail_pointer(skb) - sizeof(*ev)) {
-+			bt_dev_err(hdev, "Malicious advertising data. Stopping processing");
-+			break;
-+		}
- 	}
+ 	if (cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
+ 				    WLAN_OUI_TYPE_MICROSOFT_WPA,
+ 				    ies, (skb_tail_pointer(bcn) - ies)))
+ 		arvif->wpaie_present = true;
++	else
++		arvif->wpaie_present = false;
  
- 	hci_dev_unlock(hdev);
+ 	ret = ath11k_wmi_bcn_tmpl(ar, arvif->vdev_id, &offs, bcn);
+ 
 -- 
 2.34.1
 
