@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 253CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D01CC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:35:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421918AbiAYC3S (ORCPT
+        id S3422068AbiAYCaF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:29:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33768 "EHLO
+        Mon, 24 Jan 2022 21:30:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37336 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353627AbiAXUI7 (ORCPT
+        with ESMTP id S1379254AbiAXUK5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:08:59 -0500
+        Mon, 24 Jan 2022 15:10:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DADF66130A;
-        Mon, 24 Jan 2022 20:08:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9EEC9C340E5;
-        Mon, 24 Jan 2022 20:08:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 560D261028;
+        Mon, 24 Jan 2022 20:10:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBADC340E5;
+        Mon, 24 Jan 2022 20:10:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054935;
-        bh=kIZkiytabEpHce63qKZzZ+US9kAwLMoXJzrChs/Ap1M=;
+        s=korg; t=1643055055;
+        bh=QjAv+mVi3dI62MzHUFz7B9G4FS95ehWT/yUknSVrAwU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MQKzktTByNWOPGOb4ElohpqpW4gfDnBJRxoko+ucp2phBa5nLVkzaL+WPlxFkN+Qs
-         LWMpr0RLZjvESgIYRkBZnDPgwD9Sil9IISWDM+lOE8CfAQI8RRcn4Vt9kvT+Qlrw47
-         YojwPbmMHtf+13GWg1TUsRa1gNUvqfM4jFe9OSXs=
+        b=oovzwR4ZTDkLv/HqiGl0Q8ZtufrG2ZBMys4FEiSdCoOdhfGsk6dAT8wdlRPLSo2hh
+         xd/fUQWSze1MUoRObt8G/ZaRwz1Ml2TSjad9kB6L6I3mbnpSU/mZ4OCbDL14MOt9g0
+         F9rdv4TaN8tLCrh9XZB9DU6eBm1gKnA4SMUNr1v4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 551/563] bcmgenet: add WOL IRQ check
-Date:   Mon, 24 Jan 2022 19:45:16 +0100
-Message-Id: <20220124184043.489721539@linuxfoundation.org>
+        stable@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Alexandre Ghiti <alex@ghiti.fr>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.15 026/846] riscv: mm: fix wrong phys_ram_base value for RV64
+Date:   Mon, 24 Jan 2022 19:32:23 +0100
+Message-Id: <20220124184101.822048720@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,42 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Jisheng Zhang <jszhang@kernel.org>
 
-commit 9deb48b53e7f4056c2eaa2dc2ee3338df619e4f6 upstream.
+commit b0fd4b1bf995172b9efcee23600d4f69571c321c upstream.
 
-The driver neglects to check the result of platform_get_irq_optional()'s
-call and blithely passes the negative error codes to devm_request_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL.
-Stop calling devm_request_irq() with the invalid IRQ #s.
+Currently, if 64BIT and !XIP_KERNEL, the phys_ram_base is always 0,
+no matter the real start of dram reported by memblock is.
 
-Fixes: 8562056f267d ("net: bcmgenet: request Wake-on-LAN interrupt")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 6d7f91d914bc ("riscv: Get rid of CONFIG_PHYS_RAM_BASE in kernel physical address conversion")
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Reviewed-by: Alexandre Ghiti <alex@ghiti.fr>
+Cc: stable@vger.kernel.org
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/broadcom/genet/bcmgenet.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/riscv/mm/init.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -3962,10 +3962,12 @@ static int bcmgenet_probe(struct platfor
+--- a/arch/riscv/mm/init.c
++++ b/arch/riscv/mm/init.c
+@@ -187,10 +187,10 @@ static void __init setup_bootmem(void)
  
- 	/* Request the WOL interrupt and advertise suspend if available */
- 	priv->wol_irq_disabled = true;
--	err = devm_request_irq(&pdev->dev, priv->wol_irq, bcmgenet_wol_isr, 0,
--			       dev->name, priv);
--	if (!err)
--		device_set_wakeup_capable(&pdev->dev, 1);
-+	if (priv->wol_irq > 0) {
-+		err = devm_request_irq(&pdev->dev, priv->wol_irq,
-+				       bcmgenet_wol_isr, 0, dev->name, priv);
-+		if (!err)
-+			device_set_wakeup_capable(&pdev->dev, 1);
-+	}
  
- 	/* Set the needed headroom to account for any possible
- 	 * features enabling/disabling at runtime
+ 	phys_ram_end = memblock_end_of_DRAM();
+-#ifndef CONFIG_64BIT
+ #ifndef CONFIG_XIP_KERNEL
+ 	phys_ram_base = memblock_start_of_DRAM();
+ #endif
++#ifndef CONFIG_64BIT
+ 	/*
+ 	 * memblock allocator is not aware of the fact that last 4K bytes of
+ 	 * the addressable memory can not be mapped because of IS_ERR_VALUE
 
 
