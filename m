@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7422C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5ECC4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380746AbiAXUQv (ORCPT
+        id S1380827AbiAXUQ6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:51 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43330 "EHLO
+        Mon, 24 Jan 2022 15:16:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44866 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353083AbiAXT7P (ORCPT
+        with ESMTP id S1359363AbiAXT7i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:59:15 -0500
+        Mon, 24 Jan 2022 14:59:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1272BB8119D;
-        Mon, 24 Jan 2022 19:59:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 461DDC340E5;
-        Mon, 24 Jan 2022 19:59:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DAA2FB8119E;
+        Mon, 24 Jan 2022 19:59:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 349C7C340E5;
+        Mon, 24 Jan 2022 19:59:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054352;
-        bh=FMHYx2XBoKvpWK72As1cxGEVQ+XWXjh/vSjCyMexVUE=;
+        s=korg; t=1643054373;
+        bh=H866M6xCOcdYv+r6p734DGCGRCl35R3+8VLYrg5bNJg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yGZG13DO1WXUDoUeJm5mhhPGFCdiw29CwAFpIYb2HOQNKdUVr8kHIhQcUe7Jd781d
-         xCYa0VIY2c4s2TqLMtz1hXXBU9KNqD70fAFAmLc1wRvllAtuqCaZGo3AFGywQlRwo6
-         zPm9f7ece5uQf3f+iKNtCEl9GnFfEYyBinJN/IYo=
+        b=yoTZEiippC5IVv/nLR4Eg0BBkU0gMnf57zNBtRV+n0vOnV7tj4pu4zepahpVu+dV7
+         qNOzD89nXidFLNcGMBc3yu4u46xVA/WlZpDQUdPVjxGi8v64rkv6jqotcW9d0s85i9
+         ZbJnTz5JmuPGpk2nfcevw93PswewyecgAE9DXGto=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 318/563] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
-Date:   Mon, 24 Jan 2022 19:41:23 +0100
-Message-Id: <20220124184035.430426801@linuxfoundation.org>
+Subject: [PATCH 5.10 369/563] PM: runtime: Add safety net to supplier device release
+Date:   Mon, 24 Jan 2022 19:42:14 +0100
+Message-Id: <20220124184037.180762615@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,119 +47,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 
-[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
+[ Upstream commit d1579e61192e0e686faa4208500ef4c3b529b16c ]
 
-Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
-DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
+Because refcount_dec_not_one() returns true if the target refcount
+becomes saturated, it is generally unsafe to use its return value as
+a loop termination condition, but that is what happens when a device
+link's supplier device is released during runtime PM suspend
+operations and on device link removal.
 
-So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
-Kconfig and rename the definitions to IMX27 as further clean-up.
+To address this, introduce pm_runtime_release_supplier() to be used
+in the above cases which will check the supplier device's runtime
+PM usage counter in addition to the refcount_dec_not_one() return
+value, so the loop can be terminated in case the rpm_active refcount
+value becomes invalid, and update the code in question to use it as
+appropriate.
 
-This issue was discovered with ./scripts/checkkconfigsymbols.py, which
-reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
-SOC_IMX21.
+This change is not expected to have any visible functional impact.
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Reported-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/Kconfig.debug            | 14 +++++++-------
- arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ drivers/base/core.c          |  3 +--
+ drivers/base/power/runtime.c | 41 ++++++++++++++++++++++++++----------
+ include/linux/pm_runtime.h   |  3 +++
+ 3 files changed, 34 insertions(+), 13 deletions(-)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 8986a91a6f31b..dd1cf70353986 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -400,12 +400,12 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on i.MX25.
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 389d13616d1df..c0566aff53551 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -348,8 +348,7 @@ static void device_link_release_fn(struct work_struct *work)
+ 	/* Ensure that all references to the link object have been dropped. */
+ 	device_link_synchronize_removal();
  
--	config DEBUG_IMX21_IMX27_UART
--		bool "i.MX21 and i.MX27 Debug UART"
--		depends on SOC_IMX21 || SOC_IMX27
-+	config DEBUG_IMX27_UART
-+		bool "i.MX27 Debug UART"
-+		depends on SOC_IMX27
- 		help
- 		  Say Y here if you want kernel low-level debugging support
--		  on i.MX21 or i.MX27.
-+		  on i.MX27.
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
  
- 	config DEBUG_IMX28_UART
- 		bool "i.MX28 Debug UART"
-@@ -1523,7 +1523,7 @@ config DEBUG_IMX_UART_PORT
- 	int "i.MX Debug UART Port Selection"
- 	depends on DEBUG_IMX1_UART || \
- 		   DEBUG_IMX25_UART || \
--		   DEBUG_IMX21_IMX27_UART || \
-+		   DEBUG_IMX27_UART || \
- 		   DEBUG_IMX31_UART || \
- 		   DEBUG_IMX35_UART || \
- 		   DEBUG_IMX50_UART || \
-@@ -1591,12 +1591,12 @@ config DEBUG_LL_INCLUDE
- 	default "debug/icedcc.S" if DEBUG_ICEDCC
- 	default "debug/imx.S" if DEBUG_IMX1_UART || \
- 				 DEBUG_IMX25_UART || \
--				 DEBUG_IMX21_IMX27_UART || \
-+				 DEBUG_IMX27_UART || \
- 				 DEBUG_IMX31_UART || \
- 				 DEBUG_IMX35_UART || \
- 				 DEBUG_IMX50_UART || \
- 				 DEBUG_IMX51_UART || \
--				 DEBUG_IMX53_UART ||\
-+				 DEBUG_IMX53_UART || \
- 				 DEBUG_IMX6Q_UART || \
- 				 DEBUG_IMX6SL_UART || \
- 				 DEBUG_IMX6SX_UART || \
-diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
-index c8eb83d4b8964..3edbb3c5b42bf 100644
---- a/arch/arm/include/debug/imx-uart.h
-+++ b/arch/arm/include/debug/imx-uart.h
-@@ -11,13 +11,6 @@
- #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
- #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
+ 	put_device(link->consumer);
+ 	put_device(link->supplier);
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index bc649da4899a0..1573319404888 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -305,19 +305,40 @@ static int rpm_get_suppliers(struct device *dev)
+ 	return 0;
+ }
  
--#define IMX21_UART1_BASE_ADDR	0x1000a000
--#define IMX21_UART2_BASE_ADDR	0x1000b000
--#define IMX21_UART3_BASE_ADDR	0x1000c000
--#define IMX21_UART4_BASE_ADDR	0x1000d000
--#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
--#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
--
- #define IMX25_UART1_BASE_ADDR	0x43f90000
- #define IMX25_UART2_BASE_ADDR	0x43f94000
- #define IMX25_UART3_BASE_ADDR	0x5000c000
-@@ -26,6 +19,13 @@
- #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
- #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
- 
-+#define IMX27_UART1_BASE_ADDR	0x1000a000
-+#define IMX27_UART2_BASE_ADDR	0x1000b000
-+#define IMX27_UART3_BASE_ADDR	0x1000c000
-+#define IMX27_UART4_BASE_ADDR	0x1000d000
-+#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
-+#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
++/**
++ * pm_runtime_release_supplier - Drop references to device link's supplier.
++ * @link: Target device link.
++ * @check_idle: Whether or not to check if the supplier device is idle.
++ *
++ * Drop all runtime PM references associated with @link to its supplier device
++ * and if @check_idle is set, check if that device is idle (and so it can be
++ * suspended).
++ */
++void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
++{
++	struct device *supplier = link->supplier;
 +
- #define IMX31_UART1_BASE_ADDR	0x43f90000
- #define IMX31_UART2_BASE_ADDR	0x43f94000
- #define IMX31_UART3_BASE_ADDR	0x5000c000
-@@ -112,10 +112,10 @@
++	/*
++	 * The additional power.usage_count check is a safety net in case
++	 * the rpm_active refcount becomes saturated, in which case
++	 * refcount_dec_not_one() would return true forever, but it is not
++	 * strictly necessary.
++	 */
++	while (refcount_dec_not_one(&link->rpm_active) &&
++	       atomic_read(&supplier->power.usage_count) > 0)
++		pm_runtime_put_noidle(supplier);
++
++	if (check_idle)
++		pm_request_idle(supplier);
++}
++
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+ {
+ 	struct device_link *link;
  
- #ifdef CONFIG_DEBUG_IMX1_UART
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
--#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
--#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
- #elif defined(CONFIG_DEBUG_IMX25_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
-+#elif defined(CONFIG_DEBUG_IMX27_UART)
-+#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
- #elif defined(CONFIG_DEBUG_IMX31_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
- #elif defined(CONFIG_DEBUG_IMX35_UART)
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held()) {
+-
+-		while (refcount_dec_not_one(&link->rpm_active))
+-			pm_runtime_put_noidle(link->supplier);
+-
+-		if (try_to_suspend)
+-			pm_request_idle(link->supplier);
+-	}
++				device_links_read_lock_held())
++		pm_runtime_release_supplier(link, try_to_suspend);
+ }
+ 
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1755,9 +1776,7 @@ void pm_runtime_drop_link(struct device_link *link)
+ 		return;
+ 
+ 	pm_runtime_drop_link_count(link->consumer);
+-
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index 161acd4ede448..30091ab5de287 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -58,6 +58,7 @@ extern void pm_runtime_get_suppliers(struct device *dev);
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
++extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
+ 
+ /**
+  * pm_runtime_get_if_in_use - Conditionally bump up runtime PM usage counter.
+@@ -279,6 +280,8 @@ static inline void pm_runtime_get_suppliers(struct device *dev) {}
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
++static inline void pm_runtime_release_supplier(struct device_link *link,
++					       bool check_idle) {}
+ 
+ #endif /* !CONFIG_PM */
+ 
 -- 
 2.34.1
 
