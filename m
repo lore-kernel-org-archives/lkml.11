@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C67C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81CAFC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347134AbiAXXdH (ORCPT
+        id S1382851AbiAXXdQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:33:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41944 "EHLO
+        Mon, 24 Jan 2022 18:33:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355089AbiAXWlr (ORCPT
+        with ESMTP id S1837277AbiAXWnj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:41:47 -0500
+        Mon, 24 Jan 2022 17:43:39 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3E0C047CF7;
-        Mon, 24 Jan 2022 13:05:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552FBC047CF9;
+        Mon, 24 Jan 2022 13:05:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59A9FB81057;
-        Mon, 24 Jan 2022 21:05:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 830DFC340E7;
-        Mon, 24 Jan 2022 21:05:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D41BB812A4;
+        Mon, 24 Jan 2022 21:05:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CD48C340E5;
+        Mon, 24 Jan 2022 21:05:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058303;
-        bh=wstrC+IV/cNIbO9MQU9ClBIKDF2ZwJOJuBP3G7iJnG8=;
+        s=korg; t=1643058330;
+        bh=PPsFtXyL5103MMgwded9LMMBQ4QxVuiPMKhSkyuQ6Z4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=saDtUQuoghDWsTbRFFVEwqdq96llmyWwmvFSCouBEEsMXHQa7On9WdDz/eHO3c6sL
-         aGINcA8fuSLsJMm4tWct1K9mWuGuig7/XowIgqprYa5Xv6rB+ABDt8jUmhTEICzYTU
-         F69cYJAMOnmnW/wBii+YTClDOweCGv5aYH+mhIFw=
+        b=o0HMK1Ii2DiLSCLsO2VuRnVEQplkWyR9A0oApnI3fmHECbJFO7iG1Z/11KdIxV8Tl
+         ajsLJmZtdQrbWH4vF3Z+UkY+AGY2zoyPKlRlz6Tgw3S7t4IA50MnEv/U0moIzvQzks
+         tYP5S40vLEsqwrsz5Stc/AHzpLDE59m15xf+597s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Mark-yw Chen <mark-yw.chen@mediatek.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Fabio Estevam <festevam@denx.de>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0228/1039] Bluetooth: btmtksdio: fix resume failure
-Date:   Mon, 24 Jan 2022 19:33:37 +0100
-Message-Id: <20220124184132.990201935@linuxfoundation.org>
+Subject: [PATCH 5.16 0254/1039] ath10k: Fix the MTU size on QCA9377 SDIO
+Date:   Mon, 24 Jan 2022 19:34:03 +0100
+Message-Id: <20220124184133.858098998@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,37 +50,213 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Wang <sean.wang@mediatek.com>
+From: Fabio Estevam <festevam@denx.de>
 
-[ Upstream commit 561ae1d46a8ddcbc13162d5771f5ed6c8249e730 ]
+[ Upstream commit 09b8cd69edcf2be04a781e1781e98e52a775c9ad ]
 
-btmtksdio have to rely on MMC_PM_KEEP_POWER in pm_flags to avoid that
-SDIO power is being shut off during the device is in suspend. That fixes
-the SDIO command fails to access the bus after the device is resumed.
+On an imx6dl-pico-pi board with a QCA9377 SDIO chip, simply trying to
+connect via ssh to another machine causes:
 
-Fixes: 7f3c563c575e7 ("Bluetooth: btmtksdio: Add runtime PM support to SDIO based Bluetooth")
-Co-developed-by: Mark-yw Chen <mark-yw.chen@mediatek.com>
-Signed-off-by: Mark-yw Chen <mark-yw.chen@mediatek.com>
-Signed-off-by: Sean Wang <sean.wang@mediatek.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+[   55.824159] ath10k_sdio mmc1:0001:1: failed to transmit packet, dropping: -12
+[   55.832169] ath10k_sdio mmc1:0001:1: failed to submit frame: -12
+[   55.838529] ath10k_sdio mmc1:0001:1: failed to push frame: -12
+[   55.905863] ath10k_sdio mmc1:0001:1: failed to transmit packet, dropping: -12
+[   55.913650] ath10k_sdio mmc1:0001:1: failed to submit frame: -12
+[   55.919887] ath10k_sdio mmc1:0001:1: failed to push frame: -12
+
+, leading to an ssh connection failure.
+
+One user inspected the size of frames on Wireshark and reported
+the followig:
+
+"I was able to narrow the issue down to the mtu. If I set the mtu for
+the wlan0 device to 1486 instead of 1500, the issue does not happen.
+
+The size of frames that I see on Wireshark is exactly 1500 after
+setting it to 1486."
+
+Clearing the HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE avoids the problem and
+the ssh command works successfully after that.
+
+Introduce a 'credit_size_workaround' field to ath10k_hw_params for
+the QCA9377 SDIO, so that the HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE
+is not set in this case.
+
+Tested with QCA9377 SDIO with firmware WLAN.TF.1.1.1-00061-QCATFSWPZ-1.
+
+Fixes: 2f918ea98606 ("ath10k: enable alt data of TX path for sdio")
+Signed-off-by: Fabio Estevam <festevam@denx.de>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211124131047.713756-1-festevam@denx.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/btmtksdio.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/wireless/ath/ath10k/core.c | 19 ++++++++++++++++++-
+ drivers/net/wireless/ath/ath10k/hw.h   |  3 +++
+ 2 files changed, 21 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/btmtksdio.c b/drivers/bluetooth/btmtksdio.c
-index 9872ef18f9fea..1cbdeca1fdc4a 100644
---- a/drivers/bluetooth/btmtksdio.c
-+++ b/drivers/bluetooth/btmtksdio.c
-@@ -1042,6 +1042,8 @@ static int btmtksdio_runtime_suspend(struct device *dev)
- 	if (!bdev)
- 		return 0;
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index 5935e0973d146..5e3b4d10c1a95 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -89,6 +89,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = true,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -124,6 +125,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = true,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -160,6 +162,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -190,6 +193,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.num_wds_entries = 0x20,
+ 		.uart_pin_workaround = true,
+ 		.tx_stats_over_pktlog = false,
++		.credit_size_workaround = false,
+ 		.bmi_large_size_download = true,
+ 		.supports_peer_stats_info = true,
+ 		.dynamic_sar_support = true,
+@@ -226,6 +230,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -261,6 +266,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -296,6 +302,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -334,6 +341,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = true,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.supports_peer_stats_info = true,
+ 		.dynamic_sar_support = true,
+@@ -376,6 +384,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -424,6 +433,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -469,6 +479,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -504,6 +515,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -541,6 +553,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = true,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -570,6 +583,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.ast_skid_limit = 0x10,
+ 		.num_wds_entries = 0x20,
+ 		.uart_pin_workaround = true,
++		.credit_size_workaround = true,
+ 		.dynamic_sar_support = false,
+ 	},
+ 	{
+@@ -611,6 +625,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = false,
+ 		.hw_filter_reset_required = true,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = false,
+ 	},
+@@ -639,6 +654,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.rri_on_ddr = true,
+ 		.hw_filter_reset_required = false,
+ 		.fw_diag_ce_download = false,
++		.credit_size_workaround = false,
+ 		.tx_stats_over_pktlog = false,
+ 		.dynamic_sar_support = true,
+ 	},
+@@ -714,6 +730,7 @@ static void ath10k_send_suspend_complete(struct ath10k *ar)
  
-+	sdio_set_host_pm_flags(func, MMC_PM_KEEP_POWER);
+ static int ath10k_init_sdio(struct ath10k *ar, enum ath10k_firmware_mode mode)
+ {
++	bool mtu_workaround = ar->hw_params.credit_size_workaround;
+ 	int ret;
+ 	u32 param = 0;
+ 
+@@ -731,7 +748,7 @@ static int ath10k_init_sdio(struct ath10k *ar, enum ath10k_firmware_mode mode)
+ 
+ 	param |= HI_ACS_FLAGS_SDIO_REDUCE_TX_COMPL_SET;
+ 
+-	if (mode == ATH10K_FIRMWARE_MODE_NORMAL)
++	if (mode == ATH10K_FIRMWARE_MODE_NORMAL && !mtu_workaround)
+ 		param |= HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE;
+ 	else
+ 		param &= ~HI_ACS_FLAGS_ALT_DATA_CREDIT_SIZE;
+diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
+index 6b03c7787e36a..591ef7416b613 100644
+--- a/drivers/net/wireless/ath/ath10k/hw.h
++++ b/drivers/net/wireless/ath/ath10k/hw.h
+@@ -618,6 +618,9 @@ struct ath10k_hw_params {
+ 	 */
+ 	bool uart_pin_workaround;
+ 
++	/* Workaround for the credit size calculation */
++	bool credit_size_workaround;
 +
- 	sdio_claim_host(bdev->func);
+ 	/* tx stats support over pktlog */
+ 	bool tx_stats_over_pktlog;
  
- 	sdio_writel(bdev->func, C_FW_OWN_REQ_SET, MTK_REG_CHLPCR, &err);
 -- 
 2.34.1
 
