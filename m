@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25081C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7590CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:53:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351814AbiAXTw6 (ORCPT
+        id S1355414AbiAXTxE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:52:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55008 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234964AbiAXTmC (ORCPT
+        Mon, 24 Jan 2022 14:53:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35862 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345396AbiAXTmX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:42:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93EF4C0401F9;
-        Mon, 24 Jan 2022 11:21:40 -0800 (PST)
+        Mon, 24 Jan 2022 14:42:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 504B9B8122C;
-        Mon, 24 Jan 2022 19:21:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EC7DC340E5;
-        Mon, 24 Jan 2022 19:21:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 42B7061031;
+        Mon, 24 Jan 2022 19:42:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F61AC340E5;
+        Mon, 24 Jan 2022 19:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052098;
-        bh=9uuTNGN4fd8TIPEbjUjg8u469Jw6qL+92O7t1DCz5R4=;
+        s=korg; t=1643053342;
+        bh=V+le2JyJO4eaQ2u2wi+xJ2j42OxrRL3YiITO6FyFsQQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=joy4VfxCgwXNO5CKZ3PEVyOgDrHjzP0SWn1jc79vdMbZou66o8UbZeG6LrWJtBREz
-         vv+bTAT1GVLWJZo2zr11ssBFNE7ogCKCp8n8ZLQqTucS1ZAbp+4yoZ5bCUUJYcqk2V
-         pE3bcNUfWqougSF7MxdxypuZzbUyXrmCCA7wUljA=
+        b=tUB8XIQUT7pjBHXwg9O4Kx+RaEv8ohO4uti8S/HOHt46KVsniVxITrqsERRYfxiz8
+         gHndP1l51YLzHfX5BtHGOj7ndX9aqfA2GLlZCt5t46iwT3DtcMrIohvpmbXMg8fDIB
+         zufZmb5FcgfCbUE3FZe28wgxuyvyMOGFTmKKKPQQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
-        Ye Guojin <ye.guojin@zte.com.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 189/239] MIPS: OCTEON: add put_device() after of_find_device_by_node()
-Date:   Mon, 24 Jan 2022 19:43:47 +0100
-Message-Id: <20220124183949.123070769@linuxfoundation.org>
+        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>
+Subject: [PATCH 5.10 032/563] lkdtm: Fix content of section containing lkdtm_rodata_do_nothing()
+Date:   Mon, 24 Jan 2022 19:36:37 +0100
+Message-Id: <20220124184025.541909855@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,67 +49,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
+commit bc93a22a19eb2b68a16ecf04cdf4b2ed65aaf398 upstream.
 
-This was found by coccicheck:
-./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 324, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 387, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
+On a kernel without CONFIG_STRICT_KERNEL_RWX, running EXEC_RODATA
+test leads to "Illegal instruction" failure.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Looking at the content of rodata_objcopy.o, we see that the
+function content zeroes only:
+
+	Disassembly of section .rodata:
+
+	0000000000000000 <.lkdtm_rodata_do_nothing>:
+	   0:	00 00 00 00 	.long 0x0
+
+Add the contents flag in order to keep the content of the section
+while renaming it.
+
+	Disassembly of section .rodata:
+
+	0000000000000000 <.lkdtm_rodata_do_nothing>:
+	   0:	4e 80 00 20 	blr
+
+Fixes: e9e08a07385e ("lkdtm: support llvm-objcopy")
+Cc: stable@vger.kernel.org
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Nick Desaulniers <ndesaulniers@google.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+Signed-off-by: Kees Cook <keescook@chromium.org>
+Link: https://lore.kernel.org/r/8900731fbc05fb8b0de18af7133a8fc07c3c53a1.1633712176.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/cavium-octeon/octeon-platform.c | 2 ++
- arch/mips/cavium-octeon/octeon-usb.c      | 1 +
- 2 files changed, 3 insertions(+)
+ drivers/misc/lkdtm/Makefile |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
-index 5ba181e87d2c1..4d83f5bc7211c 100644
---- a/arch/mips/cavium-octeon/octeon-platform.c
-+++ b/arch/mips/cavium-octeon/octeon-platform.c
-@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
+--- a/drivers/misc/lkdtm/Makefile
++++ b/drivers/misc/lkdtm/Makefile
+@@ -16,7 +16,7 @@ KCOV_INSTRUMENT_rodata.o	:= n
  
- 	pd->dev.platform_data = &octeon_ehci_pdata;
- 	octeon_ehci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
- 	return ret;
- }
-@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
- 
- 	pd->dev.platform_data = &octeon_ohci_pdata;
- 	octeon_ohci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
- 	return ret;
- }
-diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
-index 75189ff2f3c78..3465452e28195 100644
---- a/arch/mips/cavium-octeon/octeon-usb.c
-+++ b/arch/mips/cavium-octeon/octeon-usb.c
-@@ -543,6 +543,7 @@ static int __init dwc3_octeon_device_init(void)
- 			devm_iounmap(&pdev->dev, base);
- 			devm_release_mem_region(&pdev->dev, res->start,
- 						resource_size(res));
-+			put_device(&pdev->dev);
- 		}
- 	} while (node != NULL);
- 
--- 
-2.34.1
-
+ OBJCOPYFLAGS :=
+ OBJCOPYFLAGS_rodata_objcopy.o	:= \
+-			--rename-section .noinstr.text=.rodata,alloc,readonly,load
++			--rename-section .noinstr.text=.rodata,alloc,readonly,load,contents
+ targets += rodata.o rodata_objcopy.o
+ $(obj)/rodata_objcopy.o: $(obj)/rodata.o FORCE
+ 	$(call if_changed,objcopy)
 
 
