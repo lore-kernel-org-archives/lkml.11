@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B58DC2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA45C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386596AbiAXXre (ORCPT
+        id S2364246AbiAXXrE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44760 "EHLO
+        Mon, 24 Jan 2022 18:47:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1576167AbiAXWzo (ORCPT
+        with ESMTP id S1356421AbiAXWz7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:55:44 -0500
+        Mon, 24 Jan 2022 17:55:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2938EC0680B6;
-        Mon, 24 Jan 2022 13:09:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F6FC0680BF;
+        Mon, 24 Jan 2022 13:10:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E552AB810BD;
-        Mon, 24 Jan 2022 21:09:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4096C340E5;
-        Mon, 24 Jan 2022 21:09:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B1318B80CCF;
+        Mon, 24 Jan 2022 21:10:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C605FC340E5;
+        Mon, 24 Jan 2022 21:10:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058587;
-        bh=dxGuISMhA9ZEc5sX9BfzvJSZLkFpxqiBwP7QfUE9xig=;
+        s=korg; t=1643058621;
+        bh=C2yRUz42DqSxD6SVZ6vEK2YQtCMvqicsfk/FQJFLEfQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1pSj3wM4a+31jGMLDDN7TH1lW71Fxy8/fy42D5ArO0Z2a92PXBciB6GPJZekbV+Br
-         mz+O4Bkkog3r0UuYY7ZxsQUwkeGwHIuTk/OuJAinK5nSmOsZ8qbBDug/v3kqehlNq6
-         mwAvOD1ZvVu58ZQaRhj2DOkGTj8W4v5M7cZy0seQ=
+        b=ik+twVqX/IotTV0XewxqJpaxRlrtLiE2E9KxcU1TXZ7la9SgX3WJWZb1anq37zJ/m
+         K47MdIFEfgSQFs+Bm4aDGIZrjeqpLXdcwp+BQiu7+J353jRKUZrmfRPbPO3I9BQtMU
+         nRLNQ4uP0Qrszy2neSFafyWZCvGk/w/zRONJ6XKI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0304/1039] usb: ftdi-elan: fix memory leak on device disconnect
-Date:   Mon, 24 Jan 2022 19:34:53 +0100
-Message-Id: <20220124184135.531746303@linuxfoundation.org>
+Subject: [PATCH 5.16 0349/1039] backlight: qcom-wled: Respect enabled-strings in set_brightness
+Date:   Mon, 24 Jan 2022 19:35:38 +0100
+Message-Id: <20220124184137.022224835@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,50 +54,133 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 1646566b5e0c556f779180a8514e521ac735de1e ]
+[ Upstream commit ec961cf3241153e0f27d850f1bf0f172e7d27a21 ]
 
-'ftdi' is alloced when probe device, but not free on device disconnect,
-this cause a memory leak as follows:
+The hardware is capable of controlling any non-contiguous sequence of
+LEDs specified in the DT using qcom,enabled-strings as u32
+array, and this also follows from the DT-bindings documentation.  The
+numbers specified in this array represent indices of the LED strings
+that are to be enabled and disabled.
 
-unreferenced object 0xffff88800d584000 (size 8400):
-  comm "kworker/0:2", pid 3809, jiffies 4295453055 (age 13.784s)
-  hex dump (first 32 bytes):
-    00 40 58 0d 80 88 ff ff 00 40 58 0d 80 88 ff ff  .@X......@X.....
-    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
-  backtrace:
-    [<000000000d47f947>] kmalloc_order_trace+0x19/0x110 mm/slab_common.c:960
-    [<000000008548ac68>] ftdi_elan_probe+0x8c/0x880 drivers/usb/misc/ftdi-elan.c:2647
-    [<000000007f73e422>] usb_probe_interface+0x31b/0x800 drivers/usb/core/driver.c:396
-    [<00000000fe8d07fc>] really_probe+0x299/0xc30 drivers/base/dd.c:517
-    [<0000000005da7d32>] __driver_probe_device+0x357/0x500 drivers/base/dd.c:751
-    [<000000003c2c9579>] driver_probe_device+0x4e/0x140 drivers/base/dd.c:781
+Its value is appropriately used to setup and enable string modules, but
+completely disregarded in the set_brightness paths which only iterate
+over the number of strings linearly.
+Take an example where only string 2 is enabled with
+qcom,enabled_strings=<2>: this string is appropriately enabled but
+subsequent brightness changes would have only touched the zero'th
+brightness register because num_strings is 1 here.  This is simply
+addressed by looking up the string for this index in the enabled_strings
+array just like the other codepaths that iterate over num_strings.
 
-Fix it by freeing 'ftdi' after nobody use it.
+Likewise enabled_strings is now also used in the autodetection path for
+consistent behaviour: when a list of strings is specified in DT only
+those strings will be probed for autodetection, analogous to how the
+number of strings that need to be probed is already bound by
+qcom,num-strings.  After all autodetection uses the set_brightness
+helpers to set an initial value, which could otherwise end up changing
+brightness on a different set of strings.
 
-Fixes: a5c66e4b2418 ("USB: ftdi-elan: client driver for ELAN Uxxx adapters")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Link: https://lore.kernel.org/r/20211217083428.2441-1-weiyongjun1@huawei.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
+Fixes: 03b2b5e86986 ("backlight: qcom-wled: Add support for WLED4 peripheral")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-10-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/misc/ftdi-elan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/video/backlight/qcom-wled.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/usb/misc/ftdi-elan.c b/drivers/usb/misc/ftdi-elan.c
-index e5a8fcdbb78e7..6c38c62d29b26 100644
---- a/drivers/usb/misc/ftdi-elan.c
-+++ b/drivers/usb/misc/ftdi-elan.c
-@@ -202,6 +202,7 @@ static void ftdi_elan_delete(struct kref *kref)
- 	mutex_unlock(&ftdi_module_lock);
- 	kfree(ftdi->bulk_in_buffer);
- 	ftdi->bulk_in_buffer = NULL;
-+	kfree(ftdi);
- }
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index 5306b06044b4f..f12c76d6e61de 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -237,7 +237,7 @@ static int wled3_set_brightness(struct wled *wled, u16 brightness)
  
- static void ftdi_elan_put_kref(struct usb_ftdi *ftdi)
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->ctrl_addr +
+-				       WLED3_SINK_REG_BRIGHT(i),
++				       WLED3_SINK_REG_BRIGHT(wled->cfg.enabled_strings[i]),
+ 				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+@@ -260,7 +260,7 @@ static int wled4_set_brightness(struct wled *wled, u16 brightness)
+ 
+ 	for (i = 0;  i < wled->cfg.num_strings; ++i) {
+ 		rc = regmap_bulk_write(wled->regmap, wled->sink_addr +
+-				       WLED4_SINK_REG_BRIGHT(i),
++				       WLED4_SINK_REG_BRIGHT(wled->cfg.enabled_strings[i]),
+ 				       &v, sizeof(v));
+ 		if (rc < 0)
+ 			return rc;
+@@ -571,7 +571,7 @@ unlock_mutex:
+ 
+ static void wled_auto_string_detection(struct wled *wled)
+ {
+-	int rc = 0, i, delay_time_us;
++	int rc = 0, i, j, delay_time_us;
+ 	u32 sink_config = 0;
+ 	u8 sink_test = 0, sink_valid = 0, val;
+ 	bool fault_set;
+@@ -618,14 +618,15 @@ static void wled_auto_string_detection(struct wled *wled)
+ 
+ 	/* Iterate through the strings one by one */
+ 	for (i = 0; i < wled->cfg.num_strings; i++) {
+-		sink_test = BIT((WLED4_SINK_REG_CURR_SINK_SHFT + i));
++		j = wled->cfg.enabled_strings[i];
++		sink_test = BIT((WLED4_SINK_REG_CURR_SINK_SHFT + j));
+ 
+ 		/* Enable feedback control */
+ 		rc = regmap_write(wled->regmap, wled->ctrl_addr +
+-				  WLED3_CTRL_REG_FEEDBACK_CONTROL, i + 1);
++				  WLED3_CTRL_REG_FEEDBACK_CONTROL, j + 1);
+ 		if (rc < 0) {
+ 			dev_err(wled->dev, "Failed to enable feedback for SINK %d rc = %d\n",
+-				i + 1, rc);
++				j + 1, rc);
+ 			goto failed_detect;
+ 		}
+ 
+@@ -634,7 +635,7 @@ static void wled_auto_string_detection(struct wled *wled)
+ 				  WLED4_SINK_REG_CURR_SINK, sink_test);
+ 		if (rc < 0) {
+ 			dev_err(wled->dev, "Failed to configure SINK %d rc=%d\n",
+-				i + 1, rc);
++				j + 1, rc);
+ 			goto failed_detect;
+ 		}
+ 
+@@ -661,7 +662,7 @@ static void wled_auto_string_detection(struct wled *wled)
+ 
+ 		if (fault_set)
+ 			dev_dbg(wled->dev, "WLED OVP fault detected with SINK %d\n",
+-				i + 1);
++				j + 1);
+ 		else
+ 			sink_valid |= sink_test;
+ 
+@@ -701,15 +702,16 @@ static void wled_auto_string_detection(struct wled *wled)
+ 	/* Enable valid sinks */
+ 	if (wled->version == 4) {
+ 		for (i = 0; i < wled->cfg.num_strings; i++) {
++			j = wled->cfg.enabled_strings[i];
+ 			if (sink_config &
+-			    BIT(WLED4_SINK_REG_CURR_SINK_SHFT + i))
++			    BIT(WLED4_SINK_REG_CURR_SINK_SHFT + j))
+ 				val = WLED4_SINK_REG_STR_MOD_MASK;
+ 			else
+ 				/* Disable modulator_en for unused sink */
+ 				val = 0;
+ 
+ 			rc = regmap_write(wled->regmap, wled->sink_addr +
+-					  WLED4_SINK_REG_STR_MOD_EN(i), val);
++					  WLED4_SINK_REG_STR_MOD_EN(j), val);
+ 			if (rc < 0) {
+ 				dev_err(wled->dev, "Failed to configure MODULATOR_EN rc=%d\n",
+ 					rc);
 -- 
 2.34.1
 
