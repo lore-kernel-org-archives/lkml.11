@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7846C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52266C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838452AbiAXWqi (ORCPT
+        id S1838543AbiAXWqr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457278AbiAXVlT (ORCPT
+        Mon, 24 Jan 2022 17:46:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58950 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457107AbiAXVk4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED253C07E310;
-        Mon, 24 Jan 2022 12:27:31 -0800 (PST)
+        Mon, 24 Jan 2022 16:40:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B5DC8B8122C;
-        Mon, 24 Jan 2022 20:27:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6754C340E5;
-        Mon, 24 Jan 2022 20:27:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EAFE61520;
+        Mon, 24 Jan 2022 21:40:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F33DC340E4;
+        Mon, 24 Jan 2022 21:40:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056049;
-        bh=cmlALGkjNK42Z8u1KhLDnG6qNAUnb9R1aG9lI4gCzOI=;
+        s=korg; t=1643060454;
+        bh=bA2NVkNRdfsC9+kYNk0cI6zBu7bM2DrL1aL/zdydw6E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i+UElGqNByU3FTUHsggbkcja7edA/QFd2BSHjG3W4OqSwNLAYzF+orHosPBeRbEFo
-         cGDdA29Wd94+kuZ8aSVkSjIFazB/gwNiESqhB33IJQr1rimHgDTxwD20sLDOtoX0XZ
-         ib9Yp3XRNceKiH77XDhlbZijRKFOg07nX2/hsASc=
+        b=2mDkXYxnyETnsdBw8AXCEXW5ryjJ2yJwRgeDaHYyT2Vnro/9XtmKcatE4cTOVw4ur
+         claEytLSE5YhOcIom6EFQqztk1wvpmHmg6nXqLIFZBkgD+E2WTl8s5DvOKtcfgVqKd
+         yda34lqzuAyknNIWti4OgqNuSQtGT3AgCiKF2x1k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 353/846] ax25: uninitialized variable in ax25_setsockopt()
-Date:   Mon, 24 Jan 2022 19:37:50 +0100
-Message-Id: <20220124184113.128174475@linuxfoundation.org>
+        stable@vger.kernel.org, Fengnan Chang <changfengnan@vivo.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.16 0954/1039] f2fs: fix remove page failed in invalidate compress pages
+Date:   Mon, 24 Jan 2022 19:45:43 +0100
+Message-Id: <20220124184157.355359360@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,75 +46,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Fengnan Chang <changfengnan@vivo.com>
 
-[ Upstream commit 9371937092d5fd502032c1bb4475b36b39b1f1b3 ]
+commit d1917865a7906baf6b687e15e8e6195a295a3992 upstream.
 
-The "opt" variable is unsigned long but we only copy 4 bytes from
-the user so the lower 4 bytes are uninitialized.
+Since compress inode not a regular file, generic_error_remove_page in
+f2fs_invalidate_compress_pages will always be failed, set compress
+inode as a regular file to fix it.
 
-I have changed the integer overflow checks from ULONG to UINT as well.
-This is a slight API change but I don't expect it to break anything.
-
-Fixes: a7b75c5a8c41 ("net: pass a sockptr_t into ->setsockopt")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6ce19aff0b8c ("f2fs: compress: add compress_inode to cache compressed blocks")
+Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
+Reviewed-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/ax25/af_ax25.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ fs/f2fs/inode.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/ax25/af_ax25.c b/net/ax25/af_ax25.c
-index aa7785687e757..7473e0cc6d469 100644
---- a/net/ax25/af_ax25.c
-+++ b/net/ax25/af_ax25.c
-@@ -536,7 +536,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 	ax25_cb *ax25;
- 	struct net_device *dev;
- 	char devname[IFNAMSIZ];
--	unsigned long opt;
-+	unsigned int opt;
- 	int res = 0;
- 
- 	if (level != SOL_AX25)
-@@ -568,7 +568,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T1:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -577,7 +577,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T2:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -593,7 +593,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_T3:
--		if (opt < 1 || opt > ULONG_MAX / HZ) {
-+		if (opt < 1 || opt > UINT_MAX / HZ) {
- 			res = -EINVAL;
- 			break;
- 		}
-@@ -601,7 +601,7 @@ static int ax25_setsockopt(struct socket *sock, int level, int optname,
- 		break;
- 
- 	case AX25_IDLE:
--		if (opt > ULONG_MAX / (60 * HZ)) {
-+		if (opt > UINT_MAX / (60 * HZ)) {
- 			res = -EINVAL;
- 			break;
- 		}
--- 
-2.34.1
-
+--- a/fs/f2fs/inode.c
++++ b/fs/f2fs/inode.c
+@@ -516,6 +516,11 @@ make_now:
+ 	} else if (ino == F2FS_COMPRESS_INO(sbi)) {
+ #ifdef CONFIG_F2FS_FS_COMPRESSION
+ 		inode->i_mapping->a_ops = &f2fs_compress_aops;
++		/*
++		 * generic_error_remove_page only truncates pages of regular
++		 * inode
++		 */
++		inode->i_mode |= S_IFREG;
+ #endif
+ 		mapping_set_gfp_mask(inode->i_mapping,
+ 			GFP_NOFS | __GFP_HIGHMEM | __GFP_MOVABLE);
 
 
