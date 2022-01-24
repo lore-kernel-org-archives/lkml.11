@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E4FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD26C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356310AbiAXUa5 (ORCPT
+        id S1384988AbiAXUbK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:30:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33776 "EHLO
+        Mon, 24 Jan 2022 15:31:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379358AbiAXULU (ORCPT
+        with ESMTP id S1379369AbiAXULV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:20 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7FF5C06F8D4;
-        Mon, 24 Jan 2022 11:33:13 -0800 (PST)
+        Mon, 24 Jan 2022 15:11:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEA51C06F8E2;
+        Mon, 24 Jan 2022 11:33:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91CA3B811FC;
-        Mon, 24 Jan 2022 19:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF652C340E5;
-        Mon, 24 Jan 2022 19:33:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4DCC161504;
+        Mon, 24 Jan 2022 19:33:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35EA3C340E5;
+        Mon, 24 Jan 2022 19:33:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052791;
-        bh=qd+RMW3ekTWdd5Ghm7/F/Cbe9ZBpbdGE29aSnDE0Ntc=;
+        s=korg; t=1643052807;
+        bh=9aYQODP5szAojPD5WJTQP+8gls/HiWPful1vla/RVVY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TY6eY/TIzB/ZXxr3IlKVOZ69EOUhUeC0JpSP1Lji8YDjZipz1ZYE3VUVUdfuaEJM+
-         tb1OLvlRF/h7xSCXOs/TLfsUfPGlFN62gzzUtkWAN+wbfmSmfJxfJgvBCeT48lvjBd
-         j848z2RUmpYsa5uMV0czXzMPuZx7a9RPIl7ACO/Y=
+        b=g5sMzs0k5IrgxWb2Iu8ZgxWcC68zEGo6FZrUQm9wBXJnk4Zz4qschzkWEvThmK//L
+         IVPCHZzIU+Xx6VwKFt3CY6mH76r6sd0DAWifmgLMqCfGh49fUdllGsTCI6DrQIkF59
+         VQ54o4A9mp7+B0o3ZL5ac/5bqBCwb4oUiqn9uAuw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 176/320] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
-Date:   Mon, 24 Jan 2022 19:42:40 +0100
-Message-Id: <20220124183959.647817904@linuxfoundation.org>
+Subject: [PATCH 5.4 181/320] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 24 Jan 2022 19:42:45 +0100
+Message-Id: <20220124183959.824749734@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -51,43 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Hilliard <james.hilliard1@gmail.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-Some uvc devices appear to require the maximum allowed USB timeout
-for GET_CUR/SET_CUR requests.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-So lets just bump the UVC control timeout to 5 seconds which is the
-same as the usb ctrl get/set defaults:
-USB_CTRL_GET_TIMEOUT 5000
-USB_CTRL_SET_TIMEOUT 5000
-
-It fixes the following runtime warnings:
-   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
-   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
-
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/uvc/uvcvideo.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index 24e3d8c647e77..5f137400bebd6 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -179,7 +179,7 @@
- /* Maximum status buffer size in bytes of interrupt URB. */
- #define UVC_MAX_STATUS_SIZE	16
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 05b0c60bfba2b..bcad7028bbf45 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1661,6 +1661,9 @@ static void remove_queue_kobjects(struct net_device *dev)
  
--#define UVC_CTRL_CONTROL_TIMEOUT	500
-+#define UVC_CTRL_CONTROL_TIMEOUT	5000
- #define UVC_CTRL_STREAMING_TIMEOUT	5000
- 
- /* Maximum allowed number of control mappings per device */
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
 2.34.1
 
