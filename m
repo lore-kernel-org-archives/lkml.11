@@ -2,154 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF11C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:57:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366129AbiAXXwW (ORCPT
+        id S2366184AbiAXXw2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:52:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356656AbiAXW4A (ORCPT
+        Mon, 24 Jan 2022 18:52:28 -0500
+Received: from smtp-fw-6001.amazon.com ([52.95.48.154]:8116 "EHLO
+        smtp-fw-6001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1840615AbiAXWyw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:56:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C89AC00366B;
-        Mon, 24 Jan 2022 11:41:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DC990B8125C;
-        Mon, 24 Jan 2022 19:41:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0229AC340E5;
-        Mon, 24 Jan 2022 19:41:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053262;
-        bh=6fZMCQloQ2t3ladZ5ITB1GxhYi5y6jBkCeqwFsjnSLI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sSaiSNeN18djYK1Kfi9YOhXxhiUxNpmIX4tMVBqqzBBy/EFqc/cdBs7d+On1ZJ27d
-         +yjp/2QEs3Nvfas+xIPTe9O+8BRrBJNi2lqHedSoMPlQwhy16H+BQE44GM+hy3Xlud
-         4Za+bCPpKx/QHj7zlTsRynzbgOxURJ90hPJvEUHk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.10 001/563] KVM: VMX: switch blocked_vcpu_on_cpu_lock to raw spinlock
-Date:   Mon, 24 Jan 2022 19:36:06 +0100
-Message-Id: <20220124184024.464020334@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
-X-stable: review
-X-Patchwork-Hint: ignore
+        Mon, 24 Jan 2022 17:54:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.com; i=@amazon.com; q=dns/txt; s=amazon201209;
+  t=1643064894; x=1674600894;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=tCQU+m5DYoHuerB1mz/UMZFKa6gGl9Rfb7pcDwFKfco=;
+  b=Xtzq4h8cl4HVBhJokEwve7jCp06LmsIAgX5CXpFnnqOwbgPf6BYeON4d
+   2/twaKpXfjFNvvHFAIg0xnfu3VX6aiI74DNA1yQZuOkp8xpINYyb+QxuH
+   UO5fV6rjcQlosFgX55TCZlwv1lIICOZicERhoF70XDLjQabJ8YVLqHqXa
+   U=;
+X-IronPort-AV: E=Sophos;i="5.88,313,1635206400"; 
+   d="scan'208";a="172800001"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-6001.iad6.amazon.com with ESMTP; 24 Jan 2022 22:54:16 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-iad-1box-d-74e80b3c.us-east-1.amazon.com (Postfix) with ESMTPS id 643298728F;
+        Mon, 24 Jan 2022 22:54:11 +0000 (UTC)
+Received: from EX13D02UWB002.ant.amazon.com (10.43.161.160) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Mon, 24 Jan 2022 22:54:10 +0000
+Received: from EX13MTAUEB002.ant.amazon.com (10.43.60.12) by
+ EX13D02UWB002.ant.amazon.com (10.43.161.160) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.28; Mon, 24 Jan 2022 22:54:10 +0000
+Received: from dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com
+ (10.200.138.153) by mail-relay.amazon.com (10.43.60.234) with Microsoft SMTP
+ Server id 15.0.1497.28 via Frontend Transport; Mon, 24 Jan 2022 22:54:09
+ +0000
+Received: by dev-dsk-alisaidi-i31e-9f3421fe.us-east-1.amazon.com (Postfix, from userid 5131138)
+        id B167A21B28; Mon, 24 Jan 2022 22:54:09 +0000 (UTC)
+From:   Ali Saidi <alisaidi@amazon.com>
+To:     <james.clark@arm.com>
+CC:     <acme@kernel.org>, <alexander.shishkin@linux.intel.com>,
+        <alisaidi@amazon.com>, <andrew.kilroy@arm.com>,
+        <benh@kernel.crashing.org>, <german.gomez@arm.com>,
+        <john.garry@huawei.com>, <jolsa@redhat.com>, <leo.yan@linaro.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-perf-users@vger.kernel.org>,
+        <mark.rutland@arm.com>, <mathieu.poirier@linaro.org>,
+        <mingo@redhat.com>, <namhyung@kernel.org>, <peterz@infradead.org>,
+        <will@kernel.org>
+Subject: Re: [PATCH] perf arm-spe: Use SPE data source for neoverse cores
+Date:   Mon, 24 Jan 2022 22:53:33 +0000
+Message-ID: <20220124225333.19864-1-alisaidi@amazon.com>
+X-Mailer: git-send-email 2.24.4.AMZN
+In-Reply-To: <0ba26f30-6978-36ad-f7d0-7b8465648e54@arm.com>
+References: <0ba26f30-6978-36ad-f7d0-7b8465648e54@arm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Tosatti <mtosatti@redhat.com>
+On 1/24/22, 11:24 AM, "James Clark" <james.clark@arm.com> wrote:
+>On 21/01/2022 18:24, Ali Saidi wrote:
+>> When synthesizing data from SPE, augment the type with source information
+>> for Arm Neoverse cores. The field is IMPLDEF but the Neoverse cores all use
+>> the same encoding. I can't find encoding information for any other SPE
+>> implementations to unify their choices with Arm's thus that is left for future
+>> work.
+>> 
+>> This changes enables the expected behavior of perf c2c on a system with SPE where
+>> lines that are shared among multiple cores show up in perf c2c output. 
+>> 
+>> Signed-off-by: Ali Saidi <alisaidi@amazon.com> 
+>> ---
+>>  .../util/arm-spe-decoder/arm-spe-decoder.c    |  1 +
+>>  .../util/arm-spe-decoder/arm-spe-decoder.h    | 12 +++++
+>>  tools/perf/util/arm-spe.c                     | 48 ++++++++++++++-----
+>>  3 files changed, 49 insertions(+), 12 deletions(-)
+>> 
+>[...]
+>> +static u64 arm_spe__synth_data_source(const struct arm_spe_record *record, u64 midr)
+>>  {
+>>  	union perf_mem_data_src	data_src = { 0 };
+>> +	bool is_neoverse = is_midr_in_range(midr, neoverse_spe);
+>>  
+>>  	if (record->op == ARM_SPE_LD)
+>>  		data_src.mem_op = PERF_MEM_OP_LOAD;
+>> @@ -409,19 +418,30 @@ static u64 arm_spe__synth_data_source(const struct arm_spe_record *record)
+>>  		data_src.mem_op = PERF_MEM_OP_STORE;
+>>  
+>>  	if (record->type & (ARM_SPE_LLC_ACCESS | ARM_SPE_LLC_MISS)) {
+>> -		data_src.mem_lvl = PERF_MEM_LVL_L3;
+>> +		if (is_neoverse && record->source == ARM_SPE_NV_DRAM) {
+>> +			data_src.mem_lvl = PERF_MEM_LVL_LOC_RAM | PERF_MEM_LVL_HIT;
+>> +		} else if (is_neoverse && record->source == ARM_SPE_NV_PEER_CLSTR) {
+>> +			data_src.mem_snoop = PERF_MEM_SNOOP_HITM;
+>
+>I'm not following how LLC_ACCESS | LLC_MISS ends up as HITM in this case (ARM_SPE_NV_PEER_CLSTR)?
+>I thought there was no way to determine a HITM from SPE. Wouldn't one of the other values
+>like PERF_MEM_SNOOP_MISS be more accurate?
 
-commit 5f02ef741a785678930f3ff0a8b6b2b0ef1bb402 upstream.
+Thanks for taking a look James.
 
-blocked_vcpu_on_cpu_lock is taken from hard interrupt context
-(pi_wakeup_handler), therefore it cannot sleep.
+I'd really like someone familiar with perf c2c output to also end up getting
+similar output when running on an Arm system with SPE. There are obviously large
+micro-architectural differences that have been abstracted away by the data_src
+abstraction but fundamentally my understanding of x86 HITM is that the line
+was found in the snoop filter of the LLC as being owned by another core and
+therefore the request needs to go to another core to get the line.  I'm not
+100% sure if on x86 it's really guaranteed to be dirty or not and it's not
+always going to be dirty in a Neoverse system, but since the SPE source
+indicates it was sourced from another core it is a core-2-core transfer of a
+line which is currently owned by another cpu core and that is the interesting
+data point that would be used to drive optimization and elimination of frequent
+core-2-core transfers (true or false sharing).
 
-Switch it to a raw spinlock.
+>> +			data_src.mem_lvl = PERF_MEM_LVL_L3 | PERF_MEM_LVL_HIT;
+>
+>This one also adds PERF_MEM_LVL_HIT even though the check of "if (record->type & ARM_SPE_LLC_MISS)"
+>hasn't happened yet. Maybe some comments would make it a bit clearer, but at the moment it's
+>not obvious how the result is derived because there are some things that don't add up like
+>ARM_SPE_LLC_MISS == PERF_MEM_LVL_HIT.
 
-Fixes:
+Assuming the above is correct, my reading of the existing code that creates the
+c2c output is that when an access is marked as an LLC hit, that doesn't
+necessarily mean that the data was present in the LLC. I don't see how it could
+given that LLC_HIT + HITM means the line was dirty in another CPUs cache, and so
+LLC_HIT + HITM seems to mean that it was a hit in the LLC snoop filter and
+required a different core to provide the line. This and the above certainly
+deserve a comment as to why the miss is being attributed in this way if it's
+otherwise acceptable.
 
-[41297.066254] BUG: scheduling while atomic: CPU 0/KVM/635218/0x00010001
-[41297.066323] Preemption disabled at:
-[41297.066324] [<ffffffff902ee47f>] irq_enter_rcu+0xf/0x60
-[41297.066339] Call Trace:
-[41297.066342]  <IRQ>
-[41297.066346]  dump_stack_lvl+0x34/0x44
-[41297.066353]  ? irq_enter_rcu+0xf/0x60
-[41297.066356]  __schedule_bug.cold+0x7d/0x8b
-[41297.066361]  __schedule+0x439/0x5b0
-[41297.066365]  ? task_blocks_on_rt_mutex.constprop.0.isra.0+0x1b0/0x440
-[41297.066369]  schedule_rtlock+0x1e/0x40
-[41297.066371]  rtlock_slowlock_locked+0xf1/0x260
-[41297.066374]  rt_spin_lock+0x3b/0x60
-[41297.066378]  pi_wakeup_handler+0x31/0x90 [kvm_intel]
-[41297.066388]  sysvec_kvm_posted_intr_wakeup_ipi+0x9d/0xd0
-[41297.066392]  </IRQ>
-[41297.066392]  asm_sysvec_kvm_posted_intr_wakeup_ipi+0x12/0x20
-...
-
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kvm/vmx/posted_intr.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -15,7 +15,7 @@
-  * can find which vCPU should be waken up.
-  */
- static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
--static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
-+static DEFINE_PER_CPU(raw_spinlock_t, blocked_vcpu_on_cpu_lock);
- 
- static inline struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
- {
-@@ -121,9 +121,9 @@ static void __pi_post_block(struct kvm_v
- 			   new.control) != old.control);
- 
- 	if (!WARN_ON_ONCE(vcpu->pre_pcpu == -1)) {
--		spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 		list_del(&vcpu->blocked_vcpu_list);
--		spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 		vcpu->pre_pcpu = -1;
- 	}
- }
-@@ -154,11 +154,11 @@ int pi_pre_block(struct kvm_vcpu *vcpu)
- 	local_irq_disable();
- 	if (!WARN_ON_ONCE(vcpu->pre_pcpu != -1)) {
- 		vcpu->pre_pcpu = vcpu->cpu;
--		spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 		list_add_tail(&vcpu->blocked_vcpu_list,
- 			      &per_cpu(blocked_vcpu_on_cpu,
- 				       vcpu->pre_pcpu));
--		spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 	}
- 
- 	do {
-@@ -215,7 +215,7 @@ void pi_wakeup_handler(void)
- 	struct kvm_vcpu *vcpu;
- 	int cpu = smp_processor_id();
- 
--	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-+	raw_spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
- 	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
- 			blocked_vcpu_list) {
- 		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-@@ -223,13 +223,13 @@ void pi_wakeup_handler(void)
- 		if (pi_test_on(pi_desc) == 1)
- 			kvm_vcpu_kick(vcpu);
- 	}
--	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-+	raw_spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
- }
- 
- void __init pi_init_cpu(int cpu)
- {
- 	INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
--	spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-+	raw_spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
- }
- 
- bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu)
-
+Thanks,
+Ali
 
