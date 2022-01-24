@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB45C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E447C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390192AbiAXUo7 (ORCPT
+        id S1390307AbiAXUpF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:44:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33896 "EHLO
+        Mon, 24 Jan 2022 15:45:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60524 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382612AbiAXU0A (ORCPT
+        with ESMTP id S1354983AbiAXUXD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:26:00 -0500
+        Mon, 24 Jan 2022 15:23:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C1E20B80FA1;
-        Mon, 24 Jan 2022 20:25:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1C70C340E5;
-        Mon, 24 Jan 2022 20:25:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DE3CAB811FB;
+        Mon, 24 Jan 2022 20:23:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 188A9C340E5;
+        Mon, 24 Jan 2022 20:22:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055957;
-        bh=hMS3Pfo/RADStheTOI07FspzNnegx1/g9BH7Y01uFTg=;
+        s=korg; t=1643055780;
+        bh=2/G4H/z6ZjT0mBnaR+ViTzd1dhM7FMwdV/1uFN7ooNs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Og2RYtCo8K+sybJg1dJVVtXUT0lt9DJEyNCuEpNoQa3Vi9FB9rNeImVBV0x2MVG74
-         Lvwd+1r2/Cg+qb7cxo2MM7HcQ94gdLW1mfxLcXDiOY4AH/p3Eb9Bd/npa8OVu/shSq
-         mRdYZcx7l445YsFDFb/zjhGeh4IYueNkwykTl/B8=
+        b=WyiVb0qwaqqoAg7DpDf7ugOyNGYr8ObSIvHPX+NOeh86p53IDQmLgahoKG3O0Cuad
+         nMNkxq8f182Alf2HkD/RHxLDghhErkPiujnvDCSYNguwcGwyyKQUyl2yHrAd6+BnYu
+         g+NVcu4rK+w6xTKHw0x412jfHisf8umzHVLW6ycM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Robert Marko <robert.marko@sartura.hr>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 321/846] Bluetooth: hci_bcm: Check for error irq
-Date:   Mon, 24 Jan 2022 19:37:18 +0100
-Message-Id: <20220124184111.973101950@linuxfoundation.org>
+Subject: [PATCH 5.15 264/846] arm64: dts: marvell: cn9130: enable CP0 GPIO controllers
+Date:   Mon, 24 Jan 2022 19:36:21 +0100
+Message-Id: <20220124184110.038261727@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,44 +47,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Robert Marko <robert.marko@sartura.hr>
 
-[ Upstream commit b38cd3b42fba66cc538edb9cf77e07881f43f8e2 ]
+[ Upstream commit 0734f8311ce72c9041e5142769eff2083889c172 ]
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq() effectively
-convert that into -EINVAL, even at probe time rather than later on.
-So it might be better to check just now.
+CN9130 has a built-in CP115 which has 2 GPIO controllers, but unlike in
+Armada 7k and 8k both are left disabled by the SoC DTSI.
 
-Fixes: 0395ffc1ee05 ("Bluetooth: hci_bcm: Add PM for BCM devices")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+This first of all makes no sense as they are always present due to being
+SoC built-in and its an issue as boards like CN9130-CRB use the CPO GPIO2
+pins for regulators and SD card support without enabling them first.
+
+So, enable both of them like Armada 7k and 8k do.
+
+Fixes: 6b8970bd8d7a ("arm64: dts: marvell: Add support for Marvell CN9130 SoC support")
+
+Signed-off-by: Robert Marko <robert.marko@sartura.hr>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_bcm.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/marvell/cn9130.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index ef54afa293574..7abf99f0ee399 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -1188,7 +1188,12 @@ static int bcm_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	dev->dev = &pdev->dev;
--	dev->irq = platform_get_irq(pdev, 0);
+diff --git a/arch/arm64/boot/dts/marvell/cn9130.dtsi b/arch/arm64/boot/dts/marvell/cn9130.dtsi
+index 71769ac7f0585..327b04134134f 100644
+--- a/arch/arm64/boot/dts/marvell/cn9130.dtsi
++++ b/arch/arm64/boot/dts/marvell/cn9130.dtsi
+@@ -42,3 +42,11 @@
+ #undef CP11X_PCIE0_BASE
+ #undef CP11X_PCIE1_BASE
+ #undef CP11X_PCIE2_BASE
 +
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
++&cp0_gpio1 {
++	status = "okay";
++};
 +
-+	dev->irq = ret;
- 
- 	/* Initialize routing field to an unused value */
- 	dev->pcm_int_params[0] = 0xff;
++&cp0_gpio2 {
++	status = "okay";
++};
 -- 
 2.34.1
 
