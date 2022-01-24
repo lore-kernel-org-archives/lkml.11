@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F57C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:02:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B473C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:03:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353359AbiAXUCx (ORCPT
+        id S1354333AbiAXUC4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:02:53 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53088 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351456AbiAXT1F (ORCPT
+        Mon, 24 Jan 2022 15:02:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50344 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346328AbiAXT07 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:27:05 -0500
+        Mon, 24 Jan 2022 14:26:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C29E61318;
-        Mon, 24 Jan 2022 19:27:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DF23C340E5;
-        Mon, 24 Jan 2022 19:27:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37559B81235;
+        Mon, 24 Jan 2022 19:26:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C950C340E5;
+        Mon, 24 Jan 2022 19:26:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052422;
-        bh=yXIQYxnNF1SjKzWmxAKfDHtSZ7/8iwVx/Mr08aAye/o=;
+        s=korg; t=1643052417;
+        bh=N32OVYcY/f1gbuRqAcysnzXSOICorRmIH14nLnx0rl0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U0aSIDiA5HgRrd+8fgKDMco3+NJLoTaP9SVPjzWIGHalxQbYnLTJ/j/x+EsRWQ8+6
-         2ODv+xyIZuIJrcMED2MH7xR5R0U08hDMkI45k2jpwfuT06O8pFQIENQITduPzQDxuX
-         mMhPCw0H36Fek8gRkcwR8FcLDbUYvWvswivvlQsw=
+        b=1OKTi7ZbxR3sWSY+dB0fVAvhP0XcrlN2efKLy6wXuZ+r9ExGPaDcBWz6DIsM0ePHk
+         VXIuShcuMfbit6KZHlj7i3twmNylCrGGrZ/g7M4pW//sLl/VYpRO314JzcsFVTJDwy
+         4xo3Z1seZpBWhZu4aB3pLw21CEQN7qreHyieAqW8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Richard Genoud <richard.genoud@gmail.com>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Thara Gopinath <thara.gopinath@linaro.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 053/320] tty: serial: atmel: Check return code of dmaengine_submit()
-Date:   Mon, 24 Jan 2022 19:40:37 +0100
-Message-Id: <20220124183955.547475165@linuxfoundation.org>
+Subject: [PATCH 5.4 051/320] crypto: qce - fix uaf on qce_ahash_register_one
+Date:   Mon, 24 Jan 2022 19:40:35 +0100
+Message-Id: <20220124183955.475962978@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -48,56 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
+[ Upstream commit b4cb4d31631912842eb7dce02b4350cbb7562d5e ]
 
-The tx_submit() method of struct dma_async_tx_descriptor is entitled
-to do sanity checks and return errors if encountered. It's not the
-case for the DMA controller drivers that this client is using
-(at_h/xdmac), because they currently don't do sanity checks and always
-return a positive cookie at tx_submit() method. In case the controller
-drivers will implement sanity checks and return errors, print a message
-so that the client will be informed that something went wrong at
-tx_submit() level.
+Pointer base points to sub field of tmpl, it
+is dereferenced after tmpl is freed. Fix
+this by accessing base before free tmpl.
 
-Fixes: 08f738be88bb ("serial: at91: add tx dma support")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Acked-by: Richard Genoud <richard.genoud@gmail.com>
-Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: ec8f5d8f ("crypto: qce - Qualcomm crypto engine driver")
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Acked-by: Thara Gopinath <thara.gopinath@linaro.org>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/atmel_serial.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/crypto/qce/sha.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
-index 8a909d5561859..da076493b336a 100644
---- a/drivers/tty/serial/atmel_serial.c
-+++ b/drivers/tty/serial/atmel_serial.c
-@@ -1002,6 +1002,11 @@ static void atmel_tx_dma(struct uart_port *port)
- 		desc->callback = atmel_complete_tx_dma;
- 		desc->callback_param = atmel_port;
- 		atmel_port->cookie_tx = dmaengine_submit(desc);
-+		if (dma_submit_error(atmel_port->cookie_tx)) {
-+			dev_err(port->dev, "dma_submit_error %d\n",
-+				atmel_port->cookie_tx);
-+			return;
-+		}
+diff --git a/drivers/crypto/qce/sha.c b/drivers/crypto/qce/sha.c
+index 0853e74583ade..29b0bad2507b1 100644
+--- a/drivers/crypto/qce/sha.c
++++ b/drivers/crypto/qce/sha.c
+@@ -512,8 +512,8 @@ static int qce_ahash_register_one(const struct qce_ahash_def *def,
+ 
+ 	ret = crypto_register_ahash(alg);
+ 	if (ret) {
+-		kfree(tmpl);
+ 		dev_err(qce->dev, "%s registration failed\n", base->cra_name);
++		kfree(tmpl);
+ 		return ret;
  	}
- 
- 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
-@@ -1262,6 +1267,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
- 	desc->callback_param = port;
- 	atmel_port->desc_rx = desc;
- 	atmel_port->cookie_rx = dmaengine_submit(desc);
-+	if (dma_submit_error(atmel_port->cookie_rx)) {
-+		dev_err(port->dev, "dma_submit_error %d\n",
-+			atmel_port->cookie_rx);
-+		goto chan_err;
-+	}
- 
- 	return 0;
  
 -- 
 2.34.1
