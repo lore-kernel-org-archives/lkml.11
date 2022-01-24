@@ -2,99 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79015C4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E885EC3526F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842470AbiAXXBz (ORCPT
+        id S1842754AbiAXXCa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:01:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58592 "EHLO
+        Mon, 24 Jan 2022 18:02:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457247AbiAXVzE (ORCPT
+        with ESMTP id S1455685AbiAXVzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:55:04 -0500
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7E0EC07E29C
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:36:15 -0800 (PST)
-Received: by mail-ot1-x32c.google.com with SMTP id s6-20020a0568301e0600b0059ea5472c98so8171695otr.11
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:36:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=PkiyCREFdDaGIz9ootXkRn4vBH0SG43WzFjcqohSdxE=;
-        b=biOqTlThtS/kKRPHpFYqWrxAwuQaMZI15zc24si1Wm+TD/mrKND7TxExKoLi2+9kp0
-         FcdKYe5w1fL/KrNuHAszHjMF5cLUTcYTjpC3AhiqtQBy2K9FJa2FroQF7dtYyh2lJjIs
-         h/KYnGpCPUjgUVSn7HLCzgEVPJlCyZqISWZsU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=PkiyCREFdDaGIz9ootXkRn4vBH0SG43WzFjcqohSdxE=;
-        b=IA36Ewr6SirPvbJmBo+R9PRnj/aV1XFAKp8ivrLI4DII0SpM3/8urdoZJ5O4MUFuF9
-         bcPQ8tLzpZGP4Ac2ycK9JAsDQel/H69eu0SoO/REZ4Q55CpOtFRVJAbMXFgWRgIZViWQ
-         2mJgtQj+umOwZZ5NpCu6MCGl5v2ng26N87kJGHPxnct7DmAzGfTkehvnAYTPfYW5A9gB
-         x8Sg5rtUCqD8X0SL22btt4KmfeEf2ch3vyYMWAi50uFQz0QC5Fcj1R8TI2tkI4qaLqTP
-         u3Qp6qsMIXt1isn5NI9k3PmPUrRg/EYupSzygHNX4deyu98ttYp5nCVBYvYKGQoSXhen
-         d8wQ==
-X-Gm-Message-State: AOAM533RUj+sSYzOT35FbG1LA+poY4S4a8KFsAV1akSqLqA+yQzD7v82
-        VzfaYuY2iJhbfont+H7x770qBK/itJv+93K5v8qefA==
-X-Google-Smtp-Source: ABdhPJyxhFIp4/kCVNQxrNu/5xh5KN6eRGvC7N5UC82evKraUAWIo6YaGg5L86kMXzG26rnOtUUc/TxoeGmN9iLqz7o=
-X-Received: by 2002:a05:6830:30ba:: with SMTP id g26mr6147866ots.159.1643056574994;
- Mon, 24 Jan 2022 12:36:14 -0800 (PST)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 24 Jan 2022 12:36:14 -0800
+        Mon, 24 Jan 2022 16:55:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 583FDC061362;
+        Mon, 24 Jan 2022 12:35:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EA1C361507;
+        Mon, 24 Jan 2022 20:35:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B28F4C340E5;
+        Mon, 24 Jan 2022 20:35:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056528;
+        bh=gHZDIl4ijtbPfwSZrWODXsLXyJ1ff7iEnfrh/2hqDMw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=FrBdsVW3Zebjf840O4rCVWUghPL2q3PBgkK6U89ZLhu4ALqX3BCeIPZxpI56zFl8S
+         7x27nkCGb32pe45bE/MXtkWYsyxNAnNczG3xLE4IV2Zq6+fdKKeDnEg+TiBQFtmcBk
+         Yk925ZfoV15xtPhupUkXK7SwWy2Sy7CHdHZCUrnk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 515/846] ACPI / x86: Allow specifying acpi_device_override_status() quirks by path
+Date:   Mon, 24 Jan 2022 19:40:32 +0100
+Message-Id: <20220124184118.779801721@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-In-Reply-To: <CAD=FV=X3+MDOMEidLbdgvcHVSObO=_x3KSLe31hr-TP6B2jCEg@mail.gmail.com>
-References: <20220124165745.16277-1-tdas@codeaurora.org> <CAD=FV=X3+MDOMEidLbdgvcHVSObO=_x3KSLe31hr-TP6B2jCEg@mail.gmail.com>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 24 Jan 2022 12:36:14 -0800
-Message-ID: <CAE-0n50aF9tvYFy+_zV1R00KG1T4oKsrNt6LLL5Hi_uiLFVCNA@mail.gmail.com>
-Subject: Re: [PATCH v1] arm64: dts: qcom: sc7280: Add lpasscore & lpassaudio
- clock controllers
-To:     Doug Anderson <dianders@chromium.org>,
-        Taniya Das <tdas@codeaurora.org>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Doug Anderson (2022-01-24 12:33:06)
-> Hi,
->
-> On Mon, Jan 24, 2022 at 8:58 AM Taniya Das <tdas@codeaurora.org> wrote:
-> >
-> > Add the low pass audio clock controller device nodes.
-> >
-> > Signed-off-by: Taniya Das <tdas@codeaurora.org>
-> > ---
-> > Dependent onLPASS clock controller change: https://lkml.org/lkml/2022/1/24/772
-> >
-> >  arch/arm64/boot/dts/qcom/sc7280.dtsi | 43 ++++++++++++++++++++++++++++
-> >  1 file changed, 43 insertions(+)
-> >
-> > diff --git a/arch/arm64/boot/dts/qcom/sc7280.dtsi b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > index 937c2e0e93eb..0aa834ce6b61 100644
-> > --- a/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > +++ b/arch/arm64/boot/dts/qcom/sc7280.dtsi
-> > @@ -8,6 +8,8 @@
-> >  #include <dt-bindings/clock/qcom,dispcc-sc7280.h>
-> >  #include <dt-bindings/clock/qcom,gcc-sc7280.h>
-> >  #include <dt-bindings/clock/qcom,gpucc-sc7280.h>
-> > +#include <dt-bindings/clock/qcom,lpassaudiocc-sc7280.h>
-> > +#include <dt-bindings/clock/qcom,lpasscorecc-sc7280.h>
->
-> Presumably using these two include files means a dependency on things
-> landing in the clk tree [1]. Unless Stephen and Bjorn want to work
-> something out, I'd guess you'll need to re-post with just hardcoded
-> numbers for now?
->
+From: Hans de Goede <hdegoede@redhat.com>
 
-Bjorn will apply both patches so the dts patch can live atop the clk
-one.
+[ Upstream commit ba46e42e925b5d09b4e441f8de3db119cc7df58f ]
+
+Not all ACPI-devices have a HID + UID, allow specifying quirks for
+acpi_device_override_status() by path too.
+
+Note this moves the path/HID+UID check to after the CPU + DMI checks
+since the path lookup is somewhat costly.
+
+This way this lookup is only done on devices where the other checks
+match.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/acpi/x86/utils.c | 42 ++++++++++++++++++++++++++++++----------
+ 1 file changed, 32 insertions(+), 10 deletions(-)
+
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index edb4f3fd93dc3..190bfc2ab3f26 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -38,22 +38,30 @@ struct override_status_id {
+ 	struct x86_cpu_id cpu_ids[2];
+ 	struct dmi_system_id dmi_ids[2]; /* Optional */
+ 	const char *uid;
++	const char *path;
+ 	unsigned long long status;
+ };
+ 
+-#define ENTRY(status, hid, uid, cpu_model, dmi...) {			\
++#define ENTRY(status, hid, uid, path, cpu_model, dmi...) {		\
+ 	{ { hid, }, {} },						\
+ 	{ X86_MATCH_INTEL_FAM6_MODEL(cpu_model, NULL), {} },		\
+ 	{ { .matches = dmi }, {} },					\
+ 	uid,								\
++	path,								\
+ 	status,								\
+ }
+ 
+ #define PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
+-	ENTRY(ACPI_STA_DEFAULT, hid, uid, cpu_model, dmi)
++	ENTRY(ACPI_STA_DEFAULT, hid, uid, NULL, cpu_model, dmi)
+ 
+ #define NOT_PRESENT_ENTRY_HID(hid, uid, cpu_model, dmi...) \
+-	ENTRY(0, hid, uid, cpu_model, dmi)
++	ENTRY(0, hid, uid, NULL, cpu_model, dmi)
++
++#define PRESENT_ENTRY_PATH(path, cpu_model, dmi...) \
++	ENTRY(ACPI_STA_DEFAULT, "", NULL, path, cpu_model, dmi)
++
++#define NOT_PRESENT_ENTRY_PATH(path, cpu_model, dmi...) \
++	ENTRY(0, "", NULL, path, cpu_model, dmi)
+ 
+ static const struct override_status_id override_status_ids[] = {
+ 	/*
+@@ -120,13 +128,6 @@ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *s
+ 	unsigned int i;
+ 
+ 	for (i = 0; i < ARRAY_SIZE(override_status_ids); i++) {
+-		if (acpi_match_device_ids(adev, override_status_ids[i].hid))
+-			continue;
+-
+-		if (!adev->pnp.unique_id ||
+-		    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
+-			continue;
+-
+ 		if (!x86_match_cpu(override_status_ids[i].cpu_ids))
+ 			continue;
+ 
+@@ -134,6 +135,27 @@ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *s
+ 		    !dmi_check_system(override_status_ids[i].dmi_ids))
+ 			continue;
+ 
++		if (override_status_ids[i].path) {
++			struct acpi_buffer path = { ACPI_ALLOCATE_BUFFER, NULL };
++			bool match;
++
++			if (acpi_get_name(adev->handle, ACPI_FULL_PATHNAME, &path))
++				continue;
++
++			match = strcmp((char *)path.pointer, override_status_ids[i].path) == 0;
++			kfree(path.pointer);
++
++			if (!match)
++				continue;
++		} else {
++			if (acpi_match_device_ids(adev, override_status_ids[i].hid))
++				continue;
++
++			if (!adev->pnp.unique_id ||
++			    strcmp(adev->pnp.unique_id, override_status_ids[i].uid))
++				continue;
++		}
++
+ 		*status = override_status_ids[i].status;
+ 		ret = true;
+ 		break;
+-- 
+2.34.1
+
+
+
