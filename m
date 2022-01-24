@@ -2,51 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D80FC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0955EC4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578076AbiAXWBh (ORCPT
+        id S1578219AbiAXWCF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:01:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37676 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446773AbiAXVSY (ORCPT
+        Mon, 24 Jan 2022 17:02:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43168 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450423AbiAXVU2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:18:24 -0500
+        Mon, 24 Jan 2022 16:20:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77A4CB81057;
-        Mon, 24 Jan 2022 21:18:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E5E8C340E4;
-        Mon, 24 Jan 2022 21:18:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20F0B61305;
+        Mon, 24 Jan 2022 21:20:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F02F2C340E4;
+        Mon, 24 Jan 2022 21:20:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059097;
-        bh=2ZPHVcGpaSXfIN28Z1vt7OZB9VjTVdIcGorkPScaoY4=;
+        s=korg; t=1643059227;
+        bh=hMvz0BBLDKfp6xLtKBumqNeTre1P81r1tH1l9Baj+sI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=adFrGPa9k64AgO/X+haxmEFNtdp1K4O6E29Rks20fz4jEALe9Hsxd6CkESGZs/SLT
-         b+qm7iRaqtc0fwXjJVMUoHdmoMfA7gTWAiZ2FIZjre+2HP3aIWe1+s+uAOiBkqjiCF
-         K7EetBfTX+hOet1BiUqGodaHE5xtVL5DRCHgTa/o=
+        b=behnfwQp/OCYQ/rOScrWLRjs/nBOqHk2iG57W/kzKmgH3U8ihi6WLAjS/JBhtD4cj
+         yD9l/3NqzW6yv44RlDxF8aoH8UjhpeC/cnWtzJj+im7juK8nATZ1TMA/BdOId7D13s
+         mAh45GNYPuacpe9ogBV0vHeZ3nHumMC+T+BTgzv4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-efi@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pingfan Liu <kernelfans@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Nick Terrell <terrelln@fb.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0503/1039] efi: apply memblock cap after memblock_add()
-Date:   Mon, 24 Jan 2022 19:38:12 +0100
-Message-Id: <20220124184142.176957209@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0544/1039] drm/sched: Avoid lockdep spalt on killing a processes
+Date:   Mon, 24 Jan 2022 19:38:53 +0100
+Message-Id: <20220124184143.561981088@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -58,136 +49,122 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pingfan Liu <kernelfans@gmail.com>
+From: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
 
-[ Upstream commit b398123bff3bcbc1facb0f29bf6e7b9f1bc55931 ]
+[ Upstream commit 542cff7893a37445f98ece26aeb3c9c1055e9ea4 ]
 
-On arm64, during kdump kernel saves vmcore, it runs into the following bug:
-...
-[   15.148919] usercopy: Kernel memory exposure attempt detected from SLUB object 'kmem_cache_node' (offset 0, size 4096)!
-[   15.159707] ------------[ cut here ]------------
-[   15.164311] kernel BUG at mm/usercopy.c:99!
-[   15.168482] Internal error: Oops - BUG: 0 [#1] SMP
-[   15.173261] Modules linked in: xfs libcrc32c crct10dif_ce ghash_ce sha2_ce sha256_arm64 sha1_ce sbsa_gwdt ast i2c_algo_bit drm_vram_helper drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops cec drm_ttm_helper ttm drm nvme nvme_core xgene_hwmon i2c_designware_platform i2c_designware_core dm_mirror dm_region_hash dm_log dm_mod overlay squashfs zstd_decompress loop
-[   15.206186] CPU: 0 PID: 542 Comm: cp Not tainted 5.16.0-rc4 #1
-[   15.212006] Hardware name: GIGABYTE R272-P30-JG/MP32-AR0-JG, BIOS F12 (SCP: 1.5.20210426) 05/13/2021
-[   15.221125] pstate: 60400009 (nZCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
-[   15.228073] pc : usercopy_abort+0x9c/0xa0
-[   15.232074] lr : usercopy_abort+0x9c/0xa0
-[   15.236070] sp : ffff8000121abba0
-[   15.239371] x29: ffff8000121abbb0 x28: 0000000000003000 x27: 0000000000000000
-[   15.246494] x26: 0000000080000400 x25: 0000ffff885c7000 x24: 0000000000000000
-[   15.253617] x23: 000007ff80400000 x22: ffff07ff80401000 x21: 0000000000000001
-[   15.260739] x20: 0000000000001000 x19: ffff07ff80400000 x18: ffffffffffffffff
-[   15.267861] x17: 656a626f2042554c x16: 53206d6f72662064 x15: 6574636574656420
-[   15.274983] x14: 74706d6574746120 x13: 2129363930342065 x12: 7a6973202c302074
-[   15.282105] x11: ffffc8b041d1b148 x10: 00000000ffff8000 x9 : ffffc8b04012812c
-[   15.289228] x8 : 00000000ffff7fff x7 : ffffc8b041d1b148 x6 : 0000000000000000
-[   15.296349] x5 : 0000000000000000 x4 : 0000000000007fff x3 : 0000000000000000
-[   15.303471] x2 : 0000000000000000 x1 : ffff07ff8c064800 x0 : 000000000000006b
-[   15.310593] Call trace:
-[   15.313027]  usercopy_abort+0x9c/0xa0
-[   15.316677]  __check_heap_object+0xd4/0xf0
-[   15.320762]  __check_object_size.part.0+0x160/0x1e0
-[   15.325628]  __check_object_size+0x2c/0x40
-[   15.329711]  copy_oldmem_page+0x7c/0x140
-[   15.333623]  read_from_oldmem.part.0+0xfc/0x1c0
-[   15.338142]  __read_vmcore.constprop.0+0x23c/0x350
-[   15.342920]  read_vmcore+0x28/0x34
-[   15.346309]  proc_reg_read+0xb4/0xf0
-[   15.349871]  vfs_read+0xb8/0x1f0
-[   15.353088]  ksys_read+0x74/0x100
-[   15.356390]  __arm64_sys_read+0x28/0x34
-...
+Probelm:
+Singlaning one sched fence from within another's sched
+fence singal callback generates lockdep splat because
+the both have same lockdep class of their fence->lock
 
-This bug introduced by commit b261dba2fdb2 ("arm64: kdump: Remove custom
-linux,usable-memory-range handling"), which moves
-memblock_cap_memory_range() to fdt, but it breaches the rules that
-memblock_cap_memory_range() should come after memblock_add() etc as said
-in commit e888fa7bb882 ("memblock: Check memory add/cap ordering").
+Fix:
+Fix bellow stack by rescheduling to irq work of
+signaling and killing of jobs that left when entity is killed.
 
-As a consequence, the virtual address set up by copy_oldmem_page() does
-not bail out from the test of virt_addr_valid() in check_heap_object(),
-and finally hits the BUG_ON().
+[11176.741181]  dump_stack+0x10/0x12
+[11176.741186] __lock_acquire.cold+0x208/0x2df
+[11176.741197]  lock_acquire+0xc6/0x2d0
+[11176.741204]  ? dma_fence_signal+0x28/0x80
+[11176.741212] _raw_spin_lock_irqsave+0x4d/0x70
+[11176.741219]  ? dma_fence_signal+0x28/0x80
+[11176.741225]  dma_fence_signal+0x28/0x80
+[11176.741230] drm_sched_fence_finished+0x12/0x20 [gpu_sched]
+[11176.741240] drm_sched_entity_kill_jobs_cb+0x1c/0x50 [gpu_sched]
+[11176.741248] dma_fence_signal_timestamp_locked+0xac/0x1a0
+[11176.741254]  dma_fence_signal+0x3b/0x80
+[11176.741260] drm_sched_fence_finished+0x12/0x20 [gpu_sched]
+[11176.741268] drm_sched_job_done.isra.0+0x7f/0x1a0 [gpu_sched]
+[11176.741277] drm_sched_job_done_cb+0x12/0x20 [gpu_sched]
+[11176.741284] dma_fence_signal_timestamp_locked+0xac/0x1a0
+[11176.741290]  dma_fence_signal+0x3b/0x80
+[11176.741296] amdgpu_fence_process+0xd1/0x140 [amdgpu]
+[11176.741504] sdma_v4_0_process_trap_irq+0x8c/0xb0 [amdgpu]
+[11176.741731]  amdgpu_irq_dispatch+0xce/0x250 [amdgpu]
+[11176.741954]  amdgpu_ih_process+0x81/0x100 [amdgpu]
+[11176.742174]  amdgpu_irq_handler+0x26/0xa0 [amdgpu]
+[11176.742393] __handle_irq_event_percpu+0x4f/0x2c0
+[11176.742402] handle_irq_event_percpu+0x33/0x80
+[11176.742408]  handle_irq_event+0x39/0x60
+[11176.742414]  handle_edge_irq+0x93/0x1d0
+[11176.742419]  __common_interrupt+0x50/0xe0
+[11176.742426]  common_interrupt+0x80/0x90
 
-Since memblock allocator has no idea about when the memblock is fully
-populated, while efi_init() is aware, so tackling this issue by calling the
-interface early_init_dt_check_for_usable_mem_range() exposed by of/fdt.
-
-Fixes: b261dba2fdb2 ("arm64: kdump: Remove custom linux,usable-memory-range handling")
-Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: Zhen Lei <thunder.leizhen@huawei.com>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Mike Rapoport <rppt@kernel.org>
-Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-Cc: Frank Rowand <frowand.list@gmail.com>
-Cc: Ard Biesheuvel <ardb@kernel.org>
-Cc: Nick Terrell <terrelln@fb.com>
-Cc: linux-arm-kernel@lists.infradead.org
-To: devicetree@vger.kernel.org
-To: linux-efi@vger.kernel.org
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20211215021348.8766-1-kernelfans@gmail.com
+Signed-off-by: Andrey Grodzovsky <andrey.grodzovsky@amd.com>
+Suggested-by: Daniel Vetter  <daniel.vetter@ffwll.ch>
+Suggested-by: Christian König <christian.koenig@amd.com>
+Tested-by: Christian König <christian.koenig@amd.com>
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Link: https://www.spinics.net/lists/dri-devel/msg321250.html
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/firmware/efi/efi-init.c | 5 +++++
- drivers/of/fdt.c                | 2 +-
- include/linux/of_fdt.h          | 2 ++
- 3 files changed, 8 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/scheduler/sched_entity.c | 15 ++++++++++++---
+ include/drm/gpu_scheduler.h              | 12 +++++++++++-
+ 2 files changed, 23 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/firmware/efi/efi-init.c b/drivers/firmware/efi/efi-init.c
-index b19ce1a83f91a..b2c829e95bd14 100644
---- a/drivers/firmware/efi/efi-init.c
-+++ b/drivers/firmware/efi/efi-init.c
-@@ -235,6 +235,11 @@ void __init efi_init(void)
- 	}
+diff --git a/drivers/gpu/drm/scheduler/sched_entity.c b/drivers/gpu/drm/scheduler/sched_entity.c
+index 27e1573af96e2..191c56064f196 100644
+--- a/drivers/gpu/drm/scheduler/sched_entity.c
++++ b/drivers/gpu/drm/scheduler/sched_entity.c
+@@ -190,6 +190,16 @@ long drm_sched_entity_flush(struct drm_sched_entity *entity, long timeout)
+ }
+ EXPORT_SYMBOL(drm_sched_entity_flush);
  
- 	reserve_regions();
++static void drm_sched_entity_kill_jobs_irq_work(struct irq_work *wrk)
++{
++	struct drm_sched_job *job = container_of(wrk, typeof(*job), work);
++
++	drm_sched_fence_finished(job->s_fence);
++	WARN_ON(job->s_fence->parent);
++	job->sched->ops->free_job(job);
++}
++
++
+ /* Signal the scheduler finished fence when the entity in question is killed. */
+ static void drm_sched_entity_kill_jobs_cb(struct dma_fence *f,
+ 					  struct dma_fence_cb *cb)
+@@ -197,9 +207,8 @@ static void drm_sched_entity_kill_jobs_cb(struct dma_fence *f,
+ 	struct drm_sched_job *job = container_of(cb, struct drm_sched_job,
+ 						 finish_cb);
+ 
+-	drm_sched_fence_finished(job->s_fence);
+-	WARN_ON(job->s_fence->parent);
+-	job->sched->ops->free_job(job);
++	init_irq_work(&job->work, drm_sched_entity_kill_jobs_irq_work);
++	irq_work_queue(&job->work);
+ }
+ 
+ static struct dma_fence *
+diff --git a/include/drm/gpu_scheduler.h b/include/drm/gpu_scheduler.h
+index f011e4c407f2e..bbc22fad8d802 100644
+--- a/include/drm/gpu_scheduler.h
++++ b/include/drm/gpu_scheduler.h
+@@ -28,6 +28,7 @@
+ #include <linux/dma-fence.h>
+ #include <linux/completion.h>
+ #include <linux/xarray.h>
++#include <linux/irq_work.h>
+ 
+ #define MAX_WAIT_SCHED_ENTITY_Q_EMPTY msecs_to_jiffies(1000)
+ 
+@@ -286,7 +287,16 @@ struct drm_sched_job {
+ 	struct list_head		list;
+ 	struct drm_gpu_scheduler	*sched;
+ 	struct drm_sched_fence		*s_fence;
+-	struct dma_fence_cb		finish_cb;
++
 +	/*
-+	 * For memblock manipulation, the cap should come after the memblock_add().
-+	 * And now, memblock is fully populated, it is time to do capping.
++	 * work is used only after finish_cb has been used and will not be
++	 * accessed anymore.
 +	 */
-+	early_init_dt_check_for_usable_mem_range();
- 	efi_esrt_init();
- 	efi_mokvar_table_init();
- 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 5a238a933eb29..65af475dfa950 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -971,7 +971,7 @@ static unsigned long chosen_node_offset = -FDT_ERR_NOTFOUND;
-  * early_init_dt_check_for_usable_mem_range - Decode usable memory range
-  * location from flat tree
-  */
--static void __init early_init_dt_check_for_usable_mem_range(void)
-+void __init early_init_dt_check_for_usable_mem_range(void)
- {
- 	const __be32 *prop;
- 	int len;
-diff --git a/include/linux/of_fdt.h b/include/linux/of_fdt.h
-index cf48983d3c867..ad09beb6d13c4 100644
---- a/include/linux/of_fdt.h
-+++ b/include/linux/of_fdt.h
-@@ -62,6 +62,7 @@ extern int early_init_dt_scan_chosen(unsigned long node, const char *uname,
- 				     int depth, void *data);
- extern int early_init_dt_scan_memory(unsigned long node, const char *uname,
- 				     int depth, void *data);
-+extern void early_init_dt_check_for_usable_mem_range(void);
- extern int early_init_dt_scan_chosen_stdout(void);
- extern void early_init_fdt_scan_reserved_mem(void);
- extern void early_init_fdt_reserve_self(void);
-@@ -86,6 +87,7 @@ extern void unflatten_and_copy_device_tree(void);
- extern void early_init_devtree(void *);
- extern void early_get_first_memblock_info(void *, phys_addr_t *);
- #else /* CONFIG_OF_EARLY_FLATTREE */
-+static inline void early_init_dt_check_for_usable_mem_range(void) {}
- static inline int early_init_dt_scan_chosen_stdout(void) { return -ENODEV; }
- static inline void early_init_fdt_scan_reserved_mem(void) {}
- static inline void early_init_fdt_reserve_self(void) {}
++	union {
++		struct dma_fence_cb		finish_cb;
++		struct irq_work 		work;
++	};
++
+ 	uint64_t			id;
+ 	atomic_t			karma;
+ 	enum drm_sched_priority		s_priority;
 -- 
 2.34.1
 
