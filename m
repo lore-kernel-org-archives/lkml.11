@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1794C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 037EAC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838000AbiAXWpp (ORCPT
+        id S1838140AbiAXWp5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47594 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377338AbiAXVh3 (ORCPT
+        Mon, 24 Jan 2022 17:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457220AbiAXVlN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:29 -0500
+        Mon, 24 Jan 2022 16:41:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB7CC07E308;
+        Mon, 24 Jan 2022 12:27:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2D18B81142;
-        Mon, 24 Jan 2022 21:37:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2393CC340E7;
-        Mon, 24 Jan 2022 21:37:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1931A61512;
+        Mon, 24 Jan 2022 20:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4165C340E5;
+        Mon, 24 Jan 2022 20:27:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060237;
-        bh=NoAJVYw6CP/5wj4wKs43vSyyWuXkyI9r0CT4hhQoO8g=;
+        s=korg; t=1643056043;
+        bh=VhfLq6rswzGbOL/ljKj6bPc7+9MR7Lf4elfV0tKpNaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N6ZV7o86rpTbcfpnGZu53diW3t1PDaPhohU46LfkhkXWEiTNcTAkI/DYrB7DpYPlP
-         pRHjk2i0qC2tqVfV2lvBMYde8zeBIbkJD9I6+xivmOM7O3wsY/skzMlmUGdjzmkb91
-         00gaZZlrgNOnA7N4gBwX6YoCKIqwZATyUKcVMYZI=
+        b=0YdWMWn+Z+6UEnPhZrTVM6sEnnUCUg9zWXuP36UUFnuFm++Ynw6S4z9thZKTOFCrq
+         Ci5IjsKCwJ7h7aar4h/xft5XbbYIcIUaQbO5xrIhemN4kCYzCyTUxHYqrS6JxbXLOz
+         Dhb4a1fhrtdJ8p8tocHUulHNUKwpj6z1g4fH2+38=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nikolay Borisov <nborisov@suse.com>,
-        Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>
-Subject: [PATCH 5.16 0884/1039] btrfs: check the root node for uptodate before returning it
-Date:   Mon, 24 Jan 2022 19:44:33 +0100
-Message-Id: <20220124184155.007622603@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 351/846] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
+Date:   Mon, 24 Jan 2022 19:37:48 +0100
+Message-Id: <20220124184113.059060074@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,68 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 120de408e4b97504a2d9b5ca534b383de2c73d49 upstream.
+[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
 
-Now that we clear the extent buffer uptodate if we fail to write it out
-we need to check to see if our root node is uptodate before we search
-down it.  Otherwise we could return stale data (or potentially corrupt
-data that was caught by the write verification step) and think that the
-path is OK to search down.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for meson_spifc_probe.
 
-CC: stable@vger.kernel.org # 5.4+
-Reviewed-by: Nikolay Borisov <nborisov@suse.com>
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/ctree.c |   19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+ drivers/spi/spi-meson-spifc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/fs/btrfs/ctree.c
-+++ b/fs/btrfs/ctree.c
-@@ -1570,12 +1570,9 @@ static struct extent_buffer *btrfs_searc
- {
- 	struct btrfs_fs_info *fs_info = root->fs_info;
- 	struct extent_buffer *b;
--	int root_lock;
-+	int root_lock = 0;
- 	int level = 0;
- 
--	/* We try very hard to do read locks on the root */
--	root_lock = BTRFS_READ_LOCK;
--
- 	if (p->search_commit_root) {
- 		/*
- 		 * The commit roots are read only so we always do read locks,
-@@ -1613,6 +1610,9 @@ static struct extent_buffer *btrfs_searc
- 		goto out;
- 	}
- 
-+	/* We try very hard to do read locks on the root */
-+	root_lock = BTRFS_READ_LOCK;
-+
- 	/*
- 	 * If the level is set to maximum, we can skip trying to get the read
- 	 * lock.
-@@ -1639,6 +1639,17 @@ static struct extent_buffer *btrfs_searc
- 	level = btrfs_header_level(b);
- 
- out:
-+	/*
-+	 * The root may have failed to write out at some point, and thus is no
-+	 * longer valid, return an error in this case.
-+	 */
-+	if (!extent_buffer_uptodate(b)) {
-+		if (root_lock)
-+			btrfs_tree_unlock_rw(b, root_lock);
-+		free_extent_buffer(b);
-+		return ERR_PTR(-EIO);
-+	}
-+
- 	p->nodes[level] = b;
- 	if (!p->skip_locking)
- 		p->locks[level] = root_lock;
+diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
+index 8eca6f24cb799..c8ed7815c4ba6 100644
+--- a/drivers/spi/spi-meson-spifc.c
++++ b/drivers/spi/spi-meson-spifc.c
+@@ -349,6 +349,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
+ 	return 0;
+ out_clk:
+ 	clk_disable_unprepare(spifc->clk);
++	pm_runtime_disable(spifc->dev);
+ out_err:
+ 	spi_master_put(master);
+ 	return ret;
+-- 
+2.34.1
+
 
 
