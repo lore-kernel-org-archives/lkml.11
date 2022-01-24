@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D726C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 806EBC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587971AbiAXWaV (ORCPT
+        id S1586127AbiAXWZo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:30:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50300 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456325AbiAXVio (ORCPT
+        Mon, 24 Jan 2022 17:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52818 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453243AbiAXV3H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:38:44 -0500
+        Mon, 24 Jan 2022 16:29:07 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D2B4C01D7F7;
+        Mon, 24 Jan 2022 12:19:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DF872B81233;
-        Mon, 24 Jan 2022 21:38:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19BB0C340E4;
-        Mon, 24 Jan 2022 21:38:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1AA1AB81229;
+        Mon, 24 Jan 2022 20:19:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42C03C340E7;
+        Mon, 24 Jan 2022 20:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060315;
-        bh=4KnP9f2BG2N0gQWpClCCaBlbp1tyU3Pjw2Z1LPrgmQ8=;
+        s=korg; t=1643055548;
+        bh=n4BMgi2JN8hzkuG96h/xxV4Z4CXa32xHgU+72gZXUko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cenakRCK9CnTOdZM4c2d6HdhVsNEiRteH3JRptVZhoBSyjlcYg5qKT4ZItgxIWzEO
-         UbIHWjpr+Fm4/kYGYF39w89YLLunWLolbGoSGJ4DCmhGh0m/9bAsTIt5hQzlcyDjbH
-         qhdNW8plCebWFm30/Fa64BW7a2w7CyPsQFw00MTw=
+        b=Q5xsVvzKTonvGqpaJuUC0oAWJDe2kTUXWf52GdQE2WZ2muae7Xb6aeuHtDSjPfRWd
+         lesuNq1cwjCRiYJC09kQd1M7yL1BF3STyfEA0wNM2kOetPwlVFSnTjIbTRJ3py4h2s
+         ZMmRyhcN4H2ASYalBZMcNIRonot+j+OWjORp5AoY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joseph Bao <joseph.bao@intel.com>,
-        Lukas Wunner <lukas@wunner.de>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>
-Subject: [PATCH 5.16 0874/1039] PCI: pciehp: Fix infinite loop in IRQ handler upon power fault
-Date:   Mon, 24 Jan 2022 19:44:23 +0100
-Message-Id: <20220124184154.674800632@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 155/846] tty: serial: atmel: Call dma_async_issue_pending()
+Date:   Mon, 24 Jan 2022 19:34:32 +0100
+Message-Id: <20220124184106.341496727@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,76 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 23584c1ed3e15a6f4bfab8dc5a88d94ab929ee12 upstream.
+[ Upstream commit 4f4b9b5895614eb2e2b5f4cab7858f44bd113e1b ]
 
-The Power Fault Detected bit in the Slot Status register differs from
-all other hotplug events in that it is sticky:  It can only be cleared
-after turning off slot power.  Per PCIe r5.0, sec. 6.7.1.8:
+The driver wrongly assummed that tx_submit() will start the transfer,
+which is not the case, now that the at_xdmac driver is fixed. tx_submit
+is supposed to push the current transaction descriptor to a pending queue,
+waiting for issue_pending to be called. issue_pending must start the
+transfer, not tx_submit.
 
-  If a power controller detects a main power fault on the hot-plug slot,
-  it must automatically set its internal main power fault latch [...].
-  The main power fault latch is cleared when software turns off power to
-  the hot-plug slot.
-
-The stickiness used to cause interrupt storms and infinite loops which
-were fixed in 2009 by commits 5651c48cfafe ("PCI pciehp: fix power fault
-interrupt storm problem") and 99f0169c17f3 ("PCI: pciehp: enable
-software notification on empty slots").
-
-Unfortunately in 2020 the infinite loop issue was inadvertently
-reintroduced by commit 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt
-race"):  The hardirq handler pciehp_isr() clears the PFD bit until
-pciehp's power_fault_detected flag is set.  That happens in the IRQ
-thread pciehp_ist(), which never learns of the event because the hardirq
-handler is stuck in an infinite loop.  Fix by setting the
-power_fault_detected flag already in the hardirq handler.
-
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=214989
-Link: https://lore.kernel.org/linux-pci/DM8PR11MB5702255A6A92F735D90A4446868B9@DM8PR11MB5702.namprd11.prod.outlook.com
-Fixes: 8edf5332c393 ("PCI: pciehp: Fix MSI interrupt race")
-Link: https://lore.kernel.org/r/66eaeef31d4997ceea357ad93259f290ededecfd.1637187226.git.lukas@wunner.de
-Reported-by: Joseph Bao <joseph.bao@intel.com>
-Tested-by: Joseph Bao <joseph.bao@intel.com>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Cc: stable@vger.kernel.org # v4.19+
-Cc: Stuart Hayes <stuart.w.hayes@gmail.com>
+Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211125090028.786832-4-tudor.ambarus@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/hotplug/pciehp_hpc.c |    7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -642,6 +642,8 @@ read_status:
- 	 */
- 	if (ctrl->power_fault_detected)
- 		status &= ~PCI_EXP_SLTSTA_PFD;
-+	else if (status & PCI_EXP_SLTSTA_PFD)
-+		ctrl->power_fault_detected = true;
- 
- 	events |= status;
- 	if (!events) {
-@@ -651,7 +653,7 @@ read_status:
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 16ff972decfef..dd350c5908804 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1009,6 +1009,8 @@ static void atmel_tx_dma(struct uart_port *port)
+ 				atmel_port->cookie_tx);
+ 			return;
+ 		}
++
++		dma_async_issue_pending(chan);
  	}
  
- 	if (status) {
--		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, events);
-+		pcie_capability_write_word(pdev, PCI_EXP_SLTSTA, status);
- 
- 		/*
- 		 * In MSI mode, all event bits must be zero before the port
-@@ -725,8 +727,7 @@ static irqreturn_t pciehp_ist(int irq, v
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1269,6 +1271,8 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 		goto chan_err;
  	}
  
- 	/* Check Power Fault Detected */
--	if ((events & PCI_EXP_SLTSTA_PFD) && !ctrl->power_fault_detected) {
--		ctrl->power_fault_detected = 1;
-+	if (events & PCI_EXP_SLTSTA_PFD) {
- 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
- 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
- 				      PCI_EXP_SLTCTL_ATTN_IND_ON);
++	dma_async_issue_pending(atmel_port->chan_rx);
++
+ 	return 0;
+ 
+ chan_err:
+-- 
+2.34.1
+
 
 
