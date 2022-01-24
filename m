@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BDDC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B008C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377534AbiAXUFg (ORCPT
+        id S1377451AbiAXUFa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44854 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356961AbiAXTrp (ORCPT
+        Mon, 24 Jan 2022 15:05:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343914AbiAXTrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:47:45 -0500
+        Mon, 24 Jan 2022 14:47:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72947C061797;
+        Mon, 24 Jan 2022 11:23:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F2F916131E;
-        Mon, 24 Jan 2022 19:47:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28F9C340E5;
-        Mon, 24 Jan 2022 19:47:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E55BB8119D;
+        Mon, 24 Jan 2022 19:23:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CCE6C340E5;
+        Mon, 24 Jan 2022 19:23:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053663;
-        bh=CK6VH06TPdfkCC62W0JQK2cm9ehLj5Fn/1ycjcQy56A=;
+        s=korg; t=1643052203;
+        bh=eGU5BZn9pv3lxR8n0x8YyiDNk3dQsF9nkslcgbj7S0M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KYT7yEsaYx1I/rEOAu6v3yqkqdooAt9xf3LR2cKnbH2M5DkXjITWEXijryNpuWZnI
-         XJCZgBPG5kFVThPz/ksZcrW/4OBHA4zPsjWQrjt7GsJooZbDHKaIDeUoSGku/zvW67
-         0nrLhtvuiUZWVDT/d98y0Vkh/iDZ8/2EEI5WyoXE=
+        b=fTFhPB0YhSaEjwXeQ/ilTQQE8jVv4OZMefVM5QjKho1wQkvqiU+/ui8+iAQlGvP+e
+         rq6sFhMwLLzcfm5vTMHh+s1xFMv4jod4YCCb1Jpdg5PDptxgvsT0xnaKdDNYED9yRg
+         ABJWQI4fOZvRQ/yQoTB7rnDat7AExnR46accAj54=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 136/563] bpf: Adjust BTF log size limit.
-Date:   Mon, 24 Jan 2022 19:38:21 +0100
-Message-Id: <20220124184029.099971589@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 4.19 223/239] net: axienet: Wait for PhyRstCmplt after core reset
+Date:   Mon, 24 Jan 2022 19:44:21 +0100
+Message-Id: <20220124183950.200828682@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,37 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexei Starovoitov <ast@kernel.org>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit c5a2d43e998a821701029f23e25b62f9188e93ff ]
+commit b400c2f4f4c53c86594dd57098970d97d488bfde upstream.
 
-Make BTF log size limit to be the same as the verifier log size limit.
-Otherwise tools that progressively increase log size and use the same log
-for BTF loading and program loading will be hitting hard to debug EINVAL.
+When resetting the device, wait for the PhyRstCmplt bit to be set
+in the interrupt status register before continuing initialization, to
+ensure that the core is actually ready. When using an external PHY, this
+also ensures we do not start trying to access the PHY while it is still
+in reset. The PHY reset is initiated by the core reset which is
+triggered just above, but remains asserted for 5ms after the core is
+reset according to the documentation.
 
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/20211201181040.23337-7-alexei.starovoitov@gmail.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The MgtRdy bit could also be waited for, but unfortunately when using
+7-series devices, the bit does not appear to work as documented (it
+seems to behave as some sort of link state indication and not just an
+indication the transceiver is ready) so it can't really be relied on for
+this purpose.
+
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/bpf/btf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index aaf2fbaa0cc76..72534a6f4b96e 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -4135,7 +4135,7 @@ static struct btf *btf_parse(void __user *btf_data, u32 btf_data_size,
- 		log->len_total = log_size;
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -279,6 +279,16 @@ static int axienet_dma_bd_init(struct ne
+ 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
+ 			  cr | XAXIDMA_CR_RUNSTOP_MASK);
  
- 		/* log attributes have to be sane */
--		if (log->len_total < 128 || log->len_total > UINT_MAX >> 8 ||
-+		if (log->len_total < 128 || log->len_total > UINT_MAX >> 2 ||
- 		    !log->level || !log->ubuf) {
- 			err = -EINVAL;
- 			goto errout;
--- 
-2.34.1
-
++	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
++	ret = read_poll_timeout(axienet_ior, value,
++				value & XAE_INT_PHYRSTCMPLT_MASK,
++				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
++				XAE_IS_OFFSET);
++	if (ret) {
++		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
++		return ret;
++	}
++
+ 	return 0;
+ out:
+ 	axienet_dma_bd_release(ndev);
 
 
