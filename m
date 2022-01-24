@@ -2,103 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BDD8C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B34C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850096AbiAXX1Z (ORCPT
+        id S1850164AbiAXX1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:27:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39974 "EHLO
+        Mon, 24 Jan 2022 18:27:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1588121AbiAXWbl (ORCPT
+        with ESMTP id S1588113AbiAXWb3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:31:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44298C02B86B;
-        Mon, 24 Jan 2022 12:56:14 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9DE460916;
-        Mon, 24 Jan 2022 20:56:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7283C340E7;
-        Mon, 24 Jan 2022 20:56:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057773;
-        bh=WpOyy6PjwGpfsS2pWgBqOag+9MmARwpgbKe9wRIksXE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CKFZ/W+EyF5deTdMRPVKYZ7Ow9alcn3mGa3ZvgjOqmon3iM2ESh63X5SAeZ6GQ49t
-         Ur86ahDRIDDLnMa2Dc5dvohQGNvDZDNeG5yV/RqtyS4z0M01lIsqq/frrJbCiMDqtd
-         LyWC8ZgFHBvBonSXtTkANr5HJwBnUt42i84b66dE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sam Bingner <sam@bingner.com>,
-        Yifeng Li <tomli@tomli.me>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [PATCH 5.16 0074/1039] PCI: Add function 1 DMA alias quirk for Marvell 88SE9125 SATA controller
-Date:   Mon, 24 Jan 2022 19:31:03 +0100
-Message-Id: <20220124184127.660334615@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 17:31:29 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 683A7C047CD4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:55:58 -0800 (PST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1643057757;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ewg7Dhv9g66Ay9i+CemB/iAHIgq8aLwWkreYxw8kj/g=;
+        b=lKXSQDPRwtX3JbI5kY4OS0NvZR/TtL6HQvc1pAby9EDjOYmhD5/59olQqxj2uLie0QcmXD
+        122jSktPVHZZZXrwOHEgRzWf0nL0CBHeDPrSnDDr8HDOszOc/HBm5rmP9RF+gXhBjXTn5t
+        BOt4I8USw4ZZZYWMNLOZPfxrxIWpgrJJfyajfFitSwYv2H6JgoZMgt5ENKQsfH3WtPxwrh
+        X891rpgKH/dqXmcZFOicjJ/6jhZv/n7K819/xU9XoTJJJG0UmRxK0IBf2I1GcI+nlIFdYZ
+        hcAXac4/1ZFqNnIiV/DS6ITtBOgFtesQaRMiqKByg+iV2ltmyDTXH+IW24cw5w==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1643057757;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ewg7Dhv9g66Ay9i+CemB/iAHIgq8aLwWkreYxw8kj/g=;
+        b=G3ENNrBjyqKPwM/QWySmB1I+RO6YHoUmLNztYTPsSSISUX2jBvJ6FDZadlS6OF25uukxWG
+        XkpauCr0fKJ7TtCA==
+To:     Fenghua Yu <fenghua.yu@intel.com>
+Cc:     Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Lu Baolu <baolu.lu@linux.intel.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Ashok Raj <ashok.raj@intel.com>,
+        Ravi V Shankar <ravi.v.shankar@intel.com>,
+        iommu@lists.linux-foundation.org, x86 <x86@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 05/11] iommu/sva: Assign a PASID to mm on PASID
+ allocation and free it on mm exit
+In-Reply-To: <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
+References: <20211217220136.2762116-1-fenghua.yu@intel.com>
+ <20211217220136.2762116-6-fenghua.yu@intel.com> <87ee4w6g1n.ffs@tglx>
+ <87bl006fdb.ffs@tglx> <Ye8RmmKpJT8brmDE@otcwcpicx3.sc.intel.com>
+Date:   Mon, 24 Jan 2022 21:55:56 +0100
+Message-ID: <878rv46eg3.ffs@tglx>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yifeng Li <tomli@tomli.me>
+On Mon, Jan 24 2022 at 12:52, Fenghua Yu wrote:
+> On Mon, Jan 24, 2022 at 09:36:00PM +0100, Thomas Gleixner wrote:
+>> On Mon, Jan 24 2022 at 21:21, Thomas Gleixner wrote:
+> Ah. This patch should remove ioasid_get(). So I will change this patch
+> as follows:
+>
+> 1. Remove ioasid_get() because it's not used any more when IOASID's
+>    refcount is set to 1 once the IOASID is allocated and is freed on mm exit.
+> 2. Change mm_pasid_get() to mm_pasid_set().
 
-commit e445375882883f69018aa669b67cbb37ec873406 upstream.
+Yes. Just resend this one. No need to post the full queue again.
 
-Like other SATA controller chips in the Marvell 88SE91xx series, the
-Marvell 88SE9125 has the same DMA requester ID hardware bug that prevents
-it from working under IOMMU.  Add it to the list of devices that need the
-quirk.
+Thanks,
 
-Without this patch, device initialization fails with DMA errors:
-
-  ata8: softreset failed (1st FIS failed)
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Write NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
-  DMAR: DRHD: handling fault status reg 2
-  DMAR: [DMA Read NO_PASID] Request device [03:00.1] fault addr 0xfffc0000 [fault reason 0x02] Present bit in context entry is clear
-
-After applying the patch, the controller can be successfully initialized:
-
-  ata8: SATA link up 1.5 Gbps (SStatus 113 SControl 330)
-  ata8.00: ATAPI: PIONEER BD-RW   BDR-207M, 1.21, max UDMA/100
-  ata8.00: configured for UDMA/100
-  scsi 7:0:0:0: CD-ROM            PIONEER  BD-RW   BDR-207M 1.21 PQ: 0 ANSI: 5
-
-Link: https://lore.kernel.org/r/YahpKVR+McJVDdkD@work
-Reported-by: Sam Bingner <sam@bingner.com>
-Tested-by: Sam Bingner <sam@bingner.com>
-Tested-by: Yifeng Li <tomli@tomli.me>
-Signed-off-by: Yifeng Li <tomli@tomli.me>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/pci/quirks.c |    3 +++
- 1 file changed, 3 insertions(+)
-
---- a/drivers/pci/quirks.c
-+++ b/drivers/pci/quirks.c
-@@ -4103,6 +4103,9 @@ DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_M
- 			 quirk_dma_func1_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9123,
- 			 quirk_dma_func1_alias);
-+/* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c136 */
-+DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9125,
-+			 quirk_dma_func1_alias);
- DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MARVELL_EXT, 0x9128,
- 			 quirk_dma_func1_alias);
- /* https://bugzilla.kernel.org/show_bug.cgi?id=42679#c14 */
-
-
+        tglx
