@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46E50C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98748C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442834AbiAXUz3 (ORCPT
+        id S1442855AbiAXUzd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:55:29 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35322 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383994AbiAXUdF (ORCPT
+        Mon, 24 Jan 2022 15:55:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58674 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385399AbiAXUdU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:05 -0500
+        Mon, 24 Jan 2022 15:33:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 537F5B8121C;
-        Mon, 24 Jan 2022 20:32:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0BBCC340E5;
-        Mon, 24 Jan 2022 20:32:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0617D61540;
+        Mon, 24 Jan 2022 20:33:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA53EC340E8;
+        Mon, 24 Jan 2022 20:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056378;
-        bh=uJoyLqhseUQJo0ZE3D2WIiitPdPERSXYICGFZS49XR4=;
+        s=korg; t=1643056399;
+        bh=Vxt7sL+McsR0Y4kjTfaLdO0eDNOwuRPngtrNVKeST7o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lEnD/lM2kbG7BJ2pmx4Q0jcpONWlaCSuxwKQeuM3rERaFc8KD4TPhQqjxYsYjAYZO
-         L1x2tsGHMhL5OHS8lJeNAt70BU0dsfETrO3IcWtcc6A3GJK/ZmGSdCztj60M7/RaIJ
-         1qR/FREjYB9iQ38vr1dmwFo0qzvzlOaJlhEOrF/Y=
+        b=lqJe3w1Q07E2QeGt5H4mwSrK5Kr/wLJpBDx3XFNKIiYy4uNYVIucStBL6q3SENmrZ
+         Mle+ogZ2VHm39ZWUdywQnfPED+Lv7LpdQ28x4QbTz5fxJwHaKJczAw9G8G77n3XPBl
+         wIwl6K63B+UPeClK2dDgxaa1vvYOQ0tkO53JWxrw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 463/846] fs: dlm: filter user dlm messages for kernel locks
-Date:   Mon, 24 Jan 2022 19:39:40 +0100
-Message-Id: <20220124184116.949672695@linuxfoundation.org>
+        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 438/846] arm64: tegra: Remove non existent Tegra194 reset
+Date:   Mon, 24 Jan 2022 19:39:15 +0100
+Message-Id: <20220124184116.088164253@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,116 +46,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Sameer Pujar <spujar@nvidia.com>
 
-[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
+[ Upstream commit 146b3a77af8091cabbd1decc51d67799e69682d2 ]
 
-This patch fixes the following crash by receiving a invalid message:
+Tegra194 does not really have "hda2codec_2x" related reset. Hence drop
+this entry to reflect actual HW.
 
-[  160.672220] ==================================================================
-[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
-[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
-[  160.681447]
-[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
-[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
-[  160.685574] Workqueue: dlm_recv process_recv_sockets
-[  160.686721] Call Trace:
-[  160.687310]  dump_stack_lvl+0x56/0x6f
-[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
-[  160.689116]  kasan_report.cold.14+0x116/0x11b
-[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
-[  160.690832]  dlm_user_add_ast+0xc3/0x370
-[  160.691502]  _receive_unlock_reply+0x103/0x170
-[  160.692241]  _receive_message+0x11df/0x1ec0
-[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.694427]  ? lock_acquire+0x175/0x400
-[  160.695058]  ? do_purge.isra.51+0x200/0x200
-[  160.695744]  ? lock_acquired+0x360/0x5d0
-[  160.696400]  ? lock_contended+0x6a0/0x6a0
-[  160.697055]  ? lock_release+0x21d/0x5e0
-[  160.697686]  ? lock_is_held_type+0xe0/0x110
-[  160.698352]  ? lock_is_held_type+0xe0/0x110
-[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
-[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
-[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
-[  160.701249]  ? down_write_killable+0x2b0/0x2b0
-[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
-[  160.702690]  dlm_receive_buffer+0x1a5/0x210
-[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
-[  160.704210]  receive_from_sock+0x1c0/0x3b0
-[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
-[  160.705561]  ? lock_acquire+0x175/0x400
-[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.707681]  process_recv_sockets+0x32/0x40
-[  160.708366]  process_one_work+0x55e/0xad0
-[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
-[  160.709820]  worker_thread+0x65/0x5e0
-[  160.710423]  ? process_one_work+0xad0/0xad0
-[  160.711087]  kthread+0x1ed/0x220
-[  160.711628]  ? set_kthread_struct+0x80/0x80
-[  160.712314]  ret_from_fork+0x22/0x30
-
-The issue is that we received a DLM message for a user lock but the
-destination lock is a kernel lock. Note that the address which is trying
-to derefence is 00000000deadbeef, which is in a kernel lock
-lkb->lkb_astparam, this field should never be derefenced by the DLM
-kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
-(memory is shared by a union field). The struct lkb_ua will be handled
-by the DLM kernel stack but on a kernel lock it will contain invalid
-data and ends in most likely crashing the kernel.
-
-It can be reproduced with two cluster nodes.
-
-node 2:
-dlm_tool join test
-echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
-echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
-
-node 1:
-dlm_tool join test
-
-python:
-foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
-          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
-newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
-newFile.write(bytes(foo))
-
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Fixes: 4878cc0c9fab ("arm64: tegra: Add HDA controller on Tegra194")
+Signed-off-by: Sameer Pujar <spujar@nvidia.com>
+Link: https://lore.kernel.org/r/1640260431-11613-4-git-send-email-spujar@nvidia.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lock.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm64/boot/dts/nvidia/tegra194.dtsi | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
-index c502c065d0075..28d1f35b11a4d 100644
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -3973,6 +3973,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 	int from = ms->m_header.h_nodeid;
- 	int error = 0;
- 
-+	/* currently mixing of user/kernel locks are not supported */
-+	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
-+		log_error(lkb->lkb_resource->res_ls,
-+			  "got user dlm message for a kernel lock");
-+		error = -EINVAL;
-+		goto out;
-+	}
-+
- 	switch (ms->m_type) {
- 	case DLM_MSG_CONVERT:
- 	case DLM_MSG_UNLOCK:
-@@ -4001,6 +4009,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 		error = -EINVAL;
- 	}
- 
-+out:
- 	if (error)
- 		log_error(lkb->lkb_resource->res_ls,
- 			  "ignore invalid message %d from %d %x %x %x %d",
+diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+index c8250a3f7891f..510d2974470cd 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
+@@ -818,9 +818,8 @@
+ 				 <&bpmp TEGRA194_CLK_HDA2CODEC_2X>;
+ 			clock-names = "hda", "hda2hdmi", "hda2codec_2x";
+ 			resets = <&bpmp TEGRA194_RESET_HDA>,
+-				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>,
+-				 <&bpmp TEGRA194_RESET_HDA2CODEC_2X>;
+-			reset-names = "hda", "hda2hdmi", "hda2codec_2x";
++				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>;
++			reset-names = "hda", "hda2hdmi";
+ 			power-domains = <&bpmp TEGRA194_POWER_DOMAIN_DISP>;
+ 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_HDAR &emc>,
+ 					<&mc TEGRA194_MEMORY_CLIENT_HDAW &emc>;
 -- 
 2.34.1
 
