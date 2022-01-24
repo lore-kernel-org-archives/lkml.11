@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B84EAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1105C4707E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351091AbiAXTZz (ORCPT
+        id S1351313AbiAXT0W (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:25:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47142 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229976AbiAXTSJ (ORCPT
+        Mon, 24 Jan 2022 14:26:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49412 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347404AbiAXTTM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:18:09 -0500
+        Mon, 24 Jan 2022 14:19:12 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2436C02C3EF;
+        Mon, 24 Jan 2022 11:07:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 432C560909;
-        Mon, 24 Jan 2022 19:18:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1590C340E5;
-        Mon, 24 Jan 2022 19:18:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F4126090C;
+        Mon, 24 Jan 2022 19:07:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A211EC340E7;
+        Mon, 24 Jan 2022 19:07:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051888;
-        bh=ri41GA+rvvOGALv/2S5SeTe6pJ0+n/UxBzOZzgqgoRs=;
+        s=korg; t=1643051251;
+        bh=N8LyJ0PBbd2eAEokv8SFCwHzwDSLj3fGyV6Q+dDmoeg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XcmKYK8lWclGql16JYpctV2oRA20sRFqieLhlR0pPDi8xHX2FPLZ2cz81NIFVzmCW
-         QSjJrxYKj72E7z+1qtlnNKc6wjkVUYxg1vc4FzDMk84skstxKAWy0KMpcp5mXU7KOI
-         yDyaA7YyjYJx2H4EpWY22bBHgm0Tj1G6iziCC9A0=
+        b=bJApuYFp2rvuJc3LZ/Riv2Sq4kwuaCWpapgbEySmhAvQYW0utOnz/AwADj4f8AgUK
+         pW1iJ3u2+GHzTmuKGxP8noWKQHJXdUwz3oWeL7Bga+OafNLpiXjYOHJIDxssk5nzEH
+         I4POZvydbJvImwWDZP1IuEXOkdJRK5gmy1SKksu0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, James Hilliard <james.hilliard1@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 120/239] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 24 Jan 2022 19:42:38 +0100
-Message-Id: <20220124183946.921198853@linuxfoundation.org>
+Subject: [PATCH 4.14 101/186] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
+Date:   Mon, 24 Jan 2022 19:42:56 +0100
+Message-Id: <20220124183940.363566908@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,38 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: James Hilliard <james.hilliard1@gmail.com>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
 
-Fault injection test report debugfs entry leak as follows:
+Some uvc devices appear to require the maximum allowed USB timeout
+for GET_CUR/SET_CUR requests.
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+So lets just bump the UVC control timeout to 5 seconds which is the
+same as the usb ctrl get/set defaults:
+USB_CTRL_GET_TIMEOUT 5000
+USB_CTRL_SET_TIMEOUT 5000
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
+It fixes the following runtime warnings:
+   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
+   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
 
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/media/usb/uvc/uvcvideo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 26acacb2fa95f..a5755e0645439 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3263,6 +3263,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index 05398784d1c89..acb9f95127eb2 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -167,7 +167,7 @@
+ /* Maximum status buffer size in bytes of interrupt URB. */
+ #define UVC_MAX_STATUS_SIZE	16
  
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+-#define UVC_CTRL_CONTROL_TIMEOUT	500
++#define UVC_CTRL_CONTROL_TIMEOUT	5000
+ #define UVC_CTRL_STREAMING_TIMEOUT	5000
+ 
+ /* Maximum allowed number of control mappings per device */
 -- 
 2.34.1
 
