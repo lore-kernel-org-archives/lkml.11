@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B563C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:07:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C314C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446240AbiAXVHm (ORCPT
+        id S1446330AbiAXVHx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:07:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
+        Mon, 24 Jan 2022 16:07:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390179AbiAXUpD (ORCPT
+        with ESMTP id S1390196AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31C23C061390;
-        Mon, 24 Jan 2022 11:55:16 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C64C061395;
+        Mon, 24 Jan 2022 11:55:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C522D60989;
-        Mon, 24 Jan 2022 19:55:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FE24C340E5;
-        Mon, 24 Jan 2022 19:55:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B972B8124F;
+        Mon, 24 Jan 2022 19:55:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67528C340E5;
+        Mon, 24 Jan 2022 19:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054115;
-        bh=P8FNdST8MIiMSsIkJay1Yf+qqqIZclz8ADarO4rtgH8=;
+        s=korg; t=1643054128;
+        bh=th4VKO5Ug+nK9IqtFEODJ6OwStYjXRjMQK8H8lx4WDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M1S1veKmJsgXsddXj+m945kCxDrZTnJZ23ErNmY1YgiH7QAGfM5crSnzyNWMtO5Cc
-         +d/buD//KVDvxt5M5EcpusFS12PCzl6cpH54JgtZbNP3Z/HYrm3Sj6qIxpAv2GJivN
-         WIg3kfyw7lHeQJ44Y3jpfhxeBpdKOOMLnfUUqQ+U=
+        b=J/t/eJ7c0uoezgJvaT6LXdo2LzEy/IX410IzigQMUGZ4arXjCfZMIomzefj6oMNEt
+         x3PJa1bFLQbIGVL6YqyPBZOGsfiNTG7iHrvtdOfqnXaicp7J07uEEbrhCOFyKMKS8J
+         LRw4MSD59m84uPEV0jPJceIH1nxgmp6AZXWWHOo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Athira Rajeev <atrajeev@linux.vnet.ibm.com>,
+        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
         Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 250/563] powerpc/perf: MMCR0 control for PMU registers under PMCC=00
-Date:   Mon, 24 Jan 2022 19:40:15 +0100
-Message-Id: <20220124184033.066628118@linuxfoundation.org>
+Subject: [PATCH 5.10 254/563] powerpc/32s: Fix shift-out-of-bounds in KASAN init
+Date:   Mon, 24 Jan 2022 19:40:19 +0100
+Message-Id: <20220124184033.209947453@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,112 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit 91668ab7db4bcfae332e561df1de2401f3f18553 ]
+[ Upstream commit af11dee4361b3519981fa04d014873f9d9edd6ac ]
 
-PowerISA v3.1 introduces new control bit (PMCCEXT) for restricting
-access to group B PMU registers in problem state when
-MMCR0 PMCC=0b00. In problem state and when MMCR0 PMCC=0b00,
-setting the Monitor Mode Control Register bit 54 (MMCR0 PMCCEXT),
-will restrict read permission on Group B Performance Monitor
-Registers (SIER, SIAR, SDAR and MMCR1). When this bit is set to zero,
-group B registers will be readable. In other platforms (like power9),
-the older behaviour is retained where group B PMU SPRs are readable.
+================================================================================
+UBSAN: shift-out-of-bounds in arch/powerpc/mm/kasan/book3s_32.c:22:23
+shift exponent -1 is negative
+CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.5-gentoo-PowerMacG4 #9
+Call Trace:
+[c214be60] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
+[c214be80] [c0b99288] ubsan_epilogue+0x10/0x5c
+[c214be90] [c0b98fe0] __ubsan_handle_shift_out_of_bounds+0x94/0x138
+[c214bf00] [c1c0f010] kasan_init_region+0xd8/0x26c
+[c214bf30] [c1c0ed84] kasan_init+0xc0/0x198
+[c214bf70] [c1c08024] setup_arch+0x18/0x54c
+[c214bfc0] [c1c037f0] start_kernel+0x90/0x33c
+[c214bff0] [00003610] 0x3610
+================================================================================
 
-Patch adds support for MMCR0 PMCCEXT bit in power10 by enabling
-this bit during boot and during the PMU event enable/disable callback
-functions.
+This happens when the directly mapped memory is a power of 2.
 
-Signed-off-by: Athira Rajeev <atrajeev@linux.vnet.ibm.com>
+Fix it by checking the shift and set the result to 0 when shift is -1
+
+Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1606409684-1589-8-git-send-email-atrajeev@linux.vnet.ibm.com
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215169
+Link: https://lore.kernel.org/r/15cbc3439d4ad988b225e2119ec99502a5cc6ad3.1638261744.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/reg.h        | 1 +
- arch/powerpc/kernel/cpu_setup_power.c | 1 +
- arch/powerpc/kernel/dt_cpu_ftrs.c     | 1 +
- arch/powerpc/perf/core-book3s.c       | 4 ++++
- arch/powerpc/perf/isa207-common.c     | 8 ++++++++
- 5 files changed, 15 insertions(+)
+ arch/powerpc/mm/kasan/book3s_32.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/include/asm/reg.h b/arch/powerpc/include/asm/reg.h
-index f4b98903064f5..6afb14b6bbc26 100644
---- a/arch/powerpc/include/asm/reg.h
-+++ b/arch/powerpc/include/asm/reg.h
-@@ -865,6 +865,7 @@
- #define   MMCR0_BHRBA	0x00200000UL /* BHRB Access allowed in userspace */
- #define   MMCR0_EBE	0x00100000UL /* Event based branch enable */
- #define   MMCR0_PMCC	0x000c0000UL /* PMC control */
-+#define   MMCR0_PMCCEXT	ASM_CONST(0x00000200) /* PMCCEXT control */
- #define   MMCR0_PMCC_U6	0x00080000UL /* PMC1-6 are R/W by user (PR) */
- #define   MMCR0_PMC1CE	0x00008000UL /* PMC1 count enable*/
- #define   MMCR0_PMCjCE	ASM_CONST(0x00004000) /* PMCj count enable*/
-diff --git a/arch/powerpc/kernel/cpu_setup_power.c b/arch/powerpc/kernel/cpu_setup_power.c
-index 0c2191ee139ec..3cca88ee96d71 100644
---- a/arch/powerpc/kernel/cpu_setup_power.c
-+++ b/arch/powerpc/kernel/cpu_setup_power.c
-@@ -123,6 +123,7 @@ static void init_PMU_ISA31(void)
- {
- 	mtspr(SPRN_MMCR3, 0);
- 	mtspr(SPRN_MMCRA, MMCRA_BHRB_DISABLE);
-+	mtspr(SPRN_MMCR0, MMCR0_PMCCEXT);
- }
+diff --git a/arch/powerpc/mm/kasan/book3s_32.c b/arch/powerpc/mm/kasan/book3s_32.c
+index 202bd260a0095..35b287b0a8da4 100644
+--- a/arch/powerpc/mm/kasan/book3s_32.c
++++ b/arch/powerpc/mm/kasan/book3s_32.c
+@@ -19,7 +19,8 @@ int __init kasan_init_region(void *start, size_t size)
+ 	block = memblock_alloc(k_size, k_size_base);
  
- /*
-diff --git a/arch/powerpc/kernel/dt_cpu_ftrs.c b/arch/powerpc/kernel/dt_cpu_ftrs.c
-index 1098863e17ee8..9d079659b24d3 100644
---- a/arch/powerpc/kernel/dt_cpu_ftrs.c
-+++ b/arch/powerpc/kernel/dt_cpu_ftrs.c
-@@ -454,6 +454,7 @@ static void init_pmu_power10(void)
+ 	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
+-		int k_size_more = 1 << (ffs(k_size - k_size_base) - 1);
++		int shift = ffs(k_size - k_size_base);
++		int k_size_more = shift ? 1 << (shift - 1) : 0;
  
- 	mtspr(SPRN_MMCR3, 0);
- 	mtspr(SPRN_MMCRA, MMCRA_BHRB_DISABLE);
-+	mtspr(SPRN_MMCR0, MMCR0_PMCCEXT);
- }
- 
- static int __init feat_enable_pmu_power10(struct dt_cpu_feature *f)
-diff --git a/arch/powerpc/perf/core-book3s.c b/arch/powerpc/perf/core-book3s.c
-index 91452313489f1..7bda7499d0401 100644
---- a/arch/powerpc/perf/core-book3s.c
-+++ b/arch/powerpc/perf/core-book3s.c
-@@ -95,6 +95,7 @@ static unsigned int freeze_events_kernel = MMCR0_FCS;
- #define SPRN_SIER3		0
- #define MMCRA_SAMPLE_ENABLE	0
- #define MMCRA_BHRB_DISABLE     0
-+#define MMCR0_PMCCEXT		0
- 
- static inline unsigned long perf_ip_adjust(struct pt_regs *regs)
- {
-@@ -1245,6 +1246,9 @@ static void power_pmu_disable(struct pmu *pmu)
- 		val |= MMCR0_FC;
- 		val &= ~(MMCR0_EBE | MMCR0_BHRBA | MMCR0_PMCC | MMCR0_PMAO |
- 			 MMCR0_FC56);
-+		/* Set mmcr0 PMCCEXT for p10 */
-+		if (ppmu->flags & PPMU_ARCH_31)
-+			val |= MMCR0_PMCCEXT;
- 
- 		/*
- 		 * The barrier is to make sure the mtspr has been
-diff --git a/arch/powerpc/perf/isa207-common.c b/arch/powerpc/perf/isa207-common.c
-index 5e8eedda45d39..58448f0e47213 100644
---- a/arch/powerpc/perf/isa207-common.c
-+++ b/arch/powerpc/perf/isa207-common.c
-@@ -561,6 +561,14 @@ int isa207_compute_mmcr(u64 event[], int n_ev,
- 	if (!(pmc_inuse & 0x60))
- 		mmcr->mmcr0 |= MMCR0_FC56;
- 
-+	/*
-+	 * Set mmcr0 (PMCCEXT) for p10 which
-+	 * will restrict access to group B registers
-+	 * when MMCR0 PMCC=0b00.
-+	 */
-+	if (cpu_has_feature(CPU_FTR_ARCH_31))
-+		mmcr->mmcr0 |= MMCR0_PMCCEXT;
-+
- 	mmcr->mmcr1 = mmcr1;
- 	mmcr->mmcra = mmcra;
- 	mmcr->mmcr2 = mmcr2;
+ 		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
+ 		if (k_size_more >= SZ_128K)
 -- 
 2.34.1
 
