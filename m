@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F3ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC886C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345642AbiAXTcy (ORCPT
+        id S1343962AbiAXTcz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:32:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346845AbiAXTXY (ORCPT
+        Mon, 24 Jan 2022 14:32:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51338 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349910AbiAXTWy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:23:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14B2C061347;
-        Mon, 24 Jan 2022 11:10:03 -0800 (PST)
+        Mon, 24 Jan 2022 14:22:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B0E2611ED;
-        Mon, 24 Jan 2022 19:10:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41EE1C340E5;
-        Mon, 24 Jan 2022 19:10:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B0E061317;
+        Mon, 24 Jan 2022 19:22:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C643C340E5;
+        Mon, 24 Jan 2022 19:22:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051402;
-        bh=XfvMCZS3irHfKeCkn05KQOEPPkpf/f2tJwSHwFj1Rh0=;
+        s=korg; t=1643052172;
+        bh=cBBZ8JPUy6BY7CZDXyLC6eF5svJh0zfrQtIgk2t0K3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z8QORHsRvXSDl9YiU5HA5O55S53G3OqK7ILys35Fg6NAcWQMxssWDWZi1thL/QZLB
-         hHxHkdCiH9lDOSjyCU1oGiA76KBKg7mlP9S51nyfzR2+aoSOg8wBQ4lfjPTzMKhGUq
-         WEwdAaix6kx9Z1pSf5PCY/7T/1vhYOv2ibFeciME=
+        b=0J/Y9Z0s8MpgpVlYnogvejAzkWdh9TLvtJP3Lv9VbYXQZ7iVSZDzDi39UmAPM2Ks3
+         tdsxpJ32wDanJIZXNgCUhSeRtJUh9sT5YrbXkqj55+F8P9pZsWsMXHDaPmC/p/bAzk
+         5zxTamde5eFKMiuiU/xVjsbIut8Wb8xfRN8tVlsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 143/186] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-Date:   Mon, 24 Jan 2022 19:43:38 +0100
-Message-Id: <20220124183941.706542243@linuxfoundation.org>
+        stable@vger.kernel.org, Merlijn Wajer <merlijn@wizzup.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        Sebastian Reichel <sre@kernel.org>,
+        Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 4.19 211/239] ARM: dts: Fix vcsi regulator to be always-on for droid4 to prevent hangs
+Date:   Mon, 24 Jan 2022 19:44:09 +0100
+Message-Id: <20220124183949.823156871@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,44 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+From: Tony Lindgren <tony@atomide.com>
 
-[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
+commit ddb52945999dcf35787bf221b62108806182578d upstream.
 
-The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
-It's better to have same data type in struct dw_scl_sda_cfg as well.
+In addition to using vcsi regulator for the display, looks like droid4 is
+using vcsi regulator to trigger off mode internally with the PMIC firmware
+when the SoC enters deeper idle states. This is configured in the Motorola
+Mapphone Linux kernel sources as "zerov_regulator".
 
-Reported-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+As we currently don't support off mode during idle for omap4, we must
+prevent vcsi from being disabled when the display is blanked to prevent
+the PMIC change to off mode. Otherwise the device will hang on entering
+idle when the display is blanked.
+
+Before commit 089b3f61ecfc ("regulator: core: Let boot-on regulators be
+powered off"), the boot-on regulators never got disabled like they should
+and vcsi did not get turned off on idle.
+
+Let's fix the issue by setting vcsi to always-on for now. Later on we may
+want to claim the vcsi regulator also in the PM code if needed.
+
+Fixes: 089b3f61ecfc ("regulator: core: Let boot-on regulators be powered off")
+Cc: Merlijn Wajer <merlijn@wizzup.org>
+Cc: Pavel Machek <pavel@ucw.cz>
+Cc: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/arm/boot/dts/motorola-cpcap-mapphone.dtsi |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
-index 86e1bd0b82e91..347d82dff67c0 100644
---- a/drivers/i2c/busses/i2c-designware-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
-@@ -50,10 +50,10 @@ enum dw_pci_ctl_id_t {
- };
+--- a/arch/arm/boot/dts/motorola-cpcap-mapphone.dtsi
++++ b/arch/arm/boot/dts/motorola-cpcap-mapphone.dtsi
+@@ -165,12 +165,12 @@
+ 		regulator-enable-ramp-delay = <1000>;
+ 	};
  
- struct dw_scl_sda_cfg {
--	u32 ss_hcnt;
--	u32 fs_hcnt;
--	u32 ss_lcnt;
--	u32 fs_lcnt;
-+	u16 ss_hcnt;
-+	u16 fs_hcnt;
-+	u16 ss_lcnt;
-+	u16 fs_lcnt;
- 	u32 sda_hold;
- };
+-	/* Used by DSS */
++	/* Used by DSS and is the "zerov_regulator" trigger for SoC off mode */
+ 	vcsi: VCSI {
+ 		regulator-min-microvolt = <1800000>;
+ 		regulator-max-microvolt = <1800000>;
+ 		regulator-enable-ramp-delay = <1000>;
+-		regulator-boot-on;
++		regulator-always-on;
+ 	};
  
--- 
-2.34.1
-
+ 	vdac: VDAC {
 
 
