@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA231C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B92CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847506AbiAXXT5 (ORCPT
+        id S1847681AbiAXXUU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:19:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        Mon, 24 Jan 2022 18:20:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584640AbiAXWVa (ORCPT
+        with ESMTP id S1584635AbiAXWVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:30 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 157BFC0424EF;
-        Mon, 24 Jan 2022 12:52:15 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD81C0424F8;
+        Mon, 24 Jan 2022 12:52:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A807D60907;
-        Mon, 24 Jan 2022 20:52:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4DCC340E5;
-        Mon, 24 Jan 2022 20:52:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6470B811FB;
+        Mon, 24 Jan 2022 20:52:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3EB3C340E5;
+        Mon, 24 Jan 2022 20:52:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057534;
-        bh=8ni2Qb1gdwnoxG6Yoqx7ckQ60AVfkgHrHpUVlMKZax8=;
+        s=korg; t=1643057553;
+        bh=uKxrKBwurW6KlaBqJxOapnKslZue1woeqqPggQ2Rh0I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0vTfZ1YDP0fGaJ04EKArWDytLSN4etv1n5g29/TVSQM22gpucJ48btJKkZF50h8v7
-         3S3PRADKSA+D/rKOCGQcNSs3ksDVcrFKC7zRL+xsANaIDDv2AsqGogUdG0OXjgvufJ
-         O/G1vQtkMtFc5+VmsMLowJYcVXH3ca0dr+MgkMyM=
+        b=eFckwEfGnTpzRR2yX9uMNtL9rU79ozIQcwPMdEhuBBXdbM2mjDPxyJvZuSkJ53+rc
+         pJdPOkw0gFNnPLpX4gacFWPFR+vQ0xciMItDgvpHDYgs70nYl1f3CNiGPOB9tx6/Z0
+         q8+WWUsSt+D/pv/dRanOCwpuEdjkcfRdksLD+DwA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alistair Popple <apopple@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>, Zi Yan <ziy@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.15 844/846] mm/hmm.c: allow VM_MIXEDMAP to work with hmm_range_fault
-Date:   Mon, 24 Jan 2022 19:46:01 +0100
-Message-Id: <20220124184130.016535793@linuxfoundation.org>
+        stable@vger.kernel.org, Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 829/846] net: mscc: ocelot: dont let phylink re-enable TX PAUSE on the NPI port
+Date:   Mon, 24 Jan 2022 19:45:46 +0100
+Message-Id: <20220124184129.502096589@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -55,147 +51,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Popple <apopple@nvidia.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 87c01d57fa23de82fff593a7d070933d08755801 upstream.
+commit 33cb0ff30cff104e753f7882c99e54cf67ea7903 upstream.
 
-hmm_range_fault() can be used instead of get_user_pages() for devices
-which allow faulting however unlike get_user_pages() it will return an
-error when used on a VM_MIXEDMAP range.
+Since commit b39648079db4 ("net: mscc: ocelot: disable flow control on
+NPI interface"), flow control should be disabled on the DSA CPU port
+when used in NPI mode.
 
-To make hmm_range_fault() more closely match get_user_pages() remove
-this restriction.  This requires dealing with the !ARCH_HAS_PTE_SPECIAL
-case in hmm_vma_handle_pte().  Rather than replicating the logic of
-vm_normal_page() call it directly and do a check for the zero pfn
-similar to what get_user_pages() currently does.
+However, the commit blamed in the Fixes: tag below broke this, because
+it allowed felix_phylink_mac_link_up() to overwrite SYS_PAUSE_CFG_PAUSE_ENA
+for the DSA CPU port.
 
-Also add a test to hmm selftest to verify functionality.
+This issue became noticeable since the device tree update from commit
+8fcea7be5736 ("arm64: dts: ls1028a: mark internal links between Felix
+and ENETC as capable of flow control").
 
-Link: https://lkml.kernel.org/r/20211104012001.2555676-1-apopple@nvidia.com
-Fixes: da4c3c735ea4 ("mm/hmm/mirror: helper to snapshot CPU page table")
-Signed-off-by: Alistair Popple <apopple@nvidia.com>
-Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
-Cc: Jerome Glisse <jglisse@redhat.com>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Zi Yan <ziy@nvidia.com>
-Cc: Ralph Campbell <rcampbell@nvidia.com>
-Cc: Felix Kuehling <Felix.Kuehling@amd.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+The solution is to check whether this is the currently configured NPI
+port from ocelot_phylink_mac_link_up(), and to not modify the statically
+disabled PAUSE frame transmission if it is.
+
+When the port is configured for lossless mode as opposed to tail drop
+mode, but the link partner (DSA master) doesn't observe the transmitted
+PAUSE frames, the switch termination throughput is much worse, as can be
+seen below.
+
+Before:
+
+root@debian:~# iperf3 -c 192.168.100.2
+Connecting to host 192.168.100.2, port 5201
+[  5] local 192.168.100.1 port 37504 connected to 192.168.100.2 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec  28.4 MBytes   238 Mbits/sec  357   22.6 KBytes
+[  5]   1.00-2.00   sec  33.6 MBytes   282 Mbits/sec  426   19.8 KBytes
+[  5]   2.00-3.00   sec  34.0 MBytes   285 Mbits/sec  343   21.2 KBytes
+[  5]   3.00-4.00   sec  32.9 MBytes   276 Mbits/sec  354   22.6 KBytes
+[  5]   4.00-5.00   sec  32.3 MBytes   271 Mbits/sec  297   18.4 KBytes
+^C[  5]   5.00-5.06   sec  2.05 MBytes   270 Mbits/sec   45   19.8 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-5.06   sec   163 MBytes   271 Mbits/sec  1822             sender
+[  5]   0.00-5.06   sec  0.00 Bytes  0.00 bits/sec                  receiver
+
+After:
+
+root@debian:~# iperf3 -c 192.168.100.2
+Connecting to host 192.168.100.2, port 5201
+[  5] local 192.168.100.1 port 49470 connected to 192.168.100.2 port 5201
+[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
+[  5]   0.00-1.00   sec   112 MBytes   941 Mbits/sec  259    143 KBytes
+[  5]   1.00-2.00   sec   110 MBytes   920 Mbits/sec  329    144 KBytes
+[  5]   2.00-3.00   sec   112 MBytes   936 Mbits/sec  255    144 KBytes
+[  5]   3.00-4.00   sec   110 MBytes   927 Mbits/sec  355    105 KBytes
+[  5]   4.00-5.00   sec   110 MBytes   926 Mbits/sec  350    156 KBytes
+[  5]   5.00-6.00   sec   110 MBytes   925 Mbits/sec  305    148 KBytes
+[  5]   6.00-7.00   sec   110 MBytes   924 Mbits/sec  320    143 KBytes
+[  5]   7.00-8.00   sec   110 MBytes   925 Mbits/sec  273   97.6 KBytes
+[  5]   8.00-9.00   sec   109 MBytes   913 Mbits/sec  299    141 KBytes
+[  5]   9.00-10.00  sec   110 MBytes   922 Mbits/sec  287    146 KBytes
+- - - - - - - - - - - - - - - - - - - - - - - - -
+[ ID] Interval           Transfer     Bitrate         Retr
+[  5]   0.00-10.00  sec  1.08 GBytes   926 Mbits/sec  3032             sender
+[  5]   0.00-10.00  sec  1.08 GBytes   925 Mbits/sec                  receiver
+
+Fixes: de274be32cb2 ("net: dsa: felix: set TX flow control according to the phylink_mac_link_up resolution")
+Reported-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/test_hmm.c                         |   24 ++++++++++++++++++
- mm/hmm.c                               |    5 ++-
- tools/testing/selftests/vm/hmm-tests.c |   42 +++++++++++++++++++++++++++++++++
- 3 files changed, 69 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c |    5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/lib/test_hmm.c
-+++ b/lib/test_hmm.c
-@@ -1087,9 +1087,33 @@ static long dmirror_fops_unlocked_ioctl(
- 	return 0;
- }
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -555,7 +555,10 @@ void ocelot_phylink_mac_link_up(struct o
  
-+static int dmirror_fops_mmap(struct file *file, struct vm_area_struct *vma)
-+{
-+	unsigned long addr;
-+
-+	for (addr = vma->vm_start; addr < vma->vm_end; addr += PAGE_SIZE) {
-+		struct page *page;
-+		int ret;
-+
-+		page = alloc_page(GFP_KERNEL | __GFP_ZERO);
-+		if (!page)
-+			return -ENOMEM;
-+
-+		ret = vm_insert_page(vma, addr, page);
-+		if (ret) {
-+			__free_page(page);
-+			return ret;
-+		}
-+		put_page(page);
-+	}
-+
-+	return 0;
-+}
-+
- static const struct file_operations dmirror_fops = {
- 	.open		= dmirror_fops_open,
- 	.release	= dmirror_fops_release,
-+	.mmap		= dmirror_fops_mmap,
- 	.unlocked_ioctl = dmirror_fops_unlocked_ioctl,
- 	.llseek		= default_llseek,
- 	.owner		= THIS_MODULE,
---- a/mm/hmm.c
-+++ b/mm/hmm.c
-@@ -300,7 +300,8 @@ static int hmm_vma_handle_pte(struct mm_
- 	 * Since each architecture defines a struct page for the zero page, just
- 	 * fall through and treat it like a normal page.
- 	 */
--	if (pte_special(pte) && !pte_devmap(pte) &&
-+	if (!vm_normal_page(walk->vma, addr, pte) &&
-+	    !pte_devmap(pte) &&
- 	    !is_zero_pfn(pte_pfn(pte))) {
- 		if (hmm_pte_need_fault(hmm_vma_walk, pfn_req_flags, 0)) {
- 			pte_unmap(ptep);
-@@ -518,7 +519,7 @@ static int hmm_vma_walk_test(unsigned lo
- 	struct hmm_range *range = hmm_vma_walk->range;
- 	struct vm_area_struct *vma = walk->vma;
+ 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
  
--	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP | VM_MIXEDMAP)) &&
-+	if (!(vma->vm_flags & (VM_IO | VM_PFNMAP)) &&
- 	    vma->vm_flags & VM_READ)
- 		return 0;
+-	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, tx_pause);
++	/* Don't attempt to send PAUSE frames on the NPI port, it's broken */
++	if (port != ocelot->npi)
++		ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA,
++				    tx_pause);
  
---- a/tools/testing/selftests/vm/hmm-tests.c
-+++ b/tools/testing/selftests/vm/hmm-tests.c
-@@ -1251,6 +1251,48 @@ TEST_F(hmm, anon_teardown)
- /*
-  * Test memory snapshot without faulting in pages accessed by the device.
-  */
-+TEST_F(hmm, mixedmap)
-+{
-+	struct hmm_buffer *buffer;
-+	unsigned long npages;
-+	unsigned long size;
-+	unsigned char *m;
-+	int ret;
-+
-+	npages = 1;
-+	size = npages << self->page_shift;
-+
-+	buffer = malloc(sizeof(*buffer));
-+	ASSERT_NE(buffer, NULL);
-+
-+	buffer->fd = -1;
-+	buffer->size = size;
-+	buffer->mirror = malloc(npages);
-+	ASSERT_NE(buffer->mirror, NULL);
-+
-+
-+	/* Reserve a range of addresses. */
-+	buffer->ptr = mmap(NULL, size,
-+			   PROT_READ | PROT_WRITE,
-+			   MAP_PRIVATE,
-+			   self->fd, 0);
-+	ASSERT_NE(buffer->ptr, MAP_FAILED);
-+
-+	/* Simulate a device snapshotting CPU pagetables. */
-+	ret = hmm_dmirror_cmd(self->fd, HMM_DMIRROR_SNAPSHOT, buffer, npages);
-+	ASSERT_EQ(ret, 0);
-+	ASSERT_EQ(buffer->cpages, npages);
-+
-+	/* Check what the device saw. */
-+	m = buffer->mirror;
-+	ASSERT_EQ(m[0], HMM_DMIRROR_PROT_READ);
-+
-+	hmm_buffer_free(buffer);
-+}
-+
-+/*
-+ * Test memory snapshot without faulting in pages accessed by the device.
-+ */
- TEST_F(hmm2, snapshot)
- {
- 	struct hmm_buffer *buffer;
+ 	/* Undo the effects of ocelot_phylink_mac_link_down:
+ 	 * enable MAC module
 
 
