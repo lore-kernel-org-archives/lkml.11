@@ -2,262 +2,321 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20045C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:02:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60A91C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238999AbiAXPCQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:02:16 -0500
-Received: from mga01.intel.com ([192.55.52.88]:64635 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234477AbiAXPCO (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:02:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643036534; x=1674572534;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/A3yuQETcYGHh0zJl4ypTfWdoT0Qd+Amo3JnNUQZ+5U=;
-  b=i1/ziA95PgPylILearWcq3NZW4/v3U0noCpvLeVrOTYBfRS7tPID7Npq
-   gVOtCB6GiZafl4SdUZGPXyA6T4Xo6r2Ng88RKJ5EKHN/LmPd1YfWaZAz9
-   JRoWoSGw/TusfvnNZ5yrmY4zP63jg7ShnTtHliJYNxKRfi9npDLcsdrcE
-   R9wxmi2wv8+DGId2KDfxM7NCQi/hZvGV0Rksawwa8MNEU15JWhFf7tOAj
-   1erZOsd3uHLwBEnABkGDO49jS6WQm/qRB7vu06rLgl1Vdy7fIBeQBOBVv
-   ZU90PyFNNDDz/cnT3Bc67OOqrsi1lvEy5yJzT2RB4WPmfKzWCQuIivfNa
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="270498500"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="270498500"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:12 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="673649998"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2022 07:02:06 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 4E5A115C; Mon, 24 Jan 2022 17:02:19 +0200 (EET)
-From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
-Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
-        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
-        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
-        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
-        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
-        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
-        x86@kernel.org, linux-kernel@vger.kernel.org,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv2 01/29] x86/tdx: Detect running as a TDX guest in early boot
-Date:   Mon, 24 Jan 2022 18:01:47 +0300
-Message-Id: <20220124150215.36893-2-kirill.shutemov@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
-References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S239895AbiAXPC2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:02:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239164AbiAXPCV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:02:21 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8603C061744
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 07:02:19 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id o131-20020a25d789000000b00614957c60dfso20236713ybg.15
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 07:02:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=P9O4S8d3oVVuE/vD4lm4oLLN+5OcE1ItgKs9PC2D6EQ=;
+        b=RbOoDBHdS9Mk6OK3SJ9PPM+mCNh2UAhlNARXtgZVfAm7zlUQUtozE/n3XqLGmcfFGM
+         CoWrEidql331DXpXkWFFAHflk7wghEreatdUUOkWnWToIoQJqUbXPsutn4a1VCLohRbm
+         HrdbE9Bcr7mOchpdYl0YCr3Y1B0NOW+SL6a0WfyG8rkRIeEB3PyCCFVHYFw2W21DePfX
+         7oLxN64x6OejuSlIzDEEcVo3qI3QS+9qGgydEao6YFkYgqlDVieQd+dolWJlzu54+Hys
+         5dbPOyOmqyC4zgXYXkybvf31WpK94c+X5lCH+CXB01IpxGzQxlL7jH7u4hNkLG0c+qNH
+         pLyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=P9O4S8d3oVVuE/vD4lm4oLLN+5OcE1ItgKs9PC2D6EQ=;
+        b=2JsRQdi+OTAJgOhglIeRu5CQdkaz3hcmjoCKiBLxtE+djFbl5QgN3uBudLQZoh33Vk
+         0JcLkgAo/0Z/MPrO9+dob7+iTy+OJa0AXnhtPJ62sPU0ZMVLwFXKdyNQgYe+6ZJCtevS
+         fwmFI2ObryPGE6TJuCqaAqkbTJR8z3lQmmzqwqeEBnXxOOxf10Q6YhnljQA+/0y0qKuS
+         0r/ozeN3L+Tum7oVAwQ1HrjP2RnVp2D55iXOtY2Z4qQjjjRj8UIifnGlhytZlxBRyZKz
+         btHwPOA9Fy+vLys5aR4g6ptxWWrWyAEpL0q9ikELbXocgtxUTyildq8CQgxCPGPffSW8
+         L9Ug==
+X-Gm-Message-State: AOAM530LimS6OlENRoNH/P+Tw1GyRtn0qJCTiQ4D8ysV1qG2QPNvy6GE
+        mB4W630BG9PPdWtnEtWrwLUoaCEVS7x/
+X-Google-Smtp-Source: ABdhPJxEDxMzU3Yk4N5L5onA4XuAOtA/Fbwxz6Je+TTJqD3UwlmWmOg3jITYTUdrlKYe14tuDKOK/3SDtfDw
+X-Received: from bg.sfo.corp.google.com ([2620:15c:11a:202:9491:3e69:9a74:1f3])
+ (user=bgeffon job=sendgmr) by 2002:a25:bb0e:: with SMTP id
+ z14mr26156550ybg.762.1643036538880; Mon, 24 Jan 2022 07:02:18 -0800 (PST)
+Date:   Mon, 24 Jan 2022 07:02:09 -0800
+Message-Id: <20220124150209.22202-1-bgeffon@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+Subject: [PATCH] dm: introduce a no open flag for deferred remove
+From:   Brian Geffon <bgeffon@google.com>
+To:     Alasdair Kergon <agk@redhat.com>, Mike Snitzer <snitzer@redhat.com>
+Cc:     dm-devel@redhat.com, linux-kernel@vger.kernel.org,
+        Brian Geffon <bgeffon@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+When a device is being removed with deferred remove it's
+still possible to open and use the device. This change
+introduces a flag called DM_DEFERRED_REMOVE_NO_OPEN_FLAG
+which when used with DM_DEFERRED_REMOVE will cause any
+new opens to fail with -ENXIO.
 
-cc_platform_has() API is used in the kernel to enable confidential
-computing features. Since TDX guest is a confidential computing
-platform, it also needs to use this API.
+If this flag is used without DM_DEFERRED_REMOVE it will
+result in an -EINVAL.
 
-In preparation of extending cc_platform_has() API to support TDX guest,
-use CPUID instruction to detect support for TDX guests in the early
-boot code (via tdx_early_init()). Since copy_bootdata() is the first
-user of cc_platform_has() API, detect the TDX guest status before it.
-
-Since cc_plaform_has() API will be used frequently across the boot
-code, instead of repeatedly detecting the TDX guest status using the
-CPUID instruction, detect once and cache the result. Add a function
-(is_tdx_guest()) to read the cached TDX guest status in CC APIs.
-
-Define a synthetic feature flag (X86_FEATURE_TDX_GUEST) and set this
-bit in a valid TDX guest platform. This feature bit will be used to
-do TDX-specific handling in some areas of the ARCH code where a
-function call to check for TDX guest status is not cost-effective
-(for example, TDX hypercall support).
-
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Brian Geffon <bgeffon@google.com>
 ---
- arch/x86/Kconfig                         | 12 +++++++++
- arch/x86/include/asm/cpufeatures.h       |  1 +
- arch/x86/include/asm/disabled-features.h |  8 +++++-
- arch/x86/include/asm/tdx.h               | 23 ++++++++++++++++++
- arch/x86/kernel/Makefile                 |  1 +
- arch/x86/kernel/head64.c                 |  4 +++
- arch/x86/kernel/tdx.c                    | 31 ++++++++++++++++++++++++
- 7 files changed, 79 insertions(+), 1 deletion(-)
- create mode 100644 arch/x86/include/asm/tdx.h
- create mode 100644 arch/x86/kernel/tdx.c
+ drivers/md/dm-core.h          |  1 +
+ drivers/md/dm-ioctl.c         | 39 +++++++++++++++++++++++++++--------
+ drivers/md/dm.c               | 21 ++++++++++++++++---
+ drivers/md/dm.h               |  9 +++++++-
+ include/uapi/linux/dm-ioctl.h | 12 +++++++++--
+ 5 files changed, 67 insertions(+), 15 deletions(-)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 6fddb63271d9..09e6744af3f8 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -880,6 +880,18 @@ config ACRN_GUEST
- 	  IOT with small footprint and real-time features. More details can be
- 	  found in https://projectacrn.org/.
+diff --git a/drivers/md/dm-core.h b/drivers/md/dm-core.h
+index b855fef4f38a..b30e59deb4a8 100644
+--- a/drivers/md/dm-core.h
++++ b/drivers/md/dm-core.h
+@@ -139,6 +139,7 @@ struct mapped_device {
+ #define DMF_SUSPENDED_INTERNALLY 7
+ #define DMF_POST_SUSPENDING 8
+ #define DMF_EMULATE_ZONE_APPEND 9
++#define DMF_DEFERRED_REMOVE_NO_OPEN 10
  
-+config INTEL_TDX_GUEST
-+	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
-+	depends on X86_64 && CPU_SUP_INTEL
-+	depends on X86_X2APIC
-+	help
-+	  Support running as a guest under Intel TDX.  Without this support,
-+	  the guest kernel can not boot or run under TDX.
-+	  TDX includes memory encryption and integrity capabilities
-+	  which protect the confidentiality and integrity of guest
-+	  memory contents and CPU state. TDX guests are protected from
-+	  potential attacks from the VMM.
-+
- endif #HYPERVISOR_GUEST
+ void disable_discard(struct mapped_device *md);
+ void disable_write_same(struct mapped_device *md);
+diff --git a/drivers/md/dm-ioctl.c b/drivers/md/dm-ioctl.c
+index 21fe8652b095..07bb679880de 100644
+--- a/drivers/md/dm-ioctl.c
++++ b/drivers/md/dm-ioctl.c
+@@ -60,7 +60,8 @@ struct vers_iter {
+ static struct rb_root name_rb_tree = RB_ROOT;
+ static struct rb_root uuid_rb_tree = RB_ROOT;
  
- source "arch/x86/Kconfig.cpu"
-diff --git a/arch/x86/include/asm/cpufeatures.h b/arch/x86/include/asm/cpufeatures.h
-index 6db4e2932b3d..defed3bd543b 100644
---- a/arch/x86/include/asm/cpufeatures.h
-+++ b/arch/x86/include/asm/cpufeatures.h
-@@ -238,6 +238,7 @@
- #define X86_FEATURE_VMW_VMMCALL		( 8*32+19) /* "" VMware prefers VMMCALL hypercall instruction */
- #define X86_FEATURE_PVUNLOCK		( 8*32+20) /* "" PV unlock function */
- #define X86_FEATURE_VCPUPREEMPT		( 8*32+21) /* "" PV vcpu_is_preempted function */
-+#define X86_FEATURE_TDX_GUEST		( 8*32+22) /* Intel Trust Domain Extensions Guest */
- 
- /* Intel-defined CPU features, CPUID level 0x00000007:0 (EBX), word 9 */
- #define X86_FEATURE_FSGSBASE		( 9*32+ 0) /* RDFSBASE, WRFSBASE, RDGSBASE, WRGSBASE instructions*/
-diff --git a/arch/x86/include/asm/disabled-features.h b/arch/x86/include/asm/disabled-features.h
-index 8f28fafa98b3..f556086e6093 100644
---- a/arch/x86/include/asm/disabled-features.h
-+++ b/arch/x86/include/asm/disabled-features.h
-@@ -65,6 +65,12 @@
- # define DISABLE_SGX	(1 << (X86_FEATURE_SGX & 31))
- #endif
- 
-+#ifdef CONFIG_INTEL_TDX_GUEST
-+# define DISABLE_TDX_GUEST	0
-+#else
-+# define DISABLE_TDX_GUEST	(1 << (X86_FEATURE_TDX_GUEST & 31))
-+#endif
-+
- /*
-  * Make sure to add features to the correct mask
-  */
-@@ -76,7 +82,7 @@
- #define DISABLED_MASK5	0
- #define DISABLED_MASK6	0
- #define DISABLED_MASK7	(DISABLE_PTI)
--#define DISABLED_MASK8	0
-+#define DISABLED_MASK8	(DISABLE_TDX_GUEST)
- #define DISABLED_MASK9	(DISABLE_SMAP|DISABLE_SGX)
- #define DISABLED_MASK10	0
- #define DISABLED_MASK11	0
-diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
-new file mode 100644
-index 000000000000..e375a950a033
---- /dev/null
-+++ b/arch/x86/include/asm/tdx.h
-@@ -0,0 +1,23 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright (C) 2021-2022 Intel Corporation */
-+#ifndef _ASM_X86_TDX_H
-+#define _ASM_X86_TDX_H
-+
-+#include <linux/init.h>
-+
-+#define TDX_CPUID_LEAF_ID	0x21
-+#define TDX_IDENT		"IntelTDX    "
-+
-+#ifdef CONFIG_INTEL_TDX_GUEST
-+
-+void __init tdx_early_init(void);
-+bool is_tdx_guest(void);
-+
-+#else
-+
-+static inline void tdx_early_init(void) { };
-+static inline bool is_tdx_guest(void) { return false; }
-+
-+#endif /* CONFIG_INTEL_TDX_GUEST */
-+
-+#endif /* _ASM_X86_TDX_H */
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 6aef9ee28a39..211d9fcdd729 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -130,6 +130,7 @@ obj-$(CONFIG_PARAVIRT_CLOCK)	+= pvclock.o
- obj-$(CONFIG_X86_PMEM_LEGACY_DEVICE) += pmem.o
- 
- obj-$(CONFIG_JAILHOUSE_GUEST)	+= jailhouse.o
-+obj-$(CONFIG_INTEL_TDX_GUEST)	+= tdx.o
- 
- obj-$(CONFIG_EISA)		+= eisa.o
- obj-$(CONFIG_PCSPKR_PLATFORM)	+= pcspeaker.o
-diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
-index de563db9cdcd..1cb6346ec3d1 100644
---- a/arch/x86/kernel/head64.c
-+++ b/arch/x86/kernel/head64.c
-@@ -40,6 +40,7 @@
- #include <asm/extable.h>
- #include <asm/trapnr.h>
- #include <asm/sev.h>
-+#include <asm/tdx.h>
+-static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred, bool only_deferred);
++static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred,
++		bool deferred_no_open, bool only_deferred);
  
  /*
-  * Manage page tables very early on.
-@@ -516,6 +517,9 @@ asmlinkage __visible void __init x86_64_start_kernel(char * real_mode_data)
+  * Guards access to both hash tables.
+@@ -74,7 +75,7 @@ static DEFINE_MUTEX(dm_hash_cells_mutex);
  
- 	copy_bootdata(__va(real_mode_data));
+ static void dm_hash_exit(void)
+ {
+-	dm_hash_remove_all(false, false, false);
++	dm_hash_remove_all(false, false, false, false);
+ }
  
-+	/* Needed before cc_platform_has() can be used for TDX */
-+	tdx_early_init();
+ /*-----------------------------------------------------------------
+@@ -315,7 +316,8 @@ static struct dm_table *__hash_remove(struct hash_cell *hc)
+ 	return table;
+ }
+ 
+-static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred, bool only_deferred)
++static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred,
++		bool deferred_no_open, bool only_deferred)
+ {
+ 	int dev_skipped;
+ 	struct rb_node *n;
+@@ -334,7 +336,8 @@ static void dm_hash_remove_all(bool keep_open_devices, bool mark_deferred, bool
+ 		dm_get(md);
+ 
+ 		if (keep_open_devices &&
+-		    dm_lock_for_deletion(md, mark_deferred, only_deferred)) {
++		    dm_lock_for_deletion(md, mark_deferred, deferred_no_open,
++				    only_deferred)) {
+ 			dm_put(md);
+ 			dev_skipped++;
+ 			continue;
+@@ -496,7 +499,7 @@ static struct mapped_device *dm_hash_rename(struct dm_ioctl *param,
+ 
+ void dm_deferred_remove(void)
+ {
+-	dm_hash_remove_all(true, false, true);
++	dm_hash_remove_all(true, false, false, true);
+ }
+ 
+ /*-----------------------------------------------------------------
+@@ -510,7 +513,13 @@ typedef int (*ioctl_fn)(struct file *filp, struct dm_ioctl *param, size_t param_
+ 
+ static int remove_all(struct file *filp, struct dm_ioctl *param, size_t param_size)
+ {
+-	dm_hash_remove_all(true, !!(param->flags & DM_DEFERRED_REMOVE), false);
++	if (param->flags & DM_DEFERRED_REMOVE_NO_OPEN_FLAG &&
++			!(param->flags & DM_DEFERRED_REMOVE)) {
++		return -EINVAL;
++	}
++
++	dm_hash_remove_all(true, !!(param->flags & DM_DEFERRED_REMOVE),
++			!!(param->flags & DM_DEFERRED_REMOVE_NO_OPEN_FLAG), false);
+ 	param->data_size = 0;
+ 	return 0;
+ }
+@@ -811,9 +820,13 @@ static void __dev_status(struct mapped_device *md, struct dm_ioctl *param)
+ 	if (dm_suspended_internally_md(md))
+ 		param->flags |= DM_INTERNAL_SUSPEND_FLAG;
+ 
+-	if (dm_test_deferred_remove_flag(md))
++	if (dm_test_deferred_remove_flag(md)) {
+ 		param->flags |= DM_DEFERRED_REMOVE;
+ 
++		if (dm_test_deferred_remove_no_open_flag(md))
++			param->flags |= DM_DEFERRED_REMOVE_NO_OPEN_FLAG;
++	}
++
+ 	param->dev = huge_encode_dev(disk_devt(disk));
+ 
+ 	/*
+@@ -960,10 +973,18 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
+ 
+ 	md = hc->md;
+ 
++	if (param->flags & DM_DEFERRED_REMOVE_NO_OPEN_FLAG &&
++			!(param->flags & DM_DEFERRED_REMOVE)) {
++		up_write(&_hash_lock);
++		dm_put(md);
++		return -EINVAL;
++	}
 +
  	/*
- 	 * Load microcode early on BSP.
+ 	 * Ensure the device is not open and nothing further can open it.
  	 */
-diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-new file mode 100644
-index 000000000000..1ef6979a6434
---- /dev/null
-+++ b/arch/x86/kernel/tdx.c
-@@ -0,0 +1,31 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (C) 2021-2022 Intel Corporation */
+-	r = dm_lock_for_deletion(md, !!(param->flags & DM_DEFERRED_REMOVE), false);
++	r = dm_lock_for_deletion(md, !!(param->flags & DM_DEFERRED_REMOVE),
++			!!(param->flags & DM_DEFERRED_REMOVE_NO_OPEN_FLAG), false);
+ 	if (r) {
+ 		if (r == -EBUSY && param->flags & DM_DEFERRED_REMOVE) {
+ 			up_write(&_hash_lock);
+@@ -984,7 +1005,7 @@ static int dev_remove(struct file *filp, struct dm_ioctl *param, size_t param_si
+ 		dm_table_destroy(t);
+ 	}
+ 
+-	param->flags &= ~DM_DEFERRED_REMOVE;
++	param->flags &= ~(DM_DEFERRED_REMOVE | DM_DEFERRED_REMOVE_NO_OPEN_FLAG);
+ 
+ 	dm_ima_measure_on_device_remove(md, false);
+ 
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index c0ae8087c602..90b74043e162 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -315,7 +315,10 @@ static int dm_blk_open(struct block_device *bdev, fmode_t mode)
+ 		goto out;
+ 
+ 	if (test_bit(DMF_FREEING, &md->flags) ||
++	    test_bit(DMF_DEFERRED_REMOVE_NO_OPEN, &md->flags) ||
+ 	    dm_deleting_md(md)) {
++		BUG_ON(test_bit(DMF_DEFERRED_REMOVE_NO_OPEN, &md->flags) &&
++		       !test_bit(DMF_DEFERRED_REMOVE, &md->flags));
+ 		md = NULL;
+ 		goto out;
+ 	}
+@@ -355,7 +358,8 @@ int dm_open_count(struct mapped_device *md)
+ /*
+  * Guarantees nothing is using the device before it's deleted.
+  */
+-int dm_lock_for_deletion(struct mapped_device *md, bool mark_deferred, bool only_deferred)
++int dm_lock_for_deletion(struct mapped_device *md, bool mark_deferred,
++		bool deferred_no_open, bool only_deferred)
+ {
+ 	int r = 0;
+ 
+@@ -363,8 +367,12 @@ int dm_lock_for_deletion(struct mapped_device *md, bool mark_deferred, bool only
+ 
+ 	if (dm_open_count(md)) {
+ 		r = -EBUSY;
+-		if (mark_deferred)
++		if (mark_deferred) {
+ 			set_bit(DMF_DEFERRED_REMOVE, &md->flags);
 +
-+#undef pr_fmt
-+#define pr_fmt(fmt)     "tdx: " fmt
-+
-+#include <linux/cpufeature.h>
-+#include <asm/tdx.h>
-+
-+static bool tdx_guest_detected __ro_after_init;
-+
-+bool is_tdx_guest(void)
++			if (deferred_no_open)
++				set_bit(DMF_DEFERRED_REMOVE_NO_OPEN, &md->flags);
++		}
+ 	} else if (only_deferred && !test_bit(DMF_DEFERRED_REMOVE, &md->flags))
+ 		r = -EEXIST;
+ 	else
+@@ -383,8 +391,10 @@ int dm_cancel_deferred_remove(struct mapped_device *md)
+ 
+ 	if (test_bit(DMF_DELETING, &md->flags))
+ 		r = -EBUSY;
+-	else
++	else {
+ 		clear_bit(DMF_DEFERRED_REMOVE, &md->flags);
++		clear_bit(DMF_DEFERRED_REMOVE_NO_OPEN, &md->flags);
++	}
+ 
+ 	spin_unlock(&_minor_lock);
+ 
+@@ -2718,6 +2728,11 @@ int dm_test_deferred_remove_flag(struct mapped_device *md)
+ 	return test_bit(DMF_DEFERRED_REMOVE, &md->flags);
+ }
+ 
++int dm_test_deferred_remove_no_open_flag(struct mapped_device *md)
 +{
-+	return tdx_guest_detected;
++	return test_bit(DMF_DEFERRED_REMOVE_NO_OPEN, &md->flags);
 +}
 +
-+void __init tdx_early_init(void)
-+{
-+	u32 eax, sig[3];
+ int dm_suspended(struct dm_target *ti)
+ {
+ 	return dm_suspended_md(ti->table->md);
+diff --git a/drivers/md/dm.h b/drivers/md/dm.h
+index 9013dc1a7b00..8d0d4344f882 100644
+--- a/drivers/md/dm.h
++++ b/drivers/md/dm.h
+@@ -158,6 +158,12 @@ void dm_internal_resume(struct mapped_device *md);
+  */
+ int dm_test_deferred_remove_flag(struct mapped_device *md);
+ 
++/*
++ * Test if the device is scheduled for deferred remove while
++ * disallowing opens.
++ */
++int dm_test_deferred_remove_no_open_flag(struct mapped_device *md);
 +
-+	cpuid_count(TDX_CPUID_LEAF_ID, 0, &eax, &sig[0], &sig[2],  &sig[1]);
+ /*
+  * Try to remove devices marked for deferred removal.
+  */
+@@ -198,7 +204,8 @@ void dm_stripe_exit(void);
+ void dm_destroy(struct mapped_device *md);
+ void dm_destroy_immediate(struct mapped_device *md);
+ int dm_open_count(struct mapped_device *md);
+-int dm_lock_for_deletion(struct mapped_device *md, bool mark_deferred, bool only_deferred);
++int dm_lock_for_deletion(struct mapped_device *md, bool mark_deferred,
++			 bool deferred_no_open, bool only_deferred);
+ int dm_cancel_deferred_remove(struct mapped_device *md);
+ int dm_request_based(struct mapped_device *md);
+ int dm_get_table_device(struct mapped_device *md, dev_t dev, fmode_t mode,
+diff --git a/include/uapi/linux/dm-ioctl.h b/include/uapi/linux/dm-ioctl.h
+index c12ce30b52df..c0fee607b827 100644
+--- a/include/uapi/linux/dm-ioctl.h
++++ b/include/uapi/linux/dm-ioctl.h
+@@ -286,9 +286,9 @@ enum {
+ #define DM_DEV_SET_GEOMETRY	_IOWR(DM_IOCTL, DM_DEV_SET_GEOMETRY_CMD, struct dm_ioctl)
+ 
+ #define DM_VERSION_MAJOR	4
+-#define DM_VERSION_MINOR	45
++#define DM_VERSION_MINOR	46
+ #define DM_VERSION_PATCHLEVEL	0
+-#define DM_VERSION_EXTRA	"-ioctl (2021-03-22)"
++#define DM_VERSION_EXTRA	"-ioctl (2022-01-21)"
+ 
+ /* Status bits */
+ #define DM_READONLY_FLAG	(1 << 0) /* In/Out */
+@@ -382,4 +382,12 @@ enum {
+  */
+ #define DM_IMA_MEASUREMENT_FLAG	(1 << 19) /* In */
+ 
++/* If set with DF_DEFERRED_REMOVE if an immediate remove is not
++ * possible because the device is still open any new additional
++ * opens will also be rejected.
++ *
++ * It is an error to specify this flag without DM_DEFERRED_REMOVE.
++ */
++#define DM_DEFERRED_REMOVE_NO_OPEN_FLAG	(1 << 20) /* In/Out */
 +
-+	if (memcmp(TDX_IDENT, sig, 12))
-+		return;
-+
-+	tdx_guest_detected = true;
-+
-+	setup_force_cpu_cap(X86_FEATURE_TDX_GUEST);
-+
-+	pr_info("Guest detected\n");
-+}
+ #endif				/* _LINUX_DM_IOCTL_H */
 -- 
-2.34.1
+2.35.0.rc0.227.g00780c9af4-goog
 
