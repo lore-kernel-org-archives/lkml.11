@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68465C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B149EC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412890AbiAYAh6 (ORCPT
+        id S3412951AbiAYAiD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:37:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57806 "EHLO
+        Mon, 24 Jan 2022 19:38:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2364082AbiAXXqp (ORCPT
+        with ESMTP id S2364001AbiAXXqc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:46:45 -0500
+        Mon, 24 Jan 2022 18:46:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07C2C0612B2;
-        Mon, 24 Jan 2022 13:42:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD7A2C034005;
+        Mon, 24 Jan 2022 13:41:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F2C460917;
-        Mon, 24 Jan 2022 21:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 210FCC340E4;
-        Mon, 24 Jan 2022 21:42:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C50461491;
+        Mon, 24 Jan 2022 21:41:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EEE2C340E4;
+        Mon, 24 Jan 2022 21:41:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060544;
-        bh=OLGhyBE3yYUeUqi46/+gVKgkTva0eh9cbOByjskd/PM=;
+        s=korg; t=1643060484;
+        bh=ZFkvLrbQuEXn14yPP2X0Q5NlzUl9AI4o2OqopNOvoAY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QU1Vt/+bGGqrbdJxxqryg9INuKTWr1rpUID7XPQKOeFTqcem6r044qd0/JRk0AmS1
-         0D23XOOsJKDDMUxbsxBeXsnr5tMiSBsFVoWpusWAtfJVSuWNCeqBBnMW0siq97i18l
-         Qjzmtbxi4OIdiprFdNj3Zgmrg9S9FTDS0VZpy4Fc=
+        b=tOknDXBzs0yWGCSsfb8nVgbaXKREO3zRsYJp+vShykxfJGkCih9BPXx8bFnF5B2NL
+         WfB/9xlhZg6x1eshtMzZrTCScFoxTUaHeyaemW/a2Y1sXitkABxEilWgeRrP7qpyg+
+         M/IrF6JDFr6/0XhG3/qyNn4+rPgb+cajVSj71UnM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Balbir Singh <bsingharora@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.16 0984/1039] taskstats: Cleanup the use of task->exit_code
-Date:   Mon, 24 Jan 2022 19:46:13 +0100
-Message-Id: <20220124184158.349632089@linuxfoundation.org>
+        stable@vger.kernel.org, John Keeping <john@metanate.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 5.16 0963/1039] pinctrl/rockchip: fix gpio device creation
+Date:   Mon, 24 Jan 2022 19:45:52 +0100
+Message-Id: <20220124184157.658285320@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,59 +49,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: John Keeping <john@metanate.com>
 
-commit 1b5a42d9c85f0e731f01c8d1129001fd8531a8a0 upstream.
+commit bceb6732f3fd2a55d8f2e518cced1c7555e216b6 upstream.
 
-In the function bacct_add_task the code reading task->exit_code was
-introduced in commit f3cef7a99469 ("[PATCH] csa: basic accounting over
-taskstats"), and it is not entirely clear what the taskstats interface
-is trying to return as only returning the exit_code of the first task
-in a process doesn't make a lot of sense.
+GPIO nodes are not themselves busses, so passing rockchip_bank_match
+here is wrong.  Passing NULL instead uses the standard bus match table
+which is more appropriate.
 
-As best as I can figure the intent is to return task->exit_code after
-a task exits.  The field is returned with per task fields, so the
-exit_code of the entire process is not wanted.  Only the value of the
-first task is returned so this is not a useful way to get the per task
-ptrace stop code.  The ordinary case of returning this value is
-returning after a task exits, which also precludes use for getting
-a ptrace value.
+devm_of_platform_populate() shows that this is the normal way to call
+of_platform_populate() from a device driver, so in order to match that
+more closely also add the pinctrl device as the parent for the newly
+created GPIO controllers.
 
-It is common to for the first task of a process to also be the last
-task of a process so this field may have done something reasonable by
-accident in testing.
+Specifically, using the wrong match here can break dynamic GPIO hogs as
+marking the GPIO bank as a bus means that of_platform_notify() will set
+OF_POPULATED on new child nodes and if this happens before
+of_gpio_notify() is called then the new hog will be skipped as
+OF_POPULATED is already set.
 
-Make ac_exitcode a reliable per task value by always returning it for
-every exited task.
-
-Setting ac_exitcode in a sensible mannter makes it possible to continue
-to provide this value going forward.
-
-Cc: Balbir Singh <bsingharora@gmail.com>
-Fixes: f3cef7a99469 ("[PATCH] csa: basic accounting over taskstats")
-Link: https://lkml.kernel.org/r/20220103213312.9144-5-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Fixes: 9ce9a02039de ("pinctrl/rockchip: drop the gpio related codes")
+Signed-off-by: John Keeping <john@metanate.com>
+Link: https://lore.kernel.org/r/20211126151352.1509583-1-john@metanate.com
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/tsacct.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/pinctrl/pinctrl-rockchip.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/kernel/tsacct.c
-+++ b/kernel/tsacct.c
-@@ -38,11 +38,10 @@ void bacct_add_tsk(struct user_namespace
- 	stats->ac_btime = clamp_t(time64_t, btime, 0, U32_MAX);
- 	stats->ac_btime64 = btime;
+--- a/drivers/pinctrl/pinctrl-rockchip.c
++++ b/drivers/pinctrl/pinctrl-rockchip.c
+@@ -2748,7 +2748,7 @@ static int rockchip_pinctrl_probe(struct
  
--	if (thread_group_leader(tsk)) {
-+	if (tsk->flags & PF_EXITING)
- 		stats->ac_exitcode = tsk->exit_code;
--		if (tsk->flags & PF_FORKNOEXEC)
--			stats->ac_flag |= AFORK;
--	}
-+	if (thread_group_leader(tsk) && (tsk->flags & PF_FORKNOEXEC))
-+		stats->ac_flag |= AFORK;
- 	if (tsk->flags & PF_SUPERPRIV)
- 		stats->ac_flag |= ASU;
- 	if (tsk->flags & PF_DUMPCORE)
+ 	platform_set_drvdata(pdev, info);
+ 
+-	ret = of_platform_populate(np, rockchip_bank_match, NULL, NULL);
++	ret = of_platform_populate(np, NULL, NULL, &pdev->dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to register gpio device\n");
+ 		return ret;
 
 
