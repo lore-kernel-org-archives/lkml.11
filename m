@@ -2,141 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B92CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FCDC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847681AbiAXXUU (ORCPT
+        id S1847797AbiAXXUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:20:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
+        Mon, 24 Jan 2022 18:20:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584635AbiAXWVa (ORCPT
+        with ESMTP id S1584593AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD81C0424F8;
-        Mon, 24 Jan 2022 12:52:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A6470B811FB;
-        Mon, 24 Jan 2022 20:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3EB3C340E5;
-        Mon, 24 Jan 2022 20:52:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057553;
-        bh=uKxrKBwurW6KlaBqJxOapnKslZue1woeqqPggQ2Rh0I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eFckwEfGnTpzRR2yX9uMNtL9rU79ozIQcwPMdEhuBBXdbM2mjDPxyJvZuSkJ53+rc
-         pJdPOkw0gFNnPLpX4gacFWPFR+vQ0xciMItDgvpHDYgs70nYl1f3CNiGPOB9tx6/Z0
-         q8+WWUsSt+D/pv/dRanOCwpuEdjkcfRdksLD+DwA=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 829/846] net: mscc: ocelot: dont let phylink re-enable TX PAUSE on the NPI port
-Date:   Mon, 24 Jan 2022 19:45:46 +0100
-Message-Id: <20220124184129.502096589@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 17:21:29 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD5FC0424E6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:52:01 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so347589pja.2
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:52:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=azp4drUBdsJbeJB1b3ReE50K/yU1xXzlMUUK30yNnBM=;
+        b=F3gryvXeekRjImadwhDQY4Obb+eJStO5e0tpTTJZt9j4ImBvFYCLicw/x99Xm0SBI0
+         v6NjLXjHROLZNeFvR99vUIBpZPUZzgGdh2i+u7kY7pUooz4Z7PrBNbMlwDsVbGv3GQtI
+         rRUIKMbN0FxgmE4CQyi6NWuZcIzwnnpQPuoISWNoex/9vCay++J2qrkgGmBCCals7WlB
+         TtgjoH4gxqB8vZgeUZ+f6URgGZARGSWXJihccCjshkf9m0Oes5qWsshKMMO5fb5923tb
+         zhV+/y9enMEKa4KQ/diaGgY/8z4wa3zCv35+Fr+7Pzl6lr6nSDJ0bPPT2hh6iqNoU6EL
+         rltg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=azp4drUBdsJbeJB1b3ReE50K/yU1xXzlMUUK30yNnBM=;
+        b=FJaIx9USFn7dhCU3aBuA+tkXmddiXHNQAtXL1zqQ9QeutLKnFK9j18cxqEYZ5KYIPk
+         00o8TakeOnZxAwha2Dc80tcC6D4BIRNd/bErXHeVRV7sr4dwvRWMr9CQ4NygKkoXp1EW
+         jVBzfrclprd7Ww/Ah5UzP8RxEGo47Ya/qgNceIMDmiZltrj4d7zhFPLk6c+ce0a0dMpw
+         y3sENUR2YSB3SMZz3tUa3tyLaa63sib5Oaevm/T11DZVNCwLO0KgASO32E2MhqhSgwbb
+         RuObsHIlef1GNGRuY5MkWe+isFr38u98qjyACeFihs2fYTtaokRELdQwJOoeag18GN7Z
+         IZzQ==
+X-Gm-Message-State: AOAM5339EE2TuZB9WS43rVTBOhi3G4jzYoGCU/+gI6/Auzov1YM8jUeg
+        FABGOLDKfcyQ/gdZ13AEml9xyy7QJK9ueQ==
+X-Google-Smtp-Source: ABdhPJxRSKpl34+ADkOyTL0oF0DQ+fVEvCLMRH1hZ84FdQZOa6FtRXIqo7qdgaw6fZ0jndD2x6C+zA==
+X-Received: by 2002:a17:902:8208:b0:14a:c442:8ca2 with SMTP id x8-20020a170902820800b0014ac4428ca2mr16248516pln.12.1643057520606;
+        Mon, 24 Jan 2022 12:52:00 -0800 (PST)
+Received: from google.com ([2620:15c:202:201:90e5:c14:112c:6b8f])
+        by smtp.gmail.com with ESMTPSA id d12sm16755034pfl.24.2022.01.24.12.51.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 24 Jan 2022 12:51:59 -0800 (PST)
+Date:   Mon, 24 Jan 2022 12:51:53 -0800
+From:   Benson Leung <bleung@google.com>
+To:     "Dustin L. Howett" <dustin@howett.net>
+Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>, tzungbi@google.com
+Subject: Re: [PATCH 0/2] platform/chrome: Add support for the Framework Laptop
+Message-ID: <Ye8RaQcIuR6kpaYj@google.com>
+References: <20220105031242.287751-1-dustin@howett.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="p4q7HqB6Z26mUEsK"
+Content-Disposition: inline
+In-Reply-To: <20220105031242.287751-1-dustin@howett.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-commit 33cb0ff30cff104e753f7882c99e54cf67ea7903 upstream.
+--p4q7HqB6Z26mUEsK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Since commit b39648079db4 ("net: mscc: ocelot: disable flow control on
-NPI interface"), flow control should be disabled on the DSA CPU port
-when used in NPI mode.
+Hi Dustin,
 
-However, the commit blamed in the Fixes: tag below broke this, because
-it allowed felix_phylink_mac_link_up() to overwrite SYS_PAUSE_CFG_PAUSE_ENA
-for the DSA CPU port.
+On Tue, Jan 04, 2022 at 09:12:40PM -0600, Dustin L. Howett wrote:
+> This patch series adds support for the Framework Laptop to the cros_ec
+> LPC driver.
+>=20
+> The Framework Laptop is a non-Chromebook laptop that uses the ChromeOS
+> Embedded Controller. Since the machine was designed to present a more
+> normal device profile, it does not report all 512 I/O ports that are
+> typically used by cros_ec_lpcs. Because of this, changes to the driver's
+> port reservation scheme were required.
+>=20
+> Dustin L. Howett (2):
+>   platform/chrome: cros-ec: detect the Framework Laptop
+>   platform/chrome: reserve only the I/O ports required for the MEC EC
+>=20
+>  drivers/platform/chrome/cros_ec_lpc.c          |   47 ++++++++++-----
+>  include/linux/platform_data/cros_ec_commands.h |    4 +
+>  2 files changed, 38 insertions(+), 13 deletions(-)
+>=20
 
-This issue became noticeable since the device tree update from commit
-8fcea7be5736 ("arm64: dts: ls1028a: mark internal links between Felix
-and ENETC as capable of flow control").
+Thanks for sending this! I saw that Framework also posted their embedded
+controller source code as well, so we've got both sides of this process
+in the open now!
 
-The solution is to check whether this is the currently configured NPI
-port from ocelot_phylink_mac_link_up(), and to not modify the statically
-disabled PAUSE frame transmission if it is.
+I'd like to have someone else at Google ramp up on reviewing chrome/platform
+patches.
 
-When the port is configured for lossless mode as opposed to tail drop
-mode, but the link partner (DSA master) doesn't observe the transmitted
-PAUSE frames, the switch termination throughput is much worse, as can be
-seen below.
+Tzung-Bi, could you help take a look at Dustin's series?
 
-Before:
+Thanks,
+Benson
 
-root@debian:~# iperf3 -c 192.168.100.2
-Connecting to host 192.168.100.2, port 5201
-[  5] local 192.168.100.1 port 37504 connected to 192.168.100.2 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec  28.4 MBytes   238 Mbits/sec  357   22.6 KBytes
-[  5]   1.00-2.00   sec  33.6 MBytes   282 Mbits/sec  426   19.8 KBytes
-[  5]   2.00-3.00   sec  34.0 MBytes   285 Mbits/sec  343   21.2 KBytes
-[  5]   3.00-4.00   sec  32.9 MBytes   276 Mbits/sec  354   22.6 KBytes
-[  5]   4.00-5.00   sec  32.3 MBytes   271 Mbits/sec  297   18.4 KBytes
-^C[  5]   5.00-5.06   sec  2.05 MBytes   270 Mbits/sec   45   19.8 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-5.06   sec   163 MBytes   271 Mbits/sec  1822             sender
-[  5]   0.00-5.06   sec  0.00 Bytes  0.00 bits/sec                  receiver
+> --=20
+> 2.34.1
+>=20
 
-After:
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
 
-root@debian:~# iperf3 -c 192.168.100.2
-Connecting to host 192.168.100.2, port 5201
-[  5] local 192.168.100.1 port 49470 connected to 192.168.100.2 port 5201
-[ ID] Interval           Transfer     Bitrate         Retr  Cwnd
-[  5]   0.00-1.00   sec   112 MBytes   941 Mbits/sec  259    143 KBytes
-[  5]   1.00-2.00   sec   110 MBytes   920 Mbits/sec  329    144 KBytes
-[  5]   2.00-3.00   sec   112 MBytes   936 Mbits/sec  255    144 KBytes
-[  5]   3.00-4.00   sec   110 MBytes   927 Mbits/sec  355    105 KBytes
-[  5]   4.00-5.00   sec   110 MBytes   926 Mbits/sec  350    156 KBytes
-[  5]   5.00-6.00   sec   110 MBytes   925 Mbits/sec  305    148 KBytes
-[  5]   6.00-7.00   sec   110 MBytes   924 Mbits/sec  320    143 KBytes
-[  5]   7.00-8.00   sec   110 MBytes   925 Mbits/sec  273   97.6 KBytes
-[  5]   8.00-9.00   sec   109 MBytes   913 Mbits/sec  299    141 KBytes
-[  5]   9.00-10.00  sec   110 MBytes   922 Mbits/sec  287    146 KBytes
-- - - - - - - - - - - - - - - - - - - - - - - - -
-[ ID] Interval           Transfer     Bitrate         Retr
-[  5]   0.00-10.00  sec  1.08 GBytes   926 Mbits/sec  3032             sender
-[  5]   0.00-10.00  sec  1.08 GBytes   925 Mbits/sec                  receiver
+--p4q7HqB6Z26mUEsK
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Fixes: de274be32cb2 ("net: dsa: felix: set TX flow control according to the phylink_mac_link_up resolution")
-Reported-by: Xiaoliang Yang <xiaoliang.yang_1@nxp.com>
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/net/ethernet/mscc/ocelot.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+-----BEGIN PGP SIGNATURE-----
 
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -555,7 +555,10 @@ void ocelot_phylink_mac_link_up(struct o
- 
- 	ocelot_write_rix(ocelot, 0, ANA_POL_FLOWC, port);
- 
--	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, tx_pause);
-+	/* Don't attempt to send PAUSE frames on the NPI port, it's broken */
-+	if (port != ocelot->npi)
-+		ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA,
-+				    tx_pause);
- 
- 	/* Undo the effects of ocelot_phylink_mac_link_down:
- 	 * enable MAC module
+iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYe8RaQAKCRBzbaomhzOw
+wlmtAQD2bG15FEjsW9X594WUGiqSLIucKvGBKPj2hTunATXepwD/VxcenjhdfddM
+RjakdKFt5RaDyKPOKJSz6CYPmDr5XgA=
+=rgBd
+-----END PGP SIGNATURE-----
 
-
+--p4q7HqB6Z26mUEsK--
