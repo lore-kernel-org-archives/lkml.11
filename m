@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96ACEC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 799AAC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388003AbiAXUhm (ORCPT
+        id S1387974AbiAXUhk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:37:42 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55276 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380611AbiAXUQe (ORCPT
+        Mon, 24 Jan 2022 15:37:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42120 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380077AbiAXUPc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:16:34 -0500
+        Mon, 24 Jan 2022 15:15:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CCBB7B8121A;
-        Mon, 24 Jan 2022 20:16:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19AD7C340E5;
-        Mon, 24 Jan 2022 20:16:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2255960B56;
+        Mon, 24 Jan 2022 20:15:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED3B9C340E5;
+        Mon, 24 Jan 2022 20:15:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055392;
-        bh=E0GfmjPk2458BTHAGUlK7SfWSFjq1jqdNMCrK7Z2KfQ=;
+        s=korg; t=1643055331;
+        bh=c1OwRTT7QSsPqUfKEn8DVhlDiGdochmBpceUUZwppaA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HAdPD3E9tWVCLV7y0pTfc6idNmqJDqf6LxHiEMyVUE1Yof78JQEuZNu4Xa2luCl8i
-         q9ljwkxOoYYmZk+LrsQbsnlfq2hPW+50yQzU4h7nnyxuIEHr9dxnakeytPHyaVdWVL
-         iktGpEIKZoit15nUJf+hEZq/BDljKqYphU2mSVtY=
+        b=RVAeQcdoH4ned209Ei2Lt5knuX8HTAj99/QLjsck0dMyd1141EGz10n36Kz7YemX4
+         hSp6gnoJLalymcq1N2rznTrioEFyUWY+Cy/nHoJv7Q1TFnWIeK3DtHA8hq1YvsP/71
+         adE8lT/x+ZnDUrhfq3DF0u9KLNFUVq7wUrIhwLGQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 136/846] media: dmxdev: fix UAF when dvb_register_device() fails
-Date:   Mon, 24 Jan 2022 19:34:13 +0100
-Message-Id: <20220124184105.686782805@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.15 084/846] drm/rockchip: dsi: Reconfigure hardware on resume()
+Date:   Mon, 24 Jan 2022 19:33:21 +0100
+Message-Id: <20220124184103.886149964@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,104 +48,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit ab599eb11882f834951c436cc080c3455ba32b9b ]
+commit e584cdc1549932f87a2707b56bc588cfac5d89e0 upstream.
 
-I got a use-after-free report:
+Since commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
+LCDC mux to bind()"), we perform most HW configuration in the bind()
+function. This configuration may be lost on suspend/resume, so we
+need to call it again. That may lead to errors like this after system
+suspend/resume:
 
-dvbdev: dvb_register_device: failed to create device dvb1.dvr0 (-12)
-...
-==================================================================
-BUG: KASAN: use-after-free in dvb_dmxdev_release+0xce/0x2f0
-...
-Call Trace:
- dump_stack_lvl+0x6c/0x8b
- print_address_description.constprop.0+0x48/0x70
- kasan_report.cold+0x82/0xdb
- __asan_load4+0x6b/0x90
- dvb_dmxdev_release+0xce/0x2f0
-...
-Allocated by task 7666:
- kasan_save_stack+0x23/0x50
- __kasan_kmalloc+0x83/0xa0
- kmem_cache_alloc_trace+0x22e/0x470
- dvb_register_device+0x12f/0x980
- dvb_dmxdev_init+0x1f3/0x230
-...
-Freed by task 7666:
- kasan_save_stack+0x23/0x50
- kasan_set_track+0x20/0x30
- kasan_set_free_info+0x24/0x40
- __kasan_slab_free+0xf2/0x130
- kfree+0xd1/0x5c0
- dvb_register_device.cold+0x1ac/0x1fa
- dvb_dmxdev_init+0x1f3/0x230
-...
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
 
-When dvb_register_device() in dvb_dmxdev_init() fails, dvb_dmxdev_init()
-does not return a failure, and the memory pointed to by dvbdev or
-dvr_dvbdev is invalid at this point. If they are used subsequently, it
-will result in UFA or null-ptr-deref.
+Tested on Acer Chromebook Tab 10 (RK3399 Gru-Scarlet).
 
-If dvb_register_device() in dvb_dmxdev_init() fails, fix the bug by making
-dvb_dmxdev_init() return an error as well.
+Note that early mailing list versions of this driver borrowed Rockchip's
+downstream/BSP solution, to do HW configuration in mode_set() (which
+*is* called at the appropriate pre-enable() times), but that was
+discarded along the way. I've avoided that still, because mode_set()
+documentation doesn't suggest this kind of purpose as far as I can tell.
 
-Link: https://lore.kernel.org/linux-media/20211015085741.1203283-1-wanghai38@huawei.com
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.2.I4e9d93aadb00b1ffc7d506e3186a25492bf0b732@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/dvb-core/dmxdev.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/drivers/media/dvb-core/dmxdev.c b/drivers/media/dvb-core/dmxdev.c
-index 5d5a48475a54f..01f288fa37e0e 100644
---- a/drivers/media/dvb-core/dmxdev.c
-+++ b/drivers/media/dvb-core/dmxdev.c
-@@ -1413,7 +1413,7 @@ static const struct dvb_device dvbdev_dvr = {
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -268,6 +268,8 @@ struct dw_mipi_dsi_rockchip {
+ 	struct dw_mipi_dsi *dmd;
+ 	const struct rockchip_dw_dsi_chip_data *cdata;
+ 	struct dw_mipi_dsi_plat_data pdata;
++
++	bool dsi_bound;
  };
- int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
- {
--	int i;
-+	int i, ret;
  
- 	if (dmxdev->demux->open(dmxdev->demux) < 0)
- 		return -EUSERS;
-@@ -1432,14 +1432,26 @@ int dvb_dmxdev_init(struct dmxdev *dmxdev, struct dvb_adapter *dvb_adapter)
- 					    DMXDEV_STATE_FREE);
+ struct dphy_pll_parameter_map {
+@@ -964,6 +966,8 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 		goto out_pll_clk;
  	}
  
--	dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
-+	ret = dvb_register_device(dvb_adapter, &dmxdev->dvbdev, &dvbdev_demux, dmxdev,
- 			    DVB_DEVICE_DEMUX, dmxdev->filternum);
--	dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
-+	if (ret < 0)
-+		goto err_register_dvbdev;
++	dsi->dsi_bound = true;
 +
-+	ret = dvb_register_device(dvb_adapter, &dmxdev->dvr_dvbdev, &dvbdev_dvr,
- 			    dmxdev, DVB_DEVICE_DVR, dmxdev->filternum);
-+	if (ret < 0)
-+		goto err_register_dvr_dvbdev;
- 
- 	dvb_ringbuffer_init(&dmxdev->dvr_buffer, NULL, 8192);
- 
  	return 0;
-+
-+err_register_dvr_dvbdev:
-+	dvb_unregister_device(dmxdev->dvbdev);
-+err_register_dvbdev:
-+	vfree(dmxdev->filter);
-+	dmxdev->filter = NULL;
-+	return ret;
- }
  
- EXPORT_SYMBOL(dvb_dmxdev_init);
--- 
-2.34.1
-
+ out_pll_clk:
+@@ -985,6 +989,8 @@ static void dw_mipi_dsi_rockchip_unbind(
+ 	if (dsi->is_slave)
+ 		return;
+ 
++	dsi->dsi_bound = false;
++
+ 	dw_mipi_dsi_unbind(dsi->dmd);
+ 
+ 	clk_disable_unprepare(dsi->pllref_clk);
+@@ -1279,6 +1285,36 @@ static const struct phy_ops dw_mipi_dsi_
+ 	.exit		= dw_mipi_dsi_dphy_exit,
+ };
+ 
++static int __maybe_unused dw_mipi_dsi_rockchip_resume(struct device *dev)
++{
++	struct dw_mipi_dsi_rockchip *dsi = dev_get_drvdata(dev);
++	int ret;
++
++	/*
++	 * Re-configure DSI state, if we were previously initialized. We need
++	 * to do this before rockchip_drm_drv tries to re-enable() any panels.
++	 */
++	if (dsi->dsi_bound) {
++		ret = clk_prepare_enable(dsi->grf_clk);
++		if (ret) {
++			DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
++			return ret;
++		}
++
++		dw_mipi_dsi_rockchip_config(dsi);
++		if (dsi->slave)
++			dw_mipi_dsi_rockchip_config(dsi->slave);
++
++		clk_disable_unprepare(dsi->grf_clk);
++	}
++
++	return 0;
++}
++
++static const struct dev_pm_ops dw_mipi_dsi_rockchip_pm_ops = {
++	SET_LATE_SYSTEM_SLEEP_PM_OPS(NULL, dw_mipi_dsi_rockchip_resume)
++};
++
+ static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -1592,6 +1628,7 @@ struct platform_driver dw_mipi_dsi_rockc
+ 	.remove		= dw_mipi_dsi_rockchip_remove,
+ 	.driver		= {
+ 		.of_match_table = dw_mipi_dsi_rockchip_dt_ids,
++		.pm	= &dw_mipi_dsi_rockchip_pm_ops,
+ 		.name	= "dw-mipi-dsi-rockchip",
+ 	},
+ };
 
 
