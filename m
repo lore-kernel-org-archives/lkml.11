@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BE9C35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC50C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444656AbiAXVBO (ORCPT
+        id S1444739AbiAXVBY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40322 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387637AbiAXUhA (ORCPT
+        Mon, 24 Jan 2022 16:01:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:32934 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387771AbiAXUhP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74175C02B8D6;
-        Mon, 24 Jan 2022 11:50:59 -0800 (PST)
+        Mon, 24 Jan 2022 15:37:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C6D0B81142;
-        Mon, 24 Jan 2022 19:50:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 623D9C340E7;
-        Mon, 24 Jan 2022 19:50:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0EE8F614EC;
+        Mon, 24 Jan 2022 20:37:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18A0CC340E5;
+        Mon, 24 Jan 2022 20:37:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053857;
-        bh=45UaNH9/HbIDxSHTUqBMSe0RI4AGTAFns1A7plVdQbQ=;
+        s=korg; t=1643056634;
+        bh=tXCJNqwYnJUv5OiUKVKDF77k+pTArpnfAmk7lgdS81Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2kR5rSrXsU7acP5lNDg4l/UjH6mpfm4VgNCZoGW3J2/Y/w4rvmQD3XFtva4HFypJI
-         IOki6eSTNjgPbueuWP9wBjHq0ORPi07BDkqTHk9R3YqSl03+P4lqwsArvKT+hReyib
-         tOEvoSse2oR1Uy1fWBJ30s7Epi7XPZSgbmWCnJH0=
+        b=sXRmSxDHYf8OVyApyVOUNvjbnnAecipOyzM9VtXlG406xOgUecWyjWiYYpKjIQn+K
+         a54Csi29pfknbJbHAbqutdiOtCGxrYwuNIw2cs8hQNSU1a3agWawvewEo7fD7WTQx5
+         v0PhMvU0SnUZwU+YcIx4eI78Ous3S5r+MCu5WW04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhang Zixun <zhang133010@icloud.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 199/563] x86/mce/inject: Avoid out-of-bounds write when setting flags
-Date:   Mon, 24 Jan 2022 19:39:24 +0100
-Message-Id: <20220124184031.312888807@linuxfoundation.org>
+        stable@vger.kernel.org, Alistair Francis <alistair@alistair23.me>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 550/846] HID: quirks: Allow inverting the absolute X/Y values
+Date:   Mon, 24 Jan 2022 19:41:07 +0100
+Message-Id: <20220124184120.001472392@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,53 +47,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhang Zixun <zhang133010@icloud.com>
+From: Alistair Francis <alistair@alistair23.me>
 
-[ Upstream commit de768416b203ac84e02a757b782a32efb388476f ]
+[ Upstream commit fd8d135b2c5e88662f2729e034913f183455a667 ]
 
-A contrived zero-length write, for example, by using write(2):
+Add a HID_QUIRK_X_INVERT/HID_QUIRK_Y_INVERT quirk that can be used
+to invert the X/Y values.
 
-  ...
-  ret = write(fd, str, 0);
-  ...
-
-to the "flags" file causes:
-
-  BUG: KASAN: stack-out-of-bounds in flags_write
-  Write of size 1 at addr ffff888019be7ddf by task writefile/3787
-
-  CPU: 4 PID: 3787 Comm: writefile Not tainted 5.16.0-rc7+ #12
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-
-due to accessing buf one char before its start.
-
-Prevent such out-of-bounds access.
-
-  [ bp: Productize into a proper patch. Link below is the next best
-    thing because the original mail didn't get archived on lore. ]
-
-Fixes: 0451d14d0561 ("EDAC, mce_amd_inj: Modify flags attribute to use string arguments")
-Signed-off-by: Zhang Zixun <zhang133010@icloud.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/linux-edac/YcnePfF1OOqoQwrX@zn.tnic/
+Signed-off-by: Alistair Francis <alistair@alistair23.me>
+[bentiss: silence checkpatch warning]
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20211208124045.61815-2-alistair@alistair23.me
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/inject.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/hid-input.c | 6 ++++++
+ include/linux/hid.h     | 2 ++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
-index 3a44346f22766..e7808309d4710 100644
---- a/arch/x86/kernel/cpu/mce/inject.c
-+++ b/arch/x86/kernel/cpu/mce/inject.c
-@@ -347,7 +347,7 @@ static ssize_t flags_write(struct file *filp, const char __user *ubuf,
- 	char buf[MAX_FLAG_OPT_SIZE], *__buf;
- 	int err;
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index c3bd7ba9a5ca0..3d33c0c06cbb3 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1332,6 +1332,12 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
  
--	if (cnt > MAX_FLAG_OPT_SIZE)
-+	if (!cnt || cnt > MAX_FLAG_OPT_SIZE)
- 		return -EINVAL;
+ 	input = field->hidinput->input;
  
- 	if (copy_from_user(&buf, ubuf, cnt))
++	if (usage->type == EV_ABS &&
++	    (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
++	     ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))) {
++		value = field->logical_maximum - value;
++	}
++
+ 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
+ 		int hat_dir = usage->hat_dir;
+ 		if (!hat_dir)
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index f453be385bd47..26742ca14609a 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -349,6 +349,8 @@ struct hid_item {
+ /* BIT(9) reserved for backward compatibility, was NO_INIT_INPUT_REPORTS */
+ #define HID_QUIRK_ALWAYS_POLL			BIT(10)
+ #define HID_QUIRK_INPUT_PER_APP			BIT(11)
++#define HID_QUIRK_X_INVERT			BIT(12)
++#define HID_QUIRK_Y_INVERT			BIT(13)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORTS		BIT(16)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORT_ID		BIT(17)
+ #define HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP	BIT(18)
 -- 
 2.34.1
 
