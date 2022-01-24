@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C14AC46467
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79851C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379197AbiAXUKe (ORCPT
+        id S1379225AbiAXUKi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
+        Mon, 24 Jan 2022 15:10:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352195AbiAXTwp (ORCPT
+        with ESMTP id S1351785AbiAXTwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:52:45 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB36DC061394;
-        Mon, 24 Jan 2022 11:26:16 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61491C06138F;
+        Mon, 24 Jan 2022 11:25:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7286CB81239;
-        Mon, 24 Jan 2022 19:26:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90EB5C340E5;
-        Mon, 24 Jan 2022 19:26:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC8DD61488;
+        Mon, 24 Jan 2022 19:25:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB123C340EA;
+        Mon, 24 Jan 2022 19:25:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052374;
-        bh=l2qkhwyajAQCjSYqn/KNwyizSyty6BnN/EXpCzFQ+wo=;
+        s=korg; t=1643052346;
+        bh=g7mHWUR/GWhbjh5JLbfZd53yt1tiPR9RD2IitNW5qzU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tLW8eWyoX1+p02EU0QUytJiG+npQONmDhc1fatLSU7/guTU/fPsJrMGzhBQFOWNQr
-         AyVep+D4wolJ3HWpddkHuHTsdjJ/3djIeQH7QGvmz8rXkSf6Rrftxtb3/k4Y9rAcjE
-         Q5rpfscjmnVTkmzi9kYigTqRk2/YHP9fvxByMWXQ=
+        b=MuJdjbRHGUjmYqj6yGR/wDkd++ODSmiRmUs1li60fZBCcmzA/wi7YgteNmmImkrWV
+         2Bn9bOIZWssiXQoqccL093ml5Fsb4ndQ/JjR2rZwbVpnjq1o7CB+j53qazAWFrGehy
+         xSd2+METCPxJIV0jQOStDvcFMSALIhmUki4mT03E=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 038/320] clk: bcm-2835: Pick the closest clock rate
-Date:   Mon, 24 Jan 2022 19:40:22 +0100
-Message-Id: <20220124183955.050123837@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Christian Eggers <ceggers@arri.de>, Han Xu <han.xu@nxp.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.4 007/320] mtd: rawnand: gpmi: Add ERR007117 protection for nfc_apply_timings
+Date:   Mon, 24 Jan 2022 19:39:51 +0100
+Message-Id: <20220124183954.021297586@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -52,46 +51,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Christian Eggers <ceggers@arri.de>
 
-[ Upstream commit 5517357a4733d7cf7c17fc79d0530cfa47add372 ]
+commit f53d4c109a666bf1a4883b45d546fba079258717 upstream.
 
-The driver currently tries to pick the closest rate that is lower than
-the rate being requested.
+gpmi_io clock needs to be gated off when changing the parent/dividers of
+enfc_clk_root (i.MX6Q/i.MX6UL) respectively qspi2_clk_root (i.MX6SX).
+Otherwise this rate change can lead to an unresponsive GPMI core which
+results in DMA timeouts and failed driver probe:
 
-This causes an issue with clk_set_min_rate() since it actively checks
-for the rounded rate to be above the minimum that was just set.
+[    4.072318] gpmi-nand 112000.gpmi-nand: DMA timeout, last DMA
+...
+[    4.370355] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -110
+...
+[    4.375988] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -22
+[    4.381524] gpmi-nand 112000.gpmi-nand: Error in ECC-based read: -22
+[    4.387988] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -22
+[    4.393535] gpmi-nand 112000.gpmi-nand: Chip: 0, Error -22
+...
 
-Let's change the logic a bit to pick the closest rate to the requested
-rate, no matter if it's actually higher or lower.
+Other than stated in i.MX 6 erratum ERR007117, it should be sufficient
+to gate only gpmi_io because all other bch/nand clocks are derived from
+different clock roots.
 
-Fixes: 6d18b8adbe67 ("clk: bcm2835: Support for clock parent selection")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-2-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The i.MX6 reference manuals state that changing clock muxers can cause
+glitches but are silent about changing dividers. But tests showed that
+these glitches can definitely happen on i.MX6ULL. For i.MX7D/8MM in turn,
+the manual guarantees that no glitches can happen when changing
+dividers.
+
+Co-developed-by: Stefan Riedmueller <s.riedmueller@phytec.de>
+Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+Cc: stable@vger.kernel.org
+Acked-by: Han Xu <han.xu@nxp.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-2-ceggers@arri.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/bcm/clk-bcm2835.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |   28 +++++++++++++++++++++++++---
+ 1 file changed, 25 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index c5486537b9284..b2af320d1b6c5 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -1216,7 +1216,7 @@ static int bcm2835_clock_determine_rate(struct clk_hw *hw,
- 		rate = bcm2835_clock_choose_div_and_prate(hw, i, req->rate,
- 							  &div, &prate,
- 							  &avgrate);
--		if (rate > best_rate && rate <= req->rate) {
-+		if (abs(req->rate - rate) < abs(req->rate - best_rate)) {
- 			best_parent = parent;
- 			best_prate = prate;
- 			best_rate = rate;
--- 
-2.34.1
-
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -710,14 +710,32 @@ static void gpmi_nfc_compute_timings(str
+ 			      (use_half_period ? BM_GPMI_CTRL1_HALF_PERIOD : 0);
+ }
+ 
+-static void gpmi_nfc_apply_timings(struct gpmi_nand_data *this)
++static int gpmi_nfc_apply_timings(struct gpmi_nand_data *this)
+ {
+ 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
+ 	struct resources *r = &this->resources;
+ 	void __iomem *gpmi_regs = r->gpmi_regs;
+ 	unsigned int dll_wait_time_us;
++	int ret;
++
++	/* Clock dividers do NOT guarantee a clean clock signal on its output
++	 * during the change of the divide factor on i.MX6Q/UL/SX. On i.MX7/8,
++	 * all clock dividers provide these guarantee.
++	 */
++	if (GPMI_IS_MX6Q(this) || GPMI_IS_MX6SX(this))
++		clk_disable_unprepare(r->clock[0]);
++
++	ret = clk_set_rate(r->clock[0], hw->clk_rate);
++	if (ret) {
++		dev_err(this->dev, "cannot set clock rate to %lu Hz: %d\n", hw->clk_rate, ret);
++		return ret;
++	}
+ 
+-	clk_set_rate(r->clock[0], hw->clk_rate);
++	if (GPMI_IS_MX6Q(this) || GPMI_IS_MX6SX(this)) {
++		ret = clk_prepare_enable(r->clock[0]);
++		if (ret)
++			return ret;
++	}
+ 
+ 	writel(hw->timing0, gpmi_regs + HW_GPMI_TIMING0);
+ 	writel(hw->timing1, gpmi_regs + HW_GPMI_TIMING1);
+@@ -736,6 +754,8 @@ static void gpmi_nfc_apply_timings(struc
+ 
+ 	/* Wait for the DLL to settle. */
+ 	udelay(dll_wait_time_us);
++
++	return 0;
+ }
+ 
+ static int gpmi_setup_data_interface(struct nand_chip *chip, int chipnr,
+@@ -2429,7 +2449,9 @@ static int gpmi_nfc_exec_op(struct nand_
+ 	 */
+ 	if (this->hw.must_apply_timings) {
+ 		this->hw.must_apply_timings = false;
+-		gpmi_nfc_apply_timings(this);
++		ret = gpmi_nfc_apply_timings(this);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	dev_dbg(this->dev, "%s: %d instructions\n", __func__, op->ninstrs);
 
 
