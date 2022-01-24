@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD0DFC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC6FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451617AbiAXVXO (ORCPT
+        id S1451535AbiAXVXH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48414 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442551AbiAXUyt (ORCPT
+        Mon, 24 Jan 2022 16:23:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50058 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351823AbiAXUxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:54:49 -0500
+        Mon, 24 Jan 2022 15:53:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB33660C17;
-        Mon, 24 Jan 2022 20:54:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F91C340E5;
-        Mon, 24 Jan 2022 20:54:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA121B80CCF;
+        Mon, 24 Jan 2022 20:53:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F262FC340E7;
+        Mon, 24 Jan 2022 20:53:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057687;
-        bh=AuyhCT3B2V3UEEjSkj4AqU0jUqp3l0eUqnqkXQA3DdE=;
+        s=korg; t=1643057584;
+        bh=vSGR6VHbNUyq1gjucRiTGoZ958d6JifO3hYpyr6RMI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ndwoz32Yvh/GTVdEurq4l/FnH+XYpn5QQa77Pfk/lk/Wcu9rM/SMVfCanKuAkHR0j
-         KmBp8rkK7sB2vdNN6yRHjCe3D0B5X0TJ0EEFCk71S+2oEd4xA4BhszN7JTa50yBkbI
-         QDS8u4y9628MpKgPRhcmTHFoMUHfEX09RLgc8Apo=
+        b=mFR9xQD1Cb7VPZO9LQcPAjVzqTkY1WAO83f6WwrZLA5hUv6rZ3dny6fLz5G1WPxk4
+         IEhNNuN/QCMQKrmk/qm2YI2IjkhDbJmr0bHt1GnGGCykQKKaoJNPNyRExjLLXWwbt8
+         aaLwlqe/aqUF/pPRsmB1dab1GDAzI82hDs7jbyLw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.16 0045/1039] media: flexcop-usb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:30:34 +0100
-Message-Id: <20220124184126.659770435@linuxfoundation.org>
+        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.16 0004/1039] HID: uhid: Fix worker destroying device without any protection
+Date:   Mon, 24 Jan 2022 19:29:53 +0100
+Message-Id: <20220124184125.288410926@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,95 +46,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Jann Horn <jannh@google.com>
 
-commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
+commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+uhid has to run hid_add_device() from workqueue context while allowing
+parallel use of the userspace API (which is protected with ->devlock).
+But hid_add_device() can fail. Currently, that is handled by immediately
+destroying the associated HID device, without using ->devlock - but if
+there are concurrent requests from userspace, that's wrong and leads to
+NULL dereferences and/or memory corruption (via use-after-free).
 
-Note that the driver was multiplying some of the timeout values with HZ
-twice resulting in 3000-second timeouts with HZ=1000.
+Fix it by leaving the HID device as-is in the worker. We can clean it up
+later, either in the UHID_DESTROY command handler or in the ->release()
+handler.
 
-Also note that two of the timeout defines are currently unused.
-
-Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
-Cc: stable@vger.kernel.org      # 3.0
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc: stable@vger.kernel.org
+Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
+Signed-off-by: Jann Horn <jannh@google.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
- drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
+ 1 file changed, 25 insertions(+), 4 deletions(-)
 
---- a/drivers/media/usb/b2c2/flexcop-usb.c
-+++ b/drivers/media/usb/b2c2/flexcop-usb.c
-@@ -87,7 +87,7 @@ static int flexcop_usb_readwrite_dw(stru
- 			0,
- 			fc_usb->data,
- 			sizeof(u32),
--			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
-+			B2C2_WAIT_FOR_OPERATION_RDW);
+--- a/drivers/hid/uhid.c
++++ b/drivers/hid/uhid.c
+@@ -28,11 +28,22 @@
  
- 	if (ret != sizeof(u32)) {
- 		err("error while %s dword from %d (%d).", read ? "reading" :
-@@ -155,7 +155,7 @@ static int flexcop_usb_v8_memory_req(str
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 	if (ret != buflen)
- 		ret = -EIO;
+ struct uhid_device {
+ 	struct mutex devlock;
++
++	/* This flag tracks whether the HID device is usable for commands from
++	 * userspace. The flag is already set before hid_add_device(), which
++	 * runs in workqueue context, to allow hid_add_device() to communicate
++	 * with userspace.
++	 * However, if hid_add_device() fails, the flag is cleared without
++	 * holding devlock.
++	 * We guarantee that if @running changes from true to false while you're
++	 * holding @devlock, it's still fine to access @hid.
++	 */
+ 	bool running;
  
-@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
- 		/* DKT 020208 - add this to support special case of DiSEqC */
- 	case USB_FUNC_I2C_CHECKWRITE:
- 		pipe = B2C2_USB_CTRL_PIPE_OUT;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_OUT;
- 		break;
- 	case USB_FUNC_I2C_READ:
- 	case USB_FUNC_I2C_REPEATREAD:
- 		pipe = B2C2_USB_CTRL_PIPE_IN;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_IN;
- 		break;
- 	default:
-@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
+ 	__u8 *rd_data;
+ 	uint rd_size;
  
- 	if (ret != buflen)
- 		ret = -EIO;
---- a/drivers/media/usb/b2c2/flexcop-usb.h
-+++ b/drivers/media/usb/b2c2/flexcop-usb.h
-@@ -91,13 +91,13 @@ typedef enum {
- 	UTILITY_SRAM_TESTVERIFY     = 0x16,
- } flexcop_usb_utility_function_t;
++	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
+ 	struct hid_device *hid;
+ 	struct uhid_event input_buf;
  
--#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
--#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_RW 1000
-+#define B2C2_WAIT_FOR_OPERATION_RDW 3000
-+#define B2C2_WAIT_FOR_OPERATION_WDW 1000
+@@ -63,9 +74,18 @@ static void uhid_device_add_worker(struc
+ 	if (ret) {
+ 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
  
--#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
+-		hid_destroy_device(uhid->hid);
+-		uhid->hid = NULL;
++		/* We used to call hid_destroy_device() here, but that's really
++		 * messy to get right because we have to coordinate with
++		 * concurrent writes from userspace that might be in the middle
++		 * of using uhid->hid.
++		 * Just leave uhid->hid as-is for now, and clean it up when
++		 * userspace tries to close or reinitialize the uhid instance.
++		 *
++		 * However, we do have to clear the ->running flag and do a
++		 * wakeup to make sure userspace knows that the device is gone.
++		 */
+ 		uhid->running = false;
++		wake_up_interruptible(&uhid->report_wait);
+ 	}
+ }
  
- typedef enum {
- 	V8_MEMORY_PAGE_DVB_CI = 0x20,
+@@ -474,7 +494,7 @@ static int uhid_dev_create2(struct uhid_
+ 	void *rd_data;
+ 	int ret;
+ 
+-	if (uhid->running)
++	if (uhid->hid)
+ 		return -EALREADY;
+ 
+ 	rd_size = ev->u.create2.rd_size;
+@@ -556,7 +576,7 @@ static int uhid_dev_create(struct uhid_d
+ 
+ static int uhid_dev_destroy(struct uhid_device *uhid)
+ {
+-	if (!uhid->running)
++	if (!uhid->hid)
+ 		return -EINVAL;
+ 
+ 	uhid->running = false;
+@@ -565,6 +585,7 @@ static int uhid_dev_destroy(struct uhid_
+ 	cancel_work_sync(&uhid->worker);
+ 
+ 	hid_destroy_device(uhid->hid);
++	uhid->hid = NULL;
+ 	kfree(uhid->rd_data);
+ 
+ 	return 0;
 
 
