@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3651C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 183C9C3526C
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421220AbiAYC0b (ORCPT
+        id S3421345AbiAYC0o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38346 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348252AbiAXTsr (ORCPT
+        Mon, 24 Jan 2022 21:26:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44612 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357182AbiAXTta (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:47 -0500
+        Mon, 24 Jan 2022 14:49:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CF7D9B811F3;
-        Mon, 24 Jan 2022 19:48:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82EB3C340E7;
-        Mon, 24 Jan 2022 19:48:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D0AFB6090B;
+        Mon, 24 Jan 2022 19:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DEFC340E8;
+        Mon, 24 Jan 2022 19:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053723;
-        bh=SW3LaOTkedTk7adcIdVcisEywFdafNAxlRBLboYCbE8=;
+        s=korg; t=1643053769;
+        bh=CLLAa3KRYtUtrOCmUpY1ensPN6KX3tszgWRlsKu2Gqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fVlkDS7q14p6OMljUSKcEZMsX+qlyQXnl9Z9XclEV+AlhAFGw7IUx4VvLhMg5BBs4
-         pNKbbnA8oE6QLFpj8jhtG0zB9+pseEc4knOrMRMDDTBDHZxULWMbRiU9F9OonsneIl
-         48eYAcl1F/K2uV/m6g2JcMnwmtGKUB72iYnSKq2M=
+        b=ZmQT3va2LIKrEsHfKKjq5fMRdCiv3Sb5ovxN1IHPeHeuBp07K7oWZ51dXk4PoHzoA
+         7Ok8WnxXcwJeupksC160dQYynvB+MxEuJkUWeI1oeNiQyBkklGI+fefeVI+6tv0xIr
+         5+Z+wFyayiCTUjKeB9EuCPgHYejgrtK0RtMKsgHA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 157/563] crypto: stm32/cryp - fix double pm exit
-Date:   Mon, 24 Jan 2022 19:38:42 +0100
-Message-Id: <20220124184029.822661198@linuxfoundation.org>
+Subject: [PATCH 5.10 170/563] drm/bridge: ti-sn65dsi86: Set max register for regmap
+Date:   Mon, 24 Jan 2022 19:38:55 +0100
+Message-Id: <20220124184030.296105763@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,36 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
+[ Upstream commit 0b665d4af35837f0a0ae63135b84a3c187c1db3b ]
 
-Delete extraneous lines in probe error handling code: pm was
-disabled twice.
+Set the maximum register to 0xff so we can dump the registers for this
+device in debugfs.
 
-Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
-
-Reported-by: Marek Vasut <marex@denx.de>
-Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: a095f15c00e2 ("drm/bridge: add support for sn65dsi86 bridge driver")
+Cc: Rob Clark <robdclark@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211215002529.382383-1-swboyd@chromium.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/stm32/stm32-cryp.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
-index fd7fb73a4d450..061db567908ae 100644
---- a/drivers/crypto/stm32/stm32-cryp.c
-+++ b/drivers/crypto/stm32/stm32-cryp.c
-@@ -2134,8 +2134,6 @@ err_engine1:
- 	list_del(&cryp->list);
- 	spin_unlock(&cryp_list.lock);
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index ecdf9b01340f5..1a58481037b3f 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -171,6 +171,7 @@ static const struct regmap_config ti_sn_bridge_regmap_config = {
+ 	.val_bits = 8,
+ 	.volatile_table = &ti_sn_bridge_volatile_table,
+ 	.cache_type = REGCACHE_NONE,
++	.max_register = 0xFF,
+ };
  
--	pm_runtime_disable(dev);
--	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
- 	pm_runtime_put_noidle(dev);
- 
+ static void ti_sn_bridge_write_u16(struct ti_sn_bridge *pdata,
 -- 
 2.34.1
 
