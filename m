@@ -2,121 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E36BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E70C2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:40:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389722AbiAYEjZ (ORCPT
+        id S1353501AbiAYEkI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:39:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        Mon, 24 Jan 2022 23:40:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51640 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1316820AbiAYDZh (ORCPT
+        with ESMTP id S1381709AbiAYD0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:25:37 -0500
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 460CEC03463F
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 15:00:49 -0800 (PST)
-Received: by mail-ot1-x336.google.com with SMTP id v8-20020a9d6048000000b005960952c694so24320775otj.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 15:00:49 -0800 (PST)
+        Mon, 24 Jan 2022 22:26:17 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4542CC06174E
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 15:16:50 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id s5so25711048ejx.2
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 15:16:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=eTJQQ6MsX5Ff+bIQxYo4yiY9UnTvAPhZS922wxBLIWs=;
-        b=h6BIQ1pcW7rPc8/weadr6vCqLFeRDLjdrhOUSLh7XrSPq/jMDafrMY/HirVc+W/RDZ
-         MXF2olW97HltisTcta1a143cKvHiklq3Aj1LH5S3JxKFBDjwRV1ebgBBTbTvdfXV1abd
-         GNMccz9OHR9pUgC9/fJc5a9vlP4RRRZ4ZBO1SOy3IUKoIvQ6f1WIzxljHEnrH5jkj0XY
-         Y0c/iihEtQXqZA6tnnTIHm+VVsg2YV1EEoBrmmw/s/ve0YiSm6UU59wHip7acpwn5+aN
-         t0T3YMTSclGHaU1r231pMnkqHXoGtF4khPMbmiIGjPMtayZLaRcTqr5psf8pRYj3GNJs
-         klfA==
+        d=amacapital-net.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=QxPfP8pNdiwhYtTaz9f4lBwxupGy0qqIDwxrF8YmvL4=;
+        b=0lvwqQR2eMER7dNpywxJaMiUqn32TykDwHsFXQbk9QtjkddJz2JxMGMZ7vUIn8qNts
+         b4NnCXXnk++9wRjgnjBoj/H8wwHQbeMEeOeFiXKEz1Ghgw9sUe15oV7MQf5g0moLeSDr
+         HHQwzSZxyKgDcTjLe+gQyBxqKouzz3a6ZOqPPGvmFR0kxoZSQmhWErOkToPMsq+H6Ece
+         e8LzxFG2GXvbEYwqdSuTihLXeFvh6lNrlYwiULzPCsV35seif51vYRYesGdEkjf9RRvZ
+         2xcpPXV1xP8ARGPHNtdSNmtDF9vk4RSO4pz23LKFXsjvYns3rjQCRe8CcKkLqLnQCHtZ
+         h1MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=eTJQQ6MsX5Ff+bIQxYo4yiY9UnTvAPhZS922wxBLIWs=;
-        b=NaH7Xf+0IXmlDfXU/6BXhqUrfRdwf0ODedCYVJ+100arebk5Uu2sGydy2wLoyI7GNt
-         oEmAiu1YKDl2UpNnTSHs0zas2M9ZgmeRtQCaGlJAqplH+pMQrJV/zTAwNq1D6BZRl0nM
-         NEpFyV5HSACwHtXE3aL+Ez3Dl0RiE4ls5uk3F7oceX3Qgqhicjie64JsKa1GobPdf0UE
-         UpG9AiIheMpmCBGbIWGIHwnuXvLLk3p4yJUZuVhUCc2MKxUN4Kup19DzMwE+IwxOdlsv
-         kjOibjarrIqWYG8D8wnHP5HEmjIEVfv/8/myIfPjuER4leD9cqd4QaVJazH0d0l307AK
-         PjVQ==
-X-Gm-Message-State: AOAM531BHJjbXj9sVQLSs8hYX+AIXT+ywKcjJPYj8UtpRYG4ps+HTFb0
-        CxcFnL9M98MUFrpjLjHjt9l+cA==
-X-Google-Smtp-Source: ABdhPJxkcSpap1VhLGQAw/l13hEXVNq4heAfIa2fMfb+0SaQZSgk40Jcw0IUMg6wCQsfoHGmsdM/Wg==
-X-Received: by 2002:a05:6830:1e99:: with SMTP id n25mr12847268otr.344.1643065248584;
-        Mon, 24 Jan 2022 15:00:48 -0800 (PST)
-Received: from [192.168.17.16] ([189.219.72.83])
-        by smtp.gmail.com with ESMTPSA id n4sm2075103otr.76.2022.01.24.15.00.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 15:00:48 -0800 (PST)
-Message-ID: <12c8fd1e-431e-9a59-9e7a-e8d856c088b9@linaro.org>
-Date:   Mon, 24 Jan 2022 17:00:46 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=QxPfP8pNdiwhYtTaz9f4lBwxupGy0qqIDwxrF8YmvL4=;
+        b=cTlXoWTXix8G1xcWkamwKEnJE7jgLt64I0ketvkY5kejfjgeSyc6EmjRjVrRktQEQW
+         FAnrTBoE2YmyV4dvNlbnQvl7y6P2b+1JX3aB5nBBCIu+e3ckwryrzaSVu9j3P4i5bqKy
+         Go/p2uOoB7fPuZ4eGWu9wQfIRVNrpPmyrFDiUBJJ9vmxdI6WjV7l7AGhQFyeHsfM2oke
+         kgswD50l7X5jCATJWgWgkfNvk4+EiQpm+UktX4Dz2x8LyoLeoheAAB2Az0vIUDkHnDto
+         fS73Rq0tGRZQGO0jlVaLwpem0OZOeJgTUHN5LXvHgNsmXn67jidsbXDade4SrEF6TAFd
+         /8+w==
+X-Gm-Message-State: AOAM5326TevcBnqOCKgCw8hM9pHy5pMwa6Mqxx5neLc1RPpZTKFCIKFu
+        tenXbIWPXNLsCbHrsKAoIzUhKc9XajpJawxmMWG/Rw==
+X-Google-Smtp-Source: ABdhPJw5ZrUO3qCzeWxUtnf+ow/Ga2rQet7PkkHrJWNYwOkFrn2Bn5jHHu8lm5LUBgrkablnldXJANswKhLcg+kcvBE=
+X-Received: by 2002:a17:906:e15:: with SMTP id l21mr13841455eji.675.1643066208803;
+ Mon, 24 Jan 2022 15:16:48 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 5.10 000/563] 5.10.94-rc1 review
-Content-Language: en-US
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, sudipm.mukherjee@gmail.com,
-        stable@vger.kernel.org
-References: <20220124184024.407936072@linuxfoundation.org>
-From:   =?UTF-8?Q?Daniel_D=c3=adaz?= <daniel.diaz@linaro.org>
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <cover.1642526745.git.khalid.aziz@oracle.com> <YevrGs3WE7ywB+lH@kernel.org>
+ <4d333527-391f-fe6b-eb2d-123d67242d2c@oracle.com> <CALCETrVNrcsLvFwTER8LmgZZdy0Mye7EJXyuOaS5yVQvB5UNpA@mail.gmail.com>
+ <e26d2bfd-adbf-16ab-76d4-949f0ebb86cf@oracle.com>
+In-Reply-To: <e26d2bfd-adbf-16ab-76d4-949f0ebb86cf@oracle.com>
+From:   Andy Lutomirski <luto@amacapital.net>
+Date:   Mon, 24 Jan 2022 15:16:26 -0800
+Message-ID: <CALCETrXjxoEmhyPdtkankPPaKp0r=oYqhnzL1A7rnQEj6xWSig@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+To:     Khalid Aziz <khalid.aziz@oracle.com>
+Cc:     Mike Rapoport <rppt@kernel.org>, akpm@linux-foundation.org,
+        willy@infradead.org, longpeng2@huawei.com, arnd@arndb.de,
+        dave.hansen@linux.intel.com, david@redhat.com, surenb@google.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-api@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
+On Mon, Jan 24, 2022 at 2:34 PM Khalid Aziz <khalid.aziz@oracle.com> wrote:
+>
+> On 1/24/22 12:45, Andy Lutomirski wrote:
+> > On Mon, Jan 24, 2022 at 10:54 AM Khalid Aziz <khalid.aziz@oracle.com> wrote:
+> >>
+> >> On 1/22/22 04:31, Mike Rapoport wrote:
+> >>> (added linux-api)
+> >>>
+> >>> On Tue, Jan 18, 2022 at 02:19:12PM -0700, Khalid Aziz wrote:
+> >>>> Page tables in kernel consume some of the memory and as long as
+> >>>> number of mappings being maintained is small enough, this space
+> >>>> consumed by page tables is not objectionable. When very few memory
+> >>>> pages are shared between processes, the number of page table entries
+> >>>> (PTEs) to maintain is mostly constrained by the number of pages of
+> >>>> memory on the system. As the number of shared pages and the number
+> >>>> of times pages are shared goes up, amount of memory consumed by page
+> >>>> tables starts to become significant.
+> >>>>
+> >>>> Some of the field deployments commonly see memory pages shared
+> >>>> across 1000s of processes. On x86_64, each page requires a PTE that
+> >>>> is only 8 bytes long which is very small compared to the 4K page
+> >>>> size. When 2000 processes map the same page in their address space,
+> >>>> each one of them requires 8 bytes for its PTE and together that adds
+> >>>> up to 8K of memory just to hold the PTEs for one 4K page. On a
+> >>>> database server with 300GB SGA, a system carsh was seen with
+> >>>> out-of-memory condition when 1500+ clients tried to share this SGA
+> >>>> even though the system had 512GB of memory. On this server, in the
+> >>>> worst case scenario of all 1500 processes mapping every page from
+> >>>> SGA would have required 878GB+ for just the PTEs. If these PTEs
+> >>>> could be shared, amount of memory saved is very significant.
+> >>>>
+> >>>> This is a proposal to implement a mechanism in kernel to allow
+> >>>> userspace processes to opt into sharing PTEs. The proposal is to add
+> >>>> a new system call - mshare(), which can be used by a process to
+> >>>> create a region (we will call it mshare'd region) which can be used
+> >>>> by other processes to map same pages using shared PTEs. Other
+> >>>> process(es), assuming they have the right permissions, can then make
+> >>>> the mashare() system call to map the shared pages into their address
+> >>>> space using the shared PTEs.  When a process is done using this
+> >>>> mshare'd region, it makes a mshare_unlink() system call to end its
+> >>>> access. When the last process accessing mshare'd region calls
+> >>>> mshare_unlink(), the mshare'd region is torn down and memory used by
+> >>>> it is freed.
+> >>>>
+> >>>>
+> >>>> API Proposal
+> >>>> ============
+> >>>>
+> >>>> The mshare API consists of two system calls - mshare() and mshare_unlink()
+> >>>>
+> >>>> --
+> >>>> int mshare(char *name, void *addr, size_t length, int oflags, mode_t mode)
+> >>>>
+> >>>> mshare() creates and opens a new, or opens an existing mshare'd
+> >>>> region that will be shared at PTE level. "name" refers to shared object
+> >>>> name that exists under /sys/fs/mshare. "addr" is the starting address
+> >>>> of this shared memory area and length is the size of this area.
+> >>>> oflags can be one of:
+> >>>>
+> >>>> - O_RDONLY opens shared memory area for read only access by everyone
+> >>>> - O_RDWR opens shared memory area for read and write access
+> >>>> - O_CREAT creates the named shared memory area if it does not exist
+> >>>> - O_EXCL If O_CREAT was also specified, and a shared memory area
+> >>>>     exists with that name, return an error.
+> >>>>
+> >>>> mode represents the creation mode for the shared object under
+> >>>> /sys/fs/mshare.
+> >>>>
+> >>>> mshare() returns an error code if it fails, otherwise it returns 0.
+> >>>
+> >>> Did you consider returning a file descriptor from mshare() system call?
+> >>> Then there would be no need in mshare_unlink() as close(fd) would work.
+> >>
+> >> That is an interesting idea. It could work and eliminates the need for a new system call. It could be confusing though
+> >> for application writers. A close() call with a side-effect of deleting shared mapping would be odd. One of the use cases
+> >> for having files for mshare'd regions is to allow for orphaned mshare'd regions to be cleaned up by calling
+> >> mshare_unlink() with region name. This can require calling mshare_unlink() multiple times in current implementation to
+> >> bring the refcount for mshare'd region to 0 when mshare_unlink() finally cleans up the region. This would be problematic
+> >> with a close() semantics though unless there was another way to force refcount to 0. Right?
+> >>
+> >
+> > I'm not sure I understand the problem.  If you're sharing a portion of
+> > an mm and the mm goes away, then all that should be left are some
+> > struct files that are no longer useful.  They'll go away when their
+> > refcount goes to zero.
+> >
+> > --Andy
+> >
+>
+> The mm that holds shared PTEs is a separate mm not tied to a task. I started out by sharing portion of the donor process
+> initially but that necessitated keeping the donor process alive. If the donor process dies, its mm and the mshare'd
+> portion go away.
+>
+> One of the requirements I have is the process that creates mshare'd region can terminate, possibly involuntarily, but
+> the mshare'd region persists and rest of the consumer processes continue without hiccup. So I create a separate mm to
+> hold shared PTEs and that mm is cleaned up when all references to mshare'd region go away. Each call to mshare()
+> increments the refcount and each call to mshare_unlink() decrements the refcount.
 
-On 1/24/22 12:36, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.10.94 release.
-> There are 563 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Wed, 26 Jan 2022 18:39:11 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.10.94-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.10.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+In general, objects which are kept alive by name tend to be quite
+awkward. Things like network namespaces essentially have to work that
+way and end up with awkward APIs.  Things like shared memory don't
+actually have to be kept alive by name, and the cases that do keep
+them alive by name (tmpfs, shmget) can end up being so awkward that
+people invent nameless variants like memfd.
 
-Regressions detected on arm, arm64, i386, x86.
+So I would strongly suggest you see how the design works out with no
+names and no external keep-alive mechanism.  Either have the continued
+existence of *any* fd keep the whole thing alive or make it be a pair
+of struct files, one that controls the region (and can map things into
+it, etc) and one that can map it.  SCM_RIGHTS is pretty good for
+passing objects like this around.
 
-This is from arm64:
-   /builds/linux/arch/arm64/mm/extable.c: In function 'fixup_exception':
-   /builds/linux/arch/arm64/mm/extable.c:17:13: error: implicit declaration of function 'in_bpf_jit' [-Werror=implicit-function-declaration]
-      17 |         if (in_bpf_jit(regs))
-         |             ^~~~~~~~~~
-   cc1: some warnings being treated as errors
-   make[3]: *** [/builds/linux/scripts/Makefile.build:280: arch/arm64/mm/extable.o] Error 1
-
-And from Perf on arm, arm64, i386, x86:
-   libbpf.c: In function 'bpf_object__elf_collect':
-   libbpf.c:2873:31: error: invalid type argument of '->' (have 'GElf_Shdr' {aka 'Elf64_Shdr'})
-    2873 |                         if (sh->sh_type != SHT_PROGBITS)
-         |                               ^~
-   libbpf.c:2877:31: error: invalid type argument of '->' (have 'GElf_Shdr' {aka 'Elf64_Shdr'})
-    2877 |                         if (sh->sh_type != SHT_PROGBITS)
-         |                               ^~
-   make[4]: *** [/builds/linux/tools/build/Makefile.build:97: /home/tuxbuild/.cache/tuxmake/builds/current/staticobjs/libbpf.o] Error 1
-
-Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
-
-Greetings!
-
-Daniel Díaz
-daniel.diaz@linaro.org
+--Andy
