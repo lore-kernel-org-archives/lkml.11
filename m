@@ -2,120 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A745C46467
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB51BC3526D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:48:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2364332AbiAXXrX (ORCPT
+        id S2364399AbiAXXsD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:47:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44808 "EHLO
+        Mon, 24 Jan 2022 18:48:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356410AbiAXWz7 (ORCPT
+        with ESMTP id S1588742AbiAXWyE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:55:59 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28C87C0680BB
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:10:05 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id b9so3520446lfq.6
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 13:10:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=1xnQF9bLGcpqpvgeBQWxaXO0sby0WkycSwLqzj4kn+w=;
-        b=Ng7RNB8+owqz2sMnqb+D3YKugbGxUS2d4ZMSn0kKJiuCLTY/mLNqhonMbkCvT6pNgx
-         S/YOAAiZ3S6M7RER960DQBd6IePRtB12JLMvyDgw9mdahFFJtw39naV20if2MpmNfdty
-         ykJax6Ty3jejql0vgStXaZ0v7OQt9AsAXmwQTpjqm+DaWnlGLgzy678Jx4GVmUjIyraB
-         +OOuO+azoZgnKz3dcfra6lXZqv1CYnQMe1vqnYyUVkx63qwr/XOWC+qA3Nh6OfNxQOd2
-         1yRH3w+IqhQRnN4I1WqY+9if/oFhxhoqzybaP25gLt0Z7iWoNybnkENrFj+BNumSkhOg
-         l5Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=1xnQF9bLGcpqpvgeBQWxaXO0sby0WkycSwLqzj4kn+w=;
-        b=2SHlgpnpdVWSygE/8yiTTNEPSLyy73YsuT8heostyMfW/DM9y1Dg1WV8KiNQQz1KZa
-         +y99EA+lsK4JLkjmRN3zWOo9V0vTVI3MDgHGGb9Wmj6sYWvqmgl9T2VuxAfIFEqNIYwc
-         3scF5HOw52kMtPgPmNqQmtJza6qhihLuftRdF/ysflt2+IpuOElalESDSahkRFfBwCHs
-         1vNLT0LT5cc99KGGLeSabk0/6aFSPDB/F0J6dexfE+jHvwkIGACAbMJrg8WxpNM3LacR
-         QeDWUpWK/vGxOwg7KxaqjQ8XvPTqNu/Xy0l5Zyj+jSQr7mLStHNPUwUWarUHVbVoZJWl
-         qfAw==
-X-Gm-Message-State: AOAM532dGVniipW4f689XJqxKtY7eapccRhbrw6VnUjRPLHK15ptiDhF
-        Y2ssyWJGX4E3QrZWcku7/k2FxQ==
-X-Google-Smtp-Source: ABdhPJwfE3A4W4S/oUX8Zs78yXqD+R3+6wSR9G234+TTwq7Sz7sfOUAV7oAU3AhIfLvwjpCjsmWiqQ==
-X-Received: by 2002:a19:ae05:: with SMTP id f5mr435716lfc.496.1643058603513;
-        Mon, 24 Jan 2022 13:10:03 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id t12sm1009115ljj.118.2022.01.24.13.10.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 13:10:03 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net 2/2] net: dsa: Avoid cross-chip syncing of VLAN filtering
-Date:   Mon, 24 Jan 2022 22:09:44 +0100
-Message-Id: <20220124210944.3749235-3-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220124210944.3749235-1-tobias@waldekranz.com>
-References: <20220124210944.3749235-1-tobias@waldekranz.com>
+        Mon, 24 Jan 2022 17:54:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00A82C06136F;
+        Mon, 24 Jan 2022 13:09:19 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B19BEB811FB;
+        Mon, 24 Jan 2022 21:09:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDBAEC340E5;
+        Mon, 24 Jan 2022 21:09:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058556;
+        bh=a9+AARr8CM66RUDoLU7UW29S2ykRGDh6pu0ykWhcya8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=m325YtP49Z/1WoxtWYEnXAKcDJdOEJLHZ2UHkJ46bq4xKAMy+G+KS/VuEa11CvtVq
+         ISBLHqakc/xyoxOa4P7utEhYMwAH11SfMEk2XjLYuIKOBZ+D/Mzv5MJ+taoHC67uGK
+         HEImeUYxG37p+bARC/bWSzAymFxuwc+Hd+jErEbI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0300/1039] media: hantro: Fix probe func error path
+Date:   Mon, 24 Jan 2022 19:34:49 +0100
+Message-Id: <20220124184135.389465865@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Organization: Westermo
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes to VLAN filtering are not applicable to cross-chip
-notifications.
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-On a system like this:
+[ Upstream commit 37af43b250fda6162005d47bf7c959c70d52b107 ]
 
-.-----.   .-----.   .-----.
-| sw1 +---+ sw2 +---+ sw3 |
-'-1-2-'   '-1-2-'   '-1-2-'
+If clocks for some reason couldn't be enabled, probe function returns
+immediately, without disabling PM. This obviously leaves PM ref counters
+unbalanced.
 
-Before this change, upon sw1p1 leaving a bridge, a call to
-dsa_port_vlan_filtering would also be made to sw2p1 and sw3p1.
+Fix that by jumping to appropriate error path, so effects of PM functions
+are reversed.
 
-In this scenario:
-
-.---------.   .-----.   .-----.
-|   sw1   +---+ sw2 +---+ sw3 |
-'-1-2-3-4-'   '-1-2-'   '-1-2-'
-
-When sw1p4 would leave a bridge, dsa_port_vlan_filtering would be
-called for sw2 and sw3 with a non-existing port - leading to array
-out-of-bounds accesses and crashes on mv88e6xxx.
-
-Fixes: d371b7c92d19 ("net: dsa: Unset vlan_filtering when ports leave the bridge")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Acked-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/dsa/switch.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/staging/media/hantro/hantro_drv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 9f9b70d6070a..517cc83d13cc 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -180,9 +180,11 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
- 						info->sw_index, info->port,
- 						info->bridge);
+diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+index fb82b9297a2ba..0d56db8376e6a 100644
+--- a/drivers/staging/media/hantro/hantro_drv.c
++++ b/drivers/staging/media/hantro/hantro_drv.c
+@@ -960,7 +960,7 @@ static int hantro_probe(struct platform_device *pdev)
+ 	ret = clk_bulk_prepare(vpu->variant->num_clocks, vpu->clocks);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Failed to prepare clocks\n");
+-		return ret;
++		goto err_pm_disable;
+ 	}
  
--	err = dsa_switch_sync_vlan_filtering(ds, info);
--	if (err)
--		return err;
-+	if (ds->dst->index == info->tree_index && ds->index == info->sw_index) {
-+		err = dsa_switch_sync_vlan_filtering(ds, info);
-+		if (err)
-+			return err;
-+	}
- 
- 	return dsa_tag_8021q_bridge_leave(ds, info);
- }
+ 	ret = v4l2_device_register(&pdev->dev, &vpu->v4l2_dev);
+@@ -1016,6 +1016,7 @@ err_v4l2_unreg:
+ 	v4l2_device_unregister(&vpu->v4l2_dev);
+ err_clk_unprepare:
+ 	clk_bulk_unprepare(vpu->variant->num_clocks, vpu->clocks);
++err_pm_disable:
+ 	pm_runtime_dont_use_autosuspend(vpu->dev);
+ 	pm_runtime_disable(vpu->dev);
+ 	return ret;
 -- 
-2.25.1
+2.34.1
+
+
 
