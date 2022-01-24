@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F23C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA336C4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573779AbiAXVpx (ORCPT
+        id S1573794AbiAXVpy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59590 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446298AbiAXVHw (ORCPT
+        Mon, 24 Jan 2022 16:45:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60402 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1447202AbiAXVKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:07:52 -0500
+        Mon, 24 Jan 2022 16:10:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 00552B81243;
-        Mon, 24 Jan 2022 21:07:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AD69C340E5;
-        Mon, 24 Jan 2022 21:07:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C9986146B;
+        Mon, 24 Jan 2022 21:10:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BF2AC340E5;
+        Mon, 24 Jan 2022 21:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058466;
-        bh=RkngHeAeVCkGRFWJ2UEUeqVNrmIJmwasCnUlDu8quqk=;
+        s=korg; t=1643058609;
+        bh=+mc7XH6ZHrcnhKZMatKve+G3YzRkXog/jm9bBkgtgnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IThzIYw3M/+hwDBfvsf76rYyknVt1zD4oeoYhGhBoBsNrE3Y6RFeqNDm4PPkC/pX5
-         b4R9RB4fS4IBMqmJXFUvGejSl36Y1G4fqbqpWZgRCMQXLRoSolOKl40z2D1NpGK0is
-         C7hrGUQWL5/FNnpZ0+BaExEinUHwF4386R3rgPeY=
+        b=iuRsi1I9gFJPcqLIuMfe0eoFFsAFLnhaF0bqvzidUqBOZOJx5GCgFR741JtsLXL92
+         MLvBj6/KUgAtctvVF2Nf/lEEz4EQtpY3BeDTe7c7AM2oG3wg4Ojm0fmd3gnZrp4CDL
+         toBhxpFK8TaEwW6wbs+mbPMhVIp4JJPhvrbnv20w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0265/1039] mwifiex: Fix possible ABBA deadlock
-Date:   Mon, 24 Jan 2022 19:34:14 +0100
-Message-Id: <20220124184134.207274633@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0345/1039] backlight: qcom-wled: Pass number of elements to read to read_u32_array
+Date:   Mon, 24 Jan 2022 19:35:34 +0100
+Message-Id: <20220124184136.891415467@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,80 +51,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 1b8bb8919ef81bfc8873d223b9361f1685f2106d ]
+[ Upstream commit e29e24bdabfeddbf8b1a4ecac1af439a85150438 ]
 
-Quoting Jia-Ju Bai <baijiaju1990@gmail.com>:
+of_property_read_u32_array takes the number of elements to read as last
+argument. This does not always need to be 4 (sizeof(u32)) but should
+instead be the size of the array in DT as read just above with
+of_property_count_elems_of_size.
 
-  mwifiex_dequeue_tx_packet()
-     spin_lock_bh(&priv->wmm.ra_list_spinlock); --> Line 1432 (Lock A)
-     mwifiex_send_addba()
-       spin_lock_bh(&priv->sta_list_spinlock); --> Line 608 (Lock B)
+To not make such an error go unnoticed again the driver now bails
+accordingly when of_property_read_u32_array returns an error.
+Surprisingly the indentation of newlined arguments is lining up again
+after prepending `rc = `.
 
-  mwifiex_process_sta_tx_pause()
-     spin_lock_bh(&priv->sta_list_spinlock); --> Line 398 (Lock B)
-     mwifiex_update_ralist_tx_pause()
-       spin_lock_bh(&priv->wmm.ra_list_spinlock); --> Line 941 (Lock A)
-
-Similar report for mwifiex_process_uap_tx_pause().
-
-While the locking expectations in this driver are a bit unclear, the
-Fixed commit only intended to protect the sta_ptr, so we can drop the
-lock as soon as we're done with it.
-
-IIUC, this deadlock cannot actually happen, because command event
-processing (which calls mwifiex_process_sta_tx_pause()) is
-sequentialized with TX packet processing (e.g.,
-mwifiex_dequeue_tx_packet()) via the main loop (mwifiex_main_process()).
-But it's good not to leave this potential issue lurking.
-
-Fixes: f0f7c2275fb9 ("mwifiex: minor cleanups w/ sta_list_spinlock in cfg80211.c")
-Cc: Douglas Anderson <dianders@chromium.org>
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Link: https://lore.kernel.org/linux-wireless/0e495b14-efbb-e0da-37bd-af6bd677ee2c@gmail.com/
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/YaV0pllJ5p/EuUat@google.com
+Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-3-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/marvell/mwifiex/sta_event.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/video/backlight/qcom-wled.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 68c63268e2e6b..2b2e6e0166e14 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -365,10 +365,12 @@ static void mwifiex_process_uap_tx_pause(struct mwifiex_private *priv,
- 		sta_ptr = mwifiex_get_sta_entry(priv, tp->peermac);
- 		if (sta_ptr && sta_ptr->tx_pause != tp->tx_pause) {
- 			sta_ptr->tx_pause = tp->tx_pause;
-+			spin_unlock_bh(&priv->sta_list_spinlock);
- 			mwifiex_update_ralist_tx_pause(priv, tp->peermac,
- 						       tp->tx_pause);
-+		} else {
-+			spin_unlock_bh(&priv->sta_list_spinlock);
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index 8a42ed89c59c9..d413b913fef32 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -1535,10 +1535,15 @@ static int wled_configure(struct wled *wled)
+ 			return -EINVAL;
  		}
--		spin_unlock_bh(&priv->sta_list_spinlock);
- 	}
- }
  
-@@ -400,11 +402,13 @@ static void mwifiex_process_sta_tx_pause(struct mwifiex_private *priv,
- 			sta_ptr = mwifiex_get_sta_entry(priv, tp->peermac);
- 			if (sta_ptr && sta_ptr->tx_pause != tp->tx_pause) {
- 				sta_ptr->tx_pause = tp->tx_pause;
-+				spin_unlock_bh(&priv->sta_list_spinlock);
- 				mwifiex_update_ralist_tx_pause(priv,
- 							       tp->peermac,
- 							       tp->tx_pause);
-+			} else {
-+				spin_unlock_bh(&priv->sta_list_spinlock);
- 			}
--			spin_unlock_bh(&priv->sta_list_spinlock);
- 		}
- 	}
- }
+-		of_property_read_u32_array(dev->of_node,
++		rc = of_property_read_u32_array(dev->of_node,
+ 						"qcom,enabled-strings",
+ 						wled->cfg.enabled_strings,
+-						sizeof(u32));
++						string_len);
++		if (rc) {
++			dev_err(dev, "Failed to read %d elements from qcom,enabled-strings: %d\n",
++				string_len, rc);
++			return rc;
++		}
+ 
+ 		for (i = 0; i < string_len; ++i) {
+ 			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
 -- 
 2.34.1
 
