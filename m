@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25261C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 787FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355384AbiAXUNh (ORCPT
+        id S1355462AbiAXUNk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:13:37 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50102 "EHLO
+        Mon, 24 Jan 2022 15:13:40 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50616 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352212AbiAXTwp (ORCPT
+        with ESMTP id S1351901AbiAXTxQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:45 -0500
+        Mon, 24 Jan 2022 14:53:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35B8860B03;
-        Mon, 24 Jan 2022 19:52:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F24C7C340E5;
-        Mon, 24 Jan 2022 19:52:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 548E660B56;
+        Mon, 24 Jan 2022 19:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31441C340E5;
+        Mon, 24 Jan 2022 19:53:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053963;
-        bh=OlA4Y8FkDzTA8w20jYBGvYJlPZZsqfaEp19JGgNdp7I=;
+        s=korg; t=1643053994;
+        bh=3xWET1iBUs7ti7fNEsXZBvabZF6fE/iIgtcF6eHBmr0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tEhS2897oYeeHjYrAJPpvgNhR81VTglomEjFkPvAJs1IP6f2/tA5QAgSClmTV42YC
-         QE0PUvD4JPlbdFCFvsSXS1UZhc5rkOWdYEjFIfYIT9O/DEIroKhnoxPxwdiH0zsUA9
-         2s6RAVQ5/YNjms1i1jFQvf07oarstK8K4xyVPCcs=
+        b=c7FqEgNeLNf+mxj876lNS1BIooXR8wW0/KRW3g0jwoefgBEHov7bnawZ0F34mU2Su
+         3pJ7+34dC5u0en3kPo5BUV9/LUmbuX6voaLxO10ryEgfuLS6ZE+Qg1PRwFFCX4grOL
+         nJSXbr/zSOgbNRx70St5dMuvc75Cq2s3+9LW/H/Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 234/563] can: xilinx_can: xcan_probe(): check for error irq
-Date:   Mon, 24 Jan 2022 19:39:59 +0100
-Message-Id: <20220124184032.534625351@linuxfoundation.org>
+Subject: [PATCH 5.10 243/563] RDMA/hns: Validate the pkey index
+Date:   Mon, 24 Jan 2022 19:40:08 +0100
+Message-Id: <20220124184032.833457825@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,46 +47,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-[ Upstream commit c6564c13dae25cd7f8e1de5127b4da4500ee5844 ]
+[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
+Before query pkey, make sure that the queried index is valid.
 
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq()
-effectively convert that into -EINVAL, even at probe time rather than
-later on. So it might be better to check just now.
-
-Fixes: b1201e44f50b ("can: xilinx CAN controller support")
-Link: https://lore.kernel.org/all/20211224021324.1447494-1-jiasheng@iscas.ac.cn
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
+Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/xilinx_can.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 48d746e18f302..375998263af7a 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -1762,7 +1762,12 @@ static int xcan_probe(struct platform_device *pdev)
- 	spin_lock_init(&priv->tx_lock);
- 
- 	/* Get IRQ for the device */
--	ndev->irq = platform_get_irq(pdev, 0);
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		goto err_free;
+diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
+index ba65823a5c0bb..c0249e4874a96 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_main.c
++++ b/drivers/infiniband/hw/hns/hns_roce_main.c
+@@ -279,6 +279,9 @@ static enum rdma_link_layer hns_roce_get_link_layer(struct ib_device *device,
+ static int hns_roce_query_pkey(struct ib_device *ib_dev, u8 port, u16 index,
+ 			       u16 *pkey)
+ {
++	if (index > 0)
++		return -EINVAL;
 +
-+	ndev->irq = ret;
-+
- 	ndev->flags |= IFF_ECHO;	/* We support local echo */
+ 	*pkey = PKEY_ID;
  
- 	platform_set_drvdata(pdev, ndev);
+ 	return 0;
 -- 
 2.34.1
 
