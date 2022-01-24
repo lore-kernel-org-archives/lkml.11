@@ -2,31 +2,31 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0559BC35272
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4575C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392136AbiAXUub (ORCPT
+        id S1392180AbiAXUuf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:50:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34374 "EHLO
+        Mon, 24 Jan 2022 15:50:35 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34284 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383245AbiAXU1C (ORCPT
+        with ESMTP id S1383079AbiAXU0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:27:02 -0500
+        Mon, 24 Jan 2022 15:26:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26994B8122F;
-        Mon, 24 Jan 2022 20:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BD38C340E5;
-        Mon, 24 Jan 2022 20:26:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2B57AB8123D;
+        Mon, 24 Jan 2022 20:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C819C340E5;
+        Mon, 24 Jan 2022 20:26:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056019;
-        bh=yaoW4loiKLDQ8TDhfuDaLdRXEdMfMbdMT7Bt3+YHHRw=;
+        s=korg; t=1643056004;
+        bh=NT3dQlqn3L5kXWshF8v8pQDahNIDvVSGsE62MASjpNo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AvhvfVrj83MQP2VMTGXyCcOGJ4M6MtAzlBzUDZNOVNlMMBhaznDF9vsrOn2ff9Enx
-         UPNXtYq38NJ6jpTkvuCQVecfFsI+FpeHrjYSkWyrGaggEs1QfbBeJfeyujmuMoX43i
-         xknBfTzcWj09vpKA6I8Yx8vpRq/7RVQc8hTpjhiM=
+        b=x4sdZS08khVEPBxrL8Ho10vTv9/qFcq1OfjFaxK7112rstnZv+Nc1JQljUz9SfbPS
+         f/y3UKIahrMFojGLG848bxbRVuZ01ZySPSQb9JATTcFPrphYLe+r0wlFNKYCXOUCx1
+         ffYM2/cxYFOVSEvRSaSL92wZhhlhlsGfs8T3skYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -34,9 +34,9 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 344/846] net/mlx5e: Sync VXLAN udp ports during uplink representor profile change
-Date:   Mon, 24 Jan 2022 19:37:41 +0100
-Message-Id: <20220124184112.796364992@linuxfoundation.org>
+Subject: [PATCH 5.15 339/846] net/mlx5e: Dont block routes with nexthop objects in SW
+Date:   Mon, 24 Jan 2022 19:37:36 +0100
+Message-Id: <20220124184112.612659954@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,54 +50,44 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Maor Dickman <maord@nvidia.com>
 
-[ Upstream commit 07f6dc4024ea1d2314b9c8b81fd4e492864fcca1 ]
+[ Upstream commit 9e72a55a3c9d54b38a704bb7292d984574a81d9d ]
 
-Currently during NIC profile disablement all VXLAN udp ports offloaded to the
-HW are flushed and during its enablement the driver send notification to
-the stack to inform the core that the entire UDP tunnel port state has been
-lost, uplink representor doesn't have the same behavior which can cause
-VXLAN udp ports offload to be in bad state while moving between modes while
-VXLAN interface exist.
+Routes with nexthop objects is currently not supported by multipath offload
+and any attempts to use it is blocked, however this also block adding SW
+routes with nexthop.
 
-Fixed by aligning the uplink representor profile behavior to the NIC behavior.
+Resolve this by returning NOTIFY_DONE instead of an error which will allow such
+a route to be created in SW but not offloaded.
 
-Fixes: 84db66124714 ("net/mlx5e: Move set vxlan nic info to profile init")
+This fix also solve an issue which block adding such routes on different devices
+due to missing check if the route FIB device is one of multipath devices.
+
+Fixes: 6a87afc072c3 ("mlx5: Fail attempts to use routes with nexthop objects")
 Signed-off-by: Maor Dickman <maord@nvidia.com>
 Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rep.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-index edecd149dcab3..161b60e1139b3 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-@@ -50,6 +50,7 @@
- #include "fs_core.h"
- #include "lib/mlx5.h"
- #include "lib/devcom.h"
-+#include "lib/vxlan.h"
- #define CREATE_TRACE_POINTS
- #include "diag/en_rep_tracepoint.h"
- #include "en_accel/ipsec.h"
-@@ -1016,6 +1017,7 @@ static void mlx5e_uplink_rep_enable(struct mlx5e_priv *priv)
- 	rtnl_lock();
- 	if (netif_running(netdev))
- 		mlx5e_open(netdev);
-+	udp_tunnel_nic_reset_ntf(priv->netdev);
- 	netif_device_attach(netdev);
- 	rtnl_unlock();
- }
-@@ -1037,6 +1039,7 @@ static void mlx5e_uplink_rep_disable(struct mlx5e_priv *priv)
- 	mlx5_notifier_unregister(mdev, &priv->events_nb);
- 	mlx5e_rep_tc_disable(priv);
- 	mlx5_lag_remove_netdev(mdev, priv->netdev);
-+	mlx5_vxlan_reset_to_default(mdev->vxlan);
- }
- 
- static MLX5E_DEFINE_STATS_GRP(sw_rep, 0);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
+index 21fdaf708f1fe..30282d86e6b96 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag_mp.c
+@@ -268,10 +268,8 @@ static int mlx5_lag_fib_event(struct notifier_block *nb,
+ 		fen_info = container_of(info, struct fib_entry_notifier_info,
+ 					info);
+ 		fi = fen_info->fi;
+-		if (fi->nh) {
+-			NL_SET_ERR_MSG_MOD(info->extack, "IPv4 route with nexthop objects is not supported");
+-			return notifier_from_errno(-EINVAL);
+-		}
++		if (fi->nh)
++			return NOTIFY_DONE;
+ 		fib_dev = fib_info_nh(fen_info->fi, 0)->fib_nh_dev;
+ 		if (fib_dev != ldev->pf[MLX5_LAG_P1].netdev &&
+ 		    fib_dev != ldev->pf[MLX5_LAG_P2].netdev) {
 -- 
 2.34.1
 
