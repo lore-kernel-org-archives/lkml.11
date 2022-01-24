@@ -2,125 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 473F9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:16:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B34C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242065AbiAXIQI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:16:08 -0500
-Received: from mga02.intel.com ([134.134.136.20]:22170 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242060AbiAXIPX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:15:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643012123; x=1674548123;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=PZ03S5WLvrnyR1cFQZpyhVAI7MHzfl8ffKZ0Qvrf9pk=;
-  b=MWDCR5dB3LT+6pS3GcNB/pugEHoSPk7g2K5HTOVxNOW5iOUKGpXQJg0E
-   XcrKXeLqVeg0FOqVEWd0FAXMk50R8+SfyYKx+NXRaNLrdYbNuTHK8Z0lX
-   uzYNfVQ5CksuFPcYh5ySfDzKyyznB370v3vMabsOT1YlrWqEWSaec7riJ
-   PwmgoVElJe5T1RZChOTH5CNiuGiGG6yndReQlQ6U6rdIag4hguJw1ykpv
-   3t4PCbwO6JcfRBHMqU4zQnpjIYTxlxzOWUwY1RobU60XdQaIJh4+OVe5P
-   umWAKKTH5xyXc2ctvHWfGEWZU4x104M8QsNaaNXjfxf4Z174Ektx+PAim
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233351563"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233351563"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:15:23 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627408142"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 00:15:22 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBuVV-000Hxp-Lf; Mon, 24 Jan 2022 08:15:21 +0000
-Date:   Mon, 24 Jan 2022 16:14:53 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Allison Henderson <allison.henderson@oracle.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Dave Chinner <dchinner@redhat.com>
-Subject: [allisonhenderson-xfs-work:delayed_attrs_v26_extended 21/30]
- fs/xfs/libxfs/xfs_parent.c:55:1: warning: no previous prototype for
- 'xfs_init_parent_name_rec'
-Message-ID: <202201241644.gmgcv562-lkp@intel.com>
+        id S242087AbiAXIQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:16:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51240 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242062AbiAXIQP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:16:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643012174;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZTLl4YJkeUuVgMvKnlcneMHmBiRgYGMhn5C09P+gXVg=;
+        b=hPAoJF8no+GXgt5ZhElOugHzSMVV1gguIDimWXXMpiv7KljTBQaDBuxy9zGQCxcs9gW1EJ
+        a0ChZ8/swvxd1+JsVxCJhTUQUB8kTajXRHTSDfX0L7LcMv1giNTTW8hX8CP1wJrIa1jKmK
+        w3zlWFpZJB3ygeHwRZJ+Xya3AFzIjXI=
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
+ [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-438-OcSjX6zjN5uWViM5VwZeEw-1; Mon, 24 Jan 2022 03:16:11 -0500
+X-MC-Unique: OcSjX6zjN5uWViM5VwZeEw-1
+Received: by mail-ej1-f70.google.com with SMTP id p16-20020a170906785000b006b5d9c3d47fso1755931ejm.21
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 00:16:11 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZTLl4YJkeUuVgMvKnlcneMHmBiRgYGMhn5C09P+gXVg=;
+        b=S/NhWfCkwnlkfR8XF+11DruHIDa6S3JoeEnbDLC0rtAj3beqMWVraQWSTtZ7BIo7ua
+         pe5yoNZzsFkWhwJW+mGs3UYnJRr/k7anAjz0zUwJ4OaOv4HIstqeO+zP3TWJkfk7Lir5
+         DiA7GKDIojRwILXBbpFAq5HxUL06N3nzAD5SdBpmdBdBxt/PqaNJTGqQ/dhrz9Ax7Mcu
+         znpEanMKaF0aWXvQWikevn1CUDGf0y5tDHxzChbNh7dX0G9F0pcbOs8BdztrMuUyynCK
+         LRns9D/XooXQ1PAOD5OsKTne6e0Gh5kIcgkEeGPykpkdMkPdkRyXLYlgevys8UpppEVA
+         QU5w==
+X-Gm-Message-State: AOAM532pAv54Pe0XSdDu3EZggr3epwpP/VoWSg7wbcNAkEMt4jGtjroO
+        CO3eHiWFI/aq1cWxkT7VKpMP9H2BMwsTjET2kDV4XmCtRb9Dxc563HPSiZNTVN1I0KcSOA/kBHD
+        WrCgw7Yzd4GLAypRzSFFzI4+w
+X-Received: by 2002:a17:906:9742:: with SMTP id o2mr11722207ejy.530.1643012170408;
+        Mon, 24 Jan 2022 00:16:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzOr3jOY+RTOMB2JqY3ZgFgnki6NWYqRSaiNL7SDrsnmX5TQlHJzM/4eGuy6YOS1RraAewSXw==
+X-Received: by 2002:a17:906:9742:: with SMTP id o2mr11722192ejy.530.1643012170213;
+        Mon, 24 Jan 2022 00:16:10 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id r23sm948111eju.134.2022.01.24.00.16.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 00:16:09 -0800 (PST)
+Message-ID: <7792513f-4f5a-d2b8-f142-ac14d97cda8f@redhat.com>
+Date:   Mon, 24 Jan 2022 09:16:08 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [Patch 0/3] Staging: rtl8723bs: Fix codestyle errors and warnings
+Content-Language: en-US
+To:     Jagath Jog J <jagathjog1996@gmail.com>, gregkh@linuxfoundation.org,
+        Larry.Finger@lwfinger.net
+Cc:     fabioaiuto83@gmail.com, dan.carpenter@oracle.com,
+        marcocesati@gmail.com, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org
+References: <20220124034456.8665-1-jagathjog1996@gmail.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220124034456.8665-1-jagathjog1996@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/allisonhenderson/xfs_work.git delayed_attrs_v26_extended
-head:   19459f5cfa422b0a6a9cd3898892e43ecb49f8f3
-commit: 71c74c8dbb3644ba2a05927c016261b776cf17c8 [21/30] xfs: parent pointer attribute creation
-config: nds32-randconfig-r024-20220124 (https://download.01.org/0day-ci/archive/20220124/202201241644.gmgcv562-lkp@intel.com/config)
-compiler: nds32le-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/allisonhenderson/xfs_work/commit/71c74c8dbb3644ba2a05927c016261b776cf17c8
-        git remote add allisonhenderson-xfs-work https://github.com/allisonhenderson/xfs_work.git
-        git fetch --no-tags allisonhenderson-xfs-work delayed_attrs_v26_extended
-        git checkout 71c74c8dbb3644ba2a05927c016261b776cf17c8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nds32 SHELL=/bin/bash fs/xfs/
+Hi,
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+On 1/24/22 04:44, Jagath Jog J wrote:
+> This series fix the following errors/warnings:
+> 
+> -Placing { braces at the end of same line of if condition
+> -Removed extra spaces in declaration
+> -Placing necessary blank line after declaration
 
-All warnings (new ones prefixed by >>):
+Thanks, series looks good to me:
 
->> fs/xfs/libxfs/xfs_parent.c:55:1: warning: no previous prototype for 'xfs_init_parent_name_rec' [-Wmissing-prototypes]
-      55 | xfs_init_parent_name_rec(
-         | ^~~~~~~~~~~~~~~~~~~~~~~~
->> fs/xfs/libxfs/xfs_parent.c:70:1: warning: no previous prototype for 'xfs_init_parent_name_irec' [-Wmissing-prototypes]
-      70 | xfs_init_parent_name_irec(
-         | ^~~~~~~~~~~~~~~~~~~~~~~~~
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
+for the series.
 
-vim +/xfs_init_parent_name_rec +55 fs/xfs/libxfs/xfs_parent.c
+Regards,
 
-    35	
-    36	/*
-    37	 * Parent pointer attribute handling.
-    38	 *
-    39	 * Because the attribute value is a filename component, it will never be longer
-    40	 * than 255 bytes. This means the attribute will always be a local format
-    41	 * attribute as it is xfs_attr_leaf_entsize_local_max() for v5 filesystems will
-    42	 * always be larger than this (max is 75% of block size).
-    43	 *
-    44	 * Creating a new parent attribute will always create a new attribute - there
-    45	 * should never, ever be an existing attribute in the tree for a new inode.
-    46	 * ENOSPC behavior is problematic - creating the inode without the parent
-    47	 * pointer is effectively a corruption, so we allow parent attribute creation
-    48	 * to dip into the reserve block pool to avoid unexpected ENOSPC errors from
-    49	 * occurring.
-    50	 */
-    51	
-    52	
-    53	/* Initializes a xfs_parent_name_rec to be stored as an attribute name */
-    54	void
-  > 55	xfs_init_parent_name_rec(
-    56		struct xfs_parent_name_rec	*rec,
-    57		struct xfs_inode		*ip,
-    58		uint32_t			p_diroffset)
-    59	{
-    60		xfs_ino_t			p_ino = ip->i_ino;
-    61		uint32_t			p_gen = VFS_I(ip)->i_generation;
-    62	
-    63		rec->p_ino = cpu_to_be64(p_ino);
-    64		rec->p_gen = cpu_to_be32(p_gen);
-    65		rec->p_diroffset = cpu_to_be32(p_diroffset);
-    66	}
-    67	
-    68	/* Initializes a xfs_parent_name_irec from an xfs_parent_name_rec */
-    69	void
-  > 70	xfs_init_parent_name_irec(
+Hans
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> 
+> Jagath Jog J (3):
+>   Staging: rtl8723bs: Placing opening { braces in previous line
+>   Staging: rtl8723bs: Removed extra spaces between datatype and variable
+>   Staging: rtl8723bs: Inserting blank line after declaration
+> 
+>  drivers/staging/rtl8723bs/core/rtw_cmd.c      | 54 +++++-----
+>  drivers/staging/rtl8723bs/hal/hal_intf.c      |  5 +
+>  .../staging/rtl8723bs/os_dep/ioctl_cfg80211.c | 98 ++++++-------------
+>  3 files changed, 63 insertions(+), 94 deletions(-)
+> 
+
