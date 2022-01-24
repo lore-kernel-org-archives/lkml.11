@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCDDCC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3ECC3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1837813AbiAXWpY (ORCPT
+        id S1838481AbiAXWql (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:45:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49640 "EHLO
+        Mon, 24 Jan 2022 17:46:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51920 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1456836AbiAXVkM (ORCPT
+        with ESMTP id S1457260AbiAXVlS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:40:12 -0500
+        Mon, 24 Jan 2022 16:41:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EB0EB81057;
-        Mon, 24 Jan 2022 21:40:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5206C340E4;
-        Mon, 24 Jan 2022 21:40:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 600E0B81188;
+        Mon, 24 Jan 2022 21:41:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D7E0C340E4;
+        Mon, 24 Jan 2022 21:41:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060409;
-        bh=j7uZC0EMg6IOGQI/zK2ZT99oLEwNN8GGLHuqvCfKBrw=;
+        s=korg; t=1643060476;
+        bh=vaHrpZuT0SEiaCkxFuZmfH+VWUjcQY23cDzjyVIvb5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xuThfJM5hw7ZfMJ/sBO/R1zw+2wqYMTefaqDTwcVENDJRH0vqQl+XR3xMqp15z8Xl
-         uLcSuj0gWV+H4mN9XNBBLSdAIShLNQlhH7ZQzzebPMcTxgkES6KjgTSmHJzU5atEor
-         zStdVhu8xdMnRPRMJsMXLFwcszX4eXsbvrvG04XI=
+        b=buFIDdYovvdFdRrmxUcyaw2brz2we9rR8rZYgm3kJQ7Veph3C1By8lg7ckawHpXqX
+         twoUC0Cbnd2e97iMHi7YIuMchrbM1UI+dflnCsFEtnJb+CHl18aqyyZtloX4Xw7Vqq
+         tdZ+1rZCq8NEfhYTxExW5+0BzcrADnQErBDAtWp4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Russell King <russell.king@oracle.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH 5.16 0937/1039] arm64/bpf: Remove 128MB limit for BPF JIT programs
-Date:   Mon, 24 Jan 2022 19:45:26 +0100
-Message-Id: <20220124184156.781671254@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.16 0960/1039] af_unix: annote lockless accesses to unix_tot_inflight & gc_in_progress
+Date:   Mon, 24 Jan 2022 19:45:49 +0100
+Message-Id: <20220124184157.563363721@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,115 +47,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Russell King <russell.king@oracle.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit b89ddf4cca43f1269093942cf5c4e457fd45c335 upstream.
+commit 9d6d7f1cb67cdee15f1a0e85aacfb924e0e02435 upstream.
 
-Commit 91fc957c9b1d ("arm64/bpf: don't allocate BPF JIT programs in module
-memory") restricts BPF JIT program allocation to a 128MB region to ensure
-BPF programs are still in branching range of each other. However this
-restriction should not apply to the aarch64 JIT, since BPF_JMP | BPF_CALL
-are implemented as a 64-bit move into a register and then a BLR instruction -
-which has the effect of being able to call anything without proximity
-limitation.
+wait_for_unix_gc() reads unix_tot_inflight & gc_in_progress
+without synchronization.
 
-The practical reason to relax this restriction on JIT memory is that 128MB of
-JIT memory can be quickly exhausted, especially where PAGE_SIZE is 64KB - one
-page is needed per program. In cases where seccomp filters are applied to
-multiple VMs on VM launch - such filters are classic BPF but converted to
-BPF - this can severely limit the number of VMs that can be launched. In a
-world where we support BPF JIT always on, turning off the JIT isn't always an
-option either.
+Adds READ_ONCE()/WRITE_ONCE() and their associated comments
+to better document the intent.
 
-Fixes: 91fc957c9b1d ("arm64/bpf: don't allocate BPF JIT programs in module memory")
-Suggested-by: Ard Biesheuvel <ard.biesheuvel@linaro.org>
-Signed-off-by: Russell King <russell.king@oracle.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Tested-by: Alan Maguire <alan.maguire@oracle.com>
-Link: https://lore.kernel.org/bpf/1636131046-5982-2-git-send-email-alan.maguire@oracle.com
+BUG: KCSAN: data-race in unix_inflight / wait_for_unix_gc
+
+write to 0xffffffff86e2b7c0 of 4 bytes by task 9380 on cpu 0:
+ unix_inflight+0x1e8/0x260 net/unix/scm.c:63
+ unix_attach_fds+0x10c/0x1e0 net/unix/scm.c:121
+ unix_scm_to_skb net/unix/af_unix.c:1674 [inline]
+ unix_dgram_sendmsg+0x679/0x16b0 net/unix/af_unix.c:1817
+ unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
+ __do_sys_sendmmsg net/socket.c:2578 [inline]
+ __se_sys_sendmmsg net/socket.c:2575 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+read to 0xffffffff86e2b7c0 of 4 bytes by task 9375 on cpu 1:
+ wait_for_unix_gc+0x24/0x160 net/unix/garbage.c:196
+ unix_dgram_sendmsg+0x8e/0x16b0 net/unix/af_unix.c:1772
+ unix_seqpacket_sendmsg+0xcc/0x110 net/unix/af_unix.c:2258
+ sock_sendmsg_nosec net/socket.c:704 [inline]
+ sock_sendmsg net/socket.c:724 [inline]
+ ____sys_sendmsg+0x39a/0x510 net/socket.c:2409
+ ___sys_sendmsg net/socket.c:2463 [inline]
+ __sys_sendmmsg+0x267/0x4c0 net/socket.c:2549
+ __do_sys_sendmmsg net/socket.c:2578 [inline]
+ __se_sys_sendmmsg net/socket.c:2575 [inline]
+ __x64_sys_sendmmsg+0x53/0x60 net/socket.c:2575
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x44/0xd0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+value changed: 0x00000002 -> 0x00000004
+
+Reported by Kernel Concurrency Sanitizer on:
+CPU: 1 PID: 9375 Comm: syz-executor.1 Not tainted 5.16.0-rc7-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+
+Fixes: 9915672d4127 ("af_unix: limit unix_tot_inflight")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Link: https://lore.kernel.org/r/20220114164328.2038499-1-eric.dumazet@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/include/asm/extable.h |    9 ---------
- arch/arm64/include/asm/memory.h  |    5 +----
- arch/arm64/kernel/traps.c        |    2 +-
- arch/arm64/mm/ptdump.c           |    2 --
- arch/arm64/net/bpf_jit_comp.c    |    7 ++-----
- 5 files changed, 4 insertions(+), 21 deletions(-)
+ net/unix/garbage.c |   14 +++++++++++---
+ net/unix/scm.c     |    6 ++++--
+ 2 files changed, 15 insertions(+), 5 deletions(-)
 
---- a/arch/arm64/include/asm/extable.h
-+++ b/arch/arm64/include/asm/extable.h
-@@ -33,15 +33,6 @@ do {							\
- 	(b)->data = (tmp).data;				\
- } while (0)
- 
--static inline bool in_bpf_jit(struct pt_regs *regs)
--{
--	if (!IS_ENABLED(CONFIG_BPF_JIT))
--		return false;
--
--	return regs->pc >= BPF_JIT_REGION_START &&
--	       regs->pc < BPF_JIT_REGION_END;
--}
--
- #ifdef CONFIG_BPF_JIT
- bool ex_handler_bpf(const struct exception_table_entry *ex,
- 		    struct pt_regs *regs);
---- a/arch/arm64/include/asm/memory.h
-+++ b/arch/arm64/include/asm/memory.h
-@@ -44,11 +44,8 @@
- #define _PAGE_OFFSET(va)	(-(UL(1) << (va)))
- #define PAGE_OFFSET		(_PAGE_OFFSET(VA_BITS))
- #define KIMAGE_VADDR		(MODULES_END)
--#define BPF_JIT_REGION_START	(_PAGE_END(VA_BITS_MIN))
--#define BPF_JIT_REGION_SIZE	(SZ_128M)
--#define BPF_JIT_REGION_END	(BPF_JIT_REGION_START + BPF_JIT_REGION_SIZE)
- #define MODULES_END		(MODULES_VADDR + MODULES_VSIZE)
--#define MODULES_VADDR		(BPF_JIT_REGION_END)
-+#define MODULES_VADDR		(_PAGE_END(VA_BITS_MIN))
- #define MODULES_VSIZE		(SZ_128M)
- #define VMEMMAP_START		(-(UL(1) << (VA_BITS - VMEMMAP_SHIFT)))
- #define VMEMMAP_END		(VMEMMAP_START + VMEMMAP_SIZE)
---- a/arch/arm64/kernel/traps.c
-+++ b/arch/arm64/kernel/traps.c
-@@ -994,7 +994,7 @@ static struct break_hook bug_break_hook
- static int reserved_fault_handler(struct pt_regs *regs, unsigned int esr)
+--- a/net/unix/garbage.c
++++ b/net/unix/garbage.c
+@@ -192,8 +192,11 @@ void wait_for_unix_gc(void)
  {
- 	pr_err("%s generated an invalid instruction at %pS!\n",
--		in_bpf_jit(regs) ? "BPF JIT" : "Kernel text patching",
-+		"Kernel text patching",
- 		(void *)instruction_pointer(regs));
- 
- 	/* We cannot handle this */
---- a/arch/arm64/mm/ptdump.c
-+++ b/arch/arm64/mm/ptdump.c
-@@ -41,8 +41,6 @@ static struct addr_marker address_marker
- 	{ 0 /* KASAN_SHADOW_START */,	"Kasan shadow start" },
- 	{ KASAN_SHADOW_END,		"Kasan shadow end" },
- #endif
--	{ BPF_JIT_REGION_START,		"BPF start" },
--	{ BPF_JIT_REGION_END,		"BPF end" },
- 	{ MODULES_VADDR,		"Modules start" },
- 	{ MODULES_END,			"Modules end" },
- 	{ VMALLOC_START,		"vmalloc() area" },
---- a/arch/arm64/net/bpf_jit_comp.c
-+++ b/arch/arm64/net/bpf_jit_comp.c
-@@ -1145,15 +1145,12 @@ out:
- 
- u64 bpf_jit_alloc_exec_limit(void)
- {
--	return BPF_JIT_REGION_SIZE;
-+	return VMALLOC_END - VMALLOC_START;
+ 	/* If number of inflight sockets is insane,
+ 	 * force a garbage collect right now.
++	 * Paired with the WRITE_ONCE() in unix_inflight(),
++	 * unix_notinflight() and gc_in_progress().
+ 	 */
+-	if (unix_tot_inflight > UNIX_INFLIGHT_TRIGGER_GC && !gc_in_progress)
++	if (READ_ONCE(unix_tot_inflight) > UNIX_INFLIGHT_TRIGGER_GC &&
++	    !READ_ONCE(gc_in_progress))
+ 		unix_gc();
+ 	wait_event(unix_gc_wait, gc_in_progress == false);
  }
+@@ -213,7 +216,9 @@ void unix_gc(void)
+ 	if (gc_in_progress)
+ 		goto out;
  
- void *bpf_jit_alloc_exec(unsigned long size)
- {
--	return __vmalloc_node_range(size, PAGE_SIZE, BPF_JIT_REGION_START,
--				    BPF_JIT_REGION_END, GFP_KERNEL,
--				    PAGE_KERNEL, 0, NUMA_NO_NODE,
--				    __builtin_return_address(0));
-+	return vmalloc(size);
- }
+-	gc_in_progress = true;
++	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
++	WRITE_ONCE(gc_in_progress, true);
++
+ 	/* First, select candidates for garbage collection.  Only
+ 	 * in-flight sockets are considered, and from those only ones
+ 	 * which don't have any external reference.
+@@ -299,7 +304,10 @@ void unix_gc(void)
  
- void bpf_jit_free_exec(void *addr)
+ 	/* All candidates should have been detached by now. */
+ 	BUG_ON(!list_empty(&gc_candidates));
+-	gc_in_progress = false;
++
++	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
++	WRITE_ONCE(gc_in_progress, false);
++
+ 	wake_up(&unix_gc_wait);
+ 
+  out:
+--- a/net/unix/scm.c
++++ b/net/unix/scm.c
+@@ -60,7 +60,8 @@ void unix_inflight(struct user_struct *u
+ 		} else {
+ 			BUG_ON(list_empty(&u->link));
+ 		}
+-		unix_tot_inflight++;
++		/* Paired with READ_ONCE() in wait_for_unix_gc() */
++		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight + 1);
+ 	}
+ 	user->unix_inflight++;
+ 	spin_unlock(&unix_gc_lock);
+@@ -80,7 +81,8 @@ void unix_notinflight(struct user_struct
+ 
+ 		if (atomic_long_dec_and_test(&u->inflight))
+ 			list_del_init(&u->link);
+-		unix_tot_inflight--;
++		/* Paired with READ_ONCE() in wait_for_unix_gc() */
++		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight - 1);
+ 	}
+ 	user->unix_inflight--;
+ 	spin_unlock(&unix_gc_lock);
 
 
