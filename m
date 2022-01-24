@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3966CC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B304C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850267AbiAXX1o (ORCPT
+        id S1383812AbiAXX1t (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:27:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39004 "EHLO
+        Mon, 24 Jan 2022 18:27:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587671AbiAXW30 (ORCPT
+        with ESMTP id S1579414AbiAXWNU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:29:26 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9071C0E531A;
-        Mon, 24 Jan 2022 12:54:57 -0800 (PST)
+        Mon, 24 Jan 2022 17:13:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9906C0E03F8;
+        Mon, 24 Jan 2022 12:44:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7DE24B81218;
-        Mon, 24 Jan 2022 20:54:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC4CCC340E5;
-        Mon, 24 Jan 2022 20:54:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5159860B2C;
+        Mon, 24 Jan 2022 20:44:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E6CC340E5;
+        Mon, 24 Jan 2022 20:43:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057696;
-        bh=50brnauWdiAtjqcwyntiqDSwqdYnjzoEqcJ97b19AFI=;
+        s=korg; t=1643057040;
+        bh=JiOVbM2qS81Tf9TfdFeLSOmQd6su6h5Fdx5wlgaihSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N9Od5PFscBQCk+um7p7rx3UDs4zAPiZKH37J+81aqIfBRMneAqgeIus6HMqJ7d9ZC
-         OzAUF4+tAG/mInb/obeKSCMya2bWVcDliquVc3PaEodWV94bziKuzrtdP8oncvN8gt
-         oWmqdbMMr7DfsmY2KnthOUMZ850o2PrcA6KhlCP0=
+        b=HlH1MudMOosQ2suTA7HhWa+hlz5xrXvN8FGw9ZMgIx3XldbyGvmB+97XTRZ25297o
+         4J0/bYeWq0hP7Qv3EDbqQdfU86Hj2E2LH7ifvGoYrdEWB9KK+dHlyTNMMXLQeOWQcu
+         Kb4BMqnZaqtxhZ2C3VMH9kjn9MdewpRG7s2CAsc8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Han Xu <han.xu@nxp.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 0016/1039] mtd: rawnand: gpmi: Remove explicit default gpmi clock setting for i.MX6
-Date:   Mon, 24 Jan 2022 19:30:05 +0100
-Message-Id: <20220124184125.688761738@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 650/846] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 24 Jan 2022 19:42:47 +0100
+Message-Id: <20220124184123.454434658@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,40 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Riedmueller <s.riedmueller@phytec.de>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-commit aa1baa0e6c1aa4872e481dce4fc7fd6f3dd8496b upstream.
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-There is no need to explicitly set the default gpmi clock rate during
-boot for the i.MX 6 since this is done during nand_detect anyway.
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
 
-Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
-Cc: stable@vger.kernel.org
-Acked-by: Han Xu <han.xu@nxp.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-1-ceggers@arri.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    9 ---------
- 1 file changed, 9 deletions(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -1052,15 +1052,6 @@ static int gpmi_get_clks(struct gpmi_nan
- 		r->clock[i] = clk;
- 	}
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index d56e9b9d2e434..a994022e32c9f 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
  
--	if (GPMI_IS_MX6(this))
--		/*
--		 * Set the default value for the gpmi clock.
--		 *
--		 * If you want to use the ONFI nand which is in the
--		 * Synchronous Mode, you should change the clock as you need.
--		 */
--		clk_set_rate(r->clock[0], 22000000);
--
- 	return 0;
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
- err_clock:
+ 	return ret;
+ }
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
+ 
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 6e4d3619137af..4df919d26b082 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -537,6 +537,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
+ 
+-- 
+2.34.1
+
 
 
