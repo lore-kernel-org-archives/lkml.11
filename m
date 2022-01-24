@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C540C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B789C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1456674AbiAXVjq (ORCPT
+        id S1456731AbiAXVjy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:39:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55860 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445083AbiAXVCH (ORCPT
+        Mon, 24 Jan 2022 16:39:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53848 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444634AbiAXVBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:02:07 -0500
+        Mon, 24 Jan 2022 16:01:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5457CB8105C;
-        Mon, 24 Jan 2022 21:02:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 833F6C340E5;
-        Mon, 24 Jan 2022 21:02:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5DC061368;
+        Mon, 24 Jan 2022 21:01:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4E10C340E5;
+        Mon, 24 Jan 2022 21:01:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058124;
-        bh=BNw15DMNEo5jqLE6Y6CE4dQGroEOmFccGBlIu/rczgw=;
+        s=korg; t=1643058073;
+        bh=WYGVexxiQzWsmwuFARY5sLnWD4LDm3nwZavgR065GQ0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v0j6Mkq5e6oZLt5HEbphiIvxKIUn3YMJZXbLDRjmuT9qvlGviT6xpm+jiyYtlhvnS
-         XDZRsxLf7tODqvodb3Np+DsVa+T8cDzUv6w15WNhE/7roKb9uznd+yqT/Fy6hFfonH
-         CK0C9GFcAcro4FJjI6uAFEc1oDV6IZ/rPr0GQ0tg=
+        b=ybugiiHT5Hbw073FMy7P+nlWmCucYzdSzD/sxbU+BPEbVl1y2feW2J6eOc4ZsIHJ5
+         vJKHw6mgXS37G46UW6K1D3tbKLmlD5nxNgTyW3R/E0aetga0HKdJ1A1B2XF04hv5dT
+         yD+8toHP6A/+wQMu2HgwWqsDTTlay3TpRV2AzOho=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Daniel Scally <djrscally@gmail.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0186/1039] media: i2c: Re-order runtime pm initialisation
-Date:   Mon, 24 Jan 2022 19:32:55 +0100
-Message-Id: <20220124184131.547439151@linuxfoundation.org>
+Subject: [PATCH 5.16 0173/1039] libbpf: Fix using invalidated memory in bpf_linker
+Date:   Mon, 24 Jan 2022 19:32:42 +0100
+Message-Id: <20220124184131.070872399@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,38 +47,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Daniel Scally <djrscally@gmail.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit d2484fbf780762f6f9cc3abb7a07ee42dca2eaa3 ]
+[ Upstream commit 593835377f24ca1bb98008ec1dc3baefe491ad6e ]
 
-The kerneldoc for pm_runtime_set_suspended() says:
+add_dst_sec() can invalidate bpf_linker's section index making
+dst_symtab pointer pointing into unallocated memory. Reinitialize
+dst_symtab pointer on each iteration to make sure it's always valid.
 
-"It is not valid to call this function for devices with runtime PM
-enabled"
-
-To satisfy that requirement, re-order the calls so that
-pm_runtime_enable() is the last one.
-
-Fixes: 11c0d8fdccc5 ("media: i2c: Add support for the OV8865 image sensor")
-Signed-off-by: Daniel Scally <djrscally@gmail.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: faf6ed321cf6 ("libbpf: Add BPF static linker APIs")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211124002325.1737739-7-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/i2c/ov8865.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/lib/bpf/linker.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/media/i2c/ov8865.c
-+++ b/drivers/media/i2c/ov8865.c
-@@ -2899,8 +2899,8 @@ static int ov8865_probe(struct i2c_clien
+diff --git a/tools/lib/bpf/linker.c b/tools/lib/bpf/linker.c
+index 94bdd97859285..6923a0ab3b127 100644
+--- a/tools/lib/bpf/linker.c
++++ b/tools/lib/bpf/linker.c
+@@ -2000,7 +2000,7 @@ add_sym:
+ static int linker_append_elf_relos(struct bpf_linker *linker, struct src_obj *obj)
+ {
+ 	struct src_sec *src_symtab = &obj->secs[obj->symtab_sec_idx];
+-	struct dst_sec *dst_symtab = &linker->secs[linker->symtab_sec_idx];
++	struct dst_sec *dst_symtab;
+ 	int i, err;
  
- 	/* Runtime PM */
+ 	for (i = 1; i < obj->sec_cnt; i++) {
+@@ -2033,6 +2033,9 @@ static int linker_append_elf_relos(struct bpf_linker *linker, struct src_obj *ob
+ 			return -1;
+ 		}
  
--	pm_runtime_enable(sensor->dev);
- 	pm_runtime_set_suspended(sensor->dev);
-+	pm_runtime_enable(sensor->dev);
++		/* add_dst_sec() above could have invalidated linker->secs */
++		dst_symtab = &linker->secs[linker->symtab_sec_idx];
++
+ 		/* shdr->sh_link points to SYMTAB */
+ 		dst_sec->shdr->sh_link = linker->symtab_sec_idx;
  
- 	/* V4L2 subdev register */
- 
+-- 
+2.34.1
+
 
 
