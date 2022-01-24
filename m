@@ -2,252 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57C62C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 563E0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 09:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236787AbiAXJkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 04:40:23 -0500
-Received: from azure-sdnproxy.icoremail.net ([52.175.55.52]:60820 "HELO
-        azure-sdnproxy-2.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with SMTP id S236844AbiAXJj5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 04:39:57 -0500
-X-Greylist: delayed 419 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Jan 2022 04:39:56 EST
-Received: from localhost.localdomain (unknown [123.60.114.22])
-        by mail-app4 (Coremail) with SMTP id cS_KCgCH_YC6ce5hI41KCA--.1780S2;
-        Mon, 24 Jan 2022 17:30:35 +0800 (CST)
-From:   lostway@zju.edu.cn
-To:     linux-kernel@vger.kernel.org, linux-edac@vger.kernel.org,
-        bp@alien8.de, tony.luck@intel.com
-Subject: [PATCH] RAS: Report ARM processor information to userspace
-Date:   Mon, 24 Jan 2022 17:30:34 +0800
-Message-Id: <20220124093034.33095-1-lostway@zju.edu.cn>
-X-Mailer: git-send-email 2.27.0
+        id S234503AbiAXJmb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 04:42:31 -0500
+Received: from mail-oln040092075099.outbound.protection.outlook.com ([40.92.75.99]:25334
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229514AbiAXJma (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 04:42:30 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FIH6JUeyDPmCKPtLtc/IhxT54Wdhe+55M0qZxHNbwsGURdOlPYjDZIGWqNG9aJZWj9BniwrJbRK9Q8Pa2e7kJDkNLDjX/SH+UDzrxvn/pMXarLAQn/EmfdXCVkto6Kai47f8UcySAS9fkr65LUMhfnl8mbVdJoIXsPAVbJwRn402pP/Co1t5PAbELPbv66Rog4XOVpe2kHXpbLqduR2u5Udd2keBPuDJwBqoL3lsbNQMGV7lppBlf1Hn80zfkc3t2TS+BVz+bymN2wP0WbOr05+Q9G7fTUAx4zf2vxDUY2+1R/PH0VEifqF08kBs8cHXlumwPgam8EKYla+tt3eiYg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Qy5cLjIkKlttuBI4ZqLrLyKNYsrBl22CnUEUl/042/4=;
+ b=hCIFoZRmCfaTTgsUp4gmsFUuzPkmd1aPaSDbpj8Fbvxuv6sXT78sCjChv9cZRpAPkiJ5BNw6EW7POFwEyycOmlXh46V0PyGMp/pqWOee/K3BZ4V8pkd/jkLSFPHynbtj1PtR0PvJ7pXNvijwPHVkrGsModrLAMmaE8tnTCs57tyHkb7gCGh6x/8jCq4o1XIOYbfHkiC5KX2AaNJZ8OtbxQxzU1mPE3AByfFUgqzgXk1lIfZFpIKTCJGPGGqQSitx6BAEXTVyj8EwVFB3uw/IFUWvJoilYwe8D+fBe4vQNO1JhAstUqPb0hnNDTNedJ9lq8kF7fJQYA2t+3jh4Xp+8Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+Received: from AM5PR0202MB2564.eurprd02.prod.outlook.com (2603:10a6:203:6c::7)
+ by AM0PR02MB3763.eurprd02.prod.outlook.com (2603:10a6:208:4f::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.17; Mon, 24 Jan
+ 2022 09:42:28 +0000
+Received: from AM5PR0202MB2564.eurprd02.prod.outlook.com
+ ([fe80::1182:31aa:e396:c15c]) by AM5PR0202MB2564.eurprd02.prod.outlook.com
+ ([fe80::1182:31aa:e396:c15c%2]) with mapi id 15.20.4909.017; Mon, 24 Jan 2022
+ 09:42:28 +0000
+Date:   Mon, 24 Jan 2022 09:42:23 +0000
+From:   Cameron Williams <cang1@live.co.uk>
+To:     gregkh@linuxfoundation.org, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] tty: Add support for Brainboxes UC cards.
+Message-ID: <AM5PR0202MB2564688493F7DD9B9C610827C45E9@AM5PR0202MB2564.eurprd02.prod.outlook.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-TMN:  [AwmJvZmcAnm1uFdmgrXhdv6vUa8nWaS7]
+X-ClientProxiedBy: LO2P265CA0178.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:a::22) To AM5PR0202MB2564.eurprd02.prod.outlook.com
+ (2603:10a6:203:6c::7)
+X-Microsoft-Original-Message-ID: <Ye50fyGYwb42IpVm@archlinux>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: cS_KCgCH_YC6ce5hI41KCA--.1780S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxtryUtr4UGF1Duw1DWw4UArb_yoWxKr17pF
-        n8CryYkr4rJFsxG3y3JFWru3y3Z34ruw1DK343Xay7CFs5ur1qgFs0gr42kF93JF98J34a
-        q3Wqgr9xCa4DJrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkYb7Iv0xC_tr1lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwV
-        C2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC
-        0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4kE6xkIj40Ew7xC0wCF04k2
-        0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
-        8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41l
-        IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIx
-        AIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2
-        jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8dpnPUUUUU==
-X-CM-SenderInfo: isrxjjaqquq6lmxovvfxof0/
+X-MS-Exchange-MessageSentRepresentingType: 1
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d40dea2b-f9dd-4b2e-d417-08d9df1dd555
+X-MS-TrafficTypeDiagnostic: AM0PR02MB3763:EE_
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Mg4iKjVDu0APKugkH+LAdLjvCdOx3mj7vQiyrphKi216icJRRiP7vrNhfdVqMePqYWvjs6zGhYOfO4lWeHRJd6PMB0IwqWX7RwAPi9BUFiPGvxhBq4jeqZsvEMOfWSHYoszQcv9s75z22p4eYLXewn8Yq+DAeODuDO1heJvYuVkAX/x/Ss6DPZwA++ib+rm4eOgIn03H1ivOmIxDM1doasVJ3j1e7gOTRlFgrQ3zg3XNr57qCQlXS0CMEv7V7vmCZhhBpEORs3YuSxBmdEwx3K7y8E1wFZgDii6he3p+04W6oyIiqRrJ2sSF/GsJ01ncgbAEEConWiC+IOzuqkwt9Ku40UOb0s6L0r/X5dwCv7cx3Dbe/Kwd7q2UGZNUK8yfrs/1537pjAtTiZerXpIXUp//hXHsuSu1zv57J5DlwK0KWkCudVrTWeyc+0rfZWMXeE5w2Ic/LKGFowBd3iXBmmDPlrjMygLhUPJBTsYp2XOzu9BCNKSxNAWQj/3kCnNhzzNH/JBtOXslZgQJqjxrfZYQFiSWtlU7A+TG9r2LIfSLQsYfVy3JU0P74zCW5DD7RhB+xk4pQBd7506wY6etyw==
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nJ5oWZvu62IqFDLXCufKJKTesYTzkvi32mveGWDn4EZJsBGLovtYYXPe9YOg?=
+ =?us-ascii?Q?G17PFLn2lPk3Wns/LVrXRE4dgz2CZgfZeHDUrL74CBJzze+Hb3ohxFBlddLb?=
+ =?us-ascii?Q?SGTwocbZ8khMcpBYT5fyE0SAesuleycAkgvd57npuHSfN/qBWuSvGDCJLVLm?=
+ =?us-ascii?Q?+knr9PIi1qgBUFEtfiron2QvfoH3+NScSan/6AXnRRHN4CdIx4i0TwWc8Sd1?=
+ =?us-ascii?Q?UtPLXg8/sfTx1Sb95n2rvDFDTqqJD6bWY3wGh01QvIcVUP3j0k6iH5RlCZxH?=
+ =?us-ascii?Q?TSgkZIfOTp6LzL9X+ignqdfqMQvIQwNvHn+2b1kkUvgbUahCf+T8PTDyU5Ij?=
+ =?us-ascii?Q?CHFY852ju/WCen6GYoW8ckZGgAmV5Z3SRd1qGig4zdgztsFZZszYNmHaldiZ?=
+ =?us-ascii?Q?9gsveHzaJ8Js2KccHME7olHK5HGqK2c+k5QqoFGRv3VHhemXU8SasrWZ5Poq?=
+ =?us-ascii?Q?4bliADU2Qen2Qp8psxk9OS9hjcpPDlqClhuK7LIE5C+qgx/yyPp3f3K4R9Ab?=
+ =?us-ascii?Q?mIGjX98hlK8a1+mrM0mTQl1mKb0G7HL/xgRXAgxXSjuyudsFu2I8rZF/mo2D?=
+ =?us-ascii?Q?ngzUi+VlZmw4V6rwVdUTaeRicFeNBc0DTNTXgB+E6GLXibb2OXfln/8nZHFX?=
+ =?us-ascii?Q?1rf/JxtYBL9Mxb1mil7B+t4wQE/L9YtabYXYUuW/xJ1NQt8Gkovqz0UfjS7e?=
+ =?us-ascii?Q?f9nhQ9mC62MWlOK/1aZRcvjKbY6nyE25be+wMks8TruLx9uKlMQjpk5cuGfG?=
+ =?us-ascii?Q?Eoa+GI+4kKJlhUoIdVSsZZ613uTc8f5+j1qfIjD26VLrxuIAHMhx0BHjFjwl?=
+ =?us-ascii?Q?kDYssAVHDUKrS9k8A7GHCffwLvVpafa0XhD9aV8vZD4D5zuOCgfmSZdKMNTK?=
+ =?us-ascii?Q?Oidh9pyfMJTo9cMJcuSjUNoao7vkw31H8Fhec1bKgwWund2YskO4KNBhN14N?=
+ =?us-ascii?Q?hfmzzl//W4MTjayHS/4W2Q=3D=3D?=
+X-OriginatorOrg: sct-15-20-4755-11-msonline-outlook-ab7de.templateTenant
+X-MS-Exchange-CrossTenant-Network-Message-Id: d40dea2b-f9dd-4b2e-d417-08d9df1dd555
+X-MS-Exchange-CrossTenant-AuthSource: AM5PR0202MB2564.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Jan 2022 09:42:27.9915
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR02MB3763
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shengwei Luo <luoshengwei@huawei.com>
+This commit adds support for the some of the Brainboxes PCI range of
+cards, including the UC-101, UC-235/246, UC-257, UC-268, UC-275/279,
+UC-302, UC-310, UC-313, UC-320/324, UC-346, UC-357, UC-368
+and UC-420/431.
 
-The ARM processor error section includes several ARM processor error
-information, several ARM processor context information and several
-vendor specific error information structures. In addition to these
-info, there are error severity and cpu logical index about the event.
-Report all of these information to userspace via perf i/f.
-
-Original-Author: Jason Tian <jason@os.amperecomputing.com>
-Signed-off-by: Shengwei Luo <luoshengwei@huawei.com>
+Signed-off-by: Cameron Williams <cang1@live.co.uk>
 ---
- drivers/acpi/apei/ghes.c |  3 +--
- drivers/ras/ras.c        | 46 ++++++++++++++++++++++++++++++++++++--
- include/linux/ras.h      | 15 +++++++++++--
- include/ras/ras_event.h  | 48 +++++++++++++++++++++++++++++++++++-----
- 4 files changed, 101 insertions(+), 11 deletions(-)
+ drivers/tty/serial/8250/8250_pci.c | 100 ++++++++++++++++++++++++++++-
+ 1 file changed, 98 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/apei/ghes.c b/drivers/acpi/apei/ghes.c
-index 0c5c9acc6254..f824c26057b1 100644
---- a/drivers/acpi/apei/ghes.c
-+++ b/drivers/acpi/apei/ghes.c
-@@ -490,9 +490,8 @@ static bool ghes_handle_arm_hw_error(struct acpi_hest_generic_data *gdata, int s
- 	int sec_sev, i;
- 	char *p;
- 
--	log_arm_hw_error(err);
--
- 	sec_sev = ghes_severity(gdata->error_severity);
-+	log_arm_hw_error(err, sec_sev);
- 	if (sev != GHES_SEV_RECOVERABLE || sec_sev != GHES_SEV_RECOVERABLE)
- 		return false;
- 
-diff --git a/drivers/ras/ras.c b/drivers/ras/ras.c
-index 95540ea8dd9d..1ec1e51f457c 100644
---- a/drivers/ras/ras.c
-+++ b/drivers/ras/ras.c
-@@ -21,9 +21,51 @@ void log_non_standard_event(const guid_t *sec_type, const guid_t *fru_id,
- 	trace_non_standard_event(sec_type, fru_id, fru_text, sev, err, len);
- }
- 
--void log_arm_hw_error(struct cper_sec_proc_arm *err)
-+void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev)
- {
--	trace_arm_event(err);
-+	u32 pei_len;
-+	u32 ctx_len = 0;
-+	u32 vsei_len;
-+	u8 *pei_err;
-+	u8 *ctx_err;
-+	u8 *ven_err_data;
-+	struct cper_arm_err_info *err_info;
-+	struct cper_arm_ctx_info *ctx_info;
-+	int n, sz;
-+	int cpu;
-+
-+	pei_len = sizeof(struct cper_arm_err_info) * err->err_info_num;
-+	pei_err = (u8 *)err + sizeof(struct cper_sec_proc_arm);
-+
-+	err_info = (struct cper_arm_err_info *)(err + 1);
-+	ctx_info = (struct cper_arm_ctx_info *)(err_info + err->err_info_num);
-+	ctx_err = (u8 *)ctx_info;
-+	for (n = 0; n < err->context_info_num; n++) {
-+		sz = sizeof(struct cper_arm_ctx_info) + ctx_info->size;
-+		ctx_info = (struct cper_arm_ctx_info *)((long)ctx_info + sz);
-+		ctx_len += sz;
-+	}
-+
-+	vsei_len = err->section_length - (sizeof(struct cper_sec_proc_arm) +
-+						pei_len + ctx_len);
-+	if (vsei_len < 0) {
-+		pr_warn(FW_BUG
-+			"section length: %d\n", err->section_length);
-+		pr_warn(FW_BUG
-+			"section length is too small\n");
-+		pr_warn(FW_BUG
-+			"firmware-generated error record is incorrect\n");
-+		vsei_len = 0;
-+	}
-+	ven_err_data = (u8 *)ctx_info;
-+
-+	cpu = GET_LOGICAL_INDEX(err->mpidr);
-+	/* when return value is invalid, set cpu index to -1 */
-+	if (cpu < 0)
-+		cpu = -1;
-+
-+	trace_arm_event(err, pei_err, pei_len, ctx_err, ctx_len,
-+			ven_err_data, vsei_len, sev, cpu);
- }
- 
- static int __init ras_init(void)
-diff --git a/include/linux/ras.h b/include/linux/ras.h
-index 1f4048bf2674..4529775374d0 100644
---- a/include/linux/ras.h
-+++ b/include/linux/ras.h
-@@ -24,7 +24,7 @@ int __init parse_cec_param(char *str);
- void log_non_standard_event(const guid_t *sec_type,
- 			    const guid_t *fru_id, const char *fru_text,
- 			    const u8 sev, const u8 *err, const u32 len);
--void log_arm_hw_error(struct cper_sec_proc_arm *err);
-+void log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev);
- #else
- static inline void
- log_non_standard_event(const guid_t *sec_type,
-@@ -32,7 +32,18 @@ log_non_standard_event(const guid_t *sec_type,
- 		       const u8 sev, const u8 *err, const u32 len)
- { return; }
- static inline void
--log_arm_hw_error(struct cper_sec_proc_arm *err) { return; }
-+log_arm_hw_error(struct cper_sec_proc_arm *err, const u8 sev) { return; }
- #endif
- 
-+#if defined(CONFIG_ARM) || defined(CONFIG_ARM64)
-+#include <asm/smp_plat.h>
-+/*
-+ * Include ARM specific SMP header which provides a function mapping mpidr to
-+ * cpu logical index.
-+ */
-+#define GET_LOGICAL_INDEX(mpidr) get_logical_index(mpidr & MPIDR_HWID_BITMASK)
-+#else
-+#define GET_LOGICAL_INDEX(mpidr) -EINVAL
-+#endif /* CONFIG_ARM || CONFIG_ARM64 */
-+
- #endif /* __RAS_H__ */
-diff --git a/include/ras/ras_event.h b/include/ras/ras_event.h
-index d0337a41141c..92cfb61bdb20 100644
---- a/include/ras/ras_event.h
-+++ b/include/ras/ras_event.h
-@@ -168,11 +168,24 @@ TRACE_EVENT(mc_event,
-  * This event is generated when hardware detects an ARM processor error
-  * has occurred. UEFI 2.6 spec section N.2.4.4.
-  */
-+#define APEIL "ARM Processor Err Info data len"
-+#define APEID "ARM Processor Err Info raw data"
-+#define APECIL "ARM Processor Err Context Info data len"
-+#define APECID "ARM Processor Err Context Info raw data"
-+#define VSEIL "Vendor Specific Err Info data len"
-+#define VSEID "Vendor Specific Err Info raw data"
- TRACE_EVENT(arm_event,
- 
--	TP_PROTO(const struct cper_sec_proc_arm *proc),
-+	TP_PROTO(const struct cper_sec_proc_arm *proc, const u8 *pei_err,
-+			const u32 pei_len,
-+			const u8 *ctx_err,
-+			const u32 ctx_len,
-+			const u8 *oem,
-+			const u32 oem_len,
-+			u8 sev,
-+			int cpu),
- 
--	TP_ARGS(proc),
-+	TP_ARGS(proc, pei_err, pei_len, ctx_err, ctx_len, oem, oem_len, sev, cpu),
- 
- 	TP_STRUCT__entry(
- 		__field(u64, mpidr)
-@@ -180,6 +193,14 @@ TRACE_EVENT(arm_event,
- 		__field(u32, running_state)
- 		__field(u32, psci_state)
- 		__field(u8, affinity)
-+		__field(u32, pei_len)
-+		__dynamic_array(u8, buf, pei_len)
-+		__field(u32, ctx_len)
-+		__dynamic_array(u8, buf1, ctx_len)
-+		__field(u32, oem_len)
-+		__dynamic_array(u8, buf2, oem_len)
-+		__field(u8, sev)
-+		__field(int, cpu)
- 	),
- 
- 	TP_fast_assign(
-@@ -199,12 +220,29 @@ TRACE_EVENT(arm_event,
- 			__entry->running_state = ~0;
- 			__entry->psci_state = ~0;
- 		}
-+		__entry->pei_len = pei_len;
-+		memcpy(__get_dynamic_array(buf), pei_err, pei_len);
-+		__entry->ctx_len = ctx_len;
-+		memcpy(__get_dynamic_array(buf1), ctx_err, ctx_len);
-+		__entry->oem_len = oem_len;
-+		memcpy(__get_dynamic_array(buf2), oem, oem_len);
-+		__entry->sev = sev;
-+		__entry->cpu = cpu;
- 	),
- 
--	TP_printk("affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
--		  "running state: %d; PSCI state: %d",
-+	TP_printk("cpu: %d; error: %d; affinity level: %d; MPIDR: %016llx; MIDR: %016llx; "
-+		  "running state: %d; PSCI state: %d; "
-+		  "%s: %d; %s: %s; %s: %d; %s: %s; %s: %d; %s: %s",
-+		  __entry->cpu,
-+		  __entry->sev,
- 		  __entry->affinity, __entry->mpidr, __entry->midr,
--		  __entry->running_state, __entry->psci_state)
-+		  __entry->running_state, __entry->psci_state,
-+		  APEIL, __entry->pei_len, APEID,
-+		  __print_hex(__get_dynamic_array(buf), __entry->pei_len),
-+		  APECIL, __entry->ctx_len, APECID,
-+		  __print_hex(__get_dynamic_array(buf1), __entry->ctx_len),
-+		  VSEIL, __entry->oem_len, VSEID,
-+		  __print_hex(__get_dynamic_array(buf2), __entry->oem_len))
- );
- 
- /*
+diff --git a/drivers/tty/serial/8250/8250_pci.c b/drivers/tty/serial/8250/8250_pci.c
+index e8b5469e9dfa..e17e97ea86fa 100644
+--- a/drivers/tty/serial/8250/8250_pci.c
++++ b/drivers/tty/serial/8250/8250_pci.c
+@@ -4779,8 +4779,30 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 	{	PCI_VENDOR_ID_INTASHIELD, PCI_DEVICE_ID_INTASHIELD_IS400,
+ 		PCI_ANY_ID, PCI_ANY_ID, 0, 0,    /* 135a.0dc0 */
+ 		pbn_b2_4_115200 },
++	/* Brainboxes Devices */
+ 	/*
+-	 * BrainBoxes UC-260
++	* Brainboxes UC-101
++	*/
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0BA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-235/246
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0AA1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-257
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0861,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-260/271/701/756
+ 	 */
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0D21,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+@@ -4788,7 +4810,81 @@ static const struct pci_device_id serial_pci_tbl[] = {
+ 		pbn_b2_4_115200 },
+ 	{	PCI_VENDOR_ID_INTASHIELD, 0x0E34,
+ 		PCI_ANY_ID, PCI_ANY_ID,
+-		 PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		PCI_CLASS_COMMUNICATION_MULTISERIAL << 8, 0xffff00,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-268
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0841,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-275/279
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0881,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_8_115200 },
++	/*
++	 * Brainboxes UC-302
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x08E1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-310
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08C1,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-313
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x08A3,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-320/324
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A61,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_1_115200 },
++	/*
++	 * Brainboxes UC-346
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0B02,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-357
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A81,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0A83,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_2_115200 },
++	/*
++	 * Brainboxes UC-368
++	 */
++	{	PCI_VENDOR_ID_INTASHIELD, 0x0C41,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
++		pbn_b2_4_115200 },
++	/*
++	 * Brainboxes UC-420/431
++	 */
++	{       PCI_VENDOR_ID_INTASHIELD, 0x0921,
++		PCI_ANY_ID, PCI_ANY_ID,
++		0, 0,
+ 		pbn_b2_4_115200 },
+ 	/*
+ 	 * Perle PCI-RAS cards
 -- 
-2.27.0
+2.34.1
 
