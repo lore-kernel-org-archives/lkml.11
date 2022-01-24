@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA765C35274
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B508C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452478AbiAXVZn (ORCPT
+        id S1452975AbiAXV1b (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:25:43 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50964 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444177AbiAXVAM (ORCPT
+        Mon, 24 Jan 2022 16:27:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55262 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444468AbiAXVBA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:00:12 -0500
+        Mon, 24 Jan 2022 16:01:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8690660916;
-        Mon, 24 Jan 2022 21:00:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A4FBC340E5;
-        Mon, 24 Jan 2022 21:00:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2342EB80FA1;
+        Mon, 24 Jan 2022 21:00:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4650AC340E5;
+        Mon, 24 Jan 2022 21:00:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058012;
-        bh=bTwDCjyp1FfNlpPdJ01CRAf9JzQtnnaDyzG6MorJD20=;
+        s=korg; t=1643058057;
+        bh=zLZtC7ypmlhH1omlZOAIcSh+uqnfUwqd1cdnR2k5tXY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XXQIHGeLBZkm7hOdrbkTwjs0R/nYoBsOz1m65fFkyiELlgecuYFYjCmJy89nKcH2j
-         ob7odbtOAdsK9i5FsgaIQ2u0l/tOAUXIMoNfxLhyYufvsPrNZgr6AjlYPgDgoy1M6p
-         juLOGvfQq9H5fQGw2Mghi7QSNaPvI+TurUtRN/Jo=
+        b=vriyTdxdTJoEztgQ0Z0Gmpu+iBcH1Mad+/AeuKFPbVa4dbkuoBrLVdZrV+cEeq9nn
+         68R2MNTEsXVXGyY/DfploQ8wVjBMEXuXUhJYYH573W7dFqozBytxlNlrnPo8xre6Ak
+         EnBlUVeuhs1cwNcDVvdOXZw9f3tq/cjZkP0ERJ40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
+        kernel test robot <lkp@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0151/1039] drm/vboxvideo: fix a NULL vs IS_ERR() check
-Date:   Mon, 24 Jan 2022 19:32:20 +0100
-Message-Id: <20220124184130.236313729@linuxfoundation.org>
+Subject: [PATCH 5.16 0168/1039] ARM: dts: stm32: fix dtbs_check warning on ili9341 dts binding on stm32f429 disco
+Date:   Mon, 24 Jan 2022 19:32:37 +0100
+Message-Id: <20220124184130.866142103@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,38 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Dillon Min <dillon.minfei@gmail.com>
 
-[ Upstream commit cebbb5c46d0cb0615fd0c62dea9b44273d0a9780 ]
+[ Upstream commit b046049e59dca5e5830dc75ed16acf7657a95161 ]
 
-The devm_gen_pool_create() function never returns NULL, it returns
-error pointers.
+Since the compatible string defined from ilitek,ili9341.yaml is
+"st,sf-tc240t-9370-t", "ilitek,ili9341"
 
-Fixes: 4cc9b565454b ("drm/vboxvideo: Use devm_gen_pool_create")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211118111233.GA1147@kili
+so, append "ilitek,ili9341" to avoid the below dtbs_check warning.
+
+arch/arm/boot/dts/stm32f429-disco.dt.yaml: display@1: compatible:
+['st,sf-tc240t-9370-t'] is too short
+
+Fixes: a726e2f000ec ("ARM: dts: stm32: enable ltdc binding with ili9341, gyro l3gd20 on stm32429-disco board")
+Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Alexandre Torgue <alexandre.torgue@foss.st.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vboxvideo/vbox_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/stm32f429-disco.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vboxvideo/vbox_main.c b/drivers/gpu/drm/vboxvideo/vbox_main.c
-index f28779715ccda..c9e8b3a63c621 100644
---- a/drivers/gpu/drm/vboxvideo/vbox_main.c
-+++ b/drivers/gpu/drm/vboxvideo/vbox_main.c
-@@ -127,8 +127,8 @@ int vbox_hw_init(struct vbox_private *vbox)
- 	/* Create guest-heap mem-pool use 2^4 = 16 byte chunks */
- 	vbox->guest_pool = devm_gen_pool_create(vbox->ddev.dev, 4, -1,
- 						"vboxvideo-accel");
--	if (!vbox->guest_pool)
--		return -ENOMEM;
-+	if (IS_ERR(vbox->guest_pool))
-+		return PTR_ERR(vbox->guest_pool);
+diff --git a/arch/arm/boot/dts/stm32f429-disco.dts b/arch/arm/boot/dts/stm32f429-disco.dts
+index 075ac57d0bf4a..6435e099c6326 100644
+--- a/arch/arm/boot/dts/stm32f429-disco.dts
++++ b/arch/arm/boot/dts/stm32f429-disco.dts
+@@ -192,7 +192,7 @@
  
- 	ret = gen_pool_add_virt(vbox->guest_pool,
- 				(unsigned long)vbox->guest_heap,
+ 	display: display@1{
+ 		/* Connect panel-ilitek-9341 to ltdc */
+-		compatible = "st,sf-tc240t-9370-t";
++		compatible = "st,sf-tc240t-9370-t", "ilitek,ili9341";
+ 		reg = <1>;
+ 		spi-3wire;
+ 		spi-max-frequency = <10000000>;
 -- 
 2.34.1
 
