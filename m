@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED71C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E68B4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451446AbiAXVW4 (ORCPT
+        id S1451426AbiAXVWz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50276 "EHLO
+        Mon, 24 Jan 2022 16:22:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51530 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442810AbiAXUzY (ORCPT
+        with ESMTP id S1442764AbiAXUzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:24 -0500
+        Mon, 24 Jan 2022 15:55:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 58B59B8105C;
-        Mon, 24 Jan 2022 20:55:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB13C340E5;
-        Mon, 24 Jan 2022 20:55:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F0056B80CCF;
+        Mon, 24 Jan 2022 20:55:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A9F4C340E5;
+        Mon, 24 Jan 2022 20:55:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057722;
-        bh=l+gtYq5zMqIJC9T7FFg/WoG6gd4YYnKZA2mw7RhH/1s=;
+        s=korg; t=1643057708;
+        bh=+UqKwQ35sgQOM9w62WCDHOz/u6Y8TNzdLyjcPKVz5Ac=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aqFLcsiR+XlvMopzzu8l53+x4PZ59325kFSFLrjyu5PEQhdx4Gq2jo2QXYyLv21W7
-         R9TW9YO5jS24UqrBgBkEOD4NRyedNDzOjpagisDdw31MEYrx6W4PoSsPpD4pgfSe7M
-         9vA055luz9pmECekrDoeOgZNbzhM2Wj6DWdlk2/Q=
+        b=LIP4acmLVJBnSoPHNAtwRuYdylaULmXCstLBo3y5rkUbC4N7in2aYZzIWrhuUe3dA
+         45bCYnAETWgoEQazHy+dFdqQP2ZmlGdRMIc/+MzC9lNtR0AE+Raus/F+q7KmXm9Mi5
+         UZxWdRlAhA8HxIbchmHC3N5qnC5i2OvpOXK2Pmo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Stable@vger.kernel.org
-Subject: [PATCH 5.16 0058/1039] iio: trigger: Fix a scheduling whilst atomic issue seen on tsc2046
-Date:   Mon, 24 Jan 2022 19:30:47 +0100
-Message-Id: <20220124184127.096367441@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.16 0020/1039] mtd: rawnand: davinci: Rewrite function description
+Date:   Mon, 24 Jan 2022 19:30:09 +0100
+Message-Id: <20220124184125.820352097@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,121 +46,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Paul Cercueil <paul@crapouillou.net>
 
-commit 9020ef659885f2622cfb386cc229b6d618362895 upstream.
+commit 0697f8441faad552fbeb02d74454b5e7bcc956a2 upstream.
 
-IIO triggers are software IRQ chips that split an incoming IRQ into
-separate IRQs routed to all devices using the trigger.
-When all consumers are done then a trigger callback reenable() is
-called.  There are a few circumstances under which this can happen
-in atomic context.
+The original comment that describes the function
+nand_davinci_read_page_hwecc_oob_first() is very obscure and it is hard
+to understand what it is for.
 
-1) A single user of the trigger that calls the iio_trigger_done()
-function from interrupt context.
-2) A race between disconnecting the last device from a trigger and
-the trigger itself sucessfully being disabled.
-
-To avoid a resulting scheduling whilst atomic, close this second corner
-by using schedule_work() to ensure the reenable is not done in atomic
-context.
-
-Note that drivers must be careful to manage the interaction of
-set_state() and reenable() callbacks to ensure appropriate reference
-counting if they are relying on the same hardware controls.
-
-Deliberately taking this the slow path rather than via a fixes tree
-because the error has hard to hit and I would like it to soak for a while
-before hitting a release kernel.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Tested-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: <Stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20211017172209.112387-1-jic23@kernel.org
+Cc: <stable@vger.kernel.org> # v5.2
+Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-3-paul@crapouillou.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/industrialio-trigger.c |   36 +++++++++++++++++++++++++++++++++++-
- include/linux/iio/trigger.h        |    2 ++
- 2 files changed, 37 insertions(+), 1 deletion(-)
+ drivers/mtd/nand/raw/davinci_nand.c |   10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -162,6 +162,39 @@ static struct iio_trigger *iio_trigger_a
- 	return trig;
+--- a/drivers/mtd/nand/raw/davinci_nand.c
++++ b/drivers/mtd/nand/raw/davinci_nand.c
+@@ -372,17 +372,15 @@ correct:
  }
  
-+static void iio_reenable_work_fn(struct work_struct *work)
-+{
-+	struct iio_trigger *trig = container_of(work, struct iio_trigger,
-+						reenable_work);
-+
-+	/*
-+	 * This 'might' occur after the trigger state is set to disabled -
-+	 * in that case the driver should skip reenabling.
-+	 */
-+	trig->ops->reenable(trig);
-+}
-+
-+/*
-+ * In general, reenable callbacks may need to sleep and this path is
-+ * not performance sensitive, so just queue up a work item
-+ * to reneable the trigger for us.
-+ *
-+ * Races that can cause this.
-+ * 1) A handler occurs entirely in interrupt context so the counter
-+ *    the final decrement is still in this interrupt.
-+ * 2) The trigger has been removed, but one last interrupt gets through.
-+ *
-+ * For (1) we must call reenable, but not in atomic context.
-+ * For (2) it should be safe to call reenanble, if drivers never blindly
-+ * reenable after state is off.
-+ */
-+static void iio_trigger_notify_done_atomic(struct iio_trigger *trig)
-+{
-+	if (atomic_dec_and_test(&trig->use_count) && trig->ops &&
-+	    trig->ops->reenable)
-+		schedule_work(&trig->reenable_work);
-+}
-+
- void iio_trigger_poll(struct iio_trigger *trig)
- {
- 	int i;
-@@ -173,7 +206,7 @@ void iio_trigger_poll(struct iio_trigger
- 			if (trig->subirqs[i].enabled)
- 				generic_handle_irq(trig->subirq_base + i);
- 			else
--				iio_trigger_notify_done(trig);
-+				iio_trigger_notify_done_atomic(trig);
- 		}
- 	}
- }
-@@ -535,6 +568,7 @@ struct iio_trigger *viio_trigger_alloc(s
- 	trig->dev.type = &iio_trig_type;
- 	trig->dev.bus = &iio_bus_type;
- 	device_initialize(&trig->dev);
-+	INIT_WORK(&trig->reenable_work, iio_reenable_work_fn);
- 
- 	mutex_init(&trig->pool_lock);
- 	trig->subirq_base = irq_alloc_descs(-1, 0,
---- a/include/linux/iio/trigger.h
-+++ b/include/linux/iio/trigger.h
-@@ -55,6 +55,7 @@ struct iio_trigger_ops {
-  * @attached_own_device:[INTERN] if we are using our own device as trigger,
-  *			i.e. if we registered a poll function to the same
-  *			device as the one providing the trigger.
-+ * @reenable_work:	[INTERN] work item used to ensure reenable can sleep.
-  **/
- struct iio_trigger {
- 	const struct iio_trigger_ops	*ops;
-@@ -74,6 +75,7 @@ struct iio_trigger {
- 	unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
- 	struct mutex			pool_lock;
- 	bool				attached_own_device;
-+	struct work_struct		reenable_work;
- };
- 
- 
+ /**
+- * nand_read_page_hwecc_oob_first - hw ecc, read oob first
++ * nand_davinci_read_page_hwecc_oob_first - Hardware ECC page read with ECC
++ *                                          data read from OOB area
+  * @chip: nand chip info structure
+  * @buf: buffer to store read data
+  * @oob_required: caller requires OOB data read to chip->oob_poi
+  * @page: page number to read
+  *
+- * Hardware ECC for large page chips, require OOB to be read first. For this
+- * ECC mode, the write_page method is re-used from ECC_HW. These methods
+- * read/write ECC from the OOB area, unlike the ECC_HW_SYNDROME support with
+- * multiple ECC steps, follows the "infix ECC" scheme and reads/writes ECC from
+- * the data area, by overwriting the NAND manufacturer bad block markings.
++ * Hardware ECC for large page chips, which requires the ECC data to be
++ * extracted from the OOB before the actual data is read.
+  */
+ static int nand_davinci_read_page_hwecc_oob_first(struct nand_chip *chip,
+ 						  uint8_t *buf,
 
 
