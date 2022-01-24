@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B550DC4167D
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 142DFC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442793AbiAXUzU (ORCPT
+        id S1442809AbiAXUzX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:55:20 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58164 "EHLO
+        Mon, 24 Jan 2022 15:55:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55290 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356873AbiAXUco (ORCPT
+        with ESMTP id S1357395AbiAXUdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:32:44 -0500
+        Mon, 24 Jan 2022 15:33:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01945613FB;
-        Mon, 24 Jan 2022 20:32:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC227C340E7;
-        Mon, 24 Jan 2022 20:32:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90FDA61535;
+        Mon, 24 Jan 2022 20:33:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D705C340E5;
+        Mon, 24 Jan 2022 20:33:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056363;
-        bh=XofxKjrbwzxrM0OgOkvPQ+yEocd1EQF1xFTdNogLaTc=;
+        s=korg; t=1643056384;
+        bh=FpFOz55NDArr1D4SGMUr6c5B/Pd266OUahPpfqk8l5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gwDC2TvITkIeY+tRyx89XzDcJmVR4u7oel4NtxMqpz/EM+EL8q/KvEWhDhQWcUYMF
-         CqFCrrjAvzAh9o4XkMVKy4ifM+JBt7j5GkDVe/HHySbn0/jIez7cwNi5DWbvwG5TU0
-         k3qsaBKOdhaAHTzjn3pDZo1wAUEHaJW4z76kyyVM=
+        b=ACDloUJeZoUptukMOG7N1CXNnG165Nw2CEKqSvflgwFcq0mNFvygTULaNgYWLo4GT
+         WPdlc4CCvWhBfT3AvpAmYuVa5Zvp4XzKVKhkAkHgYLwchjUvSUTHZaSisTV8sgVImN
+         6Oi9cv+RhY7V2AMv9HamSWh7pCMWyuCV64eoy64o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 459/846] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 24 Jan 2022 19:39:36 +0100
-Message-Id: <20220124184116.804534133@linuxfoundation.org>
+        stable@vger.kernel.org, Vasily Khoruzhick <anarsoul@gmail.com>,
+        Roman Stratiienko <r.stratiienko@gmail.com>,
+        Qiang Yu <yuq825@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 465/846] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
+Date:   Mon, 24 Jan 2022 19:39:42 +0100
+Message-Id: <20220124184117.020752409@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,38 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Qiang Yu <yuq825@gmail.com>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
 
-Fault injection test report debugfs entry leak as follows:
+Otherwise get following warning:
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
+See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
 
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Signed-off-by: Qiang Yu <yuq825@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
+ drivers/gpu/drm/lima/lima_device.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 325db9c4c6109..53f1b08017aab 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3999,6 +3999,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
+diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
+index 65fdca366e41f..36c9905894278 100644
+--- a/drivers/gpu/drm/lima/lima_device.c
++++ b/drivers/gpu/drm/lima/lima_device.c
+@@ -357,6 +357,7 @@ int lima_device_init(struct lima_device *ldev)
+ 	int err, i;
  
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+ 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
++	dma_set_max_seg_size(ldev->dev, UINT_MAX);
+ 
+ 	err = lima_clk_init(ldev);
+ 	if (err)
 -- 
 2.34.1
 
