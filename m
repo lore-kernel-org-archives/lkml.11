@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B47C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 644CEC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3408054AbiAYAV1 (ORCPT
+        id S3408098AbiAYAVe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:21:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55752 "EHLO
+        Mon, 24 Jan 2022 19:21:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2361483AbiAXXkM (ORCPT
+        with ESMTP id S2360963AbiAXXip (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:40:12 -0500
+        Mon, 24 Jan 2022 18:38:45 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48E55C078521;
-        Mon, 24 Jan 2022 13:38:35 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11129C07850B;
+        Mon, 24 Jan 2022 13:38:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0FB70B80FA1;
-        Mon, 24 Jan 2022 21:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AEE4C340E4;
-        Mon, 24 Jan 2022 21:38:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9E5CDB81243;
+        Mon, 24 Jan 2022 21:38:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA800C340E4;
+        Mon, 24 Jan 2022 21:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060312;
-        bh=NF5lkOBelGBSG7Nu/ygvh5DLxM3dmsWRSeyfgkNPk/U=;
+        s=korg; t=1643060303;
+        bh=s05JzdmOxIzc9HaITbzO0W37kq6LqIy/2UOUNHkgETw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aiVcppDAcaEvU4SyZYFbP5zfLWoHq0nJ3le6ON6c2jweNDbg/w3fnkie2F/kKqZN2
-         UO0bfG3/W9NbCp2wvN41pc9nlyv1EZ7dnVYxrpSv0mU/OUcBIbDgbOsIrHONMtWafI
-         txgPy7fmkBPNnQbVzF3CKLVlMrrApWjtOw1eZPRA=
+        b=IPpjAhd0LRZ7STT5njLNk6TPvcRk5QbCFHZUSb4LOJjlNf0zRRbfHBRxwh8eubx2S
+         1PuHu2b2lWZqa98RBefN6C0wn9bz00ZbykezfcigP6tH5x5ijDzjq5egk/lEbc/c8u
+         /q4Xrzhp3WinZ1hDsWHEoCbH7WmoJAaiieN2/4wo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, "Theodore Tso" <tytso@mit.edu>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: [PATCH 5.16 0873/1039] PCI: pciehp: Use down_read/write_nested(reset_lock) to fix lockdep errors
-Date:   Mon, 24 Jan 2022 19:44:22 +0100
-Message-Id: <20220124184154.642601971@linuxfoundation.org>
+        stable@vger.kernel.org, Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Scott Bruce <smbruce@gmail.com>,
+        Chris Hixon <linux-kernel-bugs@hixontech.com>,
+        spasswolf@web.de,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.16 0870/1039] drm/amd/display: Revert W/A for hard hangs on DCN20/DCN21
+Date:   Mon, 24 Jan 2022 19:44:19 +0100
+Message-Id: <20220124184154.546440522@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,190 +54,224 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit 085a9f43433f30cbe8a1ade62d9d7827c3217f4d upstream.
+commit c4849f88164b13dd141885e28210f599741b304b upstream.
 
-Use down_read_nested() and down_write_nested() when taking the
-ctrl->reset_lock rw-sem, passing the number of PCIe hotplug controllers in
-the path to the PCI root bus as lock subclass parameter.
+The WA from commit 2a50edbf10c8 ("drm/amd/display: Apply w/a for hard hang
+on HPD") and commit 1bd3bc745e7f ("drm/amd/display: Extend w/a for hard
+hang on HPD to dcn20") causes a regression in s0ix where the system will
+fail to resume properly on many laptops.  Pull the workarounds out to
+avoid that s0ix regression in the common case.  This HPD hang happens with
+an external device in special circumstances and a new W/A will need to be
+developed for this in the future.
 
-This fixes the following false-positive lockdep report when unplugging a
-Lenovo X1C8 from a Lenovo 2nd gen TB3 dock:
-
-  pcieport 0000:06:01.0: pciehp: Slot(1): Link Down
-  pcieport 0000:06:01.0: pciehp: Slot(1): Card not present
-  ============================================
-  WARNING: possible recursive locking detected
-  5.16.0-rc2+ #621 Not tainted
-  --------------------------------------------
-  irq/124-pciehp/86 is trying to acquire lock:
-  ffff8e5ac4299ef8 (&ctrl->reset_lock){.+.+}-{3:3}, at: pciehp_check_presence+0x23/0x80
-
-  but task is already holding lock:
-  ffff8e5ac4298af8 (&ctrl->reset_lock){.+.+}-{3:3}, at: pciehp_ist+0xf3/0x180
-
-   other info that might help us debug this:
-   Possible unsafe locking scenario:
-
-	 CPU0
-	 ----
-    lock(&ctrl->reset_lock);
-    lock(&ctrl->reset_lock);
-
-   *** DEADLOCK ***
-
-   May be due to missing lock nesting notation
-
-  3 locks held by irq/124-pciehp/86:
-   #0: ffff8e5ac4298af8 (&ctrl->reset_lock){.+.+}-{3:3}, at: pciehp_ist+0xf3/0x180
-   #1: ffffffffa3b024e8 (pci_rescan_remove_lock){+.+.}-{3:3}, at: pciehp_unconfigure_device+0x31/0x110
-   #2: ffff8e5ac1ee2248 (&dev->mutex){....}-{3:3}, at: device_release_driver+0x1c/0x40
-
-  stack backtrace:
-  CPU: 4 PID: 86 Comm: irq/124-pciehp Not tainted 5.16.0-rc2+ #621
-  Hardware name: LENOVO 20U90SIT19/20U90SIT19, BIOS N2WET30W (1.20 ) 08/26/2021
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x59/0x73
-   __lock_acquire.cold+0xc5/0x2c6
-   lock_acquire+0xb5/0x2b0
-   down_read+0x3e/0x50
-   pciehp_check_presence+0x23/0x80
-   pciehp_runtime_resume+0x5c/0xa0
-   device_for_each_child+0x45/0x70
-   pcie_port_device_runtime_resume+0x20/0x30
-   pci_pm_runtime_resume+0xa7/0xc0
-   __rpm_callback+0x41/0x110
-   rpm_callback+0x59/0x70
-   rpm_resume+0x512/0x7b0
-   __pm_runtime_resume+0x4a/0x90
-   __device_release_driver+0x28/0x240
-   device_release_driver+0x26/0x40
-   pci_stop_bus_device+0x68/0x90
-   pci_stop_bus_device+0x2c/0x90
-   pci_stop_and_remove_bus_device+0xe/0x20
-   pciehp_unconfigure_device+0x6c/0x110
-   pciehp_disable_slot+0x5b/0xe0
-   pciehp_handle_presence_or_link_change+0xc3/0x2f0
-   pciehp_ist+0x179/0x180
-
-This lockdep warning is triggered because with Thunderbolt, hotplug ports
-are nested. When removing multiple devices in a daisy-chain, each hotplug
-port's reset_lock may be acquired recursively. It's never the same lock, so
-the lockdep splat is a false positive.
-
-Because locks at the same hierarchy level are never acquired recursively, a
-per-level lockdep class is sufficient to fix the lockdep warning.
-
-The choice to use one lockdep subclass per pcie-hotplug controller in the
-path to the root-bus was made to conserve class keys because their number
-is limited and the complexity grows quadratically with number of keys
-according to Documentation/locking/lockdep-design.rst.
-
-Link: https://lore.kernel.org/linux-pci/20190402021933.GA2966@mit.edu/
-Link: https://lore.kernel.org/linux-pci/de684a28-9038-8fc6-27ca-3f6f2f6400d7@redhat.com/
-Link: https://lore.kernel.org/r/20211217141709.379663-1-hdegoede@redhat.com
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=208855
-Reported-by: "Theodore Ts'o" <tytso@mit.edu>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
-Reviewed-by: Lukas Wunner <lukas@wunner.de>
 Cc: stable@vger.kernel.org
+Cc: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Reported-by: Scott Bruce <smbruce@gmail.com>
+Reported-by: Chris Hixon <linux-kernel-bugs@hixontech.com>
+Reported-by: spasswolf@web.de
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215436
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1821
+Link: https://gitlab.freedesktop.org/drm/amd/-/issues/1852
+Fixes: 2a50edbf10c8 ("drm/amd/display: Apply w/a for hard hang on HPD")
+Fixes: 1bd3bc745e7f ("drm/amd/display: Extend w/a for hard hang on HPD to dcn20")
+Reviewed-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/hotplug/pciehp.h      |    3 +++
- drivers/pci/hotplug/pciehp_core.c |    2 +-
- drivers/pci/hotplug/pciehp_hpc.c  |   21 ++++++++++++++++++---
- 3 files changed, 22 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn20/dcn20_clk_mgr.c |   11 ----
+ drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.c    |   11 ----
+ drivers/gpu/drm/amd/display/dc/irq/dcn20/irq_service_dcn20.c |   25 -----------
+ drivers/gpu/drm/amd/display/dc/irq/dcn20/irq_service_dcn20.h |    2 
+ drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c |   25 -----------
+ drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.h |    2 
+ drivers/gpu/drm/amd/display/dc/irq/irq_service.c             |    2 
+ drivers/gpu/drm/amd/display/dc/irq/irq_service.h             |    4 -
+ 8 files changed, 3 insertions(+), 79 deletions(-)
 
---- a/drivers/pci/hotplug/pciehp.h
-+++ b/drivers/pci/hotplug/pciehp.h
-@@ -75,6 +75,8 @@ extern int pciehp_poll_time;
-  * @reset_lock: prevents access to the Data Link Layer Link Active bit in the
-  *	Link Status register and to the Presence Detect State bit in the Slot
-  *	Status register during a slot reset which may cause them to flap
-+ * @depth: Number of additional hotplug ports in the path to the root bus,
-+ *	used as lock subclass for @reset_lock
-  * @ist_running: flag to keep user request waiting while IRQ thread is running
-  * @request_result: result of last user request submitted to the IRQ thread
-  * @requester: wait queue to wake up on completion of user request,
-@@ -106,6 +108,7 @@ struct controller {
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn20/dcn20_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn20/dcn20_clk_mgr.c
+@@ -38,7 +38,6 @@
+ #include "clk/clk_11_0_0_offset.h"
+ #include "clk/clk_11_0_0_sh_mask.h"
  
- 	struct hotplug_slot hotplug_slot;	/* hotplug core interface */
- 	struct rw_semaphore reset_lock;
-+	unsigned int depth;
- 	unsigned int ist_running;
- 	int request_result;
- 	wait_queue_head_t requester;
---- a/drivers/pci/hotplug/pciehp_core.c
-+++ b/drivers/pci/hotplug/pciehp_core.c
-@@ -166,7 +166,7 @@ static void pciehp_check_presence(struct
+-#include "irq/dcn20/irq_service_dcn20.h"
+ 
+ #undef FN
+ #define FN(reg_name, field_name) \
+@@ -223,8 +222,6 @@ void dcn2_update_clocks(struct clk_mgr *
+ 	bool force_reset = false;
+ 	bool p_state_change_support;
+ 	int total_plane_count;
+-	int irq_src;
+-	uint32_t hpd_state;
+ 
+ 	if (dc->work_arounds.skip_clock_update)
+ 		return;
+@@ -242,13 +239,7 @@ void dcn2_update_clocks(struct clk_mgr *
+ 	if (dc->res_pool->pp_smu)
+ 		pp_smu = &dc->res_pool->pp_smu->nv_funcs;
+ 
+-	for (irq_src = DC_IRQ_SOURCE_HPD1; irq_src <= DC_IRQ_SOURCE_HPD6; irq_src++) {
+-		hpd_state = dc_get_hpd_state_dcn20(dc->res_pool->irqs, irq_src);
+-		if (hpd_state)
+-			break;
+-	}
+-
+-	if (display_count == 0 && !hpd_state)
++	if (display_count == 0)
+ 		enter_display_off = true;
+ 
+ 	if (enter_display_off == safe_to_lower) {
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/dcn21/rn_clk_mgr.c
+@@ -42,7 +42,6 @@
+ #include "clk/clk_10_0_2_sh_mask.h"
+ #include "renoir_ip_offset.h"
+ 
+-#include "irq/dcn21/irq_service_dcn21.h"
+ 
+ /* Constants */
+ 
+@@ -130,11 +129,9 @@ void rn_update_clocks(struct clk_mgr *cl
+ 	struct dc_clocks *new_clocks = &context->bw_ctx.bw.dcn.clk;
+ 	struct dc *dc = clk_mgr_base->ctx->dc;
+ 	int display_count;
+-	int irq_src;
+ 	bool update_dppclk = false;
+ 	bool update_dispclk = false;
+ 	bool dpp_clock_lowered = false;
+-	uint32_t hpd_state;
+ 
+ 	struct dmcu *dmcu = clk_mgr_base->ctx->dc->res_pool->dmcu;
+ 
+@@ -151,14 +148,8 @@ void rn_update_clocks(struct clk_mgr *cl
+ 
+ 			display_count = rn_get_active_display_cnt_wa(dc, context);
+ 
+-			for (irq_src = DC_IRQ_SOURCE_HPD1; irq_src <= DC_IRQ_SOURCE_HPD5; irq_src++) {
+-				hpd_state = dc_get_hpd_state_dcn21(dc->res_pool->irqs, irq_src);
+-				if (hpd_state)
+-					break;
+-			}
+-
+ 			/* if we can go lower, go lower */
+-			if (display_count == 0 && !hpd_state) {
++			if (display_count == 0) {
+ 				rn_vbios_smu_set_dcn_low_power_state(clk_mgr, DCN_PWR_STATE_LOW_POWER);
+ 				/* update power state */
+ 				clk_mgr_base->clks.pwr_state = DCN_PWR_STATE_LOW_POWER;
+--- a/drivers/gpu/drm/amd/display/dc/irq/dcn20/irq_service_dcn20.c
++++ b/drivers/gpu/drm/amd/display/dc/irq/dcn20/irq_service_dcn20.c
+@@ -132,31 +132,6 @@ enum dc_irq_source to_dal_irq_source_dcn
+ 	}
+ }
+ 
+-uint32_t dc_get_hpd_state_dcn20(struct irq_service *irq_service, enum dc_irq_source source)
+-{
+-	const struct irq_source_info *info;
+-	uint32_t addr;
+-	uint32_t value;
+-	uint32_t current_status;
+-
+-	info = find_irq_source_info(irq_service, source);
+-	if (!info)
+-		return 0;
+-
+-	addr = info->status_reg;
+-	if (!addr)
+-		return 0;
+-
+-	value = dm_read_reg(irq_service->ctx, addr);
+-	current_status =
+-		get_reg_field_value(
+-			value,
+-			HPD0_DC_HPD_INT_STATUS,
+-			DC_HPD_SENSE);
+-
+-	return current_status;
+-}
+-
+ static bool hpd_ack(
+ 	struct irq_service *irq_service,
+ 	const struct irq_source_info *info)
+--- a/drivers/gpu/drm/amd/display/dc/irq/dcn20/irq_service_dcn20.h
++++ b/drivers/gpu/drm/amd/display/dc/irq/dcn20/irq_service_dcn20.h
+@@ -31,6 +31,4 @@
+ struct irq_service *dal_irq_service_dcn20_create(
+ 	struct irq_service_init_data *init_data);
+ 
+-uint32_t dc_get_hpd_state_dcn20(struct irq_service *irq_service, enum dc_irq_source source);
+-
+ #endif
+--- a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
++++ b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.c
+@@ -135,31 +135,6 @@ enum dc_irq_source to_dal_irq_source_dcn
+ 	return DC_IRQ_SOURCE_INVALID;
+ }
+ 
+-uint32_t dc_get_hpd_state_dcn21(struct irq_service *irq_service, enum dc_irq_source source)
+-{
+-	const struct irq_source_info *info;
+-	uint32_t addr;
+-	uint32_t value;
+-	uint32_t current_status;
+-
+-	info = find_irq_source_info(irq_service, source);
+-	if (!info)
+-		return 0;
+-
+-	addr = info->status_reg;
+-	if (!addr)
+-		return 0;
+-
+-	value = dm_read_reg(irq_service->ctx, addr);
+-	current_status =
+-		get_reg_field_value(
+-			value,
+-			HPD0_DC_HPD_INT_STATUS,
+-			DC_HPD_SENSE);
+-
+-	return current_status;
+-}
+-
+ static bool hpd_ack(
+ 	struct irq_service *irq_service,
+ 	const struct irq_source_info *info)
+--- a/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.h
++++ b/drivers/gpu/drm/amd/display/dc/irq/dcn21/irq_service_dcn21.h
+@@ -31,6 +31,4 @@
+ struct irq_service *dal_irq_service_dcn21_create(
+ 	struct irq_service_init_data *init_data);
+ 
+-uint32_t dc_get_hpd_state_dcn21(struct irq_service *irq_service, enum dc_irq_source source);
+-
+ #endif
+--- a/drivers/gpu/drm/amd/display/dc/irq/irq_service.c
++++ b/drivers/gpu/drm/amd/display/dc/irq/irq_service.c
+@@ -79,7 +79,7 @@ void dal_irq_service_destroy(struct irq_
+ 	*irq_service = NULL;
+ }
+ 
+-const struct irq_source_info *find_irq_source_info(
++static const struct irq_source_info *find_irq_source_info(
+ 	struct irq_service *irq_service,
+ 	enum dc_irq_source source)
  {
- 	int occupied;
+--- a/drivers/gpu/drm/amd/display/dc/irq/irq_service.h
++++ b/drivers/gpu/drm/amd/display/dc/irq/irq_service.h
+@@ -69,10 +69,6 @@ struct irq_service {
+ 	const struct irq_service_funcs *funcs;
+ };
  
--	down_read(&ctrl->reset_lock);
-+	down_read_nested(&ctrl->reset_lock, ctrl->depth);
- 	mutex_lock(&ctrl->state_lock);
- 
- 	occupied = pciehp_card_present_or_link_active(ctrl);
---- a/drivers/pci/hotplug/pciehp_hpc.c
-+++ b/drivers/pci/hotplug/pciehp_hpc.c
-@@ -583,7 +583,7 @@ static void pciehp_ignore_dpc_link_chang
- 	 * the corresponding link change may have been ignored above.
- 	 * Synthesize it to ensure that it is acted on.
- 	 */
--	down_read(&ctrl->reset_lock);
-+	down_read_nested(&ctrl->reset_lock, ctrl->depth);
- 	if (!pciehp_check_link_active(ctrl))
- 		pciehp_request(ctrl, PCI_EXP_SLTSTA_DLLSC);
- 	up_read(&ctrl->reset_lock);
-@@ -746,7 +746,7 @@ static irqreturn_t pciehp_ist(int irq, v
- 	 * Disable requests have higher priority than Presence Detect Changed
- 	 * or Data Link Layer State Changed events.
- 	 */
--	down_read(&ctrl->reset_lock);
-+	down_read_nested(&ctrl->reset_lock, ctrl->depth);
- 	if (events & DISABLE_SLOT)
- 		pciehp_handle_disable_request(ctrl);
- 	else if (events & (PCI_EXP_SLTSTA_PDC | PCI_EXP_SLTSTA_DLLSC))
-@@ -906,7 +906,7 @@ int pciehp_reset_slot(struct hotplug_slo
- 	if (probe)
- 		return 0;
- 
--	down_write(&ctrl->reset_lock);
-+	down_write_nested(&ctrl->reset_lock, ctrl->depth);
- 
- 	if (!ATTN_BUTTN(ctrl)) {
- 		ctrl_mask |= PCI_EXP_SLTCTL_PDCE;
-@@ -962,6 +962,20 @@ static inline void dbg_ctrl(struct contr
- 
- #define FLAG(x, y)	(((x) & (y)) ? '+' : '-')
- 
-+static inline int pcie_hotplug_depth(struct pci_dev *dev)
-+{
-+	struct pci_bus *bus = dev->bus;
-+	int depth = 0;
-+
-+	while (bus->parent) {
-+		bus = bus->parent;
-+		if (bus->self && bus->self->is_hotplug_bridge)
-+			depth++;
-+	}
-+
-+	return depth;
-+}
-+
- struct controller *pcie_init(struct pcie_device *dev)
- {
- 	struct controller *ctrl;
-@@ -975,6 +989,7 @@ struct controller *pcie_init(struct pcie
- 		return NULL;
- 
- 	ctrl->pcie = dev;
-+	ctrl->depth = pcie_hotplug_depth(dev->port);
- 	pcie_capability_read_dword(pdev, PCI_EXP_SLTCAP, &slot_cap);
- 
- 	if (pdev->hotplug_user_indicators)
+-const struct irq_source_info *find_irq_source_info(
+-	struct irq_service *irq_service,
+-	enum dc_irq_source source);
+-
+ void dal_irq_service_construct(
+ 	struct irq_service *irq_service,
+ 	struct irq_service_init_data *init_data);
 
 
