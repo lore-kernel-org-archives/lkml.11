@@ -2,161 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C084C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BB4C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315747AbiAYCyH (ORCPT
+        id S1315876AbiAYCyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        Mon, 24 Jan 2022 21:54:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3407930AbiAYAVN (ORCPT
+        with ESMTP id S3409660AbiAYA1J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:21:13 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53F14C036BC9
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:05:19 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id 128so17400755pfe.12
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:05:19 -0800 (PST)
+        Mon, 24 Jan 2022 19:27:09 -0500
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F41C0C6864
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:08:40 -0800 (PST)
+Received: by mail-ot1-x329.google.com with SMTP id m8-20020a9d4c88000000b00592bae7944bso24246165otf.1
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:08:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=t2/pVCkMGUvGOAzHtcsjzXK8+5zE14NO4NddvkDqj9w=;
-        b=zgQsj3L6OSg50dgEyhI8VbLJQG2U1v8YozGt0iCNFUM1VD44MdEEHw1TSHFiiFusYm
-         KDxrEiMMuxae+sOtjt1EAf0QRiHYPBqrWfrqeoKDDcS9C6HEE8Yc+eiMecOXPMVj7yBn
-         vR6x7/Nxu9rUwbIaPs6BeMj7O0HmKhccqmGffa7QrvZQpq6IeST+8ublmUmvRAE0oJYn
-         AdMckgD861YXcZiqZQjGz7k0XtXBU9eYrbKNJx0axcLK9lsZTYS39AsDHHQjpRxksUAV
-         NzMsZ/b68MBEQWFupMhFjbLnuTikjDakneYKyipvasoYBv/IYV2UBa0nLqwjNKUeungZ
-         2D2A==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5AU7UHXWGTgXus+jcgLu4tYknaJHqkDWYn1T5acuUH8=;
+        b=NMM7a/yjJoWOPQjiTo+SdO9A7Y7k+6dqKIG3Kq3o8dz5RSoZ1W2vD77yq2K3z1Nxt4
+         2Qn4P18bkaT2nk5dsqlPUyMhY/TB3Qoo6FJRy1W+8sr33cSUmBdktRvJMckxtUpC7ev5
+         NS4RFF6uAiFsuqMj/uJEnwtonchUz8WDNLz/9Wj0/0qE5/gDqlonX/RwX/0T7sfOjJsJ
+         mIRTYh6QH+zNutWNdWHCUp+LbnJaxAVIF41PJPKVg7CoHdgjKGgvoNgaGqzpbgr4/4Ox
+         X1OrHW75bzMi9cF1nNAmFxIVFjO2qiS8K+uCqfqG980sJeDjyS8uL0x5tfK1XA0vq274
+         2OwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=t2/pVCkMGUvGOAzHtcsjzXK8+5zE14NO4NddvkDqj9w=;
-        b=jHpqOVxh4bax0Fs1BuATblyVK8EK4MP1o/zz8cZ2JPwzIWICaN6yWM7LyKD++ZgyAY
-         DweXyzEmNGlTAydm1+favtmZXb5peYnyHuGoOolk5zWjnkThOHK+cpB1qEaS0xylqVGG
-         ofV7a31Vpa7nY/K53LbrdUVA6huZwv+TbrbQTSKZYg8E1Afxu0OCHJLzArktSzuQBsDw
-         sXJQiPj8kkPGYHlr1A674WqipBY19GTI/gBLQMzsc8d/OzODbuCFzd3eBgYYnH3g11lq
-         xgzAmM+CJCrmcKCtGnIzCqG683yoeu1KX0kIZlzVBeKaxEV+wuAuE+U7i44v7aS1GUYf
-         DAHg==
-X-Gm-Message-State: AOAM5318tkAAN5tPQ0rTY0qvYw0/fxziD5XlyDTdcCua+SHFXzaNO6GX
-        UEE5LsNQzXQjomYqMdrULQJEgQ==
-X-Google-Smtp-Source: ABdhPJxjC87yai3OmklySQg2guTsUaM+Gp8LsOyFaNfbg6oSqG4pZdEJrXLL3UYim1KqqbXZDdEcOw==
-X-Received: by 2002:a05:6a00:114f:b0:4c5:72f6:d0b5 with SMTP id b15-20020a056a00114f00b004c572f6d0b5mr15521818pfm.61.1643061918766;
-        Mon, 24 Jan 2022 14:05:18 -0800 (PST)
-Received: from localhost (c-71-197-186-152.hsd1.wa.comcast.net. [71.197.186.152])
-        by smtp.gmail.com with ESMTPSA id g12sm16231227pfm.119.2022.01.24.14.05.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 14:05:18 -0800 (PST)
-From:   Kevin Hilman <khilman@baylibre.com>
-To:     Rong Chen <rong.chen@amlogic.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        1131046452@qq.com, linux-mmc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     45581586@qq.com, Rong Chen <rong.chen@amlogic.com>
-Subject: Re: [PATCH] mmc: meson: Fix usage of meson_mmc_post_req()
-In-Reply-To: <20220106105453.3875119-1-rong.chen@amlogic.com>
-References: <20220106105453.3875119-1-rong.chen@amlogic.com>
-Date:   Mon, 24 Jan 2022 14:05:17 -0800
-Message-ID: <7htudsx00y.fsf@baylibre.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5AU7UHXWGTgXus+jcgLu4tYknaJHqkDWYn1T5acuUH8=;
+        b=KbJDaLLvVU+WglUBj+dYRQPoJ1iDOkrsiLSohR60XG5u7xi/m47RKdbOpA7gBFSCCz
+         G0Xc/z/978zOoecCDi5zxr/y4cNY7vJ+vo2YC6IHSQNWNxW6y05KCwri4Y6nShRKVnvJ
+         mZlZe8Pf5pNY0/KIhWXwmrNWajlh6I/+SiAqR0qjvYxrYNTOA3hOSBncx9m3+6QdW6NG
+         S55pZUgipkztcoqf4TFOzZSqCtv15USun5Ud0BE1JlwO1Nfp/gGdWpGNcaMB4qRtxNX5
+         12XZm+BWZWCu1tE9VqZ4ZY53K1VfLPjX9oGmHp/R6QC5AJvzECYNt9i30WuhE69H2x/D
+         8sOw==
+X-Gm-Message-State: AOAM533RruNJBG9Pc//jqQBvfYfgP8Vk8UpLgWbpO0x+R8bkN8+mKzc8
+        j2rbyhQkVq1td+zKOV8QvDjV+Fj5DWobpXypKJk=
+X-Google-Smtp-Source: ABdhPJyRp7jJ3E/mwEtBlF6sV7zRxPUTudHrillxpCsaSQDiBOb6hmpGdoVdYTdWWuI6WFz59OvDXIFEApG8s+eBGw0=
+X-Received: by 2002:a9d:601a:: with SMTP id h26mr3605702otj.357.1643062119806;
+ Mon, 24 Jan 2022 14:08:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220124201812.1078824-1-trix@redhat.com>
+In-Reply-To: <20220124201812.1078824-1-trix@redhat.com>
+From:   Alex Deucher <alexdeucher@gmail.com>
+Date:   Mon, 24 Jan 2022 17:08:28 -0500
+Message-ID: <CADnq5_M+xmJkiMkug=5bix8ypxHzr0embK7GN4GRY57BK1y4FA@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/amd/pm: return -ENOTSUPP if there is no
+ get_dpm_ultimate_freq function
+To:     Tom Rix <trix@redhat.com>
+Cc:     "Quan, Evan" <evan.quan@amd.com>,
+        "Deucher, Alexander" <alexander.deucher@amd.com>,
+        Christian Koenig <christian.koenig@amd.com>,
+        xinhui pan <Xinhui.Pan@amd.com>,
+        Dave Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        "Lazar, Lijo" <lijo.lazar@amd.com>,
+        "Powell, Darren" <darren.powell@amd.com>,
+        "Chen, Guchun" <guchun.chen@amd.com>,
+        Arunpravin <Arunpravin.PaneerSelvam@amd.com>,
+        Andrey Grodzovsky <andrey.grodzovsky@amd.com>,
+        llvm@lists.linux.dev,
+        Maling list - DRI developers 
+        <dri-devel@lists.freedesktop.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Rong,
+Applied.  Thanks!
 
-First, thank you finding the issue and for submitting a fix!
+Alex
 
-Rong Chen <rong.chen@amlogic.com> writes:
-
-> To ensure the DMA moves data correctly from memory to
-> peripherals, DMA unmapping when the MMC request done
-> with calls meson_mmc_post_req().
+On Mon, Jan 24, 2022 at 3:18 PM <trix@redhat.com> wrote:
 >
-> Signed-off-by: Rong Chen <rong.chen@amlogic.com>
-
-The patch looks correct, but I think I think the changelog could be
-improved.  If I understand the code correctly, I think what you're doing
-is:
-
-"""
-Currently meson_mmc_post_req() is called in meson_mmc_request() right
-after _start_cmd().  This could lead to DMA unmapping before the request
-is actually finished.
-
-To fix, ton't call meson_mmc_post_req() until _request_done().
-"""
-
-Kevin
-
+> From: Tom Rix <trix@redhat.com>
+>
+> clang static analysis reports this represenative problem
+> amdgpu_smu.c:144:18: warning: The left operand of '*' is a garbage value
+>         return clk_freq * 100;
+>                ~~~~~~~~ ^
+>
+> If there is no get_dpm_ultimate_freq function,
+> smu_get_dpm_freq_range returns success without setting the
+> output min,max parameters.  So return an -ENOTSUPP error.
+>
+> Fixes: e5ef784b1e17 ("drm/amd/powerplay: revise calling chain on retrieving frequency range")
+> Signed-off-by: Tom Rix <trix@redhat.com>
 > ---
->  drivers/mmc/host/meson-gx-mmc.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+> v2: return error instead of initializing min/max
 >
-> diff --git a/drivers/mmc/host/meson-gx-mmc.c b/drivers/mmc/host/meson-gx-mmc.c
-> index 8f36536cb1b6..6a9554ae4b1c 100644
-> --- a/drivers/mmc/host/meson-gx-mmc.c
-> +++ b/drivers/mmc/host/meson-gx-mmc.c
-> @@ -173,6 +173,7 @@ struct meson_host {
->  	int irq;
->  
->  	bool vqmmc_enabled;
-> +	bool needs_pre_post_req;
->  };
->  
->  #define CMD_CFG_LENGTH_MASK GENMASK(8, 0)
-> @@ -663,6 +664,8 @@ static void meson_mmc_request_done(struct mmc_host *mmc,
->  	struct meson_host *host = mmc_priv(mmc);
->  
->  	host->cmd = NULL;
-> +	if (host->needs_pre_post_req)
-> +		meson_mmc_post_req(mmc, mrq, 0);
->  	mmc_request_done(host->mmc, mrq);
->  }
->  
-> @@ -880,7 +883,7 @@ static int meson_mmc_validate_dram_access(struct mmc_host *mmc, struct mmc_data
->  static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
+> drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+> index 5ace30434e603..264eb09ccfd51 100644
+> --- a/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+> +++ b/drivers/gpu/drm/amd/pm/swsmu/amdgpu_smu.c
+> @@ -116,7 +116,7 @@ int smu_get_dpm_freq_range(struct smu_context *smu,
+>                            uint32_t *min,
+>                            uint32_t *max)
 >  {
->  	struct meson_host *host = mmc_priv(mmc);
-> -	bool needs_pre_post_req = mrq->data &&
-> +	host->needs_pre_post_req = mrq->data &&
->  			!(mrq->data->host_cookie & SD_EMMC_PRE_REQ_DONE);
->  
->  	/*
-> @@ -896,22 +899,19 @@ static void meson_mmc_request(struct mmc_host *mmc, struct mmc_request *mrq)
->  		}
->  	}
->  
-> -	if (needs_pre_post_req) {
-> +	if (host->needs_pre_post_req) {
->  		meson_mmc_get_transfer_mode(mmc, mrq);
->  		if (!meson_mmc_desc_chain_mode(mrq->data))
-> -			needs_pre_post_req = false;
-> +			host->needs_pre_post_req = false;
->  	}
->  
-> -	if (needs_pre_post_req)
-> +	if (host->needs_pre_post_req)
->  		meson_mmc_pre_req(mmc, mrq);
->  
->  	/* Stop execution */
->  	writel(0, host->regs + SD_EMMC_START);
->  
->  	meson_mmc_start_cmd(mmc, mrq->sbc ?: mrq->cmd);
-> -
-> -	if (needs_pre_post_req)
-> -		meson_mmc_post_req(mmc, mrq, 0);
->  }
->  
->  static void meson_mmc_read_resp(struct mmc_host *mmc, struct mmc_command *cmd)
+> -       int ret = 0;
+> +       int ret = -ENOTSUPP;
 >
-> base-commit: 356f3f2c5756bbb67a515760966a40fc7043cdda
-> -- 
-> 2.25.1
+>         if (!min && !max)
+>                 return -EINVAL;
+> --
+> 2.26.3
+>
