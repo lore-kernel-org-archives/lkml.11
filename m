@@ -2,87 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAFA5C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDE69C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409938AbiAYA2C (ORCPT
+        id S3409999AbiAYA2N (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:28:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47644 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455421AbiAXVfY (ORCPT
+        Mon, 24 Jan 2022 19:28:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455379AbiAXVfT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:35:24 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8F37B81188;
-        Mon, 24 Jan 2022 21:35:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DBDDC340E4;
-        Mon, 24 Jan 2022 21:35:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060121;
-        bh=x1i3tJn8RukdvFNMi9ic1oCJIRWOznFLbUVdgmlY8RA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hfyJ5ae5VbX5nmYkJzEt4apwe65A/v/Gk7UeQBkLW1LubKBWGkikWO+YN+TaLvRkd
-         NJ5pnzmbtP7arID/7QX12VtdD309yJrA0cY24pBin+3lk1WhEeEE5gCrDUNbsC9Kpn
-         h4rvWuQqjfRNBSloqg5ZwLh8UkXS8o9bFeo1e2NM=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Borislav Petkov <bp@suse.de>, Tony Luck <tony.luck@intel.com>
-Subject: [PATCH 5.16 0847/1039] x86/mce: Check regs before accessing it
-Date:   Mon, 24 Jan 2022 19:43:56 +0100
-Message-Id: <20220124184153.757647457@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 16:35:19 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1D6EC0612A6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:22:10 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id r65so51437224ybc.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:22:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xwfv9DWhnbqAeBe0vZuMaEEqHhzX/GAvJYcdU/hIEU0=;
+        b=YZEjc5XgddEOMDEFMbA/nfERNSKDAvksKW3MccXgk/muQB+YDP3EGqR5R99SaGgsy+
+         tYmN3BspZJWCVNOVtpRcR2yhuqOUS/dTMJ8qhEWo4Q3s+mOiZv/gDoglKXWncm11J4iV
+         Hk9DtYMbaYEE1kWvPRVZHw8IKZ8efE2Wiw37iUO0+X/Anbte97vcnN3h8JgZxjeN0ZX2
+         rTQ9Uk6paf1BFgq62wq4y5JIew3/PMaHiXBpAWT70gQrG6ZPwfcnCx8lh84GqjA/fFBe
+         +SNnIEPlX9wqhIFaYCEziDHQ31p7qhGLgsZidM8UR5q9UUe9PoOilL7zPvj8xz1H6m4E
+         k4TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xwfv9DWhnbqAeBe0vZuMaEEqHhzX/GAvJYcdU/hIEU0=;
+        b=ZvzJi005dz+ExhOy4wZxWiyDe/87qBwNmT2sskpDtawrrdyfB65L0ZoEsgCLNwMg0j
+         FvVJKt5+sf6s4TX9rC4ccX0rDTcfH9PsH8b3s3+a7b8sjL9IgsMdHLodXZ7rr9o55ywp
+         7FXeTY8PonEA5c6soADdhfy5kSd/OAQIgPx4W/c6lezrrbd4S1PVDokIDY4VNH3Vrp/+
+         xHOlIxPqeJO4Pqz2Jai/DpAXLDvGO4YvdFgaZUPfcIQozvlh2Pr1ktWWp3MwxcrZ/Dbq
+         XbBzGq4QakdkPIBAARtDrwV5AqST8GXnen4Hps3MlUlHaFuK5re1v0uicy9zlhkXoh7/
+         DNHA==
+X-Gm-Message-State: AOAM530l0XRsNXgufsglZWGiGh7wxC3XKRbmURXdMEYkub0vpLWn8KSU
+        HNQnZBoUmgBe6msRoYwj1Wg/2+RC/72t4ugAMfgAsg==
+X-Google-Smtp-Source: ABdhPJwtXciBq3Wt7irMaN1ndtqX+rq+qAoM2WB1evkKx4m1jVtS4txslowHDJwEVGu27cYpbSFGUCQZpRE6GcjSn9w=
+X-Received: by 2002:a25:9d82:: with SMTP id v2mr24635936ybp.383.1643055729748;
+ Mon, 24 Jan 2022 12:22:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220122000301.1872828-1-jeffreyji@google.com>
+ <20220121194057.17079951@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+ <CAMzD94QW5uK2wAZfYWu5J=2HqCcLrT=y7u6+0PgJvHBb0YTz_Q@mail.gmail.com>
+ <20220124092924.0eb17027@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net> <Ye8J7rMiiTwNNA6T@pop-os.localdomain>
+In-Reply-To: <Ye8J7rMiiTwNNA6T@pop-os.localdomain>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 24 Jan 2022 12:21:58 -0800
+Message-ID: <CANn89iJKcKKLEXWELakScxxe8f0z1GQjmtA2UrBhqOEXQkk+9A@mail.gmail.com>
+Subject: Re: [PATCH net-next] net-core: add InMacErrors counter
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Brian Vazquez <brianvv@google.com>,
+        Jeffrey Ji <jeffreyjilinux@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, jeffreyji <jeffreyji@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+On Mon, Jan 24, 2022 at 12:20 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>
+> On Mon, Jan 24, 2022 at 09:29:24AM -0800, Jakub Kicinski wrote:
+> > On Mon, 24 Jan 2022 09:13:12 -0800 Brian Vazquez wrote:
+> > > On Fri, Jan 21, 2022 at 7:41 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > > On Sat, 22 Jan 2022 00:03:01 +0000 Jeffrey Ji wrote:
+> > > > > From: jeffreyji <jeffreyji@google.com>
+> > > > >
+> > > > > Increment InMacErrors counter when packet dropped due to incorrect dest
+> > > > > MAC addr.
+> > > > >
+> > > > > example output from nstat:
+> > > > > \~# nstat -z "*InMac*"
+> > > > > \#kernel
+> > > > > Ip6InMacErrors                  0                  0.0
+> > > > > IpExtInMacErrors                1                  0.0
+> > > > >
+> > > > > Tested: Created 2 netns, sent 1 packet using trafgen from 1 to the other
+> > > > > with "{eth(daddr=$INCORRECT_MAC...}", verified that nstat showed the
+> > > > > counter was incremented.
+> > > > >
+> > > > > Signed-off-by: jeffreyji <jeffreyji@google.com>
+> > > >
+> > > > How about we use the new kfree_skb_reason() instead to avoid allocating
+> > > > per-netns memory the stats?
+> > >
+> > > I'm not too familiar with the new kfree_skb_reason , but my
+> > > understanding is that it needs either the drop_monitor  or ebpf to get
+> > > the reason from the tracepoint, right? This is not too different from
+> > > using perf tool to find where the pkt is being dropped.
+> > >
+> > > The idea here was to have a high level metric that is easier to find
+> > > for users that have less expertise on using more advance tools.
+> >
+> > That much it's understood, but it's a trade off. This drop point
+> > existed for 20 years, why do we need to consume extra memory now?
+>
+> kfree_skb_reason() is for tracing and tracing has overhead in
+> production, which is higher than just a percpu counter.
+>
+> What memory overhead are you talking about? We have ~37 IP related
+> SNMP counters, this patch merely adds 1/37 memory overhead. So, what's the
+> point? :-/
+>
 
-commit 1acd85feba81084fcef00b73fc1601e42b77c5d8 upstream.
-
-Commit in Fixes accesses pt_regs before checking whether it is NULL or
-not. Make sure the NULL pointer check happens first.
-
-Fixes: 0a5b288e85bb ("x86/mce: Prevent severity computation from being instrumented")
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
-Link: https://lore.kernel.org/r/20211217102029.GA29708@kili
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- arch/x86/kernel/cpu/mce/severity.c |    5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
---- a/arch/x86/kernel/cpu/mce/severity.c
-+++ b/arch/x86/kernel/cpu/mce/severity.c
-@@ -222,6 +222,9 @@ static bool is_copy_from_user(struct pt_
- 	struct insn insn;
- 	int ret;
- 
-+	if (!regs)
-+		return false;
-+
- 	if (copy_from_kernel_nofault(insn_buf, (void *)regs->ip, MAX_INSN_SIZE))
- 		return false;
- 
-@@ -283,7 +286,7 @@ static noinstr int error_context(struct
- 	switch (fixup_type) {
- 	case EX_TYPE_UACCESS:
- 	case EX_TYPE_COPY:
--		if (!regs || !copy_user)
-+		if (!copy_user)
- 			return IN_KERNEL;
- 		m->kflags |= MCE_IN_KERNEL_COPYIN;
- 		fallthrough;
-
-
+BTW I just saw that kfree_skb_reason() changes have been proposed
+already by Menglong Dong this morning.
