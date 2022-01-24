@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628C0C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0F32C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1836597AbiAXWkK (ORCPT
+        id S1836639AbiAXWk2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:40:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457337AbiAXVlb (ORCPT
+        Mon, 24 Jan 2022 17:40:28 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59720 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457446AbiAXVlk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F85C0419D2;
-        Mon, 24 Jan 2022 12:28:00 -0800 (PST)
+        Mon, 24 Jan 2022 16:41:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C841961506;
-        Mon, 24 Jan 2022 20:27:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9C1DC340E5;
-        Mon, 24 Jan 2022 20:27:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A3AB61523;
+        Mon, 24 Jan 2022 21:41:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04019C340E4;
+        Mon, 24 Jan 2022 21:41:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056079;
-        bh=7n7G5SKrA1dBR0fD9xutzkUVLmfgbdkxbUUx2QGunBg=;
+        s=korg; t=1643060499;
+        bh=alN1nGi9d01VTi67hSzdh6Vdn9Sl4cPFqezMOL+KxcI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YiAHZNBMqMDHLhxM6KBbceHJL+74leDr10svYpN0vgbU4q9qMsyTcYYKc3fSGEinE
-         pHRsE/AEHNDE80KrxwbWq+dg7fe3VCgp8KeJijsnaIel1uPYqJ3D0m6zmpavm46oxK
-         b0fvzh6AxsdV17AobHzx8nQmFWhgTZFUTO3gwH/Y=
+        b=ymHtSzLFJxFp1ta+zgmHrQuy9wty/+BaYr93cGG+JgLCuhrj0bKjdXxYbux7RVKf8
+         PtEpgKweek7JTm38UhYOK4UwftFxqQvpo6VeZsg3R9uUskcX/egbx2u3p0av7bkxMN
+         vXEwp+KYCDVLMTtahOMZ9bf9HOT7NG1Yb3Q7OMfM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 330/846] HID: hid-uclogic-params: Invalid parameter check in uclogic_params_huion_init
-Date:   Mon, 24 Jan 2022 19:37:27 +0100
-Message-Id: <20220124184112.289601276@linuxfoundation.org>
+        stable@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        Yafang Shao <laoar.shao@gmail.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        David Howells <dhowells@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: [PATCH 5.16 0941/1039] bpf: Fix mount source show for bpffs
+Date:   Mon, 24 Jan 2022 19:45:30 +0100
+Message-Id: <20220124184156.918367031@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,55 +49,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Yafang Shao <laoar.shao@gmail.com>
 
-[ Upstream commit ff6b548afe4d9d1ff3a0f6ef79e8cbca25d8f905 ]
+commit 1e9d74660d4df625b0889e77018f9e94727ceacd upstream.
 
-The function performs a check on its input parameters, however, the
-hdev parameter is used before the check.
+We noticed our tc ebpf tools can't start after we upgrade our in-house kernel
+version from 4.19 to 5.10. That is because of the behaviour change in bpffs
+caused by commit d2935de7e4fd ("vfs: Convert bpf to use the new mount API").
 
-Initialize the stack variables after checking the input parameters to
-avoid a possible NULL pointer dereference.
+In our tc ebpf tools, we do strict environment check. If the environment is
+not matched, we won't allow to start the ebpf progs. One of the check is whether
+bpffs is properly mounted. The mount information of bpffs in kernel-4.19 and
+kernel-5.10 are as follows:
 
-Fixes: 9614219e9310e ("HID: uclogic: Extract tablet parameter discovery into a module")
-Addresses-Coverity-ID: 1443804 ("Null pointer dereference")
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+- kernel 4.19
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+bpffs on /sys/fs/bpf type bpf (rw,relatime)
+
+- kernel 5.10
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+none on /sys/fs/bpf type bpf (rw,relatime)
+
+The device name in kernel-5.10 is displayed as none instead of bpffs, then our
+environment check fails. Currently we modify the tools to adopt to the kernel
+behaviour change, but I think we'd better change the kernel code to keep the
+behavior consistent.
+
+After this change, the mount information will be displayed the same with the
+behavior in kernel-4.19, for example:
+
+$ mount -t bpf bpffs /sys/fs/bpf
+$ mount -t bpf
+bpffs on /sys/fs/bpf type bpf (rw,relatime)
+
+Fixes: d2935de7e4fd ("vfs: Convert bpf to use the new mount API")
+Suggested-by: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: Yafang Shao <laoar.shao@gmail.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Link: https://lore.kernel.org/bpf/20220108134623.32467-1-laoar.shao@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/hid-uclogic-params.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ kernel/bpf/inode.c |   14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hid/hid-uclogic-params.c b/drivers/hid/hid-uclogic-params.c
-index 3a83e2c39b4fb..4136837e4d158 100644
---- a/drivers/hid/hid-uclogic-params.c
-+++ b/drivers/hid/hid-uclogic-params.c
-@@ -709,9 +709,9 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
- 				     struct hid_device *hdev)
- {
- 	int rc;
--	struct usb_device *udev = hid_to_usb_dev(hdev);
--	struct usb_interface *iface = to_usb_interface(hdev->dev.parent);
--	__u8 bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
-+	struct usb_device *udev;
-+	struct usb_interface *iface;
-+	__u8 bInterfaceNumber;
- 	bool found;
- 	/* The resulting parameters (noop) */
- 	struct uclogic_params p = {0, };
-@@ -725,6 +725,10 @@ static int uclogic_params_huion_init(struct uclogic_params *params,
- 		goto cleanup;
- 	}
+--- a/kernel/bpf/inode.c
++++ b/kernel/bpf/inode.c
+@@ -648,12 +648,22 @@ static int bpf_parse_param(struct fs_con
+ 	int opt;
  
-+	udev = hid_to_usb_dev(hdev);
-+	iface = to_usb_interface(hdev->dev.parent);
-+	bInterfaceNumber = iface->cur_altsetting->desc.bInterfaceNumber;
+ 	opt = fs_parse(fc, bpf_fs_parameters, param, &result);
+-	if (opt < 0)
++	if (opt < 0) {
+ 		/* We might like to report bad mount options here, but
+ 		 * traditionally we've ignored all mount options, so we'd
+ 		 * better continue to ignore non-existing options for bpf.
+ 		 */
+-		return opt == -ENOPARAM ? 0 : opt;
++		if (opt == -ENOPARAM) {
++			opt = vfs_parse_fs_param_source(fc, param);
++			if (opt != -ENOPARAM)
++				return opt;
 +
- 	/* If it's not a pen interface */
- 	if (bInterfaceNumber != 0) {
- 		/* TODO: Consider marking the interface invalid */
--- 
-2.34.1
-
++			return 0;
++		}
++
++		if (opt < 0)
++			return opt;
++	}
+ 
+ 	switch (opt) {
+ 	case OPT_MODE:
 
 
