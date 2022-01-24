@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C574BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:55:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E0FCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1840411AbiAXWx1 (ORCPT
+        id S1383099AbiAXWyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:53:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57526 "EHLO
+        Mon, 24 Jan 2022 17:54:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1574952AbiAXVuu (ORCPT
+        with ESMTP id S1573899AbiAXVqt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:50:50 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDF23C0885A2;
-        Mon, 24 Jan 2022 12:33:36 -0800 (PST)
+        Mon, 24 Jan 2022 16:46:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1ECAC08B4D0;
+        Mon, 24 Jan 2022 12:32:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7C52FB81229;
-        Mon, 24 Jan 2022 20:33:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95F58C340E5;
-        Mon, 24 Jan 2022 20:33:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CFE61512;
+        Mon, 24 Jan 2022 20:32:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3691CC340E5;
+        Mon, 24 Jan 2022 20:32:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056414;
-        bh=eSOZJjsod7JXBVDUOGZX0mGYhD7AX7qWZXKijpCydxQ=;
+        s=korg; t=1643056351;
+        bh=8hJ9WSv+1YCuUgqJuulbIBv8+KsKLIxorvnJhi8rvSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nUuoS53NbokrU/t7mxrwIJeG8D+r2Q489HOPZHkCAGs9tVFmu+a9GcIBHPgFVArgA
-         Lvx/S43aBMwoIXFqg0Hk2mx7TrrGUbssU44A2NPN4k9m79eLhQcEvyQpKP5SXvK18/
-         gnuEhDP0dwWdNd41vJGp+Fs+UinR3knQnNVb7Wsg=
+        b=zYKidgnZjQa15XMCJFCPOcnJC1cS+HSMGyI9PziKXthgqn7pP3yQLNYz6FDre7evO
+         zEbZzSJKRsB6zPf955Ihmpi93nKoNc265LVs9R2XsK6U/ntLSkl1svFenD0l8zjmJz
+         X/KrEo0MlIQjO+DABN9BtBek4otAvKkTuzTihuRs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tycho Andersen <tycho@tycho.pizza>,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nick Terrell <terrelln@fb.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 477/846] batman-adv: allow netlink usage in unprivileged containers
-Date:   Mon, 24 Jan 2022 19:39:54 +0100
-Message-Id: <20220124184117.471049406@linuxfoundation.org>
+Subject: [PATCH 5.15 455/846] MIPS: compressed: Fix build with ZSTD compression
+Date:   Mon, 24 Jan 2022 19:39:32 +0100
+Message-Id: <20220124184116.671697604@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,169 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+From: Paul Cercueil <paul@crapouillou.net>
 
-[ Upstream commit 9057d6c23e7388ee9d037fccc9a7bc8557ce277b ]
+[ Upstream commit c5c7440fe7f74645940d5c9e2c49cd7efb706a4f ]
 
-Currently, creating a batman-adv interface in an unprivileged LXD
-container and attaching secondary interfaces to it with "ip" or "batctl"
-works fine. However all batctl debug and configuration commands
-fail:
+Fix the following build issues:
 
-  root@container:~# batctl originators
-  Error received: Operation not permitted
-  root@container:~# batctl orig_interval
-  1000
-  root@container:~# batctl orig_interval 2000
-  root@container:~# batctl orig_interval
-  1000
+mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `FSE_buildDTable_internal':
+ decompress.c:(.text.FSE_buildDTable_internal+0x2cc): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `BIT_initDStream':
+   decompress.c:(.text.BIT_initDStream+0x7c): undefined reference to `__clzdi2'
+   mips64el-linux-ld: decompress.c:(.text.BIT_initDStream+0x158): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `ZSTD_buildFSETable_body_default.constprop.0':
+ decompress.c:(.text.ZSTD_buildFSETable_body_default.constprop.0+0x2a8): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `FSE_readNCount_body_default':
+ decompress.c:(.text.FSE_readNCount_body_default+0x130): undefined reference to `__ctzdi2'
+ mips64el-linux-ld: decompress.c:(.text.FSE_readNCount_body_default+0x1a4): undefined reference to `__ctzdi2'
+ mips64el-linux-ld: decompress.c:(.text.FSE_readNCount_body_default+0x2e4): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `HUF_readStats_body_default':
+ decompress.c:(.text.HUF_readStats_body_default+0x184): undefined reference to `__clzdi2'
+ mips64el-linux-ld: decompress.c:(.text.HUF_readStats_body_default+0x1b4): undefined reference to `__clzdi2'
+   mips64el-linux-ld: arch/mips/boot/compressed/decompress.o: in function `ZSTD_DCtx_getParameter':
+ decompress.c:(.text.ZSTD_DCtx_getParameter+0x60): undefined reference to `__clzdi2'
 
-To fix this change the generic netlink permissions from GENL_ADMIN_PERM
-to GENL_UNS_ADMIN_PERM. This way a batman-adv interface is fully
-maintainable as root from within a user namespace, from an unprivileged
-container.
-
-All except one batman-adv netlink setting are per interface and do not
-leak information or change settings from the host system and are
-therefore save to retrieve or modify as root from within an unprivileged
-container.
-
-"batctl routing_algo" / BATADV_CMD_GET_ROUTING_ALGOS is the only
-exception: It provides the batman-adv kernel module wide default routing
-algorithm. However it is read-only from netlink and an unprivileged
-container is still not allowed to modify
-/sys/module/batman_adv/parameters/routing_algo. Instead it is advised to
-use the newly introduced "batctl if create routing_algo RA_NAME" /
-IFLA_BATADV_ALGO_NAME to set the routing algorithm on interface
-creation, which already works fine in an unprivileged container.
-
-Cc: Tycho Andersen <tycho@tycho.pizza>
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Fixes: a510b616131f ("MIPS: Add support for ZSTD-compressed kernels")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Nick Terrell <terrelln@fb.com>
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/netlink.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ arch/mips/boot/compressed/Makefile  | 2 +-
+ arch/mips/boot/compressed/clz_ctz.c | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
+ create mode 100644 arch/mips/boot/compressed/clz_ctz.c
 
-diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
-index 29276284d281c..00875e1d8c44c 100644
---- a/net/batman-adv/netlink.c
-+++ b/net/batman-adv/netlink.c
-@@ -1368,21 +1368,21 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_TP_METER,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_tp_meter_start,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_TP_METER_CANCEL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_tp_meter_cancel,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_ROUTING_ALGOS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_algo_dump,
- 	},
- 	{
-@@ -1397,68 +1397,68 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_GET_TRANSTABLE_LOCAL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_tt_local_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_TRANSTABLE_GLOBAL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_tt_global_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_ORIGINATORS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_orig_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_NEIGHBORS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_hardif_neigh_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_GATEWAYS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_gw_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_BLA_CLAIM,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_bla_claim_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_BLA_BACKBONE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_bla_backbone_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_DAT_CACHE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_dat_cache_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_MCAST_FLAGS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_mcast_flags_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_SET_MESH,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_mesh,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_SET_HARDIF,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_hardif,
- 		.internal_flags = BATADV_FLAG_NEED_MESH |
- 				  BATADV_FLAG_NEED_HARDIF,
-@@ -1474,7 +1474,7 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_SET_VLAN,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_vlan,
- 		.internal_flags = BATADV_FLAG_NEED_MESH |
- 				  BATADV_FLAG_NEED_VLAN,
+diff --git a/arch/mips/boot/compressed/Makefile b/arch/mips/boot/compressed/Makefile
+index f53510d2f6296..705b9e7f8035a 100644
+--- a/arch/mips/boot/compressed/Makefile
++++ b/arch/mips/boot/compressed/Makefile
+@@ -56,7 +56,7 @@ $(obj)/uart-ath79.c: $(srctree)/arch/mips/ath79/early_printk.c
+ 
+ vmlinuzobjs-$(CONFIG_KERNEL_XZ) += $(obj)/ashldi3.o
+ 
+-vmlinuzobjs-$(CONFIG_KERNEL_ZSTD) += $(obj)/bswapdi.o $(obj)/ashldi3.o
++vmlinuzobjs-$(CONFIG_KERNEL_ZSTD) += $(obj)/bswapdi.o $(obj)/ashldi3.o $(obj)/clz_ctz.o
+ 
+ extra-y += ashldi3.c
+ $(obj)/ashldi3.c: $(obj)/%.c: $(srctree)/lib/%.c FORCE
+diff --git a/arch/mips/boot/compressed/clz_ctz.c b/arch/mips/boot/compressed/clz_ctz.c
+new file mode 100644
+index 0000000000000..b4a1b6eb2f8ad
+--- /dev/null
++++ b/arch/mips/boot/compressed/clz_ctz.c
+@@ -0,0 +1,2 @@
++// SPDX-License-Identifier: GPL-2.0-only
++#include "../../../../lib/clz_ctz.c"
 -- 
 2.34.1
 
