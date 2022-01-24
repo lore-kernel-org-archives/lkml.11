@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81801C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE379C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350344AbiAXTYv (ORCPT
+        id S1350664AbiAXTZI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:24:51 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44614 "EHLO
+        Mon, 24 Jan 2022 14:25:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45272 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345000AbiAXTPg (ORCPT
+        with ESMTP id S242895AbiAXTQK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:15:36 -0500
+        Mon, 24 Jan 2022 14:16:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44C7960010;
-        Mon, 24 Jan 2022 19:15:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57CA2C340E5;
-        Mon, 24 Jan 2022 19:15:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4BC9060B86;
+        Mon, 24 Jan 2022 19:16:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B999C340E5;
+        Mon, 24 Jan 2022 19:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051735;
-        bh=suquYQEhvvhQdPUfWh50Vlo6qQzW8pXNTM+Kg+H+w6o=;
+        s=korg; t=1643051766;
+        bh=rNFNOaUveDWG3n5enoqmhQglyshTNpn0X82fcUAeWog=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DGLhGXgNrWNP3fVaH6j5g6wQZ0E1N3XbdecnDc7r9s9QmgGAmcDy618EiFJStnBVm
-         f5hxtQquaj9N81AJO58DI+UkmGFK1lfFbSGNKjvMWaOVCt7PZCb8o0j8uCMHPNR2y1
-         P8LEe/i3vQ2ZfVPsmsknuvppnT2HBJzPJ49rp9m8=
+        b=lmlsi0iDp6eG0QK0B/5OVR72g8gx2+eZqz0ng62fFNsWvzoD6aDHDUoCHzUi6R5TJ
+         FFdAx5sUK+cBabfX6zWnXLfKF/YEJ9b+7QF5+2HEA4gQGLVY3lMp0v0igsr4EqJSap
+         QlM1SvYkc/7eKLiO18gcPp79bCgHUur6YY8wkli0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 069/239] media: dib8000: Fix a memleak in dib8000_init()
-Date:   Mon, 24 Jan 2022 19:41:47 +0100
-Message-Id: <20220124183945.326162430@linuxfoundation.org>
+Subject: [PATCH 4.19 081/239] usb: ftdi-elan: fix memory leak on device disconnect
+Date:   Mon, 24 Jan 2022 19:41:59 +0100
+Message-Id: <20220124183945.699408618@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -48,53 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 8dbdcc7269a83305ee9d677b75064d3530a48ee2 ]
+[ Upstream commit 1646566b5e0c556f779180a8514e521ac735de1e ]
 
-In dib8000_init(), the variable fe is not freed or passed out on the
-failure of dib8000_identify(&state->i2c), which could lead to a memleak.
+'ftdi' is alloced when probe device, but not free on device disconnect,
+this cause a memory leak as follows:
 
-Fix this bug by adding a kfree of fe in the error path.
+unreferenced object 0xffff88800d584000 (size 8400):
+  comm "kworker/0:2", pid 3809, jiffies 4295453055 (age 13.784s)
+  hex dump (first 32 bytes):
+    00 40 58 0d 80 88 ff ff 00 40 58 0d 80 88 ff ff  .@X......@X.....
+    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
+  backtrace:
+    [<000000000d47f947>] kmalloc_order_trace+0x19/0x110 mm/slab_common.c:960
+    [<000000008548ac68>] ftdi_elan_probe+0x8c/0x880 drivers/usb/misc/ftdi-elan.c:2647
+    [<000000007f73e422>] usb_probe_interface+0x31b/0x800 drivers/usb/core/driver.c:396
+    [<00000000fe8d07fc>] really_probe+0x299/0xc30 drivers/base/dd.c:517
+    [<0000000005da7d32>] __driver_probe_device+0x357/0x500 drivers/base/dd.c:751
+    [<000000003c2c9579>] driver_probe_device+0x4e/0x140 drivers/base/dd.c:781
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+Fix it by freeing 'ftdi' after nobody use it.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_DVB_DIB8000=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 77e2c0f5d471 ("V4L/DVB (12900): DiB8000: added support for DiBcom ISDB-T/ISDB-Tsb demodulator DiB8000")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: a5c66e4b2418 ("USB: ftdi-elan: client driver for ELAN Uxxx adapters")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Link: https://lore.kernel.org/r/20211217083428.2441-1-weiyongjun1@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/dvb-frontends/dib8000.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/usb/misc/ftdi-elan.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/dvb-frontends/dib8000.c b/drivers/media/dvb-frontends/dib8000.c
-index 5fa787e023c7e..4b9e4afa4c61f 100644
---- a/drivers/media/dvb-frontends/dib8000.c
-+++ b/drivers/media/dvb-frontends/dib8000.c
-@@ -4476,8 +4476,10 @@ static struct dvb_frontend *dib8000_init(struct i2c_adapter *i2c_adap, u8 i2c_ad
+diff --git a/drivers/usb/misc/ftdi-elan.c b/drivers/usb/misc/ftdi-elan.c
+index 76c718ac8c78d..adc2a380be79f 100644
+--- a/drivers/usb/misc/ftdi-elan.c
++++ b/drivers/usb/misc/ftdi-elan.c
+@@ -202,6 +202,7 @@ static void ftdi_elan_delete(struct kref *kref)
+ 	mutex_unlock(&ftdi_module_lock);
+ 	kfree(ftdi->bulk_in_buffer);
+ 	ftdi->bulk_in_buffer = NULL;
++	kfree(ftdi);
+ }
  
- 	state->timf_default = cfg->pll->timf;
- 
--	if (dib8000_identify(&state->i2c) == 0)
-+	if (dib8000_identify(&state->i2c) == 0) {
-+		kfree(fe);
- 		goto error;
-+	}
- 
- 	dibx000_init_i2c_master(&state->i2c_master, DIB8000, state->i2c.adap, state->i2c.addr);
- 
+ static void ftdi_elan_put_kref(struct usb_ftdi *ftdi)
 -- 
 2.34.1
 
