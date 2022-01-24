@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D5B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:02:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E067C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243104AbiAXPCm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:02:42 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19100 "EHLO mga02.intel.com"
+        id S240242AbiAXPCo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:02:44 -0500
+Received: from mga17.intel.com ([192.55.52.151]:63901 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239970AbiAXPCX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S239990AbiAXPCX (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 10:02:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1643036542; x=1674572542;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/z7OrzV1y617WdUQU00LsxqK+cIPCzyFS6bpxBGqoJM=;
-  b=OHQXKjEG3fR4xObY61Ww/flHGTvL+s3Baj63c0vJjv64ivNgIVX8uyz3
-   EoztkWmspa9Ndj9Mul/Ymt6pCQtyB19RtlrH0Ozjv6tl3NszOtVZdAEnI
-   QxEexf06G/Irc7MZ4Em5H+0x2gH15ohOjkUm2KRk8FaHHZZnL/UwgipWG
-   Qxab06q1G6aQIguLOMNBEc099D3ANvaTMAoE2lk6BQWo0gNOU2VYrqKSE
-   ZGEGYtHpV9Hl3TPV0eY3Ahficd+XowcSVPNc4wjemlMp+uzxJ323gazI+
-   B3HGSvnl8ziBbpdzxIGEddukx1RV+3xENgtOoRRcVpYfb9vmQEL9312Z2
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233423226"
+  bh=U2RBFvSabGQbSWUrVUR6IfnDqFHD0udYc5VGLJl32RM=;
+  b=NSXkfMRxa1RHY8y7cNxbPAetjes42o8pspNcJTYAhtIYIyaF368uXRhx
+   fmpU0Ax75ORWokI+Y+HWTPPO4YAQAYWBCqWhlfCIWqtX3v+UXjEaVHK1s
+   V8QlBpcdq7o119+FPPBLcn9COqDVKwreIgW9AGrLemk8KJFAzQh4c7Q06
+   e8XK4C8/nv+PrZgSRCFFa4KCTGyBsbmbU8yiw2Eounetwo2L87dTZRehC
+   wlQElrzTLJZS0oJZ9ktURxsDI8UbC2/nncLPAzFcYKiSZHvkOP5aBsIPd
+   BJiuNtLduD+bEQJs2cbwbckHmPXhrPXQLtezj36cVD2Dr1LUqIotmhRIB
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226734674"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233423226"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:12 -0800
+   d="scan'208";a="226734674"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:22 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="479104629"
+   d="scan'208";a="562680192"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga006.jf.intel.com with ESMTP; 24 Jan 2022 07:02:06 -0800
+  by orsmga001.jf.intel.com with ESMTP; 24 Jan 2022 07:02:16 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 5BEFA2DD; Mon, 24 Jan 2022 17:02:19 +0200 (EET)
+        id 07CADA03; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -47,9 +47,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv2 02/29] x86/tdx: Extend the cc_platform_has() API to support TDX guests
-Date:   Mon, 24 Jan 2022 18:01:48 +0300
-Message-Id: <20220124150215.36893-3-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv2 14/29] x86/tdx: Early boot handling of port I/O
+Date:   Mon, 24 Jan 2022 18:02:00 +0300
+Message-Id: <20220124150215.36893-15-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
 References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
@@ -59,107 +59,103 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
+From: Andi Kleen <ak@linux.intel.com>
 
-Confidential Computing (CC) features (like string I/O unroll support,
-memory encryption/decryption support, etc) are conditionally enabled
-in the kernel using cc_platform_has() API. Since TDX guests also need
-to use these CC features, extend cc_platform_has() API and add TDX
-guest-specific CC attributes support.
+TDX guests cannot do port I/O directly. The TDX module triggers a #VE
+exception to let the guest kernel emulate port I/O, by converting them
+into TDCALLs to call the host.
 
-Use is_tdx_guest() API to detect for the TDX guest status and return
-TDX-specific CC attributes. To enable use of CC APIs in the TDX guest,
-select ARCH_HAS_CC_PLATFORM in the CONFIG_INTEL_TDX_GUEST case.
+But before IDT handlers are set up, port I/O cannot be emulated using
+normal kernel #VE handlers. To support the #VE-based emulation during
+this boot window, add a minimal early #VE handler support in early
+exception handlers. This is similar to what AMD SEV does. This is
+mainly to support earlyprintk's serial driver, as well as potentially
+the VGA driver (although it is expected not to be used).
 
-This is a preparatory patch and just creates the framework for adding
-TDX guest specific CC attributes.
+The early handler only supports I/O-related #VE exceptions. Unhandled or
+failed exceptions will be handled via early_fixup_exceptions() (like
+normal exception failures).
 
-Since is_tdx_guest() function (through cc_platform_has() API) is used in
-the early boot code, disable the instrumentation flags and function
-tracer. This is similar to AMD SEV and cc_platform.c.
+This early handler enables the use of normal in*/out* macros without
+patching them for every driver. Since there is no expectation that
+early port I/O is performance-critical, the #VE emulation cost is worth
+the simplicity benefit of not patching the port I/O usage in early
+code. There are also no concerns with nesting, since there should be
+no NMIs or interrupts this early.
 
-Since intel_cc_platform_has() function only gets called when
-is_tdx_guest() is true (valid CONFIG_INTEL_TDX_GUEST case), remove the
-redundant #ifdef in intel_cc_platform_has().
-
+Signed-off-by: Andi Kleen <ak@linux.intel.com>
+Reviewed-by: Dan Williams <dan.j.williams@intel.com>
 Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/Kconfig              | 1 +
- arch/x86/kernel/Makefile      | 3 +++
- arch/x86/kernel/cc_platform.c | 9 ++++-----
- 3 files changed, 8 insertions(+), 5 deletions(-)
+ arch/x86/include/asm/tdx.h |  4 ++++
+ arch/x86/kernel/head64.c   |  3 +++
+ arch/x86/kernel/tdx.c      | 17 +++++++++++++++++
+ 3 files changed, 24 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 09e6744af3f8..1491f25c844e 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -884,6 +884,7 @@ config INTEL_TDX_GUEST
- 	bool "Intel TDX (Trust Domain Extensions) - Guest Support"
- 	depends on X86_64 && CPU_SUP_INTEL
- 	depends on X86_X2APIC
-+	select ARCH_HAS_CC_PLATFORM
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
- 	  the guest kernel can not boot or run under TDX.
-diff --git a/arch/x86/kernel/Makefile b/arch/x86/kernel/Makefile
-index 211d9fcdd729..67415037c33c 100644
---- a/arch/x86/kernel/Makefile
-+++ b/arch/x86/kernel/Makefile
-@@ -22,6 +22,7 @@ CFLAGS_REMOVE_early_printk.o = -pg
- CFLAGS_REMOVE_head64.o = -pg
- CFLAGS_REMOVE_sev.o = -pg
- CFLAGS_REMOVE_cc_platform.o = -pg
-+CFLAGS_REMOVE_tdx.o = -pg
- endif
+diff --git a/arch/x86/include/asm/tdx.h b/arch/x86/include/asm/tdx.h
+index 27eb4ab2fdd2..8013686192fd 100644
+--- a/arch/x86/include/asm/tdx.h
++++ b/arch/x86/include/asm/tdx.h
+@@ -53,12 +53,16 @@ bool tdx_handle_virt_exception(struct pt_regs *regs, struct ve_info *ve);
  
- KASAN_SANITIZE_head$(BITS).o				:= n
-@@ -31,6 +32,7 @@ KASAN_SANITIZE_stacktrace.o				:= n
- KASAN_SANITIZE_paravirt.o				:= n
- KASAN_SANITIZE_sev.o					:= n
- KASAN_SANITIZE_cc_platform.o				:= n
-+KASAN_SANITIZE_tdx.o					:= n
+ void tdx_safe_halt(void);
  
- # With some compiler versions the generated code results in boot hangs, caused
- # by several compilation units. To be safe, disable all instrumentation.
-@@ -50,6 +52,7 @@ KCOV_INSTRUMENT		:= n
++bool tdx_early_handle_ve(struct pt_regs *regs);
++
+ #else
  
- CFLAGS_head$(BITS).o	+= -fno-stack-protector
- CFLAGS_cc_platform.o	+= -fno-stack-protector
-+CFLAGS_tdx.o		+= -fno-stack-protector
+ static inline void tdx_early_init(void) { };
+ static inline bool is_tdx_guest(void) { return false; }
+ static inline void tdx_safe_halt(void) { };
  
- CFLAGS_irq.o := -I $(srctree)/$(src)/../include/asm/trace
++static inline bool tdx_early_handle_ve(struct pt_regs *regs) { return false; }
++
+ #endif /* CONFIG_INTEL_TDX_GUEST */
  
-diff --git a/arch/x86/kernel/cc_platform.c b/arch/x86/kernel/cc_platform.c
-index 6a6ffcd978f6..c72b3919bca9 100644
---- a/arch/x86/kernel/cc_platform.c
-+++ b/arch/x86/kernel/cc_platform.c
-@@ -13,14 +13,11 @@
+ #endif /* _ASM_X86_TDX_H */
+diff --git a/arch/x86/kernel/head64.c b/arch/x86/kernel/head64.c
+index 1cb6346ec3d1..76d298ddfe75 100644
+--- a/arch/x86/kernel/head64.c
++++ b/arch/x86/kernel/head64.c
+@@ -417,6 +417,9 @@ void __init do_early_exception(struct pt_regs *regs, int trapnr)
+ 	    trapnr == X86_TRAP_VC && handle_vc_boot_ghcb(regs))
+ 		return;
  
- #include <asm/mshyperv.h>
- #include <asm/processor.h>
-+#include <asm/tdx.h>
- 
--static bool __maybe_unused intel_cc_platform_has(enum cc_attr attr)
-+static bool intel_cc_platform_has(enum cc_attr attr)
- {
--#ifdef CONFIG_INTEL_TDX_GUEST
- 	return false;
--#else
--	return false;
--#endif
++	if (trapnr == X86_TRAP_VE && tdx_early_handle_ve(regs))
++		return;
++
+ 	early_fixup_exception(regs, trapnr);
  }
  
- /*
-@@ -76,6 +73,8 @@ bool cc_platform_has(enum cc_attr attr)
- {
- 	if (sme_me_mask)
- 		return amd_cc_platform_has(attr);
-+	else if (is_tdx_guest())
-+		return intel_cc_platform_has(attr);
+diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
+index e73af22a4c11..ebb29dfb3ad4 100644
+--- a/arch/x86/kernel/tdx.c
++++ b/arch/x86/kernel/tdx.c
+@@ -302,6 +302,23 @@ static bool tdx_handle_io(struct pt_regs *regs, u32 exit_qual)
+ 	return !ret;
+ }
  
- 	if (hv_is_isolation_supported())
- 		return hyperv_cc_platform_has(attr);
++/*
++ * Early #VE exception handler. Only handles a subset of port I/O.
++ * Intended only for earlyprintk. If failed, return false.
++ */
++__init bool tdx_early_handle_ve(struct pt_regs *regs)
++{
++	struct ve_info ve;
++
++	if (tdx_get_ve_info(&ve))
++		return false;
++
++	if (ve.exit_reason != EXIT_REASON_IO_INSTRUCTION)
++		return false;
++
++	return tdx_handle_io(regs, ve.exit_qual);
++}
++
+ bool tdx_get_ve_info(struct ve_info *ve)
+ {
+ 	struct tdx_module_output out;
 -- 
 2.34.1
 
