@@ -2,151 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42899C35275
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F3FC47081
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353253AbiAXVMo (ORCPT
+        id S1448570AbiAXVND (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:44 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:53518 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347091AbiAXUhs (ORCPT
+        Mon, 24 Jan 2022 16:13:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39732 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387576AbiAXUg5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:48 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20OKbA1c060580;
-        Mon, 24 Jan 2022 14:37:10 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1643056630;
-        bh=qUb5l1wvstsaPaKzYhWNVfh1pZulWuLaYHyPrA3IFH4=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=IAnVdVYHgM5sljUjoshj/J0HdPU633rqTFUiqrDA8m7vxFeLaXBPq2MMBBKdQ6I7R
-         ZcIFj/lKutP8PmV5TPekteMR0vnp9qlzS93saVQz1QCZJMwl6ckmoSXru06LbK+/rt
-         J5U9Lrob6JONeeLJw65qOzcccXg8pdhrQ5CMCxxw=
-Received: from DLEE112.ent.ti.com (dlee112.ent.ti.com [157.170.170.23])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20OKbAJi026882
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 24 Jan 2022 14:37:10 -0600
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE112.ent.ti.com
- (157.170.170.23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 24
- Jan 2022 14:37:09 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 24 Jan 2022 14:37:10 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20OKb9WV043785;
-        Mon, 24 Jan 2022 14:37:09 -0600
-Date:   Tue, 25 Jan 2022 02:07:08 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     =?utf-8?Q?C=C3=A9dric?= Le Goater <clg@kaod.org>
-CC:     Patrick Williams <patrick@stwcx.xyz>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        <linux-aspeed@lists.ozlabs.org>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Richard Weinberger <richard@nod.at>,
-        Potin Lai <potin.lai@quantatw.com>,
-        <linux-kernel@vger.kernel.org>, Michael Walle <michael@walle.cc>,
-        <linux-mtd@lists.infradead.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Subject: Re: [PATCH] mtd: aspeed-smc: improve probe resilience
-Message-ID: <20220124203708.lm23sgsub234wlhq@ti.com>
-References: <20211229143334.297305-1-patrick@stwcx.xyz>
- <20211229173411.l2bipmi4x3arqjoo@ti.com>
- <Yc3Qav+ULNdF5zRT@heinlein>
- <20211231102623.izaqlzjvracbbgmp@ti.com>
- <20220103171721.46c8e697@xps13>
- <YdSP6tKyQ2ZRUC+2@heinlein>
- <20220105063244.lno3xur64uepa7i5@ti.com>
- <d4ba6413-57ce-14c1-ed48-d00db2f74bd3@kaod.org>
- <20220124153644.m3iwlvq5ld5cpbyz@ti.com>
- <b222361a-288a-55b2-fc02-04c0b93b4220@kaod.org>
+        Mon, 24 Jan 2022 15:36:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD113C038AF8;
+        Mon, 24 Jan 2022 11:50:23 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5DADA6091B;
+        Mon, 24 Jan 2022 19:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40DF8C340E5;
+        Mon, 24 Jan 2022 19:50:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053822;
+        bh=pn09FPzboF/tVh8/0L5nmMFwe2Jrkb8T9pquQXiejis=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rth71vgbRoyhg1ZYqAlE/rdU93Inf4IKKUCr0eQNJVSwHAkCcPIuTvOVfvIRwDYp3
+         /WdgTJFyFBGsv8aKR7sNg5cGozoKPzxeL3LLraX9Lzuo8zL3m7QKwULNa2Q7THPM3o
+         RgfyEDe+SIAgmAQgBJDZ3USZ/SYq150Ieresjpf8=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 189/563] backlight: qcom-wled: Validate enabled string indices in DT
+Date:   Mon, 24 Jan 2022 19:39:14 +0100
+Message-Id: <20220124184030.959132141@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <b222361a-288a-55b2-fc02-04c0b93b4220@kaod.org>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 24/01/22 07:34PM, Cédric Le Goater wrote:
-> > > spimem needs an extension I think. Sorry I have not been able to
-> > > push that forward. Lack of time and other tasks to address on the
-> > > host side of the machine. This is really a software problem, we
-> > > have the HW procedures ready. If a spimem expert could get involved
-> > > to make a few proposals, I would be happy to help and do some testing.
-> > > QEMU models are good enough for the software part. We can do the
-> > > training validation on real HW when ready.
-> > 
-> > What information about the flash do you need for this training?
-> 
-> Last time I looked, we lacked some post_init handler to setup a slave:
-> configure the registers defining the AHB windows for each flash
-> slave and perform the read timing calibration. calibration should
-> only be done once.
-> 
-> See how the aspeed_spi_flash_init() routine doing the calibration
-> is hooked up under aspeed_spi_claim_bus() in the u-boot driver :
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-My patch series should provide a hook for doing the calibration _after_ 
-the flash is initialized.
+[ Upstream commit c05b21ebc5bce3ecc78c2c71afd76d92c790a2ac ]
 
-> 
->   https://github.com/openbmc/u-boot/blob/v2019.04-aspeed-openbmc/drivers/spi/aspeed_spi.c
-> 
-> Not good enough for upstream, Linux would be the same :/
-> 
-> > I proposed a patch series [0] some time ago trying to implement training
-> > for TI SoCs. It did not get merged but I do intend to respin it and get
-> > it through. Would this API work for your tuning as well?
-> 
-> I will take a look.
-> > Also, I am curious how your training works. What data do you read for
-> > training delays? Where is it stored?
-> 
-> The driver reads the first 16K at slow speed (that's why we need a
-> basic minimal setup of the slave) and checks if the buffer is valid
-> enough for the calibration :
-> 
->   https://github.com/openbmc/linux/blob/dev-5.15/drivers/mtd/spi-nor/controllers/aspeed-smc.c#L998
-> 
-> it then performs reads by changing the frequency and delays and
-> compares results with the initial default buffer.
+The strings passed in DT may possibly cause out-of-bounds register
+accesses and should be validated before use.
 
-This seems similar to the tuning I implemented, except mine uses a 
-pre-defined pattern at a pre-defined location.
+Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-2-marijn.suijten@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/video/backlight/qcom-wled.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-> 
-> if not, then the driver stays in a safe mode (slow).
-
-Same for my patches.
-
-> 
-> > In our case we need to flash a
-> > known pattern at some location (which is passed in via DT). Do you need
-> > to run it for every read transaction or just once after the flash is
-> > initialized?
-> 
-> Just once because it is a heavy process. See the debug outputs below.
-> Once we have good read timings and frequency, there is no need to do
-> it each time.
-
-It looks very similar to the tuning I implemented in my patch series. 
-You should be able to use those APIs for your tuning as well. But it 
-should not block the SPI MEM port. The current upstream driver does not 
-seem to implement this tuning anyway.
-
-> 
-> > [0] https://patchwork.ozlabs.org/project/linux-mtd/list/?series=233504&state=%2A&archive=both
-> Thanks,
-> 
-> C.
-
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index cd11c57764381..2c4290f082025 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -1528,12 +1528,28 @@ static int wled_configure(struct wled *wled)
+ 	string_len = of_property_count_elems_of_size(dev->of_node,
+ 						     "qcom,enabled-strings",
+ 						     sizeof(u32));
+-	if (string_len > 0)
++	if (string_len > 0) {
++		if (string_len > wled->max_string_count) {
++			dev_err(dev, "Cannot have more than %d strings\n",
++				wled->max_string_count);
++			return -EINVAL;
++		}
++
+ 		of_property_read_u32_array(dev->of_node,
+ 						"qcom,enabled-strings",
+ 						wled->cfg.enabled_strings,
+ 						sizeof(u32));
+ 
++		for (i = 0; i < string_len; ++i) {
++			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
++				dev_err(dev,
++					"qcom,enabled-strings index %d at %d is out of bounds\n",
++					wled->cfg.enabled_strings[i], i);
++				return -EINVAL;
++			}
++		}
++	}
++
+ 	return 0;
+ }
+ 
 -- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+2.34.1
+
+
+
