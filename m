@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 812EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75805C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423271AbiAYCdX (ORCPT
+        id S3423337AbiAYCdb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:33:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383467AbiAXU1Q (ORCPT
+        Mon, 24 Jan 2022 21:33:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53278 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356849AbiAXU2c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:27:16 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A844C110F2F;
-        Mon, 24 Jan 2022 11:41:44 -0800 (PST)
+        Mon, 24 Jan 2022 15:28:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBC166131E;
-        Mon, 24 Jan 2022 19:41:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95279C340E5;
-        Mon, 24 Jan 2022 19:41:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9EBEE6150E;
+        Mon, 24 Jan 2022 20:28:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 748BEC340E5;
+        Mon, 24 Jan 2022 20:28:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053303;
-        bh=oj5Je4hEdh8UvrPiv7Hw9okiM1qi3n2AsOBeJ6hgeSM=;
+        s=korg; t=1643056111;
+        bh=60cLQvpCN4PqXns9qUE1a06rKf2YK4MYdVLXKQLv6t8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tPQg/M5pVT4KdSYzPbZwxqgbqpfYcoWj8y6yOzWR3YEt8kQFiGcC0ZtoEgrhgu/yZ
-         ztp/6fTTo6jdOc+3v4DacY4fp8VgYxiQP9SoMWJlqftx60+HJ+J6hMN1TFnj0JzW4S
-         vhPCqXB3zvGvgFd+8K7nbEgXDxyB236Aq355a3LU=
+        b=s57ZaHOyLyvZHl+aEfTaE/fwWqYVG1PaNnwrrVIh7P1Rqqkm/1TRHgUqAAY+8nhci
+         GRaMNjuZYJinxatyMwcjoCUOwwyRjpCTbmJT2JMV+W7Rh+Q2+l7XxhShLpM1wLzdhO
+         wt8OBvNx1L3d5kfQGH3G/gK0ugJzN24Expxz0PLQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.10 021/563] media: mceusb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:36:26 +0100
-Message-Id: <20220124184025.146504982@linuxfoundation.org>
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 375/846] ALSA: PCM: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:38:12 +0100
+Message-Id: <20220124184113.868119759@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +46,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-commit 16394e998cbb050730536bdf7e89f5a70efbd974 upstream.
+[ Upstream commit 5471e9762e1af4b7df057a96bfd46cc250979b88 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-Fixes: 66e89522aff7 ("V4L/DVB: IR: add mceusb IR receiver driver")
-Cc: stable@vger.kernel.org      # 2.6.36
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: a8ff48cb7083 ("ALSA: pcm: Free chmap at PCM free callback, too")
+Link: https://lore.kernel.org/r/20211116071314.15065-2-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/mceusb.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/core/pcm.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
---- a/drivers/media/rc/mceusb.c
-+++ b/drivers/media/rc/mceusb.c
-@@ -1430,7 +1430,7 @@ static void mceusb_gen1_init(struct mceu
- 	 */
- 	ret = usb_control_msg(ir->usbdev, usb_rcvctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_ADDRESS, USB_TYPE_VENDOR, 0, 0,
--			      data, USB_CTRL_MSG_SZ, HZ * 3);
-+			      data, USB_CTRL_MSG_SZ, 3000);
- 	dev_dbg(dev, "set address - ret = %d", ret);
- 	dev_dbg(dev, "set address - data[0] = %d, data[1] = %d",
- 						data[0], data[1]);
-@@ -1438,20 +1438,20 @@ static void mceusb_gen1_init(struct mceu
- 	/* set feature: bit rate 38400 bps */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_FEATURE, USB_TYPE_VENDOR,
--			      0xc04e, 0x0000, NULL, 0, HZ * 3);
-+			      0xc04e, 0x0000, NULL, 0, 3000);
- 
- 	dev_dbg(dev, "set feature - ret = %d", ret);
- 
- 	/* bRequest 4: set char length to 8 bits */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      4, USB_TYPE_VENDOR,
--			      0x0808, 0x0000, NULL, 0, HZ * 3);
-+			      0x0808, 0x0000, NULL, 0, 3000);
- 	dev_dbg(dev, "set char length - retB = %d", ret);
- 
- 	/* bRequest 2: set handshaking to use DTR/DSR */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      2, USB_TYPE_VENDOR,
--			      0x0000, 0x0100, NULL, 0, HZ * 3);
-+			      0x0000, 0x0100, NULL, 0, 3000);
- 	dev_dbg(dev, "set handshake  - retC = %d", ret);
- 
- 	/* device resume */
+diff --git a/sound/core/pcm.c b/sound/core/pcm.c
+index 6fd3677685d70..ba4a987ed1c62 100644
+--- a/sound/core/pcm.c
++++ b/sound/core/pcm.c
+@@ -810,7 +810,11 @@ EXPORT_SYMBOL(snd_pcm_new_internal);
+ static void free_chmap(struct snd_pcm_str *pstr)
+ {
+ 	if (pstr->chmap_kctl) {
+-		snd_ctl_remove(pstr->pcm->card, pstr->chmap_kctl);
++		struct snd_card *card = pstr->pcm->card;
++
++		down_write(&card->controls_rwsem);
++		snd_ctl_remove(card, pstr->chmap_kctl);
++		up_write(&card->controls_rwsem);
+ 		pstr->chmap_kctl = NULL;
+ 	}
+ }
+-- 
+2.34.1
+
 
 
