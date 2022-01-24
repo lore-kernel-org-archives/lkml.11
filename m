@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDADAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:58:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24763C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:58:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344576AbiAXS6F (ORCPT
+        id S1344195AbiAXS6I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:58:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55008 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343565AbiAXSzs (ORCPT
+        Mon, 24 Jan 2022 13:58:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53666 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343642AbiAXSzw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:55:48 -0500
+        Mon, 24 Jan 2022 13:55:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5869861507;
-        Mon, 24 Jan 2022 18:55:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 316A0C340EC;
-        Mon, 24 Jan 2022 18:55:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DF87EB8121B;
+        Mon, 24 Jan 2022 18:55:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22693C340E5;
+        Mon, 24 Jan 2022 18:55:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050546;
-        bh=UeIk/6h2m960zT2fJm51+GzcCIYPNCXiVBySTF5hzY8=;
+        s=korg; t=1643050549;
+        bh=tE9mdAFFt751Py3IuTt7RHTt7U7FMIfiWEJmBQ1SPbc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2AjKMMA+BmdmCeH4zPPsRmJAKtUsYiH5piUi9rELtDLIQg3lxbQmjenfPE7B9Nlz5
-         NMrqzeuKZWk3q6JmkxJW6B3KFIp5l6lcf5JzKaJ2Ob80CzMv5bxtrK3EyWU8uzkZFj
-         goyOGfodlJjwWtAlh5zlZT4TeZPs3CSKXr/iLPbg=
+        b=vtwbLCfT8QLj1eAKz0NgzU/yy2fZTYGLT7yCH8pF3Z6NxZd02P7UYJ3340GIbmCya
+         Ky7p0Pg5RJdbALhJ+t0KzXyelYpVeJeqCGPvzhyQv9Va2V35pQFwCKOU8wKQRH21eD
+         4cce7L5EqgYHpYmftVIart/OKLu2Ju2SCLkwmPN0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>
-Subject: [PATCH 4.9 009/157] staging: wlan-ng: Avoid bitwise vs logical OR warning in hfa384x_usb_throttlefn()
-Date:   Mon, 24 Jan 2022 19:41:39 +0100
-Message-Id: <20220124183933.084840126@linuxfoundation.org>
+        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>, Amish Chana <amish@3g.co.za>
+Subject: [PATCH 4.9 036/157] netfilter: bridge: add support for pppoe filtering
+Date:   Mon, 24 Jan 2022 19:42:06 +0100
+Message-Id: <20220124183933.950801836@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -45,68 +47,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Florian Westphal <fw@strlen.de>
 
-commit 502408a61f4b7eb4713f44bd77f4a48e6cb1b59a upstream.
+[ Upstream commit 28b78ecffea8078d81466b2e01bb5a154509f1ba ]
 
-A new warning in clang points out a place in this file where a bitwise
-OR is being used with boolean expressions:
+This makes 'bridge-nf-filter-pppoe-tagged' sysctl work for
+bridged traffic.
 
-In file included from drivers/staging/wlan-ng/prism2usb.c:2:
-drivers/staging/wlan-ng/hfa384x_usb.c:3787:7: warning: use of bitwise '|' with boolean operands [-Wbitwise-instead-of-logical]
-            ((test_and_clear_bit(THROTTLE_RX, &hw->usb_flags) &&
-            ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/staging/wlan-ng/hfa384x_usb.c:3787:7: note: cast one or both operands to int to silence this warning
-1 warning generated.
+Looking at the original commit it doesn't appear this ever worked:
 
-The comment explains that short circuiting here is undesirable, as the
-calls to test_and_{clear,set}_bit() need to happen for both sides of the
-expression.
+ static unsigned int br_nf_post_routing(unsigned int hook, struct sk_buff **pskb,
+[..]
+        if (skb->protocol == htons(ETH_P_8021Q)) {
+                skb_pull(skb, VLAN_HLEN);
+                skb->network_header += VLAN_HLEN;
++       } else if (skb->protocol == htons(ETH_P_PPP_SES)) {
++               skb_pull(skb, PPPOE_SES_HLEN);
++               skb->network_header += PPPOE_SES_HLEN;
+        }
+ [..]
+	NF_HOOK(... POST_ROUTING, ...)
 
-Clang's suggestion would work to silence the warning but the readability
-of the expression would suffer even more. To clean up the warning and
-make the block more readable, use a variable for each side of the
-bitwise expression.
+... but the adjusted offsets are never restored.
 
-Link: https://github.com/ClangBuiltLinux/linux/issues/1478
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20211014215703.3705371-1-nathan@kernel.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The alternative would be to rip this code out for good,
+but otoh we'd have to keep this anyway for the vlan handling
+(which works because vlan tag info is in the skb, not the packet
+ payload).
+
+Reported-and-tested-by: Amish Chana <amish@3g.co.za>
+Fixes: 516299d2f5b6f97 ("[NETFILTER]: bridge-nf: filter bridged IPv4/IPv6 encapsulated in pppoe traffic")
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/wlan-ng/hfa384x_usb.c |   22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ net/bridge/br_netfilter_hooks.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/staging/wlan-ng/hfa384x_usb.c
-+++ b/drivers/staging/wlan-ng/hfa384x_usb.c
-@@ -3848,18 +3848,18 @@ static void hfa384x_usb_throttlefn(unsig
+diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
+index 7104d5e64abb3..11d4d18012fed 100644
+--- a/net/bridge/br_netfilter_hooks.c
++++ b/net/bridge/br_netfilter_hooks.c
+@@ -724,6 +724,9 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 	if (nf_bridge->frag_max_size && nf_bridge->frag_max_size < mtu)
+ 		mtu = nf_bridge->frag_max_size;
  
- 	spin_lock_irqsave(&hw->ctlxq.lock, flags);
++	nf_bridge_update_protocol(skb);
++	nf_bridge_push_encap_header(skb);
++
+ 	if (skb_is_gso(skb) || skb->len + mtu_reserved <= mtu) {
+ 		nf_bridge_info_free(skb);
+ 		return br_dev_queue_push_xmit(net, sk, skb);
+@@ -741,8 +744,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
  
--	/*
--	 * We need to check BOTH the RX and the TX throttle controls,
--	 * so we use the bitwise OR instead of the logical OR.
--	 */
- 	pr_debug("flags=0x%lx\n", hw->usb_flags);
--	if (!hw->wlandev->hwremoved &&
--	    ((test_and_clear_bit(THROTTLE_RX, &hw->usb_flags) &&
--	      !test_and_set_bit(WORK_RX_RESUME, &hw->usb_flags)) |
--	     (test_and_clear_bit(THROTTLE_TX, &hw->usb_flags) &&
--	      !test_and_set_bit(WORK_TX_RESUME, &hw->usb_flags))
--	    )) {
--		schedule_work(&hw->usb_work);
-+	if (!hw->wlandev->hwremoved) {
-+		bool rx_throttle = test_and_clear_bit(THROTTLE_RX, &hw->usb_flags) &&
-+				   !test_and_set_bit(WORK_RX_RESUME, &hw->usb_flags);
-+		bool tx_throttle = test_and_clear_bit(THROTTLE_TX, &hw->usb_flags) &&
-+				   !test_and_set_bit(WORK_TX_RESUME, &hw->usb_flags);
-+		/*
-+		 * We need to check BOTH the RX and the TX throttle controls,
-+		 * so we use the bitwise OR instead of the logical OR.
-+		 */
-+		if (rx_throttle | tx_throttle)
-+			schedule_work(&hw->usb_work);
- 	}
+ 		IPCB(skb)->frag_max_size = nf_bridge->frag_max_size;
  
- 	spin_unlock_irqrestore(&hw->ctlxq.lock, flags);
+-		nf_bridge_update_protocol(skb);
+-
+ 		data = this_cpu_ptr(&brnf_frag_data_storage);
+ 
+ 		data->vlan_tci = skb->vlan_tci;
+@@ -765,8 +766,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 
+ 		IP6CB(skb)->frag_max_size = nf_bridge->frag_max_size;
+ 
+-		nf_bridge_update_protocol(skb);
+-
+ 		data = this_cpu_ptr(&brnf_frag_data_storage);
+ 		data->encap_size = nf_bridge_encap_header_len(skb);
+ 		data->size = ETH_HLEN + data->encap_size;
+-- 
+2.34.1
+
 
 
