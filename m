@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE39EC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00309C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:15:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2373009AbiAYAMy (ORCPT
+        id S2373151AbiAYANN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:12:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
+        Mon, 24 Jan 2022 19:13:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1849657AbiAXX0Z (ORCPT
+        with ESMTP id S1842147AbiAXX2e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:26:25 -0500
+        Mon, 24 Jan 2022 18:28:34 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED03C061245;
-        Mon, 24 Jan 2022 11:10:25 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DED8EC075D02;
+        Mon, 24 Jan 2022 13:34:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DFD6860918;
-        Mon, 24 Jan 2022 19:10:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7139C340E5;
-        Mon, 24 Jan 2022 19:10:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C598614FE;
+        Mon, 24 Jan 2022 21:34:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56D5EC340E4;
+        Mon, 24 Jan 2022 21:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051424;
-        bh=OcShTilfpp1LyDQG1WS6FNKo03gOhrTiA8dOuv6tF4c=;
+        s=korg; t=1643060059;
+        bh=nwhDRCmxaQ9ylnl0o8WM7gB9W7pbXqOdwinkHErgie8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r7VfP5AjzymIIrNNbav2JCGpIt6C9HyAaCGAblOmRRbZLRQ09JPOipR1cNbVBei79
-         9cwb1KGZUYHgKxjVlnp17Y/zV+3lNTd6rDXnYnXXsltiOwHyUQ6zo7lGE1ugupJ8K2
-         YvMBbDU8oimuMFIrbbRi2mfZ6sTwiSMJY5BVNrXg=
+        b=u9NeBzo2bVV7wgNir+PdvwDj57dhprLi4GR1Dhi6wmoD6zGkMatyYdJ/4xbOeLQe6
+         5pHqSpbe7Xn3K5FqyvubhQb1X60fOzzJJUkGS5kAeNorzSiy/wIRXzfs4vUuLW+fY3
+         /CXgJlxxK9S8QMQzx17GO+KJEvHHuo63nbB8sEio=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Jan Stancek <jstancek@redhat.com>,
-        Borislav Petkov <bp@suse.de>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 4.14 158/186] drm/radeon: fix error handling in radeon_driver_open_kms
-Date:   Mon, 24 Jan 2022 19:43:53 +0100
-Message-Id: <20220124183942.180878929@linuxfoundation.org>
+        stable@vger.kernel.org, Dario Binacchi <dariobin@libero.it>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0798/1039] Input: ti_am335x_tsc - fix STEPCONFIG setup for Z2
+Date:   Mon, 24 Jan 2022 19:43:07 +0100
+Message-Id: <20220124184152.124989565@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,86 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian König <christian.koenig@amd.com>
+From: Dario Binacchi <dariobin@libero.it>
 
-commit 4722f463896cc0ef1a6f1c3cb2e171e949831249 upstream.
+[ Upstream commit 6bfeb6c21e1bdc11c328b7d996d20f0f73c6b9b0 ]
 
-The return value was never initialized so the cleanup code executed when
-it isn't even necessary.
+The Z2 step configuration doesn't erase the SEL_INP_SWC_3_0 bit-field
+before setting the ADC channel. This way its value could be corrupted by
+the ADC channel selected for the Z1 coordinate.
 
-Just add proper error handling.
-
-Fixes: ab50cb9df889 ("drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()")
-Signed-off-by: Christian König <christian.koenig@amd.com>
-Tested-by: Jan Stancek <jstancek@redhat.com>
-Tested-by: Borislav Petkov <bp@suse.de>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 8c896308feae ("input: ti_am335x_adc: use only FIFO0 and clean up a little")
+Signed-off-by: Dario Binacchi <dariobin@libero.it>
+Link: https://lore.kernel.org/r/20211212125358.14416-3-dariobin@libero.it
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_kms.c |   22 ++++++++++++----------
- 1 file changed, 12 insertions(+), 10 deletions(-)
+ drivers/input/touchscreen/ti_am335x_tsc.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/radeon/radeon_kms.c
-+++ b/drivers/gpu/drm/radeon/radeon_kms.c
-@@ -673,18 +673,18 @@ int radeon_driver_open_kms(struct drm_de
- 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
- 		if (unlikely(!fpriv)) {
- 			r = -ENOMEM;
--			goto out_suspend;
-+			goto err_suspend;
- 		}
+diff --git a/drivers/input/touchscreen/ti_am335x_tsc.c b/drivers/input/touchscreen/ti_am335x_tsc.c
+index fd3ffdd23470b..cfc943423241f 100644
+--- a/drivers/input/touchscreen/ti_am335x_tsc.c
++++ b/drivers/input/touchscreen/ti_am335x_tsc.c
+@@ -196,7 +196,10 @@ static void titsc_step_config(struct titsc *ts_dev)
+ 			STEPCONFIG_OPENDLY);
  
- 		if (rdev->accel_working) {
- 			vm = &fpriv->vm;
- 			r = radeon_vm_init(rdev, vm);
- 			if (r)
--				goto out_fpriv;
-+				goto err_fpriv;
- 
- 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
- 			if (r)
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 
- 			/* map the ib pool buffer read only into
- 			 * virtual address space */
-@@ -692,7 +692,7 @@ int radeon_driver_open_kms(struct drm_de
- 							rdev->ring_tmp_bo.bo);
- 			if (!vm->ib_bo_va) {
- 				r = -ENOMEM;
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 			}
- 
- 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
-@@ -700,19 +700,21 @@ int radeon_driver_open_kms(struct drm_de
- 						  RADEON_VM_PAGE_READABLE |
- 						  RADEON_VM_PAGE_SNOOPED);
- 			if (r)
--				goto out_vm_fini;
-+				goto err_vm_fini;
- 		}
- 		file_priv->driver_priv = fpriv;
- 	}
- 
--	if (!r)
--		goto out_suspend;
-+	pm_runtime_mark_last_busy(dev->dev);
-+	pm_runtime_put_autosuspend(dev->dev);
-+	return 0;
- 
--out_vm_fini:
-+err_vm_fini:
- 	radeon_vm_fini(rdev, vm);
--out_fpriv:
-+err_fpriv:
- 	kfree(fpriv);
--out_suspend:
-+
-+err_suspend:
- 	pm_runtime_mark_last_busy(dev->dev);
- 	pm_runtime_put_autosuspend(dev->dev);
- 	return r;
+ 	end_step++;
+-	config |= STEPCONFIG_INP(ts_dev->inp_yn);
++	config = STEPCONFIG_MODE_HWSYNC |
++			STEPCONFIG_AVG_16 | ts_dev->bit_yp |
++			ts_dev->bit_xn | STEPCONFIG_INM_ADCREFM |
++			STEPCONFIG_INP(ts_dev->inp_yn);
+ 	titsc_writel(ts_dev, REG_STEPCONFIG(end_step), config);
+ 	titsc_writel(ts_dev, REG_STEPDELAY(end_step),
+ 			STEPCONFIG_OPENDLY);
+-- 
+2.34.1
+
 
 
