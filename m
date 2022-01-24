@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7607C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F958C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351442AbiAXUlC (ORCPT
+        id S1389469AbiAXUlL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:41:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47390 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381586AbiAXUVV (ORCPT
+        Mon, 24 Jan 2022 15:41:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59666 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350617AbiAXUVn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:21:21 -0500
+        Mon, 24 Jan 2022 15:21:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 73BAE614E2;
-        Mon, 24 Jan 2022 20:21:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 528FDC340E5;
-        Mon, 24 Jan 2022 20:21:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3EE8EB8121A;
+        Mon, 24 Jan 2022 20:21:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EDB1C340E5;
+        Mon, 24 Jan 2022 20:21:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055679;
-        bh=f21MzGFvooadYexLUcwxb1T6t4IyhWjyJE0ILpkgpd8=;
+        s=korg; t=1643055701;
+        bh=A7FifYEoNq3WcY60AzUYb/DEVXnbG0VC8sCAVJ03L+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iqJL6vRlmBt4nhJtOKXKRraGgQw9LcEL6Sv1FbqWlRx961mPrYbb1PptkieBqIDCo
-         2dyctguukY3+b0Pf4l7nyNCrbIgOEhkdcqSX0YEzzZjGheHClaLEhQk+4zOC/Rpmko
-         uuuajZmuJW0gJ9gSqGH742om0Ajq0BrsIHCyW0oM=
+        b=lxi4SzPDRsdzEARyaUtBA3ykbnb4j1vWvzN+KIHYA2yxYRar0QBm/0dvyWF7DGY1u
+         msGAZQVx/z4KHy6vfcbjzgkMmuUaCL1Hf3mAYQ4dr5lIgnKq6sM/ck59eXx2OYvzoK
+         N1Vyyy09bI/HpD2tNhWkYeKLnvEn+mwWy1mTrsvM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 231/846] crypto: stm32/cryp - fix CTR counter carry
-Date:   Mon, 24 Jan 2022 19:35:48 +0100
-Message-Id: <20220124184108.901641484@linuxfoundation.org>
+Subject: [PATCH 5.15 237/846] crypto: stm32 - Revert broken pm_runtime_resume_and_get changes
+Date:   Mon, 24 Jan 2022 19:35:54 +0100
+Message-Id: <20220124184109.114188920@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,76 +48,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+From: Herbert Xu <herbert@gondor.apana.org.au>
 
-[ Upstream commit 41c76690b0990efacd15d35cfb4e77318cd80ebb ]
+[ Upstream commit 3d6b661330a7954d8136df98160d525eb04dcd6a ]
 
-STM32 CRYP hardware doesn't manage CTR counter bigger than max U32, as
-a workaround, at each block the current IV is saved, if the saved IV
-lower u32 is 0xFFFFFFFF, the full IV is manually incremented, and set
-in hardware.
-Fixes: bbb2832620ac ("crypto: stm32 - Fix sparse warnings")
+We should not call pm_runtime_resume_and_get where the reference
+count is expected to be incremented unconditionally.  This patch
+reverts these calls to the original unconditional get_sync call.
 
-Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Reported-by: Heiner Kallweit <hkallweit1@gmail.com>
+Fixes: 747bf30fd944 ("crypto: stm32/cryp - Fix PM reference leak...")
+Fixes: 1cb3ad701970 ("crypto: stm32/hash - Fix PM reference leak...")
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/stm32/stm32-cryp.c | 27 +++++++++++++--------------
- 1 file changed, 13 insertions(+), 14 deletions(-)
+ drivers/crypto/stm32/stm32-cryp.c | 3 ++-
+ drivers/crypto/stm32/stm32-hash.c | 6 +++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
-index 7389a0536ff02..d13b262b36252 100644
+index cd57c5bae3ce9..81eb136b6c11d 100644
 --- a/drivers/crypto/stm32/stm32-cryp.c
 +++ b/drivers/crypto/stm32/stm32-cryp.c
-@@ -163,7 +163,7 @@ struct stm32_cryp {
- 	struct scatter_walk     in_walk;
- 	struct scatter_walk     out_walk;
- 
--	u32                     last_ctr[4];
-+	__be32                  last_ctr[4];
- 	u32                     gcm_ctr;
- };
- 
-@@ -1217,27 +1217,26 @@ static void stm32_cryp_check_ctr_counter(struct stm32_cryp *cryp)
+@@ -529,7 +529,8 @@ static int stm32_cryp_hw_init(struct stm32_cryp *cryp)
  {
- 	u32 cr;
+ 	int ret;
+ 	u32 cfg, hw_mode;
+-	pm_runtime_resume_and_get(cryp->dev);
++
++	pm_runtime_get_sync(cryp->dev);
  
--	if (unlikely(cryp->last_ctr[3] == 0xFFFFFFFF)) {
--		cryp->last_ctr[3] = 0;
--		cryp->last_ctr[2]++;
--		if (!cryp->last_ctr[2]) {
--			cryp->last_ctr[1]++;
--			if (!cryp->last_ctr[1])
--				cryp->last_ctr[0]++;
--		}
-+	if (unlikely(cryp->last_ctr[3] == cpu_to_be32(0xFFFFFFFF))) {
-+		/*
-+		 * In this case, we need to increment manually the ctr counter,
-+		 * as HW doesn't handle the U32 carry.
-+		 */
-+		crypto_inc((u8 *)cryp->last_ctr, sizeof(cryp->last_ctr));
+ 	/* Disable interrupt */
+ 	stm32_cryp_write(cryp, CRYP_IMSCR, 0);
+diff --git a/drivers/crypto/stm32/stm32-hash.c b/drivers/crypto/stm32/stm32-hash.c
+index 389de9e3302d5..d33006d43f761 100644
+--- a/drivers/crypto/stm32/stm32-hash.c
++++ b/drivers/crypto/stm32/stm32-hash.c
+@@ -813,7 +813,7 @@ static void stm32_hash_finish_req(struct ahash_request *req, int err)
+ static int stm32_hash_hw_init(struct stm32_hash_dev *hdev,
+ 			      struct stm32_hash_request_ctx *rctx)
+ {
+-	pm_runtime_resume_and_get(hdev->dev);
++	pm_runtime_get_sync(hdev->dev);
  
- 		cr = stm32_cryp_read(cryp, CRYP_CR);
- 		stm32_cryp_write(cryp, CRYP_CR, cr & ~CR_CRYPEN);
+ 	if (!(HASH_FLAGS_INIT & hdev->flags)) {
+ 		stm32_hash_write(hdev, HASH_CR, HASH_CR_INIT);
+@@ -962,7 +962,7 @@ static int stm32_hash_export(struct ahash_request *req, void *out)
+ 	u32 *preg;
+ 	unsigned int i;
  
--		stm32_cryp_hw_write_iv(cryp, (__be32 *)cryp->last_ctr);
-+		stm32_cryp_hw_write_iv(cryp, cryp->last_ctr);
+-	pm_runtime_resume_and_get(hdev->dev);
++	pm_runtime_get_sync(hdev->dev);
  
- 		stm32_cryp_write(cryp, CRYP_CR, cr);
- 	}
+ 	while ((stm32_hash_read(hdev, HASH_SR) & HASH_SR_BUSY))
+ 		cpu_relax();
+@@ -1000,7 +1000,7 @@ static int stm32_hash_import(struct ahash_request *req, const void *in)
  
--	cryp->last_ctr[0] = stm32_cryp_read(cryp, CRYP_IV0LR);
--	cryp->last_ctr[1] = stm32_cryp_read(cryp, CRYP_IV0RR);
--	cryp->last_ctr[2] = stm32_cryp_read(cryp, CRYP_IV1LR);
--	cryp->last_ctr[3] = stm32_cryp_read(cryp, CRYP_IV1RR);
-+	/* The IV registers are BE  */
-+	cryp->last_ctr[0] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV0LR));
-+	cryp->last_ctr[1] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV0RR));
-+	cryp->last_ctr[2] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV1LR));
-+	cryp->last_ctr[3] = cpu_to_be32(stm32_cryp_read(cryp, CRYP_IV1RR));
- }
+ 	preg = rctx->hw_context;
  
- static bool stm32_cryp_irq_read_data(struct stm32_cryp *cryp)
+-	pm_runtime_resume_and_get(hdev->dev);
++	pm_runtime_get_sync(hdev->dev);
+ 
+ 	stm32_hash_write(hdev, HASH_IMR, *preg++);
+ 	stm32_hash_write(hdev, HASH_STR, *preg++);
 -- 
 2.34.1
 
