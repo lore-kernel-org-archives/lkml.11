@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C40FC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 531C2C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383485AbiAXU1Q (ORCPT
+        id S1383433AbiAXU1P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:27:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352050AbiAXT5G (ORCPT
+        Mon, 24 Jan 2022 15:27:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42022 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352065AbiAXT5I (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE679C047CC4;
-        Mon, 24 Jan 2022 11:27:35 -0800 (PST)
+        Mon, 24 Jan 2022 14:57:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6FD59612A5;
-        Mon, 24 Jan 2022 19:27:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50EC9C340E5;
-        Mon, 24 Jan 2022 19:27:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A45C2B81250;
+        Mon, 24 Jan 2022 19:57:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB5FCC36AF8;
+        Mon, 24 Jan 2022 19:57:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052454;
-        bh=9a+xHoltRu03sANkBxiaS+KPP2yivPNWUQ+VE4R/e6I=;
+        s=korg; t=1643054225;
+        bh=VZmVXt/UEJu0JrykiqxVGJCDpMEGYho1Ci9uJsaNUT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZkoPccDXIYSe17eIotLjE6GrupkazGfRr8Wq3VkdVN4tQ5P1r6LsnX6H0RIe2UCo4
-         Mc4C/GngznZa+SeQshMZax1gBMctBm14p1mSy9ivHA967oHB256p0yIgpb2Ld31Evj
-         Owk9zn+mFKlIVqTYRr6o4NxHeKop4EBJ+1YGAEj0=
+        b=dmUdwV/fh7FRY8SIHKMp90u9EqYgtEHu76mVeSk2oHww1CC3Fm30+QjVzidTk7wmM
+         R82WO07hQ9o5uUqTkjMUnrRzWs1kjAmSkTy4z3ltHAsyGFFqPlw1TVeRJE4Ltjm9fO
+         W41ZTb9XNHuMref3oSqOj9JzK0e6CoULoePbl7ZE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, aleksandr.o.makarov@gmail.com,
-        Brian Norris <briannorris@chromium.org>,
-        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
-        <nfraprado@collabora.com>, Chen-Yu Tsai <wenst@chromium.org>,
-        Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH 5.4 032/320] drm/rockchip: dsi: Hold pm-runtime across bind/unbind
-Date:   Mon, 24 Jan 2022 19:40:16 +0100
-Message-Id: <20220124183954.848066075@linuxfoundation.org>
+        stable@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 286/563] counter: stm32-lptimer-cnt: remove iio counter abi
+Date:   Mon, 24 Jan 2022 19:40:51 +0100
+Message-Id: <20220124184034.341913688@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,148 +49,484 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 
-commit 514db871922f103886ad4d221cf406b4fcc5e74a upstream.
+[ Upstream commit 01f68f067dc39df9c9d95d759ee61517eb4b0fcf ]
 
-In commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
-LCDC mux to bind()"), we moved most HW configuration to bind(), but we
-didn't move the runtime PM management. Therefore, depending on initial
-boot state, runtime-PM workqueue delays, and other timing factors, we
-may disable our power domain in between the hardware configuration
-(bind()) and when we enable the display. This can cause us to lose
-hardware state and fail to configure our display. For example:
+Currently, the STM32 LP Timer counter driver registers into both IIO and
+counter subsystems, which is redundant.
 
-  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
-  panel-innolux-p079zca ff960000.mipi.0: failed to write command 0
+Remove the IIO counter ABI and IIO registration from the STM32 LP Timer
+counter driver since it's been superseded by the Counter subsystem
+as discussed in [1].
 
-or:
+Keep only the counter subsystem related part.
+Move a part of the ABI documentation into a driver comment.
 
-  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
-  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
+This also removes a duplicate ABI warning
+$ scripts/get_abi.pl validate
+...
+/sys/bus/iio/devices/iio:deviceX/in_count0_preset is defined 2 times:
+  ./Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:100
+  ./Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:0
 
-We should match the runtime PM to the lifetime of the bind()/unbind()
-cycle.
+[1] https://lkml.org/lkml/2021/1/19/347
 
-Tested on Acer Chrometab 10 (RK3399 Gru-Scarlet), with panel drivers
-built either as modules or built-in.
-
-Side notes: it seems one is more likely to see this problem when the
-panel driver is built into the kernel. I've also seen this problem
-bisect down to commits that simply changed Kconfig dependencies, because
-it changed the order in which driver init functions were compiled into
-the kernel, and therefore the ordering and timing of built-in device
-probe.
-
-Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
-Link: https://lore.kernel.org/linux-rockchip/9aedfb528600ecf871885f7293ca4207c84d16c1.camel@gmail.com/
-Reported-by: <aleksandr.o.makarov@gmail.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-Signed-off-by: Heiko Stuebner <heiko@sntech.de>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.1.Ic2904d37f30013a7f3d8476203ad3733c186827e@changeid
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Link: https://lore.kernel.org/r/1611926542-2490-1-git-send-email-fabrice.gasnier@foss.st.com
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++------------
- 1 file changed, 19 insertions(+), 18 deletions(-)
+ .../ABI/testing/sysfs-bus-iio-lptimer-stm32   |  62 ----
+ drivers/counter/Kconfig                       |   2 +-
+ drivers/counter/stm32-lptimer-cnt.c           | 297 +++---------------
+ 3 files changed, 37 insertions(+), 324 deletions(-)
+ delete mode 100644 Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
 
---- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-+++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
-@@ -625,10 +625,6 @@ static void dw_mipi_dsi_encoder_enable(s
- 	if (mux < 0)
- 		return;
- 
--	pm_runtime_get_sync(dsi->dev);
--	if (dsi->slave)
--		pm_runtime_get_sync(dsi->slave->dev);
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
+deleted file mode 100644
+index 73498ff666bd7..0000000000000
+--- a/Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32
++++ /dev/null
+@@ -1,62 +0,0 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/in_count0_preset
+-KernelVersion:	4.13
+-Contact:	fabrice.gasnier@st.com
+-Description:
+-		Reading returns the current preset value. Writing sets the
+-		preset value. Encoder counts continuously from 0 to preset
+-		value, depending on direction (up/down).
 -
- 	/*
- 	 * For the RK3399, the clk of grf must be enabled before writing grf
- 	 * register. And for RK3288 or other soc, this grf_clk must be NULL,
-@@ -647,20 +643,10 @@ static void dw_mipi_dsi_encoder_enable(s
- 	clk_disable_unprepare(dsi->grf_clk);
+-What:		/sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+-KernelVersion:	4.13
+-Contact:	fabrice.gasnier@st.com
+-Description:
+-		Reading returns the list possible quadrature modes.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode
+-KernelVersion:	4.13
+-Contact:	fabrice.gasnier@st.com
+-Description:
+-		Configure the device counter quadrature modes:
+-
+-		- non-quadrature:
+-			Encoder IN1 input servers as the count input (up
+-			direction).
+-
+-		- quadrature:
+-			Encoder IN1 and IN2 inputs are mixed to get direction
+-			and count.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_count_polarity_available
+-KernelVersion:	4.13
+-Contact:	fabrice.gasnier@st.com
+-Description:
+-		Reading returns the list possible active edges.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_count0_polarity
+-KernelVersion:	4.13
+-Contact:	fabrice.gasnier@st.com
+-Description:
+-		Configure the device encoder/counter active edge:
+-
+-		- rising-edge
+-		- falling-edge
+-		- both-edges
+-
+-		In non-quadrature mode, device counts up on active edge.
+-
+-		In quadrature mode, encoder counting scenarios are as follows:
+-
+-		+---------+----------+--------------------+--------------------+
+-		| Active  | Level on |      IN1 signal    |     IN2 signal     |
+-		| edge    | opposite +----------+---------+----------+---------+
+-		|         | signal   |  Rising  | Falling |  Rising  | Falling |
+-		+---------+----------+----------+---------+----------+---------+
+-		| Rising  | High ->  |   Down   |    -    |   Up     |    -    |
+-		| edge    | Low  ->  |   Up     |    -    |   Down   |    -    |
+-		+---------+----------+----------+---------+----------+---------+
+-		| Falling | High ->  |    -     |   Up    |    -     |   Down  |
+-		| edge    | Low  ->  |    -     |   Down  |    -     |   Up    |
+-		+---------+----------+----------+---------+----------+---------+
+-		| Both    | High ->  |   Down   |   Up    |   Up     |   Down  |
+-		| edges   | Low  ->  |   Up     |   Down  |   Down   |   Up    |
+-		+---------+----------+----------+---------+----------+---------+
+diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+index 2de53ab0dd252..cbdf84200e278 100644
+--- a/drivers/counter/Kconfig
++++ b/drivers/counter/Kconfig
+@@ -41,7 +41,7 @@ config STM32_TIMER_CNT
+ 
+ config STM32_LPTIMER_CNT
+ 	tristate "STM32 LP Timer encoder counter driver"
+-	depends on (MFD_STM32_LPTIMER || COMPILE_TEST) && IIO
++	depends on MFD_STM32_LPTIMER || COMPILE_TEST
+ 	help
+ 	  Select this option to enable STM32 Low-Power Timer quadrature encoder
+ 	  and counter driver.
+diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+index fd6828e2d34f5..937439635d53f 100644
+--- a/drivers/counter/stm32-lptimer-cnt.c
++++ b/drivers/counter/stm32-lptimer-cnt.c
+@@ -12,8 +12,8 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/counter.h>
+-#include <linux/iio/iio.h>
+ #include <linux/mfd/stm32-lptimer.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
+@@ -107,249 +107,27 @@ static int stm32_lptim_setup(struct stm32_lptim_cnt *priv, int enable)
+ 	return regmap_update_bits(priv->regmap, STM32_LPTIM_CFGR, mask, val);
  }
  
--static void dw_mipi_dsi_encoder_disable(struct drm_encoder *encoder)
+-static int stm32_lptim_write_raw(struct iio_dev *indio_dev,
+-				 struct iio_chan_spec const *chan,
+-				 int val, int val2, long mask)
 -{
--	struct dw_mipi_dsi_rockchip *dsi = to_dsi(encoder);
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-	int ret;
 -
--	if (dsi->slave)
--		pm_runtime_put(dsi->slave->dev);
--	pm_runtime_put(dsi->dev);
+-	switch (mask) {
+-	case IIO_CHAN_INFO_ENABLE:
+-		if (val < 0 || val > 1)
+-			return -EINVAL;
+-
+-		/* Check nobody uses the timer, or already disabled/enabled */
+-		ret = stm32_lptim_is_enabled(priv);
+-		if ((ret < 0) || (!ret && !val))
+-			return ret;
+-		if (val && ret)
+-			return -EBUSY;
+-
+-		ret = stm32_lptim_setup(priv, val);
+-		if (ret)
+-			return ret;
+-		return stm32_lptim_set_enable_state(priv, val);
+-
+-	default:
+-		return -EINVAL;
+-	}
 -}
 -
- static const struct drm_encoder_helper_funcs
- dw_mipi_dsi_encoder_helper_funcs = {
- 	.atomic_check = dw_mipi_dsi_encoder_atomic_check,
- 	.enable = dw_mipi_dsi_encoder_enable,
--	.disable = dw_mipi_dsi_encoder_disable,
- };
- 
- static const struct drm_encoder_funcs dw_mipi_dsi_encoder_funcs = {
-@@ -795,10 +781,14 @@ static int dw_mipi_dsi_rockchip_bind(str
- 		put_device(second);
- 	}
- 
-+	pm_runtime_get_sync(dsi->dev);
-+	if (dsi->slave)
-+		pm_runtime_get_sync(dsi->slave->dev);
-+
- 	ret = clk_prepare_enable(dsi->pllref_clk);
- 	if (ret) {
- 		DRM_DEV_ERROR(dev, "Failed to enable pllref_clk: %d\n", ret);
+-static int stm32_lptim_read_raw(struct iio_dev *indio_dev,
+-				struct iio_chan_spec const *chan,
+-				int *val, int *val2, long mask)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-	u32 dat;
+-	int ret;
+-
+-	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
+-		ret = regmap_read(priv->regmap, STM32_LPTIM_CNT, &dat);
+-		if (ret)
+-			return ret;
+-		*val = dat;
+-		return IIO_VAL_INT;
+-
+-	case IIO_CHAN_INFO_ENABLE:
+-		ret = stm32_lptim_is_enabled(priv);
+-		if (ret < 0)
+-			return ret;
+-		*val = ret;
+-		return IIO_VAL_INT;
+-
+-	case IIO_CHAN_INFO_SCALE:
+-		/* Non-quadrature mode: scale = 1 */
+-		*val = 1;
+-		*val2 = 0;
+-		if (priv->quadrature_mode) {
+-			/*
+-			 * Quadrature encoder mode:
+-			 * - both edges, quarter cycle, scale is 0.25
+-			 * - either rising/falling edge scale is 0.5
+-			 */
+-			if (priv->polarity > 1)
+-				*val2 = 2;
+-			else
+-				*val2 = 1;
+-		}
+-		return IIO_VAL_FRACTIONAL_LOG2;
+-
+-	default:
+-		return -EINVAL;
+-	}
+-}
+-
+-static const struct iio_info stm32_lptim_cnt_iio_info = {
+-	.read_raw = stm32_lptim_read_raw,
+-	.write_raw = stm32_lptim_write_raw,
+-};
+-
+-static const char *const stm32_lptim_quadrature_modes[] = {
+-	"non-quadrature",
+-	"quadrature",
+-};
+-
+-static int stm32_lptim_get_quadrature_mode(struct iio_dev *indio_dev,
+-					   const struct iio_chan_spec *chan)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-
+-	return priv->quadrature_mode;
+-}
+-
+-static int stm32_lptim_set_quadrature_mode(struct iio_dev *indio_dev,
+-					   const struct iio_chan_spec *chan,
+-					   unsigned int type)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-
+-	if (stm32_lptim_is_enabled(priv))
+-		return -EBUSY;
+-
+-	priv->quadrature_mode = type;
+-
+-	return 0;
+-}
+-
+-static const struct iio_enum stm32_lptim_quadrature_mode_en = {
+-	.items = stm32_lptim_quadrature_modes,
+-	.num_items = ARRAY_SIZE(stm32_lptim_quadrature_modes),
+-	.get = stm32_lptim_get_quadrature_mode,
+-	.set = stm32_lptim_set_quadrature_mode,
+-};
+-
+-static const char * const stm32_lptim_cnt_polarity[] = {
+-	"rising-edge", "falling-edge", "both-edges",
+-};
+-
+-static int stm32_lptim_cnt_get_polarity(struct iio_dev *indio_dev,
+-					const struct iio_chan_spec *chan)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-
+-	return priv->polarity;
+-}
+-
+-static int stm32_lptim_cnt_set_polarity(struct iio_dev *indio_dev,
+-					const struct iio_chan_spec *chan,
+-					unsigned int type)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-
+-	if (stm32_lptim_is_enabled(priv))
+-		return -EBUSY;
+-
+-	priv->polarity = type;
+-
+-	return 0;
+-}
+-
+-static const struct iio_enum stm32_lptim_cnt_polarity_en = {
+-	.items = stm32_lptim_cnt_polarity,
+-	.num_items = ARRAY_SIZE(stm32_lptim_cnt_polarity),
+-	.get = stm32_lptim_cnt_get_polarity,
+-	.set = stm32_lptim_cnt_set_polarity,
+-};
+-
+-static ssize_t stm32_lptim_cnt_get_ceiling(struct stm32_lptim_cnt *priv,
+-					   char *buf)
+-{
+-	return snprintf(buf, PAGE_SIZE, "%u\n", priv->ceiling);
+-}
+-
+-static ssize_t stm32_lptim_cnt_set_ceiling(struct stm32_lptim_cnt *priv,
+-					   const char *buf, size_t len)
+-{
+-	int ret;
+-
+-	if (stm32_lptim_is_enabled(priv))
+-		return -EBUSY;
+-
+-	ret = kstrtouint(buf, 0, &priv->ceiling);
+-	if (ret)
 -		return ret;
-+		goto out_pm_runtime;
- 	}
+-
+-	if (priv->ceiling > STM32_LPTIM_MAX_ARR)
+-		return -EINVAL;
+-
+-	return len;
+-}
+-
+-static ssize_t stm32_lptim_cnt_get_preset_iio(struct iio_dev *indio_dev,
+-					      uintptr_t private,
+-					      const struct iio_chan_spec *chan,
+-					      char *buf)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-
+-	return stm32_lptim_cnt_get_ceiling(priv, buf);
+-}
+-
+-static ssize_t stm32_lptim_cnt_set_preset_iio(struct iio_dev *indio_dev,
+-					      uintptr_t private,
+-					      const struct iio_chan_spec *chan,
+-					      const char *buf, size_t len)
+-{
+-	struct stm32_lptim_cnt *priv = iio_priv(indio_dev);
+-
+-	return stm32_lptim_cnt_set_ceiling(priv, buf, len);
+-}
+-
+-/* LP timer with encoder */
+-static const struct iio_chan_spec_ext_info stm32_lptim_enc_ext_info[] = {
+-	{
+-		.name = "preset",
+-		.shared = IIO_SEPARATE,
+-		.read = stm32_lptim_cnt_get_preset_iio,
+-		.write = stm32_lptim_cnt_set_preset_iio,
+-	},
+-	IIO_ENUM("polarity", IIO_SEPARATE, &stm32_lptim_cnt_polarity_en),
+-	IIO_ENUM_AVAILABLE("polarity", &stm32_lptim_cnt_polarity_en),
+-	IIO_ENUM("quadrature_mode", IIO_SEPARATE,
+-		 &stm32_lptim_quadrature_mode_en),
+-	IIO_ENUM_AVAILABLE("quadrature_mode", &stm32_lptim_quadrature_mode_en),
+-	{}
+-};
+-
+-static const struct iio_chan_spec stm32_lptim_enc_channels = {
+-	.type = IIO_COUNT,
+-	.channel = 0,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			      BIT(IIO_CHAN_INFO_ENABLE) |
+-			      BIT(IIO_CHAN_INFO_SCALE),
+-	.ext_info = stm32_lptim_enc_ext_info,
+-	.indexed = 1,
+-};
+-
+-/* LP timer without encoder (counter only) */
+-static const struct iio_chan_spec_ext_info stm32_lptim_cnt_ext_info[] = {
+-	{
+-		.name = "preset",
+-		.shared = IIO_SEPARATE,
+-		.read = stm32_lptim_cnt_get_preset_iio,
+-		.write = stm32_lptim_cnt_set_preset_iio,
+-	},
+-	IIO_ENUM("polarity", IIO_SEPARATE, &stm32_lptim_cnt_polarity_en),
+-	IIO_ENUM_AVAILABLE("polarity", &stm32_lptim_cnt_polarity_en),
+-	{}
+-};
+-
+-static const struct iio_chan_spec stm32_lptim_cnt_channels = {
+-	.type = IIO_COUNT,
+-	.channel = 0,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			      BIT(IIO_CHAN_INFO_ENABLE) |
+-			      BIT(IIO_CHAN_INFO_SCALE),
+-	.ext_info = stm32_lptim_cnt_ext_info,
+-	.indexed = 1,
+-};
+-
+ /**
+  * enum stm32_lptim_cnt_function - enumerates LPTimer counter & encoder modes
+  * @STM32_LPTIM_COUNTER_INCREASE: up count on IN1 rising, falling or both edges
+  * @STM32_LPTIM_ENCODER_BOTH_EDGE: count on both edges (IN1 & IN2 quadrature)
++ *
++ * In non-quadrature mode, device counts up on active edge.
++ * In quadrature mode, encoder counting scenarios are as follows:
++ * +---------+----------+--------------------+--------------------+
++ * | Active  | Level on |      IN1 signal    |     IN2 signal     |
++ * | edge    | opposite +----------+---------+----------+---------+
++ * |         | signal   |  Rising  | Falling |  Rising  | Falling |
++ * +---------+----------+----------+---------+----------+---------+
++ * | Rising  | High ->  |   Down   |    -    |   Up     |    -    |
++ * | edge    | Low  ->  |   Up     |    -    |   Down   |    -    |
++ * +---------+----------+----------+---------+----------+---------+
++ * | Falling | High ->  |    -     |   Up    |    -     |   Down  |
++ * | edge    | Low  ->  |    -     |   Down  |    -     |   Up    |
++ * +---------+----------+----------+---------+----------+---------+
++ * | Both    | High ->  |   Down   |   Up    |   Up     |   Down  |
++ * | edges   | Low  ->  |   Up     |   Down  |   Down   |   Up    |
++ * +---------+----------+----------+---------+----------+---------+
+  */
+ enum stm32_lptim_cnt_function {
+ 	STM32_LPTIM_COUNTER_INCREASE,
+@@ -484,7 +262,7 @@ static ssize_t stm32_lptim_cnt_ceiling_read(struct counter_device *counter,
+ {
+ 	struct stm32_lptim_cnt *const priv = counter->priv;
  
- 	/*
-@@ -810,7 +800,7 @@ static int dw_mipi_dsi_rockchip_bind(str
- 	ret = clk_prepare_enable(dsi->grf_clk);
- 	if (ret) {
- 		DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
--		return ret;
-+		goto out_pm_runtime;
- 	}
- 
- 	dw_mipi_dsi_rockchip_config(dsi);
-@@ -822,16 +812,23 @@ static int dw_mipi_dsi_rockchip_bind(str
- 	ret = rockchip_dsi_drm_create_encoder(dsi, drm_dev);
- 	if (ret) {
- 		DRM_DEV_ERROR(dev, "Failed to create drm encoder\n");
--		return ret;
-+		goto out_pm_runtime;
- 	}
- 
- 	ret = dw_mipi_dsi_bind(dsi->dmd, &dsi->encoder);
- 	if (ret) {
- 		DRM_DEV_ERROR(dev, "Failed to bind: %d\n", ret);
--		return ret;
-+		goto out_pm_runtime;
- 	}
- 
- 	return 0;
-+
-+out_pm_runtime:
-+	pm_runtime_put(dsi->dev);
-+	if (dsi->slave)
-+		pm_runtime_put(dsi->slave->dev);
-+
-+	return ret;
+-	return stm32_lptim_cnt_get_ceiling(priv, buf);
++	return snprintf(buf, PAGE_SIZE, "%u\n", priv->ceiling);
  }
  
- static void dw_mipi_dsi_rockchip_unbind(struct device *dev,
-@@ -846,6 +843,10 @@ static void dw_mipi_dsi_rockchip_unbind(
- 	dw_mipi_dsi_unbind(dsi->dmd);
- 
- 	clk_disable_unprepare(dsi->pllref_clk);
+ static ssize_t stm32_lptim_cnt_ceiling_write(struct counter_device *counter,
+@@ -493,8 +271,22 @@ static ssize_t stm32_lptim_cnt_ceiling_write(struct counter_device *counter,
+ 					     const char *buf, size_t len)
+ {
+ 	struct stm32_lptim_cnt *const priv = counter->priv;
++	unsigned int ceiling;
++	int ret;
 +
-+	pm_runtime_put(dsi->dev);
-+	if (dsi->slave)
-+		pm_runtime_put(dsi->slave->dev);
++	if (stm32_lptim_is_enabled(priv))
++		return -EBUSY;
++
++	ret = kstrtouint(buf, 0, &ceiling);
++	if (ret)
++		return ret;
++
++	if (ceiling > STM32_LPTIM_MAX_ARR)
++		return -EINVAL;
++
++	priv->ceiling = ceiling;
+ 
+-	return stm32_lptim_cnt_set_ceiling(priv, buf, len);
++	return len;
  }
  
- static const struct component_ops dw_mipi_dsi_rockchip_ops = {
+ static const struct counter_count_ext stm32_lptim_cnt_ext[] = {
+@@ -630,32 +422,19 @@ static int stm32_lptim_cnt_probe(struct platform_device *pdev)
+ {
+ 	struct stm32_lptimer *ddata = dev_get_drvdata(pdev->dev.parent);
+ 	struct stm32_lptim_cnt *priv;
+-	struct iio_dev *indio_dev;
+-	int ret;
+ 
+ 	if (IS_ERR_OR_NULL(ddata))
+ 		return -EINVAL;
+ 
+-	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
+-	if (!indio_dev)
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
+ 		return -ENOMEM;
+ 
+-	priv = iio_priv(indio_dev);
+ 	priv->dev = &pdev->dev;
+ 	priv->regmap = ddata->regmap;
+ 	priv->clk = ddata->clk;
+ 	priv->ceiling = STM32_LPTIM_MAX_ARR;
+ 
+-	/* Initialize IIO device */
+-	indio_dev->name = dev_name(&pdev->dev);
+-	indio_dev->dev.of_node = pdev->dev.of_node;
+-	indio_dev->info = &stm32_lptim_cnt_iio_info;
+-	if (ddata->has_encoder)
+-		indio_dev->channels = &stm32_lptim_enc_channels;
+-	else
+-		indio_dev->channels = &stm32_lptim_cnt_channels;
+-	indio_dev->num_channels = 1;
+-
+ 	/* Initialize Counter device */
+ 	priv->counter.name = dev_name(&pdev->dev);
+ 	priv->counter.parent = &pdev->dev;
+@@ -673,10 +452,6 @@ static int stm32_lptim_cnt_probe(struct platform_device *pdev)
+ 
+ 	platform_set_drvdata(pdev, priv);
+ 
+-	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+-	if (ret)
+-		return ret;
+-
+ 	return devm_counter_register(&pdev->dev, &priv->counter);
+ }
+ 
+-- 
+2.34.1
+
 
 
