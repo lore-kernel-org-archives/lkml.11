@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851E8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D90C35268
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377510AbiAXUFe (ORCPT
+        id S1377600AbiAXUFn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37800 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354097AbiAXTsA (ORCPT
+        Mon, 24 Jan 2022 15:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356980AbiAXTsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:00 -0500
+        Mon, 24 Jan 2022 14:48:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C89DC038AF8;
+        Mon, 24 Jan 2022 11:23:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29C77B8119D;
-        Mon, 24 Jan 2022 19:47:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D17BC340E5;
-        Mon, 24 Jan 2022 19:47:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CED7C60010;
+        Mon, 24 Jan 2022 19:23:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90EEBC340E5;
+        Mon, 24 Jan 2022 19:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053676;
-        bh=/vz12Y+4kCw+FJnjP4uwJIwY0vpUaKSJwMXMfs4kA/k=;
+        s=korg; t=1643052210;
+        bh=U+eiWYMugops2qGWPhAC285h643ykhpyv+8sf2oFFCs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vltYa7x/HUPJXlOU193E8ZIP4kZCHA22a0S1cEFz7lGZMtMC+VR1kNG4p8bywlD6n
-         sS0u6UBd+9+UkHRbM+7qBHPD6PW80aWQwz5A0lu146lq0iPX8gaNZFnVbj20i7W25H
-         XTDroPvtWpOfKbktzcIeaviddlzmfQPYM9jQEOok=
+        b=YAcxZtSUFk9inF8FuHJIBtR6WFPnH21lD3Hg7vKA/cezgzLhlLiBP9meLiWOA7X+Q
+         u2bZWIahfxhkg0K56luMNuMjed7LaaCwKC+XXREdXPK5IK+AUXk9lYntcyfVffZdsY
+         j5rNM94QstcReRWLyuqeeSjqNmmUFDfXzjdhg06I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Suresh Udipi <sudipi@jp.adit-jv.com>,
-        Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>,
-        Michael Rodin <mrodin@de.adit-jv.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 108/563] media: rcar-csi2: Correct the selection of hsfreqrange
-Date:   Mon, 24 Jan 2022 19:37:53 +0100
-Message-Id: <20220124184028.138439005@linuxfoundation.org>
+        stable@vger.kernel.org, Laurence de Bruxelles <lfdebrux@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 4.19 225/239] rtc: pxa: fix null pointer dereference
+Date:   Mon, 24 Jan 2022 19:44:23 +0100
+Message-Id: <20220124183950.263085309@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,80 +49,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Udipi <sudipi@jp.adit-jv.com>
+From: Laurence de Bruxelles <lfdebrux@gmail.com>
 
-[ Upstream commit cee44d4fbacbbdfe62697ec94e76c6e4f726c5df ]
+commit 34127b3632b21e5c391756e724b1198eb9917981 upstream.
 
-hsfreqrange should be chosen based on the calculated mbps which
-is closer to the default bit rate  and within the range as per
-table[1]. But current calculation always selects first value which
-is greater than or equal to the calculated mbps which may lead
-to chosing a wrong range in some cases.
+With the latest stable kernel versions the rtc on the PXA based
+Zaurus does not work, when booting I see the following kernel messages:
 
-For example for 360 mbps for H3/M3N
-Existing logic selects
-Calculated value 360Mbps : Default 400Mbps Range [368.125 -433.125 mbps]
+pxa-rtc pxa-rtc: failed to find rtc clock source
+pxa-rtc pxa-rtc: Unable to init SA1100 RTC sub-device
+pxa-rtc: probe of pxa-rtc failed with error -2
+hctosys: unable to open rtc device (rtc0)
 
-This hsfreqrange is out of range.
+I think this is because commit f2997775b111 ("rtc: sa1100: fix possible
+race condition") moved the allocation of the rtc_device struct out of
+sa1100_rtc_init and into sa1100_rtc_probe. This means that pxa_rtc_probe
+also needs to do allocation for the rtc_device struct, otherwise
+sa1100_rtc_init will try to dereference a null pointer. This patch adds
+that allocation by copying how sa1100_rtc_probe in
+drivers/rtc/rtc-sa1100.c does it; after the IRQs are set up a managed
+rtc_device is allocated.
 
-The logic is changed to get the default value which is closest to the
-calculated value [1]
+I've tested this patch with `qemu-system-arm -machine akita` and with a
+real Zaurus SL-C1000 applied to 4.19, 5.4, and 5.10.
 
-Calculated value 360Mbps : Default 350Mbps  Range [320.625 -380.625 mpbs]
-
-[1] specs r19uh0105ej0200-r-car-3rd-generation.pdf [Table 25.9]
-
-Please note that According to Renesas in Table 25.9 the range for
-220 default value is corrected as below
-
- |Range (Mbps)     |  Default  Bit rate (Mbps) |
- -----------------------------------------------
- | 197.125-244.125 |     220                   |
- -----------------------------------------------
-
-Fixes: 769afd212b16 ("media: rcar-csi2: add Renesas R-Car MIPI CSI-2 receiver driver")
-Signed-off-by: Suresh Udipi <sudipi@jp.adit-jv.com>
-Signed-off-by: Kazuyoshi Akiyama <akiyama@nds-osk.co.jp>
-Signed-off-by: Michael Rodin <mrodin@de.adit-jv.com>
-Reviewed-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: Laurence de Bruxelles <lfdebrux@gmail.com>
+Fixes: f2997775b111 ("rtc: sa1100: fix possible race condition")
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Link: https://lore.kernel.org/r/20220101154149.12026-1-lfdebrux@gmail.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/platform/rcar-vin/rcar-csi2.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/rtc/rtc-pxa.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/media/platform/rcar-vin/rcar-csi2.c b/drivers/media/platform/rcar-vin/rcar-csi2.c
-index d2d87a204e918..6fb8efcb40444 100644
---- a/drivers/media/platform/rcar-vin/rcar-csi2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-csi2.c
-@@ -436,16 +436,23 @@ static int rcsi2_wait_phy_start(struct rcar_csi2 *priv,
- static int rcsi2_set_phypll(struct rcar_csi2 *priv, unsigned int mbps)
- {
- 	const struct rcsi2_mbps_reg *hsfreq;
-+	const struct rcsi2_mbps_reg *hsfreq_prev = NULL;
- 
--	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++)
-+	for (hsfreq = priv->info->hsfreqrange; hsfreq->mbps != 0; hsfreq++) {
- 		if (hsfreq->mbps >= mbps)
- 			break;
-+		hsfreq_prev = hsfreq;
-+	}
- 
- 	if (!hsfreq->mbps) {
- 		dev_err(priv->dev, "Unsupported PHY speed (%u Mbps)", mbps);
- 		return -ERANGE;
+--- a/drivers/rtc/rtc-pxa.c
++++ b/drivers/rtc/rtc-pxa.c
+@@ -349,6 +349,10 @@ static int __init pxa_rtc_probe(struct p
+ 		return -ENXIO;
  	}
  
-+	if (hsfreq_prev &&
-+	    ((mbps - hsfreq_prev->mbps) <= (hsfreq->mbps - mbps)))
-+		hsfreq = hsfreq_prev;
++	sa1100_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
++	if (IS_ERR(sa1100_rtc->rtc))
++		return PTR_ERR(sa1100_rtc->rtc);
 +
- 	rcsi2_write(priv, PHYPLL_REG, PHYPLL_HSFREQRANGE(hsfreq->reg));
- 
- 	return 0;
--- 
-2.34.1
-
+ 	pxa_rtc->base = devm_ioremap(dev, pxa_rtc->ress->start,
+ 				resource_size(pxa_rtc->ress));
+ 	if (!pxa_rtc->base) {
 
 
