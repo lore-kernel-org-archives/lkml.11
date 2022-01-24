@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 310B8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E07DDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442116AbiAXUxO (ORCPT
+        id S1442143AbiAXUxZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:53:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
+        Mon, 24 Jan 2022 15:53:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384757AbiAXUad (ORCPT
+        with ESMTP id S1384767AbiAXUad (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:30:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C92E1C08B4D5;
-        Mon, 24 Jan 2022 11:42:49 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 542D0C08B4D9;
+        Mon, 24 Jan 2022 11:42:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 865F2B80FA1;
-        Mon, 24 Jan 2022 19:42:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A9A43C340E5;
-        Mon, 24 Jan 2022 19:42:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D2BE36135E;
+        Mon, 24 Jan 2022 19:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4073C340E5;
+        Mon, 24 Jan 2022 19:42:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053367;
-        bh=FeZZ+ingMMeS9llhA0tL7fmg4FwHfTx7PJX3YvByI6A=;
+        s=korg; t=1643053373;
+        bh=q06pqYo6uEXuUELP82UDgfcUYfD4+EybH2C9KbzgQ4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=h7JAahBvBFk8l/NZOpIEsvDjsdWUUXaLyEEKLapyXt0YF1RyjQ8uG0lbjH9lKx7Jo
-         UArvXGoyOmc1vDvwKArdzvGMDiyMasroJnGiBOmGW4DzOYcZt+feF+fafgRUUuHrtm
-         ng+hLd8qAs+tXDRP3wcBttFO1EQW2+5Xs8Hfa8mQ=
+        b=GcacAnTQH76Ha4NCVjylc/LJ/dIeHx73uBkXPtSUGhUvm9N+GcklEHii2GXzY18L8
+         Y7YTNYIcarxf2/KtWea6e4zCriTEQ9HJrg8iDNxohR1eQ8myCaSHA3jAwbXIq852Y9
+         q5Mcxr6J4fUCh6SHwZPL6o02BzyV0F1vt9+jVTQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.10 034/563] gpu: host1x: Add back arm_iommu_detach_device()
-Date:   Mon, 24 Jan 2022 19:36:39 +0100
-Message-Id: <20220124184025.606765771@linuxfoundation.org>
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 044/563] drm: fix null-ptr-deref in drm_dev_init_release()
+Date:   Mon, 24 Jan 2022 19:36:49 +0100
+Message-Id: <20220124184025.937609654@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,57 +51,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Wang Hai <wanghai38@huawei.com>
 
-commit d5185965c3b59073c4520bad7dd2adf725b9abba upstream.
+[ Upstream commit acf20ed020ffa4d6cc8347e8d356509b95df3cbe ]
 
-Host1x DMA buffer isn't mapped properly when CONFIG_ARM_DMA_USE_IOMMU=y.
-The memory management code of Host1x driver has a longstanding overhaul
-overdue and it's not obvious where the problem is in this case. Hence
-let's add back the old workaround which we already had sometime before.
-It explicitly detaches Host1x device from the offending implicit IOMMU
-domain. This fixes a completely broken Host1x DMA in case of ARM32
-multiplatform kernel config.
+I got a null-ptr-deref report:
 
-Cc: stable@vger.kernel.org
-Fixes: af1cbfb9bf0f ("gpu: host1x: Support DMA mapping of buffers")
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[drm:drm_dev_init [drm]] *ERROR* Cannot allocate anonymous inode: -12
+==================================================================
+BUG: KASAN: null-ptr-deref in iput+0x3c/0x4a0
+...
+Call Trace:
+ dump_stack_lvl+0x6c/0x8b
+ kasan_report.cold+0x64/0xdb
+ __asan_load8+0x69/0x90
+ iput+0x3c/0x4a0
+ drm_dev_init_release+0x39/0xb0 [drm]
+ drm_managed_release+0x158/0x2d0 [drm]
+ drm_dev_init+0x3a7/0x4c0 [drm]
+ __devm_drm_dev_alloc+0x55/0xd0 [drm]
+ mi0283qt_probe+0x8a/0x2b5 [mi0283qt]
+ spi_probe+0xeb/0x130
+...
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+If drm_fs_inode_new() fails in drm_dev_init(), dev->anon_inode will point
+to PTR_ERR(...) instead of NULL. This will result in null-ptr-deref when
+drm_fs_inode_free(dev->anon_inode) is called.
+
+drm_dev_init()
+	drm_fs_inode_new() // fail, dev->anon_inode = PTR_ERR(...)
+	drm_managed_release()
+		drm_dev_init_release()
+			drm_fs_inode_free() // access non-existent anon_inode
+
+Define a temp variable and assign it to dev->anon_inode if the temp
+variable is not PTR_ERR.
+
+Fixes: 2cbf7fc6718b ("drm: Use drmm_ for drm_dev_init cleanup")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211013114139.4042207-1-wanghai38@huawei.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/host1x/dev.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/gpu/drm/drm_drv.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -18,6 +18,10 @@
- #include <trace/events/host1x.h>
- #undef CREATE_TRACE_POINTS
+diff --git a/drivers/gpu/drm/drm_drv.c b/drivers/gpu/drm/drm_drv.c
+index cd162d406078a..006e3b896caea 100644
+--- a/drivers/gpu/drm/drm_drv.c
++++ b/drivers/gpu/drm/drm_drv.c
+@@ -577,6 +577,7 @@ static int drm_dev_init(struct drm_device *dev,
+ 			struct drm_driver *driver,
+ 			struct device *parent)
+ {
++	struct inode *inode;
+ 	int ret;
  
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+#include <asm/dma-iommu.h>
-+#endif
-+
- #include "bus.h"
- #include "channel.h"
- #include "debug.h"
-@@ -232,6 +236,17 @@ static struct iommu_domain *host1x_iommu
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(host->dev);
- 	int err;
+ 	if (!drm_core_init_complete) {
+@@ -613,13 +614,15 @@ static int drm_dev_init(struct drm_device *dev,
+ 	if (ret)
+ 		return ret;
  
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+	if (host->dev->archdata.mapping) {
-+		struct dma_iommu_mapping *mapping =
-+				to_dma_iommu_mapping(host->dev);
-+		arm_iommu_detach_device(host->dev);
-+		arm_iommu_release_mapping(mapping);
+-	dev->anon_inode = drm_fs_inode_new();
+-	if (IS_ERR(dev->anon_inode)) {
+-		ret = PTR_ERR(dev->anon_inode);
++	inode = drm_fs_inode_new();
++	if (IS_ERR(inode)) {
++		ret = PTR_ERR(inode);
+ 		DRM_ERROR("Cannot allocate anonymous inode: %d\n", ret);
+ 		goto err;
+ 	}
+ 
++	dev->anon_inode = inode;
 +
-+		domain = iommu_get_domain_for_dev(host->dev);
-+	}
-+#endif
-+
- 	/*
- 	 * We may not always want to enable IOMMU support (for example if the
- 	 * host1x firewall is already enabled and we don't support addressing
+ 	if (drm_core_check_feature(dev, DRIVER_RENDER)) {
+ 		ret = drm_minor_alloc(dev, DRM_MINOR_RENDER);
+ 		if (ret)
+-- 
+2.34.1
+
 
 
