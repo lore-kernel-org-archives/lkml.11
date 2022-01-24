@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A152CC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB169C4167D
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448371AbiAXVMa (ORCPT
+        id S1448076AbiAXVL6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:30 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40750 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388131AbiAXUiN (ORCPT
+        Mon, 24 Jan 2022 16:11:58 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40554 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390362AbiAXUpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:38:13 -0500
+        Mon, 24 Jan 2022 15:45:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9E19B81253;
-        Mon, 24 Jan 2022 20:38:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA01EC340E8;
-        Mon, 24 Jan 2022 20:38:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0D2A06091C;
+        Mon, 24 Jan 2022 20:45:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8B2FC340E5;
+        Mon, 24 Jan 2022 20:45:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056690;
-        bh=HIy2u0y7M5fy3vdbc5cARgsiZf/zd6A7vjYEMM4cDAU=;
+        s=korg; t=1643057111;
+        bh=AaF7euI3kYHd/11AknQCQrpr2iggUpjasga3Y3juYgM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eakL+C5M+Rpf+fz9zHGdnHLzzibhAR6WDfoGw6HGHGuC4cx5SDQ5MGuO0x7YYh3iC
-         6Z7WypI78mZrw79fbIISD1V1bF3ohURleobxu/BYdmMeYhjFyj96FsuK9Xz15PQr7E
-         8luXl7D2dCfxiK1y4+OcYJVY8nfSgWn6WUDHHXhI=
+        b=aJATeTYH705c+wuUSMiKjJxSwyRnbJaGjBhohoXn+rBYnNZsD9DdeDZ9br0oYgXCg
+         Xjfev1+UN1NJPw37njPx/RCacCUXHxXSjRHSW289xscxcF74quEhojFsytlHJNqTb+
+         WFtLstbnBARq/9Q0lfzGBvMc6HUReG0pkuE8Oodg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 541/846] ARM: dts: qcom: sdx55: fix IPA interconnect definitions
-Date:   Mon, 24 Jan 2022 19:40:58 +0100
-Message-Id: <20220124184119.681627935@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.15 705/846] PCI: pci-bridge-emul: Fix definitions of reserved bits
+Date:   Mon, 24 Jan 2022 19:43:42 +0100
+Message-Id: <20220124184125.371304108@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,47 +47,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit c0d6316c238b1bd743108bd4b08eda364f47c7c9 ]
+commit 12998087d9f48b66965b97412069c7826502cd7e upstream.
 
-The first two interconnects defined for IPA on the SDX55 SoC are
-really two parts of what should be represented as a single path
-between IPA and system memory.
+Some bits in PCI_EXP registers are reserved for non-root ports. Driver
+pci-bridge-emul.c implements PCIe Root Port device therefore it should not
+allow setting reserved bits of registers.
 
-Fix this by combining the "memory-a" and "memory-b" interconnects
-into a single "memory" interconnect.
+Properly define non-reserved bits for all PCI_EXP registers.
 
-Reported-by: David Heidelberg <david@ixit.cz>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211124155944.1290-5-pali@kernel.org
+Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm/boot/dts/qcom-sdx55.dtsi | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/pci/pci-bridge-emul.c |   36 +++++++++++++++++++++++++-----------
+ 1 file changed, 25 insertions(+), 11 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-index 1e6ce035f76a9..b5b784c5c65e4 100644
---- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-@@ -334,12 +334,10 @@
- 			clocks = <&rpmhcc RPMH_IPA_CLK>;
- 			clock-names = "core";
+--- a/drivers/pci/pci-bridge-emul.c
++++ b/drivers/pci/pci-bridge-emul.c
+@@ -176,41 +176,55 @@ struct pci_bridge_reg_behavior pcie_cap_
+ 	[PCI_CAP_LIST_ID / 4] = {
+ 		/*
+ 		 * Capability ID, Next Capability Pointer and
+-		 * Capabilities register are all read-only.
++		 * bits [14:0] of Capabilities register are all read-only.
++		 * Bit 15 of Capabilities register is reserved.
+ 		 */
+-		.ro = ~0,
++		.ro = GENMASK(30, 0),
+ 	},
  
--			interconnects = <&system_noc MASTER_IPA &system_noc SLAVE_SNOC_MEM_NOC_GC>,
--					<&mem_noc MASTER_SNOC_GC_MEM_NOC &mc_virt SLAVE_EBI_CH0>,
-+			interconnects = <&system_noc MASTER_IPA &mc_virt SLAVE_EBI_CH0>,
- 					<&system_noc MASTER_IPA &system_noc SLAVE_OCIMEM>,
- 					<&mem_noc MASTER_AMPSS_M0 &system_noc SLAVE_IPA_CFG>;
--			interconnect-names = "memory-a",
--					     "memory-b",
-+			interconnect-names = "memory",
- 					     "imem",
- 					     "config";
+ 	[PCI_EXP_DEVCAP / 4] = {
+-		.ro = ~0,
++		/*
++		 * Bits [31:29] and [17:16] are reserved.
++		 * Bits [27:18] are reserved for non-upstream ports.
++		 * Bits 28 and [14:6] are reserved for non-endpoint devices.
++		 * Other bits are read-only.
++		 */
++		.ro = BIT(15) | GENMASK(5, 0),
+ 	},
  
--- 
-2.34.1
-
+ 	[PCI_EXP_DEVCTL / 4] = {
+-		/* Device control register is RW */
+-		.rw = GENMASK(15, 0),
++		/*
++		 * Device control register is RW, except bit 15 which is
++		 * reserved for non-endpoints or non-PCIe-to-PCI/X bridges.
++		 */
++		.rw = GENMASK(14, 0),
+ 
+ 		/*
+ 		 * Device status register has bits 6 and [3:0] W1C, [5:4] RO,
+-		 * the rest is reserved
++		 * the rest is reserved. Also bit 6 is reserved for non-upstream
++		 * ports.
+ 		 */
+-		.w1c = (BIT(6) | GENMASK(3, 0)) << 16,
++		.w1c = GENMASK(3, 0) << 16,
+ 		.ro = GENMASK(5, 4) << 16,
+ 	},
+ 
+ 	[PCI_EXP_LNKCAP / 4] = {
+-		/* All bits are RO, except bit 23 which is reserved */
+-		.ro = lower_32_bits(~BIT(23)),
++		/*
++		 * All bits are RO, except bit 23 which is reserved and
++		 * bit 18 which is reserved for non-upstream ports.
++		 */
++		.ro = lower_32_bits(~(BIT(23) | PCI_EXP_LNKCAP_CLKPM)),
+ 	},
+ 
+ 	[PCI_EXP_LNKCTL / 4] = {
+ 		/*
+ 		 * Link control has bits [15:14], [11:3] and [1:0] RW, the
+-		 * rest is reserved.
++		 * rest is reserved. Bit 8 is reserved for non-upstream ports.
+ 		 *
+ 		 * Link status has bits [13:0] RO, and bits [15:14]
+ 		 * W1C.
+ 		 */
+-		.rw = GENMASK(15, 14) | GENMASK(11, 3) | GENMASK(1, 0),
++		.rw = GENMASK(15, 14) | GENMASK(11, 9) | GENMASK(7, 3) | GENMASK(1, 0),
+ 		.ro = GENMASK(13, 0) << 16,
+ 		.w1c = GENMASK(15, 14) << 16,
+ 	},
 
 
