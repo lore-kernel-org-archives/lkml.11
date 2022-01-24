@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D597C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A5DAC3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367507AbiAXXzl (ORCPT
+        id S2367858AbiAXX4m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:55:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49562 "EHLO
+        Mon, 24 Jan 2022 18:56:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1845906AbiAXXNz (ORCPT
+        with ESMTP id S1846416AbiAXXPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:13:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A9AC067A70;
-        Mon, 24 Jan 2022 13:19:56 -0800 (PST)
+        Mon, 24 Jan 2022 18:15:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D25C0604CF;
+        Mon, 24 Jan 2022 13:24:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DEDFAB81142;
-        Mon, 24 Jan 2022 21:19:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B916C340E4;
-        Mon, 24 Jan 2022 21:19:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00622614C9;
+        Mon, 24 Jan 2022 21:24:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7FA4C340E4;
+        Mon, 24 Jan 2022 21:24:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059193;
-        bh=TTIVadTQ/H/nHFNTW22sbDeI8axrVJXpDhzc9tFLTPk=;
+        s=korg; t=1643059447;
+        bh=REBuG4OoCqpO2dEgywiMEnlKX2lH4hWXFOcoOtaLmws=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WWXcqcYHNnV3vp/IdyFTWTIB3fNzFqbPkNtxbv1LHqdqdmt6jSazksCByOIWyLR47
-         gkvMfC4tZzmFiZQrnJLxGW2gtnrKXGlHF76z9vFbeklheTbF0tx7tpFwTTfuGl9Pey
-         8kGx56C+E/OFG2KqmQBqhVj40cZ5aXcFekgR+mQ4=
+        b=kqBIs3K9j84lHej5as9GL+6WVJSycKSmxuAcTRR0T0lx4NhT4mMF07BvgjsNx58mF
+         PUfwTf2Zw13BYolNN4Nt6OO4hC6Rd0Q9eVWpHSL5wkBRx5z1tsj9+fUFuasAXZbO+m
+         xdnv5Iwgc00+ED6VNRax7p1gs/djwWobx6WwxcGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Peng Fan <peng.fan@nxp.com>,
-        Jassi Brar <jaswinder.singh@linaro.org>,
+        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Martin Leung <Martin.Leung@amd.com>,
+        Daniel Wheeler <daniel.wheeler@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0534/1039] mailbox: imx: Fix an IS_ERR() vs NULL bug
-Date:   Mon, 24 Jan 2022 19:38:43 +0100
-Message-Id: <20220124184143.232436141@linuxfoundation.org>
+Subject: [PATCH 5.16 0586/1039] drm/amd/display: add else to avoid double destroy clk_mgr
+Date:   Mon, 24 Jan 2022 19:39:35 +0100
+Message-Id: <20220124184145.038092690@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,37 +53,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Martin Leung <Martin.Leung@amd.com>
 
-[ Upstream commit 05d06f37196b2e3abeff2b98b785c8803865e646 ]
+[ Upstream commit 11dff0e871037a6ad978e52f826a2eb7f5fb274a ]
 
-The devm_kzalloc() function does not return error pointers, it returns
-NULL on failure.
+[Why & How]
+when changing some code we accidentally
+changed else if-> if. reverting that.
 
-Fixes: 97961f78e8bc ("mailbox: imx: support i.MX8ULP S4 MU")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Jassi Brar <jaswinder.singh@linaro.org>
+Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
+Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
+Signed-off-by: Martin Leung <Martin.Leung@amd.com>
+Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mailbox/imx-mailbox.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/mailbox/imx-mailbox.c b/drivers/mailbox/imx-mailbox.c
-index ffe36a6bef9e0..544de2db64531 100644
---- a/drivers/mailbox/imx-mailbox.c
-+++ b/drivers/mailbox/imx-mailbox.c
-@@ -563,8 +563,8 @@ static int imx_mu_probe(struct platform_device *pdev)
- 		size = sizeof(struct imx_sc_rpc_msg_max);
- 
- 	priv->msg = devm_kzalloc(dev, size, GFP_KERNEL);
--	if (IS_ERR(priv->msg))
--		return PTR_ERR(priv->msg);
-+	if (!priv->msg)
-+		return -ENOMEM;
- 
- 	priv->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(priv->clk)) {
+diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
+index 26f96ee324729..9200c8ce02ba9 100644
+--- a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
++++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
+@@ -308,8 +308,7 @@ void dc_destroy_clk_mgr(struct clk_mgr *clk_mgr_base)
+ 	case FAMILY_NV:
+ 		if (ASICREV_IS_SIENNA_CICHLID_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
+ 			dcn3_clk_mgr_destroy(clk_mgr);
+-		}
+-		if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
++		} else if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
+ 			dcn3_clk_mgr_destroy(clk_mgr);
+ 		}
+ 		if (ASICREV_IS_BEIGE_GOBY_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
 -- 
 2.34.1
 
