@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B65C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36FD4C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345625AbiAYCf5 (ORCPT
+        id S3423717AbiAYCgA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:35:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35468 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384986AbiAXUbK (ORCPT
+        Mon, 24 Jan 2022 21:36:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385055AbiAXUbZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:31:10 -0500
+        Mon, 24 Jan 2022 15:31:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BABAC07A96D;
+        Mon, 24 Jan 2022 11:43:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D325EB81249;
-        Mon, 24 Jan 2022 20:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B41DC340E5;
-        Mon, 24 Jan 2022 20:31:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B4BCDB811FB;
+        Mon, 24 Jan 2022 19:43:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE84C340EA;
+        Mon, 24 Jan 2022 19:43:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056268;
-        bh=6EkDRNGlfa2QskW110D63DdZZVgyjLqd5vMfMotBes4=;
+        s=korg; t=1643053388;
+        bh=4RUcMj1GoLMRgwa1w50kVg3OcRDZyoHyt2bFDIJJZb8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0PXLdrYULCgQ6NLSCLaL7hzGj0dSGuSThWgI+WVlFPLhvneshrloqpMIbmtKF6U3N
-         ZIKoBhyZd71po4DzcUQLlZbABLGo1VBHxa8FuRfwDWHVNfbDJ9APr0r7lGayr7rgNO
-         G2VRB6PnqtrYydktUo9FOPwFvt9lw2rZmeeBReFQ=
+        b=VHdSzKk/RHT40JtqLLfiiAl6yHbOYIUqiBYzCb+OuXKUGxht4qVhOkxznM4/v5z7f
+         mfguVqrFhgW0lmhQq69PKiNgLSmcfLlqAbFyV53v/2O903l3/pK9YlPwyUSnpQIwY/
+         pWXozx2ayk736W+ZPQh1/ei1VxNJqRduSJ55pDMA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Trevor Wu <trevor.wu@mediatek.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 426/846] ASoC: mediatek: mt8195: correct default value
-Date:   Mon, 24 Jan 2022 19:39:03 +0100
-Message-Id: <20220124184115.669005237@linuxfoundation.org>
+Subject: [PATCH 5.10 049/563] drm/rockchip: dsi: Disable PLL clock on bind error
+Date:   Mon, 24 Jan 2022 19:36:54 +0100
+Message-Id: <20220124184026.116047314@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,40 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Trevor Wu <trevor.wu@mediatek.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 30e693ee82d20361f2caacca3b68c79e1a7cb16c ]
+[ Upstream commit 5a614570172e1c9f59035d259dd735acd4f1c01b ]
 
-mt8195_cg_patch is used to reset the default value of audio cg, so the
-register value could be consistent with CCF reference count.
-Nevertheless, AUDIO_TOP_CON1[1:0] is used to control an internal mux,
-and it's expected to keep the default value 0.
+Fix some error handling here noticed in review of other changes.
 
-This patch corrects the default value in case an unexpected behavior
-happens in the future.
-
-Fixes: 6746cc8582599 ("ASoC: mediatek: mt8195: add platform driver")
-Signed-off-by: Trevor Wu <trevor.wu@mediatek.com>
-Link: https://lore.kernel.org/r/20211216022424.28470-1-trevor.wu@mediatek.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: 2d4f7bdafd70 ("drm/rockchip: dsi: migrate to use dw-mipi-dsi bridge driver")
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reported-by: Chen-Yu Tsai <wenst@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.4.I8bb7a91ecc411d56bc155763faa15f289d7fc074@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8195/mt8195-afe-pcm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c b/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
-index 6635c3f72eccc..2edb40fe27ccb 100644
---- a/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
-+++ b/sound/soc/mediatek/mt8195/mt8195-afe-pcm.c
-@@ -3028,7 +3028,7 @@ static const struct reg_sequence mt8195_afe_reg_defaults[] = {
+diff --git a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+index d3cea42dde436..6691e45230126 100644
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -923,7 +923,7 @@ static int dw_mipi_dsi_rockchip_bind(struct device *dev,
+ 	ret = clk_prepare_enable(dsi->grf_clk);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
+-		goto out_pm_runtime;
++		goto out_pll_clk;
+ 	}
  
- static const struct reg_sequence mt8195_cg_patch[] = {
- 	{ AUDIO_TOP_CON0, 0xfffffffb },
--	{ AUDIO_TOP_CON1, 0xfffffffa },
-+	{ AUDIO_TOP_CON1, 0xfffffff8 },
- };
+ 	dw_mipi_dsi_rockchip_config(dsi);
+@@ -935,17 +935,19 @@ static int dw_mipi_dsi_rockchip_bind(struct device *dev,
+ 	ret = rockchip_dsi_drm_create_encoder(dsi, drm_dev);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to create drm encoder\n");
+-		goto out_pm_runtime;
++		goto out_pll_clk;
+ 	}
  
- static int mt8195_afe_init_registers(struct mtk_base_afe *afe)
+ 	ret = dw_mipi_dsi_bind(dsi->dmd, &dsi->encoder);
+ 	if (ret) {
+ 		DRM_DEV_ERROR(dev, "Failed to bind: %d\n", ret);
+-		goto out_pm_runtime;
++		goto out_pll_clk;
+ 	}
+ 
+ 	return 0;
+ 
++out_pll_clk:
++	clk_disable_unprepare(dsi->pllref_clk);
+ out_pm_runtime:
+ 	pm_runtime_put(dsi->dev);
+ 	if (dsi->slave)
 -- 
 2.34.1
 
