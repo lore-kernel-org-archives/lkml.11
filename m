@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F18CBC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F87EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839956AbiAXWwT (ORCPT
+        id S1840001AbiAXWwY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:52:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33010 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445470AbiAXVnh (ORCPT
+        Mon, 24 Jan 2022 17:52:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56578 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1458145AbiAXVmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:43:37 -0500
+        Mon, 24 Jan 2022 16:42:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 458E7C07A954;
+        Mon, 24 Jan 2022 12:30:50 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90CB46150B;
-        Mon, 24 Jan 2022 21:43:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69CF2C340E4;
-        Mon, 24 Jan 2022 21:43:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01A85B8122A;
+        Mon, 24 Jan 2022 20:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 399A8C340E5;
+        Mon, 24 Jan 2022 20:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060616;
-        bh=F0Fefbr5CTrGbQwVRWajkOardZ0wutxowsrDiXU7x6M=;
+        s=korg; t=1643056247;
+        bh=lk34w8WMdUL6l4PL5XdnwhuS4losa8tnQTL3Rj/ZblM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1agiTswl8NpVBX90LJm7fjUXvboe2qqPr/PsxwO2P3UtiwyATfwYs8t96lATbSuR6
-         DXPvcgPAUz5LsROFRvLDYgc37RtGfxz0tMzxv5/EzFOVipJxg5UNnVwt1AhcpfS6f+
-         YKzLItPliJ17eSicmb5kdtpCBHvxBqoypVMd9ZtQ=
+        b=rfx2Wup2blfcMAFl5LZcVIRSCNWBB/yVGcpZiob3MdpLsFeqjnXs76MDhmXuVrrCg
+         LQJMqZL8CCtO8YQdpHKmPAuYfXMtgyephYfawLXlkfLQtN33F2RKYeRUGBGCK68ZDB
+         zwH1Z2rftyeZrCeOYhRwivruYWeakT8IYKLDvrcM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 1006/1039] devlink: Remove misleading internal_flags from health reporter dump
-Date:   Mon, 24 Jan 2022 19:46:35 +0100
-Message-Id: <20220124184159.107965939@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 420/846] iommu/amd: X2apic mode: re-enable after resume
+Date:   Mon, 24 Jan 2022 19:38:57 +0100
+Message-Id: <20220124184115.468706093@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,31 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Leon Romanovsky <leonro@nvidia.com>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-commit e9538f8270db24d272659e15841854c7ea11119e upstream.
+[ Upstream commit 01b297a48a26bcb96769505ac948db4603b72bd1 ]
 
-DEVLINK_CMD_HEALTH_REPORTER_DUMP_GET command doesn't have .doit callback
-and has no use in internal_flags at all. Remove this misleading assignment.
+Otherwise it is guaranteed to not work after the resume...
 
-Fixes: e44ef4e4516c ("devlink: Hang reporter's dump method on a dumpit cb")
-Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 66929812955bb ("iommu/amd: Add support for X2APIC IOMMU interrupts")
+
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20211123161038.48009-3-mlevitsk@redhat.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/devlink.c |    2 --
- 1 file changed, 2 deletions(-)
+ drivers/iommu/amd/init.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -8840,8 +8840,6 @@ static const struct genl_small_ops devli
- 			    GENL_DONT_VALIDATE_DUMP_STRICT,
- 		.dumpit = devlink_nl_cmd_health_reporter_dump_get_dumpit,
- 		.flags = GENL_ADMIN_PERM,
--		.internal_flags = DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT |
--				  DEVLINK_NL_FLAG_NO_LOCK,
- 	},
- 	{
- 		.cmd = DEVLINK_CMD_HEALTH_REPORTER_DUMP_CLEAR,
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 9b12a2f7548ac..c1d4e66d2747b 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -2169,7 +2169,6 @@ static int iommu_setup_intcapxt(struct amd_iommu *iommu)
+ 		return ret;
+ 	}
+ 
+-	iommu_feature_enable(iommu, CONTROL_INTCAPXT_EN);
+ 	return 0;
+ }
+ 
+@@ -2192,6 +2191,10 @@ static int iommu_init_irq(struct amd_iommu *iommu)
+ 
+ 	iommu->int_enabled = true;
+ enable_faults:
++
++	if (amd_iommu_xt_mode == IRQ_REMAP_X2APIC_MODE)
++		iommu_feature_enable(iommu, CONTROL_INTCAPXT_EN);
++
+ 	iommu_feature_enable(iommu, CONTROL_EVT_INT_EN);
+ 
+ 	if (iommu->ppr_log != NULL)
+-- 
+2.34.1
+
 
 
