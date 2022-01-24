@@ -2,44 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18938C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4501C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588020AbiAXWae (ORCPT
+        id S1588069AbiAXWbP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:30:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377582AbiAXViv (ORCPT
+        Mon, 24 Jan 2022 17:31:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54726 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378331AbiAXVjT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:38:51 -0500
+        Mon, 24 Jan 2022 16:39:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 803ACC034005;
+        Mon, 24 Jan 2022 12:24:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE3E2B815AC;
-        Mon, 24 Jan 2022 21:38:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 056B6C36AEB;
-        Mon, 24 Jan 2022 21:38:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B42761491;
+        Mon, 24 Jan 2022 20:24:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFCB8C340E7;
+        Mon, 24 Jan 2022 20:24:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060327;
-        bh=/CkJZbBS/noqHTVzt9gb1OaMJAK407vUfQxtvkkrFfs=;
+        s=korg; t=1643055856;
+        bh=+mc7XH6ZHrcnhKZMatKve+G3YzRkXog/jm9bBkgtgnU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0o463h19Qf/HjpGwKPT8ghXEAfITqpgz57SAWuZ/ySZMZk02aFm2Mhh54VEmL9FDe
-         ge3h+ONg1TyJgVTcDL72YOzGLSQsxCMaKP5QJfLDfi/VGlLNnvJq0RAFoaUpzpPSOj
-         32h09wrtzyPPGOrjZ2bB3LFPvldQCb1O8YkKQJXU=
+        b=dsIkEDc3qQAUOaGkvaG9vthmBZjx/RtFZEjHpt5H0SbfrWTP5dV7epL4Zb097FuG7
+         rPhSnWSN2cbuUvuOVUPalA0kudiH6q2LgrBacB2zG3oQTn87XizbYMeeEQCXDWvbEQ
+         Bv99fJrIg4oktKZf7n12D1/ZSAibaOxH9tgeEUWQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH 5.16 0912/1039] Documentation: ACPI: Fix data node reference documentation
-Date:   Mon, 24 Jan 2022 19:45:01 +0100
-Message-Id: <20220124184155.959228329@linuxfoundation.org>
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 287/846] backlight: qcom-wled: Pass number of elements to read to read_u32_array
+Date:   Mon, 24 Jan 2022 19:36:44 +0100
+Message-Id: <20220124184110.822340218@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,66 +54,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sakari Ailus <sakari.ailus@linux.intel.com>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-commit a11174952205d082f1658fab4314f0caf706e0a8 upstream.
+[ Upstream commit e29e24bdabfeddbf8b1a4ecac1af439a85150438 ]
 
-The data node reference documentation was missing a package that must
-contain the property values, instead property name and multiple values
-being present in a single package. This is not aligned with the _DSD
-spec.
+of_property_read_u32_array takes the number of elements to read as last
+argument. This does not always need to be 4 (sizeof(u32)) but should
+instead be the size of the array in DT as read just above with
+of_property_count_elems_of_size.
 
-Fix it by adding the package for the values.
+To not make such an error go unnoticed again the driver now bails
+accordingly when of_property_read_u32_array returns an error.
+Surprisingly the indentation of newlined arguments is lining up again
+after prepending `rc = `.
 
-Also add the missing "reg" properties to two numbered nodes.
-
-Fixes: b10134a3643d ("ACPI: property: Document hierarchical data extension references")
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 775d2ffb4af6 ("backlight: qcom-wled: Restructure the driver for WLED3")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-3-marijn.suijten@somainline.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/firmware-guide/acpi/dsd/data-node-references.rst |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/video/backlight/qcom-wled.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
---- a/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
-+++ b/Documentation/firmware-guide/acpi/dsd/data-node-references.rst
-@@ -5,7 +5,7 @@
- Referencing hierarchical data nodes
- ===================================
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index 8a42ed89c59c9..d413b913fef32 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -1535,10 +1535,15 @@ static int wled_configure(struct wled *wled)
+ 			return -EINVAL;
+ 		}
  
--:Copyright: |copy| 2018 Intel Corporation
-+:Copyright: |copy| 2018, 2021 Intel Corporation
- :Author: Sakari Ailus <sakari.ailus@linux.intel.com>
+-		of_property_read_u32_array(dev->of_node,
++		rc = of_property_read_u32_array(dev->of_node,
+ 						"qcom,enabled-strings",
+ 						wled->cfg.enabled_strings,
+-						sizeof(u32));
++						string_len);
++		if (rc) {
++			dev_err(dev, "Failed to read %d elements from qcom,enabled-strings: %d\n",
++				string_len, rc);
++			return rc;
++		}
  
- ACPI in general allows referring to device objects in the tree only.
-@@ -52,12 +52,14 @@ the ANOD object which is also the final
- 	    Name (NOD0, Package() {
- 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
- 		Package () {
-+		    Package () { "reg", 0 },
- 		    Package () { "random-property", 3 },
- 		}
- 	    })
- 	    Name (NOD1, Package() {
- 		ToUUID("dbb8e3e6-5886-4ba6-8795-1319f52a966b"),
- 		Package () {
-+		    Package () { "reg", 1 },
- 		    Package () { "anothernode", "ANOD" },
- 		}
- 	    })
-@@ -74,7 +76,11 @@ the ANOD object which is also the final
- 	    Name (_DSD, Package () {
- 		ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
- 		Package () {
--		    Package () { "reference", ^DEV0, "node@1", "anothernode" },
-+		    Package () {
-+			"reference", Package () {
-+			    ^DEV0, "node@1", "anothernode"
-+			}
-+		    },
- 		}
- 	    })
- 	}
+ 		for (i = 0; i < string_len; ++i) {
+ 			if (wled->cfg.enabled_strings[i] >= wled->max_string_count) {
+-- 
+2.34.1
+
 
 
