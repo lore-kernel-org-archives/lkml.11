@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9EACC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576319AbiAXVxT (ORCPT
+        id S1576338AbiAXVxW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:53:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39134 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450613AbiAXVVG (ORCPT
+        Mon, 24 Jan 2022 16:53:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450655AbiAXVVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:21:06 -0500
+        Mon, 24 Jan 2022 16:21:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5428FC0A1CC7;
+        Mon, 24 Jan 2022 12:14:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E14BEB8105C;
-        Mon, 24 Jan 2022 21:21:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 476CFC340E4;
-        Mon, 24 Jan 2022 21:21:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08674B812A5;
+        Mon, 24 Jan 2022 20:14:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CAE2C340E7;
+        Mon, 24 Jan 2022 20:14:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059262;
-        bh=oXLBzOz/hkAg5gBd5Fy/0nL79/vChLwPGP35T3oMc8g=;
+        s=korg; t=1643055276;
+        bh=1XugZksY2Q1RIc5Ov3cpXwUMSko7XlkqMP6r64FLYaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YGFdxbEymKbUtjyT/cI/8cq/20UZ7c2KXi2+MblCdsOuYqpDjmok3rplTK81a7Yki
-         jmSNMAZe1diplyC6U1KdJ2MF8ocKxox7yma0gortz6sJ7vzf4DpNpp332uGiqC0Hdn
-         /JjvQ0fcx6gcONROG31ct3ucU6v4yjyVedq9VZqw=
+        b=ui4xB5DUYphgvhlHiOHh9Pb8xGCwdoroSqhtmwUejApUHTQfmIWvWegyxlNAoiGNV
+         pvD1FKHb6jRtG7IoAWuHd3+ygNcg0l6+tXORHaEVMroQls/lu+avi3W2D0PJqaHGOe
+         0yu/RaHv88IbIhcn2ZMR/1TTaQmBm87CvcWDTsME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0558/1039] media: atomisp-ov2680: Fix ov2680_set_fmt() clobbering the exposure
-Date:   Mon, 24 Jan 2022 19:39:07 +0100
-Message-Id: <20220124184144.069405886@linuxfoundation.org>
+Subject: [PATCH 5.15 098/846] libbpf: Free up resources used by inner map definition
+Date:   Mon, 24 Jan 2022 19:33:35 +0100
+Message-Id: <20220124184104.375758757@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,137 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 4492289c31364d28c2680b43b18883385a5d216c ]
+[ Upstream commit 8f7b239ea8cfdc8e64c875ee417fed41431a1f37 ]
 
-Now that we restore the default or last user set exposure setting on
-power_up() there is no need for the registers written by ov2680_set_fmt()
-to write to the exposure register.
+It's not enough to just free(map->inner_map), as inner_map itself can
+have extra memory allocated, like map name.
 
-Not doing so fixes the exposure always being reset to the value from
-the res->regs array after a set_fmt().
-
-Link: https://lore.kernel.org/linux-media/20211107171549.267583-11-hdegoede@redhat.com
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 646f02ffdd49 ("libbpf: Add BTF-defined map-in-map support")
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-3-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/i2c/ov2680.h | 24 ----------------------
- 1 file changed, 24 deletions(-)
+ tools/lib/bpf/libbpf.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/atomisp/i2c/ov2680.h b/drivers/staging/media/atomisp/i2c/ov2680.h
-index 874115f35fcad..798b28e134b64 100644
---- a/drivers/staging/media/atomisp/i2c/ov2680.h
-+++ b/drivers/staging/media/atomisp/i2c/ov2680.h
-@@ -289,8 +289,6 @@ static struct ov2680_reg const ov2680_global_setting[] = {
-  */
- static struct ov2680_reg const ov2680_QCIF_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -334,8 +332,6 @@ static struct ov2680_reg const ov2680_QCIF_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_CIF_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -377,8 +373,6 @@ static struct ov2680_reg const ov2680_CIF_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_QVGA_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -420,8 +414,6 @@ static struct ov2680_reg const ov2680_QVGA_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_656x496_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -463,8 +455,6 @@ static struct ov2680_reg const ov2680_656x496_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_720x592_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x26},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0x00}, // X_ADDR_START;
- 	{0x3802, 0x00},
-@@ -508,8 +498,6 @@ static struct ov2680_reg const ov2680_720x592_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_800x600_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x26},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -551,8 +539,6 @@ static struct ov2680_reg const ov2680_800x600_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_720p_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -594,8 +580,6 @@ static struct ov2680_reg const ov2680_720p_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1296x976_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -637,8 +621,6 @@ static struct ov2680_reg const ov2680_1296x976_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x90},
- 	{0x3802, 0x00},
-@@ -682,8 +664,6 @@ static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
- 
- static struct ov2680_reg const ov2680_1616x916_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -726,8 +706,6 @@ static struct ov2680_reg const ov2680_1616x916_30fps[] = {
- #if 0
- static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -769,8 +747,6 @@ static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1616x1216_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 7145463a4a562..0ad29203cbfbf 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -8676,7 +8676,10 @@ int bpf_map__set_inner_map_fd(struct bpf_map *map, int fd)
+ 		pr_warn("error: inner_map_fd already specified\n");
+ 		return libbpf_err(-EINVAL);
+ 	}
+-	zfree(&map->inner_map);
++	if (map->inner_map) {
++		bpf_map__destroy(map->inner_map);
++		zfree(&map->inner_map);
++	}
+ 	map->inner_map_fd = fd;
+ 	return 0;
+ }
 -- 
 2.34.1
 
