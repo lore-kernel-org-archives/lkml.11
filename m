@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6D97C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C71E3C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1577970AbiAXWBV (ORCPT
+        id S1577816AbiAXWBG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:01:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50952 "EHLO
+        Mon, 24 Jan 2022 17:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451574AbiAXVXI (ORCPT
+        with ESMTP id S1451494AbiAXVXC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:08 -0500
+        Mon, 24 Jan 2022 16:23:02 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15111C09B055;
-        Mon, 24 Jan 2022 12:17:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011E0C028C32;
+        Mon, 24 Jan 2022 12:17:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B0808B812A7;
-        Mon, 24 Jan 2022 20:17:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D231CC340E5;
-        Mon, 24 Jan 2022 20:17:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF28AB8121C;
+        Mon, 24 Jan 2022 20:17:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD003C340E5;
+        Mon, 24 Jan 2022 20:17:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055460;
-        bh=wCk2AXJ9tvWhIi/cMIJbL4Pixx4R3mqFsXGZLo+5u3I=;
+        s=korg; t=1643055435;
+        bh=nkRbVp2W10K033deshM2ceJteFE6A6KthK5vUO20h1o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EoVGbnpI/PSL89nW4gZflT0SBiv4ZjV5cgLbaWUEu1Faddtu2JQ9lmeY8XtsiGgEc
-         aes+uH292qB/jLYQ+ZQMZgGRMo35h0vE1szrYQv6K1cdqQcQtC59aBvp63R+kq2NXH
-         TUAD3HzJB4xd67zMpVzIAl+CeG7ext9kaJqGlmrI=
+        b=X8UunnzvNkrfIR/NbcVxlvxOJLXPVvzyDYj/0ivthqTKTHitQ6Bi65zSwO3VxIdZC
+         Pvf9niyeaEDnzUgUJ8pjEvAztBZVDlmgEOmN02u3boKFyBmcwXWxrd5qVIbGlIKOHv
+         Q8uN6zfZR5xTfT54kDnNsf7GLMjjIBYRswr1Gwfo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alan Maguire <alan.maguire@oracle.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        stable@vger.kernel.org, Jammy Huang <jammy_huang@aspeedtech.com>,
+        Paul Menzel <pmenzel@molgen.mpg.de>,
+        Joel Stanley <joel@jms.id.au>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 159/846] libbpf: Silence uninitialized warning/error in btf_dump_dump_type_data
-Date:   Mon, 24 Jan 2022 19:34:36 +0100
-Message-Id: <20220124184106.471942756@linuxfoundation.org>
+Subject: [PATCH 5.15 117/846] media: aspeed: fix mode-detect always time out at 2nd run
+Date:   Mon, 24 Jan 2022 19:33:54 +0100
+Message-Id: <20220124184105.009738998@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,48 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Maguire <alan.maguire@oracle.com>
+From: Jammy Huang <jammy_huang@aspeedtech.com>
 
-[ Upstream commit 43174f0d4597325cb91f1f1f55263eb6e6101036 ]
+[ Upstream commit 62cea52ad4bead0ae4be2cfe1142eb0aae0e9fbd ]
 
-When compiling libbpf with gcc 4.8.5, we see:
+aspeed_video_get_resolution() will try to do res-detect again if the
+timing got in last try is invalid. But it will always time out because
+VE_SEQ_CTRL_TRIG_MODE_DET is only cleared after 1st mode-detect.
 
-  CC       staticobjs/btf_dump.o
-btf_dump.c: In function ‘btf_dump_dump_type_data.isra.24’:
-btf_dump.c:2296:5: error: ‘err’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
-  if (err < 0)
-     ^
-cc1: all warnings being treated as errors
-make: *** [staticobjs/btf_dump.o] Error 1
+To fix the problem, just clear VE_SEQ_CTRL_TRIG_MODE_DET before setting
+it in aspeed_video_enable_mode_detect().
 
-While gcc 4.8.5 is too old to build the upstream kernel, it's possible it
-could be used to build standalone libbpf which suffers from the same problem.
-Silence the error by initializing 'err' to 0.  The warning/error seems to be
-a false positive since err is set early in the function.  Regardless we
-shouldn't prevent libbpf from building for this.
-
-Fixes: 920d16af9b42 ("libbpf: BTF dumper support for typed data")
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Link: https://lore.kernel.org/bpf/1638180040-8037-1-git-send-email-alan.maguire@oracle.com
+Fixes: d2b4387f3bdf ("media: platform: Add Aspeed Video Engine driver")
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+Acked-by: Paul Menzel <pmenzel@molgen.mpg.de>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/btf_dump.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/platform/aspeed-video.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/btf_dump.c b/tools/lib/bpf/btf_dump.c
-index e4b483f15fb99..8c9325802793b 100644
---- a/tools/lib/bpf/btf_dump.c
-+++ b/tools/lib/bpf/btf_dump.c
-@@ -2186,7 +2186,7 @@ static int btf_dump_dump_type_data(struct btf_dump *d,
- 				   __u8 bits_offset,
- 				   __u8 bit_sz)
- {
--	int size, err;
-+	int size, err = 0;
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 7bb6babdcade0..23c41c545c536 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -500,6 +500,10 @@ static void aspeed_video_enable_mode_detect(struct aspeed_video *video)
+ 	aspeed_video_update(video, VE_INTERRUPT_CTRL, 0,
+ 			    VE_INTERRUPT_MODE_DETECT);
  
- 	size = btf_dump_type_data_check_overflow(d, t, id, data, bits_offset);
- 	if (size < 0)
++	/* Disable mode detect in order to re-trigger */
++	aspeed_video_update(video, VE_SEQ_CTRL,
++			    VE_SEQ_CTRL_TRIG_MODE_DET, 0);
++
+ 	/* Trigger mode detect */
+ 	aspeed_video_update(video, VE_SEQ_CTRL, 0, VE_SEQ_CTRL_TRIG_MODE_DET);
+ }
+@@ -786,10 +790,6 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 			return;
+ 		}
+ 
+-		/* Disable mode detect in order to re-trigger */
+-		aspeed_video_update(video, VE_SEQ_CTRL,
+-				    VE_SEQ_CTRL_TRIG_MODE_DET, 0);
+-
+ 		aspeed_video_check_and_set_polarity(video);
+ 
+ 		aspeed_video_enable_mode_detect(video);
 -- 
 2.34.1
 
