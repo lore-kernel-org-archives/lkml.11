@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91E6C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD1B1C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:26:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350106AbiAXTYe (ORCPT
+        id S1350256AbiAXTYo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:24:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40470 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348429AbiAXTPX (ORCPT
+        Mon, 24 Jan 2022 14:24:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44530 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230384AbiAXTP2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:15:23 -0500
+        Mon, 24 Jan 2022 14:15:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C55D0B8121B;
-        Mon, 24 Jan 2022 19:15:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 039C9C340E7;
-        Mon, 24 Jan 2022 19:15:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32D35612A5;
+        Mon, 24 Jan 2022 19:15:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E3D7C340E5;
+        Mon, 24 Jan 2022 19:15:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051720;
-        bh=V950xem1v9xwxVGnakH5w1P/y3OzfhnZwG553b3v7bk=;
+        s=korg; t=1643051726;
+        bh=+Y5rCE8pky0SVMuid6BEie+bScD2LnKU6fGjCqvgFGU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZP+vERhJnBILPDEbmM3zwcFIJvIYTCPdSjH7QJ9n+7qY32CZTtjggqIXsvcFLEW6N
-         pnyKrDs3TtMAigCAc+9M+ylDFR6Gpo/4uw0GJsEIwM8sBuWbonSNfkap0gdGyHlDUO
-         MeRl0wLAT5plywy8K02YcoDG+QznbOSiJK8sWvDE=
+        b=J9bEX6f8K1muS17Lh6z/B9GkMLC0GwEeN8xwbUOC9otbOcjqC/jawW3WIXIuSpB4d
+         /+oNkykwMMf2hvjLAZoHm8EZM40ZOGyc3AZBQ9fl2s5CDlJ2er3X//Xj0Dnj2KPQFC
+         l545ivIrRMdQeyF8+qjwhr03CmAImpU2dsann6MQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.19 038/239] media: pvrusb2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:16 +0100
-Message-Id: <20220124183944.352815291@linuxfoundation.org>
+        stable@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.19 066/239] tty: serial: uartlite: allow 64 bit address
+Date:   Mon, 24 Jan 2022 19:41:44 +0100
+Message-Id: <20220124183945.237568972@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -47,60 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Lizhi Hou <lizhi.hou@xilinx.com>
 
-commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
+[ Upstream commit 3672fb65155530b5eea6225685c75329b6debec3 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+The base address of uartlite registers could be 64 bit address which is from
+device resource. When ulite_probe() calls ulite_assign(), this 64 bit
+address is casted to 32-bit. The fix is to replace "u32" type with
+"phys_addr_t" type for the base address in ulite_assign() argument list.
 
-Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
-Cc: stable@vger.kernel.org      # 2.6.18
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 8fa7b6100693 ("[POWERPC] Uartlite: Separate the bus binding from the driver proper")
+Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
+Link: https://lore.kernel.org/r/20211129202302.1319033-1-lizhi.hou@xilinx.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/uartlite.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -1476,7 +1476,7 @@ static int pvr2_upload_firmware1(struct
- 	for (address = 0; address < fwsize; address += 0x800) {
- 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
- 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
--				       0, fw_ptr, 0x800, HZ);
-+				       0, fw_ptr, 0x800, 1000);
- 	}
- 
- 	trace_firmware("Upload done, releasing device's CPU");
-@@ -1614,7 +1614,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
- 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
- 
- 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
--				    &actual_length, HZ);
-+				    &actual_length, 1000);
- 		ret |= (actual_length != bcnt);
- 		if (ret) break;
- 		fw_done += bcnt;
-@@ -3431,7 +3431,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
- 						      0xa0,0xc0,
- 						      address,0,
- 						      hdw->fw_buffer+address,
--						      0x800,HZ);
-+						      0x800,1000);
- 				if (ret < 0) break;
- 			}
- 
-@@ -3970,7 +3970,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
- 	/* Write the CPUCS register on the 8051.  The lsb of the register
- 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
- 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
--	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
-+	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
- 	if (ret < 0) {
- 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
- 			   "cpureset_assert(%d) error=%d",val,ret);
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 8df3058226687..5d1b7455e627d 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -618,7 +618,7 @@ static struct uart_driver ulite_uart_driver = {
+  *
+  * Returns: 0 on success, <0 otherwise
+  */
+-static int ulite_assign(struct device *dev, int id, u32 base, int irq,
++static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
+ 			struct uartlite_data *pdata)
+ {
+ 	struct uart_port *port;
+-- 
+2.34.1
+
 
 
