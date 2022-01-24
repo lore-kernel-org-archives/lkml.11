@@ -2,44 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F460C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BA6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358842AbiAXUnI (ORCPT
+        id S1358999AbiAXUnU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:43:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:32782 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354711AbiAXUX7 (ORCPT
+        Mon, 24 Jan 2022 15:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36452 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356011AbiAXUYW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:59 -0500
+        Mon, 24 Jan 2022 15:24:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80C1CC03401E;
+        Mon, 24 Jan 2022 11:40:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B472BB8119E;
-        Mon, 24 Jan 2022 20:23:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D1EC340E5;
-        Mon, 24 Jan 2022 20:23:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D059B81239;
+        Mon, 24 Jan 2022 19:40:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A979C340E5;
+        Mon, 24 Jan 2022 19:40:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055835;
-        bh=/bLI7PY8b0pniFdtjS+4UE+h+UAG8zivzIo6Fo50J8c=;
+        s=korg; t=1643053251;
+        bh=SXLfzd5y8qbHZcNAsfFwg8ytvIlVzeFuNSCndUNrVus=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oPNc2suXpKqou3OkQr8A+65ICzhmAFtJ9azTJZfX1Z5X2dSuU9iDcgVXJyb7qCbp1
-         UyMCREGTc/iaNKI8IqpROs79B7x47Ou49de1LtWG5M+hwVcCUgHWT9r4lKjiffDNnX
-         wKJN7g4mgp4ViszQoc8gBc9wcn7fyyA8Lqv8417c=
+        b=ns/wKTM/qYVopfEnAZEpacCiA1Ht2Zoxy5p8bbg4ZVwfNntf1iYNypedG8RBC6J90
+         jtBjmvZgW1HCKT6FXUoGfdi6abK7+ReG1lsOXWjXZBv+mAUAvcPrhy4POv1XyBAfEP
+         Lyd1m6f/OoHXJIe6hWP1A4TnCLjyrfSR/tS37xvU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 281/846] lib/logic_iomem: Fix 32-bit build
-Date:   Mon, 24 Jan 2022 19:36:38 +0100
-Message-Id: <20220124184110.622146104@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Alexander Stein <alexander.stein@mailbox.org>,
+        Rob Herring <robh@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 5.4 315/320] dt-bindings: display: meson-vpu: Add missing amlogic,canvas property
+Date:   Mon, 24 Jan 2022 19:44:59 +0100
+Message-Id: <20220124184004.652659969@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,84 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Alexander Stein <alexander.stein@mailbox.org>
 
-[ Upstream commit 4e84139e14af5ea60772cc4f33d7059aec76e0eb ]
+commit 640f35b871d29cd685ce0ea0762636381beeb98a upstream.
 
-On a 32-bit build, the (unsigned long long) casts throw warnings
-(or errors) due to being to a different integer size. Cast to
-uintptr_t first (with the __force for sparse) and then further
-to get the consistent print on 32 and 64-bit.
+This property was already mentioned in the old textual bindings
+amlogic,meson-vpu.txt, but got dropped during conversion.
+Adding it back similar to amlogic,gx-vdec.yaml.
 
-Fixes: ca2e334232b6 ("lib: add iomem emulation (logic_iomem)")
-Reported-by: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Richard Weinberger <richard@nod.at>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 6b9ebf1e0e67 ("dt-bindings: display: amlogic, meson-vpu: convert to yaml")
+Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211219094155.177206-1-alexander.stein@mailbox.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- lib/logic_iomem.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml |    6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/lib/logic_iomem.c b/lib/logic_iomem.c
-index 9bdfde0c0f86d..54fa601f3300b 100644
---- a/lib/logic_iomem.c
-+++ b/lib/logic_iomem.c
-@@ -79,7 +79,7 @@ static void __iomem *real_ioremap(phys_addr_t offset, size_t size)
- static void real_iounmap(void __iomem *addr)
- {
- 	WARN(1, "invalid iounmap for addr 0x%llx\n",
--	     (unsigned long long __force)addr);
-+	     (unsigned long long)(uintptr_t __force)addr);
- }
- #endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
+--- a/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
++++ b/Documentation/devicetree/bindings/display/amlogic,meson-vpu.yaml
+@@ -78,6 +78,10 @@ properties:
+   interrupts:
+     maxItems: 1
  
-@@ -173,7 +173,7 @@ EXPORT_SYMBOL(iounmap);
- static u##sz real_raw_read ## op(const volatile void __iomem *addr)	\
- {									\
- 	WARN(1, "Invalid read" #op " at address %llx\n",		\
--	     (unsigned long long __force)addr);				\
-+	     (unsigned long long)(uintptr_t __force)addr);		\
- 	return (u ## sz)~0ULL;						\
- }									\
- 									\
-@@ -181,7 +181,8 @@ static void real_raw_write ## op(u ## sz val,				\
- 				 volatile void __iomem *addr)		\
- {									\
- 	WARN(1, "Invalid writeq" #op " of 0x%llx at address %llx\n",	\
--	     (unsigned long long)val, (unsigned long long __force)addr);\
-+	     (unsigned long long)val,					\
-+	     (unsigned long long)(uintptr_t __force)addr);\
- }									\
++  amlogic,canvas:
++    description: should point to a canvas provider node
++    $ref: /schemas/types.yaml#/definitions/phandle
++
+   power-domains:
+     maxItems: 1
+     description: phandle to the associated power domain
+@@ -106,6 +110,7 @@ required:
+   - port@1
+   - "#address-cells"
+   - "#size-cells"
++  - amlogic,canvas
  
- MAKE_FALLBACK(b, 8);
-@@ -194,14 +195,14 @@ MAKE_FALLBACK(q, 64);
- static void real_memset_io(volatile void __iomem *addr, int value, size_t size)
- {
- 	WARN(1, "Invalid memset_io at address 0x%llx\n",
--	     (unsigned long long __force)addr);
-+	     (unsigned long long)(uintptr_t __force)addr);
- }
+ examples:
+   - |
+@@ -116,6 +121,7 @@ examples:
+         interrupts = <3>;
+         #address-cells = <1>;
+         #size-cells = <0>;
++        amlogic,canvas = <&canvas>;
  
- static void real_memcpy_fromio(void *buffer, const volatile void __iomem *addr,
- 			       size_t size)
- {
- 	WARN(1, "Invalid memcpy_fromio at address 0x%llx\n",
--	     (unsigned long long __force)addr);
-+	     (unsigned long long)(uintptr_t __force)addr);
- 
- 	memset(buffer, 0xff, size);
- }
-@@ -210,7 +211,7 @@ static void real_memcpy_toio(volatile void __iomem *addr, const void *buffer,
- 			     size_t size)
- {
- 	WARN(1, "Invalid memcpy_toio at address 0x%llx\n",
--	     (unsigned long long __force)addr);
-+	     (unsigned long long)(uintptr_t __force)addr);
- }
- #endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
- 
--- 
-2.34.1
-
+         /* CVBS VDAC output port */
+         port@0 {
 
 
