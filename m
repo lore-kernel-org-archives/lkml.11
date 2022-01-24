@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA4BC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D230C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447382AbiAXVKg (ORCPT
+        id S1447435AbiAXVKp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:10:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46934 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390829AbiAXUq1 (ORCPT
+        Mon, 24 Jan 2022 16:10:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43148 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390833AbiAXUq2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:27 -0500
+        Mon, 24 Jan 2022 15:46:28 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 727F2C061243;
+        Mon, 24 Jan 2022 11:56:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D2B5B81257;
-        Mon, 24 Jan 2022 20:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E15C36AE3;
-        Mon, 24 Jan 2022 20:46:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E9C9B8121C;
+        Mon, 24 Jan 2022 19:56:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F009C340E5;
+        Mon, 24 Jan 2022 19:56:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057185;
-        bh=Optsw7fZH7IyeMM7yyHVhmBMnQlfEE3Lft2i5Il4zVY=;
+        s=korg; t=1643054167;
+        bh=FpFOz55NDArr1D4SGMUr6c5B/Pd266OUahPpfqk8l5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XVQKRVJ/aWBGV1/SBXphIUhuv/55vVb72r/4E/GQGV/ujOPs5x4Y+DuqYMmRwRtso
-         YmMLAteqrgz1axRUbiWzB0O1AQkmNy8utLGHU5nKxE/uY7IChyHZvMyhONKdi4FhGy
-         7CqN4eXtw5SPxYZkh6/LPaI3DLfO8/BaZnAuFne4=
+        b=DTqQh2/eP1CLyBJvnz/LJ4hk5uuMAxeVvxeeBXwxzw6L8dQ4yLA9DiXGXERwtQEGZ
+         Rs8aKlukynXCOvnxY+2JA45WHRfzzKhjogKWbblYFGvqKsFFufDW+sDfybFgF1z869
+         Z3UDpSC+Oj6qRSP54xRHX+/zVX7uezc+mGcqM5Ec=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baruch Siach <baruch@tkos.co.il>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 5.15 730/846] of: base: Improve argument length mismatch error
-Date:   Mon, 24 Jan 2022 19:44:07 +0100
-Message-Id: <20220124184126.181693077@linuxfoundation.org>
+        stable@vger.kernel.org, Vasily Khoruzhick <anarsoul@gmail.com>,
+        Roman Stratiienko <r.stratiienko@gmail.com>,
+        Qiang Yu <yuq825@gmail.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 301/563] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
+Date:   Mon, 24 Jan 2022 19:41:06 +0100
+Message-Id: <20220124184034.854329625@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,55 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baruch Siach <baruch@tkos.co.il>
+From: Qiang Yu <yuq825@gmail.com>
 
-commit 5d05b811b5acb92fc581a7b328b36646c86f5ab9 upstream.
+[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
 
-The cells_name field of of_phandle_iterator might be NULL. Use the
-phandle name instead. With this change instead of:
+Otherwise get following warning:
 
-  OF: /soc/pinctrl@1000000: (null) = 3 found 2
+DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
 
-We get:
+See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
 
-  OF: /soc/pinctrl@1000000: phandle pinctrl@1000000 needs 3, found 2
-
-Which is a more helpful messages making DT debugging easier.
-
-In this particular example the phandle name looks like duplicate of the
-same node name. But note that the first node is the parent node
-(it->parent), while the second is the phandle target (it->node). They
-happen to be the same in the case that triggered this improvement. See
-commit 72cb4c48a46a ("arm64: dts: qcom: ipq6018: Fix gpio-ranges
-property").
-
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/f6a68e0088a552ea9dfd4d8e3b5b586d92594738.1640881913.git.baruch@tkos.co.il
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Signed-off-by: Qiang Yu <yuq825@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/base.c |   11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/lima/lima_device.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1327,9 +1327,14 @@ int of_phandle_iterator_next(struct of_p
- 		 * property data length
- 		 */
- 		if (it->cur + count > it->list_end) {
--			pr_err("%pOF: %s = %d found %td\n",
--			       it->parent, it->cells_name,
--			       count, it->list_end - it->cur);
-+			if (it->cells_name)
-+				pr_err("%pOF: %s = %d found %td\n",
-+					it->parent, it->cells_name,
-+					count, it->list_end - it->cur);
-+			else
-+				pr_err("%pOF: phandle %s needs %d, found %td\n",
-+					it->parent, of_node_full_name(it->node),
-+					count, it->list_end - it->cur);
- 			goto err;
- 		}
- 	}
+diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
+index 65fdca366e41f..36c9905894278 100644
+--- a/drivers/gpu/drm/lima/lima_device.c
++++ b/drivers/gpu/drm/lima/lima_device.c
+@@ -357,6 +357,7 @@ int lima_device_init(struct lima_device *ldev)
+ 	int err, i;
+ 
+ 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
++	dma_set_max_seg_size(ldev->dev, UINT_MAX);
+ 
+ 	err = lima_clk_init(ldev);
+ 	if (err)
+-- 
+2.34.1
+
 
 
