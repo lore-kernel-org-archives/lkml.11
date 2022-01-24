@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BF3C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3859C3526E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2364927AbiAXXtv (ORCPT
+        id S2365109AbiAXXuP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:49:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49164 "EHLO
+        Mon, 24 Jan 2022 18:50:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1844754AbiAXXKO (ORCPT
+        with ESMTP id S1844747AbiAXXKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:10:14 -0500
+        Mon, 24 Jan 2022 18:10:13 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716E9C0A0285;
-        Mon, 24 Jan 2022 13:18:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B7EC0A0295;
+        Mon, 24 Jan 2022 13:18:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FABB614A8;
-        Mon, 24 Jan 2022 21:18:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C28A2C340E4;
-        Mon, 24 Jan 2022 21:18:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6120861496;
+        Mon, 24 Jan 2022 21:18:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AABCC340E4;
+        Mon, 24 Jan 2022 21:18:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059103;
-        bh=CHPzfW6i5bXLXtdsGALLpzo6sxfPO+RZtns6yyzQsS4=;
+        s=korg; t=1643059112;
+        bh=crMXqvSs9XeCYRWN5QFY6tsNKDUACgMNtu1LADo50Es=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eLV/Eh/ZRff51G0ujXwdMedbVNX41Ex8/IXUBizB2xpCUvgHGHUdiUyyisPy1qnuq
-         t9c9Ez86gegZkbvBcXVEw9lv22THeFZDurmex0YE+Hm2sq67S1egD2XBQ7m58e3xw2
-         3eR23Z9MvCvtaohwkrdMCRsjVTw4L7+o9QEbg2Bs=
+        b=qOVHfJO7ZoxKEmK83q/802lOpo6CchlCPZYByMkno9r4MYqc+5k/6VAHhSmcKW4zt
+         fNNcu0gvof7n6L3JMbbJg5I3AbudCFM/A36frTqe7eCid06yT5wpbRAK2UuoQwuREg
+         rXrXvhibwwAZZMylraiQpjevkMrUHZkHpYZ/Uch8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Van Assche <bvanassche@acm.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Xiang Chen <chenxiang66@hisilicon.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>,
-        John Garry <john.garry@huawei.com>
-Subject: [PATCH 5.16 0504/1039] scsi: block: pm: Always set request queue runtime active in blk_post_runtime_resume()
-Date:   Mon, 24 Jan 2022 19:38:13 +0100
-Message-Id: <20220124184142.209470147@linuxfoundation.org>
+        stable@vger.kernel.org, Sachin Sant <sachinp@linux.vnet.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0507/1039] powerpc/64s: Mask NIP before checking against SRR0
+Date:   Mon, 24 Jan 2022 19:38:16 +0100
+Message-Id: <20220124184142.325472093@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -53,118 +50,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alan Stern <stern@rowland.harvard.edu>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 6e1fcab00a23f7fe9f4fe9704905a790efa1eeab ]
+[ Upstream commit 314f6c23dd8d417281eb9e8a516dd98036f2e7b3 ]
 
-John Garry reported a deadlock that occurs when trying to access a
-runtime-suspended SATA device.  For obscure reasons, the rescan procedure
-causes the link to be hard-reset, which disconnects the device.
+When CONFIG_PPC_RFI_SRR_DEBUG=y we check that NIP and SRR0 match when
+returning from interrupts. This can trigger falsely if NIP has either of
+its two low bits set via sigreturn or ptrace, while SRR0 has its low two
+bits masked in hardware.
 
-The rescan tries to carry out a runtime resume when accessing the device.
-scsi_rescan_device() holds the SCSI device lock and won't release it until
-it can put commands onto the device's block queue.  This can't happen until
-the queue is successfully runtime-resumed or the device is unregistered.
-But the runtime resume fails because the device is disconnected, and
-__scsi_remove_device() can't do the unregistration because it can't get the
-device lock.
+As a quick fix make sure to mask the low bits before doing the check.
 
-The best way to resolve this deadlock appears to be to allow the block
-queue to start running again even after an unsuccessful runtime resume.
-The idea is that the driver or the SCSI error handler will need to be able
-to use the queue to resolve the runtime resume failure.
-
-This patch removes the err argument to blk_post_runtime_resume() and makes
-the routine act as though the resume was successful always.  This fixes the
-deadlock.
-
-Link: https://lore.kernel.org/r/1639999298-244569-4-git-send-email-chenxiang66@hisilicon.com
-Fixes: e27829dc92e5 ("scsi: serialize ->rescan against ->remove")
-Reported-and-tested-by: John Garry <john.garry@huawei.com>
-Reviewed-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Xiang Chen <chenxiang66@hisilicon.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: 59dc5bfca0cb ("powerpc/64s: avoid reloading (H)SRR registers if they are still valid")
+Reported-by: Sachin Sant <sachinp@linux.vnet.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Tested-by: Sachin Sant <sachinp@linux.vnet.ibm.com>
+Link: https://lore.kernel.org/r/20211221135101.2085547-1-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/blk-pm.c         | 22 +++++++---------------
- drivers/scsi/scsi_pm.c |  2 +-
- include/linux/blk-pm.h |  2 +-
- 3 files changed, 9 insertions(+), 17 deletions(-)
+ arch/powerpc/kernel/interrupt_64.S | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/blk-pm.c b/block/blk-pm.c
-index 17bd020268d42..2dad62cc15727 100644
---- a/block/blk-pm.c
-+++ b/block/blk-pm.c
-@@ -163,27 +163,19 @@ EXPORT_SYMBOL(blk_pre_runtime_resume);
- /**
-  * blk_post_runtime_resume - Post runtime resume processing
-  * @q: the queue of the device
-- * @err: return value of the device's runtime_resume function
-  *
-  * Description:
-- *    Update the queue's runtime status according to the return value of the
-- *    device's runtime_resume function. If the resume was successful, call
-- *    blk_set_runtime_active() to do the real work of restarting the queue.
-+ *    For historical reasons, this routine merely calls blk_set_runtime_active()
-+ *    to do the real work of restarting the queue.  It does this regardless of
-+ *    whether the device's runtime-resume succeeded; even if it failed the
-+ *    driver or error handler will need to communicate with the device.
-  *
-  *    This function should be called near the end of the device's
-  *    runtime_resume callback.
-  */
--void blk_post_runtime_resume(struct request_queue *q, int err)
-+void blk_post_runtime_resume(struct request_queue *q)
- {
--	if (!q->dev)
--		return;
--	if (!err) {
--		blk_set_runtime_active(q);
--	} else {
--		spin_lock_irq(&q->queue_lock);
--		q->rpm_status = RPM_SUSPENDED;
--		spin_unlock_irq(&q->queue_lock);
--	}
-+	blk_set_runtime_active(q);
- }
- EXPORT_SYMBOL(blk_post_runtime_resume);
- 
-@@ -201,7 +193,7 @@ EXPORT_SYMBOL(blk_post_runtime_resume);
-  * runtime PM status and re-enable peeking requests from the queue. It
-  * should be called before first request is added to the queue.
-  *
-- * This function is also called by blk_post_runtime_resume() for successful
-+ * This function is also called by blk_post_runtime_resume() for
-  * runtime resumes.  It does everything necessary to restart the queue.
-  */
- void blk_set_runtime_active(struct request_queue *q)
-diff --git a/drivers/scsi/scsi_pm.c b/drivers/scsi/scsi_pm.c
-index b5a858c29488a..f06ca9d2a597d 100644
---- a/drivers/scsi/scsi_pm.c
-+++ b/drivers/scsi/scsi_pm.c
-@@ -181,7 +181,7 @@ static int sdev_runtime_resume(struct device *dev)
- 	blk_pre_runtime_resume(sdev->request_queue);
- 	if (pm && pm->runtime_resume)
- 		err = pm->runtime_resume(dev);
--	blk_post_runtime_resume(sdev->request_queue, err);
-+	blk_post_runtime_resume(sdev->request_queue);
- 
- 	return err;
- }
-diff --git a/include/linux/blk-pm.h b/include/linux/blk-pm.h
-index b80c65aba2493..2580e05a8ab67 100644
---- a/include/linux/blk-pm.h
-+++ b/include/linux/blk-pm.h
-@@ -14,7 +14,7 @@ extern void blk_pm_runtime_init(struct request_queue *q, struct device *dev);
- extern int blk_pre_runtime_suspend(struct request_queue *q);
- extern void blk_post_runtime_suspend(struct request_queue *q, int err);
- extern void blk_pre_runtime_resume(struct request_queue *q);
--extern void blk_post_runtime_resume(struct request_queue *q, int err);
-+extern void blk_post_runtime_resume(struct request_queue *q);
- extern void blk_set_runtime_active(struct request_queue *q);
- #else
- static inline void blk_pm_runtime_init(struct request_queue *q,
+diff --git a/arch/powerpc/kernel/interrupt_64.S b/arch/powerpc/kernel/interrupt_64.S
+index ec950b08a8dcc..894588b2381e5 100644
+--- a/arch/powerpc/kernel/interrupt_64.S
++++ b/arch/powerpc/kernel/interrupt_64.S
+@@ -30,6 +30,7 @@ COMPAT_SYS_CALL_TABLE:
+ 	.ifc \srr,srr
+ 	mfspr	r11,SPRN_SRR0
+ 	ld	r12,_NIP(r1)
++	clrrdi  r12,r12,2
+ 100:	tdne	r11,r12
+ 	EMIT_BUG_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+ 	mfspr	r11,SPRN_SRR1
+@@ -39,6 +40,7 @@ COMPAT_SYS_CALL_TABLE:
+ 	.else
+ 	mfspr	r11,SPRN_HSRR0
+ 	ld	r12,_NIP(r1)
++	clrrdi  r12,r12,2
+ 100:	tdne	r11,r12
+ 	EMIT_BUG_ENTRY 100b,__FILE__,__LINE__,(BUGFLAG_WARNING | BUGFLAG_ONCE)
+ 	mfspr	r11,SPRN_HSRR1
 -- 
 2.34.1
 
