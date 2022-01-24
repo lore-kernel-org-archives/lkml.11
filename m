@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF4AC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 351C5C46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380886AbiAXURB (ORCPT
+        id S1349938AbiAXURF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:17:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44998 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359570AbiAXT7v (ORCPT
+        Mon, 24 Jan 2022 15:17:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59342 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359784AbiAXUAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:59:51 -0500
+        Mon, 24 Jan 2022 15:00:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81EE8C055A87;
+        Mon, 24 Jan 2022 11:28:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C7439B8121A;
-        Mon, 24 Jan 2022 19:59:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4ADDC340E5;
-        Mon, 24 Jan 2022 19:59:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4050FB8121B;
+        Mon, 24 Jan 2022 19:28:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F353C340E5;
+        Mon, 24 Jan 2022 19:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054388;
-        bh=7iTssmaqpC1K/Xqd0MdRNMXEmtIL7JRZogdBpi/rGDQ=;
+        s=korg; t=1643052503;
+        bh=d9OmUHPKQrZ6Natp9JukyqTsw+yMgXrciAtgaRtw1yw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MFmm58sKhK/Ejz9tehtTAhu/DoSMHgHGKiwD/5hQXzG2xYf1GJqwm/oit3NX6mb23
-         HDMkvZP4GTpiQ0gwsDTuyB0tRgvNEnC/5tWhP3/fHiAH127Z80/vsxMxY0IRmxQcng
-         P2cYyPQOUWz62vKzoVQ4qs0fFfO9+9zlZ6sBEiqs=
+        b=zEM0u6kRT1DHFNCejlgqNV54VPrPlb9P8OqADzV2ci4FVMwqzxsMSTRj8IoZXFPxJ
+         eTLubtEwCzl77r3AfdVfaNhBSq0efKlkecnKuQkDZJIpAIGwOmMORZTtobBMZ7zR7j
+         DJvMZyKNC4G2+zMaqVP1qaafzPsPoSUxFNVv0hSM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 356/563] x86/mce: Allow instrumentation during task work queueing
-Date:   Mon, 24 Jan 2022 19:42:01 +0100
-Message-Id: <20220124184036.726854688@linuxfoundation.org>
+Subject: [PATCH 5.4 080/320] crypto: stm32/cryp - fix double pm exit
+Date:   Mon, 24 Jan 2022 19:41:04 +0100
+Message-Id: <20220124183956.457673340@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,50 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit 4fbce464db81a42f9a57ee242d6150ec7f996415 ]
+[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
 
-Fixes
+Delete extraneous lines in probe error handling code: pm was
+disabled twice.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xdb1: call to queue_task_work() leaves .noinstr.text section
+Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-6-bp@alien8.de
+Reported-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 14b34963eb1f7..34fffffaf8730 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1443,6 +1443,14 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 	if (worst != MCE_AR_SEVERITY && !kill_it)
- 		goto out;
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index 92472a48c0454..c41e66211c5b4 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -2034,8 +2034,6 @@ err_engine1:
+ 	list_del(&cryp->list);
+ 	spin_unlock(&cryp_list.lock);
  
-+	/*
-+	 * Enable instrumentation around the external facilities like
-+	 * task_work_add() (via queue_task_work()), fixup_exception() etc.
-+	 * For now, that is. Fixing this properly would need a lot more involved
-+	 * reorganization.
-+	 */
-+	instrumentation_begin();
-+
- 	/* Fault was in user mode and we need to take some action */
- 	if ((m.cs & 3) == 3) {
- 		/* If this triggers there is no way to recover. Die hard. */
-@@ -1468,6 +1476,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 		if (m.kflags & MCE_IN_KERNEL_COPYIN)
- 			queue_task_work(&m, msg, kill_it);
- 	}
-+
-+	instrumentation_end();
-+
- out:
- 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
- }
+-	pm_runtime_disable(dev);
+-	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_put_noidle(dev);
+ 
 -- 
 2.34.1
 
