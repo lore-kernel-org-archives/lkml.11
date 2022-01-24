@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 618E9C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31AC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451964AbiAXVXv (ORCPT
+        id S1452021AbiAXVX4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44592 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443277AbiAXU4g (ORCPT
+        Mon, 24 Jan 2022 16:23:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52278 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443427AbiAXU4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:56:36 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C877C110F30;
-        Mon, 24 Jan 2022 11:18:19 -0800 (PST)
+        Mon, 24 Jan 2022 15:56:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 09FDF60BB9;
-        Mon, 24 Jan 2022 19:18:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE8CDC340E5;
-        Mon, 24 Jan 2022 19:18:17 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A14FB81233;
+        Mon, 24 Jan 2022 20:56:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34D32C340E5;
+        Mon, 24 Jan 2022 20:56:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051898;
-        bh=42cKnB73ycwsYbytnMtn+m7ZqxOi3VaJu09BCcgAuRU=;
+        s=korg; t=1643057813;
+        bh=iQYvZKOwn04GejAiJzx17eTC96LSLpLWKisII9IwQuA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hNQZ5L8Cvab0bSwn2+4DzrZsgx/mzTkQghIvGsrGHSQ8Vgq1OUkGNe+Ht3ty6VVZ5
-         pxU8AjPennwDieHls7XwYGyWCEfLx+4a1PfU0FpPzX5PzNab2W9fQx44lJlZratNCZ
-         37KDbnX0bdJKsmMauFLWmTIBesDM/5Tcst0sls00=
+        b=VGovbQQ8iZrMN1opNtHCEg3aU7IhOWNDQj/6KRPWdFMdI4jdiMLhUXebtr8fnw/U7
+         Z16HhZZ6qbJYVPbRTVeIf/vSYd+YjtjEkQNbBEIPyTeVnh0RX/e2B9VXxC/M+t2oqx
+         0qzbZGkvEtds2dsHOtPuknwJuqdI3BXBh6hgGLOg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Diego Viola <diego.viola@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 123/239] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
-Date:   Mon, 24 Jan 2022 19:42:41 +0100
-Message-Id: <20220124183947.011511046@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 5.16 0055/1039] can: softing_cs: softingcs_probe(): fix memleak on registration failure
+Date:   Mon, 24 Jan 2022 19:30:44 +0100
+Message-Id: <20220124184126.998671788@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,103 +46,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Skeggs <bskeggs@redhat.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
+commit ced4913efb0acc844ed65cc01d091a85d83a2082 upstream.
 
-There have been reports of the WFI timing out on some boards, and a
-patch was proposed to just remove it.  This stuff is rather fragile,
-and I believe the WFI might be needed with our FW prior to GM200.
+In case device registration fails during probe, the driver state and
+the embedded platform device structure needs to be freed using
+platform_device_put() to properly free all resources (e.g. the device
+name).
 
-However, we probably should not be touching PMU during init on GPUs
-where we depend on NVIDIA FW, outside of limited circumstances, so
-this should be a somewhat safer change that achieves the desired
-result.
-
-Reported-by: Diego Viola <diego.viola@gmail.com>
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 0a0b7a5f7a04 ("can: add driver for Softing card")
+Link: https://lore.kernel.org/all/20211222104843.6105-1-johan@kernel.org
+Cc: stable@vger.kernel.org # 2.6.38
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ drivers/net/can/softing/softing_cs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-index ce70a193caa7f..8cf3d1b4662de 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-@@ -70,20 +70,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
+--- a/drivers/net/can/softing/softing_cs.c
++++ b/drivers/net/can/softing/softing_cs.c
+@@ -293,7 +293,7 @@ static int softingcs_probe(struct pcmcia
  	return 0;
- }
  
--static int
-+static void
- nvkm_pmu_reset(struct nvkm_pmu *pmu)
- {
- 	struct nvkm_device *device = pmu->subdev.device;
- 
- 	if (!pmu->func->enabled(pmu))
--		return 0;
--
--	/* Inhibit interrupts, and wait for idle. */
--	nvkm_wr32(device, 0x10a014, 0x0000ffff);
--	nvkm_msec(device, 2000,
--		if (!nvkm_rd32(device, 0x10a04c))
--			break;
--	);
-+		return;
- 
- 	/* Reset. */
- 	if (pmu->func->reset)
-@@ -94,25 +87,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
- 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
- 			break;
- 	);
--
--	return 0;
- }
- 
- static int
- nvkm_pmu_preinit(struct nvkm_subdev *subdev)
- {
- 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
--	return nvkm_pmu_reset(pmu);
-+	nvkm_pmu_reset(pmu);
-+	return 0;
- }
- 
- static int
- nvkm_pmu_init(struct nvkm_subdev *subdev)
- {
- 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
--	int ret = nvkm_pmu_reset(pmu);
--	if (ret == 0 && pmu->func->init)
--		ret = pmu->func->init(pmu);
--	return ret;
-+	struct nvkm_device *device = pmu->subdev.device;
-+
-+	if (!pmu->func->init)
-+		return 0;
-+
-+	if (pmu->func->enabled(pmu)) {
-+		/* Inhibit interrupts, and wait for idle. */
-+		nvkm_wr32(device, 0x10a014, 0x0000ffff);
-+		nvkm_msec(device, 2000,
-+			if (!nvkm_rd32(device, 0x10a04c))
-+				break;
-+		);
-+
-+		nvkm_pmu_reset(pmu);
-+	}
-+
-+	return pmu->func->init(pmu);
- }
- 
- static int
--- 
-2.34.1
-
+ platform_failed:
+-	kfree(dev);
++	platform_device_put(pdev);
+ mem_failed:
+ pcmcia_bad:
+ pcmcia_failed:
 
 
