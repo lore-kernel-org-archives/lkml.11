@@ -2,107 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC037C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D65C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:55:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365689AbiAXXv3 (ORCPT
+        id S2365713AbiAXXvb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:51:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29842 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1845207AbiAXXLo (ORCPT
+        Mon, 24 Jan 2022 18:51:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47298 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1383497AbiAXXEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:11:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643065902;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+xq1dvb+auyrR+UeLJpXMeONNpkCtEYu5jUsqN8ZMlw=;
-        b=cwVVkXKmm5myp4R+HpJuRBRpJX/qHbBEQcp3KO3NSpntY1c7NWX3S7229L88Aei/B89UA2
-        bdzV3Ny4VXeewTSI31FDPH1iikwyNARN+/UI/Xsx0hzuKADKQ3cF/uVpLTPQ1F8lR4HY1H
-        0b14Cwh6Gb6OaSKB77yQsnMDAOC6MJ8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-220-ld2GHqSqO42Wyt0MthM2yA-1; Mon, 24 Jan 2022 18:11:39 -0500
-X-MC-Unique: ld2GHqSqO42Wyt0MthM2yA-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Mon, 24 Jan 2022 18:04:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB516C02B77C;
+        Mon, 24 Jan 2022 13:16:33 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 26F90835B47;
-        Mon, 24 Jan 2022 23:11:38 +0000 (UTC)
-Received: from [172.30.41.16] (unknown [10.2.18.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B49C5108B4;
-        Mon, 24 Jan 2022 23:11:37 +0000 (UTC)
-Subject: [PATCH] vfio/pci: Stub vfio_pci_vga_rw when !CONFIG_VFIO_PCI_VGA
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     alex.williamson@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Mon, 24 Jan 2022 16:11:37 -0700
-Message-ID: <164306582968.3758255.15192949639574660648.stgit@omen>
-User-Agent: StGit/1.0-8-g6af9-dirty
+        by ams.source.kernel.org (Postfix) with ESMTPS id A4159B8123A;
+        Mon, 24 Jan 2022 21:16:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03218C340E4;
+        Mon, 24 Jan 2022 21:16:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058991;
+        bh=kO9zzbykNvCY4rMFSnfyyyarik+GEjCV89BpyAmECy4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=tKdM25WUNw4wWiF5bRpZKo4mSts/s8W51miLE0sCu66GIKOY3LLYbUb50yJisugMO
+         xQeOT1xWfFlj+80cYGAFq8be8kMNdKmvEwTxBQmZF7jGOEEkYgfbExKqfML2GIdzlB
+         npov/h2wp9VUaOukz/EY57Db5fZGtpvf+r8A/kvE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        kernel test robot <lkp@intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0468/1039] ASoC: amd: Fix dependency for SPI master
+Date:   Mon, 24 Jan 2022 19:37:37 +0100
+Message-Id: <20220124184141.014006048@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Resolve build errors reported against UML build for undefined
-ioport_map() and ioport_unmap() functions.  Without this config
-option a device cannot have vfio_pci_core_device.has_vga set,
-so the existing function would always return -EINVAL anyway.
+From: Lucas Tanure <tanureal@opensource.cirrus.com>
 
-Link: https://lore.kernel.org/r/20220123125737.2658758-1-geert@linux-m68k.org
-Signed-off-by: Alex Williamson <alex.williamson@redhat.com>
+[ Upstream commit 19a628d8f1a6c16263d8037a918427207c8a95a0 ]
+
+Set SPI_MASTER as dependency as is using CS35L41 SPI driver
+
+Fixes: 96792fdd77cd1 ("ASoC: amd: enable vangogh platform machine driver build")
+
+Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Link: https://lore.kernel.org/r/20211201180004.1402156-1-tanureal@opensource.cirrus.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vfio/pci/vfio_pci_rdwr.c |    2 ++
- include/linux/vfio_pci_core.h    |    9 +++++++++
- 2 files changed, 11 insertions(+)
+ sound/soc/amd/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/vfio/pci/vfio_pci_rdwr.c b/drivers/vfio/pci/vfio_pci_rdwr.c
-index 57d3b2cbbd8e..82ac1569deb0 100644
---- a/drivers/vfio/pci/vfio_pci_rdwr.c
-+++ b/drivers/vfio/pci/vfio_pci_rdwr.c
-@@ -288,6 +288,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 	return done;
- }
- 
-+#ifdef CONFIG_VFIO_PCI_VGA
- ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite)
- {
-@@ -355,6 +356,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 
- 	return done;
- }
-+#endif
- 
- static void vfio_pci_ioeventfd_do_write(struct vfio_pci_ioeventfd *ioeventfd,
- 					bool test_mem)
-diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-index ef9a44b6cf5d..ae6f4838ab75 100644
---- a/include/linux/vfio_pci_core.h
-+++ b/include/linux/vfio_pci_core.h
-@@ -159,8 +159,17 @@ extern ssize_t vfio_pci_config_rw(struct vfio_pci_core_device *vdev,
- extern ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite);
- 
-+#ifdef CONFIG_VFIO_PCI_VGA
- extern ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
- 			       size_t count, loff_t *ppos, bool iswrite);
-+#else
-+static inline ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev,
-+				      char __user *buf, size_t count,
-+				      loff_t *ppos, bool iswrite)
-+{
-+	return -EINVAL;
-+}
-+#endif
- 
- extern long vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
- 			       uint64_t data, int count, int fd);
+diff --git a/sound/soc/amd/Kconfig b/sound/soc/amd/Kconfig
+index 2c6af3f8f2961..ff535370e525a 100644
+--- a/sound/soc/amd/Kconfig
++++ b/sound/soc/amd/Kconfig
+@@ -68,7 +68,7 @@ config SND_SOC_AMD_VANGOGH_MACH
+ 	tristate "AMD Vangogh support for NAU8821 CS35L41"
+ 	select SND_SOC_NAU8821
+ 	select SND_SOC_CS35L41_SPI
+-	depends on SND_SOC_AMD_ACP5x && I2C
++	depends on SND_SOC_AMD_ACP5x && I2C && SPI_MASTER
+ 	help
+ 	  This option enables machine driver for Vangogh platform
+ 	  using NAU8821 and CS35L41 codecs.
+-- 
+2.34.1
+
 
 
