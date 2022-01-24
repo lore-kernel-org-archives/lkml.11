@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B3AEC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C04BAC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422896AbiAYCcW (ORCPT
+        id S3422992AbiAYCcm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:22 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46344 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355957AbiAXUWL (ORCPT
+        Mon, 24 Jan 2022 21:32:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37040 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355493AbiAXUWb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:11 -0500
+        Mon, 24 Jan 2022 15:22:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011A5C0417CF;
+        Mon, 24 Jan 2022 11:40:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7554C61382;
-        Mon, 24 Jan 2022 20:22:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51286C340E5;
-        Mon, 24 Jan 2022 20:22:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 93417612E9;
+        Mon, 24 Jan 2022 19:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53B61C340E5;
+        Mon, 24 Jan 2022 19:40:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055730;
-        bh=OEEiLG+MaqoQuKa893H/hE0g8O4Jt/RefZPNUva1qyY=;
+        s=korg; t=1643053215;
+        bh=9wTFvCDXsLGr2ff4ZSyAlfnhmj5VqNbcLjP9DYhL73E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VmeRMhKbTAPDi0Bzv0Z0cVkF7E/S5S9tc8dnpj83MvhC+6Xdd88tn/1x1MKNJTyb7
-         6J7byl8LO6AsvAk8g/gFk7SGasKSq5ySNzkaGAis9xt15sII72wqMcrpyzb+zWNzGc
-         COVLOab7oNUPSd6xRriR+5e8ZO9ID5JCglfjUOEk=
+        b=0MBK2adB3ZfirpDsAaEk+ej3glhLr53h5y0xvfkBc7iuOku5VatHsSsThQv+eclma
+         QugK/cgxGny1a53ANo4kMERw0kGjdhMjnbsFCnECsIuNyN2ruHq7foRgoZYExmidgW
+         qZEgylkrfqZ1qBP3Fijzm7HUcTbEC+KU6dZiMmao=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 220/846] drm/amd/display: Fix out of bounds access on DNC31 stream encoder regs
-Date:   Mon, 24 Jan 2022 19:35:37 +0100
-Message-Id: <20220124184108.511512456@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.4 280/320] Documentation: fix firewire.rst ABI file path error
+Date:   Mon, 24 Jan 2022 19:44:24 +0100
+Message-Id: <20220124184003.504380023@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,47 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit d374d3b493215d637b9e7be12a93f22caf4c1f97 ]
+commit b0ac702f3329cdc8a06dcaac73183d4b5a2b942d upstream.
 
-[Why]
-During dcn31_stream_encoder_create, if PHYC/D get remapped to F/G on B0
-then we'll index 5 or 6 into a array of length 5 - leading to an
-access violation on some configs during device creation.
+Adjust the path of the ABI files for firewire.rst to prevent a
+documentation build error. Prevents this problem:
 
-[How]
-Software won't be touching PHYF/PHYG directly, so just extend the
-array to cover all possible engine IDs.
+Sphinx parallel build error:
+docutils.utils.SystemMessage: Documentation/driver-api/firewire.rst:22: (SEVERE/4) Problems with "include" directive path:
+InputError: [Errno 2] No such file or directory: '../Documentation/driver-api/ABI/stable/firewire-cdev'.
 
-Even if it does by try to access one of these registers by accident
-the offset will be 0 and we'll get a warning during the access.
-
-Fixes: 2fe9a0e1173f ("drm/amd/display: Fix DCN3 B0 DP Alt Mapping")
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2f4830ef96d2 ("FireWire: add driver-api Introduction section")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/20220119033905.4779-1-rdunlap@infradead.org
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/driver-api/firewire.rst |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-index 0fe570717ba01..d4fe5352421fc 100644
---- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-+++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
-@@ -470,7 +470,8 @@ static const struct dcn30_afmt_mask afmt_mask = {
- 	SE_DCN3_REG_LIST(id)\
- }
+--- a/Documentation/driver-api/firewire.rst
++++ b/Documentation/driver-api/firewire.rst
+@@ -19,7 +19,7 @@ of kernel interfaces is available via ex
+ Firewire char device data structures
+ ====================================
  
--static const struct dcn10_stream_enc_registers stream_enc_regs[] = {
-+/* Some encoders won't be initialized here - but they're logical, not physical. */
-+static const struct dcn10_stream_enc_registers stream_enc_regs[ENGINE_ID_COUNT] = {
- 	stream_enc_regs(0),
- 	stream_enc_regs(1),
- 	stream_enc_regs(2),
--- 
-2.34.1
-
+-.. include:: /ABI/stable/firewire-cdev
++.. include:: ../ABI/stable/firewire-cdev
+     :literal:
+ 
+ .. kernel-doc:: include/uapi/linux/firewire-cdev.h
+@@ -28,7 +28,7 @@ Firewire char device data structures
+ Firewire device probing and sysfs interfaces
+ ============================================
+ 
+-.. include:: /ABI/stable/sysfs-bus-firewire
++.. include:: ../ABI/stable/sysfs-bus-firewire
+     :literal:
+ 
+ .. kernel-doc:: drivers/firewire/core-device.c
 
 
