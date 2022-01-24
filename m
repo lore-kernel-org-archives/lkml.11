@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D22C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5046DC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357535AbiAXTuO (ORCPT
+        id S1350869AbiAXTua (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:50:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37498 "EHLO
+        Mon, 24 Jan 2022 14:50:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37730 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355098AbiAXTkB (ORCPT
+        with ESMTP id S1355303AbiAXTkZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:01 -0500
+        Mon, 24 Jan 2022 14:40:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C2D7D61523;
-        Mon, 24 Jan 2022 19:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E309C340E5;
-        Mon, 24 Jan 2022 19:39:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B925761298;
+        Mon, 24 Jan 2022 19:40:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DED0C340E5;
+        Mon, 24 Jan 2022 19:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053199;
-        bh=Jxtv+A1161cRIGR/Gk7IFvyFKod5JdGJGCILTRds53I=;
+        s=korg; t=1643053224;
+        bh=WS0FP5EzZnRXvSa/+sP/qnF6xwKayJlaYd0A6sJ99QA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=txNtJGR/Epvaq8MkmgwEtWJ6NTHCniCAssO7nTA6Ce2HUgp7b4GdZrwqP0D/7cWmw
-         x19iE08VDaxKLeH76msEOD34MyOpJ+RfYWBTp7v6Es/IyOorMNbZm7tOqRty7zBPwt
-         OMvSav/oUz6bQdGe8JWtJxipwsoGx/BkytyIebxg=
+        b=dD2uMa/VyjRVtmlEIvhTZYMMYL4xXPmHU2c7xt5v76PEH6n3CTrpcKEBv6OUTPlq5
+         ZqsPA3xOPXpCljNVN6dwFGS4fsksBVtan88zL2Zho0XauAqz5xJd8mH1MOIUrMOZWU
+         XpnIkHZNJ7v3tjvV0DrH6h7N/JSW2dXXSzq6NFbE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
         Tudor Ambarus <tudor.ambarus@microchip.com>,
         Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.4 307/320] dmaengine: at_xdmac: Fix concurrency over xfers_list
-Date:   Mon, 24 Jan 2022 19:44:51 +0100
-Message-Id: <20220124184004.387740545@linuxfoundation.org>
+Subject: [PATCH 5.4 309/320] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
+Date:   Mon, 24 Jan 2022 19:44:53 +0100
+Message-Id: <20220124184004.449445557@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,48 +49,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 18deddea9184b62941395889ff7659529c877326 upstream.
+commit 912f7c6f7fac273f40e621447cf17d14b50d6e5b upstream.
 
-Since tx_submit can be called from a hard IRQ, xfers_list must be
-protected with a lock to avoid concurency on the list's elements.
-Since at_xdmac_handle_cyclic() is called from a tasklet, spin_lock_irq
-is enough to protect from a hard IRQ.
+The hardware channel next descriptor view structure contains just
+fields of 32 bits, while dma_addr_t can be of type u64 or u32
+depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
+what the hardware expects.
 
 Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
 Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-8-tudor.ambarus@microchip.com
+Link: https://lore.kernel.org/r/20211215110115.191749-11-tudor.ambarus@microchip.com
 Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma/at_xdmac.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+ drivers/dma/at_xdmac.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
 --- a/drivers/dma/at_xdmac.c
 +++ b/drivers/dma/at_xdmac.c
-@@ -1564,14 +1564,17 @@ static void at_xdmac_handle_cyclic(struc
- 	struct at_xdmac_desc		*desc;
- 	struct dma_async_tx_descriptor	*txd;
+@@ -221,15 +221,15 @@ struct at_xdmac {
  
--	if (!list_empty(&atchan->xfers_list)) {
--		desc = list_first_entry(&atchan->xfers_list,
--					struct at_xdmac_desc, xfer_node);
--		txd = &desc->tx_dma_desc;
--
--		if (txd->flags & DMA_PREP_INTERRUPT)
--			dmaengine_desc_get_callback_invoke(txd, NULL);
-+	spin_lock_irq(&atchan->lock);
-+	if (list_empty(&atchan->xfers_list)) {
-+		spin_unlock_irq(&atchan->lock);
-+		return;
- 	}
-+	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
-+				xfer_node);
-+	spin_unlock_irq(&atchan->lock);
-+	txd = &desc->tx_dma_desc;
-+	if (txd->flags & DMA_PREP_INTERRUPT)
-+		dmaengine_desc_get_callback_invoke(txd, NULL);
- }
+ /* Linked List Descriptor */
+ struct at_xdmac_lld {
+-	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
+-	u32		mbr_ubc;	/* Microblock Control Member */
+-	dma_addr_t	mbr_sa;		/* Source Address Member */
+-	dma_addr_t	mbr_da;		/* Destination Address Member */
+-	u32		mbr_cfg;	/* Configuration Register */
+-	u32		mbr_bc;		/* Block Control Register */
+-	u32		mbr_ds;		/* Data Stride Register */
+-	u32		mbr_sus;	/* Source Microblock Stride Register */
+-	u32		mbr_dus;	/* Destination Microblock Stride Register */
++	u32 mbr_nda;	/* Next Descriptor Member */
++	u32 mbr_ubc;	/* Microblock Control Member */
++	u32 mbr_sa;	/* Source Address Member */
++	u32 mbr_da;	/* Destination Address Member */
++	u32 mbr_cfg;	/* Configuration Register */
++	u32 mbr_bc;	/* Block Control Register */
++	u32 mbr_ds;	/* Data Stride Register */
++	u32 mbr_sus;	/* Source Microblock Stride Register */
++	u32 mbr_dus;	/* Destination Microblock Stride Register */
+ };
  
- static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+ /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
 
 
