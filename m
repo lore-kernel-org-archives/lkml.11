@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7749FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72506C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:52:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343676AbiAXSwb (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:52:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        id S245545AbiAXSwe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:52:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343628AbiAXSvM (ORCPT
+        with ESMTP id S1343652AbiAXSvS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:51:12 -0500
+        Mon, 24 Jan 2022 13:51:18 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 789BFC0617BA;
-        Mon, 24 Jan 2022 10:50:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C04C061776;
+        Mon, 24 Jan 2022 10:51:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 157B4614DF;
-        Mon, 24 Jan 2022 18:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DBFD1C340E5;
-        Mon, 24 Jan 2022 18:50:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3FE461514;
+        Mon, 24 Jan 2022 18:51:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9569BC340E8;
+        Mon, 24 Jan 2022 18:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050254;
-        bh=U6RKr9vFK/7T1bwk178thgThkYtuoXo3nEgOP/hosJw=;
+        s=korg; t=1643050267;
+        bh=ryaLA9s4ic0UyRgR1BPQvm3ZbngJz68AdEU/0//C1yM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gCAq9dj3PVUxaNfvvK8rmzYXVAOr4Vfy9Wk6aeIEL2WENtGf4MFaGfWb8GZWkM+U2
-         0DDQv69WR4xoEDzhBJ9Pe3fTD9lCtalCW+EyydOz0GSPE+WMmCuweKW848FkJ/Mxhz
-         z+Hq/7HYrX2mMN0iCFaNFmuqBcrNfyFapbuLnX2c=
+        b=AuHOn6vdkj35Ifr+IuBKaG/QmohdRac3wUQE6ZGxgQHmsyK6S7t6f8n2qyPT+d8CN
+         agIKheC60d9EwMVZqnWoj4AWVB6IGVkhub/yMlkh9kfUjzWAlYyz05lqXZwQy9r/fM
+         FaK50CtlLCFakMBUKb4LhHYsPb7r+B0WN7X5M2OY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 060/114] usb: gadget: f_fs: Use stream_open() for endpoint files
-Date:   Mon, 24 Jan 2022 19:42:35 +0100
-Message-Id: <20220124183928.957319424@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
+        Xiongwei Song <sxwjean@gmail.com>,
+        Denis Efremov <efremov@linux.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 064/114] floppy: Add max size check for user space request
+Date:   Mon, 24 Jan 2022 19:42:39 +0100
+Message-Id: <20220124183929.080923085@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -50,63 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
+[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
 
-Function fs endpoint file operations are synchronized via an interruptible
-mutex wait. However we see threads that do ep file operations concurrently
-are getting blocked for the mutex lock in __fdget_pos(). This is an
-uninterruptible wait and we see hung task warnings and kernel panic
-if hung_task_panic systcl is enabled if host does not send/receive
-the data for long time.
+We need to check the max request size that is from user space before
+allocating pages. If the request size exceeds the limit, return -EINVAL.
+This check can avoid the warning below from page allocator.
 
-The reason for threads getting blocked in __fdget_pos() is due to
-the file position protection introduced by the commit 9c225f2655e3
-("vfs: atomic f_pos accesses as per POSIX"). Since function fs
-endpoint files does not have the notion of the file position, switch
-to the stream mode. This will bypass the file position mutex and
-threads will be blocked in interruptible state for the function fs
-mutex.
+WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
+WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
+Modules linked in:
+CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
+Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
+RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
+R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
+FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
+ __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
+ raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
+ raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
+ fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
+ fd_ioctl drivers/block/floppy.c:3555 [inline]
+ fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
+ compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
+ __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
 
-It should not affects user space as we are only changing the task state
-changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
-for the USB transfers to be finished. However there is a slight change to
-the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
-getting blocked inside fdget_pos(). Now they reach to function fs and error
-code is returned. The non blocking behavior is actually honoured now.
-
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Signed-off-by: Denis Efremov <efremov@linux.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/block/floppy.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index 390e592358e63..7af4d05dabeaa 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -541,7 +541,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
- 	file->private_data = ffs;
- 	ffs_data_opened(ffs);
- 
--	return 0;
-+	return stream_open(inode, file);
+diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
+index 826ab5f2f6b9f..373dab29addf2 100644
+--- a/drivers/block/floppy.c
++++ b/drivers/block/floppy.c
+@@ -3116,6 +3116,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
+ 	}
  }
  
- static int ffs_ep0_release(struct inode *inode, struct file *file)
-@@ -882,7 +882,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
- 	file->private_data = epfile;
- 	ffs_data_opened(epfile->ffs);
++#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
++
+ static int raw_cmd_copyin(int cmd, void __user *param,
+ 				 struct floppy_raw_cmd **rcmd)
+ {
+@@ -3153,7 +3155,7 @@ loop:
+ 	ptr->resultcode = 0;
  
--	return 0;
-+	return stream_open(inode, file);
- }
- 
- static int ffs_aio_cancel(struct kiocb *kiocb)
+ 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
+-		if (ptr->length <= 0)
++		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
+ 			return -EINVAL;
+ 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
+ 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
 -- 
 2.34.1
 
