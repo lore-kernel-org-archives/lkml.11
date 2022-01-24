@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAEF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7948C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376282AbiAXUBO (ORCPT
+        id S1353936AbiAXUBV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:01:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58832 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348618AbiAXThn (ORCPT
+        Mon, 24 Jan 2022 15:01:21 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34990 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345679AbiAXTha (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:37:43 -0500
+        Mon, 24 Jan 2022 14:37:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 229FBB81142;
-        Mon, 24 Jan 2022 19:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48681C340E5;
-        Mon, 24 Jan 2022 19:37:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48CFC614A8;
+        Mon, 24 Jan 2022 19:37:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27201C340E7;
+        Mon, 24 Jan 2022 19:37:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053058;
-        bh=4ZpRgW4Bcsrip4PUdaaioMGM1mw8+zX2JCcZ9hwNATU=;
+        s=korg; t=1643053049;
+        bh=YljHBSu8U7fYgPuBxiqBxuJLS3a+IyXUlt9fCs6zb+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O/3oiWqqZsasGCurFi6nMFcEcsgoR1onGCPjIGl2R0P41bkVwakii9O51CYHl8Jam
-         keJm8fH0Ail9xYVipzS64SN6LR7iZ9lFKWRsw5ogXImFwkLD+tihii3HKFOjIpESC8
-         z9tQgZ81fCVqHOL5AV8Dq2N5SctRKJsIUKtjCwFs=
+        b=Kps0+E7pgVwkAleioERwVpFQy9pYjS+XPbWmvlARwty3R/0k96d4Qwuu3R6TcIweJ
+         1QD1bMeRZw4AJm2YKgTRqN2SK4LdUCSF3SDe2geR7kp6i2Cvx0GXVuHlqYKPEKkgu/
+         ya+ZWclMksHzJhF3nUssLOX9HoYzGr/b7+A5ucfI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.4 262/320] PCI: pci-bridge-emul: Correctly set PCIe capabilities
-Date:   Mon, 24 Jan 2022 19:44:06 +0100
-Message-Id: <20220124184002.900020903@linuxfoundation.org>
+        stable@vger.kernel.org, John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.4 259/320] parisc: Fix lpa and lpa_user defines
+Date:   Mon, 24 Jan 2022 19:44:03 +0100
+Message-Id: <20220124184002.794686090@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,86 +46,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: John David Anglin <dave.anglin@bell.net>
 
-commit 1f1050c5e1fefb34ac90a506b43e9da803b5f8f7 upstream.
+commit db19c6f1a2a353cc8dec35b4789733a3cf6e2838 upstream.
 
-Older mvebu hardware provides PCIe Capability structure only in version 1.
-New mvebu and aardvark hardware provides it in version 2. So do not force
-version to 2 in pci_bridge_emul_init() and rather allow drivers to set
-correct version. Drivers need to set version in pcie_conf.cap field without
-overwriting PCI_CAP_LIST_ID register. Both drivers (mvebu and aardvark) do
-not provide slot support yet, so do not set PCI_EXP_FLAGS_SLOT flag.
+While working on the rewrite to the light-weight syscall and futex code, I
+experimented with using a hash index based on the user physical address of
+atomic variable. This exposed two problems with the lpa and lpa_user defines.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-6-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
+Because of the copy instruction, the pa argument needs to be an early clobber
+argument. This prevents gcc from allocating the va and pa arguments to the same
+register.
+
+Secondly, the lpa instruction can cause a page fault so we need to catch
+exceptions.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Fixes: 116d753308cf ("parisc: Use lpa instruction to load physical addresses in driver code")
+Signed-off-by: Helge Deller <deller@gmx.de>
+Cc: stable@vger.kernel.org # v5.2+
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    4 +++-
- drivers/pci/controller/pci-mvebu.c    |    8 ++++++++
- drivers/pci/pci-bridge-emul.c         |    5 +----
- 3 files changed, 12 insertions(+), 5 deletions(-)
+ arch/parisc/include/asm/special_insns.h |   44 +++++++++++++++++---------------
+ 1 file changed, 24 insertions(+), 20 deletions(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -863,7 +863,6 @@ advk_pci_bridge_emul_pcie_conf_read(stru
- 		return PCI_BRIDGE_EMUL_HANDLED;
- 	}
+--- a/arch/parisc/include/asm/special_insns.h
++++ b/arch/parisc/include/asm/special_insns.h
+@@ -2,28 +2,32 @@
+ #ifndef __PARISC_SPECIAL_INSNS_H
+ #define __PARISC_SPECIAL_INSNS_H
  
--	case PCI_CAP_LIST_ID:
- 	case PCI_EXP_DEVCAP:
- 	case PCI_EXP_DEVCTL:
- 		*value = advk_readl(pcie, PCIE_CORE_PCIEXP_CAP + reg);
-@@ -944,6 +943,9 @@ static int advk_sw_pci_bridge_init(struc
- 	/* Support interrupt A for MSI feature */
- 	bridge->conf.intpin = PCIE_CORE_INT_A_ASSERT_ENABLE;
+-#define lpa(va)	({			\
+-	unsigned long pa;		\
+-	__asm__ __volatile__(		\
+-		"copy %%r0,%0\n\t"	\
+-		"lpa %%r0(%1),%0"	\
+-		: "=r" (pa)		\
+-		: "r" (va)		\
+-		: "memory"		\
+-	);				\
+-	pa;				\
++#define lpa(va)	({					\
++	unsigned long pa;				\
++	__asm__ __volatile__(				\
++		"copy %%r0,%0\n"			\
++		"8:\tlpa %%r0(%1),%0\n"			\
++		"9:\n"					\
++		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
++		: "=&r" (pa)				\
++		: "r" (va)				\
++		: "memory"				\
++	);						\
++	pa;						\
+ })
  
-+	/* Aardvark HW provides PCIe Capability structure in version 2 */
-+	bridge->pcie_conf.cap = cpu_to_le16(2);
-+
- 	/* Indicates supports for Completion Retry Status */
- 	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
+-#define lpa_user(va)	({		\
+-	unsigned long pa;		\
+-	__asm__ __volatile__(		\
+-		"copy %%r0,%0\n\t"	\
+-		"lpa %%r0(%%sr3,%1),%0"	\
+-		: "=r" (pa)		\
+-		: "r" (va)		\
+-		: "memory"		\
+-	);				\
+-	pa;				\
++#define lpa_user(va)	({				\
++	unsigned long pa;				\
++	__asm__ __volatile__(				\
++		"copy %%r0,%0\n"			\
++		"8:\tlpa %%r0(%%sr3,%1),%0\n"		\
++		"9:\n"					\
++		ASM_EXCEPTIONTABLE_ENTRY(8b, 9b)	\
++		: "=&r" (pa)				\
++		: "r" (va)				\
++		: "memory"				\
++	);						\
++	pa;						\
+ })
  
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -576,6 +576,8 @@ struct pci_bridge_emul_ops mvebu_pci_bri
- static void mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
- {
- 	struct pci_bridge_emul *bridge = &port->bridge;
-+	u32 pcie_cap = mvebu_readl(port, PCIE_CAP_PCIEXP);
-+	u8 pcie_cap_ver = ((pcie_cap >> 16) & PCI_EXP_FLAGS_VERS);
- 
- 	bridge->conf.vendor = PCI_VENDOR_ID_MARVELL;
- 	bridge->conf.device = mvebu_readl(port, PCIE_DEV_ID_OFF) >> 16;
-@@ -588,6 +590,12 @@ static void mvebu_pci_bridge_emul_init(s
- 		bridge->conf.iolimit = PCI_IO_RANGE_TYPE_32;
- 	}
- 
-+	/*
-+	 * Older mvebu hardware provides PCIe Capability structure only in
-+	 * version 1. New hardware provides it in version 2.
-+	 */
-+	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
-+
- 	bridge->has_pcie = true;
- 	bridge->data = port;
- 	bridge->ops = &mvebu_pci_bridge_emul_ops;
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -288,10 +288,7 @@ int pci_bridge_emul_init(struct pci_brid
- 	if (bridge->has_pcie) {
- 		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
- 		bridge->pcie_conf.cap_id = PCI_CAP_ID_EXP;
--		/* Set PCIe v2, root port, slot support */
--		bridge->pcie_conf.cap =
--			cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4 | 2 |
--				    PCI_EXP_FLAGS_SLOT);
-+		bridge->pcie_conf.cap |= cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4);
- 		bridge->pcie_cap_regs_behavior =
- 			kmemdup(pcie_cap_regs_behavior,
- 				sizeof(pcie_cap_regs_behavior),
+ #define mfctl(reg)	({		\
 
 
