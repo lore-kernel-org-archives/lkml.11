@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 099F9C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 764C1C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410512AbiAYCnA (ORCPT
+        id S1356314AbiAYCoL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:43:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37874 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382785AbiAXUck (ORCPT
+        Mon, 24 Jan 2022 21:44:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46612 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444559AbiAXVBI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:32:40 -0500
+        Mon, 24 Jan 2022 16:01:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9553CC055A84;
+        Mon, 24 Jan 2022 12:02:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B8B3EB811F9;
-        Mon, 24 Jan 2022 20:32:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED9A6C340E7;
-        Mon, 24 Jan 2022 20:32:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 35D076130D;
+        Mon, 24 Jan 2022 20:02:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15E25C340E5;
+        Mon, 24 Jan 2022 20:02:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056357;
-        bh=qVTsRmkfHHvtcYhP+AfBxHTCm0Hpp40vXIcFjCKm+lI=;
+        s=korg; t=1643054534;
+        bh=LxtqiCU/HnTQBi7Y6RaZ5mzfJ2enE8ac2ayAJ6KDquo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ACdPH7SVTfYQySczm/6iwHLto0QBOmhwgY9zPGLPpiCmMynO1HnzOATB3brgA+oDU
-         x+OPh+JPWC2XnVvvDB6Xu+CXl5TXjkHGPSm8hlX2IAnG3eBCMtABodSDvMzJ7tNA5j
-         +5ArpqqC05FUsi00ax0F3dne4KqByhooTvRxQOyw=
+        b=MiJRrYFzm/cSjxF+/wzmcWYO+AbWlh8A3aSmUQx/ANk837ZrX2SaxXwLQhFfb1HOC
+         1dgc8nL/ZGzupU8ru+akJw40jabh5duKirQVMkkSpO4zwGCTLbpNrU3/Gst7bOgCTF
+         xlTW7ereVAXFoR8l8FO5yxWG8zoIsPgKgrVRDShw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Merlijn Wajer <merlijn@wizzup.org>,
-        "Sicelo A. Mhlongo" <absicsz@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 457/846] ARM: dts: omap3-n900: Fix lp5523 for multi color
-Date:   Mon, 24 Jan 2022 19:39:34 +0100
-Message-Id: <20220124184116.738683164@linuxfoundation.org>
+        stable@vger.kernel.org, Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 419/563] KVM: PPC: Book3S: Suppress warnings when allocating too big memory slots
+Date:   Mon, 24 Jan 2022 19:43:04 +0100
+Message-Id: <20220124184038.943871029@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,139 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sicelo A. Mhlongo <absicsz@gmail.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit e9af026a3b24f59d7af4609f73e0ef60a4d6d516 ]
+[ Upstream commit 511d25d6b789fffcb20a3eb71899cf974a31bd9d ]
 
-Since the LED multicolor framework support was added in commit
-92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
-LEDs on this platform stopped working.
+The userspace can trigger "vmalloc size %lu allocation failure: exceeds
+total pages" via the KVM_SET_USER_MEMORY_REGION ioctl.
 
-Fixes: 92a81562e695 ("leds: lp55xx: Add multicolor framework support to lp55xx")
-Fixes: ac219bf3c9bd ("leds: lp55xx: Convert to use GPIO descriptors")
-Signed-off-by: Merlijn Wajer <merlijn@wizzup.org>
-Signed-off-by: Sicelo A. Mhlongo <absicsz@gmail.com>
-Signed-off-by: Pavel Machek <pavel@ucw.cz>
+This silences the warning by checking the limit before calling vzalloc()
+and returns ENOMEM if failed.
+
+This does not call underlying valloc helpers as __vmalloc_node() is only
+exported when CONFIG_TEST_VMALLOC_MODULE and __vmalloc_node_range() is
+not exported at all.
+
+Spotted by syzkaller.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+[mpe: Use 'size' for the variable rather than 'cb']
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210901084512.1658628-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/omap3-n900.dts | 50 +++++++++++++++++++++++++-------
- 1 file changed, 40 insertions(+), 10 deletions(-)
+ arch/powerpc/kvm/book3s_hv.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/omap3-n900.dts b/arch/arm/boot/dts/omap3-n900.dts
-index 32335d4ce478b..d40c3d2c4914e 100644
---- a/arch/arm/boot/dts/omap3-n900.dts
-+++ b/arch/arm/boot/dts/omap3-n900.dts
-@@ -8,6 +8,7 @@
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index 175967a195c44..527c205d5a5f5 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -4557,8 +4557,12 @@ static int kvmppc_core_prepare_memory_region_hv(struct kvm *kvm,
+ 	unsigned long npages = mem->memory_size >> PAGE_SHIFT;
  
- #include "omap34xx.dtsi"
- #include <dt-bindings/input/input.h>
-+#include <dt-bindings/leds/common.h>
- 
- /*
-  * Default secure signed bootloader (Nokia X-Loader) does not enable L3 firewall
-@@ -630,63 +631,92 @@
- 	};
- 
- 	lp5523: lp5523@32 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
- 		compatible = "national,lp5523";
- 		reg = <0x32>;
- 		clock-mode = /bits/ 8 <0>; /* LP55XX_CLOCK_AUTO */
--		enable-gpio = <&gpio2 9 GPIO_ACTIVE_HIGH>; /* 41 */
-+		enable-gpios = <&gpio2 9 GPIO_ACTIVE_HIGH>; /* 41 */
- 
--		chan0 {
-+		led@0 {
-+			reg = <0>;
- 			chan-name = "lp5523:kb1";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan1 {
-+		led@1 {
-+			reg = <1>;
- 			chan-name = "lp5523:kb2";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan2 {
-+		led@2 {
-+			reg = <2>;
- 			chan-name = "lp5523:kb3";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan3 {
-+		led@3 {
-+			reg = <3>;
- 			chan-name = "lp5523:kb4";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan4 {
-+		led@4 {
-+			reg = <4>;
- 			chan-name = "lp5523:b";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_BLUE>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan5 {
-+		led@5 {
-+			reg = <5>;
- 			chan-name = "lp5523:g";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_GREEN>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan6 {
-+		led@6 {
-+			reg = <6>;
- 			chan-name = "lp5523:r";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_RED>;
-+			function = LED_FUNCTION_STATUS;
- 		};
- 
--		chan7 {
-+		led@7 {
-+			reg = <7>;
- 			chan-name = "lp5523:kb5";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 
--		chan8 {
-+		led@8 {
-+			reg = <8>;
- 			chan-name = "lp5523:kb6";
- 			led-cur = /bits/ 8 <50>;
- 			max-cur = /bits/ 8 <100>;
-+			color = <LED_COLOR_ID_WHITE>;
-+			function = LED_FUNCTION_KBD_BACKLIGHT;
- 		};
- 	};
- 
+ 	if (change == KVM_MR_CREATE) {
+-		slot->arch.rmap = vzalloc(array_size(npages,
+-					  sizeof(*slot->arch.rmap)));
++		unsigned long size = array_size(npages, sizeof(*slot->arch.rmap));
++
++		if ((size >> PAGE_SHIFT) > totalram_pages())
++			return -ENOMEM;
++
++		slot->arch.rmap = vzalloc(size);
+ 		if (!slot->arch.rmap)
+ 			return -ENOMEM;
+ 	}
 -- 
 2.34.1
 
