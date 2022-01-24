@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 270FCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B681CC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576095AbiAXVxB (ORCPT
+        id S1576158AbiAXVxF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:53:01 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37822 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447065AbiAXVSo (ORCPT
+        Mon, 24 Jan 2022 16:53:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450606AbiAXVVC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:18:44 -0500
+        Mon, 24 Jan 2022 16:21:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045D4C028C1F;
+        Mon, 24 Jan 2022 12:14:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 36925B8105C;
-        Mon, 24 Jan 2022 21:18:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68541C340E4;
-        Mon, 24 Jan 2022 21:18:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3CBCB811FB;
+        Mon, 24 Jan 2022 20:14:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DFE70C340E5;
+        Mon, 24 Jan 2022 20:14:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059119;
-        bh=pieXjopHJClA3R5Ukxgru4qNpdVk33ngFDmFKm50a+s=;
+        s=korg; t=1643055252;
+        bh=Ox4yzlZMvY7YFn/MCM8rYLIMnTGeZmHgf511Cyk3+2o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QvVRPgn4Xt1ZTAJDSOxyQevyqvoCTx2Bcd4W7dalyLuuloDTGXdGYeDFPmQ0ybph7
-         h5cT8moIDqbqzW5Pa/Ixnzo6YKLw6D/PLaFBXs91In4gKC6yMAWdHkgcYYjYpfLCEA
-         YN4NQjBDZUQyps12KMQRoudivMVswLUbcs1kUSJs=
+        b=ta+htMQHVY86gyQtu9/YXswWOPqXndSwi6qGCwgkGx1XwZi9nw3wfmIdzIAiQ+xx9
+         gqxMARZpsxjlJQMaXAGqGAwWYX1eTq6y/RvWBGo5JThcoQijSSyPHQxEvxa/56zzhD
+         WQvQEAc73NDfmW2YH9BdlGCWvtWTvEeoGhNPujw8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Swapnil Jakhade <sjakhade@cadence.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0509/1039] phy: cadence: Sierra: Fix to get correct parent for mux clocks
-Date:   Mon, 24 Jan 2022 19:38:18 +0100
-Message-Id: <20220124184142.400075607@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 091/846] drm/vc4: hdmi: Make sure the controller is powered in detect
+Date:   Mon, 24 Jan 2022 19:33:28 +0100
+Message-Id: <20220124184104.125679917@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,92 +52,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Swapnil Jakhade <sjakhade@cadence.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit da08aab940092a050a4fb2857ed9479d2b0e03c4 ]
+[ Upstream commit 0f5251339eda7f7eb7bd4467607ae1d01b24e129 ]
 
-Fix get_parent() callback to return the correct index of the parent for
-PLL_CMNLC1 clock. Add a separate table of register values corresponding
-to the parent index for PLL_CMNLC1. Update set_parent() callback
-accordingly.
+If the HPD GPIO is not available and drm_probe_ddc fails, we end up
+reading the HDMI_HOTPLUG register, but the controller might be powered
+off resulting in a CPU hang. Make sure we have the power domain and the
+HSM clock powered during the detect cycle to prevent the hang from
+happening.
 
-Fixes: 28081b72859f ("phy: cadence: Sierra: Model PLL_CMNLC and PLL_CMNLC1 as clocks (mux clocks)")
-Signed-off-by: Swapnil Jakhade <sjakhade@cadence.com>
-Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
-Link: https://lore.kernel.org/r/20211223060137.9252-12-sjakhade@cadence.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-6-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/cadence/phy-cadence-sierra.c | 31 ++++++++++++++++++++----
- 1 file changed, 26 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/phy/cadence/phy-cadence-sierra.c b/drivers/phy/cadence/phy-cadence-sierra.c
-index e93818e3991fd..3e2d096d54fd7 100644
---- a/drivers/phy/cadence/phy-cadence-sierra.c
-+++ b/drivers/phy/cadence/phy-cadence-sierra.c
-@@ -215,7 +215,10 @@ static const int pll_mux_parent_index[][SIERRA_NUM_CMN_PLLC_PARENTS] = {
- 	[CMN_PLLLC1] = { PLL1_REFCLK, PLL0_REFCLK },
- };
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index 6b0700d0b408e..21510ae31a9ec 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -168,6 +168,8 @@ vc4_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 	struct vc4_hdmi *vc4_hdmi = connector_to_vc4_hdmi(connector);
+ 	bool connected = false;
  
--static u32 cdns_sierra_pll_mux_table[] = { 0, 1 };
-+static u32 cdns_sierra_pll_mux_table[][SIERRA_NUM_CMN_PLLC_PARENTS] = {
-+	[CMN_PLLLC] = { 0, 1 },
-+	[CMN_PLLLC1] = { 1, 0 },
-+};
- 
- struct cdns_sierra_inst {
- 	struct phy *phy;
-@@ -436,11 +439,25 @@ static const struct phy_ops ops = {
- static u8 cdns_sierra_pll_mux_get_parent(struct clk_hw *hw)
- {
- 	struct cdns_sierra_pll_mux *mux = to_cdns_sierra_pll_mux(hw);
-+	struct regmap_field *plllc1en_field = mux->plllc1en_field;
-+	struct regmap_field *termen_field = mux->termen_field;
- 	struct regmap_field *field = mux->pfdclk_sel_preg;
- 	unsigned int val;
-+	int index;
- 
- 	regmap_field_read(field, &val);
--	return clk_mux_val_to_index(hw, cdns_sierra_pll_mux_table, 0, val);
++	WARN_ON(pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev));
 +
-+	if (strstr(clk_hw_get_name(hw), clk_names[CDNS_SIERRA_PLL_CMNLC1])) {
-+		index = clk_mux_val_to_index(hw, cdns_sierra_pll_mux_table[CMN_PLLLC1], 0, val);
-+		if (index == 1) {
-+			regmap_field_write(plllc1en_field, 1);
-+			regmap_field_write(termen_field, 1);
-+		}
-+	} else {
-+		index = clk_mux_val_to_index(hw, cdns_sierra_pll_mux_table[CMN_PLLLC], 0, val);
-+	}
-+
-+	return index;
+ 	if (vc4_hdmi->hpd_gpio &&
+ 	    gpiod_get_value_cansleep(vc4_hdmi->hpd_gpio)) {
+ 		connected = true;
+@@ -188,10 +190,12 @@ vc4_hdmi_connector_detect(struct drm_connector *connector, bool force)
+ 			}
+ 		}
+ 
++		pm_runtime_put(&vc4_hdmi->pdev->dev);
+ 		return connector_status_connected;
+ 	}
+ 
+ 	cec_phys_addr_invalidate(vc4_hdmi->cec_adap);
++	pm_runtime_put(&vc4_hdmi->pdev->dev);
+ 	return connector_status_disconnected;
  }
  
- static int cdns_sierra_pll_mux_set_parent(struct clk_hw *hw, u8 index)
-@@ -458,7 +475,11 @@ static int cdns_sierra_pll_mux_set_parent(struct clk_hw *hw, u8 index)
- 		ret |= regmap_field_write(termen_field, 1);
- 	}
- 
--	val = cdns_sierra_pll_mux_table[index];
-+	if (strstr(clk_hw_get_name(hw), clk_names[CDNS_SIERRA_PLL_CMNLC1]))
-+		val = cdns_sierra_pll_mux_table[CMN_PLLLC1][index];
-+	else
-+		val = cdns_sierra_pll_mux_table[CMN_PLLLC][index];
-+
- 	ret |= regmap_field_write(field, val);
- 
- 	return ret;
-@@ -496,8 +517,8 @@ static int cdns_sierra_pll_mux_register(struct cdns_sierra_phy *sp,
- 	for (i = 0; i < num_parents; i++) {
- 		clk = sp->input_clks[pll_mux_parent_index[clk_index][i]];
- 		if (IS_ERR_OR_NULL(clk)) {
--			dev_err(dev, "No parent clock for derived_refclk\n");
--			return PTR_ERR(clk);
-+			dev_err(dev, "No parent clock for PLL mux clocks\n");
-+			return IS_ERR(clk) ? PTR_ERR(clk) : -ENOENT;
- 		}
- 		parent_names[i] = __clk_get_name(clk);
- 	}
 -- 
 2.34.1
 
