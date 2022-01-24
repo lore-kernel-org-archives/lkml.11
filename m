@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E86BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA75EC43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:48:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390596AbiAXUpy (ORCPT
+        id S1390739AbiAXUqI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:45:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49444 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381767AbiAXUXe (ORCPT
+        Mon, 24 Jan 2022 15:46:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356303AbiAXUXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:34 -0500
+        Mon, 24 Jan 2022 15:23:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1C1C06124E;
+        Mon, 24 Jan 2022 11:10:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F13E861008;
-        Mon, 24 Jan 2022 20:23:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CED69C340E8;
-        Mon, 24 Jan 2022 20:23:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22D3EB81233;
+        Mon, 24 Jan 2022 19:10:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BC8AC340E5;
+        Mon, 24 Jan 2022 19:10:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055808;
-        bh=7FuChzgMaV2OYhpaYWC7LUUS8H6TQwy/LwWyEKCH3tY=;
+        s=korg; t=1643051439;
+        bh=7MnhLEjkv5OmPQOjR5kPlUEAsHS1KKAq0CkG2/QiCQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2aBGdLHyrHETFtjmpXFlAnlIaWS3704E7VxUL1+TTlwsrZn8TSXJeFXMT04c7GsoD
-         98vlGn2Ei/50hRvPzJl9kYTJWUl/tAihu7+/b2FZOOmq8WrjVQiITeYNDMQHOB+OpP
-         b2HpFkrovSY1SefeG2gcXfX5PmqcrTQv/kXffVVQ=
+        b=XoIkdLYyPb+SxKCiITAghlWKNu0HVb/jQBmfH0vKOi3QiJVbT7h97qUOqWTVv4doh
+         ZRzl7WUQfGxdTUlZzIWVcRnd4JTajzoLdJBpvm69a2PhRbUi1KU81mrVYm1zd1rtc0
+         YvlkspSDvTSGYRwSMmjM+V+B8JgBlgazIF5J+BSI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mikko Perttunen <mperttunen@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 255/846] gpu: host1x: select CONFIG_DMA_SHARED_BUFFER
-Date:   Mon, 24 Jan 2022 19:36:12 +0100
-Message-Id: <20220124184109.739731686@linuxfoundation.org>
+        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
+        Zhu Yanjun <zyjzyj2000@gmail.com>,
+        Bob Pearson <rpearsonhpe@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Subject: [PATCH 4.14 162/186] RDMA/rxe: Fix a typo in opcode name
+Date:   Mon, 24 Jan 2022 19:43:57 +0100
+Message-Id: <20220124183942.308437768@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,43 +51,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Chengguang Xu <cgxu519@mykernel.net>
 
-[ Upstream commit 6c7a388b62366f0de9936db3c1921d7f4e0011bc ]
+commit 8d1cfb884e881efd69a3be4ef10772c71cb22216 upstream.
 
-Linking fails when dma-buf is disabled:
+There is a redundant ']' in the name of opcode IB_OPCODE_RC_SEND_MIDDLE,
+so just fix it.
 
-ld.lld: error: undefined symbol: dma_fence_release
->>> referenced by fence.c
->>>               gpu/host1x/fence.o:(host1x_syncpt_fence_enable_signaling) in archive drivers/built-in.a
->>> referenced by fence.c
->>>               gpu/host1x/fence.o:(host1x_fence_signal) in archive drivers/built-in.a
->>> referenced by fence.c
->>>               gpu/host1x/fence.o:(do_fence_timeout) in archive drivers/built-in.a
-
-Fixes: 687db2207b1b ("gpu: host1x: Add DMA fence implementation")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Reviewed-by: Mikko Perttunen <mperttunen@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 8700e3e7c485 ("Soft RoCE driver")
+Link: https://lore.kernel.org/r/20211218112320.3558770-1-cgxu519@mykernel.net
+Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
+Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
+Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/host1x/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/infiniband/sw/rxe/rxe_opcode.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/host1x/Kconfig b/drivers/gpu/host1x/Kconfig
-index 6dab94adf25e5..6815b4db17c1b 100644
---- a/drivers/gpu/host1x/Kconfig
-+++ b/drivers/gpu/host1x/Kconfig
-@@ -2,6 +2,7 @@
- config TEGRA_HOST1X
- 	tristate "NVIDIA Tegra host1x driver"
- 	depends on ARCH_TEGRA || (ARM && COMPILE_TEST)
-+	select DMA_SHARED_BUFFER
- 	select IOMMU_IOVA
- 	help
- 	  Driver for the NVIDIA Tegra host1x hardware.
--- 
-2.34.1
-
+--- a/drivers/infiniband/sw/rxe/rxe_opcode.c
++++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
+@@ -137,7 +137,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NU
+ 		}
+ 	},
+ 	[IB_OPCODE_RC_SEND_MIDDLE]		= {
+-		.name	= "IB_OPCODE_RC_SEND_MIDDLE]",
++		.name	= "IB_OPCODE_RC_SEND_MIDDLE",
+ 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_SEND_MASK
+ 				| RXE_MIDDLE_MASK,
+ 		.length = RXE_BTH_BYTES,
 
 
