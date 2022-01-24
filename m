@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A8FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEE0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:24:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347837AbiAXTXx (ORCPT
+        id S1346473AbiAXTYA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:23:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48852 "EHLO
+        Mon, 24 Jan 2022 14:24:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48868 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348163AbiAXTO5 (ORCPT
+        with ESMTP id S1348178AbiAXTO7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:14:57 -0500
+        Mon, 24 Jan 2022 14:14:59 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0357BC0612F3;
-        Mon, 24 Jan 2022 11:06:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9953C0612F9;
+        Mon, 24 Jan 2022 11:06:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7611DB8122C;
-        Mon, 24 Jan 2022 19:06:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A966BC340E7;
-        Mon, 24 Jan 2022 19:06:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E7A6B8122C;
+        Mon, 24 Jan 2022 19:06:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3E0BC340E5;
+        Mon, 24 Jan 2022 19:06:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051169;
-        bh=Fg6qWsA/2CLDHs+vPCi/HXNiBqMhMXgbsP60Z+tFIFg=;
+        s=korg; t=1643051172;
+        bh=B7mjUnZq8ZfyVsarG1B9zQS0XV+aXbFi/U1xJGdxK64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tdsmJFVfsmDB0BaXNdSByFVZEs4tej5YZR6A5NVQmeH2qas03gEFlqiY6hd3cooCG
-         Z1W/3YeJV/pMNsrr4hzEmJthMsREt/G7m0r+1gtqv5aRkU53UBhzEqEf9YWtdHbOoT
-         96+ADwY6PG0KNM0xvzrDbBhnEuXXzElEOz2QwpXk=
+        b=Svz7jkVxxJcDukhQGB5M0fZCNdEDnL3cbhkv+D4WrRPll872hGDL4oSTGOjAsT5d5
+         UJixNK8oqjYSlMfBMIWcrx6nVJUOHCRn/3N/fhP894YjuRVnMyacB+C16UBOOXjI9Y
+         glQXSc9hd+WbxG/qU+F++M2Z7DiB6k9qHn+6KmEo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>, Amish Chana <amish@3g.co.za>
-Subject: [PATCH 4.14 044/186] netfilter: bridge: add support for pppoe filtering
-Date:   Mon, 24 Jan 2022 19:41:59 +0100
-Message-Id: <20220124183938.552224017@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 035/186] clk: bcm-2835: Remove rounding up the dividers
+Date:   Mon, 24 Jan 2022 19:41:50 +0100
+Message-Id: <20220124183938.253195344@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -50,75 +52,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 28b78ecffea8078d81466b2e01bb5a154509f1ba ]
+[ Upstream commit 8ca011ef4af48a7af7b15afd8a4a44039dd04cea ]
 
-This makes 'bridge-nf-filter-pppoe-tagged' sysctl work for
-bridged traffic.
+The driver, once it found a divider, tries to round it up by increasing
+the least significant bit of the fractional part by one when the
+round_up argument is set and there's a remainder.
 
-Looking at the original commit it doesn't appear this ever worked:
+However, since it increases the divider it will actually reduce the
+clock rate below what we were asking for, leading to issues with
+clk_set_min_rate() that will complain that our rounded clock rate is
+below the minimum of the rate.
 
- static unsigned int br_nf_post_routing(unsigned int hook, struct sk_buff **pskb,
-[..]
-        if (skb->protocol == htons(ETH_P_8021Q)) {
-                skb_pull(skb, VLAN_HLEN);
-                skb->network_header += VLAN_HLEN;
-+       } else if (skb->protocol == htons(ETH_P_PPP_SES)) {
-+               skb_pull(skb, PPPOE_SES_HLEN);
-+               skb->network_header += PPPOE_SES_HLEN;
-        }
- [..]
-	NF_HOOK(... POST_ROUTING, ...)
+Since the dividers are fairly precise already, let's remove that part so
+that we can have clk_set_min_rate() working.
 
-... but the adjusted offsets are never restored.
+This is effectively a revert of 9c95b32ca093 ("clk: bcm2835: add a round
+up ability to the clock divisor").
 
-The alternative would be to rip this code out for good,
-but otoh we'd have to keep this anyway for the vlan handling
-(which works because vlan tag info is in the skb, not the packet
- payload).
-
-Reported-and-tested-by: Amish Chana <amish@3g.co.za>
-Fixes: 516299d2f5b6f97 ("[NETFILTER]: bridge-nf: filter bridged IPv4/IPv6 encapsulated in pppoe traffic")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Fixes: 9c95b32ca093 ("clk: bcm2835: add a round up ability to the clock divisor")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-3-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/br_netfilter_hooks.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/clk/bcm/clk-bcm2835.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/net/bridge/br_netfilter_hooks.c b/net/bridge/br_netfilter_hooks.c
-index 8155c3d811a14..7e50bd9f36112 100644
---- a/net/bridge/br_netfilter_hooks.c
-+++ b/net/bridge/br_netfilter_hooks.c
-@@ -724,6 +724,9 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
- 	if (nf_bridge->frag_max_size && nf_bridge->frag_max_size < mtu)
- 		mtu = nf_bridge->frag_max_size;
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index d6cd1cc3f8e4d..8ccd72cc66bab 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -949,8 +949,7 @@ static int bcm2835_clock_is_on(struct clk_hw *hw)
  
-+	nf_bridge_update_protocol(skb);
-+	nf_bridge_push_encap_header(skb);
-+
- 	if (skb_is_gso(skb) || skb->len + mtu_reserved <= mtu) {
- 		nf_bridge_info_free(skb);
- 		return br_dev_queue_push_xmit(net, sk, skb);
-@@ -741,8 +744,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
+ 				    unsigned long rate,
+-				    unsigned long parent_rate,
+-				    bool round_up)
++				    unsigned long parent_rate)
+ {
+ 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
+ 	const struct bcm2835_clock_data *data = clock->data;
+@@ -962,10 +961,6 @@ static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
  
- 		IPCB(skb)->frag_max_size = nf_bridge->frag_max_size;
- 
--		nf_bridge_update_protocol(skb);
+ 	rem = do_div(temp, rate);
+ 	div = temp;
 -
- 		data = this_cpu_ptr(&brnf_frag_data_storage);
+-	/* Round up and mask off the unused bits */
+-	if (round_up && ((div & unused_frac_mask) != 0 || rem != 0))
+-		div += unused_frac_mask + 1;
+ 	div &= ~unused_frac_mask;
  
- 		data->vlan_tci = skb->vlan_tci;
-@@ -765,8 +766,6 @@ static int br_nf_dev_queue_xmit(struct net *net, struct sock *sk, struct sk_buff
+ 	/* different clamping limits apply for a mash clock */
+@@ -1096,7 +1091,7 @@ static int bcm2835_clock_set_rate(struct clk_hw *hw,
+ 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
+ 	struct bcm2835_cprman *cprman = clock->cprman;
+ 	const struct bcm2835_clock_data *data = clock->data;
+-	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate, false);
++	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate);
+ 	u32 ctl;
  
- 		IP6CB(skb)->frag_max_size = nf_bridge->frag_max_size;
+ 	spin_lock(&cprman->regs_lock);
+@@ -1147,7 +1142,7 @@ static unsigned long bcm2835_clock_choose_div_and_prate(struct clk_hw *hw,
  
--		nf_bridge_update_protocol(skb);
--
- 		data = this_cpu_ptr(&brnf_frag_data_storage);
- 		data->encap_size = nf_bridge_encap_header_len(skb);
- 		data->size = ETH_HLEN + data->encap_size;
+ 	if (!(BIT(parent_idx) & data->set_rate_parent)) {
+ 		*prate = clk_hw_get_rate(parent);
+-		*div = bcm2835_clock_choose_div(hw, rate, *prate, true);
++		*div = bcm2835_clock_choose_div(hw, rate, *prate);
+ 
+ 		*avgrate = bcm2835_clock_rate_from_divisor(clock, *prate, *div);
+ 
 -- 
 2.34.1
 
