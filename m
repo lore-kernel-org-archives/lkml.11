@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0BF7C3526D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11191C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374212AbiAYAQ0 (ORCPT
+        id S2374040AbiAYAP6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:16:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
+        Mon, 24 Jan 2022 19:15:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382466AbiAXX2E (ORCPT
+        with ESMTP id S1385520AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C19C01D7ED;
-        Mon, 24 Jan 2022 13:31:08 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9A61C01D7F9;
+        Mon, 24 Jan 2022 13:31:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20BD5B8122A;
-        Mon, 24 Jan 2022 21:31:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFE4C340E4;
-        Mon, 24 Jan 2022 21:31:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69363614DE;
+        Mon, 24 Jan 2022 21:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46F07C340E7;
+        Mon, 24 Jan 2022 21:31:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059865;
-        bh=f3jC77ynaSTB8B4PFcxF+om2SUl/1JBzStOOMLauPeU=;
+        s=korg; t=1643059903;
+        bh=MQZNKsIA8dH2rECRUuLDz3Ofvj0Sz2YQD2ogUS2SVoQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jAa9fZ1MrMleXpEQU29xqnxt1FkF4bR8Y0tk92DaYDi2XgyvVsfpjgU1SVf5mPMro
-         vGA3j8KAgNk7+Ey69GP/kBfwbMg7go/z3A8uGItiZmJhrDpJs0Qo/PNTm0kD3Dmoeh
-         j/44CT4YbtpB7Rsq1PGMzxS90mDsLjpoIQNQARyQ=
+        b=pq42pJcAqaDvavDnbXKucMSKLEjb2SKCcmsgrCcNxCc1lLxmONvSY/E0j9mXRs+Px
+         GLqW8bJ84xSUjkhIgyx/xamhD/zqN0ZD0SbRZ/vDp40R8ALs0C65W1Mrc/pUKdp9Y5
+         NTxWBHQlObDfPu8QZF8vWqJ0W/yezdttUhGjmySI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Akira Yokosawa <akiyks@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0728/1039] scripts: sphinx-pre-install: Fix ctex support on Debian
-Date:   Mon, 24 Jan 2022 19:41:57 +0100
-Message-Id: <20220124184149.801920838@linuxfoundation.org>
+        stable@vger.kernel.org, Chunfeng Yun <chunfeng.yun@mediatek.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0774/1039] phy: phy-mtk-tphy: add support efuse setting
+Date:   Mon, 24 Jan 2022 19:42:43 +0100
+Message-Id: <20220124184151.317875908@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,36 +49,275 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab@kernel.org>
+From: Chunfeng Yun <chunfeng.yun@mediatek.com>
 
-[ Upstream commit 87d6576ddf8ac25f36597bc93ca17f6628289c16 ]
+[ Upstream commit 6f2b033cb883f64ad084a75f13634242c7e179a6 ]
 
-The name of the package with ctexhook.sty is different on
-Debian/Ubuntu.
+Due to some SoCs have a bit shift issue that will drop a bit for usb3
+phy or pcie phy, fix it by adding software efuse reading and setting,
+but only support it optionally for version 2/3.
 
-Reported-by: Akira Yokosawa <akiyks@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
-Tested-by: Akira Yokosawa <akiyks@gmail.com>
-Link: https://lore.kernel.org/r/63882425609a2820fac78f5e94620abeb7ed5f6f.1641429634.git.mchehab@kernel.org
-Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
+Link: https://lore.kernel.org/r/20211218082802.5256-2-chunfeng.yun@mediatek.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- scripts/sphinx-pre-install | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/phy/mediatek/phy-mtk-tphy.c | 162 ++++++++++++++++++++++++++++
+ 1 file changed, 162 insertions(+)
 
-diff --git a/scripts/sphinx-pre-install b/scripts/sphinx-pre-install
-index 288e86a9d1e58..61a79ce705ccf 100755
---- a/scripts/sphinx-pre-install
-+++ b/scripts/sphinx-pre-install
-@@ -369,6 +369,9 @@ sub give_debian_hints()
- 	);
+diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
+index cdcef865fe9e5..98a942c607a67 100644
+--- a/drivers/phy/mediatek/phy-mtk-tphy.c
++++ b/drivers/phy/mediatek/phy-mtk-tphy.c
+@@ -12,6 +12,7 @@
+ #include <linux/iopoll.h>
+ #include <linux/mfd/syscon.h>
+ #include <linux/module.h>
++#include <linux/nvmem-consumer.h>
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
+ #include <linux/phy/phy.h>
+@@ -41,6 +42,9 @@
+ #define SSUSB_SIFSLV_V2_U3PHYD		0x200
+ #define SSUSB_SIFSLV_V2_U3PHYA		0x400
  
- 	if ($pdf) {
-+		check_missing_file(["/usr/share/texlive/texmf-dist/tex/latex/ctex/ctexhook.sty"],
-+				   "texlive-lang-chinese", 2);
++#define U3P_MISC_REG1		0x04
++#define MR1_EFUSE_AUTO_LOAD_DIS		BIT(6)
 +
- 		check_missing_file(["/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
- 				   "fonts-dejavu", 2);
+ #define U3P_USBPHYACR0		0x000
+ #define PA0_RG_U2PLL_FORCE_ON		BIT(15)
+ #define PA0_USB20_PLL_PREDIV		GENMASK(7, 6)
+@@ -133,6 +137,8 @@
+ #define P3C_RG_SWRST_U3_PHYD_FORCE_EN	BIT(24)
+ 
+ #define U3P_U3_PHYA_REG0	0x000
++#define P3A_RG_IEXT_INTR		GENMASK(15, 10)
++#define P3A_RG_IEXT_INTR_VAL(x)		((0x3f & (x)) << 10)
+ #define P3A_RG_CLKDRV_OFF		GENMASK(3, 2)
+ #define P3A_RG_CLKDRV_OFF_VAL(x)	((0x3 & (x)) << 2)
+ 
+@@ -187,6 +193,19 @@
+ #define P3D_RG_FWAKE_TH		GENMASK(21, 16)
+ #define P3D_RG_FWAKE_TH_VAL(x)	((0x3f & (x)) << 16)
+ 
++#define U3P_U3_PHYD_IMPCAL0		0x010
++#define P3D_RG_FORCE_TX_IMPEL		BIT(31)
++#define P3D_RG_TX_IMPEL			GENMASK(28, 24)
++#define P3D_RG_TX_IMPEL_VAL(x)		((0x1f & (x)) << 24)
++
++#define U3P_U3_PHYD_IMPCAL1		0x014
++#define P3D_RG_FORCE_RX_IMPEL		BIT(31)
++#define P3D_RG_RX_IMPEL			GENMASK(28, 24)
++#define P3D_RG_RX_IMPEL_VAL(x)		((0x1f & (x)) << 24)
++
++#define U3P_U3_PHYD_RSV			0x054
++#define P3D_RG_EFUSE_AUTO_LOAD_DIS	BIT(12)
++
+ #define U3P_U3_PHYD_CDR1		0x05c
+ #define P3D_RG_CDR_BIR_LTD1		GENMASK(28, 24)
+ #define P3D_RG_CDR_BIR_LTD1_VAL(x)	((0x1f & (x)) << 24)
+@@ -307,6 +326,11 @@ struct mtk_phy_pdata {
+ 	 * 48M PLL, fix it by switching PLL to 26M from default 48M
+ 	 */
+ 	bool sw_pll_48m_to_26m;
++	/*
++	 * Some SoCs (e.g. mt8195) drop a bit when use auto load efuse,
++	 * support sw way, also support it for v2/v3 optionally.
++	 */
++	bool sw_efuse_supported;
+ 	enum mtk_phy_version version;
+ };
+ 
+@@ -336,6 +360,10 @@ struct mtk_phy_instance {
+ 	struct regmap *type_sw;
+ 	u32 type_sw_reg;
+ 	u32 type_sw_index;
++	u32 efuse_sw_en;
++	u32 efuse_intr;
++	u32 efuse_tx_imp;
++	u32 efuse_rx_imp;
+ 	int eye_src;
+ 	int eye_vrt;
+ 	int eye_term;
+@@ -1040,6 +1068,130 @@ static int phy_type_set(struct mtk_phy_instance *instance)
+ 	return 0;
+ }
+ 
++static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instance)
++{
++	struct device *dev = &instance->phy->dev;
++	int ret = 0;
++
++	/* tphy v1 doesn't support sw efuse, skip it */
++	if (!tphy->pdata->sw_efuse_supported) {
++		instance->efuse_sw_en = 0;
++		return 0;
++	}
++
++	/* software efuse is optional */
++	instance->efuse_sw_en = device_property_read_bool(dev, "nvmem-cells");
++	if (!instance->efuse_sw_en)
++		return 0;
++
++	switch (instance->type) {
++	case PHY_TYPE_USB2:
++		ret = nvmem_cell_read_variable_le_u32(dev, "intr", &instance->efuse_intr);
++		if (ret) {
++			dev_err(dev, "fail to get u2 intr efuse, %d\n", ret);
++			break;
++		}
++
++		/* no efuse, ignore it */
++		if (!instance->efuse_intr) {
++			dev_warn(dev, "no u2 intr efuse, but dts enable it\n");
++			instance->efuse_sw_en = 0;
++			break;
++		}
++
++		dev_dbg(dev, "u2 efuse - intr %x\n", instance->efuse_intr);
++		break;
++
++	case PHY_TYPE_USB3:
++	case PHY_TYPE_PCIE:
++		ret = nvmem_cell_read_variable_le_u32(dev, "intr", &instance->efuse_intr);
++		if (ret) {
++			dev_err(dev, "fail to get u3 intr efuse, %d\n", ret);
++			break;
++		}
++
++		ret = nvmem_cell_read_variable_le_u32(dev, "rx_imp", &instance->efuse_rx_imp);
++		if (ret) {
++			dev_err(dev, "fail to get u3 rx_imp efuse, %d\n", ret);
++			break;
++		}
++
++		ret = nvmem_cell_read_variable_le_u32(dev, "tx_imp", &instance->efuse_tx_imp);
++		if (ret) {
++			dev_err(dev, "fail to get u3 tx_imp efuse, %d\n", ret);
++			break;
++		}
++
++		/* no efuse, ignore it */
++		if (!instance->efuse_intr &&
++		    !instance->efuse_rx_imp &&
++		    !instance->efuse_rx_imp) {
++			dev_warn(dev, "no u3 intr efuse, but dts enable it\n");
++			instance->efuse_sw_en = 0;
++			break;
++		}
++
++		dev_dbg(dev, "u3 efuse - intr %x, rx_imp %x, tx_imp %x\n",
++			instance->efuse_intr, instance->efuse_rx_imp,instance->efuse_tx_imp);
++		break;
++	default:
++		dev_err(dev, "no sw efuse for type %d\n", instance->type);
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static void phy_efuse_set(struct mtk_phy_instance *instance)
++{
++	struct device *dev = &instance->phy->dev;
++	struct u2phy_banks *u2_banks = &instance->u2_banks;
++	struct u3phy_banks *u3_banks = &instance->u3_banks;
++	u32 tmp;
++
++	if (!instance->efuse_sw_en)
++		return;
++
++	switch (instance->type) {
++	case PHY_TYPE_USB2:
++		tmp = readl(u2_banks->misc + U3P_MISC_REG1);
++		tmp |= MR1_EFUSE_AUTO_LOAD_DIS;
++		writel(tmp, u2_banks->misc + U3P_MISC_REG1);
++
++		tmp = readl(u2_banks->com + U3P_USBPHYACR1);
++		tmp &= ~PA1_RG_INTR_CAL;
++		tmp |= PA1_RG_INTR_CAL_VAL(instance->efuse_intr);
++		writel(tmp, u2_banks->com + U3P_USBPHYACR1);
++		break;
++	case PHY_TYPE_USB3:
++	case PHY_TYPE_PCIE:
++		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_RSV);
++		tmp |= P3D_RG_EFUSE_AUTO_LOAD_DIS;
++		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_RSV);
++
++		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_IMPCAL0);
++		tmp &= ~P3D_RG_TX_IMPEL;
++		tmp |= P3D_RG_TX_IMPEL_VAL(instance->efuse_tx_imp);
++		tmp |= P3D_RG_FORCE_TX_IMPEL;
++		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_IMPCAL0);
++
++		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_IMPCAL1);
++		tmp &= ~P3D_RG_RX_IMPEL;
++		tmp |= P3D_RG_RX_IMPEL_VAL(instance->efuse_rx_imp);
++		tmp |= P3D_RG_FORCE_RX_IMPEL;
++		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_IMPCAL1);
++
++		tmp = readl(u3_banks->phya + U3P_U3_PHYA_REG0);
++		tmp &= ~P3A_RG_IEXT_INTR;
++		tmp |= P3A_RG_IEXT_INTR_VAL(instance->efuse_intr);
++		writel(tmp, u3_banks->phya + U3P_U3_PHYA_REG0);
++		break;
++	default:
++		dev_warn(dev, "no sw efuse for type %d\n", instance->type);
++		break;
++	}
++}
++
+ static int mtk_phy_init(struct phy *phy)
+ {
+ 	struct mtk_phy_instance *instance = phy_get_drvdata(phy);
+@@ -1050,6 +1202,8 @@ static int mtk_phy_init(struct phy *phy)
+ 	if (ret)
+ 		return ret;
+ 
++	phy_efuse_set(instance);
++
+ 	switch (instance->type) {
+ 	case PHY_TYPE_USB2:
+ 		u2_phy_instance_init(tphy, instance);
+@@ -1134,6 +1288,7 @@ static struct phy *mtk_phy_xlate(struct device *dev,
+ 	struct mtk_phy_instance *instance = NULL;
+ 	struct device_node *phy_np = args->np;
+ 	int index;
++	int ret;
+ 
+ 	if (args->args_count != 1) {
+ 		dev_err(dev, "invalid number of cells in 'phy' property\n");
+@@ -1174,6 +1329,10 @@ static struct phy *mtk_phy_xlate(struct device *dev,
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 
++	ret = phy_efuse_get(tphy, instance);
++	if (ret)
++		return ERR_PTR(ret);
++
+ 	phy_parse_property(tphy, instance);
+ 	phy_type_set(instance);
+ 
+@@ -1196,10 +1355,12 @@ static const struct mtk_phy_pdata tphy_v1_pdata = {
+ 
+ static const struct mtk_phy_pdata tphy_v2_pdata = {
+ 	.avoid_rx_sen_degradation = false,
++	.sw_efuse_supported = true,
+ 	.version = MTK_PHY_V2,
+ };
+ 
+ static const struct mtk_phy_pdata tphy_v3_pdata = {
++	.sw_efuse_supported = true,
+ 	.version = MTK_PHY_V3,
+ };
+ 
+@@ -1210,6 +1371,7 @@ static const struct mtk_phy_pdata mt8173_pdata = {
+ 
+ static const struct mtk_phy_pdata mt8195_pdata = {
+ 	.sw_pll_48m_to_26m = true,
++	.sw_efuse_supported = true,
+ 	.version = MTK_PHY_V3,
+ };
  
 -- 
 2.34.1
