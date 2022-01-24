@@ -2,40 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D38C352A1
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A152CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448243AbiAXVMO (ORCPT
+        id S1448371AbiAXVMa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46322 "EHLO
+        Mon, 24 Jan 2022 16:12:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40750 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390455AbiAXUp0 (ORCPT
+        with ESMTP id S1388131AbiAXUiN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:45:26 -0500
+        Mon, 24 Jan 2022 15:38:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0724CB81057;
-        Mon, 24 Jan 2022 20:45:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 019EBC340E5;
-        Mon, 24 Jan 2022 20:45:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B9E19B81253;
+        Mon, 24 Jan 2022 20:38:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA01EC340E8;
+        Mon, 24 Jan 2022 20:38:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057123;
-        bh=6NOPhziuYypkTM6BA48wy+IPkpY4HrxLprlwRYabKag=;
+        s=korg; t=1643056690;
+        bh=HIy2u0y7M5fy3vdbc5cARgsiZf/zd6A7vjYEMM4cDAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HnF0mqSdU1BLneWQpx//NPVmSAyTvEKlpA4fzWwlqO6XCWnvl/SXkRUGaUs34HOEu
-         IFXbXFtrW2NO/fz5w7G1mtWQB5QAgmvgqN4PCmQcqFJZFw2O2Qq5FSIH9GioYV+LTR
-         hM3t5jKnvTU4HXDCv6TshXF3HjYHGu/MpOl0cv5E=
+        b=eakL+C5M+Rpf+fz9zHGdnHLzzibhAR6WDfoGw6HGHGuC4cx5SDQ5MGuO0x7YYh3iC
+         6Z7WypI78mZrw79fbIISD1V1bF3ohURleobxu/BYdmMeYhjFyj96FsuK9Xz15PQr7E
+         8luXl7D2dCfxiK1y4+OcYJVY8nfSgWn6WUDHHXhI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH 5.15 709/846] xfrm: fix dflt policy check when there is no policy configured
-Date:   Mon, 24 Jan 2022 19:43:46 +0100
-Message-Id: <20220124184125.491447877@linuxfoundation.org>
+        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Alex Elder <elder@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 541/846] ARM: dts: qcom: sdx55: fix IPA interconnect definitions
+Date:   Mon, 24 Jan 2022 19:40:58 +0100
+Message-Id: <20220124184119.681627935@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -47,35 +49,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Alex Elder <elder@linaro.org>
 
-commit ec3bb890817e4398f2d46e12e2e205495b116be9 upstream.
+[ Upstream commit c0d6316c238b1bd743108bd4b08eda364f47c7c9 ]
 
-When there is no policy configured on the system, the default policy is
-checked in xfrm_route_forward. However, it was done with the wrong
-direction (XFRM_POLICY_FWD instead of XFRM_POLICY_OUT).
-The default policy for XFRM_POLICY_FWD was checked just before, with a call
-to xfrm[46]_policy_check().
+The first two interconnects defined for IPA on the SDX55 SoC are
+really two parts of what should be represented as a single path
+between IPA and system memory.
 
-CC: stable@vger.kernel.org
-Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by combining the "memory-a" and "memory-b" interconnects
+into a single "memory" interconnect.
+
+Reported-by: David Heidelberg <david@ixit.cz>
+Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Signed-off-by: Alex Elder <elder@linaro.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/net/xfrm.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/boot/dts/qcom-sdx55.dtsi | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1167,7 +1167,7 @@ static inline int xfrm_route_forward(str
- {
- 	struct net *net = dev_net(skb->dev);
+diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
+index 1e6ce035f76a9..b5b784c5c65e4 100644
+--- a/arch/arm/boot/dts/qcom-sdx55.dtsi
++++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
+@@ -334,12 +334,10 @@
+ 			clocks = <&rpmhcc RPMH_IPA_CLK>;
+ 			clock-names = "core";
  
--	if (xfrm_default_allow(net, XFRM_POLICY_FWD))
-+	if (xfrm_default_allow(net, XFRM_POLICY_OUT))
- 		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
- 			(skb_dst(skb)->flags & DST_NOXFRM) ||
- 			__xfrm_route_forward(skb, family);
+-			interconnects = <&system_noc MASTER_IPA &system_noc SLAVE_SNOC_MEM_NOC_GC>,
+-					<&mem_noc MASTER_SNOC_GC_MEM_NOC &mc_virt SLAVE_EBI_CH0>,
++			interconnects = <&system_noc MASTER_IPA &mc_virt SLAVE_EBI_CH0>,
+ 					<&system_noc MASTER_IPA &system_noc SLAVE_OCIMEM>,
+ 					<&mem_noc MASTER_AMPSS_M0 &system_noc SLAVE_IPA_CFG>;
+-			interconnect-names = "memory-a",
+-					     "memory-b",
++			interconnect-names = "memory",
+ 					     "imem",
+ 					     "config";
+ 
+-- 
+2.34.1
+
 
 
