@@ -2,59 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3DE6C35276
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E730BC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380256AbiAXUQA (ORCPT
+        id S1380609AbiAXUQe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:16:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235574AbiAXT4j (ORCPT
+        Mon, 24 Jan 2022 15:16:34 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54610 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359280AbiAXT6O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:56:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10108C02B85F;
-        Mon, 24 Jan 2022 11:27:29 -0800 (PST)
+        Mon, 24 Jan 2022 14:58:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A74AEB81236;
-        Mon, 24 Jan 2022 19:27:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAD40C340E5;
-        Mon, 24 Jan 2022 19:27:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2E9C160916;
+        Mon, 24 Jan 2022 19:58:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 111CFC340EA;
+        Mon, 24 Jan 2022 19:58:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052446;
-        bh=vSHOw0cTxQAWZazSXAgmY+JvxSWBkyxVSahW+O9oOhY=;
+        s=korg; t=1643054292;
+        bh=WQCIdyoCBqzT1RiVCy6TIWZuU6QVvUeH/y9HpzGEJrU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wDh8bEEb0PmPWKHUENOAV5Ib8IhHz5wo7xoZfJ1Kjv/npDcB7X6+z7OaX8/yK57b9
-         2BfiDSC2C3SGjDu3kEBjl6M6nwtrMeEpo2ixFX+b0I7ynbBQK1SwwEfiLhlyA9CX2k
-         7z648Ds4QW5ZZaSlGIuRYy/vhbB0dgRpP75HZsKA=
+        b=wLTuJfk0AksQz20HkkHE+WIfjZQFjixYTiWjqGjJ7ysQiTnpVWxZtCsrHB5XK9e9e
+         fMxW0dBa+4FtNvIExqIfbr9/FCNUyYeeg2V3LrH2MeuoMByL2KZg/7Zyt0K5nan3hD
+         g2bFzW2/47g5FncWQI0vZGNRiQZBF9dCs/8vE2J0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
-        David Hildenbrand <david@redhat.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Lameter <cl@linux.com>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Borislav Petkov <bp@alien8.de>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.4 029/320] mm_zone: add function to check if managed dma zone exists
-Date:   Mon, 24 Jan 2022 19:40:13 +0100
-Message-Id: <20220124183954.747814708@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 341/563] drm: rcar-du: Fix CRTC timings when CMM is used
+Date:   Mon, 24 Jan 2022 19:41:46 +0100
+Message-Id: <20220124184036.217959039@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -63,169 +47,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Baoquan He <bhe@redhat.com>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-commit 62b3107073646e0946bd97ff926832bafb846d17 upstream.
+[ Upstream commit f0ce591dc9a97067c6e783a2eaccd22c5476144d ]
 
-Patch series "Handle warning of allocation failure on DMA zone w/o
-managed pages", v4.
+When the CMM is enabled, an offset of 25 pixels must be subtracted from
+the HDS (horizontal display start) and HDE (horizontal display end)
+registers. Fix the timings calculation, and take this into account in
+the mode validation.
 
-**Problem observed:
-On x86_64, when crash is triggered and entering into kdump kernel, page
-allocation failure can always be seen.
+This fixes a visible horizontal offset in the image with VGA monitors.
+HDMI monitors seem to be generally more tolerant to incorrect timings,
+but may be affected too.
 
- ---------------------------------
- DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
- swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
- CPU: 0 PID: 1 Comm: swapper/0
- Call Trace:
-  dump_stack+0x7f/0xa1
-  warn_alloc.cold+0x72/0xd6
-  ......
-  __alloc_pages+0x24d/0x2c0
-  ......
-  dma_atomic_pool_init+0xdb/0x176
-  do_one_initcall+0x67/0x320
-  ? rcu_read_lock_sched_held+0x3f/0x80
-  kernel_init_freeable+0x290/0x2dc
-  ? rest_init+0x24f/0x24f
-  kernel_init+0xa/0x111
-  ret_from_fork+0x22/0x30
- Mem-Info:
- ------------------------------------
-
-***Root cause:
-In the current kernel, it assumes that DMA zone must have managed pages
-and try to request pages if CONFIG_ZONE_DMA is enabled. While this is not
-always true. E.g in kdump kernel of x86_64, only low 1M is presented and
-locked down at very early stage of boot, so that this low 1M won't be
-added into buddy allocator to become managed pages of DMA zone. This
-exception will always cause page allocation failure if page is requested
-from DMA zone.
-
-***Investigation:
-This failure happens since below commit merged into linus's tree.
-  1a6a9044b967 x86/setup: Remove CONFIG_X86_RESERVE_LOW and reservelow= options
-  23721c8e92f7 x86/crash: Remove crash_reserve_low_1M()
-  f1d4d47c5851 x86/setup: Always reserve the first 1M of RAM
-  7c321eb2b843 x86/kdump: Remove the backup region handling
-  6f599d84231f x86/kdump: Always reserve the low 1M when the crashkernel option is specified
-
-Before them, on x86_64, the low 640K area will be reused by kdump kernel.
-So in kdump kernel, the content of low 640K area is copied into a backup
-region for dumping before jumping into kdump. Then except of those firmware
-reserved region in [0, 640K], the left area will be added into buddy
-allocator to become available managed pages of DMA zone.
-
-However, after above commits applied, in kdump kernel of x86_64, the low
-1M is reserved by memblock, but not released to buddy allocator. So any
-later page allocation requested from DMA zone will fail.
-
-At the beginning, if crashkernel is reserved, the low 1M need be locked
-down because AMD SME encrypts memory making the old backup region
-mechanims impossible when switching into kdump kernel.
-
-Later, it was also observed that there are BIOSes corrupting memory
-under 1M. To solve this, in commit f1d4d47c5851, the entire region of
-low 1M is always reserved after the real mode trampoline is allocated.
-
-Besides, recently, Intel engineer mentioned their TDX (Trusted domain
-extensions) which is under development in kernel also needs to lock down
-the low 1M. So we can't simply revert above commits to fix the page allocation
-failure from DMA zone as someone suggested.
-
-***Solution:
-Currently, only DMA atomic pool and dma-kmalloc will initialize and
-request page allocation with GFP_DMA during bootup.
-
-So only initializ DMA atomic pool when DMA zone has available managed
-pages, otherwise just skip the initialization.
-
-For dma-kmalloc(), for the time being, let's mute the warning of
-allocation failure if requesting pages from DMA zone while no manged
-pages.  Meanwhile, change code to use dma_alloc_xx/dma_map_xx API to
-replace kmalloc(GFP_DMA), or do not use GFP_DMA when calling kmalloc() if
-not necessary.  Christoph is posting patches to fix those under
-drivers/scsi/.  Finally, we can remove the need of dma-kmalloc() as people
-suggested.
-
-This patch (of 3):
-
-In some places of the current kernel, it assumes that dma zone must have
-managed pages if CONFIG_ZONE_DMA is enabled.  While this is not always
-true.  E.g in kdump kernel of x86_64, only low 1M is presented and locked
-down at very early stage of boot, so that there's no managed pages at all
-in DMA zone.  This exception will always cause page allocation failure if
-page is requested from DMA zone.
-
-Here add function has_managed_dma() and the relevant helper functions to
-check if there's DMA zone with managed pages.  It will be used in later
-patches.
-
-Link: https://lkml.kernel.org/r/20211223094435.248523-1-bhe@redhat.com
-Link: https://lkml.kernel.org/r/20211223094435.248523-2-bhe@redhat.com
-Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
-Signed-off-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: David Hildenbrand <david@redhat.com>
-Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Christoph Lameter <cl@linux.com>
-Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
-Cc: Pekka Enberg <penberg@kernel.org>
-Cc: David Rientjes <rientjes@google.com>
-Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
-Cc: Vlastimil Babka <vbabka@suse.cz>
-Cc: David Laight <David.Laight@ACULAB.COM>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: Marek Szyprowski <m.szyprowski@samsung.com>
-Cc: Robin Murphy <robin.murphy@arm.com>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/mmzone.h |    9 +++++++++
- mm/page_alloc.c        |   15 +++++++++++++++
- 2 files changed, 24 insertions(+)
+ drivers/gpu/drm/rcar-du/rcar_du_crtc.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
---- a/include/linux/mmzone.h
-+++ b/include/linux/mmzone.h
-@@ -929,6 +929,15 @@ static inline int is_highmem_idx(enum zo
- #endif
- }
+diff --git a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
+index 1b9738e44909d..065604c5837de 100644
+--- a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
++++ b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
+@@ -215,6 +215,7 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
+ 	const struct drm_display_mode *mode = &rcrtc->crtc.state->adjusted_mode;
+ 	struct rcar_du_device *rcdu = rcrtc->dev;
+ 	unsigned long mode_clock = mode->clock * 1000;
++	unsigned int hdse_offset;
+ 	u32 dsmr;
+ 	u32 escr;
  
-+#ifdef CONFIG_ZONE_DMA
-+bool has_managed_dma(void);
-+#else
-+static inline bool has_managed_dma(void)
-+{
-+	return false;
-+}
-+#endif
+@@ -298,10 +299,15 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
+ 	     | DSMR_DIPM_DISP | DSMR_CSPM;
+ 	rcar_du_crtc_write(rcrtc, DSMR, dsmr);
+ 
++	hdse_offset = 19;
++	if (rcrtc->group->cmms_mask & BIT(rcrtc->index % 2))
++		hdse_offset += 25;
 +
- /**
-  * is_highmem - helper function to quickly check if a struct zone is a
-  *              highmem zone or not.  This is an attempt to keep references
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -8694,3 +8694,18 @@ bool set_hwpoison_free_buddy_page(struct
- 	return hwpoisoned;
- }
- #endif
+ 	/* Display timings */
+-	rcar_du_crtc_write(rcrtc, HDSR, mode->htotal - mode->hsync_start - 19);
++	rcar_du_crtc_write(rcrtc, HDSR, mode->htotal - mode->hsync_start -
++					hdse_offset);
+ 	rcar_du_crtc_write(rcrtc, HDER, mode->htotal - mode->hsync_start +
+-					mode->hdisplay - 19);
++					mode->hdisplay - hdse_offset);
+ 	rcar_du_crtc_write(rcrtc, HSWR, mode->hsync_end -
+ 					mode->hsync_start - 1);
+ 	rcar_du_crtc_write(rcrtc, HCR,  mode->htotal - 1);
+@@ -831,6 +837,7 @@ rcar_du_crtc_mode_valid(struct drm_crtc *crtc,
+ 	struct rcar_du_crtc *rcrtc = to_rcar_crtc(crtc);
+ 	struct rcar_du_device *rcdu = rcrtc->dev;
+ 	bool interlaced = mode->flags & DRM_MODE_FLAG_INTERLACE;
++	unsigned int min_sync_porch;
+ 	unsigned int vbp;
+ 
+ 	if (interlaced && !rcar_du_has(rcdu, RCAR_DU_FEATURE_INTERLACED))
+@@ -838,9 +845,14 @@ rcar_du_crtc_mode_valid(struct drm_crtc *crtc,
+ 
+ 	/*
+ 	 * The hardware requires a minimum combined horizontal sync and back
+-	 * porch of 20 pixels and a minimum vertical back porch of 3 lines.
++	 * porch of 20 pixels (when CMM isn't used) or 45 pixels (when CMM is
++	 * used), and a minimum vertical back porch of 3 lines.
+ 	 */
+-	if (mode->htotal - mode->hsync_start < 20)
++	min_sync_porch = 20;
++	if (rcrtc->group->cmms_mask & BIT(rcrtc->index % 2))
++		min_sync_porch += 25;
 +
-+#ifdef CONFIG_ZONE_DMA
-+bool has_managed_dma(void)
-+{
-+	struct pglist_data *pgdat;
-+
-+	for_each_online_pgdat(pgdat) {
-+		struct zone *zone = &pgdat->node_zones[ZONE_DMA];
-+
-+		if (managed_zone(zone))
-+			return true;
-+	}
-+	return false;
-+}
-+#endif /* CONFIG_ZONE_DMA */
++	if (mode->htotal - mode->hsync_start < min_sync_porch)
+ 		return MODE_HBLANK_NARROW;
+ 
+ 	vbp = (mode->vtotal - mode->vsync_end) / (interlaced ? 2 : 1);
+-- 
+2.34.1
+
 
 
