@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 177F1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF9EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:32:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243006AbiAXTbw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:52 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46340 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345996AbiAXTWa (ORCPT
+        id S1347490AbiAXTcA (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:32:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52506 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348369AbiAXTYL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:30 -0500
+        Mon, 24 Jan 2022 14:24:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 804B3B81215;
-        Mon, 24 Jan 2022 19:22:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B8A8C340E5;
-        Mon, 24 Jan 2022 19:22:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 701D760010;
+        Mon, 24 Jan 2022 19:24:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BE41C340E5;
+        Mon, 24 Jan 2022 19:24:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052145;
-        bh=zhxegM3sBBiujj8RPue3C+DEmvIsUk70MnMMWX3SENk=;
+        s=korg; t=1643052250;
+        bh=+CWjJhb3LHq2nkKWhUKIM9khMf6V6/hB/5bZ3Edscmk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XCVlsu39ayCxeh4HNEb9u8yEXiR15U3Kopnr60OESxzlGMQR+tL3llQ827NHI7DCL
-         IbN7BcYx1W3tSDbsl/3A/5kcUiYYHxqjLDYFXvlYSJCiwT5+ogOAGmkDpgy61euPXC
-         mOm0CCPP5QHQE9t+EYEQCBu6VZZgUPxzU9FN8pPE=
+        b=XdLidgITTPvkiMhvT638G1YDoxJOlWinwWKOquAN6Zf8FIU1LAv2v2QJd5dcliS6P
+         oyNNV2rtOXbjzHmuIAnNYhr3x61CVSrMmQF5F0dg1oBt/EeULLwO+fHSLuJmyNPND9
+         EoPP4EyVzb5Es3zqMDaz8YkqZvULIHSNFsmaHzqQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jan Kara <jack@suse.cz>, stable@kernel.org,
-        Theodore Tso <tytso@mit.edu>
-Subject: [PATCH 4.19 203/239] ext4: make sure quota gets properly shutdown on error
-Date:   Mon, 24 Jan 2022 19:44:01 +0100
-Message-Id: <20220124183949.561283422@linuxfoundation.org>
+        Suren Baghdasaryan <surenb@google.com>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.19 237/239] mips,s390,sh,sparc: gup: Work around the "COW can break either way" issue
+Date:   Mon, 24 Jan 2022 19:44:35 +0100
+Message-Id: <20220124183950.633915249@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -45,51 +46,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Ben Hutchings <ben@decadent.org.uk>
 
-commit 15fc69bbbbbc8c72e5f6cc4e1be0f51283c5448e upstream.
+In Linux 4.14 and 4.19 these architectures still have their own
+implementations of get_user_pages_fast().  These also need to force
+the write flag on when taking the fast path.
 
-When we hit an error when enabling quotas and setting inode flags, we do
-not properly shutdown quota subsystem despite returning error from
-Q_QUOTAON quotactl. This can lead to some odd situations like kernel
-using quota file while it is still writeable for userspace. Make sure we
-properly cleanup the quota subsystem in case of error.
-
-Signed-off-by: Jan Kara <jack@suse.cz>
-Cc: stable@kernel.org
-Link: https://lore.kernel.org/r/20211007155336.12493-2-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 407faed92b4a ("gup: document and work around "COW can break either way" issue")
+Fixes: 5e24029791e8 ("gup: document and work around "COW can break either way" issue")
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
 ---
- fs/ext4/super.c |   10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ arch/mips/mm/gup.c  |    9 ++++++++-
+ arch/s390/mm/gup.c  |    9 ++++++++-
+ arch/sh/mm/gup.c    |    9 ++++++++-
+ arch/sparc/mm/gup.c |    9 ++++++++-
+ 4 files changed, 32 insertions(+), 4 deletions(-)
 
---- a/fs/ext4/super.c
-+++ b/fs/ext4/super.c
-@@ -5797,10 +5797,7 @@ static int ext4_quota_on(struct super_bl
+--- a/arch/mips/mm/gup.c
++++ b/arch/mips/mm/gup.c
+@@ -274,7 +274,14 @@ int get_user_pages_fast(unsigned long st
+ 		next = pgd_addr_end(addr, end);
+ 		if (pgd_none(pgd))
+ 			goto slow;
+-		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
++		/*
++		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
++		 * because get_user_pages() may need to cause an early COW in
++		 * order to avoid confusing the normal COW routines. So only
++		 * targets that are already writable are safe to do by just
++		 * looking at the page tables.
++		 */
++		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
+ 			goto slow;
+ 	} while (pgdp++, addr = next, addr != end);
+ 	local_irq_enable();
+--- a/arch/s390/mm/gup.c
++++ b/arch/s390/mm/gup.c
+@@ -287,7 +287,14 @@ int get_user_pages_fast(unsigned long st
  
- 	lockdep_set_quota_inode(path->dentry->d_inode, I_DATA_SEM_QUOTA);
- 	err = dquot_quota_on(sb, type, format_id, path);
--	if (err) {
--		lockdep_set_quota_inode(path->dentry->d_inode,
--					     I_DATA_SEM_NORMAL);
--	} else {
-+	if (!err) {
- 		struct inode *inode = d_inode(path->dentry);
- 		handle_t *handle;
+ 	might_sleep();
+ 	start &= PAGE_MASK;
+-	nr = __get_user_pages_fast(start, nr_pages, write, pages);
++	/*
++	 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
++	 * because get_user_pages() may need to cause an early COW in
++	 * order to avoid confusing the normal COW routines. So only
++	 * targets that are already writable are safe to do by just
++	 * looking at the page tables.
++	 */
++	nr = __get_user_pages_fast(start, nr_pages, 1, pages);
+ 	if (nr == nr_pages)
+ 		return nr;
  
-@@ -5820,7 +5817,12 @@ static int ext4_quota_on(struct super_bl
- 		ext4_journal_stop(handle);
- 	unlock_inode:
- 		inode_unlock(inode);
-+		if (err)
-+			dquot_quota_off(sb, type);
- 	}
-+	if (err)
-+		lockdep_set_quota_inode(path->dentry->d_inode,
-+					     I_DATA_SEM_NORMAL);
- 	return err;
- }
+--- a/arch/sh/mm/gup.c
++++ b/arch/sh/mm/gup.c
+@@ -242,7 +242,14 @@ int get_user_pages_fast(unsigned long st
+ 		next = pgd_addr_end(addr, end);
+ 		if (pgd_none(pgd))
+ 			goto slow;
+-		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
++		/*
++		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
++		 * because get_user_pages() may need to cause an early COW in
++		 * order to avoid confusing the normal COW routines. So only
++		 * targets that are already writable are safe to do by just
++		 * looking at the page tables.
++		 */
++		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
+ 			goto slow;
+ 	} while (pgdp++, addr = next, addr != end);
+ 	local_irq_enable();
+--- a/arch/sparc/mm/gup.c
++++ b/arch/sparc/mm/gup.c
+@@ -303,7 +303,14 @@ int get_user_pages_fast(unsigned long st
+ 		next = pgd_addr_end(addr, end);
+ 		if (pgd_none(pgd))
+ 			goto slow;
+-		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
++		/*
++		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
++		 * because get_user_pages() may need to cause an early COW in
++		 * order to avoid confusing the normal COW routines. So only
++		 * targets that are already writable are safe to do by just
++		 * looking at the page tables.
++		 */
++		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
+ 			goto slow;
+ 	} while (pgdp++, addr = next, addr != end);
  
 
 
