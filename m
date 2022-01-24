@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB65C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1876C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842791AbiAXXCf (ORCPT
+        id S1842739AbiAXXC3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:02:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59504 "EHLO
+        Mon, 24 Jan 2022 18:02:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450740AbiAXVyz (ORCPT
+        with ESMTP id S1455940AbiAXVzA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:54:55 -0500
+        Mon, 24 Jan 2022 16:55:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BA90C0C0910;
-        Mon, 24 Jan 2022 12:35:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73985C061364;
+        Mon, 24 Jan 2022 12:35:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBB2B614EC;
-        Mon, 24 Jan 2022 20:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A47E3C340E5;
-        Mon, 24 Jan 2022 20:35:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FFC661506;
+        Mon, 24 Jan 2022 20:35:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1570C340E5;
+        Mon, 24 Jan 2022 20:35:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056501;
-        bh=vIl/gclyF80YoCxy9zzgOrGGbUlqzJB+spj0los22ZY=;
+        s=korg; t=1643056532;
+        bh=a3dFkuC1B1onUYYjOCkI8tMCtX9oDS/YpYKObjKeaao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v3KSrniHtHmtx401ynOYyIc5O5VRlTSD1YZOSlNmLe864Ze04hh0chowweu8L5i7e
-         uRmtTFEcZwwFrLT7B3eakrGzP9JjCyJ3blVlIZclAMuVQY1VbpKbuac7QA15qNPTh2
-         OMUky1v9xytSmChCI7wLhLUUuQCF37e9xcc5eJ+U=
+        b=oRNpjNSmNI78C63Vky+f5I5Q8fJX3njCbhCYBsUpky5ZKa2MXYH4eIWZf+JqphIJO
+         hhdfTh7rMBXehCCz6962eQuBqWcZtQ+olwfsytVC2KzWIERSP9ppWVd5JrLS+9qFsd
+         tRAVcA7OG9t6lzgves56suTkqlXVU5lgErDO1l58=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 473/846] media: atomisp: set per-devices default mode
-Date:   Mon, 24 Jan 2022 19:39:50 +0100
-Message-Id: <20220124184117.319775146@linuxfoundation.org>
+Subject: [PATCH 5.15 516/846] ACPI / x86: Add not-present quirk for the PCI0.SDHB.BRC1 device on the GPD win
+Date:   Mon, 24 Jan 2022 19:40:33 +0100
+Message-Id: <20220124184118.816851771@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,156 +50,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 2c45e343c581091835c9047ed5298518aa133163 ]
+[ Upstream commit 57d2dbf710d832841872fb15ebb79429cab90fae ]
 
-The atomisp driver originally used the s_parm command to
-initialize the run_mode type to the driver. So, before start
-setting up the streaming, s_parm should be called.
+The GPD win and its sibling the GPD pocket (99% the same electronics in a
+different case) use a PCI wifi card. But the ACPI tables on both variants
+contain a bug where the SDIO MMC controller for SDIO wifi cards is enabled
+despite this. This SDIO MMC controller has a PCI0.SDHB.BRC1 child-device
+which _PS3 method sets a GPIO causing the PCI wifi card to turn off.
 
-So, even having 5 "normal" video devices, one meant to be used
-for each type, the run_mode was actually selected when
-s_parm is called.
+At the moment there is a pretty ugly kludge in the sdhci-acpi.c code,
+just to work around the bug in the DSDT of this single design. This can
+be solved cleaner/simply with a quirk overriding the _STA return of the
+broken PCI0.SDHB.BRC1 PCI0.SDHB.BRC1 child with a status value of 0,
+so that its power_manageable flag gets cleared, avoiding this problem.
 
-Without setting the run mode, applications that don't call
-VIDIOC_SET_PARM with a custom atomisp parameters won't work, as
-the pipeline won't be set:
+Note that even though it is not used, the _STA method for the MMC
+controller is deliberately not overridden. If the status of the MMC
+controller were forced to 0 it would never get suspended, which would
+cause these mini-laptops to not reach S0i3 level when suspended.
 
-	atomisp-isp2 0000:00:03.0: can't create streams
-	atomisp-isp2 0000:00:03.0: __get_frame_info 1600x1200 (padded to 0) returned -22
-
-However, commit 8a7c5594c020 ("media: v4l2-ioctl: clear fields in s_parm")
-broke support for it, with a good reason, as drivers shoudn't be
-extending the API for their own purposes.
-
-So, as an step to allow generic apps to use this driver, put
-the device's run_mode in preview after open.
-
-After this patch, using v4l2grab starts to work on preview
-mode (/dev/video2):
-
-	$ v4l2grab -f YUYV -x 1600 -y 1200 -d /dev/video2 -n 1 -u
-	$ feh out000.pnm
-
-So, let's just setup the default run_mode that each video devnode
-should assume, setting it at open() time.
-
-Reported-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/atomisp_fops.c  |  5 +++++
- .../staging/media/atomisp/pci/atomisp_subdev.c    | 15 ++++++++++-----
- .../staging/media/atomisp/pci/atomisp_subdev.h    |  3 +++
- drivers/staging/media/atomisp/pci/atomisp_v4l2.c  |  4 +++-
- drivers/staging/media/atomisp/pci/atomisp_v4l2.h  |  3 ++-
- 5 files changed, 23 insertions(+), 7 deletions(-)
+ drivers/acpi/x86/utils.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_fops.c b/drivers/staging/media/atomisp/pci/atomisp_fops.c
-index 02c19b92bdccb..18fff47bd25d2 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_fops.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_fops.c
-@@ -877,6 +877,11 @@ done:
- 	else
- 		pipe->users++;
- 	rt_mutex_unlock(&isp->mutex);
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index 190bfc2ab3f26..b3fb428461c6f 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -94,9 +94,10 @@ static const struct override_status_id override_status_ids[] = {
+ 	/*
+ 	 * The GPD win BIOS dated 20170221 has disabled the accelerometer, the
+ 	 * drivers sometimes cause crashes under Windows and this is how the
+-	 * manufacturer has solved this :| Note that the the DMI data is less
+-	 * generic then it seems, a board_vendor of "AMI Corporation" is quite
+-	 * rare and a board_name of "Default String" also is rare.
++	 * manufacturer has solved this :|  The DMI match may not seem unique,
++	 * but it is. In the 67000+ DMI decode dumps from linux-hardware.org
++	 * only 116 have board_vendor set to "AMI Corporation" and of those 116
++	 * only the GPD win and pocket entries' board_name is "Default string".
+ 	 *
+ 	 * Unfortunately the GPD pocket also uses these strings and its BIOS
+ 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
+@@ -120,6 +121,19 @@ static const struct override_status_id override_status_ids[] = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "05/25/2017")
+ 	      }),
 +
-+	/* Ensure that a mode is set */
-+	if (asd)
-+		v4l2_ctrl_s_ctrl(asd->run_mode, pipe->default_run_mode);
-+
- 	return 0;
- 
- css_error:
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_subdev.c b/drivers/staging/media/atomisp/pci/atomisp_subdev.c
-index 12f22ad007c73..ffaf11e0b0ad8 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_subdev.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_subdev.c
-@@ -1164,23 +1164,28 @@ static int isp_subdev_init_entities(struct atomisp_sub_device *asd)
- 
- 	atomisp_init_acc_pipe(asd, &asd->video_acc);
- 
--	ret = atomisp_video_init(&asd->video_in, "MEMORY");
-+	ret = atomisp_video_init(&asd->video_in, "MEMORY",
-+				 ATOMISP_RUN_MODE_SDV);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_capture, "CAPTURE");
-+	ret = atomisp_video_init(&asd->video_out_capture, "CAPTURE",
-+				 ATOMISP_RUN_MODE_STILL_CAPTURE);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_vf, "VIEWFINDER");
-+	ret = atomisp_video_init(&asd->video_out_vf, "VIEWFINDER",
-+				 ATOMISP_RUN_MODE_CONTINUOUS_CAPTURE);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_preview, "PREVIEW");
-+	ret = atomisp_video_init(&asd->video_out_preview, "PREVIEW",
-+				 ATOMISP_RUN_MODE_PREVIEW);
- 	if (ret < 0)
- 		return ret;
- 
--	ret = atomisp_video_init(&asd->video_out_video_capture, "VIDEO");
-+	ret = atomisp_video_init(&asd->video_out_video_capture, "VIDEO",
-+				 ATOMISP_RUN_MODE_VIDEO);
- 	if (ret < 0)
- 		return ret;
- 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_subdev.h b/drivers/staging/media/atomisp/pci/atomisp_subdev.h
-index d6fcfab6352d7..a8d210ea5f8be 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_subdev.h
-+++ b/drivers/staging/media/atomisp/pci/atomisp_subdev.h
-@@ -81,6 +81,9 @@ struct atomisp_video_pipe {
- 	/* the link list to store per_frame parameters */
- 	struct list_head per_frame_params;
- 
-+	/* Store here the initial run mode */
-+	unsigned int default_run_mode;
-+
- 	unsigned int buffers_in_css;
- 
- 	/* irq_lock is used to protect video buffer state change operations and
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-index 7982cc143374a..14c39b8987c95 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
-@@ -447,7 +447,8 @@ const struct atomisp_dfs_config dfs_config_cht_soc = {
- 	.dfs_table_size = ARRAY_SIZE(dfs_rules_cht_soc),
++	/*
++	 * The GPD win/pocket have a PCI wifi card, but its DSDT has the SDIO
++	 * mmc controller enabled and that has a child-device which _PS3
++	 * method sets a GPIO causing the PCI wifi card to turn off.
++	 * See above remark about uniqueness of the DMI match.
++	 */
++	NOT_PRESENT_ENTRY_PATH("\\_SB_.PCI0.SDHB.BRC1", ATOM_AIRMONT, {
++		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
++		DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
++		DMI_EXACT_MATCH(DMI_BOARD_SERIAL, "Default string"),
++		DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Default string"),
++	      }),
  };
  
--int atomisp_video_init(struct atomisp_video_pipe *video, const char *name)
-+int atomisp_video_init(struct atomisp_video_pipe *video, const char *name,
-+		       unsigned int run_mode)
- {
- 	int ret;
- 	const char *direction;
-@@ -478,6 +479,7 @@ int atomisp_video_init(struct atomisp_video_pipe *video, const char *name)
- 		 "ATOMISP ISP %s %s", name, direction);
- 	video->vdev.release = video_device_release_empty;
- 	video_set_drvdata(&video->vdev, video->isp);
-+	video->default_run_mode = run_mode;
- 
- 	return 0;
- }
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.h b/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
-index 81bb356b81720..72611b8286a4a 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
-+++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
-@@ -27,7 +27,8 @@ struct v4l2_device;
- struct atomisp_device;
- struct firmware;
- 
--int atomisp_video_init(struct atomisp_video_pipe *video, const char *name);
-+int atomisp_video_init(struct atomisp_video_pipe *video, const char *name,
-+		       unsigned int run_mode);
- void atomisp_acc_init(struct atomisp_acc_pipe *video, const char *name);
- void atomisp_video_unregister(struct atomisp_video_pipe *video);
- void atomisp_acc_unregister(struct atomisp_acc_pipe *video);
+ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
 -- 
 2.34.1
 
