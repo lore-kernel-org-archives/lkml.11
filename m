@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47B4CC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD6D6C46467
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1314059AbiAYCuO (ORCPT
+        id S1314301AbiAYCur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:50:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55790 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445469AbiAXVDi (ORCPT
+        Mon, 24 Jan 2022 21:50:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57096 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353146AbiAXVEV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:38 -0500
+        Mon, 24 Jan 2022 16:04:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6B0361317;
-        Mon, 24 Jan 2022 21:03:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C49B1C340E5;
-        Mon, 24 Jan 2022 21:03:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B9BBB811A9;
+        Mon, 24 Jan 2022 21:04:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 674D4C340E5;
+        Mon, 24 Jan 2022 21:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058208;
-        bh=EuZrEE6iroL4h8Fnk2WfPwJrm92ykgsXH1Ll7+avYoc=;
+        s=korg; t=1643058257;
+        bh=Px/8V69LgBn1lpcu7IMMdtgNlAppZ3FW1twrHtuTLLU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WcbnC6L7M1HMFscF1q4e3gTGnEx5/glQZNvxb1VtcNPRdCYSZd/89Mh3zdM6C0TGJ
-         2lE/8NW5UcqYRew89uInsKbpvbmjRWyttPvG/3e3BLqg3JWuj9+fVJFXgPMAeEnKQU
-         U8GR0xVXM8aAcMrAUZhzVGuIWB1SDP8xiz3yVXRE=
+        b=EqJrYtDm5q7UQmvolC+Ts37A8wRAXxKyJ/Ljy+z8zDkN2XZ/73GmAqp4p4752IIm4
+         tJHv8Ot9Zxa0cNrI+/Ldb4tytoL1IQGuaMWI2+oj5HtgrTKIOyopbJQKkvUMTkdWyU
+         fzKbuz4XS7Z0zjRxcnKXzEBh8Oz7WLLPL+AAevL8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Zhou Qingyang <zhou1615@umn.edu>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0214/1039] drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()
-Date:   Mon, 24 Jan 2022 19:33:23 +0100
-Message-Id: <20220124184132.532128732@linuxfoundation.org>
+Subject: [PATCH 5.16 0197/1039] media: venus: core: Fix a resource leak in the error handling path of venus_probe()
+Date:   Mon, 24 Jan 2022 19:33:06 +0100
+Message-Id: <20220124184131.950143884@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,116 +49,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit ab50cb9df8896b39aae65c537a30de2c79c19735 ]
+[ Upstream commit 8cc7a1b2aca067397a016cdb971a5e6ad9b640c7 ]
 
-In radeon_driver_open_kms(), radeon_vm_bo_add() is assigned to
-vm->ib_bo_va and passes and used in radeon_vm_bo_set_addr(). In
-radeon_vm_bo_set_addr(), there is a dereference of vm->ib_bo_va,
-which could lead to a NULL pointer dereference on failure of
-radeon_vm_bo_add().
+A successful 'of_platform_populate()' call should be balanced by a
+corresponding 'of_platform_depopulate()' call in the error handling path
+of the probe, as already done in the remove function.
 
-Fix this bug by adding a check of vm->ib_bo_va.
+A successful 'venus_firmware_init()' call should be balanced by a
+corresponding 'venus_firmware_deinit()' call in the error handling path
+of the probe, as already done in the remove function.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
+Update the error handling path accordingly.
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_DRM_RADEON=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: cc9e67e3d700 ("drm/radeon: fix VM IB handling")
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fixes: f9799fcce4bb ("media: venus: firmware: register separate platform_device for firmware loader")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/radeon/radeon_kms.c | 36 ++++++++++++++++-------------
- 1 file changed, 20 insertions(+), 16 deletions(-)
+ drivers/media/platform/qcom/venus/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
-index 482fb0ae6cb5d..66aee48fd09d2 100644
---- a/drivers/gpu/drm/radeon/radeon_kms.c
-+++ b/drivers/gpu/drm/radeon/radeon_kms.c
-@@ -648,6 +648,8 @@ void radeon_driver_lastclose_kms(struct drm_device *dev)
- int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
- {
- 	struct radeon_device *rdev = dev->dev_private;
-+	struct radeon_fpriv *fpriv;
-+	struct radeon_vm *vm;
- 	int r;
+diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
+index fd32385485fa6..877eca1258037 100644
+--- a/drivers/media/platform/qcom/venus/core.c
++++ b/drivers/media/platform/qcom/venus/core.c
+@@ -350,11 +350,11 @@ static int venus_probe(struct platform_device *pdev)
  
- 	file_priv->driver_priv = NULL;
-@@ -660,8 +662,6 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
+ 	ret = venus_firmware_init(core);
+ 	if (ret)
+-		goto err_runtime_disable;
++		goto err_of_depopulate;
  
- 	/* new gpu have virtual address space support */
- 	if (rdev->family >= CHIP_CAYMAN) {
--		struct radeon_fpriv *fpriv;
--		struct radeon_vm *vm;
+ 	ret = venus_boot(core);
+ 	if (ret)
+-		goto err_runtime_disable;
++		goto err_firmware_deinit;
  
- 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
- 		if (unlikely(!fpriv)) {
-@@ -672,35 +672,39 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
- 		if (rdev->accel_working) {
- 			vm = &fpriv->vm;
- 			r = radeon_vm_init(rdev, vm);
--			if (r) {
--				kfree(fpriv);
--				goto out_suspend;
--			}
-+			if (r)
-+				goto out_fpriv;
- 
- 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
--			if (r) {
--				radeon_vm_fini(rdev, vm);
--				kfree(fpriv);
--				goto out_suspend;
--			}
-+			if (r)
-+				goto out_vm_fini;
- 
- 			/* map the ib pool buffer read only into
- 			 * virtual address space */
- 			vm->ib_bo_va = radeon_vm_bo_add(rdev, vm,
- 							rdev->ring_tmp_bo.bo);
-+			if (!vm->ib_bo_va) {
-+				r = -ENOMEM;
-+				goto out_vm_fini;
-+			}
-+
- 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
- 						  RADEON_VA_IB_OFFSET,
- 						  RADEON_VM_PAGE_READABLE |
- 						  RADEON_VM_PAGE_SNOOPED);
--			if (r) {
--				radeon_vm_fini(rdev, vm);
--				kfree(fpriv);
--				goto out_suspend;
--			}
-+			if (r)
-+				goto out_vm_fini;
- 		}
- 		file_priv->driver_priv = fpriv;
- 	}
- 
-+	if (!r)
-+		goto out_suspend;
-+
-+out_vm_fini:
-+	radeon_vm_fini(rdev, vm);
-+out_fpriv:
-+	kfree(fpriv);
- out_suspend:
- 	pm_runtime_mark_last_busy(dev->dev);
- 	pm_runtime_put_autosuspend(dev->dev);
+ 	ret = hfi_core_resume(core, true);
+ 	if (ret)
+@@ -386,6 +386,10 @@ err_dev_unregister:
+ 	v4l2_device_unregister(&core->v4l2_dev);
+ err_venus_shutdown:
+ 	venus_shutdown(core);
++err_firmware_deinit:
++	venus_firmware_deinit(core);
++err_of_depopulate:
++	of_platform_depopulate(dev);
+ err_runtime_disable:
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_set_suspended(dev);
 -- 
 2.34.1
 
