@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A2AC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56DE9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:29:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849958AbiAXX1F (ORCPT
+        id S1849974AbiAXX1J (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:27:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40548 "EHLO
+        Mon, 24 Jan 2022 18:27:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1835190AbiAXWfs (ORCPT
+        with ESMTP id S1588258AbiAXWbq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:35:48 -0500
+        Mon, 24 Jan 2022 17:31:46 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 766A8C07A94A;
-        Mon, 24 Jan 2022 12:58:41 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBF19C095430;
+        Mon, 24 Jan 2022 12:57:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 14FB160C60;
-        Mon, 24 Jan 2022 20:58:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 003D2C340E5;
-        Mon, 24 Jan 2022 20:58:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89761612C8;
+        Mon, 24 Jan 2022 20:57:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C986C340E8;
+        Mon, 24 Jan 2022 20:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057920;
-        bh=IyH1Lh56yH9JDasMVhjm5n150Kxj6K6Tx0L9VwNIBGQ=;
+        s=korg; t=1643057847;
+        bh=TN6v4/4sN1+XYeIpKg4vF/SxBkB5QkaJ3j9sK91D2XA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MzPs1qb3Pl03QKDqrSvcZ5M/vc4Y+RIuVLLwLEQAHyp5i+HjlcpVYDtho/VfarzhM
-         wYrOQI+BPvflSpHlk95JMu1nsVmvuoz7rh0mEqBdBhSbm4WQZwYD3J4JCMtK5LPY7+
-         9pcw6sPO/T7vFdG9FGdHdavt+3bw0KOCU7nikNJg=
+        b=J3d3ETxxwe94ITcip4+QmAbib9egIyrr7khkDSECqvwyDZ5EnQSz0JPq10Dh+jylE
+         /xWWBcL5qxL8vomttAgAU7VkR1z5oudm0C+LLpaOWPxUQnRal16pUps8BK/YrxvwsW
+         dbw3z7rBP71eunQKX+ndJAYpfesjROQZBoY7JSv0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
-        Sam Ravnborg <sam@ravnborg.org>,
+        stable@vger.kernel.org,
+        Dave Stevenson <dave.stevenson@raspberrypi.com>,
+        Maxime Ripard <maxime@cerno.tech>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0089/1039] drm/panel: innolux-p079zca: Delete panel on attach() failure
-Date:   Mon, 24 Jan 2022 19:31:18 +0100
-Message-Id: <20220124184128.149662846@linuxfoundation.org>
+Subject: [PATCH 5.16 0099/1039] drm/vc4: hdmi: Make sure the controller is powered up during bind
+Date:   Mon, 24 Jan 2022 19:31:28 +0100
+Message-Id: <20220124184128.482138775@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,55 +51,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 32a267e9c057e1636e7afdd20599aa5741a73079 ]
+[ Upstream commit 9c6e4f6ed1d61d5f46946e5c151ceb279eedadb1 ]
 
-If we fail to attach (e.g., because 1 of 2 dual-DSI controllers aren't
-ready), we leave a dangling drm_panel reference to freed memory. Clean
-that up on failure.
+In the bind hook, we actually need the device to have the HSM clock
+running during the final part of the display initialisation where we
+reset the controller and initialise the CEC component.
 
-This problem exists since the driver's introduction, but is especially
-relevant after refactored for dual-DSI variants.
+Failing to do so will result in a complete, silent, hang of the CPU.
 
-Fixes: 14c8f2e9f8ea ("drm/panel: add Innolux P079ZCA panel driver")
-Fixes: 7ad4e4636c54 ("drm/panel: p079zca: Refactor panel driver to support multiple panels")
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210923173336.2.I9023cf8811a3abf4964ed84eb681721d8bb489d6@changeid
+Fixes: 411efa18e4b0 ("drm/vc4: hdmi: Move the HSM clock enable to runtime_pm")
+Link: https://patchwork.freedesktop.org/patch/msgid/20210819135931.895976-3-maxime@cerno.tech
+Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/panel/panel-innolux-p079zca.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/panel/panel-innolux-p079zca.c b/drivers/gpu/drm/panel/panel-innolux-p079zca.c
-index aea3162253914..f194b62e290ca 100644
---- a/drivers/gpu/drm/panel/panel-innolux-p079zca.c
-+++ b/drivers/gpu/drm/panel/panel-innolux-p079zca.c
-@@ -484,6 +484,7 @@ static void innolux_panel_del(struct innolux_panel *innolux)
- static int innolux_panel_probe(struct mipi_dsi_device *dsi)
- {
- 	const struct panel_desc *desc;
-+	struct innolux_panel *innolux;
- 	int err;
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index f7e48bc6cb114..29ee9264b0870 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -2191,6 +2191,18 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 	if (ret)
+ 		goto err_put_ddc;
  
- 	desc = of_device_get_match_data(&dsi->dev);
-@@ -495,7 +496,14 @@ static int innolux_panel_probe(struct mipi_dsi_device *dsi)
- 	if (err < 0)
- 		return err;
- 
--	return mipi_dsi_attach(dsi);
-+	err = mipi_dsi_attach(dsi);
-+	if (err < 0) {
-+		innolux = mipi_dsi_get_drvdata(dsi);
-+		innolux_panel_del(innolux);
-+		return err;
-+	}
++	/*
++	 * We need to have the device powered up at this point to call
++	 * our reset hook and for the CEC init.
++	 */
++	ret = vc4_hdmi_runtime_resume(dev);
++	if (ret)
++		goto err_put_ddc;
 +
-+	return 0;
- }
++	pm_runtime_get_noresume(dev);
++	pm_runtime_set_active(dev);
++	pm_runtime_enable(dev);
++
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
  
- static int innolux_panel_remove(struct mipi_dsi_device *dsi)
+@@ -2202,8 +2214,6 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 		clk_prepare_enable(vc4_hdmi->pixel_bvb_clock);
+ 	}
+ 
+-	pm_runtime_enable(dev);
+-
+ 	drm_simple_encoder_init(drm, encoder, DRM_MODE_ENCODER_TMDS);
+ 	drm_encoder_helper_add(encoder, &vc4_hdmi_encoder_helper_funcs);
+ 
+@@ -2227,6 +2237,8 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 			     vc4_hdmi_debugfs_regs,
+ 			     vc4_hdmi);
+ 
++	pm_runtime_put_sync(dev);
++
+ 	return 0;
+ 
+ err_free_cec:
+@@ -2237,6 +2249,7 @@ err_destroy_conn:
+ 	vc4_hdmi_connector_destroy(&vc4_hdmi->connector);
+ err_destroy_encoder:
+ 	drm_encoder_cleanup(encoder);
++	pm_runtime_put_sync(dev);
+ 	pm_runtime_disable(dev);
+ err_put_ddc:
+ 	put_device(&vc4_hdmi->ddc->dev);
 -- 
 2.34.1
 
