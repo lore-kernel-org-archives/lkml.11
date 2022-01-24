@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7BF8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA6EAC4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845214AbiAXXLr (ORCPT
+        id S1845273AbiAXXL4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:11:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36622 "EHLO
+        Mon, 24 Jan 2022 18:11:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584523AbiAXWVX (ORCPT
+        with ESMTP id S1584568AbiAXWVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:23 -0500
+        Mon, 24 Jan 2022 17:21:25 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F12DC0424C9;
-        Mon, 24 Jan 2022 12:49:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EF01C0424DD;
+        Mon, 24 Jan 2022 12:51:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 17A2CB80FA1;
-        Mon, 24 Jan 2022 20:49:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43D11C340E5;
-        Mon, 24 Jan 2022 20:49:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D9CE2B81061;
+        Mon, 24 Jan 2022 20:51:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FB04C340E5;
+        Mon, 24 Jan 2022 20:51:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057391;
-        bh=br/iQTyRsURcetzVqnQpSl1GiGq29hfg10350Q/e9Ew=;
+        s=korg; t=1643057476;
+        bh=hgTMhcKXn0qipvk81yvlR5VaiWMS55P9EIckJyt9sxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D35QV/GT57oa5jGhfItNSeAitLj//R3L2ltxbXXmE2+E4mQxm67h5UZhWKycc9NEZ
-         V+liwIBCPdxOAB7zc4KgEAkvMkW7TVjrElT0MvG/BeD+hNxFMevV71r7p5V+AC+Qhe
-         +GJbgWnR7+kxGvePaMgfgAWxCirQk4wlmYFT98sk=
+        b=cVzk2u0PzY/98LBanGWPMOzv1bTlqE3M/mr39WgW6gr5gczzP9eQgkos1e5IoE7iq
+         1wUk9hp4qj+AcJl+bbxGPrImjPg07AlevbR9tSuSVyaqTRd6ok+EPtw8v2pivPOix5
+         gH6D0f2XPnwU7Bul/Eld3NB8Fgvrl+oHC7lBYWLU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.15 798/846] net: axienet: fix for TX busy handling
-Date:   Mon, 24 Jan 2022 19:45:15 +0100
-Message-Id: <20220124184128.477699424@linuxfoundation.org>
+Subject: [PATCH 5.15 792/846] net: axienet: Wait for PhyRstCmplt after core reset
+Date:   Mon, 24 Jan 2022 19:45:09 +0100
+Message-Id: <20220124184128.274931321@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,146 +52,48 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Robert Hancock <robert.hancock@calian.com>
 
-commit bb193e3db8b86a63f26889c99e14fd30c9ebd72a upstream.
+commit b400c2f4f4c53c86594dd57098970d97d488bfde upstream.
 
-Network driver documentation indicates we should be avoiding returning
-NETDEV_TX_BUSY from ndo_start_xmit in normal cases, since it requires
-the packets to be requeued. Instead the queue should be stopped after
-a packet is added to the TX ring when there may not be enough room for an
-additional one. Also, when TX ring entries are completed, we should only
-wake the queue if we know there is room for another full maximally
-fragmented packet.
+When resetting the device, wait for the PhyRstCmplt bit to be set
+in the interrupt status register before continuing initialization, to
+ensure that the core is actually ready. When using an external PHY, this
+also ensures we do not start trying to access the PHY while it is still
+in reset. The PHY reset is initiated by the core reset which is
+triggered just above, but remains asserted for 5ms after the core is
+reset according to the documentation.
 
-Print a warning if there is insufficient space at the start of start_xmit,
-since this should no longer happen.
-
-Combined with increasing the default TX ring size (in a subsequent
-patch), this appears to recover the TX performance lost by previous changes
-to actually manage the TX ring state properly.
+The MgtRdy bit could also be waited for, but unfortunately when using
+7-series devices, the bit does not appear to work as documented (it
+seems to behave as some sort of link state indication and not just an
+indication the transceiver is ready) so it can't really be relied on for
+this purpose.
 
 Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
 Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   86 ++++++++++++----------
- 1 file changed, 47 insertions(+), 39 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
 --- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
 +++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -661,6 +661,32 @@ static int axienet_free_tx_chain(struct
- }
- 
- /**
-+ * axienet_check_tx_bd_space - Checks if a BD/group of BDs are currently busy
-+ * @lp:		Pointer to the axienet_local structure
-+ * @num_frag:	The number of BDs to check for
-+ *
-+ * Return: 0, on success
-+ *	    NETDEV_TX_BUSY, if any of the descriptors are not free
-+ *
-+ * This function is invoked before BDs are allocated and transmission starts.
-+ * This function returns 0 if a BD or group of BDs can be allocated for
-+ * transmission. If the BD or any of the BDs are not free the function
-+ * returns a busy status. This is invoked from axienet_start_xmit.
-+ */
-+static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
-+					    int num_frag)
-+{
-+	struct axidma_bd *cur_p;
-+
-+	/* Ensure we see all descriptor updates from device or TX IRQ path */
-+	rmb();
-+	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
-+	if (cur_p->cntrl)
-+		return NETDEV_TX_BUSY;
-+	return 0;
-+}
-+
-+/**
-  * axienet_start_xmit_done - Invoked once a transmit is completed by the
-  * Axi DMA Tx channel.
-  * @ndev:	Pointer to the net_device structure
-@@ -689,33 +715,8 @@ static void axienet_start_xmit_done(stru
- 	/* Matches barrier in axienet_start_xmit */
- 	smp_mb();
- 
--	netif_wake_queue(ndev);
--}
--
--/**
-- * axienet_check_tx_bd_space - Checks if a BD/group of BDs are currently busy
-- * @lp:		Pointer to the axienet_local structure
-- * @num_frag:	The number of BDs to check for
-- *
-- * Return: 0, on success
-- *	    NETDEV_TX_BUSY, if any of the descriptors are not free
-- *
-- * This function is invoked before BDs are allocated and transmission starts.
-- * This function returns 0 if a BD or group of BDs can be allocated for
-- * transmission. If the BD or any of the BDs are not free the function
-- * returns a busy status. This is invoked from axienet_start_xmit.
-- */
--static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
--					    int num_frag)
--{
--	struct axidma_bd *cur_p;
--
--	/* Ensure we see all descriptor updates from device or TX IRQ path */
--	rmb();
--	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
--	if (cur_p->cntrl)
--		return NETDEV_TX_BUSY;
--	return 0;
-+	if (!axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1))
-+		netif_wake_queue(ndev);
- }
- 
- /**
-@@ -748,19 +749,14 @@ axienet_start_xmit(struct sk_buff *skb,
- 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
- 
- 	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
--		if (netif_queue_stopped(ndev))
--			return NETDEV_TX_BUSY;
--
-+		/* Should not happen as last start_xmit call should have
-+		 * checked for sufficient space and queue should only be
-+		 * woken when sufficient space is available.
-+		 */
- 		netif_stop_queue(ndev);
--
--		/* Matches barrier in axienet_start_xmit_done */
--		smp_mb();
--
--		/* Space might have just been freed - check again */
--		if (axienet_check_tx_bd_space(lp, num_frag + 1))
--			return NETDEV_TX_BUSY;
--
--		netif_wake_queue(ndev);
-+		if (net_ratelimit())
-+			netdev_warn(ndev, "TX ring unexpectedly full\n");
-+		return NETDEV_TX_BUSY;
+@@ -516,6 +516,16 @@ static int __axienet_device_reset(struct
+ 		return ret;
  	}
  
- 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
-@@ -821,6 +817,18 @@ axienet_start_xmit(struct sk_buff *skb,
- 	if (++lp->tx_bd_tail >= lp->tx_bd_num)
- 		lp->tx_bd_tail = 0;
- 
-+	/* Stop queue if next transmit may not have space */
-+	if (axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1)) {
-+		netif_stop_queue(ndev);
-+
-+		/* Matches barrier in axienet_start_xmit_done */
-+		smp_mb();
-+
-+		/* Space might have just been freed - check again */
-+		if (!axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1))
-+			netif_wake_queue(ndev);
++	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
++	ret = read_poll_timeout(axienet_ior, value,
++				value & XAE_INT_PHYRSTCMPLT_MASK,
++				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
++				XAE_IS_OFFSET);
++	if (ret) {
++		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
++		return ret;
 +	}
 +
- 	return NETDEV_TX_OK;
+ 	return 0;
  }
  
 
