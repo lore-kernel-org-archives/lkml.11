@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3F7C47081
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9B7C35272
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358984AbiAXT4H (ORCPT
+        id S1359001AbiAXT4I (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:56:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42216 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351146AbiAXToo (ORCPT
+        Mon, 24 Jan 2022 14:56:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354759AbiAXThv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:44:44 -0500
+        Mon, 24 Jan 2022 14:37:51 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33F1CC0085BD;
+        Mon, 24 Jan 2022 11:17:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B1CA06153F;
-        Mon, 24 Jan 2022 19:44:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E5AFC340E5;
-        Mon, 24 Jan 2022 19:44:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B13E56131D;
+        Mon, 24 Jan 2022 19:17:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84D45C340E5;
+        Mon, 24 Jan 2022 19:17:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053482;
-        bh=m1F5fWtgDM8E6XKmaqCuV0mNrGXhTgIpzHKN+ItcTok=;
+        s=korg; t=1643051851;
+        bh=MVcReX3W2UATrsEc/FCbBHApTKVMcOq6AMGjgtU5CP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BuhWMXcfaCx2Do6tF3X+S/6OHP76J9g7cKEAv+8cm5engwBoMPFxeJ7wZAtpCZUg7
-         WCQtaOwOGaRRiIYNusOSr7fjHu3gn/lgaJWJmylE/NISTYN/ZA1jyau/j75xBs9bJQ
-         0HAPUnSZp296lS4drlywgLmmkPi06mH3rIU1Uxoc=
+        b=fJocDCPBDEdIOz8mb18qcqcXQoWCfRbwohMsxnW1k7S1bzTiKMo+P0tMdSpiQ/LA/
+         NexNgklJVF/Uzwvcyfm5Mt2dU6Z0k177UJPrKqyehVSAp+6L8BrCvS5wL7ApFVmLWh
+         hkzokrZ9qgoF4t1m4h2v/iBhTBGpC2jm057/uiVc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Hewitt <christianshewitt@gmail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 080/563] arm64: dts: meson-gxbb-wetek: fix HDMI in early boot
-Date:   Mon, 24 Jan 2022 19:37:25 +0100
-Message-Id: <20220124184027.154017982@linuxfoundation.org>
+Subject: [PATCH 4.19 074/239] crypto: stm32/cryp - fix double pm exit
+Date:   Mon, 24 Jan 2022 19:41:52 +0100
+Message-Id: <20220124183945.477087875@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,44 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Hewitt <christianshewitt@gmail.com>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit 8182a35868db5f053111d5d9d4da8fcb3f99259d ]
+[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
 
-Mark the VDDIO_AO18 regulator always-on and set hdmi-supply for the hdmi_tx
-node to ensure HDMI is powered in the early stages of boot.
+Delete extraneous lines in probe error handling code: pm was
+disabled twice.
 
-Fixes: fb72c03e0e32 ("ARM64: dts: meson-gxbb-wetek: add a wetek specific dtsi to cleanup hub and play2")
+Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
 
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211012052522.30873-2-christianshewitt@gmail.com
+Reported-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-index a350fee1264d7..8e2af986cebaf 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb-wetek.dtsi
-@@ -64,6 +64,7 @@
- 		regulator-name = "VDDIO_AO18";
- 		regulator-min-microvolt = <1800000>;
- 		regulator-max-microvolt = <1800000>;
-+		regulator-always-on;
- 	};
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index 23b0b7bd64c7f..b3b49dce11369 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -2036,8 +2036,6 @@ err_engine1:
+ 	list_del(&cryp->list);
+ 	spin_unlock(&cryp_list.lock);
  
- 	vcc_3v3: regulator-vcc_3v3 {
-@@ -161,6 +162,7 @@
- 	status = "okay";
- 	pinctrl-0 = <&hdmi_hpd_pins>, <&hdmi_i2c_pins>;
- 	pinctrl-names = "default";
-+	hdmi-supply = <&vddio_ao18>;
- };
+-	pm_runtime_disable(dev);
+-	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_put_noidle(dev);
  
- &hdmi_tx_tmds_port {
 -- 
 2.34.1
 
