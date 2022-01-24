@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0ECAC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAB11C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:16:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1582315AbiAXWPG (ORCPT
+        id S1582359AbiAXWPL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:15:06 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42470 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452896AbiAXV1X (ORCPT
+        Mon, 24 Jan 2022 17:15:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1452865AbiAXV1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:27:23 -0500
+        Mon, 24 Jan 2022 16:27:13 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45869C073227;
+        Mon, 24 Jan 2022 12:18:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F21D2B812A7;
-        Mon, 24 Jan 2022 21:27:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25F9AC340E4;
-        Mon, 24 Jan 2022 21:27:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D709660B56;
+        Mon, 24 Jan 2022 20:18:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD416C340E5;
+        Mon, 24 Jan 2022 20:18:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059636;
-        bh=VugHGI8+6S85HjqW94JyGeLrIidA8ZW1E+7xFGmNbvY=;
+        s=korg; t=1643055509;
+        bh=TXWftH3Lvlt9MHh1xSd+HVBtOTeO7gkjpDkzqXx25Ww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HwknhRKko4gRgnqWGES8sS/o3XUOfF0FeWg/QLttp1YG+Dnl3kOUJyB0xmjkP5hnj
-         EMAAvrceKAeQ62XG4sh3aJjhPAtKvaKkp0y/6zQ2fynfsl4fNTj5bF+ZR4MrxUx3yd
-         V/shXpUso9Ocw/1MzOTd9iOZ3ksblXJnUQTMyf3o=
+        b=voiHKdiH30jYYYB/lnu1CUf+MWLedmZVqJnsdI9if0Ttyz5Qses8tGGYUfTHE4f9/
+         ysflh+muvc8pXKsflyEo7L0N9BrGc4SNWk8+eLz1AjTpJEtI4SkvKf4l4+w8JxaE0f
+         UMCiafFYj/X80WoblbLM7lvU1F/SZqOscBapbcA0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Jesper Dangaard Brouer <brouer@redhat.com>,
+        Nechama Kraus <nechamax.kraus@linux.intel.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0655/1039] mmc: tmio: reinit card irqs in reset routine
-Date:   Mon, 24 Jan 2022 19:40:44 +0100
-Message-Id: <20220124184147.379482173@linuxfoundation.org>
+Subject: [PATCH 5.15 174/846] igc: AF_XDP zero-copy metadata adjust breaks SKBs on XDP_PASS
+Date:   Mon, 24 Jan 2022 19:34:51 +0100
+Message-Id: <20220124184106.979687442@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,65 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Biju Das <biju.das.jz@bp.renesas.com>
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-[ Upstream commit e315b1f3a170f368da5618f8a598e68880302ed1 ]
+[ Upstream commit 4fa8fcd3440101dbacf4fae91de69877ef751977 ]
 
-Refactor the code so that card detect irqs are always reenabled after a
-reset. This avoids doing it manually all over the code or forgetting to
-do this in the future.
+Driver already implicitly supports XDP metadata access in AF_XDP
+zero-copy mode, as xsk_buff_pool's xp_alloc() naturally set xdp_buff
+data_meta equal data.
 
-Reported-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-[wsa: added a comment when 'native_hotplug' has to be set]
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Link: https://lore.kernel.org/r/20211103122646.64422-1-wsa+renesas@sang-engineering.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+This works fine for XDP and AF_XDP, but if a BPF-prog adjust via
+bpf_xdp_adjust_meta() and choose to call XDP_PASS, then igc function
+igc_construct_skb_zc() will construct an invalid SKB packet. The
+function correctly include the xdp->data_meta area in the memcpy, but
+forgot to pull header to take metasize into account.
+
+Fixes: fc9df2a0b520 ("igc: Enable RX via AF_XDP zero-copy")
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Tested-by: Nechama Kraus <nechamax.kraus@linux.intel.com>
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/tmio_mmc_core.c | 15 +++------------
- 1 file changed, 3 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/tmio_mmc_core.c b/drivers/mmc/host/tmio_mmc_core.c
-index e2affa52ef469..a5850d83908be 100644
---- a/drivers/mmc/host/tmio_mmc_core.c
-+++ b/drivers/mmc/host/tmio_mmc_core.c
-@@ -960,14 +960,8 @@ static void tmio_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
- 	case MMC_POWER_OFF:
- 		tmio_mmc_power_off(host);
- 		/* For R-Car Gen2+, we need to reset SDHI specific SCC */
--		if (host->pdata->flags & TMIO_MMC_MIN_RCAR2) {
--			host->reset(host);
--
--			if (host->native_hotplug)
--				tmio_mmc_enable_mmc_irqs(host,
--						TMIO_STAT_CARD_REMOVE |
--						TMIO_STAT_CARD_INSERT);
--		}
-+		if (host->pdata->flags & TMIO_MMC_MIN_RCAR2)
-+			tmio_mmc_reset(host);
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 0a96627391a8c..c7fa978cdf02e 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -2447,8 +2447,10 @@ static struct sk_buff *igc_construct_skb_zc(struct igc_ring *ring,
  
- 		host->set_clock(host, 0);
- 		break;
-@@ -1175,6 +1169,7 @@ int tmio_mmc_host_probe(struct tmio_mmc_host *_host)
- 	if (mmc_can_gpio_cd(mmc))
- 		_host->ops.get_cd = mmc_gpio_get_cd;
+ 	skb_reserve(skb, xdp->data_meta - xdp->data_hard_start);
+ 	memcpy(__skb_put(skb, totalsize), xdp->data_meta, totalsize);
+-	if (metasize)
++	if (metasize) {
+ 		skb_metadata_set(skb, metasize);
++		__skb_pull(skb, metasize);
++	}
  
-+	/* must be set before tmio_mmc_reset() */
- 	_host->native_hotplug = !(mmc_can_gpio_cd(mmc) ||
- 				  mmc->caps & MMC_CAP_NEEDS_POLL ||
- 				  !mmc_card_is_removable(mmc));
-@@ -1295,10 +1290,6 @@ int tmio_mmc_host_runtime_resume(struct device *dev)
- 	if (host->clk_cache)
- 		host->set_clock(host, host->clk_cache);
- 
--	if (host->native_hotplug)
--		tmio_mmc_enable_mmc_irqs(host,
--				TMIO_STAT_CARD_REMOVE | TMIO_STAT_CARD_INSERT);
--
- 	tmio_mmc_enable_dma(host, true);
- 
- 	return 0;
+ 	return skb;
+ }
 -- 
 2.34.1
 
