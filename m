@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A68C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66095C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235042AbiAXTWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:22:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39126 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242600AbiAXTNk (ORCPT
+        id S1345629AbiAXTWW (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:22:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40054 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346436AbiAXTMs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:40 -0500
+        Mon, 24 Jan 2022 14:12:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B79B4B811FC;
-        Mon, 24 Jan 2022 19:13:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC84BC340E5;
-        Mon, 24 Jan 2022 19:13:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 25CF96130A;
+        Mon, 24 Jan 2022 19:12:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04A6DC340E5;
+        Mon, 24 Jan 2022 19:12:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051617;
-        bh=mzOXgJWu4huwItt9Jb9pt1M7G82FlnWck1CgOhpFlsE=;
+        s=korg; t=1643051567;
+        bh=S+oUhieKCUVWkr3cNVSk7UFZZl4vLzAmix0sjkOrXIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=penyo4OWhPzqBwlqN66HFN5cMRa8hCZ4FyfqMNbTEKfgdp476HGwcrFP4r7G722F9
-         dM0ZMrFKtNqyJAvHpNEr4K+DPaYdGcG/M4lTFLAgyGUDv/0euCMFpTtcMqkF2VV68e
-         JQK4gBrVEIlgbuoYHPiDEl8sphdexhPwe/oGko7k=
+        b=nNgxE7r2M7TXGFkbEB5hrLhayVqljzfpRaUxpkDwRyKtSlbZpzdtjqziNxFvUsOxP
+         1xpRFEKAAzhOrWme6gjzWiqk/+tgtmk6FsAivjvZ47MikyGvgceMzFHyI+L/wQg9Qq
+         OnwjJm8thYgy6dkHuwir3ye/9XWEW3lhvC/5NMjk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.19 031/239] media: flexcop-usb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:09 +0100
-Message-Id: <20220124183944.116121404@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 4.19 017/239] rtlwifi: rtl8192cu: Fix WARNING when calling local_irq_restore() with interrupts enabled
+Date:   Mon, 24 Jan 2022 19:40:55 +0100
+Message-Id: <20220124183943.662258539@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -46,95 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Larry Finger <Larry.Finger@lwfinger.net>
 
-commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
+commit 8b144dedb928e4e2f433a328d58f44c3c098d63e upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+Syzbot reports the following WARNING:
 
-Note that the driver was multiplying some of the timeout values with HZ
-twice resulting in 3000-second timeouts with HZ=1000.
+[200~raw_local_irq_restore() called with IRQs enabled
+WARNING: CPU: 1 PID: 1206 at kernel/locking/irqflag-debug.c:10
+   warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
 
-Also note that two of the timeout defines are currently unused.
+Hardware initialization for the rtl8188cu can run for as long as 350 ms,
+and the routine may be called with interrupts disabled. To avoid locking
+the machine for this long, the current routine saves the interrupt flags
+and enables local interrupts. The problem is that it restores the flags
+at the end without disabling local interrupts first.
 
-Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
-Cc: stable@vger.kernel.org      # 3.0
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+This patch fixes commit a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long
+disable of IRQs").
+
+Reported-by: syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Fixes: a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long disable of IRQs")
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211215171105.20623-1-Larry.Finger@lwfinger.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
- drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
- 2 files changed, 11 insertions(+), 11 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/media/usb/b2c2/flexcop-usb.c
-+++ b/drivers/media/usb/b2c2/flexcop-usb.c
-@@ -86,7 +86,7 @@ static int flexcop_usb_readwrite_dw(stru
- 			0,
- 			fc_usb->data,
- 			sizeof(u32),
--			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
-+			B2C2_WAIT_FOR_OPERATION_RDW);
- 
- 	if (ret != sizeof(u32)) {
- 		err("error while %s dword from %d (%d).", read ? "reading" :
-@@ -154,7 +154,7 @@ static int flexcop_usb_v8_memory_req(str
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 	if (ret != buflen)
- 		ret = -EIO;
- 
-@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
- 		/* DKT 020208 - add this to support special case of DiSEqC */
- 	case USB_FUNC_I2C_CHECKWRITE:
- 		pipe = B2C2_USB_CTRL_PIPE_OUT;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_OUT;
- 		break;
- 	case USB_FUNC_I2C_READ:
- 	case USB_FUNC_I2C_REPEATREAD:
- 		pipe = B2C2_USB_CTRL_PIPE_IN;
--		nWaitTime = 2;
-+		nWaitTime = 2000;
- 		request_type |= USB_DIR_IN;
- 		break;
- 	default:
-@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
- 			wIndex,
- 			fc_usb->data,
- 			buflen,
--			nWaitTime * HZ);
-+			nWaitTime);
- 
- 	if (ret != buflen)
- 		ret = -EIO;
---- a/drivers/media/usb/b2c2/flexcop-usb.h
-+++ b/drivers/media/usb/b2c2/flexcop-usb.h
-@@ -91,13 +91,13 @@ typedef enum {
- 	UTILITY_SRAM_TESTVERIFY     = 0x16,
- } flexcop_usb_utility_function_t;
- 
--#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
--#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_RW 1000
-+#define B2C2_WAIT_FOR_OPERATION_RDW 3000
-+#define B2C2_WAIT_FOR_OPERATION_WDW 1000
- 
--#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
--#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
-+#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
-+#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
- 
- typedef enum {
- 	V8_MEMORY_PAGE_DVB_CI = 0x20,
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
+@@ -1020,6 +1020,7 @@ int rtl92cu_hw_init(struct ieee80211_hw
+ 	_InitPABias(hw);
+ 	rtl92c_dm_init(hw);
+ exit:
++	local_irq_disable();
+ 	local_irq_restore(flags);
+ 	return err;
+ }
 
 
