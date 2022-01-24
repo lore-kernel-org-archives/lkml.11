@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD2DC2BA4C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0FFC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349141AbiAXTUT (ORCPT
+        id S1349104AbiAXTUO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:20:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41566 "EHLO
+        Mon, 24 Jan 2022 14:20:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41358 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345298AbiAXTL6 (ORCPT
+        with ESMTP id S238472AbiAXTLs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:58 -0500
+        Mon, 24 Jan 2022 14:11:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18B0A60BB9;
-        Mon, 24 Jan 2022 19:11:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25D53C340EB;
-        Mon, 24 Jan 2022 19:11:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD5F6124E;
+        Mon, 24 Jan 2022 19:11:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AF3EC340E5;
+        Mon, 24 Jan 2022 19:11:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051517;
-        bh=ATbwbrhLYhUw5b7slfxUdG2/4HZMt/W6+8bip6jDOLM=;
+        s=korg; t=1643051507;
+        bh=BhvH5FYxPJNi12cUpjUBB71t6MBUCKzlBxAp22IT8s0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ldVqTc/ZcIBEKvYrq6COGH0FSSWXEi7jQnX25+S1uPQXkAYXYvA8B8Cho47e/8Y27
-         Nf6h2v0u5KXwBYVJ/ecUGTNjRX+W3LxXhjpHyZpu0+lM1Ei+cIVp8BwZ1y0RbV0Byl
-         eE5VTa4hrhJQtiO8iBxjqIxE9Y7J3RVi55TLVP8A=
+        b=EbHcCYbKg8eFahWRvxC5A1tgtV3/OcLX+8a8vbmEGkIW/VyhpucRzdEMwWNiUtTyw
+         2c1QsW39w/vfpym9nyydRTMWunyhpDmjhfTXClLdvcXPaot6MsSBdkPDkpzMv0S1Px
+         heczi8I8QcqMz6rVyyZFOuAfAyjgud+uT28NzZ6Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 4.14 180/186] mips,s390,sh,sparc: gup: Work around the "COW can break either way" issue
-Date:   Mon, 24 Jan 2022 19:44:15 +0100
-Message-Id: <20220124183942.899147289@linuxfoundation.org>
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Ye Guojin <ye.guojin@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 142/186] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 24 Jan 2022 19:43:37 +0100
+Message-Id: <20220124183941.670941363@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -46,93 +48,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-In Linux 4.14 and 4.19 these architectures still have their own
-implementations of get_user_pages_fast().  These also need to force
-the write flag on when taking the fast path.
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-Fixes: 407faed92b4a ("gup: document and work around "COW can break either way" issue")
-Fixes: 5e24029791e8 ("gup: document and work around "COW can break either way" issue")
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/mm/gup.c  |    9 ++++++++-
- arch/s390/mm/gup.c  |    9 ++++++++-
- arch/sh/mm/gup.c    |    9 ++++++++-
- arch/sparc/mm/gup.c |    9 ++++++++-
- 4 files changed, 32 insertions(+), 4 deletions(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
---- a/arch/mips/mm/gup.c
-+++ b/arch/mips/mm/gup.c
-@@ -272,7 +272,14 @@ int get_user_pages_fast(unsigned long st
- 		next = pgd_addr_end(addr, end);
- 		if (pgd_none(pgd))
- 			goto slow;
--		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
-+		/*
-+		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+		 * because get_user_pages() may need to cause an early COW in
-+		 * order to avoid confusing the normal COW routines. So only
-+		 * targets that are already writable are safe to do by just
-+		 * looking at the page tables.
-+		 */
-+		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
- 			goto slow;
- 	} while (pgdp++, addr = next, addr != end);
- 	local_irq_enable();
---- a/arch/s390/mm/gup.c
-+++ b/arch/s390/mm/gup.c
-@@ -285,7 +285,14 @@ int get_user_pages_fast(unsigned long st
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index e1e24118c169e..ed42fc27033c4 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
  
- 	might_sleep();
- 	start &= PAGE_MASK;
--	nr = __get_user_pages_fast(start, nr_pages, write, pages);
-+	/*
-+	 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+	 * because get_user_pages() may need to cause an early COW in
-+	 * order to avoid confusing the normal COW routines. So only
-+	 * targets that are already writable are safe to do by just
-+	 * looking at the page tables.
-+	 */
-+	nr = __get_user_pages_fast(start, nr_pages, 1, pages);
- 	if (nr == nr_pages)
- 		return nr;
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
---- a/arch/sh/mm/gup.c
-+++ b/arch/sh/mm/gup.c
-@@ -240,7 +240,14 @@ int get_user_pages_fast(unsigned long st
- 		next = pgd_addr_end(addr, end);
- 		if (pgd_none(pgd))
- 			goto slow;
--		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
-+		/*
-+		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+		 * because get_user_pages() may need to cause an early COW in
-+		 * order to avoid confusing the normal COW routines. So only
-+		 * targets that are already writable are safe to do by just
-+		 * looking at the page tables.
-+		 */
-+		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
- 			goto slow;
- 	} while (pgdp++, addr = next, addr != end);
- 	local_irq_enable();
---- a/arch/sparc/mm/gup.c
-+++ b/arch/sparc/mm/gup.c
-@@ -262,7 +262,14 @@ int get_user_pages_fast(unsigned long st
- 		next = pgd_addr_end(addr, end);
- 		if (pgd_none(pgd))
- 			goto slow;
--		if (!gup_pud_range(pgd, addr, next, write, pages, &nr))
-+		/*
-+		 * The FAST_GUP case requires FOLL_WRITE even for pure reads,
-+		 * because get_user_pages() may need to cause an early COW in
-+		 * order to avoid confusing the normal COW routines. So only
-+		 * targets that are already writable are safe to do by just
-+		 * looking at the page tables.
-+		 */
-+		if (!gup_pud_range(pgd, addr, next, 1, pages, &nr))
- 			goto slow;
- 	} while (pgdp++, addr = next, addr != end);
+ 	return ret;
+ }
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
  
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 75189ff2f3c78..3465452e28195 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -543,6 +543,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
+ 
+-- 
+2.34.1
+
 
 
