@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AD71C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448386AbiAXVMe (ORCPT
+        id S1376390AbiAXVMr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:12:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40704 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388094AbiAXUiL (ORCPT
+        Mon, 24 Jan 2022 16:12:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33176 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350085AbiAXUhs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:38:11 -0500
+        Mon, 24 Jan 2022 15:37:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7664B81243;
-        Mon, 24 Jan 2022 20:38:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10CA6C340E7;
-        Mon, 24 Jan 2022 20:38:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9249C6154F;
+        Mon, 24 Jan 2022 20:37:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B572C340E5;
+        Mon, 24 Jan 2022 20:37:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056687;
-        bh=syKAXgGkNN/cd6e1sptDYNJgaiCH3RcEKn5+Joj72mU=;
+        s=korg; t=1643056667;
+        bh=pkScPT/qHrBlmsJ+4ABC2NTBLaFxmMQUSkN+opeaQI0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QakadFLoEXBOv+vTd7CAVT8jUH4SfgfSHKZ4cFJGpAwzCcl72e3GfG8yq3yMx9NVX
-         pgWhNCSN1b44Vp54AI1G6f20MEkLZ6Vk3Madf28NzCNC9J8XSrbI6n1sY9BRxkPpfU
-         9D0HRnvNDzLPmSiqunSi0MHCvvfkSaKlQldPEm3E=
+        b=RhLHVH2X95kQYgOLp7BoHC2vcSYxMquG6EsNUo6CIpE9AzuD+LxKmw+1UWkVXcZJ5
+         5W2sLfV6Xasa/VraaM/hjsqVJQOKfxH4r3q9hOXlmzcqZMfb1+bejXUkAvtx8iHjuZ
+         Opt08ZuELZCQyzN8nPq9qAUPhEIo2UxkxR2zFlFo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 567/846] mt76: mt7615: fix possible deadlock while mt7615_register_ext_phy()
-Date:   Mon, 24 Jan 2022 19:41:24 +0100
-Message-Id: <20220124184120.586707680@linuxfoundation.org>
+        stable@vger.kernel.org, Biwen Li <biwen.li@nxp.com>,
+        Li Yang <leoyang.lil@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 560/846] arm64: dts: ls1028a-qds: move rtc node to the correct i2c bus
+Date:   Mon, 24 Jan 2022 19:41:17 +0100
+Message-Id: <20220124184120.341583585@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -46,49 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Chiu <chui-hao.chiu@mediatek.com>
+From: Biwen Li <biwen.li@nxp.com>
 
-[ Upstream commit 8c55516de3f9b76b9d9444e7890682ec2efc809f ]
+[ Upstream commit cbe9d948eadfe352ad45495a7cc5bf20a1b29d90 ]
 
-ieee80211_register_hw() is called with rtnl_lock held, and this could be
-caused lockdep from a work item that's on a workqueue that is flushed
-with the rtnl held.
+The i2c rtc is on i2c2 bus not i2c1 bus, so fix it in dts.
 
-Move mt7615_register_ext_phy() outside the init_work().
-
-Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: Biwen Li <biwen.li@nxp.com>
+Signed-off-by: Li Yang <leoyang.lil@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-index a2465b49ecd0c..87b4aa52ee0f9 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-@@ -28,8 +28,6 @@ static void mt7615_pci_init_work(struct work_struct *work)
- 		return;
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+index bfd14b64567e4..2f92e62ecafe9 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+@@ -272,11 +272,6 @@
+ 				vcc-supply = <&sb_3v3>;
+ 			};
  
- 	mt7615_init_work(dev);
--	if (dev->dbdc_support)
--		mt7615_register_ext_phy(dev);
- }
+-			rtc@51 {
+-				compatible = "nxp,pcf2129";
+-				reg = <0x51>;
+-			};
+-
+ 			eeprom@56 {
+ 				compatible = "atmel,24c512";
+ 				reg = <0x56>;
+@@ -318,6 +313,15 @@
  
- static int mt7615_init_hardware(struct mt7615_dev *dev)
-@@ -160,6 +158,12 @@ int mt7615_register_device(struct mt7615_dev *dev)
- 	mt7615_init_txpower(dev, &dev->mphy.sband_2g.sband);
- 	mt7615_init_txpower(dev, &dev->mphy.sband_5g.sband);
+ };
  
-+	if (dev->dbdc_support) {
-+		ret = mt7615_register_ext_phy(dev);
-+		if (ret)
-+			return ret;
-+	}
++&i2c1 {
++	status = "okay";
 +
- 	return mt7615_init_debugfs(dev);
- }
- 
++	rtc@51 {
++		compatible = "nxp,pcf2129";
++		reg = <0x51>;
++	};
++};
++
+ &enetc_port1 {
+ 	phy-handle = <&qds_phy1>;
+ 	phy-connection-type = "rgmii-id";
 -- 
 2.34.1
 
