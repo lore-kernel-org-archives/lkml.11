@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A9C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87DDDC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423368AbiAYCet (ORCPT
+        id S3423474AbiAYCfN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:34:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38772 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384357AbiAXU3e (ORCPT
+        Mon, 24 Jan 2022 21:35:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54068 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384352AbiAXU3e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:29:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2954C07A960;
-        Mon, 24 Jan 2022 11:42:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 945E26141C;
-        Mon, 24 Jan 2022 19:42:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 754A7C340E5;
-        Mon, 24 Jan 2022 19:42:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B8C361507;
+        Mon, 24 Jan 2022 20:29:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A8DAC340E5;
+        Mon, 24 Jan 2022 20:29:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053349;
-        bh=fyqEQBVglc5pdAIBij1r7tV5jKgJ1Mfni7cnBdPz3dg=;
+        s=korg; t=1643056173;
+        bh=1h+/Z/DAiDZoSEbnMDcCn4AXxNjDsVzS3lRJAXu21lc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wiaKvf1t0nxCb+sJR0nDCqee/WBID/zwdnKZwybUP5Q9eAmNMtxbpDSl1wQp+LrVu
-         zlfwNJXhDCBoyfRzwSTQ03LRn8W5E8eVgzKCvBzHpmRHtGcUajBKY9Z0LIfbRf7h2H
-         SBoL/fWN6BBbs8w8r39NAx652Z5RdKDAI9UjAczw=
+        b=B85DGnvCshbpf+rM24EBp7gIRmu3yCkGF1Oe4b8/Mcmh8UnAMwinVBWrsQRiXerkG
+         phVuJQJSwxe9Ono0EbTl6sya1luaVwOE6zn4nP0Ku7YbaoeWFRmnQsbPYefFG32Qfr
+         Z+jykpdx5xYQPnCIrDYdZtwYhko0lT6ndBJv5Wo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.10 005/563] HID: wacom: Avoid using stale array indicies to read contact count
-Date:   Mon, 24 Jan 2022 19:36:10 +0100
-Message-Id: <20220124184024.594123453@linuxfoundation.org>
+        stable@vger.kernel.org, Bixuan Cui <cuibixuan@linux.alibaba.com>,
+        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 394/846] ALSA: oss: fix compile error when OSS_DEBUG is enabled
+Date:   Mon, 24 Jan 2022 19:38:31 +0100
+Message-Id: <20220124184114.549648871@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,44 +46,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Bixuan Cui <cuibixuan@linux.alibaba.com>
 
-commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
+[ Upstream commit 8e7daf318d97f25e18b2fc7eb5909e34cd903575 ]
 
-If we ever see a touch report with contact count data we initialize
-several variables used to read the contact count in the pre-report
-phase. These variables are never reset if we process a report which
-doesn't contain a contact count, however. This can cause the pre-
-report function to trigger a read of arbitrary memory (e.g. NULL
-if we're lucky) and potentially crash the driver.
+Fix compile error when OSS_DEBUG is enabled:
+    sound/core/oss/pcm_oss.c: In function 'snd_pcm_oss_set_trigger':
+    sound/core/oss/pcm_oss.c:2055:10: error: 'substream' undeclared (first
+    use in this function); did you mean 'csubstream'?
+      pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
+              ^
 
-This commit restores resetting of the variables back to default
-"none" values that were used prior to the commit mentioned
-below.
-
-Link: https://github.com/linuxwacom/input-wacom/issues/276
-Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 61efcee8608c ("ALSA: oss: Use standard printk helpers")
+Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
+Link: https://lore.kernel.org/r/1638349134-110369-1-git-send-email-cuibixuan@linux.alibaba.com
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/wacom_wac.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ sound/core/oss/pcm_oss.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2654,6 +2654,10 @@ static void wacom_wac_finger_pre_report(
+diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
+index 20a0a4771b9a8..3ee9edf858156 100644
+--- a/sound/core/oss/pcm_oss.c
++++ b/sound/core/oss/pcm_oss.c
+@@ -2065,7 +2065,7 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
+ 	int err, cmd;
  
- 	hid_data->confidence = true;
- 
-+	hid_data->cc_report = 0;
-+	hid_data->cc_index = -1;
-+	hid_data->cc_value_index = -1;
-+
- 	for (i = 0; i < report->maxfield; i++) {
- 		struct hid_field *field = report->field[i];
- 		int j;
+ #ifdef OSS_DEBUG
+-	pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
++	pr_debug("pcm_oss: trigger = 0x%x\n", trigger);
+ #endif
+ 	
+ 	psubstream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
+-- 
+2.34.1
+
 
 
