@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCEFC4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 930BBC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379974AbiAXUPV (ORCPT
+        id S1380064AbiAXUPa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:15:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41030 "EHLO
+        Mon, 24 Jan 2022 15:15:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41452 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358524AbiAXTzY (ORCPT
+        with ESMTP id S1358902AbiAXT4A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:55:24 -0500
+        Mon, 24 Jan 2022 14:56:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 368CCB81249;
-        Mon, 24 Jan 2022 19:55:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F0DAC340E5;
-        Mon, 24 Jan 2022 19:55:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6D60B811F9;
+        Mon, 24 Jan 2022 19:55:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4301C340E8;
+        Mon, 24 Jan 2022 19:55:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054122;
-        bh=98zH9u/dBMHoLBSmD4N4UIOlb0RnvHJAmJkIuGxkAPs=;
+        s=korg; t=1643054158;
+        bh=Am4JlF+3LE3QNxnbCrz5BtyOYey+mHZ/4iNz2HgS+MY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sl/VVDtLUE0V4i77dHsdyO1PQe04HcHOyp7JgNa/spRMqEyDN71j33j0KG4Ly5IMZ
-         Zv0iFAIrkj13MITBE/ZKfKI1WNauXYRwOiYcWuQzzztOibH7W9TmzZGP2ime2tVDdx
-         Rr0pK7iNauYA6Fy5vn/oNFw5OmfMdtpq4ewDNis8=
+        b=o1fNizLOsK95zLBHtGwdig9QrUpzcSOhV+Wt7XZGOql1q+ArDkvs0P5JR6VOBNurJ
+         gQXr/Nwke33lA9dTeZ3cu9fiG4EzRt29ePjFNHpPjOlHbe2/erbiQvREdASM6nFyyj
+         DGvAkKJ1vHfeeh+ZaQgr6MSCpNIbuuH2LTWsP80g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 252/563] powerpc/irq: Add helper to set regs->softe
-Date:   Mon, 24 Jan 2022 19:40:17 +0100
-Message-Id: <20220124184033.139559555@linuxfoundation.org>
+Subject: [PATCH 5.10 298/563] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 24 Jan 2022 19:41:03 +0100
+Message-Id: <20220124184034.745171504@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,66 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit fb5608fd117a8b48752d2b5a7e70847c1ed33d33 ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-regs->softe doesn't exist on PPC32.
+Fault injection test report debugfs entry leak as follows:
 
-Add irq_soft_mask_regs_set_state() helper to set regs->softe.
-This helper will void on PPC32.
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
 
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/5f37d1177a751fdbca79df461d283850ca3a34a2.1612796617.git.christophe.leroy@csgroup.eu
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
+
+Add the remove debugfs code to fix it.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/include/asm/hw_irq.h | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/include/asm/hw_irq.h b/arch/powerpc/include/asm/hw_irq.h
-index 0363734ff56e0..da94cab528dd4 100644
---- a/arch/powerpc/include/asm/hw_irq.h
-+++ b/arch/powerpc/include/asm/hw_irq.h
-@@ -38,6 +38,8 @@
- #define PACA_IRQ_MUST_HARD_MASK	(PACA_IRQ_EE)
- #endif
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 2ad66f64879f1..2e7998bad133b 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3810,6 +3810,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
-+#endif /* CONFIG_PPC64 */
-+
- /*
-  * flags for paca->irq_soft_mask
-  */
-@@ -46,8 +48,6 @@
- #define IRQS_PMI_DISABLED	2
- #define IRQS_ALL_DISABLED	(IRQS_DISABLED | IRQS_PMI_DISABLED)
- 
--#endif /* CONFIG_PPC64 */
--
- #ifndef __ASSEMBLY__
- 
- extern void replay_system_reset(void);
-@@ -296,6 +296,10 @@ extern void irq_set_pending_from_srr1(unsigned long srr1);
- 
- extern void force_external_irq_replay(void);
- 
-+static inline void irq_soft_mask_regs_set_state(struct pt_regs *regs, unsigned long val)
-+{
-+	regs->softe = val;
-+}
- #else /* CONFIG_PPC64 */
- 
- static inline unsigned long arch_local_save_flags(void)
-@@ -364,6 +368,9 @@ static inline bool arch_irq_disabled_regs(struct pt_regs *regs)
- 
- static inline void may_hard_irq_enable(void) { }
- 
-+static inline void irq_soft_mask_regs_set_state(struct pt_regs *regs, unsigned long val)
-+{
-+}
- #endif /* CONFIG_PPC64 */
- 
- #define ARCH_IRQ_INIT_FLAGS	IRQ_NOREQUEST
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
