@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E36C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79D37C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357435AbiAXTuA (ORCPT
+        id S1357467AbiAXTuF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:50:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58796 "EHLO
+        Mon, 24 Jan 2022 14:50:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60068 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354940AbiAXTjn (ORCPT
+        with ESMTP id S1354921AbiAXTji (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:39:43 -0500
+        Mon, 24 Jan 2022 14:39:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0B2CB80FA1;
-        Mon, 24 Jan 2022 19:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02BA8C340E5;
-        Mon, 24 Jan 2022 19:39:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D219CB810BD;
+        Mon, 24 Jan 2022 19:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0811C340E5;
+        Mon, 24 Jan 2022 19:39:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053180;
-        bh=Kg6lB8gyFX7ICKo3+KWCWKtc2SOVkFcVpBWAYHfLIk4=;
+        s=korg; t=1643053174;
+        bh=5vvXEwtT+nl1XZYj/msZ/ibkaZkOY9t/AmP0MCYpxQs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iXkqVAton2oKAhP/YUDzDfvYS1KneJDZ0k5KJb75XoDFxwHzoiM+zWKZFbq+LXVUf
-         BlZyN3uEMiz6t3U+qU4wifaf90MT9rc9T6TWuL9cxImKhy0BeN9sCjvBQ/RNHrVJur
-         fznXzYrAihCIgxtk6BoDRKu9De0ynz4ej3LCnxmw=
+        b=DgnYED6RraJNO101Mb6Hi51wdYyQCkjjb0gOMKtxSq8q6ZUrlEU56QEUHjX8tH+i9
+         pRywiHqX+O/stuY5BBbes5R+Kn9ikI+Iz3rIrJnE6kiiPTiRS5CavueT9wHJyVG6Ef
+         Q5HCuGuVXgsraQZpP0U5W6JyHvDW5cpcGT35G4uc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julius Werner <jwerner@chromium.org>,
-        Ben Hutchings <ben@decadent.org.uk>
-Subject: [PATCH 5.4 275/320] firmware: Update Kconfig help text for Google firmware
-Date:   Mon, 24 Jan 2022 19:44:19 +0100
-Message-Id: <20220124184003.327989918@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.4 300/320] netns: add schedule point in ops_exit_list()
+Date:   Mon, 24 Jan 2022 19:44:44 +0100
+Message-Id: <20220124184004.156321648@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,40 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Hutchings <ben@decadent.org.uk>
+From: Eric Dumazet <edumazet@google.com>
 
-commit d185a3466f0cd5af8f1c5c782c53bc0e6f2e7136 upstream.
+commit 2836615aa22de55b8fca5e32fe1b27a67cda625e upstream.
 
-The help text for GOOGLE_FIRMWARE states that it should only be
-enabled when building a kernel for Google's own servers.  However,
-many of the drivers dependent on it are also useful on Chromebooks or
-on any platform using coreboot.
+When under stress, cleanup_net() can have to dismantle
+netns in big numbers. ops_exit_list() currently calls
+many helpers [1] that have no schedule point, and we can
+end up with soft lockups, particularly on hosts
+with many cpus.
 
-Update the help text to reflect this double duty.
+Even for moderate amount of netns processed by cleanup_net()
+this patch avoids latency spikes.
 
-Fixes: d384d6f43d1e ("firmware: google memconsole: Add coreboot support")
-Reviewed-by: Julius Werner <jwerner@chromium.org>
-Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
-Link: https://lore.kernel.org/r/20180618225540.GD14131@decadent.org.uk
+[1] Some of these helpers like fib_sync_up() and fib_sync_down_dev()
+are very slow because net/ipv4/fib_semantics.c uses host-wide hash tables,
+and ifindex is used as the only input of two hash functions.
+    ifindexes tend to be the same for all netns (lo.ifindex==1 per instance)
+    This will be fixed in a separate patch.
+
+Fixes: 72ad937abd0a ("net: Add support for batching network namespace cleanups")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Eric W. Biederman <ebiederm@xmission.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/google/Kconfig |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ net/core/net_namespace.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/firmware/google/Kconfig
-+++ b/drivers/firmware/google/Kconfig
-@@ -3,9 +3,9 @@ menuconfig GOOGLE_FIRMWARE
- 	bool "Google Firmware Drivers"
- 	default n
- 	help
--	  These firmware drivers are used by Google's servers.  They are
--	  only useful if you are working directly on one of their
--	  proprietary servers.  If in doubt, say "N".
-+	  These firmware drivers are used by Google servers,
-+	  Chromebooks and other devices using coreboot firmware.
-+	  If in doubt, say "N".
- 
- if GOOGLE_FIRMWARE
- 
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -168,8 +168,10 @@ static void ops_exit_list(const struct p
+ {
+ 	struct net *net;
+ 	if (ops->exit) {
+-		list_for_each_entry(net, net_exit_list, exit_list)
++		list_for_each_entry(net, net_exit_list, exit_list) {
+ 			ops->exit(net);
++			cond_resched();
++		}
+ 	}
+ 	if (ops->exit_batch)
+ 		ops->exit_batch(net_exit_list);
 
 
