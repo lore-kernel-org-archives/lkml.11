@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF52C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C852C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575367AbiAXVvd (ORCPT
+        id S1575398AbiAXVvg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:51:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39808 "EHLO
+        Mon, 24 Jan 2022 16:51:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39620 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376998AbiAXVQw (ORCPT
+        with ESMTP id S1449730AbiAXVQr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:16:52 -0500
+        Mon, 24 Jan 2022 16:16:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A911614BB;
-        Mon, 24 Jan 2022 21:16:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC3CC36AE3;
-        Mon, 24 Jan 2022 21:16:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8386161491;
+        Mon, 24 Jan 2022 21:16:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DF01C340E4;
+        Mon, 24 Jan 2022 21:16:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059011;
-        bh=PhEMH2TmR9SH/HlCq8r5xzc38BxxMHpemwszlBVQ4WY=;
+        s=korg; t=1643059006;
+        bh=dMH0TrLfYPk5E/hAHhxg0Py6sv4hdcdjMM7UmDRYzEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M+mQOG4+xrnbK4TJSdwdCGOxTMCq6yNHqZFrCGAQ0A/obHf/P5MbgNR7cyV/9OzgI
-         ObZlCDjsMqIZWmFsONBCr91HopG5keOuOfRKQeuwe1YZ68LDbOBhfeA68NfYp0fswl
-         wxCUNcQzC8Az6M06KyRlW2y1B6ciPdcvSpvvqP0A=
+        b=u5Oms+egUCbPTZZvRf3+YSewlziFMWOrLC2IfKvYGdjqlo63zsd2xF3ejcQjLPJf/
+         nWq6xPfAfuGBRcSZouGNR+JkANGxFhXUWW8VWA6ST3MpMua8Z+PcIK8UunTwicJKiS
+         DB/KgjhR7IekwB3yY4wDAMpElCOxRHXn9FEk+aeQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0443/1039] ext4: avoid trim error on fs with small groups
-Date:   Mon, 24 Jan 2022 19:37:12 +0100
-Message-Id: <20220124184140.185237193@linuxfoundation.org>
+        stable@vger.kernel.org, Martijn Coenen <maco@android.com>,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Todd Kjos <tkjos@google.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0472/1039] binder: avoid potential data leakage when copying txn
+Date:   Mon, 24 Jan 2022 19:37:41 +0100
+Message-Id: <20220124184141.140445442@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,70 +47,229 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Todd Kjos <tkjos@google.com>
 
-[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
+[ Upstream commit 6d98eb95b450a75adb4516a1d33652dc78d2b20c ]
 
-A user reported FITRIM ioctl failing for him on ext4 on some devices
-without apparent reason.  After some debugging we've found out that
-these devices (being LVM volumes) report rather large discard
-granularity of 42MB and the filesystem had 1k blocksize and thus group
-size of 8MB. Because ext4 FITRIM implementation puts discard
-granularity into minlen, ext4_trim_fs() declared the trim request as
-invalid. However just silently doing nothing seems to be a more
-appropriate reaction to such combination of parameters since user did
-not specify anything wrong.
+Transactions are copied from the sender to the target
+first and objects like BINDER_TYPE_PTR and BINDER_TYPE_FDA
+are then fixed up. This means there is a short period where
+the sender's version of these objects are visible to the
+target prior to the fixups.
 
-CC: Lukas Czerner <lczerner@redhat.com>
-Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Instead of copying all of the data first, copy data only
+after any needed fixups have been applied.
+
+Fixes: 457b9a6f09f0 ("Staging: android: add binder driver")
+Reviewed-by: Martijn Coenen <maco@android.com>
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Signed-off-by: Todd Kjos <tkjos@google.com>
+Link: https://lore.kernel.org/r/20211130185152.437403-3-tkjos@google.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ioctl.c   | 2 --
- fs/ext4/mballoc.c | 8 ++++++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/android/binder.c | 94 ++++++++++++++++++++++++++++++----------
+ 1 file changed, 70 insertions(+), 24 deletions(-)
 
-diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
-index 606dee9e08a32..220a4c8178b5e 100644
---- a/fs/ext4/ioctl.c
-+++ b/fs/ext4/ioctl.c
-@@ -1117,8 +1117,6 @@ resizefs_out:
- 		    sizeof(range)))
- 			return -EFAULT;
- 
--		range.minlen = max((unsigned int)range.minlen,
--				   q->limits.discard_granularity);
- 		ret = ext4_trim_fs(sb, &range);
- 		if (ret < 0)
- 			return ret;
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 215b7068f548a..9af83b6242ddf 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -6404,6 +6404,7 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
+diff --git a/drivers/android/binder.c b/drivers/android/binder.c
+index 7d29d3d931a79..99ae919255f4d 100644
+--- a/drivers/android/binder.c
++++ b/drivers/android/binder.c
+@@ -1608,15 +1608,21 @@ static void binder_cleanup_transaction(struct binder_transaction *t,
+ /**
+  * binder_get_object() - gets object and checks for valid metadata
+  * @proc:	binder_proc owning the buffer
++ * @u:		sender's user pointer to base of buffer
+  * @buffer:	binder_buffer that we're parsing.
+  * @offset:	offset in the @buffer at which to validate an object.
+  * @object:	struct binder_object to read into
+  *
+- * Return:	If there's a valid metadata object at @offset in @buffer, the
++ * Copy the binder object at the given offset into @object. If @u is
++ * provided then the copy is from the sender's buffer. If not, then
++ * it is copied from the target's @buffer.
++ *
++ * Return:	If there's a valid metadata object at @offset, the
+  *		size of that object. Otherwise, it returns zero. The object
+  *		is read into the struct binder_object pointed to by @object.
   */
- int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
- {
-+	struct request_queue *q = bdev_get_queue(sb->s_bdev);
- 	struct ext4_group_info *grp;
- 	ext4_group_t group, first_group, last_group;
- 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
-@@ -6422,6 +6423,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
- 	    start >= max_blks ||
- 	    range->len < sb->s_blocksize)
- 		return -EINVAL;
-+	/* No point to try to trim less than discard granularity */
-+	if (range->minlen < q->limits.discard_granularity) {
-+		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
-+			q->limits.discard_granularity >> sb->s_blocksize_bits);
-+		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
-+			goto out;
+ static size_t binder_get_object(struct binder_proc *proc,
++				const void __user *u,
+ 				struct binder_buffer *buffer,
+ 				unsigned long offset,
+ 				struct binder_object *object)
+@@ -1626,10 +1632,16 @@ static size_t binder_get_object(struct binder_proc *proc,
+ 	size_t object_size = 0;
+ 
+ 	read_size = min_t(size_t, sizeof(*object), buffer->data_size - offset);
+-	if (offset > buffer->data_size || read_size < sizeof(*hdr) ||
+-	    binder_alloc_copy_from_buffer(&proc->alloc, object, buffer,
+-					  offset, read_size))
++	if (offset > buffer->data_size || read_size < sizeof(*hdr))
+ 		return 0;
++	if (u) {
++		if (copy_from_user(object, u + offset, read_size))
++			return 0;
++	} else {
++		if (binder_alloc_copy_from_buffer(&proc->alloc, object, buffer,
++						  offset, read_size))
++			return 0;
 +	}
- 	if (end >= max_blks)
- 		end = max_blks - 1;
- 	if (end <= first_data_blk)
+ 
+ 	/* Ok, now see if we read a complete object. */
+ 	hdr = &object->hdr;
+@@ -1702,7 +1714,7 @@ static struct binder_buffer_object *binder_validate_ptr(
+ 					  b, buffer_offset,
+ 					  sizeof(object_offset)))
+ 		return NULL;
+-	object_size = binder_get_object(proc, b, object_offset, object);
++	object_size = binder_get_object(proc, NULL, b, object_offset, object);
+ 	if (!object_size || object->hdr.type != BINDER_TYPE_PTR)
+ 		return NULL;
+ 	if (object_offsetp)
+@@ -1767,7 +1779,8 @@ static bool binder_validate_fixup(struct binder_proc *proc,
+ 		unsigned long buffer_offset;
+ 		struct binder_object last_object;
+ 		struct binder_buffer_object *last_bbo;
+-		size_t object_size = binder_get_object(proc, b, last_obj_offset,
++		size_t object_size = binder_get_object(proc, NULL, b,
++						       last_obj_offset,
+ 						       &last_object);
+ 		if (object_size != sizeof(*last_bbo))
+ 			return false;
+@@ -1882,7 +1895,7 @@ static void binder_transaction_buffer_release(struct binder_proc *proc,
+ 		if (!binder_alloc_copy_from_buffer(&proc->alloc, &object_offset,
+ 						   buffer, buffer_offset,
+ 						   sizeof(object_offset)))
+-			object_size = binder_get_object(proc, buffer,
++			object_size = binder_get_object(proc, NULL, buffer,
+ 							object_offset, &object);
+ 		if (object_size == 0) {
+ 			pr_err("transaction release %d bad object at offset %lld, size %zd\n",
+@@ -2455,6 +2468,7 @@ static void binder_transaction(struct binder_proc *proc,
+ 	binder_size_t off_start_offset, off_end_offset;
+ 	binder_size_t off_min;
+ 	binder_size_t sg_buf_offset, sg_buf_end_offset;
++	binder_size_t user_offset = 0;
+ 	struct binder_proc *target_proc = NULL;
+ 	struct binder_thread *target_thread = NULL;
+ 	struct binder_node *target_node = NULL;
+@@ -2469,6 +2483,8 @@ static void binder_transaction(struct binder_proc *proc,
+ 	int t_debug_id = atomic_inc_return(&binder_last_id);
+ 	char *secctx = NULL;
+ 	u32 secctx_sz = 0;
++	const void __user *user_buffer = (const void __user *)
++				(uintptr_t)tr->data.ptr.buffer;
+ 
+ 	e = binder_transaction_log_add(&binder_transaction_log);
+ 	e->debug_id = t_debug_id;
+@@ -2780,19 +2796,6 @@ static void binder_transaction(struct binder_proc *proc,
+ 	t->buffer->clear_on_free = !!(t->flags & TF_CLEAR_BUF);
+ 	trace_binder_transaction_alloc_buf(t->buffer);
+ 
+-	if (binder_alloc_copy_user_to_buffer(
+-				&target_proc->alloc,
+-				t->buffer, 0,
+-				(const void __user *)
+-					(uintptr_t)tr->data.ptr.buffer,
+-				tr->data_size)) {
+-		binder_user_error("%d:%d got transaction with invalid data ptr\n",
+-				proc->pid, thread->pid);
+-		return_error = BR_FAILED_REPLY;
+-		return_error_param = -EFAULT;
+-		return_error_line = __LINE__;
+-		goto err_copy_data_failed;
+-	}
+ 	if (binder_alloc_copy_user_to_buffer(
+ 				&target_proc->alloc,
+ 				t->buffer,
+@@ -2837,6 +2840,7 @@ static void binder_transaction(struct binder_proc *proc,
+ 		size_t object_size;
+ 		struct binder_object object;
+ 		binder_size_t object_offset;
++		binder_size_t copy_size;
+ 
+ 		if (binder_alloc_copy_from_buffer(&target_proc->alloc,
+ 						  &object_offset,
+@@ -2848,8 +2852,27 @@ static void binder_transaction(struct binder_proc *proc,
+ 			return_error_line = __LINE__;
+ 			goto err_bad_offset;
+ 		}
+-		object_size = binder_get_object(target_proc, t->buffer,
+-						object_offset, &object);
++
++		/*
++		 * Copy the source user buffer up to the next object
++		 * that will be processed.
++		 */
++		copy_size = object_offset - user_offset;
++		if (copy_size && (user_offset > object_offset ||
++				binder_alloc_copy_user_to_buffer(
++					&target_proc->alloc,
++					t->buffer, user_offset,
++					user_buffer + user_offset,
++					copy_size))) {
++			binder_user_error("%d:%d got transaction with invalid data ptr\n",
++					proc->pid, thread->pid);
++			return_error = BR_FAILED_REPLY;
++			return_error_param = -EFAULT;
++			return_error_line = __LINE__;
++			goto err_copy_data_failed;
++		}
++		object_size = binder_get_object(target_proc, user_buffer,
++				t->buffer, object_offset, &object);
+ 		if (object_size == 0 || object_offset < off_min) {
+ 			binder_user_error("%d:%d got transaction with invalid offset (%lld, min %lld max %lld) or object.\n",
+ 					  proc->pid, thread->pid,
+@@ -2861,6 +2884,11 @@ static void binder_transaction(struct binder_proc *proc,
+ 			return_error_line = __LINE__;
+ 			goto err_bad_offset;
+ 		}
++		/*
++		 * Set offset to the next buffer fragment to be
++		 * copied
++		 */
++		user_offset = object_offset + object_size;
+ 
+ 		hdr = &object.hdr;
+ 		off_min = object_offset + object_size;
+@@ -2956,9 +2984,14 @@ static void binder_transaction(struct binder_proc *proc,
+ 			}
+ 			ret = binder_translate_fd_array(fda, parent, t, thread,
+ 							in_reply_to);
+-			if (ret < 0) {
++			if (!ret)
++				ret = binder_alloc_copy_to_buffer(&target_proc->alloc,
++								  t->buffer,
++								  object_offset,
++								  fda, sizeof(*fda));
++			if (ret) {
+ 				return_error = BR_FAILED_REPLY;
+-				return_error_param = ret;
++				return_error_param = ret > 0 ? -EINVAL : ret;
+ 				return_error_line = __LINE__;
+ 				goto err_translate_failed;
+ 			}
+@@ -3028,6 +3061,19 @@ static void binder_transaction(struct binder_proc *proc,
+ 			goto err_bad_object_type;
+ 		}
+ 	}
++	/* Done processing objects, copy the rest of the buffer */
++	if (binder_alloc_copy_user_to_buffer(
++				&target_proc->alloc,
++				t->buffer, user_offset,
++				user_buffer + user_offset,
++				tr->data_size - user_offset)) {
++		binder_user_error("%d:%d got transaction with invalid data ptr\n",
++				proc->pid, thread->pid);
++		return_error = BR_FAILED_REPLY;
++		return_error_param = -EFAULT;
++		return_error_line = __LINE__;
++		goto err_copy_data_failed;
++	}
+ 	if (t->buffer->oneway_spam_suspect)
+ 		tcomplete->type = BINDER_WORK_TRANSACTION_ONEWAY_SPAM_SUSPECT;
+ 	else
 -- 
 2.34.1
 
