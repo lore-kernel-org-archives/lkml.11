@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B80BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F460C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:43:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352959AbiAXUnE (ORCPT
+        id S1358842AbiAXUnI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:43:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49732 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349765AbiAXUXy (ORCPT
+        Mon, 24 Jan 2022 15:43:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:32782 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354711AbiAXUX7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:23:54 -0500
+        Mon, 24 Jan 2022 15:23:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A67B2614EC;
-        Mon, 24 Jan 2022 20:23:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B484C340E5;
-        Mon, 24 Jan 2022 20:23:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B472BB8119E;
+        Mon, 24 Jan 2022 20:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7D1EC340E5;
+        Mon, 24 Jan 2022 20:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055829;
-        bh=Wcrj+rKfUeDaiHz1P3RN61MxAqpAvccw1pIYIr8pwPQ=;
+        s=korg; t=1643055835;
+        bh=/bLI7PY8b0pniFdtjS+4UE+h+UAG8zivzIo6Fo50J8c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cp3zu2mLuHnWA3DOZjWtumE/yx+VEUT+y/uETb4eGtAA7cAaiywf9LqIgPxh/z/ul
-         CxE0/Qs0kC+pfBn2C8iFwFmIvcJLLiiaacTrISOQVUQpWoT1TaHXRxnvW0q8fd3Urq
-         R306wTw68Lnfo70er3HnO2l88WUrz/V5X0OYscys=
+        b=oPNc2suXpKqou3OkQr8A+65ICzhmAFtJ9azTJZfX1Z5X2dSuU9iDcgVXJyb7qCbp1
+         UyMCREGTc/iaNKI8IqpROs79B7x47Ou49de1LtWG5M+hwVcCUgHWT9r4lKjiffDNnX
+         wKJN7g4mgp4ViszQoc8gBc9wcn7fyyA8Lqv8417c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        stable@vger.kernel.org, Al Viro <viro@zeniv.linux.org.uk>,
         Johannes Berg <johannes.berg@intel.com>,
         Richard Weinberger <richard@nod.at>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 279/846] um: rename set_signals() to um_set_signals()
-Date:   Mon, 24 Jan 2022 19:36:36 +0100
-Message-Id: <20220124184110.555886129@linuxfoundation.org>
+Subject: [PATCH 5.15 281/846] lib/logic_iomem: Fix 32-bit build
+Date:   Mon, 24 Jan 2022 19:36:38 +0100
+Message-Id: <20220124184110.622146104@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,162 +50,80 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit bbe33504d4a7fdab9011211e55e262c869b3f6cc ]
+[ Upstream commit 4e84139e14af5ea60772cc4f33d7059aec76e0eb ]
 
-Rename set_signals() as there's at least one driver that
-uses the same name and can now be built on UM due to PCI
-support, and thus we can get symbol conflicts.
+On a 32-bit build, the (unsigned long long) casts throw warnings
+(or errors) due to being to a different integer size. Cast to
+uintptr_t first (with the __force for sparse) and then further
+to get the consistent print on 32 and 64-bit.
 
-Also rename set_signals_trace() to be consistent.
-
-Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 68f5d3f3b654 ("um: add PCI over virtio emulation driver")
+Fixes: ca2e334232b6 ("lib: add iomem emulation (logic_iomem)")
+Reported-by: Al Viro <viro@zeniv.linux.org.uk>
 Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/asm/irqflags.h   | 4 ++--
- arch/um/include/shared/longjmp.h | 2 +-
- arch/um/include/shared/os.h      | 4 ++--
- arch/um/kernel/ksyms.c           | 2 +-
- arch/um/os-Linux/sigio.c         | 6 +++---
- arch/um/os-Linux/signal.c        | 8 ++++----
- 6 files changed, 13 insertions(+), 13 deletions(-)
+ lib/logic_iomem.c | 13 +++++++------
+ 1 file changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/arch/um/include/asm/irqflags.h b/arch/um/include/asm/irqflags.h
-index dab5744e9253d..1e69ef5bc35e0 100644
---- a/arch/um/include/asm/irqflags.h
-+++ b/arch/um/include/asm/irqflags.h
-@@ -3,7 +3,7 @@
- #define __UM_IRQFLAGS_H
- 
- extern int signals_enabled;
--int set_signals(int enable);
-+int um_set_signals(int enable);
- void block_signals(void);
- void unblock_signals(void);
- 
-@@ -16,7 +16,7 @@ static inline unsigned long arch_local_save_flags(void)
- #define arch_local_irq_restore arch_local_irq_restore
- static inline void arch_local_irq_restore(unsigned long flags)
+diff --git a/lib/logic_iomem.c b/lib/logic_iomem.c
+index 9bdfde0c0f86d..54fa601f3300b 100644
+--- a/lib/logic_iomem.c
++++ b/lib/logic_iomem.c
+@@ -79,7 +79,7 @@ static void __iomem *real_ioremap(phys_addr_t offset, size_t size)
+ static void real_iounmap(void __iomem *addr)
  {
--	set_signals(flags);
-+	um_set_signals(flags);
+ 	WARN(1, "invalid iounmap for addr 0x%llx\n",
+-	     (unsigned long long __force)addr);
++	     (unsigned long long)(uintptr_t __force)addr);
  }
+ #endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
  
- #define arch_local_irq_enable arch_local_irq_enable
-diff --git a/arch/um/include/shared/longjmp.h b/arch/um/include/shared/longjmp.h
-index bdb2869b72b31..8863319039f3d 100644
---- a/arch/um/include/shared/longjmp.h
-+++ b/arch/um/include/shared/longjmp.h
-@@ -18,7 +18,7 @@ extern void longjmp(jmp_buf, int);
- 	enable = *(volatile int *)&signals_enabled;	\
- 	n = setjmp(*buf);				\
- 	if(n != 0)					\
--		set_signals_trace(enable);		\
-+		um_set_signals_trace(enable);		\
- 	n; })
+@@ -173,7 +173,7 @@ EXPORT_SYMBOL(iounmap);
+ static u##sz real_raw_read ## op(const volatile void __iomem *addr)	\
+ {									\
+ 	WARN(1, "Invalid read" #op " at address %llx\n",		\
+-	     (unsigned long long __force)addr);				\
++	     (unsigned long long)(uintptr_t __force)addr);		\
+ 	return (u ## sz)~0ULL;						\
+ }									\
+ 									\
+@@ -181,7 +181,8 @@ static void real_raw_write ## op(u ## sz val,				\
+ 				 volatile void __iomem *addr)		\
+ {									\
+ 	WARN(1, "Invalid writeq" #op " of 0x%llx at address %llx\n",	\
+-	     (unsigned long long)val, (unsigned long long __force)addr);\
++	     (unsigned long long)val,					\
++	     (unsigned long long)(uintptr_t __force)addr);\
+ }									\
  
- #endif
-diff --git a/arch/um/include/shared/os.h b/arch/um/include/shared/os.h
-index 96d400387c93e..03ffbdddcc480 100644
---- a/arch/um/include/shared/os.h
-+++ b/arch/um/include/shared/os.h
-@@ -238,8 +238,8 @@ extern void send_sigio_to_self(void);
- extern int change_sig(int signal, int on);
- extern void block_signals(void);
- extern void unblock_signals(void);
--extern int set_signals(int enable);
--extern int set_signals_trace(int enable);
-+extern int um_set_signals(int enable);
-+extern int um_set_signals_trace(int enable);
- extern int os_is_signal_stack(void);
- extern void deliver_alarm(void);
- extern void register_pm_wake_signal(void);
-diff --git a/arch/um/kernel/ksyms.c b/arch/um/kernel/ksyms.c
-index b1e5634398d09..3a85bde3e1734 100644
---- a/arch/um/kernel/ksyms.c
-+++ b/arch/um/kernel/ksyms.c
-@@ -6,7 +6,7 @@
- #include <linux/module.h>
- #include <os.h>
- 
--EXPORT_SYMBOL(set_signals);
-+EXPORT_SYMBOL(um_set_signals);
- EXPORT_SYMBOL(signals_enabled);
- 
- EXPORT_SYMBOL(os_stat_fd);
-diff --git a/arch/um/os-Linux/sigio.c b/arch/um/os-Linux/sigio.c
-index 6597ea1986ffa..9e71794839e87 100644
---- a/arch/um/os-Linux/sigio.c
-+++ b/arch/um/os-Linux/sigio.c
-@@ -132,7 +132,7 @@ static void update_thread(void)
- 	int n;
- 	char c;
- 
--	flags = set_signals_trace(0);
-+	flags = um_set_signals_trace(0);
- 	CATCH_EINTR(n = write(sigio_private[0], &c, sizeof(c)));
- 	if (n != sizeof(c)) {
- 		printk(UM_KERN_ERR "update_thread : write failed, err = %d\n",
-@@ -147,7 +147,7 @@ static void update_thread(void)
- 		goto fail;
- 	}
- 
--	set_signals_trace(flags);
-+	um_set_signals_trace(flags);
- 	return;
-  fail:
- 	/* Critical section start */
-@@ -161,7 +161,7 @@ static void update_thread(void)
- 	close(write_sigio_fds[0]);
- 	close(write_sigio_fds[1]);
- 	/* Critical section end */
--	set_signals_trace(flags);
-+	um_set_signals_trace(flags);
- }
- 
- int __add_sigio_fd(int fd)
-diff --git a/arch/um/os-Linux/signal.c b/arch/um/os-Linux/signal.c
-index 6cf098c23a394..24a403a70a020 100644
---- a/arch/um/os-Linux/signal.c
-+++ b/arch/um/os-Linux/signal.c
-@@ -94,7 +94,7 @@ void sig_handler(int sig, struct siginfo *si, mcontext_t *mc)
- 
- 	sig_handler_common(sig, si, mc);
- 
--	set_signals_trace(enabled);
-+	um_set_signals_trace(enabled);
- }
- 
- static void timer_real_alarm_handler(mcontext_t *mc)
-@@ -126,7 +126,7 @@ void timer_alarm_handler(int sig, struct siginfo *unused_si, mcontext_t *mc)
- 
- 	signals_active &= ~SIGALRM_MASK;
- 
--	set_signals_trace(enabled);
-+	um_set_signals_trace(enabled);
- }
- 
- void deliver_alarm(void) {
-@@ -348,7 +348,7 @@ void unblock_signals(void)
- 	}
- }
- 
--int set_signals(int enable)
-+int um_set_signals(int enable)
+ MAKE_FALLBACK(b, 8);
+@@ -194,14 +195,14 @@ MAKE_FALLBACK(q, 64);
+ static void real_memset_io(volatile void __iomem *addr, int value, size_t size)
  {
- 	int ret;
- 	if (signals_enabled == enable)
-@@ -362,7 +362,7 @@ int set_signals(int enable)
- 	return ret;
+ 	WARN(1, "Invalid memset_io at address 0x%llx\n",
+-	     (unsigned long long __force)addr);
++	     (unsigned long long)(uintptr_t __force)addr);
  }
  
--int set_signals_trace(int enable)
-+int um_set_signals_trace(int enable)
+ static void real_memcpy_fromio(void *buffer, const volatile void __iomem *addr,
+ 			       size_t size)
  {
- 	int ret;
- 	if (signals_enabled == enable)
+ 	WARN(1, "Invalid memcpy_fromio at address 0x%llx\n",
+-	     (unsigned long long __force)addr);
++	     (unsigned long long)(uintptr_t __force)addr);
+ 
+ 	memset(buffer, 0xff, size);
+ }
+@@ -210,7 +211,7 @@ static void real_memcpy_toio(volatile void __iomem *addr, const void *buffer,
+ 			     size_t size)
+ {
+ 	WARN(1, "Invalid memcpy_toio at address 0x%llx\n",
+-	     (unsigned long long __force)addr);
++	     (unsigned long long)(uintptr_t __force)addr);
+ }
+ #endif /* CONFIG_LOGIC_IOMEM_FALLBACK */
+ 
 -- 
 2.34.1
 
