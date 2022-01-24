@@ -2,97 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:46:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA3F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:49:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiAXNqf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:46:35 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:49058 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232769AbiAXNqe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:46:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643031993;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=VMWjUFPNROSNZ1gB7bIAJHjMk/KVdbCxC1i1CaU9o8k=;
-        b=dLaq+IBnNeXqPubyheXgyWNkID+xMyS8+JlPZKTFbclUe2gHPL7G0/GxOfs5yBNV6AK3BZ
-        vzBU70fEpeQR88+AaddKhapHfh5n1sqZFNb35lqpuJFLuNh+CIDhCNzXoBgUtdxK08DVcF
-        IFHGeb529SqUGYtE6FMivvH+FSUv7ls=
-Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
- [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-323--LN8TaWMM6-n68guag0gWQ-1; Mon, 24 Jan 2022 08:46:32 -0500
-X-MC-Unique: -LN8TaWMM6-n68guag0gWQ-1
-Received: by mail-ej1-f71.google.com with SMTP id d18-20020a1709063ed200b006a5eeb2ee4dso2073625ejj.3
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:46:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=VMWjUFPNROSNZ1gB7bIAJHjMk/KVdbCxC1i1CaU9o8k=;
-        b=NNxC7xZNwc8FkwgQQBV3t4mu8yoF447PG4cSKKwye7KF6+Hf3IHG15ExvaeaS659nH
-         7p3GnE2EK7buy31r/XAhnQFH6kaye50UY6SSnAjWUB4nhsGKpx7m28uZE+MvXTQfIsUd
-         9tMn9orwEzOWq6NYBSUK8JgehFhO3GntOkjx8u2hCZ5wVVV3CMH0YSPYFyYmMzd2WSg+
-         pxh7FOk+kzbo7Itqe/i8LHP083iNOXymOb6ezxA6gf3GEQdG7ErRZNUhW9ZUzbU8GjOq
-         x9+5ZIQhsoILRyXC5FmtgqEL1SI1lJH61no2BC5P8oq94+S1/iVJjgxii+4tCQczmFKZ
-         yncA==
-X-Gm-Message-State: AOAM533QENHZx+Xq8qaux+3JjjKyW7eJN5DZnBnhqd+4wujeASUas7YB
-        CwjdYIGfcks48kU3MxqH1FLHdYOC3eneb1SDRBTN5kiaY3iz17DJuorwlEzYTv8aMp2hlkK3JcD
-        3M1F8KxcjSmdKdgMJUVFF1uE6
-X-Received: by 2002:a05:6402:650:: with SMTP id u16mr16286102edx.163.1643031990561;
-        Mon, 24 Jan 2022 05:46:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyPPS6Cfx4PZykBtvSaLRQRaAbKk4CngKeatZ4sjeSvxKkSns8X1naDMiTsILFxx8eTjvA0Ag==
-X-Received: by 2002:a05:6402:650:: with SMTP id u16mr16286089edx.163.1643031990351;
-        Mon, 24 Jan 2022 05:46:30 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id gh14sm4886125ejb.38.2022.01.24.05.46.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 05:46:29 -0800 (PST)
-Message-ID: <93cd45a7-700b-2437-d56b-3597bdadb657@redhat.com>
-Date:   Mon, 24 Jan 2022 14:46:28 +0100
+        id S234323AbiAXNt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:49:56 -0500
+Received: from mga05.intel.com ([192.55.52.43]:11290 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232688AbiAXNtr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 08:49:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643032187; x=1674568187;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SZOZaltlzRkEFvk7iyPFTYTArEs+caDEG/8y0bOW5QQ=;
+  b=jBaYD5WBGXQqsavxFF8qSKv9xVcYAGK7XRJ08NG6B2ncbqAZP5P4pR5K
+   Bsx1IQVOsS9RTldhjnaIenkiXGYlwFZNLJaPazSUrrIZPlTG4//DjePzu
+   ugiBNYXDBrthX0zfwZ3yqXwAduHJkmyqwSrPEUhXWgN5l8qhub9UbWxKs
+   Sb7Q3XGOkYIQg784DcZztWZKO19oxTxFmK5jfWxA7GzlHz+OyT6jJc4RS
+   C2F8CevCfc5S16B15Ro6DofXJr5H4AjJ6HaPxL+6uyDTW9KdIb+zgvp1m
+   lPM/4Dj0YWUFclkDzqWnID42Lw788V+nIC69gKnKLEqWSufQVwkMguVfT
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="332400062"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="332400062"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 05:49:46 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="673628194"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 24 Jan 2022 05:49:42 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nBzj4-000IPB-6r; Mon, 24 Jan 2022 13:49:42 +0000
+Date:   Mon, 24 Jan 2022 21:49:15 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>, jic23@kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Subject: Re: [PATCH V1 2/6] iio: accel: sca3300: Add interface for operation
+ modes.
+Message-ID: <202201242108.VNQCotc3-lkp@intel.com>
+References: <20220124093912.2429190-3-Qing-wu.Li@leica-geosystems.com.cn>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] KVM: VMX: Zero host's SYSENTER_ESP iff SYSENTER is NOT
- used
-Content-Language: en-US
-To:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lai Jiangshan <laijs@linux.alibaba.com>
-References: <20220122015211.1468758-1-seanjc@google.com>
- <8735lgjgwl.fsf@redhat.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <8735lgjgwl.fsf@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220124093912.2429190-3-Qing-wu.Li@leica-geosystems.com.cn>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/22/22 09:47, Vitaly Kuznetsov wrote:
->>   	 */
->> -	vmcs_writel(HOST_IA32_SYSENTER_ESP, 0);
->> +	if (!IS_ENABLED(CONFIG_IA32_EMULATION) && !IS_ENABLED(CONFIG_X86_32))
-> Isn't it the same as "!IS_ENABLED(CONFIG_COMPAT_32)"? (same goes to the
-> check in vmx_vcpu_load_vmcs())
-> 
+Hi LI,
 
-It is, but I think it's clearer to write it as it's already done in 
-arch/x86/kvm/vmx/vmx.c, or possibly
+Thank you for the patch! Yet something to improve:
 
-if (IS_ENABLED(CONFIG_X86_64) && !IS_ENABLED(CONFIG_IA32_EMULATION))
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on v5.17-rc1 next-20220124]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-CONFIG_COMPAT_32 doesn't say as clearly whether it's enabled for 32-bit 
-systems or not.
+url:    https://github.com/0day-ci/linux/commits/LI-Qingwu/i-iio-accel-sca3300-add-compitible-for-scl3300/20220124-174021
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+config: hexagon-randconfig-r033-20220124 (https://download.01.org/0day-ci/archive/20220124/202201242108.VNQCotc3-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 2e58a18910867ba6795066e044293e6daf89edf5)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/1521580933c9c08143fc14b23a363eb7961d4520
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review LI-Qingwu/i-iio-accel-sca3300-add-compitible-for-scl3300/20220124-174021
+        git checkout 1521580933c9c08143fc14b23a363eb7961d4520
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/iio/accel/
 
-Paolo
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
+All errors (new ones prefixed by >>):
+
+>> drivers/iio/accel/sca3300.c:74:53: error: too few arguments provided to function-like macro invocation
+           IIO_ENUM_AVAILABLE("op_mode", &sca3300_op_mode_enum),
+                                                              ^
+   include/linux/iio/iio.h:112:9: note: macro 'IIO_ENUM_AVAILABLE' defined here
+   #define IIO_ENUM_AVAILABLE(_name, _shared, _e) \
+           ^
+>> drivers/iio/accel/sca3300.c:74:2: error: use of undeclared identifier 'IIO_ENUM_AVAILABLE'
+           IIO_ENUM_AVAILABLE("op_mode", &sca3300_op_mode_enum),
+           ^
+   2 errors generated.
+
+
+vim +74 drivers/iio/accel/sca3300.c
+
+    71	
+    72	static const struct iio_chan_spec_ext_info sca3300_ext_info[] = {
+    73		IIO_ENUM("op_mode", IIO_SHARED_BY_DIR, &sca3300_op_mode_enum),
+  > 74		IIO_ENUM_AVAILABLE("op_mode", &sca3300_op_mode_enum),
+    75		{ }
+    76	};
+    77	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
