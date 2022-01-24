@@ -2,101 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE3CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:13:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54542C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:13:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243070AbiAXNNE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:13:04 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31124 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242965AbiAXNMk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:12:40 -0500
-Received: from canpemm500009.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jj9KV0DSyz1FCv5;
-        Mon, 24 Jan 2022 21:08:46 +0800 (CST)
-Received: from localhost.localdomain (10.67.164.66) by
- canpemm500009.china.huawei.com (7.192.105.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 24 Jan 2022 21:12:37 +0800
-From:   Yicong Yang <yangyicong@hisilicon.com>
-To:     <gregkh@linuxfoundation.org>, <helgaas@kernel.org>,
-        <alexander.shishkin@linux.intel.com>, <lorenzo.pieralisi@arm.com>,
-        <will@kernel.org>, <mark.rutland@arm.com>,
-        <mathieu.poirier@linaro.org>, <suzuki.poulose@arm.com>,
-        <mike.leach@linaro.org>, <leo.yan@linaro.org>,
-        <jonathan.cameron@huawei.com>, <daniel.thompson@linaro.org>,
-        <joro@8bytes.org>, <john.garry@huawei.com>,
-        <shameerali.kolothum.thodi@huawei.com>, <robin.murphy@arm.com>,
-        <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <coresight@lists.linaro.org>, <linux-pci@vger.kernel.org>,
-        <linux-perf-users@vger.kernel.org>,
-        <iommu@lists.linux-foundation.org>
-CC:     <prime.zeng@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, <linuxarm@huawei.com>,
-        <yangyicong@hisilicon.com>, <song.bao.hua@hisilicon.com>
-Subject: [PATCH v3 8/8] iommu/arm-smmu-v3: Make default domain type of HiSilicon PTT device to identity
-Date:   Mon, 24 Jan 2022 21:11:18 +0800
-Message-ID: <20220124131118.17887-9-yangyicong@hisilicon.com>
-X-Mailer: git-send-email 2.31.0
-In-Reply-To: <20220124131118.17887-1-yangyicong@hisilicon.com>
-References: <20220124131118.17887-1-yangyicong@hisilicon.com>
+        id S243086AbiAXNNQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:13:16 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:53460 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242951AbiAXNNB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 08:13:01 -0500
+Received: from ip5b412258.dynamic.kabel-deutschland.de ([91.65.34.88] helo=diego.localnet)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1nBz9V-00036x-42; Mon, 24 Jan 2022 14:12:57 +0100
+From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org
+Cc:     Atish Patra <atishp@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Atish Patra <atishp@atishpatra.org>,
+        Anup Patel <anup@brainfault.org>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        devicetree@vger.kernel.org, Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv@lists.infradead.org,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Atish Patra <atishp@atishpatra.org>
+Subject: Re: [v5 6/9] RISC-V: Add perf platform driver based on SBI PMU extension
+Date:   Mon, 24 Jan 2022 14:12:56 +0100
+Message-ID: <13483045.gklhn8uf4L@diego>
+In-Reply-To: <20211225054647.1750577-7-atishp@rivosinc.com>
+References: <20211225054647.1750577-1-atishp@rivosinc.com> <20211225054647.1750577-7-atishp@rivosinc.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.164.66]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- canpemm500009.china.huawei.com (7.192.105.203)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The DMA of HiSilicon PTT device can only work with identical
-mapping. So add a quirk for the device to force the domain
-passthrough.
+Am Samstag, 25. Dezember 2021, 06:46:44 CET schrieb Atish Patra:
+> From: Atish Patra <atish.patra@wdc.com>
+> 
+> RISC-V SBI specification added a PMU extension that allows to configure
+> start/stop any pmu counter. The RISC-V perf can use most of the generic
+> perf features except interrupt overflow and event filtering based on
+> privilege mode which will be added in future.
+> 
+> It also allows to monitor a handful of firmware counters that can provide
+> insights into firmware activity during a performance analysis.
+> 
+> Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> Signed-off-by: Atish Patra <atishp@rivosinc.com>
+> ---
 
-Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
----
- drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+[...]
 
-diff --git a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-index 6dc6d8b6b368..6f67a2b1dd27 100644
---- a/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-+++ b/drivers/iommu/arm/arm-smmu-v3/arm-smmu-v3.c
-@@ -2838,6 +2838,21 @@ static int arm_smmu_dev_disable_feature(struct device *dev,
- 	}
- }
- 
-+#define IS_HISI_PTT_DEVICE(pdev)	((pdev)->vendor == PCI_VENDOR_ID_HUAWEI && \
-+					 (pdev)->device == 0xa12e)
-+
-+static int arm_smmu_def_domain_type(struct device *dev)
-+{
-+	if (dev_is_pci(dev)) {
-+		struct pci_dev *pdev = to_pci_dev(dev);
-+
-+		if (IS_HISI_PTT_DEVICE(pdev))
-+			return IOMMU_DOMAIN_IDENTITY;
-+	}
-+
-+	return 0;
-+}
-+
- static struct iommu_ops arm_smmu_ops = {
- 	.capable		= arm_smmu_capable,
- 	.domain_alloc		= arm_smmu_domain_alloc,
-@@ -2863,6 +2878,7 @@ static struct iommu_ops arm_smmu_ops = {
- 	.sva_unbind		= arm_smmu_sva_unbind,
- 	.sva_get_pasid		= arm_smmu_sva_get_pasid,
- 	.page_response		= arm_smmu_page_response,
-+	.def_domain_type	= arm_smmu_def_domain_type,
- 	.pgsize_bitmap		= -1UL, /* Restricted during device attach */
- 	.owner			= THIS_MODULE,
- };
--- 
-2.24.0
+> +static int pmu_sbi_device_probe(struct platform_device *pdev)
+> +{
+> +	struct riscv_pmu *pmu = NULL;
+> +	int num_counters;
+> +	int ret;
+> +
+> +	pr_info("SBI PMU extension is available\n");
+> +	/* Notify legacy implementation that SBI pmu is available*/
+> +	riscv_pmu_legacy_init(true);
+
+Just wondering, shouldn't the riscv_pmu_legacy_init() call live in
+pmu_sbi_devinit) below?
+
+I.e. when you detected the presence of the PMU sbi extension you already
+know that you don't want the legacy one and you have less control over
+probe-ordering (when the driver actually probes) than the initcall itself.
+
+
+Also, I think a better naming for the function might be good.
+Right now just reading
+
+	riscv_pmu_legacy_init(true);
+
+suggests that you _want_ the legacy-init to be enabled, while
+in reality the function means the opposite, disabling the legacy init.
+
+So maybe something like
+	riscv_pmu_disable_legacy(true); ?
+
+
+Heiko
+
+> +	pmu = riscv_pmu_alloc();
+> +	if (!pmu)
+> +		return -ENOMEM;
+> +
+> +	num_counters = pmu_sbi_find_num_ctrs();
+> +	if (num_counters < 0) {
+> +		pr_err("SBI PMU extension doesn't provide any counters\n");
+> +		return -ENODEV;
+> +	}
+> +
+> +	/* cache all the information about counters now */
+> +	if (pmu_sbi_get_ctrinfo(num_counters))
+> +		return -ENODEV;
+> +
+> +	pmu->num_counters = num_counters;
+> +	pmu->ctr_start = pmu_sbi_ctr_start;
+> +	pmu->ctr_stop = pmu_sbi_ctr_stop;
+> +	pmu->event_map = pmu_sbi_event_map;
+> +	pmu->ctr_get_idx = pmu_sbi_ctr_get_idx;
+> +	pmu->ctr_get_width = pmu_sbi_ctr_get_width;
+> +	pmu->ctr_clear_idx = pmu_sbi_ctr_clear_idx;
+> +	pmu->ctr_read = pmu_sbi_ctr_read;
+> +
+> +	ret = cpuhp_state_add_instance(CPUHP_AP_PERF_RISCV_STARTING, &pmu->node);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = perf_pmu_register(&pmu->pmu, "cpu", PERF_TYPE_RAW);
+> +	if (ret) {
+> +		cpuhp_state_remove_instance(CPUHP_AP_PERF_RISCV_STARTING, &pmu->node);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver pmu_sbi_driver = {
+> +	.probe		= pmu_sbi_device_probe,
+> +	.driver		= {
+> +		.name	= RISCV_PMU_PDEV_NAME,
+> +	},
+> +};
+> +
+> +static int __init pmu_sbi_devinit(void)
+> +{
+> +	int ret;
+> +	struct platform_device *pdev;
+> +
+> +	if (((sbi_major_version() == 0) && (sbi_minor_version() < 3)) ||
+> +		sbi_probe_extension(SBI_EXT_PMU) <= 0) {
+> +		return 0;
+> +	}
+> +
+> +	ret = cpuhp_setup_state_multi(CPUHP_AP_PERF_RISCV_STARTING,
+> +				      "perf/riscv/pmu:starting",
+> +				      pmu_sbi_starting_cpu, pmu_sbi_dying_cpu);
+> +	if (ret) {
+> +		pr_err("CPU hotplug notifier for RISC-V PMU could not be registered: %d\n",
+> +		       ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = platform_driver_register(&pmu_sbi_driver);
+> +	if (ret)
+> +		return ret;
+> +
+> +	pdev = platform_device_register_simple(RISCV_PMU_PDEV_NAME, -1, NULL, 0);
+> +	if (IS_ERR(pdev)) {
+> +		platform_driver_unregister(&pmu_sbi_driver);
+> +		return PTR_ERR(pdev);
+> +	}
+> +
+> +	return ret;
+> +}
+> +device_initcall(pmu_sbi_devinit)
+> 
+
+
+
 
