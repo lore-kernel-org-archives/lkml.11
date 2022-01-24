@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EACC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A04C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345458AbiAXTXc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:23:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38960 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344855AbiAXTNZ (ORCPT
+        id S241787AbiAXTXl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:23:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344583AbiAXTNI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:25 -0500
+        Mon, 24 Jan 2022 14:13:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEA16C0604E7;
+        Mon, 24 Jan 2022 11:04:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 25F8FB811F9;
-        Mon, 24 Jan 2022 19:13:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BBB9C340E5;
-        Mon, 24 Jan 2022 19:13:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5E66360010;
+        Mon, 24 Jan 2022 19:04:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F36FC340E5;
+        Mon, 24 Jan 2022 19:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051601;
-        bh=Oo2lX6416TxPeLNk85BzSqjJdoOIIwJmRJQe4N3bdMg=;
+        s=korg; t=1643051056;
+        bh=3njCL0iPs9o1Ejs+3EW/XKFhmRx+GaQarQ66q9kIcNw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PSh/NZIjPASiyLOL5Jp0Ct3SkrbEAFqUntEiLtYX/yy9kK9J8lKTW2HH0arRNMNFh
-         QkdiibcJkgY3T/AW6GUPlLH5x0qt+IW6NbROtBWEB7nctEqiHIx9ppd6Whcti7oCV5
-         Ku27iyZ3+Ax42gpfJEhvWLrMZHOPOpZC8bakvEJA=
+        b=H3BX7Z+lLshRyu0XAwvJvtpSFFsbHPGasPpuEmTWTcpWBMhrP/zRraHdJROxzrg1Y
+         9sjci4NrNdAB4gCjzHxeQgYgEce1f0bem4+qFei7O4054NXtab2eBkyqgeyIOJ7P/b
+         jKdKuV5Xr0ebyIdZi3NOJobt8BQO1Qv/TrPKgioo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Subject: [PATCH 4.19 027/239] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
-Date:   Mon, 24 Jan 2022 19:41:05 +0100
-Message-Id: <20220124183943.988707524@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.14 008/186] random: fix data race on crng init time
+Date:   Mon, 24 Jan 2022 19:41:23 +0100
+Message-Id: <20220124183937.381172045@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,102 +49,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+From: Eric Biggers <ebiggers@google.com>
 
-commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
+commit 009ba8568be497c640cab7571f7bfd18345d7b24 upstream.
 
-Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
-(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
-a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
+_extract_crng() does plain loads of crng->init_time and
+crng_global_init_time, which causes undefined behavior if
+crng_reseed() and RNDRESEEDCRNG modify these corrently.
 
-KASAN report:
+Use READ_ONCE() and WRITE_ONCE() to make the behavior defined.
 
-  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
-  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+Don't fix the race on crng->init_time by protecting it with crng->lock,
+since it's not a problem for duplicate reseedings to occur.  I.e., the
+lockless access with READ_ONCE() is fine.
 
-  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
-  Call Trace:
-   <TASK>
-   dump_stack_lvl+0x45/0x59
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   __kasan_report.cold+0x117/0x11c
-   ? mark_lock+0x480/0x4f0
-   ? nfc_alloc_send_skb+0x2d/0xc0
-   kasan_report+0x38/0x50
-   nfc_alloc_send_skb+0x2d/0xc0
-   nfc_llcp_send_ui_frame+0x18c/0x2a0
-   ? nfc_llcp_send_i_frame+0x230/0x230
-   ? __local_bh_enable_ip+0x86/0xe0
-   ? llcp_sock_connect+0x470/0x470
-   ? llcp_sock_connect+0x470/0x470
-   sock_sendmsg+0x8e/0xa0
-   ____sys_sendmsg+0x253/0x3f0
-   ...
-
-The issue was visible only with multiple simultaneous calls to bind() and
-sendmsg(), which resulted in most of the bind() calls to fail.  The
-bind() was failing on checking if there is available WKS/SDP/SAP
-(respective bit in 'struct nfc_llcp_local' fields).  When there was no
-available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
-socket was able to trigger mentioned NULL pointer dereference of
-nfc_llcp_sock->dev.
-
-The code looks simply racy and currently it protects several paths
-against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
-in error paths of bind().  The llcp_sock_sendmsg() did not have such
-check but called function nfc_llcp_send_ui_frame() had, although not
-protected with lock_sock().
-
-Therefore the race could look like (same socket is used all the time):
-  CPU0                                     CPU1
-  ====                                     ====
-  llcp_sock_bind()
-  - lock_sock()
-    - success
-  - release_sock()
-  - return 0
-                                           llcp_sock_sendmsg()
-                                           - lock_sock()
-                                           - release_sock()
-  llcp_sock_bind(), same socket
-  - lock_sock()
-    - error
-                                           - nfc_llcp_send_ui_frame()
-                                             - if (!llcp_sock->local)
-    - llcp_sock->local = NULL
-    - nfc_put_device(dev)
-                                             - dereference llcp_sock->dev
-  - release_sock()
-  - return -ERRNO
-
-The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
-lock, which is racy and ineffective check.  Instead, its caller
-llcp_sock_sendmsg(), should perform the check inside lock_sock().
-
-Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
-Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d848e5f8e1eb ("random: add new ioctl RNDRESEEDCRNG")
+Fixes: e192be9d9a30 ("random: replace non-blocking pool with a Chacha20-based CRNG")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/nfc/llcp_sock.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/char/random.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
---- a/net/nfc/llcp_sock.c
-+++ b/net/nfc/llcp_sock.c
-@@ -796,6 +796,11 @@ static int llcp_sock_sendmsg(struct sock
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -951,7 +951,7 @@ static void crng_reseed(struct crng_stat
+ 		crng->state[i+4] ^= buf.key[i] ^ rv;
+ 	}
+ 	memzero_explicit(&buf, sizeof(buf));
+-	crng->init_time = jiffies;
++	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+ 	if (crng == &primary_crng && crng_init < 2) {
+ 		invalidate_batched_entropy();
+@@ -978,12 +978,15 @@ static void crng_reseed(struct crng_stat
+ static void _extract_crng(struct crng_state *crng,
+ 			  __u8 out[CHACHA20_BLOCK_SIZE])
+ {
+-	unsigned long v, flags;
++	unsigned long v, flags, init_time;
  
- 	lock_sock(sk);
- 
-+	if (!llcp_sock->local) {
-+		release_sock(sk);
-+		return -ENODEV;
+-	if (crng_ready() &&
+-	    (time_after(crng_global_init_time, crng->init_time) ||
+-	     time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL)))
+-		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
++	if (crng_ready()) {
++		init_time = READ_ONCE(crng->init_time);
++		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
++		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
++			crng_reseed(crng, crng == &primary_crng ?
++				    &input_pool : NULL);
 +	}
-+
- 	if (sk->sk_type == SOCK_DGRAM) {
- 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
- 				 msg->msg_name);
+ 	spin_lock_irqsave(&crng->lock, flags);
+ 	if (arch_get_random_long(&v))
+ 		crng->state[14] ^= v;
+@@ -1987,7 +1990,7 @@ static long random_ioctl(struct file *f,
+ 		if (crng_init < 2)
+ 			return -ENODATA;
+ 		crng_reseed(&primary_crng, &input_pool);
+-		crng_global_init_time = jiffies - 1;
++		WRITE_ONCE(crng_global_init_time, jiffies - 1);
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
 
 
