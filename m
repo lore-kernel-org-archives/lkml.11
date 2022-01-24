@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64C2C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A33AFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378836AbiAXUJz (ORCPT
+        id S1378956AbiAXUKG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:09:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348026AbiAXTwN (ORCPT
+        Mon, 24 Jan 2022 15:10:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40510 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347194AbiAXTwS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E964CC0617A6;
-        Mon, 24 Jan 2022 11:25:10 -0800 (PST)
+        Mon, 24 Jan 2022 14:52:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89DBD61490;
-        Mon, 24 Jan 2022 19:25:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6227FC340E7;
-        Mon, 24 Jan 2022 19:25:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57CB7B81229;
+        Mon, 24 Jan 2022 19:52:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 803C6C340E5;
+        Mon, 24 Jan 2022 19:52:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052310;
-        bh=lDnMZdm1qIoBNi8zGpb9L19ogrWHp8r6Rf4WFn0gvus=;
+        s=korg; t=1643053936;
+        bh=VhfLq6rswzGbOL/ljKj6bPc7+9MR7Lf4elfV0tKpNaM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DOhg/0JyenJHizcZQTF4cIjiaYP3/PVCvBrw2TW6Bqvv1J4DZNgF65XwJzu2gQW1V
-         ud5F1eCTCm/8Vy8LLcC6wS6S6XWcODjrravEP5TabOTHEYHyE+8Xfsz9g+h7ivjcb8
-         LEyC9HHBEtWzGHNVA5kTZix5SMteHYcbPwOFcMS0=
+        b=hp2MrEqEVppltJlTAPKfVIEBcbOflbGbEJeCtuFwTRQ1uBmEaFi02I2qzkYPnOnuA
+         WXErqvIYpkgBpdFnncHgkoi3NEQ1sJM5kSWfRN8qk0FhggaPBsx8SUtYB46xwx9KcV
+         VndzBCLoGOIfRv1oBehZGBIxs6ZI2dYzOcD8NhU4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 017/320] media: em28xx: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:40:01 +0100
-Message-Id: <20220124183954.337288425@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 226/563] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
+Date:   Mon, 24 Jan 2022 19:39:51 +0100
+Message-Id: <20220124184032.264663766@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,42 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit d9b7e8df3aa9b8c10708aab60e72e79ac08237e4 upstream.
+[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for meson_spifc_probe.
 
-Fixes: a6c2ba283565 ("[PATCH] v4l: 716: support for em28xx board family")
-Cc: stable@vger.kernel.org      # 2.6.16
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/em28xx/em28xx-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/spi/spi-meson-spifc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/media/usb/em28xx/em28xx-core.c
-+++ b/drivers/media/usb/em28xx/em28xx-core.c
-@@ -89,7 +89,7 @@ int em28xx_read_reg_req_len(struct em28x
- 	mutex_lock(&dev->ctrl_urb_lock);
- 	ret = usb_control_msg(udev, pipe, req,
- 			      USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			      0x0000, reg, dev->urb_buf, len, HZ);
-+			      0x0000, reg, dev->urb_buf, len, 1000);
- 	if (ret < 0) {
- 		em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
- 			      pipe,
-@@ -158,7 +158,7 @@ int em28xx_write_regs_req(struct em28xx
- 	memcpy(dev->urb_buf, buf, len);
- 	ret = usb_control_msg(udev, pipe, req,
- 			      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			      0x0000, reg, dev->urb_buf, len, HZ);
-+			      0x0000, reg, dev->urb_buf, len, 1000);
- 	mutex_unlock(&dev->ctrl_urb_lock);
- 
- 	if (ret < 0) {
+diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
+index 8eca6f24cb799..c8ed7815c4ba6 100644
+--- a/drivers/spi/spi-meson-spifc.c
++++ b/drivers/spi/spi-meson-spifc.c
+@@ -349,6 +349,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
+ 	return 0;
+ out_clk:
+ 	clk_disable_unprepare(spifc->clk);
++	pm_runtime_disable(spifc->dev);
+ out_err:
+ 	spi_master_put(master);
+ 	return ret;
+-- 
+2.34.1
+
 
 
