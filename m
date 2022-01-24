@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE39DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D57DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:21:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348894AbiAXTTw (ORCPT
+        id S1349004AbiAXTUC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:19:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343901AbiAXTLO (ORCPT
+        Mon, 24 Jan 2022 14:20:02 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37484 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239179AbiAXTLZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:11:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A68C061368;
-        Mon, 24 Jan 2022 11:03:03 -0800 (PST)
+        Mon, 24 Jan 2022 14:11:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 967BAB81229;
-        Mon, 24 Jan 2022 19:03:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A776DC340E5;
-        Mon, 24 Jan 2022 19:03:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 106FDB81239;
+        Mon, 24 Jan 2022 19:11:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0FF96C340E5;
+        Mon, 24 Jan 2022 19:11:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050982;
-        bh=FcXJOa7bHUqybc6OliOtg4d1gBGX7CtOJSWvToOBRD0=;
+        s=korg; t=1643051482;
+        bh=cM8e0f4FcNE+MacCiN8jXQAKoaEqErh8xnFDFuWA15U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A7NCosljaeGHOF2lvubczr8C3tRGddlfQvNQAU9Bct9J/4+/1s/Po6L8JVyMKg7YI
-         Cm2MWhSvxwSgQX4BsKCriApin3jG9GAF9bQiErwGYWHCudU7qZE+QFfnrY+uxkcA+7
-         FwCM97fE9VIjNVhVam7pxwTF5Z9NulakTbbjTx88=
+        b=TkCYuUfzt8vj3KdgaoHyAeBnq3vqzR1uZLWp8ig1Fu+MQkwd57qfWgxSVesT6XzWV
+         VKECPRRHgCBsNaPU/W0YOA6w8UtPrYIR6jvk4vLh5z++wXpyh7k9zgLJFm2stZy59H
+         mG9VCOQcHETOUGEWvZDtNa+hk2+1o1inlVBsqG1o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 4.14 017/186] HID: wacom: Ignore the confidence flag when a touch is removed
-Date:   Mon, 24 Jan 2022 19:41:32 +0100
-Message-Id: <20220124183937.670548203@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.14 175/186] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
+Date:   Mon, 24 Jan 2022 19:44:10 +0100
+Message-Id: <20220124183942.745157911@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -50,80 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit df03e9bd6d4806619b4cdc91a3d7695818a8e2b7 upstream.
+commit 912f7c6f7fac273f40e621447cf17d14b50d6e5b upstream.
 
-AES hardware may internally re-classify a contact that it thought was
-intentional as a palm. Intentional contacts are reported as "down" with
-the confidence bit set. When this re-classification occurs, however, the
-state transitions to "up" with the confidence bit cleared. This kind of
-transition appears to be legal according to Microsoft docs, but we do
-not handle it correctly. Because the confidence bit is clear, we don't
-call `wacom_wac_finger_slot` and update userspace. This causes hung
-touches that confuse userspace and interfere with pen arbitration.
+The hardware channel next descriptor view structure contains just
+fields of 32 bits, while dma_addr_t can be of type u64 or u32
+depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
+what the hardware expects.
 
-This commit adds a special case to ignore the confidence flag if a contact
-is reported as removed. This ensures we do not leave a hung touch if one
-of these re-classification events occured. Ideally we'd have some way to
-also let userspace know that the touch has been re-classified as a palm
-and needs to be canceled, but that's not possible right now :)
-
-Link: https://github.com/linuxwacom/input-wacom/issues/288
-Fixes: 7fb0413baa7f (HID: wacom: Use "Confidence" flag to prevent reporting invalid contacts)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-11-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_wac.c |   29 ++++++++++++++++++++++++++---
- 1 file changed, 26 insertions(+), 3 deletions(-)
+ drivers/dma/at_xdmac.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2424,6 +2424,24 @@ static void wacom_wac_finger_slot(struct
- 	}
- }
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -232,15 +232,15 @@ struct at_xdmac {
  
-+static bool wacom_wac_slot_is_active(struct input_dev *dev, int key)
-+{
-+	struct input_mt *mt = dev->mt;
-+	struct input_mt_slot *s;
-+
-+	if (!mt)
-+		return false;
-+
-+	for (s = mt->slots; s != mt->slots + mt->num_slots; s++) {
-+		if (s->key == key &&
-+			input_mt_get_value(s, ABS_MT_TRACKING_ID) >= 0) {
-+			return true;
-+		}
-+	}
-+
-+	return false;
-+}
-+
- static void wacom_wac_finger_event(struct hid_device *hdev,
- 		struct hid_field *field, struct hid_usage *usage, __s32 value)
- {
-@@ -2466,9 +2484,14 @@ static void wacom_wac_finger_event(struc
+ /* Linked List Descriptor */
+ struct at_xdmac_lld {
+-	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
+-	u32		mbr_ubc;	/* Microblock Control Member */
+-	dma_addr_t	mbr_sa;		/* Source Address Member */
+-	dma_addr_t	mbr_da;		/* Destination Address Member */
+-	u32		mbr_cfg;	/* Configuration Register */
+-	u32		mbr_bc;		/* Block Control Register */
+-	u32		mbr_ds;		/* Data Stride Register */
+-	u32		mbr_sus;	/* Source Microblock Stride Register */
+-	u32		mbr_dus;	/* Destination Microblock Stride Register */
++	u32 mbr_nda;	/* Next Descriptor Member */
++	u32 mbr_ubc;	/* Microblock Control Member */
++	u32 mbr_sa;	/* Source Address Member */
++	u32 mbr_da;	/* Destination Address Member */
++	u32 mbr_cfg;	/* Configuration Register */
++	u32 mbr_bc;	/* Block Control Register */
++	u32 mbr_ds;	/* Data Stride Register */
++	u32 mbr_sus;	/* Source Microblock Stride Register */
++	u32 mbr_dus;	/* Destination Microblock Stride Register */
+ };
  
- 
- 	if (usage->usage_index + 1 == field->report_count) {
--		if (equivalent_usage == wacom_wac->hid_data.last_slot_field &&
--		    wacom_wac->hid_data.confidence)
--			wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
-+		if (equivalent_usage == wacom_wac->hid_data.last_slot_field) {
-+			bool touch_removed = wacom_wac_slot_is_active(wacom_wac->touch_input,
-+				wacom_wac->hid_data.id) && !wacom_wac->hid_data.tipswitch;
-+
-+			if (wacom_wac->hid_data.confidence || touch_removed) {
-+				wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
-+			}
-+		}
- 	}
- }
- 
+ /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
 
 
