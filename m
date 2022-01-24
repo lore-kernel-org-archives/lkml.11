@@ -2,39 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD67C41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60D35C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450933AbiAXVVq (ORCPT
+        id S1450978AbiAXVVz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:21:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50404 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442156AbiAXUxg (ORCPT
+        Mon, 24 Jan 2022 16:21:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46816 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442151AbiAXUxb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:53:36 -0500
+        Mon, 24 Jan 2022 15:53:31 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B189B81063;
-        Mon, 24 Jan 2022 20:53:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD50C340E5;
-        Mon, 24 Jan 2022 20:53:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C3BB60C44;
+        Mon, 24 Jan 2022 20:53:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 558C5C340E7;
+        Mon, 24 Jan 2022 20:53:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057611;
-        bh=w6SHKE6jX4ZUVWOWECRb9u1Z6a+zZf7mElpRsXhmPcw=;
+        s=korg; t=1643057608;
+        bh=aMCzFlePstTjSYJQ1nZqs+s14GvcDB63SuiLw1DajFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ASNIidu52vwgs6zqTt0Q9oKlnCTBoAPyEjnr9wXoy7ZODrHEje1/17FYdlUvLF0Gb
-         1JaONlACoGVSMqBj5WmoiqT+Wv/OlRQbX4bcBbt8bCHsHQoBt4TxoEYSijYkFILZQa
-         yeVYm2yc8UecSSDCaZ0gqAT+Z1vJw1gKEUwfclUc=
+        b=EfBWG2HCv0cgatgK0bgK+OCop9SWQXrdyqryrlASyUZJgY01IKeLGHDV5rUzHPfyS
+         8rVeUouRvc2xS68Ctbi6UF36KCT+XfIbmpLJqGWbDVi/ZSYcJOKfdiftHgHXlpKjc2
+         V+G+UJGYuoEb+Ztv71b48L3szABS78Xwsv/WBo1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.16 0022/1039] mtd: rawnand: ingenic: JZ4740 needs oob_first read page function
-Date:   Mon, 24 Jan 2022 19:30:11 +0100
-Message-Id: <20220124184125.880752344@linuxfoundation.org>
+        stable@vger.kernel.org, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.16 0013/1039] f2fs: avoid EINVAL by SBI_NEED_FSCK when pinning a file
+Date:   Mon, 24 Jan 2022 19:30:02 +0100
+Message-Id: <20220124184125.591885196@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,59 +45,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Cercueil <paul@crapouillou.net>
+From: Jaegeuk Kim <jaegeuk@kernel.org>
 
-commit 0171480007d64f663aae9226303f1b1e4621229e upstream.
+commit 19bdba5265624ba6b9d9dd936a0c6ccc167cfe80 upstream.
 
-The ECC engine on the JZ4740 SoC requires the ECC data to be read before
-the page; using the default page reading function does not work. Indeed,
-the old JZ4740 NAND driver (removed in 5.4) did use the 'OOB first' flag
-that existed back then.
+Android OTA failed due to SBI_NEED_FSCK flag when pinning the file. Let's avoid
+it since we can do in-place-updates.
 
-Use the newly created nand_read_page_hwecc_oob_first() to address this
-issue.
-
-This issue was not found when the new ingenic-nand driver was developed,
-most likely because the Device Tree used had the nand-ecc-mode set to
-"hw_oob_first", which seems to not be supported anymore.
-
-Cc: <stable@vger.kernel.org> # v5.2
-Fixes: a0ac778eb82c ("mtd: rawnand: ingenic: Add support for the JZ4740")
-Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211016132228.40254-5-paul@crapouillou.net
+Cc: stable@vger.kernel.org
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/ingenic/ingenic_nand_drv.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ fs/f2fs/data.c |    7 +++++--
+ fs/f2fs/file.c |   10 +++++-----
+ 2 files changed, 10 insertions(+), 7 deletions(-)
 
---- a/drivers/mtd/nand/raw/ingenic/ingenic_nand_drv.c
-+++ b/drivers/mtd/nand/raw/ingenic/ingenic_nand_drv.c
-@@ -32,6 +32,7 @@ struct jz_soc_info {
- 	unsigned long addr_offset;
- 	unsigned long cmd_offset;
- 	const struct mtd_ooblayout_ops *oob_layout;
-+	bool oob_first;
- };
+--- a/fs/f2fs/data.c
++++ b/fs/f2fs/data.c
+@@ -2617,6 +2617,11 @@ bool f2fs_should_update_outplace(struct
+ {
+ 	struct f2fs_sb_info *sbi = F2FS_I_SB(inode);
  
- struct ingenic_nand_cs {
-@@ -240,6 +241,9 @@ static int ingenic_nand_attach_chip(stru
- 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
- 		chip->bbt_options |= NAND_BBT_NO_OOB;
++	/* The below cases were checked when setting it. */
++	if (f2fs_is_pinned_file(inode))
++		return false;
++	if (fio && is_sbi_flag_set(sbi, SBI_NEED_FSCK))
++		return true;
+ 	if (f2fs_lfs_mode(sbi))
+ 		return true;
+ 	if (S_ISDIR(inode->i_mode))
+@@ -2625,8 +2630,6 @@ bool f2fs_should_update_outplace(struct
+ 		return true;
+ 	if (f2fs_is_atomic_file(inode))
+ 		return true;
+-	if (is_sbi_flag_set(sbi, SBI_NEED_FSCK))
+-		return true;
  
-+	if (nfc->soc_info->oob_first)
-+		chip->ecc.read_page = nand_read_page_hwecc_oob_first;
+ 	/* swap file is migrating in aligned write mode */
+ 	if (is_inode_flag_set(inode, FI_ALIGNED_WRITE))
+--- a/fs/f2fs/file.c
++++ b/fs/f2fs/file.c
+@@ -3143,17 +3143,17 @@ static int f2fs_ioc_set_pin_file(struct
+ 
+ 	inode_lock(inode);
+ 
+-	if (f2fs_should_update_outplace(inode, NULL)) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+ 	if (!pin) {
+ 		clear_inode_flag(inode, FI_PIN_FILE);
+ 		f2fs_i_gc_failures_write(inode, 0);
+ 		goto done;
+ 	}
+ 
++	if (f2fs_should_update_outplace(inode, NULL)) {
++		ret = -EINVAL;
++		goto out;
++	}
 +
- 	/* For legacy reasons we use a different layout on the qi,lb60 board. */
- 	if (of_machine_is_compatible("qi,lb60"))
- 		mtd_set_ooblayout(mtd, &qi_lb60_ooblayout_ops);
-@@ -534,6 +538,7 @@ static const struct jz_soc_info jz4740_s
- 	.data_offset = 0x00000000,
- 	.cmd_offset = 0x00008000,
- 	.addr_offset = 0x00010000,
-+	.oob_first = true,
- };
- 
- static const struct jz_soc_info jz4725b_soc_info = {
+ 	if (f2fs_pin_file_control(inode, false)) {
+ 		ret = -EAGAIN;
+ 		goto out;
 
 
