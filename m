@@ -2,77 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A585C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BDDC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377425AbiAXUF2 (ORCPT
+        id S1377534AbiAXUFg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:28 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:58300 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356915AbiAXTrj (ORCPT
+        Mon, 24 Jan 2022 15:05:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44854 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356961AbiAXTrp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:47:39 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6F7FE21999;
-        Mon, 24 Jan 2022 19:42:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1643053350;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Uk4yJXt5bU5Zj9U01tGsXKXIzarJNnJJ/xFI3TIiBoM=;
-        b=xkY7eOJES7BjCHlJTRH4JbxrgF0LCTKv9dKbQ5tYUEV7xi9y5DhEe7zPQB9rTUt/NIPSO9
-        PVQafygGeXO7H00IegrAnUcU+suZJNHlIrOxinCx0Lm+rzGk63VNtyA2ak9g0vVkJTaOna
-        81ymFH75eNw3z05/SzbEfGjtmlwG/Js=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1643053350;
-        h=from:from:reply-to:reply-to:date:date:message-id:message-id:to:to:
-         cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Uk4yJXt5bU5Zj9U01tGsXKXIzarJNnJJ/xFI3TIiBoM=;
-        b=eJRB+hsY11bzgiBAkX8cKR7FV7wgFKY7T/JEljfNT1Ec4pmQ7cSuLnZ7IK2M912KE84sy/
-        DxF9d/DTurpNl9Ag==
-Received: from ds.suse.cz (ds.suse.cz [10.100.12.205])
-        by relay2.suse.de (Postfix) with ESMTP id 57883A3BF6;
-        Mon, 24 Jan 2022 19:42:30 +0000 (UTC)
-Received: by ds.suse.cz (Postfix, from userid 10065)
-        id 44F7EDA7A3; Mon, 24 Jan 2022 20:41:50 +0100 (CET)
-Date:   Mon, 24 Jan 2022 20:41:49 +0100
-From:   David Sterba <dsterba@suse.cz>
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-Cc:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: Re: [PATCH v2] btrfs: zoned: Remove redundant initialization of
- to_add
-Message-ID: <20220124194149.GD14046@twin.jikos.cz>
-Reply-To: dsterba@suse.cz
-Mail-Followup-To: dsterba@suse.cz,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, clm@fb.com,
-        josef@toxicpanda.com, dsterba@suse.com, linux-btrfs@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>
-References: <20220121114351.93220-1-jiapeng.chong@linux.alibaba.com>
+        Mon, 24 Jan 2022 14:47:45 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2F916131E;
+        Mon, 24 Jan 2022 19:47:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D28F9C340E5;
+        Mon, 24 Jan 2022 19:47:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643053663;
+        bh=CK6VH06TPdfkCC62W0JQK2cm9ehLj5Fn/1ycjcQy56A=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KYT7yEsaYx1I/rEOAu6v3yqkqdooAt9xf3LR2cKnbH2M5DkXjITWEXijryNpuWZnI
+         XJCZgBPG5kFVThPz/ksZcrW/4OBHA4zPsjWQrjt7GsJooZbDHKaIDeUoSGku/zvW67
+         0nrLhtvuiUZWVDT/d98y0Vkh/iDZ8/2EEI5WyoXE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 136/563] bpf: Adjust BTF log size limit.
+Date:   Mon, 24 Jan 2022 19:38:21 +0100
+Message-Id: <20220124184029.099971589@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121114351.93220-1-jiapeng.chong@linux.alibaba.com>
-User-Agent: Mutt/1.5.23.1-rc1 (2014-03-12)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 07:43:51PM +0800, Jiapeng Chong wrote:
-> to_add is being initialized to len but this is never read as
-> to_add is overwritten later on. Remove the redundant
-> initialization.
-> 
-> Cleans up the following clang-analyzer warning:
-> 
-> fs/btrfs/extent-tree.c:2769:8: warning: Value stored to 'to_add' during
-> its initialization is never read [clang-analyzer-deadcode.DeadStores].
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+From: Alexei Starovoitov <ast@kernel.org>
 
-Added to misc-next, thanks.
+[ Upstream commit c5a2d43e998a821701029f23e25b62f9188e93ff ]
+
+Make BTF log size limit to be the same as the verifier log size limit.
+Otherwise tools that progressively increase log size and use the same log
+for BTF loading and program loading will be hitting hard to debug EINVAL.
+
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Link: https://lore.kernel.org/bpf/20211201181040.23337-7-alexei.starovoitov@gmail.com
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ kernel/bpf/btf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+index aaf2fbaa0cc76..72534a6f4b96e 100644
+--- a/kernel/bpf/btf.c
++++ b/kernel/bpf/btf.c
+@@ -4135,7 +4135,7 @@ static struct btf *btf_parse(void __user *btf_data, u32 btf_data_size,
+ 		log->len_total = log_size;
+ 
+ 		/* log attributes have to be sane */
+-		if (log->len_total < 128 || log->len_total > UINT_MAX >> 8 ||
++		if (log->len_total < 128 || log->len_total > UINT_MAX >> 2 ||
+ 		    !log->level || !log->ubuf) {
+ 			err = -EINVAL;
+ 			goto errout;
+-- 
+2.34.1
+
+
+
