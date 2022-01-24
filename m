@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B716C3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09A1EC41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848149AbiAXXVv (ORCPT
+        id S1848014AbiAXXVd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:21:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38518 "EHLO
+        Mon, 24 Jan 2022 18:21:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585937AbiAXWZX (ORCPT
+        with ESMTP id S1586905AbiAXW1b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:25:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C380C0418AD;
-        Mon, 24 Jan 2022 12:53:57 -0800 (PST)
+        Mon, 24 Jan 2022 17:27:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 390EBC019B20;
+        Mon, 24 Jan 2022 12:54:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A96EB81057;
-        Mon, 24 Jan 2022 20:53:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60986C36AE3;
-        Mon, 24 Jan 2022 20:53:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DAD460B03;
+        Mon, 24 Jan 2022 20:54:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EB40C340E5;
+        Mon, 24 Jan 2022 20:54:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057635;
-        bh=coNUTtreSapjjg9ezr4KWHjBcWf3lunj23LcLPSUqUg=;
+        s=korg; t=1643057678;
+        bh=Z+D5Lb0cITYxKZnNkwCLasS5OuqE492k2Fon+rCWUp0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t9svWaAy5agR16Wyk0hmAwGgZLOlIgZCETP1K5pMJxhPu/4Aufjyean0UhOGOfVrC
-         23x++kzL/OiBCbm9aoOdC/lyR6zziuc1Pf+TBAx1BUmO+IQb0mIA6E4UZ2fFIH+K0a
-         hul3rOajVXsbPfNnNQD9zmf7fr/5VAJimjIUoY38=
+        b=Yi/vI76VY1RlBmNAqQUlz/GhXYLTB5C3eDxVUkgaRoHvJDOJZuv4DCqUijGxurIzG
+         D3c2RSu2l4/YZ4ItF/tX9c6j/w7uFnyQYNkx8JRioZPCfLunH2tFHrgk0qthU8oNF5
+         y+YBE9G0kprERt2g+2U796uwreNePPHNgq+s99U4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bedirhan KURT <windowz414@gnuweeb.org>,
-        Louvian Lyndal <louvianlyndal@gmail.com>,
-        Peter Cordes <peter@cordes.ca>,
-        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
-        Willy Tarreau <w@1wt.eu>,
-        "Paul E. McKenney" <paulmck@kernel.org>
-Subject: [PATCH 5.16 0030/1039] tools/nolibc: x86-64: Fix startup code bug
-Date:   Mon, 24 Jan 2022 19:30:19 +0100
-Message-Id: <20220124184126.148559174@linuxfoundation.org>
+        stable@vger.kernel.org, Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.16 0042/1039] media: cec: fix a deadlock situation
+Date:   Mon, 24 Jan 2022 19:30:31 +0100
+Message-Id: <20220124184126.550255993@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -53,97 +49,259 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+From: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 
-commit 937ed91c712273131de6d2a02caafd3ee84e0c72 upstream.
+commit a9e6107616bb8108aa4fc22584a05e69761a91f7 upstream.
 
-Before this patch, the `_start` function looks like this:
-```
-0000000000001170 <_start>:
-    1170:	pop    %rdi
-    1171:	mov    %rsp,%rsi
-    1174:	lea    0x8(%rsi,%rdi,8),%rdx
-    1179:	and    $0xfffffffffffffff0,%rsp
-    117d:	sub    $0x8,%rsp
-    1181:	call   1000 <main>
-    1186:	movzbq %al,%rdi
-    118a:	mov    $0x3c,%rax
-    1191:	syscall
-    1193:	hlt
-    1194:	data16 cs nopw 0x0(%rax,%rax,1)
-    119f:	nop
-```
-Note the "and" to %rsp with $-16, it makes the %rsp be 16-byte aligned,
-but then there is a "sub" with $0x8 which makes the %rsp no longer
-16-byte aligned, then it calls main. That's the bug!
+The cec_devnode struct has a lock meant to serialize access
+to the fields of this struct. This lock is taken during
+device node (un)registration and when opening or releasing a
+filehandle to the device node. When the last open filehandle
+is closed the cec adapter might be disabled by calling the
+adap_enable driver callback with the devnode.lock held.
 
-What actually the x86-64 System V ABI mandates is that right before the
-"call", the %rsp must be 16-byte aligned, not after the "call". So the
-"sub" with $0x8 here breaks the alignment. Remove it.
+However, if during that callback a message or event arrives
+then the driver will call one of the cec_queue_event()
+variants in cec-adap.c, and those will take the same devnode.lock
+to walk the open filehandle list.
 
-An example where this rule matters is when the callee needs to align
-its stack at 16-byte for aligned move instruction, like `movdqa` and
-`movaps`. If the callee can't align its stack properly, it will result
-in segmentation fault.
+This obviously causes a deadlock.
 
-x86-64 System V ABI also mandates the deepest stack frame should be
-zero. Just to be safe, let's zero the %rbp on startup as the content
-of %rbp may be unspecified when the program starts. Now it looks like
-this:
-```
-0000000000001170 <_start>:
-    1170:	pop    %rdi
-    1171:	mov    %rsp,%rsi
-    1174:	lea    0x8(%rsi,%rdi,8),%rdx
-    1179:	xor    %ebp,%ebp                # zero the %rbp
-    117b:	and    $0xfffffffffffffff0,%rsp # align the %rsp
-    117f:	call   1000 <main>
-    1184:	movzbq %al,%rdi
-    1188:	mov    $0x3c,%rax
-    118f:	syscall
-    1191:	hlt
-    1192:	data16 cs nopw 0x0(%rax,%rax,1)
-    119d:	nopl   (%rax)
-```
+This is quite easy to reproduce with the cec-gpio driver since that
+uses the cec-pin framework which generated lots of events and uses
+a kernel thread for the processing, so when adap_enable is called
+the thread is still running and can generate events.
 
-Cc: Bedirhan KURT <windowz414@gnuweeb.org>
-Cc: Louvian Lyndal <louvianlyndal@gmail.com>
-Reported-by: Peter Cordes <peter@cordes.ca>
-Signed-off-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
-[wt: I did this on purpose due to a misunderstanding of the spec, other
-     archs will thus have to be rechecked, particularly i386]
-Cc: stable@vger.kernel.org
-Signed-off-by: Willy Tarreau <w@1wt.eu>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+But I suspect that it might also happen with other drivers if an
+interrupt arrives signaling e.g. a received message before adap_enable
+had a chance to disable the interrupts.
+
+This patch adds a new mutex to serialize access to the fhs list.
+When adap_enable() is called the devnode.lock mutex is held, but
+not devnode.lock_fhs. The event functions in cec-adap.c will now
+use devnode.lock_fhs instead of devnode.lock, ensuring that it is
+safe to call those functions from the adap_enable callback.
+
+This specific issue only happens if the last open filehandle is closed
+and the physical address is invalid. This is not something that
+happens during normal operation, but it does happen when monitoring
+CEC traffic (e.g. cec-ctl --monitor) with an unconfigured CEC adapter.
+
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc: <stable@vger.kernel.org>  # for v5.13 and up
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/include/nolibc/nolibc.h |   10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/media/cec/core/cec-adap.c |   38 +++++++++++++++++++++-----------------
+ drivers/media/cec/core/cec-api.c  |    6 ++++++
+ drivers/media/cec/core/cec-core.c |    3 +++
+ include/media/cec.h               |   11 +++++++++--
+ 4 files changed, 39 insertions(+), 19 deletions(-)
 
---- a/tools/include/nolibc/nolibc.h
-+++ b/tools/include/nolibc/nolibc.h
-@@ -399,14 +399,20 @@ struct stat {
- })
+--- a/drivers/media/cec/core/cec-adap.c
++++ b/drivers/media/cec/core/cec-adap.c
+@@ -161,10 +161,10 @@ static void cec_queue_event(struct cec_a
+ 	u64 ts = ktime_get_ns();
+ 	struct cec_fh *fh;
  
- /* startup code */
-+/*
-+ * x86-64 System V ABI mandates:
-+ * 1) %rsp must be 16-byte aligned right before the function call.
-+ * 2) The deepest stack frame should be zero (the %rbp).
+-	mutex_lock(&adap->devnode.lock);
++	mutex_lock(&adap->devnode.lock_fhs);
+ 	list_for_each_entry(fh, &adap->devnode.fhs, list)
+ 		cec_queue_event_fh(fh, ev, ts);
+-	mutex_unlock(&adap->devnode.lock);
++	mutex_unlock(&adap->devnode.lock_fhs);
+ }
+ 
+ /* Notify userspace that the CEC pin changed state at the given time. */
+@@ -178,11 +178,12 @@ void cec_queue_pin_cec_event(struct cec_
+ 	};
+ 	struct cec_fh *fh;
+ 
+-	mutex_lock(&adap->devnode.lock);
+-	list_for_each_entry(fh, &adap->devnode.fhs, list)
++	mutex_lock(&adap->devnode.lock_fhs);
++	list_for_each_entry(fh, &adap->devnode.fhs, list) {
+ 		if (fh->mode_follower == CEC_MODE_MONITOR_PIN)
+ 			cec_queue_event_fh(fh, &ev, ktime_to_ns(ts));
+-	mutex_unlock(&adap->devnode.lock);
++	}
++	mutex_unlock(&adap->devnode.lock_fhs);
+ }
+ EXPORT_SYMBOL_GPL(cec_queue_pin_cec_event);
+ 
+@@ -195,10 +196,10 @@ void cec_queue_pin_hpd_event(struct cec_
+ 	};
+ 	struct cec_fh *fh;
+ 
+-	mutex_lock(&adap->devnode.lock);
++	mutex_lock(&adap->devnode.lock_fhs);
+ 	list_for_each_entry(fh, &adap->devnode.fhs, list)
+ 		cec_queue_event_fh(fh, &ev, ktime_to_ns(ts));
+-	mutex_unlock(&adap->devnode.lock);
++	mutex_unlock(&adap->devnode.lock_fhs);
+ }
+ EXPORT_SYMBOL_GPL(cec_queue_pin_hpd_event);
+ 
+@@ -211,10 +212,10 @@ void cec_queue_pin_5v_event(struct cec_a
+ 	};
+ 	struct cec_fh *fh;
+ 
+-	mutex_lock(&adap->devnode.lock);
++	mutex_lock(&adap->devnode.lock_fhs);
+ 	list_for_each_entry(fh, &adap->devnode.fhs, list)
+ 		cec_queue_event_fh(fh, &ev, ktime_to_ns(ts));
+-	mutex_unlock(&adap->devnode.lock);
++	mutex_unlock(&adap->devnode.lock_fhs);
+ }
+ EXPORT_SYMBOL_GPL(cec_queue_pin_5v_event);
+ 
+@@ -286,12 +287,12 @@ static void cec_queue_msg_monitor(struct
+ 	u32 monitor_mode = valid_la ? CEC_MODE_MONITOR :
+ 				      CEC_MODE_MONITOR_ALL;
+ 
+-	mutex_lock(&adap->devnode.lock);
++	mutex_lock(&adap->devnode.lock_fhs);
+ 	list_for_each_entry(fh, &adap->devnode.fhs, list) {
+ 		if (fh->mode_follower >= monitor_mode)
+ 			cec_queue_msg_fh(fh, msg);
+ 	}
+-	mutex_unlock(&adap->devnode.lock);
++	mutex_unlock(&adap->devnode.lock_fhs);
+ }
+ 
+ /*
+@@ -302,12 +303,12 @@ static void cec_queue_msg_followers(stru
+ {
+ 	struct cec_fh *fh;
+ 
+-	mutex_lock(&adap->devnode.lock);
++	mutex_lock(&adap->devnode.lock_fhs);
+ 	list_for_each_entry(fh, &adap->devnode.fhs, list) {
+ 		if (fh->mode_follower == CEC_MODE_FOLLOWER)
+ 			cec_queue_msg_fh(fh, msg);
+ 	}
+-	mutex_unlock(&adap->devnode.lock);
++	mutex_unlock(&adap->devnode.lock_fhs);
+ }
+ 
+ /* Notify userspace of an adapter state change. */
+@@ -1573,6 +1574,7 @@ void __cec_s_phys_addr(struct cec_adapte
+ 		/* Disabling monitor all mode should always succeed */
+ 		if (adap->monitor_all_cnt)
+ 			WARN_ON(call_op(adap, adap_monitor_all_enable, false));
++		/* serialize adap_enable */
+ 		mutex_lock(&adap->devnode.lock);
+ 		if (adap->needs_hpd || list_empty(&adap->devnode.fhs)) {
+ 			WARN_ON(adap->ops->adap_enable(adap, false));
+@@ -1584,14 +1586,16 @@ void __cec_s_phys_addr(struct cec_adapte
+ 			return;
+ 	}
+ 
++	/* serialize adap_enable */
+ 	mutex_lock(&adap->devnode.lock);
+ 	adap->last_initiator = 0xff;
+ 	adap->transmit_in_progress = false;
+ 
+-	if ((adap->needs_hpd || list_empty(&adap->devnode.fhs)) &&
+-	    adap->ops->adap_enable(adap, true)) {
+-		mutex_unlock(&adap->devnode.lock);
+-		return;
++	if (adap->needs_hpd || list_empty(&adap->devnode.fhs)) {
++		if (adap->ops->adap_enable(adap, true)) {
++			mutex_unlock(&adap->devnode.lock);
++			return;
++		}
+ 	}
+ 
+ 	if (adap->monitor_all_cnt &&
+--- a/drivers/media/cec/core/cec-api.c
++++ b/drivers/media/cec/core/cec-api.c
+@@ -586,6 +586,7 @@ static int cec_open(struct inode *inode,
+ 		return err;
+ 	}
+ 
++	/* serialize adap_enable */
+ 	mutex_lock(&devnode->lock);
+ 	if (list_empty(&devnode->fhs) &&
+ 	    !adap->needs_hpd &&
+@@ -624,7 +625,9 @@ static int cec_open(struct inode *inode,
+ 	}
+ #endif
+ 
++	mutex_lock(&devnode->lock_fhs);
+ 	list_add(&fh->list, &devnode->fhs);
++	mutex_unlock(&devnode->lock_fhs);
+ 	mutex_unlock(&devnode->lock);
+ 
+ 	return 0;
+@@ -653,8 +656,11 @@ static int cec_release(struct inode *ino
+ 		cec_monitor_all_cnt_dec(adap);
+ 	mutex_unlock(&adap->lock);
+ 
++	/* serialize adap_enable */
+ 	mutex_lock(&devnode->lock);
++	mutex_lock(&devnode->lock_fhs);
+ 	list_del(&fh->list);
++	mutex_unlock(&devnode->lock_fhs);
+ 	if (cec_is_registered(adap) && list_empty(&devnode->fhs) &&
+ 	    !adap->needs_hpd && adap->phys_addr == CEC_PHYS_ADDR_INVALID) {
+ 		WARN_ON(adap->ops->adap_enable(adap, false));
+--- a/drivers/media/cec/core/cec-core.c
++++ b/drivers/media/cec/core/cec-core.c
+@@ -169,8 +169,10 @@ static void cec_devnode_unregister(struc
+ 	devnode->registered = false;
+ 	devnode->unregistered = true;
+ 
++	mutex_lock(&devnode->lock_fhs);
+ 	list_for_each_entry(fh, &devnode->fhs, list)
+ 		wake_up_interruptible(&fh->wait);
++	mutex_unlock(&devnode->lock_fhs);
+ 
+ 	mutex_unlock(&devnode->lock);
+ 
+@@ -272,6 +274,7 @@ struct cec_adapter *cec_allocate_adapter
+ 
+ 	/* adap->devnode initialization */
+ 	INIT_LIST_HEAD(&adap->devnode.fhs);
++	mutex_init(&adap->devnode.lock_fhs);
+ 	mutex_init(&adap->devnode.lock);
+ 
+ 	adap->kthread = kthread_run(cec_thread_func, adap, "cec-%s", name);
+--- a/include/media/cec.h
++++ b/include/media/cec.h
+@@ -26,13 +26,17 @@
+  * @dev:	cec device
+  * @cdev:	cec character device
+  * @minor:	device node minor number
++ * @lock:	lock to serialize open/release and registration
+  * @registered:	the device was correctly registered
+  * @unregistered: the device was unregistered
++ * @lock_fhs:	lock to control access to @fhs
+  * @fhs:	the list of open filehandles (cec_fh)
+- * @lock:	lock to control access to this structure
+  *
+  * This structure represents a cec-related device node.
+  *
++ * To add or remove filehandles from @fhs the @lock must be taken first,
++ * followed by @lock_fhs. It is safe to access @fhs if either lock is held.
 + *
-+ */
- asm(".section .text\n"
-     ".global _start\n"
-     "_start:\n"
-     "pop %rdi\n"                // argc   (first arg, %rdi)
-     "mov %rsp, %rsi\n"          // argv[] (second arg, %rsi)
-     "lea 8(%rsi,%rdi,8),%rdx\n" // then a NULL then envp (third arg, %rdx)
--    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned when
--    "sub $8, %rsp\n"            // entering the callee
-+    "xor %ebp, %ebp\n"          // zero the stack frame
-+    "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
-     "call main\n"               // main() returns the status code, we'll exit with it.
-     "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
-     "mov $60, %rax\n"           // NR_exit == 60
+  * The @parent is a physical device. It must be set by core or device drivers
+  * before registering the node.
+  */
+@@ -43,10 +47,13 @@ struct cec_devnode {
+ 
+ 	/* device info */
+ 	int minor;
++	/* serialize open/release and registration */
++	struct mutex lock;
+ 	bool registered;
+ 	bool unregistered;
++	/* protect access to fhs */
++	struct mutex lock_fhs;
+ 	struct list_head fhs;
+-	struct mutex lock;
+ };
+ 
+ struct cec_adapter;
 
 
