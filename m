@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B32C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE5FBC433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244083AbiAYCzs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:55:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42572 "EHLO
+        id S1350342AbiAYC4C (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 21:56:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3413913AbiAYAlT (ORCPT
+        with ESMTP id S3413920AbiAYAlU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:41:19 -0500
+        Mon, 24 Jan 2022 19:41:20 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87EFBC06F8C8;
-        Mon, 24 Jan 2022 12:12:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A695DC06F8C1;
+        Mon, 24 Jan 2022 12:12:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0F64B8119E;
-        Mon, 24 Jan 2022 20:12:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EF8BC340E5;
-        Mon, 24 Jan 2022 20:12:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E188B811FB;
+        Mon, 24 Jan 2022 20:12:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EC00C340E5;
+        Mon, 24 Jan 2022 20:12:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055174;
-        bh=JtuOwGjrs+4E0N1ONfB/JKaOLTOJtjSWdNVu1Zx8gZU=;
+        s=korg; t=1643055168;
+        bh=P3mP2RwBxJp/EBT6OaLms76ZlqOs6NnvvLLYqQRsXt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JTrEt8S1RokD0kXJRKESv6nS7FYriTAkcgFYnCJbWZmoPi4tgkimcM1mxxIVCySOP
-         ZbzYo7oB9u/s1AEuDn7dzMJxxGY3YpbBlzHR1wWjUXBDqcLa2AfYZkMD8anVvQgUtO
-         R0SzFTnM6VlGRY1BVSds+UbzKFSzy5V6cDA+2774=
+        b=gHUA8STDh5vtodANNM32prNOIkTT4K9p/J40NrxScIqnkebr9L+pyiFBgna7QgtKC
+         GUWAwWdyN4sof0sog8aiJFpEp4qkQjnvWEv7sn2gUjmvW2iVux24sBrlC/Hbf415wC
+         lfCpTRJ/l4Ums0cxhG391kn7ZgHaF7UhcvKyZmzg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dmitry Osipenko <digetx@gmail.com>,
-        Thierry Reding <treding@nvidia.com>
-Subject: [PATCH 5.15 065/846] gpu: host1x: Add back arm_iommu_detach_device()
-Date:   Mon, 24 Jan 2022 19:33:02 +0100
-Message-Id: <20220124184103.206921316@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Hari Prasath <Hari.PrasathGE@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>
+Subject: [PATCH 5.15 063/846] ARM: dts: at91: update alternate function of signal PD20
+Date:   Mon, 24 Jan 2022 19:33:00 +0100
+Message-Id: <20220124184103.143884503@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,57 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dmitry Osipenko <digetx@gmail.com>
+From: Hari Prasath <Hari.PrasathGE@microchip.com>
 
-commit d5185965c3b59073c4520bad7dd2adf725b9abba upstream.
+commit 12f332d2dd3187472f595b678246adb10d886bd0 upstream.
 
-Host1x DMA buffer isn't mapped properly when CONFIG_ARM_DMA_USE_IOMMU=y.
-The memory management code of Host1x driver has a longstanding overhaul
-overdue and it's not obvious where the problem is in this case. Hence
-let's add back the old workaround which we already had sometime before.
-It explicitly detaches Host1x device from the offending implicit IOMMU
-domain. This fixes a completely broken Host1x DMA in case of ARM32
-multiplatform kernel config.
+The alternate function of PD20 is 4 as per the datasheet of
+sama7g5 and not 5 as defined earlier.
 
-Cc: stable@vger.kernel.org
-Fixes: af1cbfb9bf0f ("gpu: host1x: Support DMA mapping of buffers")
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Hari Prasath <Hari.PrasathGE@microchip.com>
+Fixes: 7540629e2fc7 ("ARM: dts: at91: add sama7g5 SoC DT and sama7g5-ek")
+Cc: <stable@vger.kernel.org> # v5.15+
+Signed-off-by: Nicolas Ferre <nicolas.ferre@microchip.com>
+Link: https://lore.kernel.org/r/20211208063553.19807-1-Hari.PrasathGE@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/host1x/dev.c |   15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ arch/arm/boot/dts/sama7g5-pinfunc.h |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/gpu/host1x/dev.c
-+++ b/drivers/gpu/host1x/dev.c
-@@ -18,6 +18,10 @@
- #include <trace/events/host1x.h>
- #undef CREATE_TRACE_POINTS
- 
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+#include <asm/dma-iommu.h>
-+#endif
-+
- #include "bus.h"
- #include "channel.h"
- #include "debug.h"
-@@ -238,6 +242,17 @@ static struct iommu_domain *host1x_iommu
- 	struct iommu_domain *domain = iommu_get_domain_for_dev(host->dev);
- 	int err;
- 
-+#if IS_ENABLED(CONFIG_ARM_DMA_USE_IOMMU)
-+	if (host->dev->archdata.mapping) {
-+		struct dma_iommu_mapping *mapping =
-+				to_dma_iommu_mapping(host->dev);
-+		arm_iommu_detach_device(host->dev);
-+		arm_iommu_release_mapping(mapping);
-+
-+		domain = iommu_get_domain_for_dev(host->dev);
-+	}
-+#endif
-+
- 	/*
- 	 * We may not always want to enable IOMMU support (for example if the
- 	 * host1x firewall is already enabled and we don't support addressing
+--- a/arch/arm/boot/dts/sama7g5-pinfunc.h
++++ b/arch/arm/boot/dts/sama7g5-pinfunc.h
+@@ -765,7 +765,7 @@
+ #define PIN_PD20__PCK0			PINMUX_PIN(PIN_PD20, 1, 3)
+ #define PIN_PD20__FLEXCOM2_IO3		PINMUX_PIN(PIN_PD20, 2, 2)
+ #define PIN_PD20__PWMH3			PINMUX_PIN(PIN_PD20, 3, 4)
+-#define PIN_PD20__CANTX4		PINMUX_PIN(PIN_PD20, 5, 2)
++#define PIN_PD20__CANTX4		PINMUX_PIN(PIN_PD20, 4, 2)
+ #define PIN_PD20__FLEXCOM5_IO0		PINMUX_PIN(PIN_PD20, 6, 5)
+ #define PIN_PD21			117
+ #define PIN_PD21__GPIO			PINMUX_PIN(PIN_PD21, 0, 0)
 
 
