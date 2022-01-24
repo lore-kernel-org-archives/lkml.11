@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AC5BC4707A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34104C35272
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838258AbiAXWqL (ORCPT
+        id S1838633AbiAXWrA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55866 "EHLO
+        Mon, 24 Jan 2022 17:47:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457578AbiAXVly (ORCPT
+        with ESMTP id S1357695AbiAXVhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:54 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F5C4C07E339;
-        Mon, 24 Jan 2022 12:29:55 -0800 (PST)
+        Mon, 24 Jan 2022 16:37:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5660C0604FA;
+        Mon, 24 Jan 2022 12:23:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B0E0A6152C;
-        Mon, 24 Jan 2022 20:29:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEA89C340E5;
-        Mon, 24 Jan 2022 20:29:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4D484B81239;
+        Mon, 24 Jan 2022 20:23:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E7D2C340E5;
+        Mon, 24 Jan 2022 20:23:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056194;
-        bh=qBGJQvEiC+5yEk7D9KrHPmp9qyha9xUZHlzgsWWyzMo=;
+        s=korg; t=1643055796;
+        bh=JRhg2ihMM98ffXlxRr3jbRB4CO+4DG9nSjwHNStzLd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a05NN9fhsRti1EpEZd4p4KgFrVdLHRVCdHMYcCRadsBbVEOEwjDUHrShbcdlV9iua
-         aePrnxT2xyez+1f8cL2+o8VhyS14dvKTmhnU+oMCHYdhvmJjeh2hFgC4QNFeLHbGMA
-         ECFksW1PJCTU8nYMbzBhmnUedU+bji4YggEPqvww=
+        b=hQLcA5gjq91b4EPt+qfiRxKJNTmeWn++ewvJHOXSPFW38kKAEz9ExXg8GgFIs8KJN
+         UOkXTILz0dUrC/mUd2WWZXdZKo3pxOCzjtMQn3drMC4bd4oORNS4xp+KcnYgiI+NCI
+         WbJebkuM52NHuBpsp3ZwRstJzV2bTEa6lykxm6zE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 370/846] bnxt_en: use firmware provided max timeout for messages
-Date:   Mon, 24 Jan 2022 19:38:07 +0100
-Message-Id: <20220124184113.710354818@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 269/846] rtw88: Disable PCIe ASPM while doing NAPI poll on 8821CE
+Date:   Mon, 24 Jan 2022 19:36:26 +0100
+Message-Id: <20220124184110.211646294@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,150 +51,176 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit bce9a0b7900836df223ab638090df0cb8430d9e8 ]
+[ Upstream commit 24f5e38a13b5ae2b6105cda8bb47c19108e62a9a ]
 
-Some older devices cannot accommodate the 40 seconds timeout
-cap for long running commands (such as NVRAM commands) due to
-hardware limitations. Allow these devices to request more time for
-these long running commands, but print a warning, since the longer
-timeout may cause the hung task watchdog to trigger. In the case of a
-firmware update operation, this is preferable to failing outright.
+Many Intel based platforms face system random freeze after commit
+9e2fd29864c5 ("rtw88: add napi support").
 
-v2: Use bp->hwrm_cmd_max_timeout directly without the constants.
+The commit itself shouldn't be the culprit. My guess is that the 8821CE
+only leaves ASPM L1 for a short period when IRQ is raised. Since IRQ is
+masked during NAPI polling, the PCIe link stays at L1 and makes RX DMA
+extremely slow. Eventually the RX ring becomes messed up:
+[ 1133.194697] rtw_8821ce 0000:02:00.0: pci bus timeout, check dma status
 
-Fixes: 881d8353b05e ("bnxt_en: Add an upper bound for all firmware command timeouts.")
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Since the 8821CE hardware may fail to leave ASPM L1, manually do it in
+the driver to resolve the issue.
+
+Fixes: 9e2fd29864c5 ("rtw88: add napi support")
+Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=215131
+BugLink: https://bugs.launchpad.net/bugs/1927808
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Acked-by: Jian-Hong Pan <jhp@endlessos.org>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211215114635.333767-1-kai.heng.feng@canonical.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c          | 6 ++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h          | 3 ++-
- drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c | 4 ++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  | 9 +++------
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c     | 2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h     | 3 +--
- 6 files changed, 15 insertions(+), 12 deletions(-)
+ drivers/net/wireless/realtek/rtw88/pci.c | 70 +++++++-----------------
+ drivers/net/wireless/realtek/rtw88/pci.h |  2 +
+ 2 files changed, 21 insertions(+), 51 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 0fba01db336cc..a8855a200a3c5 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -8004,6 +8004,12 @@ static int bnxt_hwrm_ver_get(struct bnxt *bp)
- 	bp->hwrm_cmd_timeout = le16_to_cpu(resp->def_req_timeout);
- 	if (!bp->hwrm_cmd_timeout)
- 		bp->hwrm_cmd_timeout = DFLT_HWRM_CMD_TIMEOUT;
-+	bp->hwrm_cmd_max_timeout = le16_to_cpu(resp->max_req_timeout) * 1000;
-+	if (!bp->hwrm_cmd_max_timeout)
-+		bp->hwrm_cmd_max_timeout = HWRM_CMD_MAX_TIMEOUT;
-+	else if (bp->hwrm_cmd_max_timeout > HWRM_CMD_MAX_TIMEOUT)
-+		netdev_warn(bp->dev, "Device requests max timeout of %d seconds, may trigger hung task watchdog\n",
-+			    bp->hwrm_cmd_max_timeout / 1000);
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 3b367c9085eba..08cf66141889b 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -2,7 +2,6 @@
+ /* Copyright(c) 2018-2019  Realtek Corporation
+  */
  
- 	if (resp->hwrm_intf_maj_8b >= 1) {
- 		bp->hwrm_max_req_len = le16_to_cpu(resp->max_req_win_len);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 19fe6478e9b4b..0a5137c1f6d4e 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1901,7 +1901,8 @@ struct bnxt {
+-#include <linux/dmi.h>
+ #include <linux/module.h>
+ #include <linux/pci.h>
+ #include "main.h"
+@@ -1409,7 +1408,11 @@ static void rtw_pci_link_ps(struct rtw_dev *rtwdev, bool enter)
+ 	 * throughput. This is probably because the ASPM behavior slightly
+ 	 * varies from different SOC.
+ 	 */
+-	if (rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1)
++	if (!(rtwpci->link_ctrl & PCI_EXP_LNKCTL_ASPM_L1))
++		return;
++
++	if ((enter && atomic_dec_if_positive(&rtwpci->link_usage) == 0) ||
++	    (!enter && atomic_inc_return(&rtwpci->link_usage) == 1))
+ 		rtw_pci_aspm_set(rtwdev, enter);
+ }
  
- 	u16			hwrm_max_req_len;
- 	u16			hwrm_max_ext_req_len;
--	int			hwrm_cmd_timeout;
-+	unsigned int		hwrm_cmd_timeout;
-+	unsigned int		hwrm_cmd_max_timeout;
- 	struct mutex		hwrm_cmd_lock;	/* serialize hwrm messages */
- 	struct hwrm_ver_get_output	ver_resp;
- #define FW_VER_STR_LEN		32
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-index 3e23fce3771e6..156f76bcea7eb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_coredump.c
-@@ -32,7 +32,7 @@ static int bnxt_hwrm_dbg_dma_data(struct bnxt *bp, void *msg,
- 		return -ENOMEM;
+@@ -1658,6 +1661,9 @@ static int rtw_pci_napi_poll(struct napi_struct *napi, int budget)
+ 					      priv);
+ 	int work_done = 0;
+ 
++	if (rtwpci->rx_no_aspm)
++		rtw_pci_link_ps(rtwdev, false);
++
+ 	while (work_done < budget) {
+ 		u32 work_done_once;
+ 
+@@ -1681,6 +1687,8 @@ static int rtw_pci_napi_poll(struct napi_struct *napi, int budget)
+ 		if (rtw_pci_get_hw_rx_ring_nr(rtwdev, rtwpci))
+ 			napi_schedule(napi);
  	}
++	if (rtwpci->rx_no_aspm)
++		rtw_pci_link_ps(rtwdev, true);
  
--	hwrm_req_timeout(bp, msg, HWRM_COREDUMP_TIMEOUT);
-+	hwrm_req_timeout(bp, msg, bp->hwrm_cmd_max_timeout);
- 	cmn_resp = hwrm_req_hold(bp, msg);
- 	resp = cmn_resp;
+ 	return work_done;
+ }
+@@ -1702,59 +1710,13 @@ static void rtw_pci_napi_deinit(struct rtw_dev *rtwdev)
+ 	netif_napi_del(&rtwpci->napi);
+ }
  
-@@ -125,7 +125,7 @@ static int bnxt_hwrm_dbg_coredump_initiate(struct bnxt *bp, u16 component_id,
- 	if (rc)
- 		return rc;
- 
--	hwrm_req_timeout(bp, req, HWRM_COREDUMP_TIMEOUT);
-+	hwrm_req_timeout(bp, req, bp->hwrm_cmd_max_timeout);
- 	req->component_id = cpu_to_le16(component_id);
- 	req->segment_id = cpu_to_le16(segment_id);
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index c5974b16670a8..2497925105215 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -31,9 +31,6 @@
- #include "bnxt_nvm_defs.h"	/* NVRAM content constant and structure defs */
- #include "bnxt_fw_hdr.h"	/* Firmware hdr constant and structure defs */
- #include "bnxt_coredump.h"
--#define FLASH_NVRAM_TIMEOUT	((HWRM_CMD_TIMEOUT) * 100)
--#define FLASH_PACKAGE_TIMEOUT	((HWRM_CMD_TIMEOUT) * 200)
--#define INSTALL_PACKAGE_TIMEOUT	((HWRM_CMD_TIMEOUT) * 200)
- 
- static u32 bnxt_get_msglevel(struct net_device *dev)
+-enum rtw88_quirk_dis_pci_caps {
+-	QUIRK_DIS_PCI_CAP_MSI,
+-	QUIRK_DIS_PCI_CAP_ASPM,
+-};
+-
+-static int disable_pci_caps(const struct dmi_system_id *dmi)
+-{
+-	uintptr_t dis_caps = (uintptr_t)dmi->driver_data;
+-
+-	if (dis_caps & BIT(QUIRK_DIS_PCI_CAP_MSI))
+-		rtw_disable_msi = true;
+-	if (dis_caps & BIT(QUIRK_DIS_PCI_CAP_ASPM))
+-		rtw_pci_disable_aspm = true;
+-
+-	return 1;
+-}
+-
+-static const struct dmi_system_id rtw88_pci_quirks[] = {
+-	{
+-		.callback = disable_pci_caps,
+-		.ident = "Protempo Ltd L116HTN6SPW",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "Protempo Ltd"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "L116HTN6SPW"),
+-		},
+-		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+-	},
+-	{
+-		.callback = disable_pci_caps,
+-		.ident = "HP HP Pavilion Laptop 14-ce0xxx",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP Pavilion Laptop 14-ce0xxx"),
+-		},
+-		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+-	},
+-	{
+-		.callback = disable_pci_caps,
+-		.ident = "HP HP 250 G7 Notebook PC",
+-		.matches = {
+-			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
+-			DMI_MATCH(DMI_PRODUCT_NAME, "HP 250 G7 Notebook PC"),
+-		},
+-		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+-	},
+-	{}
+-};
+-
+ int rtw_pci_probe(struct pci_dev *pdev,
+ 		  const struct pci_device_id *id)
  {
-@@ -2167,7 +2164,7 @@ static int bnxt_flash_nvram(struct net_device *dev, u16 dir_type,
- 		req->host_src_addr = cpu_to_le64(dma_handle);
++	struct pci_dev *bridge = pci_upstream_bridge(pdev);
+ 	struct ieee80211_hw *hw;
+ 	struct rtw_dev *rtwdev;
++	struct rtw_pci *rtwpci;
+ 	int drv_data_size;
+ 	int ret;
+ 
+@@ -1772,6 +1734,9 @@ int rtw_pci_probe(struct pci_dev *pdev,
+ 	rtwdev->hci.ops = &rtw_pci_ops;
+ 	rtwdev->hci.type = RTW_HCI_TYPE_PCIE;
+ 
++	rtwpci = (struct rtw_pci *)rtwdev->priv;
++	atomic_set(&rtwpci->link_usage, 1);
++
+ 	ret = rtw_core_init(rtwdev);
+ 	if (ret)
+ 		goto err_release_hw;
+@@ -1800,7 +1765,10 @@ int rtw_pci_probe(struct pci_dev *pdev,
+ 		goto err_destroy_pci;
  	}
  
--	hwrm_req_timeout(bp, req, FLASH_NVRAM_TIMEOUT);
-+	hwrm_req_timeout(bp, req, bp->hwrm_cmd_max_timeout);
- 	req->dir_type = cpu_to_le16(dir_type);
- 	req->dir_ordinal = cpu_to_le16(dir_ordinal);
- 	req->dir_ext = cpu_to_le16(dir_ext);
-@@ -2508,8 +2505,8 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
- 		return rc;
- 	}
+-	dmi_check_system(rtw88_pci_quirks);
++	/* Disable PCIe ASPM L1 while doing NAPI poll for 8821CE */
++	if (pdev->device == 0xc821 && bridge->vendor == PCI_VENDOR_ID_INTEL)
++		rtwpci->rx_no_aspm = true;
++
+ 	rtw_pci_phy_cfg(rtwdev);
  
--	hwrm_req_timeout(bp, modify, FLASH_PACKAGE_TIMEOUT);
--	hwrm_req_timeout(bp, install, INSTALL_PACKAGE_TIMEOUT);
-+	hwrm_req_timeout(bp, modify, bp->hwrm_cmd_max_timeout);
-+	hwrm_req_timeout(bp, install, bp->hwrm_cmd_max_timeout);
+ 	ret = rtw_register_hw(rtwdev, hw);
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.h b/drivers/net/wireless/realtek/rtw88/pci.h
+index 66f78eb7757c5..0c37efd8c66fa 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.h
++++ b/drivers/net/wireless/realtek/rtw88/pci.h
+@@ -223,6 +223,8 @@ struct rtw_pci {
+ 	struct rtw_pci_tx_ring tx_rings[RTK_MAX_TX_QUEUE_NUM];
+ 	struct rtw_pci_rx_ring rx_rings[RTK_MAX_RX_QUEUE_NUM];
+ 	u16 link_ctrl;
++	atomic_t link_usage;
++	bool rx_no_aspm;
+ 	DECLARE_BITMAP(flags, NUM_OF_RTW_PCI_FLAGS);
  
- 	hwrm_req_hold(bp, modify);
- 	modify->host_src_addr = cpu_to_le64(dma_handle);
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-index bb7327b82d0b2..8171f4912fa01 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.c
-@@ -496,7 +496,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
- 	}
- 
- 	/* Limit timeout to an upper limit */
--	timeout = min_t(uint, ctx->timeout, HWRM_CMD_MAX_TIMEOUT);
-+	timeout = min(ctx->timeout, bp->hwrm_cmd_max_timeout ?: HWRM_CMD_MAX_TIMEOUT);
- 	/* convert timeout to usec */
- 	timeout *= 1000;
- 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-index 4d17f0d5363bb..9a9fc4e8041b6 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_hwrm.h
-@@ -58,11 +58,10 @@ void hwrm_update_token(struct bnxt *bp, u16 seq, enum bnxt_hwrm_wait_state s);
- 
- #define BNXT_HWRM_MAX_REQ_LEN		(bp->hwrm_max_req_len)
- #define BNXT_HWRM_SHORT_REQ_LEN		sizeof(struct hwrm_short_input)
--#define HWRM_CMD_MAX_TIMEOUT		40000
-+#define HWRM_CMD_MAX_TIMEOUT		40000U
- #define SHORT_HWRM_CMD_TIMEOUT		20
- #define HWRM_CMD_TIMEOUT		(bp->hwrm_cmd_timeout)
- #define HWRM_RESET_TIMEOUT		((HWRM_CMD_TIMEOUT) * 4)
--#define HWRM_COREDUMP_TIMEOUT		((HWRM_CMD_TIMEOUT) * 12)
- #define BNXT_HWRM_TARGET		0xffff
- #define BNXT_HWRM_NO_CMPL_RING		-1
- #define BNXT_HWRM_REQ_MAX_SIZE		128
+ 	void __iomem *mmap;
 -- 
 2.34.1
 
