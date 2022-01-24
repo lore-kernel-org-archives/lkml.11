@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1008C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43F7AC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:06:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842893AbiAXXCu (ORCPT
+        id S1842917AbiAXXCy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:02:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60564 "EHLO
+        Mon, 24 Jan 2022 18:02:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577145AbiAXV7S (ORCPT
+        with ESMTP id S1577106AbiAXV7S (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:59:18 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA34C0C0930;
-        Mon, 24 Jan 2022 12:39:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C85DEC0C092B;
+        Mon, 24 Jan 2022 12:39:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B25561542;
-        Mon, 24 Jan 2022 20:39:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 257B7C340E5;
-        Mon, 24 Jan 2022 20:39:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E29761383;
+        Mon, 24 Jan 2022 20:39:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3455EC340E5;
+        Mon, 24 Jan 2022 20:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056793;
-        bh=KlFSF0j8veL8md7Y4b+Dz13W2sUnpa2l1Ey6l6J/GRo=;
+        s=korg; t=1643056787;
+        bh=nODJdLZgNtDJsYBxRp1SexhPYRVVlpVwxtcXBGJsMPs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V3yGDh5wLsRgQ2mRgHpazSFthomGotXHs/czY6srYlaRdj6h7UmJpg1REKLQsrKgB
-         9NfHw492BxmhYgbPw/zuAg/1F2sQ180CKTscfBrJOgEZBCub0U4L8N1JVo9ZDzeh0v
-         1vA2XQnIx6dlqQJVNOn8jhWr+lvVzLR8/553swI8=
+        b=a/+gyR8VpB7eaTrj5lEp6eYxWq8qnWoCdrRfXIlv7e/VqWLq9NxK7QxOPVkk48b9q
+         F44nsP3YVLI8VO0Jcn7Nd/3l5BkKZbf3dWFR/Pd2KBu2kms30tCN998IW3yJxQdcVI
+         STMRmvvVQEgFIFH+MgCpDlRx11Z82vy3ep8+RIwc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 602/846] net: mdio: Demote probed message to debug print
-Date:   Mon, 24 Jan 2022 19:41:59 +0100
-Message-Id: <20220124184121.800326343@linuxfoundation.org>
+Subject: [PATCH 5.15 600/846] btrfs: remove BUG_ON() in find_parent_nodes()
+Date:   Mon, 24 Jan 2022 19:41:57 +0100
+Message-Id: <20220124184121.725700779@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,38 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
+[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
 
-On systems with large numbers of MDIO bus/muxes the message indicating
-that a given MDIO bus has been successfully probed is repeated for as
-many buses we have, which can eat up substantial boot time for no
-reason, demote to a debug print.
+We search for an extent entry with .offset = -1, which shouldn't be a
+thing, but corruption happens.  Add an ASSERT() for the developers,
+return -EUCLEAN for mortals.
 
-Reported-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mdio_bus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/btrfs/backref.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 6865d9319197f..8dc6e6269c65e 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -591,7 +591,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index f735b8798ba12..6b4b0f105a572 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1214,7 +1214,12 @@ again:
+ 	ret = btrfs_search_slot(NULL, fs_info->extent_root, &key, path, 0, 0);
+ 	if (ret < 0)
+ 		goto out;
+-	BUG_ON(ret == 0);
++	if (ret == 0) {
++		/* This shouldn't happen, indicates a bug or fs corruption. */
++		ASSERT(ret != 0);
++		ret = -EUCLEAN;
++		goto out;
++	}
  
- 	bus->state = MDIOBUS_REGISTERED;
--	pr_info("%s: probed\n", bus->name);
-+	dev_dbg(&bus->dev, "probed\n");
- 	return 0;
- 
- error:
+ #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
+ 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
 -- 
 2.34.1
 
