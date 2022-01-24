@@ -2,42 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7625FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13F44C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384131AbiAXU2z (ORCPT
+        id S1384150AbiAXU27 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:28:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49536 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378242AbiAXUGk (ORCPT
+        Mon, 24 Jan 2022 15:28:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33746 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378320AbiAXUGv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:06:40 -0500
+        Mon, 24 Jan 2022 15:06:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 45D59B8122F;
-        Mon, 24 Jan 2022 20:06:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEA4C340E5;
-        Mon, 24 Jan 2022 20:06:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95E8161324;
+        Mon, 24 Jan 2022 20:06:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 93889C340E5;
+        Mon, 24 Jan 2022 20:06:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054798;
-        bh=U2lQl/MZ0d0+YaTq1QYVKR854nG4+BKuzrVJGOnA0c4=;
+        s=korg; t=1643054810;
+        bh=SRAw0h8NYECOGKjSJjF9DsNbnXDNk3/S7oZf5Nhl9fE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RmT19GfgKaPgmPtCOFkOKaFMAHxxmPBEcguIMka1TY2W89ONlxjMNAfKUYKoZRMUe
-         mUN50MOdSTzMyexuQPGXY9Foprc0XO9msEz2a/ZS/xhfL1N8ANTkupCtIrMWs2/FHP
-         FvD1o0QeAahHUfHGChi8el6LuWl8vnl6z5+g2Wng=
+        b=uIsoq6NJO7/45MSw32TRI5YbyGhkdKTgEA9WrhTWrYsDRsAwbDdZUTYfQJk0HA+zV
+         EH+c3ZR9qV73Lrzyc3IFuOwWdHBAGn1+GHEZ+kEzHQGIYpyTQfrZZNi5P3ZUsW7aJ1
+         5QNWKBFbfJus/h4jZKjHybb/kNZyf2dYTAsz8K24=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Subject: [PATCH 5.10 507/563] xdp: check prog type before updating BPF link
-Date:   Mon, 24 Jan 2022 19:44:32 +0100
-Message-Id: <20220124184042.004368957@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 511/563] net/fsl: xgmac_mdio: Add workaround for erratum A-009885
+Date:   Mon, 24 Jan 2022 19:44:36 +0100
+Message-Id: <20220124184042.137459992@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,43 +46,98 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Toke Høiland-Jørgensen <toke@redhat.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-commit 382778edc8262b7535f00523e9eb22edba1b9816 upstream.
+commit 6198c722019774d38018457a8bfb9ba3ed8c931e upstream.
 
-The bpf_xdp_link_update() function didn't check the program type before
-updating the program, which made it possible to install any program type as
-an XDP program, which is obviously not good. Syzbot managed to trigger this
-by swapping in an LWT program on the XDP hook which would crash in a helper
-call.
+Once an MDIO read transaction is initiated, we must read back the data
+register within 16 MDC cycles after the transaction completes. Outside
+of this window, reads may return corrupt data.
 
-Fix this by adding a check and bailing out if the types don't match.
+Therefore, disable local interrupts in the critical section, to
+maximize the probability that we can satisfy this requirement.
 
-Fixes: 026a4c28e1db ("bpf, xdp: Implement LINK_UPDATE for BPF XDP link")
-Reported-by: syzbot+983941aa85af6ded1fd9@syzkaller.appspotmail.com
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/r/20220107221115.326171-1-toke@redhat.com
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/core/dev.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/net/ethernet/freescale/xgmac_mdio.c |   25 +++++++++++++++++++------
+ 1 file changed, 19 insertions(+), 6 deletions(-)
 
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -9339,6 +9339,12 @@ static int bpf_xdp_link_update(struct bp
- 		goto out_unlock;
+--- a/drivers/net/ethernet/freescale/xgmac_mdio.c
++++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
+@@ -49,6 +49,7 @@ struct tgec_mdio_controller {
+ struct mdio_fsl_priv {
+ 	struct	tgec_mdio_controller __iomem *mdio_base;
+ 	bool	is_little_endian;
++	bool	has_a009885;
+ 	bool	has_a011043;
+ };
+ 
+@@ -184,10 +185,10 @@ static int xgmac_mdio_read(struct mii_bu
+ {
+ 	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
+ 	struct tgec_mdio_controller __iomem *regs = priv->mdio_base;
++	unsigned long flags;
+ 	uint16_t dev_addr;
+ 	uint32_t mdio_stat;
+ 	uint32_t mdio_ctl;
+-	uint16_t value;
+ 	int ret;
+ 	bool endian = priv->is_little_endian;
+ 
+@@ -219,12 +220,18 @@ static int xgmac_mdio_read(struct mii_bu
+ 			return ret;
  	}
- 	old_prog = link->prog;
-+	if (old_prog->type != new_prog->type ||
-+	    old_prog->expected_attach_type != new_prog->expected_attach_type) {
-+		err = -EINVAL;
-+		goto out_unlock;
-+	}
+ 
++	if (priv->has_a009885)
++		/* Once the operation completes, i.e. MDIO_STAT_BSY clears, we
++		 * must read back the data register within 16 MDC cycles.
++		 */
++		local_irq_save(flags);
 +
- 	if (old_prog == new_prog) {
- 		/* no-op, don't disturb drivers */
- 		bpf_prog_put(new_prog);
+ 	/* Initiate the read */
+ 	xgmac_write32(mdio_ctl | MDIO_CTL_READ, &regs->mdio_ctl, endian);
+ 
+ 	ret = xgmac_wait_until_done(&bus->dev, regs, endian);
+ 	if (ret)
+-		return ret;
++		goto irq_restore;
+ 
+ 	/* Return all Fs if nothing was there */
+ 	if ((xgmac_read32(&regs->mdio_stat, endian) & MDIO_STAT_RD_ER) &&
+@@ -232,13 +239,17 @@ static int xgmac_mdio_read(struct mii_bu
+ 		dev_dbg(&bus->dev,
+ 			"Error while reading PHY%d reg at %d.%hhu\n",
+ 			phy_id, dev_addr, regnum);
+-		return 0xffff;
++		ret = 0xffff;
++	} else {
++		ret = xgmac_read32(&regs->mdio_data, endian) & 0xffff;
++		dev_dbg(&bus->dev, "read %04x\n", ret);
+ 	}
+ 
+-	value = xgmac_read32(&regs->mdio_data, endian) & 0xffff;
+-	dev_dbg(&bus->dev, "read %04x\n", value);
++irq_restore:
++	if (priv->has_a009885)
++		local_irq_restore(flags);
+ 
+-	return value;
++	return ret;
+ }
+ 
+ static int xgmac_mdio_probe(struct platform_device *pdev)
+@@ -282,6 +293,8 @@ static int xgmac_mdio_probe(struct platf
+ 	priv->is_little_endian = device_property_read_bool(&pdev->dev,
+ 							   "little-endian");
+ 
++	priv->has_a009885 = device_property_read_bool(&pdev->dev,
++						      "fsl,erratum-a009885");
+ 	priv->has_a011043 = device_property_read_bool(&pdev->dev,
+ 						      "fsl,erratum-a011043");
+ 
 
 
