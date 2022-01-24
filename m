@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F858C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C342C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422537AbiAYCbd (ORCPT
+        id S3423113AbiAYCc5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:31:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35224 "EHLO
+        Mon, 24 Jan 2022 21:32:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345124AbiAXUTV (ORCPT
+        with ESMTP id S1356107AbiAXUWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:19:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CAF0C075966;
-        Mon, 24 Jan 2022 11:38:41 -0800 (PST)
+        Mon, 24 Jan 2022 15:22:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC7F5C061341;
+        Mon, 24 Jan 2022 11:09:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 057DDB81188;
-        Mon, 24 Jan 2022 19:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CE5CC340E5;
-        Mon, 24 Jan 2022 19:38:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8C29560E8D;
+        Mon, 24 Jan 2022 19:09:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69743C340E5;
+        Mon, 24 Jan 2022 19:09:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053118;
-        bh=7MnhLEjkv5OmPQOjR5kPlUEAsHS1KKAq0CkG2/QiCQc=;
+        s=korg; t=1643051384;
+        bh=2RKnHRcMNEsbNzB2olYHLB1e0G04cMftUsVOEYp7ubg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GikW50vF+3ZC1A5IulqEh/9wZDFGjXaN70FyJpp5MpSRf9C8V8+115KqwsFLVwmp+
-         Opv1QqEHtLdsPMP+SJkA0e8VUhNrsLJwGE0hGlhYBk+jJa9aJmhVuvqLnG4PFxuj7+
-         rVL4cIrhhrcwi/HIyyvT5EgzQpOEXJQHr+OR8dKM=
+        b=wOhGB2/8siB+KLE0AoHA/QdOW4KBP5Q9aghmR+FgcBOA6hkGpbrMqIk0AGLuURMXA
+         QbZsZEbrhxGTKkJLe222el+9YXOuqLR5QvK8AktXKJqZSrbjNs+byGFESP2x1Ghfc5
+         uPGyIBBsuWpFcGe/7CJKjjGKIeLMlTfKrYUhULUc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chengguang Xu <cgxu519@mykernel.net>,
-        Zhu Yanjun <zyjzyj2000@gmail.com>,
-        Bob Pearson <rpearsonhpe@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Subject: [PATCH 5.4 283/320] RDMA/rxe: Fix a typo in opcode name
-Date:   Mon, 24 Jan 2022 19:44:27 +0100
-Message-Id: <20220124184003.600809394@linuxfoundation.org>
+        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 111/186] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
+Date:   Mon, 24 Jan 2022 19:43:06 +0100
+Message-Id: <20220124183940.687778352@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,34 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengguang Xu <cgxu519@mykernel.net>
+From: Thierry Reding <treding@nvidia.com>
 
-commit 8d1cfb884e881efd69a3be4ef10772c71cb22216 upstream.
+[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
 
-There is a redundant ']' in the name of opcode IB_OPCODE_RC_SEND_MIDDLE,
-so just fix it.
+The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
+MiB - 1. This was likely presumed to be the "limit" rather than length.
+Fix it up.
 
-Fixes: 8700e3e7c485 ("Soft RoCE driver")
-Link: https://lore.kernel.org/r/20211218112320.3558770-1-cgxu519@mykernel.net
-Signed-off-by: Chengguang Xu <cgxu519@mykernel.net>
-Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
-Reviewed-by: Bob Pearson <rpearsonhpe@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/sw/rxe/rxe_opcode.c |    2 +-
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/infiniband/sw/rxe/rxe_opcode.c
-+++ b/drivers/infiniband/sw/rxe/rxe_opcode.c
-@@ -137,7 +137,7 @@ struct rxe_opcode_info rxe_opcode[RXE_NU
- 		}
- 	},
- 	[IB_OPCODE_RC_SEND_MIDDLE]		= {
--		.name	= "IB_OPCODE_RC_SEND_MIDDLE]",
-+		.name	= "IB_OPCODE_RC_SEND_MIDDLE",
- 		.mask	= RXE_PAYLOAD_MASK | RXE_REQ_MASK | RXE_SEND_MASK
- 				| RXE_MIDDLE_MASK,
- 		.length = RXE_BTH_BYTES,
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index a9c3eef6c4e09..3307d816050fe 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -351,7 +351,7 @@
+ 
+ 	ccplex@e000000 {
+ 		compatible = "nvidia,tegra186-ccplex-cluster";
+-		reg = <0x0 0x0e000000 0x0 0x3fffff>;
++		reg = <0x0 0x0e000000 0x0 0x400000>;
+ 
+ 		nvidia,bpmp = <&bpmp>;
+ 	};
+-- 
+2.34.1
+
 
 
