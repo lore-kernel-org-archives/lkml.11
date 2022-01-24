@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC5BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AECDC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452238AbiAXVYZ (ORCPT
+        id S1452298AbiAXVYb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50404 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346823AbiAXU5p (ORCPT
+        Mon, 24 Jan 2022 16:24:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52116 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443746AbiAXU65 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:57:45 -0500
+        Mon, 24 Jan 2022 15:58:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 895CAB81063;
-        Mon, 24 Jan 2022 20:57:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B05F4C340E5;
-        Mon, 24 Jan 2022 20:57:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 27A2A61414;
+        Mon, 24 Jan 2022 20:58:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1729C340E5;
+        Mon, 24 Jan 2022 20:58:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057859;
-        bh=U3wisKp1DQL3P73XQGZFVVCkj4o+R4Zq2mDuqeIwGBc=;
+        s=korg; t=1643057935;
+        bh=eJP1hCWniN1ltL1kT6b/7fbt3ENomNOTOg9u1vjqjEM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OoHBVsX3KdlPyCky4LlG1wx3XhhkLIVoQET7K8MPdcuQ4IGiyl2r6XkeQTDfO/HK+
-         iHA00JWa6l38gBYBDjqAgsKfZiUoM6UEz1+6Rv5q96A21P+ND3Jg9PAdDakn4gi5J4
-         GpMR+KVnRsm47vFeMMsBok4axMXwKxX0bjf9Sy3Y=
+        b=TUs4qm5YOcvTsDQ6WdRO33cxZ82WIptEMt3LQ0/MLKj/GJOFlE29XZOXw38s27P7A
+         RlqE+hasyKXcEK5Hjfc1vjxzHHcU3L2Sw/szAOErvh0qYddZfoCr4FynrAb35JI0f2
+         jU8atx7dfde6E1MDoyFbecnKBwgp2JInFqwEIP0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Daniel Scally <djrscally@gmail.com>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0085/1039] Bluetooth: L2CAP: Fix not initializing sk_peer_pid
-Date:   Mon, 24 Jan 2022 19:31:14 +0100
-Message-Id: <20220124184128.011755111@linuxfoundation.org>
+Subject: [PATCH 5.16 0120/1039] media: ipu3-cio2: fix error code in cio2_bridge_connect_sensor()
+Date:   Mon, 24 Jan 2022 19:31:49 +0100
+Message-Id: <20220124184129.172023559@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,66 +50,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit f5ff291098f70a70b344df1e388596755c3c8315 ]
+[ Upstream commit 85db29d22cc521d9d06de2f5c7832981a55df157 ]
 
-In order to group sockets being connected using L2CAP_MODE_EXT_FLOWCTL
-the pid is used but sk_peer_pid was not being initialized as it is
-currently only done for af_unix.
+Return -ENODEV if acpi_get_physical_device_location() fails.  Don't
+return success.
 
-Fixes: b48596d1dc25 ("Bluetooth: L2CAP: Add get_peer_pid callback")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 485aa3df0dff ("media: ipu3-cio2: Parse sensor orientation and rotation")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Daniel Scally <djrscally@gmail.com>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/media/pci/intel/ipu3/cio2-bridge.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index 160c016a5dfb9..4574c5cb1b596 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -172,6 +172,21 @@ done:
- 	return err;
- }
+diff --git a/drivers/media/pci/intel/ipu3/cio2-bridge.c b/drivers/media/pci/intel/ipu3/cio2-bridge.c
+index 67c467d3c81f9..0b586b4e537ef 100644
+--- a/drivers/media/pci/intel/ipu3/cio2-bridge.c
++++ b/drivers/media/pci/intel/ipu3/cio2-bridge.c
+@@ -238,8 +238,10 @@ static int cio2_bridge_connect_sensor(const struct cio2_sensor_config *cfg,
+ 			goto err_put_adev;
  
-+static void l2cap_sock_init_pid(struct sock *sk)
-+{
-+	struct l2cap_chan *chan = l2cap_pi(sk)->chan;
-+
-+	/* Only L2CAP_MODE_EXT_FLOWCTL ever need to access the PID in order to
-+	 * group the channels being requested.
-+	 */
-+	if (chan->mode != L2CAP_MODE_EXT_FLOWCTL)
-+		return;
-+
-+	spin_lock(&sk->sk_peer_lock);
-+	sk->sk_peer_pid = get_pid(task_tgid(current));
-+	spin_unlock(&sk->sk_peer_lock);
-+}
-+
- static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 			      int alen, int flags)
- {
-@@ -243,6 +258,8 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 	if (chan->psm && bdaddr_type_is_le(chan->src_type) && !chan->mode)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
+ 		status = acpi_get_physical_device_location(adev->handle, &sensor->pld);
+-		if (ACPI_FAILURE(status))
++		if (ACPI_FAILURE(status)) {
++			ret = -ENODEV;
+ 			goto err_put_adev;
++		}
  
-+	l2cap_sock_init_pid(sk);
-+
- 	err = l2cap_chan_connect(chan, la.l2_psm, __le16_to_cpu(la.l2_cid),
- 				 &la.l2_bdaddr, la.l2_bdaddr_type);
- 	if (err)
-@@ -298,6 +315,8 @@ static int l2cap_sock_listen(struct socket *sock, int backlog)
- 		goto done;
- 	}
- 
-+	l2cap_sock_init_pid(sk);
-+
- 	sk->sk_max_ack_backlog = backlog;
- 	sk->sk_ack_backlog = 0;
- 
+ 		if (sensor->ssdb.lanes > CIO2_MAX_LANES) {
+ 			dev_err(&adev->dev,
 -- 
 2.34.1
 
