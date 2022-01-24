@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22664C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47AEFC43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587278AbiAXW2C (ORCPT
+        id S1587308AbiAXW2E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54450 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441813AbiAXVdy (ORCPT
+        Mon, 24 Jan 2022 17:28:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45900 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454866AbiAXVeB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BE20C075D30;
-        Mon, 24 Jan 2022 12:21:49 -0800 (PST)
+        Mon, 24 Jan 2022 16:34:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 380B2B812A4;
-        Mon, 24 Jan 2022 20:21:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BFAC340E5;
-        Mon, 24 Jan 2022 20:21:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E870AB8123A;
+        Mon, 24 Jan 2022 21:33:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B60EC340E4;
+        Mon, 24 Jan 2022 21:33:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055706;
-        bh=6MCDUWjQGuPK+6rXGKDuy1uhPt3cjwXpXWsXzQaWAVI=;
+        s=korg; t=1643060038;
+        bh=R8/1XpnUCRmWuxRq57W415mmpgzGhzNlkkynV5S82N0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/7uFe1B8rT0lLzXU+hiJaOAMf6wdnCVHnnk6/7kj+yMMHVOgoCuPPRLR/izIo/5s
-         3LGf+srCjz1JH6FC8rfISMP+n/NsFlOP3YMmFuENcMJkrJeD0RBWmJ/3BZkFZhvnre
-         PpdB7v2Ykw7z/qpIkAJkj5B7GE+vwp357w05dvxk=
+        b=ONeBL5Gsat1wRL+yUfAG109shpgcP7hJC1dKEo5TaVH6BXZ34Iq22qnkggFbS53/k
+         56YAn1J814O525y6s2MK4XfXDQWHqLphJS5p0xGuLt9Qi9TC7ij2+aKbniRyjw/o53
+         QLi5oWqapXKdvmk4lyWexFlihdCmelatJdiBxa5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Rameshkumar Sundaram <quic_ramess@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 239/846] ath11k: Fix deleting uninitialized kernel timer during fragment cache flush
-Date:   Mon, 24 Jan 2022 19:35:56 +0100
-Message-Id: <20220124184109.174201070@linuxfoundation.org>
+        stable@vger.kernel.org, Sean Paul <seanpaul@chromium.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Liu Ying <victor.liu@nxp.com>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0818/1039] drm/atomic: Check new_crtc_state->active to determine if CRTC needs disable in self refresh mode
+Date:   Mon, 24 Jan 2022 19:43:27 +0100
+Message-Id: <20220124184152.800331782@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,94 +53,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rameshkumar Sundaram <quic_ramess@quicinc.com>
+From: Liu Ying <victor.liu@nxp.com>
 
-[ Upstream commit ba53ee7f7f38cf0592b8be1dcdabaf8f7535f8c1 ]
+[ Upstream commit 69e630016ef4e4a1745310c446f204dc6243e907 ]
 
-frag_timer will be created & initialized for stations when
-they associate and will be deleted during every key installation
-while flushing old fragments.
+Actual hardware state of CRTC is controlled by the member 'active' in
+struct drm_crtc_state instead of the member 'enable', according to the
+kernel doc of the member 'enable'.  In fact, the drm client modeset
+and atomic helpers are using the member 'active' to do the control.
 
-For AP interface self peer will be created and Group keys
-will be installed for this peer, but there will be no real
-Station entry & hence frag_timer won't be created and
-initialized, deleting such uninitialized kernel timers causes below
-warnings and backtraces printed with CONFIG_DEBUG_OBJECTS_TIMERS
-enabled.
+Referencing the member 'enable' of new_crtc_state, the function
+crtc_needs_disable() may fail to reflect if CRTC needs disable in
+self refresh mode, e.g., when the framebuffer emulation will be blanked
+through the client modeset helper with the next commit, the member
+'enable' of new_crtc_state is still true while the member 'active' is
+false, hence the relevant potential encoder and bridges won't be disabled.
 
-[ 177.828008] ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
-[ 177.836833] WARNING: CPU: 3 PID: 188 at lib/debugobjects.c:508 debug_print_object+0xb0/0xf0
-[ 177.845185] Modules linked in: ath11k_pci ath11k qmi_helpers qrtr_mhi qrtr ns mhi
-[ 177.852679] CPU: 3 PID: 188 Comm: hostapd Not tainted 5.14.0-rc3-32919-g4034139e1838-dirty #14
-[ 177.865805] pstate: 60000005 (nZCv daif -PAN -UAO -TCO BTYPE=--)
-[ 177.871804] pc : debug_print_object+0xb0/0xf0
-[ 177.876155] lr : debug_print_object+0xb0/0xf0
-[ 177.880505] sp : ffffffc01169b5a0
-[ 177.883810] x29: ffffffc01169b5a0 x28: ffffff80081c2320 x27: ffffff80081c4078
-[ 177.890942] x26: ffffff8003fe8f28 x25: ffffff8003de9890 x24: ffffffc01134d738
-[ 177.898075] x23: ffffffc010948f20 x22: ffffffc010b2d2e0 x21: ffffffc01169b628
-[ 177.905206] x20: ffffffc01134d700 x19: ffffffc010c80d98 x18: 00000000000003f6
-[ 177.912339] x17: 203a657079742074 x16: 63656a626f202930 x15: 0000000000000152
-[ 177.919471] x14: 0000000000000152 x13: 00000000ffffffea x12: ffffffc010d732e0
-[ 177.926603] x11: 0000000000000003 x10: ffffffc010d432a0 x9 : ffffffc010d432f8
-[ 177.933735] x8 : 000000000002ffe8 x7 : c0000000ffffdfff x6 : 0000000000000001
-[ 177.940866] x5 : 0000000000000000 x4 : 0000000000000000 x3 : 00000000ffffffff
-[ 177.947997] x2 : ffffffc010c93240 x1 : ffffff80023624c0 x0 : 0000000000000054
-[ 177.955130] Call trace:
-[ 177.957567] debug_print_object+0xb0/0xf0
-[ 177.961570] debug_object_assert_init+0x124/0x178
-[ 177.966269] try_to_del_timer_sync+0x1c/0x70
-[ 177.970536] del_timer_sync+0x30/0x50
-[ 177.974192] ath11k_peer_frags_flush+0x34/0x68 [ath11k]
-[ 177.979439] ath11k_mac_op_set_key+0x1e4/0x338 [ath11k]
-[ 177.984673] ieee80211_key_enable_hw_accel+0xc8/0x3d0
-[ 177.989722] ieee80211_key_replace+0x360/0x740
-[ 177.994160] ieee80211_key_link+0x16c/0x210
-[ 177.998337] ieee80211_add_key+0x138/0x338
-[ 178.002426] nl80211_new_key+0xfc/0x258
-[ 178.006257] genl_family_rcv_msg_doit.isra.17+0xd8/0x120
-[ 178.011565] genl_rcv_msg+0xd8/0x1c8
-[ 178.015134] netlink_rcv_skb+0x38/0xf8
-[ 178.018877] genl_rcv+0x34/0x48
-[ 178.022012] netlink_unicast+0x174/0x230
-[ 178.025928] netlink_sendmsg+0x188/0x388
-[ 178.029845] ____sys_sendmsg+0x218/0x250
-[ 178.033763] ___sys_sendmsg+0x68/0x90
-[ 178.037418] __sys_sendmsg+0x44/0x88
-[ 178.040988] __arm64_sys_sendmsg+0x20/0x28
-[ 178.045077] invoke_syscall.constprop.5+0x54/0xe0
-[ 178.049776] do_el0_svc+0x74/0xc0
-[ 178.053084] el0_svc+0x10/0x18
-[ 178.056133] el0t_64_sync_handler+0x88/0xb0
-[ 178.060310] el0t_64_sync+0x148/0x14c
-[ 178.063966] ---[ end trace 8a5cf0bf9d34a058 ]---
+So, let's check new_crtc_state->active to determine if CRTC needs disable
+in self refresh mode instead of new_crtc_state->enable.
 
-Add changes to not to delete frag timer for peers during
-group key installation.
-
-Tested on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-01092-QCAHKSWPL_SILICONZ-1
-
-Fixes: c3944a562102 ("ath11k: Clear the fragment cache during key install")
-Signed-off-by: Rameshkumar Sundaram <quic_ramess@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1639071421-25078-1-git-send-email-quic_ramess@quicinc.com
+Fixes: 1452c25b0e60 ("drm: Add helpers to kick off self refresh mode in drivers")
+Cc: Sean Paul <seanpaul@chromium.org>
+Cc: Rob Clark <robdclark@chromium.org>
+Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc: Maxime Ripard <mripard@kernel.org>
+Cc: Thomas Zimmermann <tzimmermann@suse.de>
+Cc: David Airlie <airlied@linux.ie>
+Cc: Daniel Vetter <daniel@ffwll.ch>
+Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Liu Ying <victor.liu@nxp.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211230040626.646807-1-victor.liu@nxp.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 2 +-
+ drivers/gpu/drm/drm_atomic_helper.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 2df60c74809d3..9dfa77389c4da 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -2791,7 +2791,7 @@ static int ath11k_mac_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
- 	/* flush the fragments cache during key (re)install to
- 	 * ensure all frags in the new frag list belong to the same key.
+diff --git a/drivers/gpu/drm/drm_atomic_helper.c b/drivers/gpu/drm/drm_atomic_helper.c
+index 2c0c6ec928200..ff2bc9a118011 100644
+--- a/drivers/gpu/drm/drm_atomic_helper.c
++++ b/drivers/gpu/drm/drm_atomic_helper.c
+@@ -1001,7 +1001,7 @@ crtc_needs_disable(struct drm_crtc_state *old_state,
+ 	 * it's in self refresh mode and needs to be fully disabled.
  	 */
--	if (peer && cmd == SET_KEY)
-+	if (peer && sta && cmd == SET_KEY)
- 		ath11k_peer_frags_flush(ar, peer);
- 	spin_unlock_bh(&ab->base_lock);
+ 	return old_state->active ||
+-	       (old_state->self_refresh_active && !new_state->enable) ||
++	       (old_state->self_refresh_active && !new_state->active) ||
+ 	       new_state->self_refresh_active;
+ }
  
 -- 
 2.34.1
