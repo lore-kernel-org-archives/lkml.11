@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9CBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CA2C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452564AbiAXVZx (ORCPT
+        id S1452417AbiAXVZd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:25:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44224 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442663AbiAXUzE (ORCPT
+        Mon, 24 Jan 2022 16:25:33 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51218 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359437AbiAXU6V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22589C095422;
-        Mon, 24 Jan 2022 11:59:39 -0800 (PST)
+        Mon, 24 Jan 2022 15:58:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D341DB810AF;
-        Mon, 24 Jan 2022 19:59:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 141A7C340E5;
-        Mon, 24 Jan 2022 19:59:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB3D860B28;
+        Mon, 24 Jan 2022 20:58:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A512AC340E5;
+        Mon, 24 Jan 2022 20:58:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054376;
-        bh=EUtzGHwc0AI9vPC/gyGm26EPy+dyA+8wOf2lTLuS7Gs=;
+        s=korg; t=1643057899;
+        bh=KNx+81XLGMGGQOWm3ipy3nUWBHABpFfh8FamoSzrYhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nrLlu/9gMCGTK5N5yQLYTwch7A9431s+MIO+BdFS4/fg//dKPxNzTAISxudFl1Y35
-         f4cOzp2g82Y5Ab7REXdb0IKvp4YQ6JKGjwzBJRafqA3CI0jp2trGO4ceB5OdvCERHM
-         IOMCIUw6quRBPQcV2ErSYF6MULYFqgac65Ki0DkU=
+        b=Er3iSV1Nya/0t4UynVzACFwr5pbYaqS2SdC7H/QYlL22eQxnvKVDbCa8rhVeAlSMG
+         8ft5BRas7I4XjlkcMkxUKV1FMxgRGdJq0b94OwFDkWxiZ6lcHH5RY4wxtRpTVYVTT+
+         u01pyyMdRvwIRaS/PoIHJ955FCyu3WAOubq6pHNM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 370/563] cpufreq: Fix initialization of min and max frequency QoS requests
-Date:   Mon, 24 Jan 2022 19:42:15 +0100
-Message-Id: <20220124184037.212017964@linuxfoundation.org>
+Subject: [PATCH 5.16 0114/1039] wcn36xx: populate band before determining rate on RX
+Date:   Mon, 24 Jan 2022 19:31:43 +0100
+Message-Id: <20220124184128.961150656@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,52 +48,124 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+From: Benjamin Li <benl@squareup.com>
 
-[ Upstream commit 521223d8b3ec078f670c7c35a1a04b1b2af07966 ]
+[ Upstream commit c9c5608fafe4dae975c9644c7d14c51ad3b0ed73 ]
 
-The min and max frequency QoS requests in the cpufreq core are
-initialized to whatever the current min and max frequency values are
-at the init time, but if any of these values change later (for
-example, cpuinfo.max_freq is updated by the driver), these initial
-request values will be limiting the CPU frequency unnecessarily
-unless they are changed by user space via sysfs.
+status.band is used in determination of status.rate -- for 5GHz on legacy
+rates there is a linear shift between the BD descriptor's rate field and
+the wcn36xx driver's rate table (wcn_5ghz_rates).
 
-To address this, initialize min_freq_req and max_freq_req to
-FREQ_QOS_MIN_DEFAULT_VALUE and FREQ_QOS_MAX_DEFAULT_VALUE,
-respectively, so they don't really limit anything until user
-space updates them.
+We have a special clause to populate status.band for hardware scan offload
+frames. However, this block occurs after status.rate is already populated.
+Correctly handle this dependency by moving the band block before the rate
+block.
 
-Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Tested-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+This patch addresses kernel warnings & missing scan results for 5GHz APs
+that send their beacons/probe responses at the higher four legacy rates
+(24-54 Mbps), when using hardware scan offload:
+
+  ------------[ cut here ]------------
+  WARNING: CPU: 0 PID: 0 at net/mac80211/rx.c:4532 ieee80211_rx_napi+0x744/0x8d8
+  Modules linked in: wcn36xx [...]
+  CPU: 0 PID: 0 Comm: swapper/0 Tainted: G        W         4.19.107-g73909fa #1
+  Hardware name: Square, Inc. T2 (all variants) (DT)
+  Call trace:
+  dump_backtrace+0x0/0x148
+  show_stack+0x14/0x1c
+  dump_stack+0xb8/0xf0
+  __warn+0x2ac/0x2d8
+  warn_slowpath_null+0x44/0x54
+  ieee80211_rx_napi+0x744/0x8d8
+  ieee80211_tasklet_handler+0xa4/0xe0
+  tasklet_action_common+0xe0/0x118
+  tasklet_action+0x20/0x28
+  __do_softirq+0x108/0x1ec
+  irq_exit+0xd4/0xd8
+  __handle_domain_irq+0x84/0xbc
+  gic_handle_irq+0x4c/0xb8
+  el1_irq+0xe8/0x190
+  lpm_cpuidle_enter+0x220/0x260
+  cpuidle_enter_state+0x114/0x1c0
+  cpuidle_enter+0x34/0x48
+  do_idle+0x150/0x268
+  cpu_startup_entry+0x20/0x24
+  rest_init+0xd4/0xe0
+  start_kernel+0x398/0x430
+  ---[ end trace ae28cb759352b403 ]---
+
+Fixes: 8a27ca394782 ("wcn36xx: Correct band/freq reporting on RX")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211104010548.1107405-2-benl@squareup.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/cpufreq.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 37 +++++++++++++------------
+ 1 file changed, 19 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
-index 8e159fb6af9cd..30dafe8fc5054 100644
---- a/drivers/cpufreq/cpufreq.c
-+++ b/drivers/cpufreq/cpufreq.c
-@@ -1400,7 +1400,7 @@ static int cpufreq_online(unsigned int cpu)
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index 75951ccbc840e..f0a9f069a92a9 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -314,8 +314,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	fc = __le16_to_cpu(hdr->frame_control);
+ 	sn = IEEE80211_SEQ_TO_SN(__le16_to_cpu(hdr->seq_ctrl));
  
- 		ret = freq_qos_add_request(&policy->constraints,
- 					   policy->min_freq_req, FREQ_QOS_MIN,
--					   policy->min);
-+					   FREQ_QOS_MIN_DEFAULT_VALUE);
- 		if (ret < 0) {
- 			/*
- 			 * So we don't call freq_qos_remove_request() for an
-@@ -1420,7 +1420,7 @@ static int cpufreq_online(unsigned int cpu)
+-	status.freq = WCN36XX_CENTER_FREQ(wcn);
+-	status.band = WCN36XX_BAND(wcn);
+ 	status.mactime = 10;
+ 	status.signal = -get_rssi0(bd);
+ 	status.antenna = 1;
+@@ -327,6 +325,25 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
  
- 		ret = freq_qos_add_request(&policy->constraints,
- 					   policy->max_freq_req, FREQ_QOS_MAX,
--					   policy->max);
-+					   FREQ_QOS_MAX_DEFAULT_VALUE);
- 		if (ret < 0) {
- 			policy->max_freq_req = NULL;
- 			goto out_destroy_policy;
+ 	wcn36xx_dbg(WCN36XX_DBG_RX, "status.flags=%x\n", status.flag);
+ 
++	if (bd->scan_learn) {
++		/* If packet originate from hardware scanning, extract the
++		 * band/channel from bd descriptor.
++		 */
++		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
++
++		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
++			status.band = NL80211_BAND_5GHZ;
++			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
++								     status.band);
++		} else {
++			status.band = NL80211_BAND_2GHZ;
++			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
++		}
++	} else {
++		status.band = WCN36XX_BAND(wcn);
++		status.freq = WCN36XX_CENTER_FREQ(wcn);
++	}
++
+ 	if (bd->rate_id < ARRAY_SIZE(wcn36xx_rate_table)) {
+ 		rate = &wcn36xx_rate_table[bd->rate_id];
+ 		status.encoding = rate->encoding;
+@@ -353,22 +370,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	    ieee80211_is_probe_resp(hdr->frame_control))
+ 		status.boottime_ns = ktime_get_boottime_ns();
+ 
+-	if (bd->scan_learn) {
+-		/* If packet originates from hardware scanning, extract the
+-		 * band/channel from bd descriptor.
+-		 */
+-		u8 hwch = (bd->reserved0 << 4) + bd->rx_ch;
+-
+-		if (bd->rf_band != 1 && hwch <= sizeof(ab_rx_ch_map) && hwch >= 1) {
+-			status.band = NL80211_BAND_5GHZ;
+-			status.freq = ieee80211_channel_to_frequency(ab_rx_ch_map[hwch - 1],
+-								     status.band);
+-		} else {
+-			status.band = NL80211_BAND_2GHZ;
+-			status.freq = ieee80211_channel_to_frequency(hwch, status.band);
+-		}
+-	}
+-
+ 	memcpy(IEEE80211_SKB_RXCB(skb), &status, sizeof(status));
+ 
+ 	if (ieee80211_is_beacon(hdr->frame_control)) {
 -- 
 2.34.1
 
