@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D753CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30B8CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1844719AbiAXXyk (ORCPT
+        id S2367331AbiAXXzI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:54:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50566 "EHLO
+        Mon, 24 Jan 2022 18:55:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846509AbiAXXQK (ORCPT
+        with ESMTP id S1846533AbiAXXQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:16:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CB9C0617B0;
-        Mon, 24 Jan 2022 13:25:11 -0800 (PST)
+        Mon, 24 Jan 2022 18:16:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 077FDC07E5FE;
+        Mon, 24 Jan 2022 11:44:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DB47B80FA1;
-        Mon, 24 Jan 2022 21:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68FF0C340E4;
-        Mon, 24 Jan 2022 21:25:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 994D6612E9;
+        Mon, 24 Jan 2022 19:44:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69C1DC340E5;
+        Mon, 24 Jan 2022 19:44:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059510;
-        bh=OLkQY0VqpEjqmsadHkfttEzD4OLRruEKHl2jmHWNBVM=;
+        s=korg; t=1643053443;
+        bh=TUZoR2a6e6D4ye3CC8JKRwNZAcvr5X0v2R8sXMbQqKI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q6D14CEV7n50vz6/yI0ezWPfM3IhkRr4iFeaWfJUrycsrjqgBJMm4V//Gzs0LCc0w
-         oMAbGiwK9eTKc04RICKZAodRhcOnIs84PWO+/KLseAntPzulAI6+6nD0COS4HK2t6/
-         sY91pU9KKdf3IPKZbQjajVWq2bWSsOqreejhR+4k=
+        b=A7t7JzNi4kgFqKQroBRWprrk15DOxcSmYhvqGLc+aNm0DfejS9RtsgBFlL1dYLcN7
+         95ahyGvyZoA4rS1VG2wBjJh9QI4jjChyZ/RoO2G6piUER2C2yfLElyjQyJghLiBbAD
+         b3f+zB5hTFmch+fiDlp/CIMH25o+31XBNp/JU5cY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Heidelberg <david@ixit.cz>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Alex Elder <elder@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0639/1039] ARM: dts: qcom: sdx55: fix IPA interconnect definitions
-Date:   Mon, 24 Jan 2022 19:40:28 +0100
-Message-Id: <20220124184146.834483881@linuxfoundation.org>
+Subject: [PATCH 5.10 065/563] media: atomisp: add missing media_device_cleanup() in atomisp_unregister_entities()
+Date:   Mon, 24 Jan 2022 19:37:10 +0100
+Message-Id: <20220124184026.656495527@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,45 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit c0d6316c238b1bd743108bd4b08eda364f47c7c9 ]
+[ Upstream commit ce3015b7212e96db426d0c36f80fd159c91155d1 ]
 
-The first two interconnects defined for IPA on the SDX55 SoC are
-really two parts of what should be represented as a single path
-between IPA and system memory.
+After the commit 9832e155f1ed ("[media] media-device: split media
+initialization and registration"), calling media_device_cleanup()
+is needed it seems. However, currently it is missing for the module
+unload path.
 
-Fix this by combining the "memory-a" and "memory-b" interconnects
-into a single "memory" interconnect.
+Note that for the probe failure path, it is already added in
+atomisp_register_entities().
 
-Reported-by: David Heidelberg <david@ixit.cz>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This patch adds the missing call of media_device_cleanup() in
+atomisp_unregister_entities().
+
+Fixes: a49d25364dfb ("staging/atomisp: Add support for the Intel IPU v2")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-sdx55.dtsi | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/staging/media/atomisp/pci/atomisp_v4l2.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-index 44526ad9d210b..eee2f63b9bbab 100644
---- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-@@ -333,12 +333,10 @@
- 			clocks = <&rpmhcc RPMH_IPA_CLK>;
- 			clock-names = "core";
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+index fa1bd99cd6f17..d35506f643609 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+@@ -1182,6 +1182,7 @@ static void atomisp_unregister_entities(struct atomisp_device *isp)
  
--			interconnects = <&system_noc MASTER_IPA &system_noc SLAVE_SNOC_MEM_NOC_GC>,
--					<&mem_noc MASTER_SNOC_GC_MEM_NOC &mc_virt SLAVE_EBI_CH0>,
-+			interconnects = <&system_noc MASTER_IPA &mc_virt SLAVE_EBI_CH0>,
- 					<&system_noc MASTER_IPA &system_noc SLAVE_OCIMEM>,
- 					<&mem_noc MASTER_AMPSS_M0 &system_noc SLAVE_IPA_CFG>;
--			interconnect-names = "memory-a",
--					     "memory-b",
-+			interconnect-names = "memory",
- 					     "imem",
- 					     "config";
+ 	v4l2_device_unregister(&isp->v4l2_dev);
+ 	media_device_unregister(&isp->media_dev);
++	media_device_cleanup(&isp->media_dev);
+ }
  
+ static int atomisp_register_entities(struct atomisp_device *isp)
 -- 
 2.34.1
 
