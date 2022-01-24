@@ -2,40 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0734C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:08:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC08C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:08:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359855AbiAXUIV (ORCPT
+        id S1378708AbiAXUI1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:08:21 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46872 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357288AbiAXTtp (ORCPT
+        Mon, 24 Jan 2022 15:08:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38908 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357411AbiAXTt6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:49:45 -0500
+        Mon, 24 Jan 2022 14:49:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BD2D60918;
-        Mon, 24 Jan 2022 19:49:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 783AEC340E5;
-        Mon, 24 Jan 2022 19:49:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5EE24B81229;
+        Mon, 24 Jan 2022 19:49:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BEE6DC340E7;
+        Mon, 24 Jan 2022 19:49:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053784;
-        bh=NME2bflPx5hxDRxQHfuwV9nyDf/2Q6iYYa/VJjCsh4U=;
+        s=korg; t=1643053795;
+        bh=q0f3Kyn2K6gkI2P9btt0obaREPOGXLT3e/syK84A8O4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SaYaOrUcmGYH8e0fIKRQd4Xgw5JfsfWOuLR19DdJGgfRPreZj2dLZPKFurTyXV931
-         MxbUhQ9YenDR7ZxJ/OTkCvKOLWAN4Nq/Fjmb4ljjAeXd4PS5hro128EHeu4mrRX1/G
-         JwxOjiNifkVm3/vy1q5nrlygCanM3DdFEI+7WGmc=
+        b=LeOTfpnEoJnfDqfCRQNQIouJC8n+BpE4TXRj2TUE/Jouo84+RgMuPQqMn2EKAh1tF
+         +IZl9Cmx/i7v/MxCWbd27VTzZ1109JtsNZhOS1IS/p3dZ5RFUYRX9H2jGGOxeCktvY
+         5r5RIzx4hVp2XrX51/RdnnvKFuo0+QLY5MGmw1c4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lv Yunlong <lyl2019@mail.ustc.edu.cn>,
-        Luca Coelho <luciano.coelho@intel.com>,
+        stable@vger.kernel.org, Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Uladzislau Rezki <urezki@gmail.com>,
+        Boqun Feng <boqun.feng@gmail.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 144/563] wireless: iwlwifi: Fix a double free in iwl_txq_dyn_alloc_dma
-Date:   Mon, 24 Jan 2022 19:38:29 +0100
-Message-Id: <20220124184029.380871878@linuxfoundation.org>
+Subject: [PATCH 5.10 147/563] rcu/exp: Mark current CPU as exp-QS in IPI loop second pass
+Date:   Mon, 24 Jan 2022 19:38:32 +0100
+Message-Id: <20220124184029.484611296@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,41 +52,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
+From: Frederic Weisbecker <frederic@kernel.org>
 
-[ Upstream commit f973795a8d19cbf3d03807704eb7c6ff65788d5a ]
+[ Upstream commit 81f6d49cce2d2fe507e3fddcc4a6db021d9c2e7b ]
 
-In iwl_txq_dyn_alloc_dma, txq->tfds is freed at first time by:
-iwl_txq_alloc()->goto err_free_tfds->dma_free_coherent(). But
-it forgot to set txq->tfds to NULL.
+Expedited RCU grace periods invoke sync_rcu_exp_select_node_cpus(), which
+takes two passes over the leaf rcu_node structure's CPUs.  The first
+pass gathers up the current CPU and CPUs that are in dynticks idle mode.
+The workqueue will report a quiescent state on their behalf later.
+The second pass sends IPIs to the rest of the CPUs, but excludes the
+current CPU, incorrectly assuming it has been included in the first
+pass's list of CPUs.
 
-Then the txq->tfds is freed again in iwl_txq_dyn_alloc_dma by:
-goto error->iwl_txq_gen2_free_memory()->dma_free_coherent().
+Unfortunately the current CPU may have changed between the first and
+second pass, due to the fact that the various rcu_node structures'
+->lock fields have been dropped, thus momentarily enabling preemption.
+This means that if the second pass's CPU was not on the first pass's
+list, it will be ignored completely.  There will be no IPI sent to
+it, and there will be no reporting of quiescent states on its behalf.
+Unfortunately, the expedited grace period will nevertheless be waiting
+for that CPU to report a quiescent state, but with that CPU having no
+reason to believe that such a report is needed.
 
-My patch sets txq->tfds to NULL after the first free to avoid the
-double free.
+The result will be an expedited grace period stall.
 
-Fixes: 0cd1ad2d7fd41 ("iwlwifi: move all bus-independent TX functions to common code")
-Signed-off-by: Lv Yunlong <lyl2019@mail.ustc.edu.cn>
-Link: https://lore.kernel.org/r/20210403054755.4781-1-lyl2019@mail.ustc.edu.cn
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fix this by no longer excluding the current CPU from consideration during
+the second pass.
+
+Fixes: b9ad4d6ed18e ("rcu: Avoid self-IPI in sync_rcu_exp_select_node_cpus()")
+Reviewed-by: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Signed-off-by: Frederic Weisbecker <frederic@kernel.org>
+Cc: Uladzislau Rezki <urezki@gmail.com>
+Cc: Neeraj Upadhyay <quic_neeraju@quicinc.com>
+Cc: Boqun Feng <boqun.feng@gmail.com>
+Cc: Josh Triplett <josh@joshtriplett.org>
+Cc: Joel Fernandes <joel@joelfernandes.org>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/queue/tx.c | 1 +
+ kernel/rcu/tree_exp.h | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/queue/tx.c b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-index 9181221a2434d..0136df00ff6a6 100644
---- a/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/queue/tx.c
-@@ -1148,6 +1148,7 @@ int iwl_txq_alloc(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
- 	return 0;
- err_free_tfds:
- 	dma_free_coherent(trans->dev, tfd_sz, txq->tfds, txq->dma_addr);
-+	txq->tfds = NULL;
- error:
- 	if (txq->entries && cmd_queue)
- 		for (i = 0; i < slots_num; i++)
+diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+index 0ffe185c1f46a..0dc16345e668c 100644
+--- a/kernel/rcu/tree_exp.h
++++ b/kernel/rcu/tree_exp.h
+@@ -387,6 +387,7 @@ retry_ipi:
+ 			continue;
+ 		}
+ 		if (get_cpu() == cpu) {
++			mask_ofl_test |= mask;
+ 			put_cpu();
+ 			continue;
+ 		}
 -- 
 2.34.1
 
