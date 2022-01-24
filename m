@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42A67C35271
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C005C35272
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443353AbiAXU4o (ORCPT
+        id S1443434AbiAXU4z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39400 "EHLO
+        Mon, 24 Jan 2022 15:56:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384954AbiAXUeT (ORCPT
+        with ESMTP id S1346411AbiAXUdy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:34:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 074F1C07E2B7;
-        Mon, 24 Jan 2022 11:47:52 -0800 (PST)
+        Mon, 24 Jan 2022 15:33:54 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1FCEC07E2B0;
+        Mon, 24 Jan 2022 11:47:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A203B61031;
-        Mon, 24 Jan 2022 19:47:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77A19C340E5;
-        Mon, 24 Jan 2022 19:47:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 582E2B811F9;
+        Mon, 24 Jan 2022 19:47:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC77C340E5;
+        Mon, 24 Jan 2022 19:47:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053670;
-        bh=H0Nf65V8r/RvVEwCt8j9T0Es3uLNGZIIW5tsXERlElY=;
+        s=korg; t=1643053636;
+        bh=OHhwjXkBsD5R4QcwYkR1d17e/ZJhJIHy3HA4FGFsKoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uFbLQqYVtTq0HCRZxhcyWur1rEeVYSBSTA+aXuejyY6QTORT4/2JdiM06gTgTi5dm
-         BjC6OdNVXYvpJBb75NhY5bXNttV1hVAJozAJcdRWswcRTf3CHog0YE5PmHu8Vdro0H
-         RTU53KGEb3O5iR8GYX9kucUMGtyEuxwNnLJdYqpQ=
+        b=GsvC99UCzd/1n+Z2JJZdAlMsyBYTDveoWL1llMW8IP0vMvx/BguaIM6x5oR9267JU
+         UJudlHFCwl4d/z5ZMEWgtSmYpCnnkx0sTPe49uOoIhSagg28xL2dxIFPE6+Vg7pD+b
+         TCMuS1Ibjtr7VI/QSbXCVtp2mvZFCKTLOKK4SsM0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Zijlstra <peterz@infradead.org>,
-        Kajol Jain <kjain@linux.ibm.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
+        stable@vger.kernel.org, Lizhi Hou <lizhi.hou@xilinx.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 138/563] bpf: Remove config check to enable bpf support for branch records
-Date:   Mon, 24 Jan 2022 19:38:23 +0100
-Message-Id: <20220124184029.173197383@linuxfoundation.org>
+Subject: [PATCH 5.10 128/563] tty: serial: uartlite: allow 64 bit address
+Date:   Mon, 24 Jan 2022 19:38:13 +0100
+Message-Id: <20220124184028.827395757@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,94 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kajol Jain <kjain@linux.ibm.com>
+From: Lizhi Hou <lizhi.hou@xilinx.com>
 
-[ Upstream commit db52f57211b4e45f0ebb274e2c877b211dc18591 ]
+[ Upstream commit 3672fb65155530b5eea6225685c75329b6debec3 ]
 
-Branch data available to BPF programs can be very useful to get stack traces
-out of userspace application.
+The base address of uartlite registers could be 64 bit address which is from
+device resource. When ulite_probe() calls ulite_assign(), this 64 bit
+address is casted to 32-bit. The fix is to replace "u32" type with
+"phys_addr_t" type for the base address in ulite_assign() argument list.
 
-Commit fff7b64355ea ("bpf: Add bpf_read_branch_records() helper") added BPF
-support to capture branch records in x86. Enable this feature also for other
-architectures as well by removing checks specific to x86.
-
-If an architecture doesn't support branch records, bpf_read_branch_records()
-still has appropriate checks and it will return an -EINVAL in that scenario.
-Based on UAPI helper doc in include/uapi/linux/bpf.h, unsupported architectures
-should return -ENOENT in such case. Hence, update the appropriate check to
-return -ENOENT instead.
-
-Selftest 'perf_branches' result on power9 machine which has the branch stacks
-support:
-
- - Before this patch:
-
-  [command]# ./test_progs -t perf_branches
-   #88/1 perf_branches/perf_branches_hw:FAIL
-   #88/2 perf_branches/perf_branches_no_hw:OK
-   #88 perf_branches:FAIL
-  Summary: 0/1 PASSED, 0 SKIPPED, 1 FAILED
-
- - After this patch:
-
-  [command]# ./test_progs -t perf_branches
-   #88/1 perf_branches/perf_branches_hw:OK
-   #88/2 perf_branches/perf_branches_no_hw:OK
-   #88 perf_branches:OK
-  Summary: 1/2 PASSED, 0 SKIPPED, 0 FAILED
-
-Selftest 'perf_branches' result on power9 machine which doesn't have branch
-stack report:
-
- - After this patch:
-
-  [command]# ./test_progs -t perf_branches
-   #88/1 perf_branches/perf_branches_hw:SKIP
-   #88/2 perf_branches/perf_branches_no_hw:OK
-   #88 perf_branches:OK
-  Summary: 1/1 PASSED, 1 SKIPPED, 0 FAILED
-
-Fixes: fff7b64355eac ("bpf: Add bpf_read_branch_records() helper")
-Suggested-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Kajol Jain <kjain@linux.ibm.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Link: https://lore.kernel.org/bpf/20211206073315.77432-1-kjain@linux.ibm.com
+Fixes: 8fa7b6100693 ("[POWERPC] Uartlite: Separate the bus binding from the driver proper")
+Signed-off-by: Lizhi Hou <lizhi.hou@xilinx.com>
+Link: https://lore.kernel.org/r/20211129202302.1319033-1-lizhi.hou@xilinx.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/trace/bpf_trace.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/tty/serial/uartlite.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index ba644760f5076..a9e074769881f 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -1517,9 +1517,6 @@ static const struct bpf_func_proto bpf_perf_prog_read_value_proto = {
- BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
- 	   void *, buf, u32, size, u64, flags)
+diff --git a/drivers/tty/serial/uartlite.c b/drivers/tty/serial/uartlite.c
+index 7081ab322b402..48923cd8c07d1 100644
+--- a/drivers/tty/serial/uartlite.c
++++ b/drivers/tty/serial/uartlite.c
+@@ -615,7 +615,7 @@ static struct uart_driver ulite_uart_driver = {
+  *
+  * Returns: 0 on success, <0 otherwise
+  */
+-static int ulite_assign(struct device *dev, int id, u32 base, int irq,
++static int ulite_assign(struct device *dev, int id, phys_addr_t base, int irq,
+ 			struct uartlite_data *pdata)
  {
--#ifndef CONFIG_X86
--	return -ENOENT;
--#else
- 	static const u32 br_entry_size = sizeof(struct perf_branch_entry);
- 	struct perf_branch_stack *br_stack = ctx->data->br_stack;
- 	u32 to_copy;
-@@ -1528,7 +1525,7 @@ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
- 		return -EINVAL;
- 
- 	if (unlikely(!br_stack))
--		return -EINVAL;
-+		return -ENOENT;
- 
- 	if (flags & BPF_F_GET_BRANCH_RECORDS_SIZE)
- 		return br_stack->nr * br_entry_size;
-@@ -1540,7 +1537,6 @@ BPF_CALL_4(bpf_read_branch_records, struct bpf_perf_event_data_kern *, ctx,
- 	memcpy(buf, br_stack->entries, to_copy);
- 
- 	return to_copy;
--#endif
- }
- 
- static const struct bpf_func_proto bpf_read_branch_records_proto = {
+ 	struct uart_port *port;
 -- 
 2.34.1
 
