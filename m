@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 054F4C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5D12C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245576AbiAXSuO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:50:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48146 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245348AbiAXStT (ORCPT
+        id S245613AbiAXSuQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:50:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49496 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235976AbiAXStX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:49:19 -0500
+        Mon, 24 Jan 2022 13:49:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5118E614D7;
-        Mon, 24 Jan 2022 18:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13036C340E7;
-        Mon, 24 Jan 2022 18:49:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 63733B8121D;
+        Mon, 24 Jan 2022 18:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E366C340E5;
+        Mon, 24 Jan 2022 18:49:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050157;
-        bh=+WCTDEWi3bIvHe85xv/QXID3bVKL+fBpNepNnRgV0YI=;
+        s=korg; t=1643050161;
+        bh=rH7vXnLsMeqrHjpj2FZxMKF7MTGw1pwYc0KA4eDVaSA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fvyJgbxOl8sY2QYdu5J2f8jmUY1OP05JHN4n6M/p5qmoYCvn00uWvebi6wNRnMgq2
-         /LJMOQQkhunDu3BjyGo2Tb8RXzKvf/L6gG+oYzaKANzaoMEHXSBqVsRIN7RNBAMbZ8
-         FRvX5DXAWAYNa3M+nnOczeIwx3rcb41q2eLBO2gU=
+        b=v/S5oguqmVQ5gVKB1idw5OxB4KNeCoi58U3FiilpdqcJv0Y/IlHGA0HPduhAeXDx4
+         CVWw5C9HQ7wGkAQwwjmj7rRvw1w9E3SZ2aP9vkoTLHcpU+gy3Yvkcwmr6VBi3xnz5o
+         CnOnw2Y3wof4o7ecGrs8Nhjirz8Wy7is1PMKXoBk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tasos Sahanidis <tasos@tasossah.com>,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 029/114] floppy: Fix hang in watchdog when disk is ejected
-Date:   Mon, 24 Jan 2022 19:42:04 +0100
-Message-Id: <20220124183928.019231426@linuxfoundation.org>
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 030/114] media: dib8000: Fix a memleak in dib8000_init()
+Date:   Mon, 24 Jan 2022 19:42:05 +0100
+Message-Id: <20220124183928.048787958@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -46,49 +47,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tasos Sahanidis <tasos@tasossah.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit fb48febce7e30baed94dd791e19521abd2c3fd83 ]
+[ Upstream commit 8dbdcc7269a83305ee9d677b75064d3530a48ee2 ]
 
-When the watchdog detects a disk change, it calls cancel_activity(),
-which in turn tries to cancel the fd_timer delayed work.
+In dib8000_init(), the variable fe is not freed or passed out on the
+failure of dib8000_identify(&state->i2c), which could lead to a memleak.
 
-In the above scenario, fd_timer_fn is set to fd_watchdog(), meaning
-it is trying to cancel its own work.
-This results in a hang as cancel_delayed_work_sync() is waiting for the
-watchdog (itself) to return, which never happens.
+Fix this bug by adding a kfree of fe in the error path.
 
-This can be reproduced relatively consistently by attempting to read a
-broken floppy, and ejecting it while IO is being attempted and retried.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-To resolve this, this patch calls cancel_delayed_work() instead, which
-cancels the work without waiting for the watchdog to return and finish.
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
-Before this regression was introduced, the code in this section used
-del_timer(), and not del_timer_sync() to delete the watchdog timer.
+Builds with CONFIG_DVB_DIB8000=m show no new warnings,
+and our static analyzer no longer warns about this code.
 
-Link: https://lore.kernel.org/r/399e486c-6540-db27-76aa-7a271b061f76@tasossah.com
-Fixes: 070ad7e793dc ("floppy: convert to delayed work and single-thread wq")
-Signed-off-by: Tasos Sahanidis <tasos@tasossah.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Fixes: 77e2c0f5d471 ("V4L/DVB (12900): DiB8000: added support for DiBcom ISDB-T/ISDB-Tsb demodulator DiB8000")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/dvb-frontends/dib8000.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 40c251ef175db..826ab5f2f6b9f 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -994,7 +994,7 @@ static DECLARE_DELAYED_WORK(fd_timer, fd_timer_workfn);
- static void cancel_activity(void)
- {
- 	do_floppy = NULL;
--	cancel_delayed_work_sync(&fd_timer);
-+	cancel_delayed_work(&fd_timer);
- 	cancel_work_sync(&floppy_work);
- }
+diff --git a/drivers/media/dvb-frontends/dib8000.c b/drivers/media/dvb-frontends/dib8000.c
+index 94c26270fff0e..b8af5a3c707f8 100644
+--- a/drivers/media/dvb-frontends/dib8000.c
++++ b/drivers/media/dvb-frontends/dib8000.c
+@@ -4461,8 +4461,10 @@ static struct dvb_frontend *dib8000_init(struct i2c_adapter *i2c_adap, u8 i2c_ad
+ 
+ 	state->timf_default = cfg->pll->timf;
+ 
+-	if (dib8000_identify(&state->i2c) == 0)
++	if (dib8000_identify(&state->i2c) == 0) {
++		kfree(fe);
+ 		goto error;
++	}
+ 
+ 	dibx000_init_i2c_master(&state->i2c_master, DIB8000, state->i2c.adap, state->i2c.addr);
  
 -- 
 2.34.1
