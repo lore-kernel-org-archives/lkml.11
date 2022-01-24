@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40CDAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51684C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455984AbiAXVhB (ORCPT
+        id S1456002AbiAXVhE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:37:01 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41414 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391015AbiAXUqs (ORCPT
+        Mon, 24 Jan 2022 16:37:04 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55586 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444767AbiAXVBc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:48 -0500
+        Mon, 24 Jan 2022 16:01:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB13B60B1A;
-        Mon, 24 Jan 2022 20:46:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98CB5C340E5;
-        Mon, 24 Jan 2022 20:46:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 827B5B81063;
+        Mon, 24 Jan 2022 21:01:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B814BC340E5;
+        Mon, 24 Jan 2022 21:01:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057207;
-        bh=ADWlPxviep3j3KSwqXUux5ntWlp2DypFvaeUKSbxgpI=;
+        s=korg; t=1643058088;
+        bh=BEB192YSk8J7M70ks8jXvP3kVrZQ28TXQvGWZkv04+k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SilDmNG/I31KIZ7tOT8xg6lTgUxUeh7dkWq32NTeg8HWQ79yALdHWa527kKKmS36X
-         5ib+xQhrVyzfAGzyYdKAGC2ny2rzZjJGLx6t83Le4IzTko8ANr0r76XZ/k4otTh5cK
-         HI+V7AOSEzGcs70unKeVoJ1Cdu42mDY4Hb3up9gg=
+        b=N2UdX3pGZSDM/lDL/AJDOgi1Ko7jvZdnfy0IieA8s0QBTx5LfdM0H6sC6oJB1pY3U
+         iohkoNVI7LSYUya29hJohZ0AM1WczxJKjOTXKej+bhcJokK3RwL2S6DVDmSG1MQodX
+         TguAgOAnUBqiisd6eTmfq4QG/5X3cpb0FKSM3Du4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, German Gomex <german.gomez@arm.com>,
-        Mike Leach <mike.leach@linaro.org>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>
-Subject: [PATCH 5.15 736/846] Documentation: coresight: Fix documentation issue
-Date:   Mon, 24 Jan 2022 19:44:13 +0100
-Message-Id: <20220124184126.387849341@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Richard Genoud <richard.genoud@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0177/1039] tty: serial: atmel: Check return code of dmaengine_submit()
+Date:   Mon, 24 Jan 2022 19:32:46 +0100
+Message-Id: <20220124184131.217361811@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,52 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mike Leach <mike.leach@linaro.org>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 66bd1333abd7fa191f13b929c9119d6cd3df27b0 upstream.
+[ Upstream commit 1e67bd2b8cb90b66e89562598e9c2046246832d3 ]
 
-Fix the description of the directories and attributes used
-in cs_etm as used by perf.
+The tx_submit() method of struct dma_async_tx_descriptor is entitled
+to do sanity checks and return errors if encountered. It's not the
+case for the DMA controller drivers that this client is using
+(at_h/xdmac), because they currently don't do sanity checks and always
+return a positive cookie at tx_submit() method. In case the controller
+drivers will implement sanity checks and return errors, print a message
+so that the client will be informed that something went wrong at
+tx_submit() level.
 
-Drop the references to the 'configurations' sub-directory which
-had been removed in an earlier version of the patchset.
-
-Fixes: f71cd93d5ea4 ("Documentation: coresight: Add documentation for CoreSight config")
-Reported-by: German Gomex <german.gomez@arm.com>
-Signed-off-by: Mike Leach <mike.leach@linaro.org>
-Link: https://lore.kernel.org/r/20211117164220.14883-1-mike.leach@linaro.org
-Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Acked-by: Richard Genoud <richard.genoud@gmail.com>
+Link: https://lore.kernel.org/r/20211125090028.786832-3-tudor.ambarus@microchip.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/trace/coresight/coresight-config.rst |   16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/Documentation/trace/coresight/coresight-config.rst
-+++ b/Documentation/trace/coresight/coresight-config.rst
-@@ -211,19 +211,13 @@ also declared in the perf 'cs_etm' event
- be selected when running trace under perf::
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 2c99a47a25357..376f7a9c2868a 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -1004,6 +1004,11 @@ static void atmel_tx_dma(struct uart_port *port)
+ 		desc->callback = atmel_complete_tx_dma;
+ 		desc->callback_param = atmel_port;
+ 		atmel_port->cookie_tx = dmaengine_submit(desc);
++		if (dma_submit_error(atmel_port->cookie_tx)) {
++			dev_err(port->dev, "dma_submit_error %d\n",
++				atmel_port->cookie_tx);
++			return;
++		}
+ 	}
  
-     $ ls /sys/devices/cs_etm
--    configurations  format  perf_event_mux_interval_ms  sinks  type
--    events  nr_addr_filters  power
-+    cpu0  cpu2  events  nr_addr_filters		power  subsystem  uevent
-+    cpu1  cpu3  format  perf_event_mux_interval_ms	sinks  type
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1258,6 +1263,11 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 	desc->callback_param = port;
+ 	atmel_port->desc_rx = desc;
+ 	atmel_port->cookie_rx = dmaengine_submit(desc);
++	if (dma_submit_error(atmel_port->cookie_rx)) {
++		dev_err(port->dev, "dma_submit_error %d\n",
++			atmel_port->cookie_rx);
++		goto chan_err;
++	}
  
--Key directories here are 'configurations' - which lists the loaded
--configurations, and 'events' - a generic perf directory which allows
--selection on the perf command line.::
-+The key directory here is 'events' - a generic perf directory which allows
-+selection on the perf command line. As with the sinks entries, this provides
-+a hash of the configuration name.
+ 	return 0;
  
--    $ ls configurations/
--    autofdo
--    $ cat configurations/autofdo
--    0xa7c3dddd
--
--As with the sinks entries, this provides a hash of the configuration name.
- The entry in the 'events' directory uses perfs built in syntax generator
- to substitute the syntax for the name when evaluating the command::
- 
+-- 
+2.34.1
+
 
 
