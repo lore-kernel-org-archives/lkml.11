@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990BFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:24:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381628AbiAXUYT (ORCPT
+        id S1354391AbiAXUY0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:24:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43330 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352152AbiAXT5L (ORCPT
+        Mon, 24 Jan 2022 15:24:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347958AbiAXTvu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:11 -0500
+        Mon, 24 Jan 2022 14:51:50 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24B5BC04188E;
+        Mon, 24 Jan 2022 11:24:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB8B8B81215;
-        Mon, 24 Jan 2022 19:57:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C34C340E5;
-        Mon, 24 Jan 2022 19:57:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B671C613EA;
+        Mon, 24 Jan 2022 19:24:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDA4DC340E7;
+        Mon, 24 Jan 2022 19:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054228;
-        bh=k/jaFgS3jdXQ+cUcP3Ir26Qm797Ulvmbkt2quYhZPXI=;
+        s=korg; t=1643052272;
+        bh=3U9VP1OuruVXeNmVCUIDrfmA01G3vDMoXgFxbdOhwwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EiVRB0/pgehPGxN8zYgj+emrt4ekQJbhQih6mY9VXO3sJsctpDDleFBHyct5t486+
-         XCaFHOlMewCUD9y5XKDzwTwTajA7t5/6vm5LWyN+Tea3Esdaz7X8pLpnfmCXQUMExL
-         HFRWSG5UCbqe7mbohq2Ni0lrEDU/N7ccGLQm82z8=
+        b=INB7Mwa2z3doEfIlGXMlwxQr7S7eph8fUReZboB5YyZXCduxzABbfmB8qxRqmLVEY
+         f4EBUYI6BimKglKmQuYvD+cuSh8sdrtOdR9JoIyuDD7loVzrTy++A2nRAgeR1tpRym
+         8NxSFqv6QBxR9sO7beLNpgqTv2ZhQwZU1mrPQr40=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 287/563] arm64: tegra: Fix Tegra194 HDA {clock,reset}-names ordering
-Date:   Mon, 24 Jan 2022 19:40:52 +0100
-Message-Id: <20220124184034.378586170@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 219/239] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
+Date:   Mon, 24 Jan 2022 19:44:17 +0100
+Message-Id: <20220124183950.075823521@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,47 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-[ Upstream commit 48f6e195039486bc303118948f49a9873acc888f ]
+commit 0d375d610fa96524e2ee2b46830a46a7bfa92a9f upstream.
 
-As per the HDA binding doc reorder {clock,reset}-names entries for
-Tegra194. This also serves as a preparation for converting existing
-binding doc to json-schema.
+This block is used in (at least) T1024 and T1040, including their
+variants like T1023 etc.
 
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Signed-off-by: Thierry Reding <treding@nvidia.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra194.dtsi | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi |    2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra194.dtsi b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-index 9b5007e5f790f..815df654e6387 100644
---- a/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra194.dtsi
-@@ -782,13 +782,13 @@
- 			reg = <0x3510000 0x10000>;
- 			interrupts = <GIC_SPI 161 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&bpmp TEGRA194_CLK_HDA>,
--				 <&bpmp TEGRA194_CLK_HDA2CODEC_2X>,
--				 <&bpmp TEGRA194_CLK_HDA2HDMICODEC>;
--			clock-names = "hda", "hda2codec_2x", "hda2hdmi";
-+				 <&bpmp TEGRA194_CLK_HDA2HDMICODEC>,
-+				 <&bpmp TEGRA194_CLK_HDA2CODEC_2X>;
-+			clock-names = "hda", "hda2hdmi", "hda2codec_2x";
- 			resets = <&bpmp TEGRA194_RESET_HDA>,
--				 <&bpmp TEGRA194_RESET_HDA2CODEC_2X>,
--				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>;
--			reset-names = "hda", "hda2codec_2x", "hda2hdmi";
-+				 <&bpmp TEGRA194_RESET_HDA2HDMICODEC>,
-+				 <&bpmp TEGRA194_RESET_HDA2CODEC_2X>;
-+			reset-names = "hda", "hda2hdmi", "hda2codec_2x";
- 			power-domains = <&bpmp TEGRA194_POWER_DOMAIN_DISP>;
- 			interconnects = <&mc TEGRA194_MEMORY_CLIENT_HDAR &emc>,
- 					<&mc TEGRA194_MEMORY_CLIENT_HDAW &emc>;
--- 
-2.34.1
-
+--- a/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
++++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
+@@ -79,6 +79,7 @@ fman0: fman@400000 {
+ 		#size-cells = <0>;
+ 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
+ 		reg = <0xfc000 0x1000>;
++		fsl,erratum-a009885;
+ 	};
+ 
+ 	xmdio0: mdio@fd000 {
+@@ -86,6 +87,7 @@ fman0: fman@400000 {
+ 		#size-cells = <0>;
+ 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
+ 		reg = <0xfd000 0x1000>;
++		fsl,erratum-a009885;
+ 	};
+ };
+ 
 
 
