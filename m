@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5A6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D28C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576338AbiAXVxW (ORCPT
+        id S1576370AbiAXVx2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:53:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50954 "EHLO
+        Mon, 24 Jan 2022 16:53:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450655AbiAXVVI (ORCPT
+        with ESMTP id S1450653AbiAXVVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:21:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5428FC0A1CC7;
-        Mon, 24 Jan 2022 12:14:39 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBE7C028C2B;
+        Mon, 24 Jan 2022 12:14:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 08674B812A5;
-        Mon, 24 Jan 2022 20:14:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CAE2C340E7;
-        Mon, 24 Jan 2022 20:14:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C25561491;
+        Mon, 24 Jan 2022 20:14:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0143FC340E5;
+        Mon, 24 Jan 2022 20:14:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055276;
-        bh=1XugZksY2Q1RIc5Ov3cpXwUMSko7XlkqMP6r64FLYaE=;
+        s=korg; t=1643055291;
+        bh=bk5v1u8Hg9MWexuPCgwEWZSSVhmQfiM7lztRzglm+zo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ui4xB5DUYphgvhlHiOHh9Pb8xGCwdoroSqhtmwUejApUHTQfmIWvWegyxlNAoiGNV
-         pvD1FKHb6jRtG7IoAWuHd3+ygNcg0l6+tXORHaEVMroQls/lu+avi3W2D0PJqaHGOe
-         0yu/RaHv88IbIhcn2ZMR/1TTaQmBm87CvcWDTsME=
+        b=v9LQSK7lKg0NoM67f7PWieZOcJ7XXD8iR9UaUu31Y8B9xPyKlVOnchPyZsbTxmgD1
+         WzBa0OVyz28MHLFjKjuWaAuWCxbLn7OaSzzL2PxExTKDP73oDkh6hhoLyKUdfTjF6N
+         /4d4GwiacFFX4SiLd98GnJkpxBvYSdQ8VJxxgUqA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Hengqi Chen <hengqi.chen@gmail.com>,
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 098/846] libbpf: Free up resources used by inner map definition
-Date:   Mon, 24 Jan 2022 19:33:35 +0100
-Message-Id: <20220124184104.375758757@linuxfoundation.org>
+Subject: [PATCH 5.15 103/846] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
+Date:   Mon, 24 Jan 2022 19:33:40 +0100
+Message-Id: <20220124184104.551939229@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,39 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Benjamin Li <benl@squareup.com>
 
-[ Upstream commit 8f7b239ea8cfdc8e64c875ee417fed41431a1f37 ]
+[ Upstream commit cfdf6b19e750f7de8ae71a26932f63b52e3bf74c ]
 
-It's not enough to just free(map->inner_map), as inner_map itself can
-have extra memory allocated, like map name.
+The linear mapping between the BD rate field and the driver's 5GHz
+legacy rates table (wcn_5ghz_rates) does not only apply for the latter
+four rates -- it applies to all eight rates.
 
-Fixes: 646f02ffdd49 ("libbpf: Add BTF-defined map-in-map support")
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
-Link: https://lore.kernel.org/bpf/20211107165521.9240-3-andrii@kernel.org
+Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211104010548.1107405-3-benl@squareup.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7145463a4a562..0ad29203cbfbf 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -8676,7 +8676,10 @@ int bpf_map__set_inner_map_fd(struct bpf_map *map, int fd)
- 		pr_warn("error: inner_map_fd already specified\n");
- 		return libbpf_err(-EINVAL);
- 	}
--	zfree(&map->inner_map);
-+	if (map->inner_map) {
-+		bpf_map__destroy(map->inner_map);
-+		zfree(&map->inner_map);
-+	}
- 	map->inner_map_fd = fd;
- 	return 0;
- }
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index f76de106570d2..f33e7228a1010 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -237,7 +237,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	const struct wcn36xx_rate *rate;
+ 	struct ieee80211_hdr *hdr;
+ 	struct wcn36xx_rx_bd *bd;
+-	struct ieee80211_supported_band *sband;
+ 	u16 fc, sn;
+ 
+ 	/*
+@@ -295,12 +294,11 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 		status.enc_flags = rate->encoding_flags;
+ 		status.bw = rate->bw;
+ 		status.rate_idx = rate->mcs_or_legacy_index;
+-		sband = wcn->hw->wiphy->bands[status.band];
+ 		status.nss = 1;
+ 
+ 		if (status.band == NL80211_BAND_5GHZ &&
+ 		    status.encoding == RX_ENC_LEGACY &&
+-		    status.rate_idx >= sband->n_bitrates) {
++		    status.rate_idx >= 4) {
+ 			/* no dsss rates in 5Ghz rates table */
+ 			status.rate_idx -= 4;
+ 		}
 -- 
 2.34.1
 
