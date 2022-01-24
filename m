@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2AEFCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C014C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:54:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1574800AbiAXVuX (ORCPT
+        id S1574834AbiAXVua (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:50:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448767AbiAXVNq (ORCPT
+        Mon, 24 Jan 2022 16:50:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35284 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1448850AbiAXVN7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:13:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F423C09F48F;
-        Mon, 24 Jan 2022 12:11:07 -0800 (PST)
+        Mon, 24 Jan 2022 16:13:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 360C4B81229;
-        Mon, 24 Jan 2022 20:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66800C340E5;
-        Mon, 24 Jan 2022 20:11:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9713F61469;
+        Mon, 24 Jan 2022 21:13:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CE87C340E5;
+        Mon, 24 Jan 2022 21:13:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055064;
-        bh=CJ40P4ApaPT+yCkIt+R5SbXdg418MmTbXEyQxB9sxMU=;
+        s=korg; t=1643058838;
+        bh=4Xtodu3zTAwAMpuKMCIK/bIZ2u4C1XrKH2z0fYjbXBA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ekvRSSrmktBXuhiQiXLkk3eUU4AdxXm4XC/CdNrsf9K9JB0u7EwFs3Z8AjWLTd+2E
-         iNjXWYnRyAzTGChBzRBtmquEo7Z7GQZomT+qhEFhmZV/i0J9rBHO36xVrqfALBqMUa
-         nwqOaNmQ+C3DgwPhtWH/wFsBWEsPit4TkWzgQjNs=
+        b=qchwmpts16Qt1u53wOHHjfgdjcwZj1Vyi86ugZaUYws1lM2gaWW/i8K31ZUacDLij
+         /7/gX8EKsjSRWOsu0iK/0mYD21ecErM2yfOGpXkh21vhp7YZzqgTqGq1gSZmjhNkn8
+         ZBso9g0lKXt1lM5LTP2qnqf9/gIKazhIG4nso/TQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.15 029/846] crypto: x86/aesni - dont require alignment of data
-Date:   Mon, 24 Jan 2022 19:32:26 +0100
-Message-Id: <20220124184101.923485350@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>
+Subject: [PATCH 5.16 0419/1039] mptcp: fix opt size when sending DSS + MP_FAIL
+Date:   Mon, 24 Jan 2022 19:36:48 +0100
+Message-Id: <20220124184139.391651474@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,51 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Matthieu Baerts <matthieu.baerts@tessares.net>
 
-commit d480a26bdf872529919e7c30e17f79d0d7b8c4da upstream.
+[ Upstream commit 04fac2cae9422a3401c172571afbcfdd58fa5c7e ]
 
-x86 AES-NI routines can deal with unaligned data. Crypto context
-(key, iv etc.) have to be aligned but we take care of that separately
-by copying it onto the stack. We were feeding unaligned data into
-crypto routines up until commit 83c83e658863 ("crypto: aesni -
-refactor scatterlist processing") switched to use the full
-skcipher API which uses cra_alignmask to decide data alignment.
+When these two options had to be sent -- which is not common -- the DSS
+size was not being taken into account in the remaining size.
 
-This fixes 21% performance regression in kTLS.
+Additionally in this situation, the reported size was only the one of
+the MP_FAIL which can cause issue if at the end, we need to write more
+in the TCP options than previously said.
 
-Tested by booting with CONFIG_CRYPTO_MANAGER_EXTRA_TESTS=y
-(and running thru various kTLS packets).
+Here we use a dedicated variable for MP_FAIL size to keep the
+WARN_ON_ONCE() just after.
 
-CC: stable@vger.kernel.org # 5.15+
-Fixes: 83c83e658863 ("crypto: aesni - refactor scatterlist processing")
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: c25aeb4e0953 ("mptcp: MP_FAIL suboption sending")
+Acked-and-tested-by: Geliang Tang <geliang.tang@suse.com>
+Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/crypto/aesni-intel_glue.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/mptcp/options.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
---- a/arch/x86/crypto/aesni-intel_glue.c
-+++ b/arch/x86/crypto/aesni-intel_glue.c
-@@ -1107,7 +1107,7 @@ static struct aead_alg aesni_aeads[] = {
- 		.cra_flags		= CRYPTO_ALG_INTERNAL,
- 		.cra_blocksize		= 1,
- 		.cra_ctxsize		= sizeof(struct aesni_rfc4106_gcm_ctx),
--		.cra_alignmask		= AESNI_ALIGN - 1,
-+		.cra_alignmask		= 0,
- 		.cra_module		= THIS_MODULE,
- 	},
- }, {
-@@ -1124,7 +1124,7 @@ static struct aead_alg aesni_aeads[] = {
- 		.cra_flags		= CRYPTO_ALG_INTERNAL,
- 		.cra_blocksize		= 1,
- 		.cra_ctxsize		= sizeof(struct generic_gcmaes_ctx),
--		.cra_alignmask		= AESNI_ALIGN - 1,
-+		.cra_alignmask		= 0,
- 		.cra_module		= THIS_MODULE,
- 	},
- } };
+diff --git a/net/mptcp/options.c b/net/mptcp/options.c
+index fe98e4f475baa..96c6efdd48bcc 100644
+--- a/net/mptcp/options.c
++++ b/net/mptcp/options.c
+@@ -821,10 +821,13 @@ bool mptcp_established_options(struct sock *sk, struct sk_buff *skb,
+ 	if (mptcp_established_options_mp(sk, skb, snd_data_fin, &opt_size, remaining, opts))
+ 		ret = true;
+ 	else if (mptcp_established_options_dss(sk, skb, snd_data_fin, &opt_size, remaining, opts)) {
++		unsigned int mp_fail_size;
++
+ 		ret = true;
+-		if (mptcp_established_options_mp_fail(sk, &opt_size, remaining, opts)) {
+-			*size += opt_size;
+-			remaining -= opt_size;
++		if (mptcp_established_options_mp_fail(sk, &mp_fail_size,
++						      remaining - opt_size, opts)) {
++			*size += opt_size + mp_fail_size;
++			remaining -= opt_size - mp_fail_size;
+ 			return true;
+ 		}
+ 	}
+-- 
+2.34.1
+
 
 
