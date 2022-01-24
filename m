@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 846B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:29:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBF29C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:29:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231531AbiAXT3E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:29:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43896 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347071AbiAXTOc (ORCPT
+        id S1348169AbiAXT3U (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:29:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48688 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346589AbiAXTOU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:14:32 -0500
+        Mon, 24 Jan 2022 14:14:20 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1179BC06177D;
+        Mon, 24 Jan 2022 11:06:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 762CF6090A;
-        Mon, 24 Jan 2022 19:14:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D7BBC340E5;
-        Mon, 24 Jan 2022 19:14:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A509960E8D;
+        Mon, 24 Jan 2022 19:06:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 81612C340E5;
+        Mon, 24 Jan 2022 19:06:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051670;
-        bh=d4twU/xt8Evsjk78l3La49ircXkQ1OuoTKgMSn0/0D8=;
+        s=korg; t=1643051162;
+        bh=hvwqAWRJ4apn+57AcPKoLybt+PMGly9Vz3DbNf3/Zgk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TPrR0ymUlNpdCeeCTRMIkuxzExjbLgoJhXsAImRBii6tr1GrnwhhhOmccNXjh+FrZ
-         Rk45hLiaOTJAprlOR2PjeMgVrX7ZWzPFvdRyifSHRl/ScuArQyVKqSVS28vQtJCMm5
-         8zXPhOMx5iPLt5Y3u8JQbsb5fA/pOpUmCAYkG4rk=
+        b=jlSpWBQUyiPDsQbKb1OBdUXeW4EwI3ustEMTR5KLKM2fI0QxbobayaNZD5mi8pvZm
+         i7aEbci1X24RReqHPbZl9sAkbqwUFoaWduoiHK8Oc4mP+85IdzXZSDz17M17i25vMo
+         e/sW5yyughKZ3+Vc/Zq1jXFCaPVYjyi4ojdYSOJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dillon Min <dillon.minfei@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 050/239] media: videobuf2: Fix the size printk format
-Date:   Mon, 24 Jan 2022 19:41:28 +0100
-Message-Id: <20220124183944.727868893@linuxfoundation.org>
+Subject: [PATCH 4.14 042/186] tty: serial: atmel: Call dma_async_issue_pending()
+Date:   Mon, 24 Jan 2022 19:41:57 +0100
+Message-Id: <20220124183938.479526891@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,48 +50,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dillon Min <dillon.minfei@gmail.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit c9ee220d76775e42f35d634479c978d9350077d3 ]
+[ Upstream commit 4f4b9b5895614eb2e2b5f4cab7858f44bd113e1b ]
 
-Since the type of parameter size is unsigned long,
-it should printk by %lu, instead of %ld, fix it.
+The driver wrongly assummed that tx_submit() will start the transfer,
+which is not the case, now that the at_xdmac driver is fixed. tx_submit
+is supposed to push the current transaction descriptor to a pending queue,
+waiting for issue_pending to be called. issue_pending must start the
+transfer, not tx_submit.
 
-Fixes: 7952be9b6ece ("media: drivers/media/common/videobuf2: rename from videobuf")
-Signed-off-by: Dillon Min <dillon.minfei@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 34df42f59a60 ("serial: at91: add rx dma support")
+Fixes: 08f738be88bb ("serial: at91: add tx dma support")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211125090028.786832-4-tudor.ambarus@microchip.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/videobuf2/videobuf2-dma-contig.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/tty/serial/atmel_serial.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/media/common/videobuf2/videobuf2-dma-contig.c b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-index aff0ab7bf83d5..bbd5716d4c9cb 100644
---- a/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-+++ b/drivers/media/common/videobuf2/videobuf2-dma-contig.c
-@@ -154,7 +154,7 @@ static void *vb2_dc_alloc(struct device *dev, unsigned long attrs,
- 	buf->cookie = dma_alloc_attrs(dev, size, &buf->dma_addr,
- 					GFP_KERNEL | gfp_flags, buf->attrs);
- 	if (!buf->cookie) {
--		dev_err(dev, "dma_alloc_coherent of size %ld failed\n", size);
-+		dev_err(dev, "dma_alloc_coherent of size %lu failed\n", size);
- 		kfree(buf);
- 		return ERR_PTR(-ENOMEM);
+diff --git a/drivers/tty/serial/atmel_serial.c b/drivers/tty/serial/atmel_serial.c
+index 9a56b88df95f8..4da5604d7385a 100644
+--- a/drivers/tty/serial/atmel_serial.c
++++ b/drivers/tty/serial/atmel_serial.c
+@@ -930,6 +930,8 @@ static void atmel_tx_dma(struct uart_port *port)
+ 				atmel_port->cookie_tx);
+ 			return;
+ 		}
++
++		dma_async_issue_pending(chan);
  	}
-@@ -206,9 +206,9 @@ static int vb2_dc_mmap(void *buf_priv, struct vm_area_struct *vma)
  
- 	vma->vm_ops->open(vma);
+ 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
+@@ -1194,6 +1196,8 @@ static int atmel_prepare_rx_dma(struct uart_port *port)
+ 		goto chan_err;
+ 	}
  
--	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %ld\n",
--		__func__, (unsigned long)buf->dma_addr, vma->vm_start,
--		buf->size);
-+	pr_debug("%s: mapped dma addr 0x%08lx at 0x%08lx, size %lu\n",
-+		 __func__, (unsigned long)buf->dma_addr, vma->vm_start,
-+		 buf->size);
- 
++	dma_async_issue_pending(atmel_port->chan_rx);
++
  	return 0;
- }
+ 
+ chan_err:
 -- 
 2.34.1
 
