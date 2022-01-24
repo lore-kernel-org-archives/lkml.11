@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C98DC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0771C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576792AbiAXV4Y (ORCPT
+        id S1576519AbiAXVzK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:56:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450887AbiAXVVn (ORCPT
+        Mon, 24 Jan 2022 16:55:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44000 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450827AbiAXVVa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:21:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56EC0C0604E4;
-        Mon, 24 Jan 2022 12:16:36 -0800 (PST)
+        Mon, 24 Jan 2022 16:21:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EB845611CD;
-        Mon, 24 Jan 2022 20:16:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D425BC340E5;
-        Mon, 24 Jan 2022 20:16:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 64260614D8;
+        Mon, 24 Jan 2022 21:21:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4407EC340E4;
+        Mon, 24 Jan 2022 21:21:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055395;
-        bh=QA8+oOIsCW4SEIRGEnJ6v+finhlrCS8bNEytK881OKw=;
+        s=korg; t=1643059289;
+        bh=EZGfL1TCmkidrIE1+PMXiJ6X9E2Pb7CtXObzgF6wVFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=M3d0zvkQjcGslb1qbw+C8LbdHJPk8khVuCa8PFClLorIAbxwtSALlsnD8cQnwWZaE
-         06kI9dO7F1zD5A0UIZ7H+ZCoKCIrI1QgoTVPHSW3IAhh9X80cIT+uMD3Z4T87XPP8g
-         GFGXGZGYgWGLSEcMHmKhPMZ+csCLYNXKJcWYVIT4=
+        b=URpk6Iuf87etJww0OLpVRGEVtTKLYFULytJT6+hbV8ccaa0vTPjPYpBQhAp5OWPMd
+         pM5/gfhWHenzk5Qpcje65CKt7nDrrGLO6iY7hi8iBpm/zHurlT/hMQXkkgzvmHZYde
+         wQ6DpbHmJ4C/o5AYphOFn0WfT3nwCiTGDfXqjLdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wolfgang Ocker <weo@reccoware.de>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org,
+        Amjad Ouled-Ameur <aouledameur@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 137/846] crypto: atmel-aes - Reestablish the correct tfm context at dequeue
-Date:   Mon, 24 Jan 2022 19:34:14 +0100
-Message-Id: <20220124184105.717837467@linuxfoundation.org>
+Subject: [PATCH 5.16 0566/1039] usb: dwc3: meson-g12a: fix shared reset control use
+Date:   Mon, 24 Jan 2022 19:39:15 +0100
+Message-Id: <20220124184144.353212169@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,74 +48,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
 
-[ Upstream commit 6d48de655917a9d782953eba65de4e3db593ddf0 ]
+[ Upstream commit 4ce3b45704d5ef46fb4b28083c8aba6716fabf3b ]
 
-In case there were more requests from different tfms in the crypto
-queue, only the context of the last initialized tfm was considered.
+reset_control_(de)assert() calls are called on a shared reset line when
+reset_control_reset has been used. This is not allowed by the reset
+framework.
 
-Fixes: ec2088b66f7a ("crypto: atmel-aes - Allocate aes dev at tfm init time")
-Reported-by: Wolfgang Ocker <weo@reccoware.de>
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Use reset_control_rearm() call in suspend() and remove() as a way to state
+that the resource is no longer used, hence the shared reset line
+may be triggered again by other devices. Use reset_control_rearm() also in
+case probe fails after reset() has been called.
+
+reset_control_rearm() keeps use of triggered_count sane in the reset
+framework, use of reset_control_reset() on shared reset line should be
+balanced with reset_control_rearm().
+
+Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+Reported-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20211112162827.128319-3-aouledameur@baylibre.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/atmel-aes.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+ drivers/usb/dwc3/dwc3-meson-g12a.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/crypto/atmel-aes.c b/drivers/crypto/atmel-aes.c
-index 9391ccc03382d..fe05584031914 100644
---- a/drivers/crypto/atmel-aes.c
-+++ b/drivers/crypto/atmel-aes.c
-@@ -960,6 +960,7 @@ static int atmel_aes_handle_queue(struct atmel_aes_dev *dd,
- 	ctx = crypto_tfm_ctx(areq->tfm);
+diff --git a/drivers/usb/dwc3/dwc3-meson-g12a.c b/drivers/usb/dwc3/dwc3-meson-g12a.c
+index d0f9b7c296b0d..bd814df3bf8b8 100644
+--- a/drivers/usb/dwc3/dwc3-meson-g12a.c
++++ b/drivers/usb/dwc3/dwc3-meson-g12a.c
+@@ -755,16 +755,16 @@ static int dwc3_meson_g12a_probe(struct platform_device *pdev)
  
- 	dd->areq = areq;
-+	dd->ctx = ctx;
- 	start_async = (areq != new_areq);
- 	dd->is_async = start_async;
+ 	ret = dwc3_meson_g12a_get_phys(priv);
+ 	if (ret)
+-		goto err_disable_clks;
++		goto err_rearm;
  
-@@ -1274,7 +1275,6 @@ static int atmel_aes_init_tfm(struct crypto_skcipher *tfm)
+ 	ret = priv->drvdata->setup_regmaps(priv, base);
+ 	if (ret)
+-		goto err_disable_clks;
++		goto err_rearm;
  
- 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_start;
+ 	if (priv->vbus) {
+ 		ret = regulator_enable(priv->vbus);
+ 		if (ret)
+-			goto err_disable_clks;
++			goto err_rearm;
+ 	}
+ 
+ 	/* Get dr_mode */
+@@ -825,6 +825,9 @@ err_disable_regulator:
+ 	if (priv->vbus)
+ 		regulator_disable(priv->vbus);
+ 
++err_rearm:
++	reset_control_rearm(priv->reset);
++
+ err_disable_clks:
+ 	clk_bulk_disable_unprepare(priv->drvdata->num_clks,
+ 				   priv->drvdata->clks);
+@@ -852,6 +855,8 @@ static int dwc3_meson_g12a_remove(struct platform_device *pdev)
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_set_suspended(dev);
+ 
++	reset_control_rearm(priv->reset);
++
+ 	clk_bulk_disable_unprepare(priv->drvdata->num_clks,
+ 				   priv->drvdata->clks);
+ 
+@@ -892,7 +897,7 @@ static int __maybe_unused dwc3_meson_g12a_suspend(struct device *dev)
+ 		phy_exit(priv->phys[i]);
+ 	}
+ 
+-	reset_control_assert(priv->reset);
++	reset_control_rearm(priv->reset);
  
  	return 0;
-@@ -1291,7 +1291,6 @@ static int atmel_aes_ctr_init_tfm(struct crypto_skcipher *tfm)
+ }
+@@ -902,7 +907,9 @@ static int __maybe_unused dwc3_meson_g12a_resume(struct device *dev)
+ 	struct dwc3_meson_g12a *priv = dev_get_drvdata(dev);
+ 	int i, ret;
  
- 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_ctr_start;
+-	reset_control_deassert(priv->reset);
++	ret = reset_control_reset(priv->reset);
++	if (ret)
++		return ret;
  
- 	return 0;
-@@ -1783,7 +1782,6 @@ static int atmel_aes_gcm_init(struct crypto_aead *tfm)
- 
- 	crypto_aead_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_gcm_start;
- 
- 	return 0;
-@@ -1927,7 +1925,6 @@ static int atmel_aes_xts_init_tfm(struct crypto_skcipher *tfm)
- 	crypto_skcipher_set_reqsize(tfm, sizeof(struct atmel_aes_reqctx) +
- 				    crypto_skcipher_reqsize(ctx->fallback_tfm));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_xts_start;
- 
- 	return 0;
-@@ -2154,7 +2151,6 @@ static int atmel_aes_authenc_init_tfm(struct crypto_aead *tfm,
- 	crypto_aead_set_reqsize(tfm, (sizeof(struct atmel_aes_authenc_reqctx) +
- 				      auth_reqsize));
- 	ctx->base.dd = dd;
--	ctx->base.dd->ctx = &ctx->base;
- 	ctx->base.start = atmel_aes_authenc_start;
- 
- 	return 0;
+ 	ret = priv->drvdata->usb_init(priv);
+ 	if (ret)
 -- 
 2.34.1
 
