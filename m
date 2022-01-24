@@ -2,95 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6465C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1453C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455529AbiAXVfe (ORCPT
+        id S1455576AbiAXVfk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:35:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44392 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392277AbiAXUvB (ORCPT
+        Mon, 24 Jan 2022 16:35:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:32393 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1392240AbiAXUuz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:51:01 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2C4DC60C60;
-        Mon, 24 Jan 2022 20:50:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08C27C340E5;
-        Mon, 24 Jan 2022 20:50:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057458;
-        bh=p0y5hJByeFplk5ECbWCT3NibhmV/f6yWSLLTnzSRmkU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lu03jff0stm+RoIN1RUrVVMv2o4R+gOoSPSQTQz/dxQmOTYvyT2cGVIcJ9MEikP2A
-         3DxvH2RH5s7ramByfXwP+8Q5EZGpmznzHikvF9dEPRa+ZCPMliUqXGTL+v+ApBrJGe
-         TQKSQJfVepY2zK2D7DyYaRDa/vrBCBHq7ElCDh0c=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 818/846] dmaengine: at_xdmac: Fix concurrency over xfers_list
-Date:   Mon, 24 Jan 2022 19:45:35 +0100
-Message-Id: <20220124184129.118939908@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 15:50:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643057451;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=W5c5UK/SJnH0GNmhSmScmYGQtLKcq6CRrf3IVpkQpYk=;
+        b=bERgZotDNF3uBtRN5dm90botcvVebA2zmgOmHu9iGk32hDGiTvA+Yk/P4JFKSNngyehMkT
+        cPR85KPlL7Pmfm0YPbBnbSwzPFVoMIXK/dSC2K64ds5rWFVbCkwrnfzeXU5F3fyXCG9Lz4
+        BOI8Cvb+sfjJAwesaxu5ATB9pHtdG3M=
+Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
+ [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-250-FaeU1DAhMQmTHL3PgqhTjw-1; Mon, 24 Jan 2022 15:50:50 -0500
+X-MC-Unique: FaeU1DAhMQmTHL3PgqhTjw-1
+Received: by mail-oi1-f197.google.com with SMTP id r17-20020a056808211100b002cda6863beaso1641551oiw.14
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:50:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=W5c5UK/SJnH0GNmhSmScmYGQtLKcq6CRrf3IVpkQpYk=;
+        b=sI1Gy6R4ub3LYOSMkw26zqxxs6yTzu/fjlXC1rkxJj+ZMIN9qKI8ykjXtha9AhkGYe
+         YNtTirY5Ol28WMwG/WDdUToz2czrCYxbH4qIKX7xmgBkDqeepxY1py0ZPCj68BshXJet
+         htq16gpFcm6b70WokmSd3EhN+HALL5mytAomhdrfCIuWSf+hli+oIZx69TnMMI2bQlY3
+         illE+2gZ5Uhl2oLwB/tv/YiS5NZIEWPRqbtzyPQCW+LBvehc6dSDhOojXsTU7ywcWWTB
+         /PeG6488AIskZchpm0gq+uGkwXqUkAEtKPU1nt7z6IwO81U6beidfBoFWMT3yXSCJ7wf
+         G3fw==
+X-Gm-Message-State: AOAM530OQVLx6GwBYFeF1h1C1OqZbZuVyfGlWCvAlbeGFHlo6zkLVpkY
+        8JhAoRsWSNp2ZAV7di1wBbBQhK0odv+r14j8UeTLXxMP2nh+LHfvukqr5EocFd/7e8KQQqNHOCn
+        KvYOocFve+3lT0UvLdF+bVtRfYNWSCX78v35v+gFuH+H8MyvOTPaP3Xl7XNEZssj4UhYyxog=
+X-Received: by 2002:a4a:4584:: with SMTP id y126mr4402248ooa.80.1643057449485;
+        Mon, 24 Jan 2022 12:50:49 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzAYU9XhxKMknK71q/gt6tjzBlHExLAImx5gFnEHVWq6mED4gVTXkTaRslPZ563SVTMYqb27g==
+X-Received: by 2002:a4a:4584:: with SMTP id y126mr4402228ooa.80.1643057449212;
+        Mon, 24 Jan 2022 12:50:49 -0800 (PST)
+Received: from localhost.localdomain (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id s11sm2531756otq.69.2022.01.24.12.50.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 24 Jan 2022 12:50:48 -0800 (PST)
+Subject: Re: [PATCH] lib: zstd: clean up double word in comment.
+To:     Nick Terrell <terrelln@fb.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220120132006.749016-1-trix@redhat.com>
+ <BFE23560-5B80-4876-9FAA-726E0E9AADC1@fb.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <0e972d79-aeb0-670f-ba1f-0adea7306084@redhat.com>
+Date:   Mon, 24 Jan 2022 12:50:47 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <BFE23560-5B80-4876-9FAA-726E0E9AADC1@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 18deddea9184b62941395889ff7659529c877326 upstream.
+On 1/24/22 12:18 PM, Nick Terrell wrote:
+>
+>> On Jan 20, 2022, at 5:20 AM, trix@redhat.com wrote:
+>>
+>> From: Tom Rix <trix@redhat.com>
+>>
+>> Remove the second 'a' and 'into'.
+> Thanks for the patch!
+>
+> I'll merge this into my tree and get this into the 5.18 merge window.
+>
+> If you are able to, can you please submit this patch as a PR upstream [0]?
+> Else, I will backport it before my next update. Either way I'll merge this patch.
 
-Since tx_submit can be called from a hard IRQ, xfers_list must be
-protected with a lock to avoid concurency on the list's elements.
-Since at_xdmac_handle_cyclic() is called from a tasklet, spin_lock_irq
-is enough to protect from a hard IRQ.
+yes, here it is
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-8-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
----
- drivers/dma/at_xdmac.c |   17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+https://github.com/facebook/zstd/pull/3026
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1619,14 +1619,17 @@ static void at_xdmac_handle_cyclic(struc
- 	struct at_xdmac_desc		*desc;
- 	struct dma_async_tx_descriptor	*txd;
- 
--	if (!list_empty(&atchan->xfers_list)) {
--		desc = list_first_entry(&atchan->xfers_list,
--					struct at_xdmac_desc, xfer_node);
--		txd = &desc->tx_dma_desc;
--
--		if (txd->flags & DMA_PREP_INTERRUPT)
--			dmaengine_desc_get_callback_invoke(txd, NULL);
-+	spin_lock_irq(&atchan->lock);
-+	if (list_empty(&atchan->xfers_list)) {
-+		spin_unlock_irq(&atchan->lock);
-+		return;
- 	}
-+	desc = list_first_entry(&atchan->xfers_list, struct at_xdmac_desc,
-+				xfer_node);
-+	spin_unlock_irq(&atchan->lock);
-+	txd = &desc->tx_dma_desc;
-+	if (txd->flags & DMA_PREP_INTERRUPT)
-+		dmaengine_desc_get_callback_invoke(txd, NULL);
- }
- 
- static void at_xdmac_handle_error(struct at_xdmac_chan *atchan)
+Tom
 
+>
+> Best,
+> Nick Terrell
+>
+> [0] https://github.com/facebook/zstd/blob/dev/lib/zstd.h#L1396-L1407
+>
+>> Signed-off-by: Tom Rix <trix@redhat.com>
+>> ---
+>> include/linux/zstd_lib.h | 4 ++--
+>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/linux/zstd_lib.h b/include/linux/zstd_lib.h
+>> index b8c7dbf98390f..6b91758b61af9 100644
+>> --- a/include/linux/zstd_lib.h
+>> +++ b/include/linux/zstd_lib.h
+>> @@ -1330,7 +1330,7 @@ ZSTDLIB_API size_t ZSTD_generateSequences(ZSTD_CCtx* zc, ZSTD_Sequence* outSeqs,
+>>
+>> /*! ZSTD_mergeBlockDelimiters() :
+>>   * Given an array of ZSTD_Sequence, remove all sequences that represent block delimiters/last literals
+>> - * by merging them into into the literals of the next sequence.
+>> + * by merging them into the literals of the next sequence.
+>>   *
+>>   * As such, the final generated result has no explicit representation of block boundaries,
+>>   * and the final last literals segment is not represented in the sequences.
+>> @@ -1377,7 +1377,7 @@ ZSTDLIB_API size_t ZSTD_compressSequences(ZSTD_CCtx* const cctx, void* dst, size
+>> /*! ZSTD_writeSkippableFrame() :
+>>   * Generates a zstd skippable frame containing data given by src, and writes it to dst buffer.
+>>   *
+>> - * Skippable frames begin with a a 4-byte magic number. There are 16 possible choices of magic number,
+>> + * Skippable frames begin with a 4-byte magic number. There are 16 possible choices of magic number,
+>>   * ranging from ZSTD_MAGIC_SKIPPABLE_START to ZSTD_MAGIC_SKIPPABLE_START+15.
+>>   * As such, the parameter magicVariant controls the exact skippable frame magic number variant used, so
+>>   * the magic number used will be ZSTD_MAGIC_SKIPPABLE_START + magicVariant.
+>> -- 
+>> 2.26.3
+>>
 
