@@ -2,41 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 501EFC41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A877C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344873AbiAXTPt (ORCPT
+        id S1345074AbiAXTPx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:15:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36290 "EHLO
+        Mon, 24 Jan 2022 14:15:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36230 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345767AbiAXTGX (ORCPT
+        with ESMTP id S1345297AbiAXTGR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:06:23 -0500
+        Mon, 24 Jan 2022 14:06:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 21FD560B86;
-        Mon, 24 Jan 2022 19:06:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE1DCC340E5;
-        Mon, 24 Jan 2022 19:06:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0FF766121F;
+        Mon, 24 Jan 2022 19:06:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A74C340E5;
+        Mon, 24 Jan 2022 19:06:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051181;
-        bh=MJJ8negSy+ve/uRVf/CAfpvBZyQ7XE5bk9WJWThHUtc=;
+        s=korg; t=1643051175;
+        bh=6YLW78DEnS5dNSAdV+HGmI0LffLmBTnA0Y1T2eBhgkI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RXp2D6WK0eRxyZspcmqIH1LTsRNznofiBCIEM/IzB8pS5bbBhd3XH1OoOdmiq7xIg
-         /9VBjB7XAfr5Jr4/gIFrOZcACu8k3tNRP/uRMb4LPPwyz7hWUY/i0tIatB9AT/5Jnb
-         9DlfGGSHSZAytdt7+rxOIQBcDgZUtX/6Zo4tZUOY=
+        b=BVCbacquuWrw6T7+hOi9v3TBm2mAYmRmSkBnGk+FYncj02+R6/eLbdHqGinZp8vk1
+         Af+c4g/uuCbcPQaM/1zE+z0RTa1svKe3i7P3tBY+Y0f3gXa5h22wRIOZNLDDAAZGr8
+         OfnnGJOhlWBjw+zT7HUPv/WcUbTBQbPArwcIzF2Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Brown <broonie@kernel.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 081/186] ASoC: samsung: idma: Check of ioremap return value
-Date:   Mon, 24 Jan 2022 19:42:36 +0100
-Message-Id: <20220124183939.725682278@linuxfoundation.org>
+Subject: [PATCH 4.14 071/186] ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:42:26 +0100
+Message-Id: <20220124183939.410438986@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -48,37 +46,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 3ecb46755eb85456b459a1a9f952c52986bce8ec ]
+[ Upstream commit 80bd64af75b4bb11c0329bc66c35da2ddfb66d88 ]
 
-Because of the potential failure of the ioremap(), the buf->area could
-be NULL.
-Therefore, we need to check it and return -ENOMEM in order to transfer
-the error.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-Fixes: f09aecd50f39 ("ASoC: SAMSUNG: Add I2S0 internal dma driver")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Link: https://lore.kernel.org/r/20211228034026.1659385-1-jiasheng@iscas.ac.cn
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes: d13bd412dce2 ("ALSA: hda - Manage kcontrol lists")
+Link: https://lore.kernel.org/r/20211116071314.15065-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/samsung/idma.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/pci/hda/hda_codec.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/sound/soc/samsung/idma.c b/sound/soc/samsung/idma.c
-index a635df61f928c..2a6ffb2abb338 100644
---- a/sound/soc/samsung/idma.c
-+++ b/sound/soc/samsung/idma.c
-@@ -369,6 +369,8 @@ static int preallocate_idma_buffer(struct snd_pcm *pcm, int stream)
- 	buf->addr = idma.lp_tx_addr;
- 	buf->bytes = idma_hardware.buffer_bytes_max;
- 	buf->area = (unsigned char * __force)ioremap(buf->addr, buf->bytes);
-+	if (!buf->area)
-+		return -ENOMEM;
- 
- 	return 0;
+diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
+index a56f018d586f5..8ec73955170b4 100644
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -1680,8 +1680,11 @@ void snd_hda_ctls_clear(struct hda_codec *codec)
+ {
+ 	int i;
+ 	struct hda_nid_item *items = codec->mixers.list;
++
++	down_write(&codec->card->controls_rwsem);
+ 	for (i = 0; i < codec->mixers.used; i++)
+ 		snd_ctl_remove(codec->card, items[i].kctl);
++	up_write(&codec->card->controls_rwsem);
+ 	snd_array_free(&codec->mixers);
+ 	snd_array_free(&codec->nids);
  }
 -- 
 2.34.1
