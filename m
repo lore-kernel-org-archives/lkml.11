@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ABFEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:42:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C3BC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:42:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346154AbiAXTmj (ORCPT
+        id S1349979AbiAXTmo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:42:39 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55624 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352225AbiAXTce (ORCPT
+        Mon, 24 Jan 2022 14:42:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33078 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348370AbiAXTeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:32:34 -0500
+        Mon, 24 Jan 2022 14:34:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32B45B8122F;
-        Mon, 24 Jan 2022 19:32:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65705C340E5;
-        Mon, 24 Jan 2022 19:32:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0245D614DA;
+        Mon, 24 Jan 2022 19:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 132E2C340E5;
+        Mon, 24 Jan 2022 19:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052747;
-        bh=DAO4tYwqdARcTANi8ZVt/gONjK/k/ESqgOqBbagLP1I=;
+        s=korg; t=1643052853;
+        bh=LrpabL+wuM/+nyKF87fxZioZKj1x5/6s1eLkOzRY2fU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WgXw+SSDsuHknmkbFyi5Mr1T7qLubIW7S1AaLkSBVQUVJUNO8AcjApBKQW5M56Uas
-         KowftTt+h273oK+K+6Uqke6Zo3KtfjlPOQR2lb/1ZlPgPgsKUmB2qWj5L5R2wIQ20m
-         1nVnFc+po7czqQGE+tmQj+FsLHtY4PNOmHt/CaRY=
+        b=TI8YxfgyLtVTpnlopVBY9o34bsZzUNfE8xgjfm0RlcUnM9Zc/989kFdzGFc1zjAXo
+         0SIeF6MJE3DEBBhEUqo6QdlANhAMXSXQWJjBb53Jh1O0ktJiNPN8af8I1Ig0CtROcZ
+         cf/FIhkomdfl5mxHecRUW4CVSJSwdwaV+Puak+5Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 160/320] usb: gadget: f_fs: Use stream_open() for endpoint files
-Date:   Mon, 24 Jan 2022 19:42:24 +0100
-Message-Id: <20220124183959.083332678@linuxfoundation.org>
+Subject: [PATCH 5.4 195/320] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
+Date:   Mon, 24 Jan 2022 19:42:59 +0100
+Message-Id: <20220124184000.275002434@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,63 +46,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
+[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
 
-Function fs endpoint file operations are synchronized via an interruptible
-mutex wait. However we see threads that do ep file operations concurrently
-are getting blocked for the mutex lock in __fdget_pos(). This is an
-uninterruptible wait and we see hung task warnings and kernel panic
-if hung_task_panic systcl is enabled if host does not send/receive
-the data for long time.
+The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
+MiB - 1. This was likely presumed to be the "limit" rather than length.
+Fix it up.
 
-The reason for threads getting blocked in __fdget_pos() is due to
-the file position protection introduced by the commit 9c225f2655e3
-("vfs: atomic f_pos accesses as per POSIX"). Since function fs
-endpoint files does not have the notion of the file position, switch
-to the stream mode. This will bypass the file position mutex and
-threads will be blocked in interruptible state for the function fs
-mutex.
-
-It should not affects user space as we are only changing the task state
-changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
-for the USB transfers to be finished. However there is a slight change to
-the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
-getting blocked inside fdget_pos(). Now they reach to function fs and error
-code is returned. The non blocking behavior is actually honoured now.
-
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index 3f5c21f7f9905..2bea33b41553b 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
- 	file->private_data = ffs;
- 	ffs_data_opened(ffs);
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index 9abf0cb1dd67f..4457262750734 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -709,7 +709,7 @@
  
--	return 0;
-+	return stream_open(inode, file);
- }
+ 	ccplex@e000000 {
+ 		compatible = "nvidia,tegra186-ccplex-cluster";
+-		reg = <0x0 0x0e000000 0x0 0x3fffff>;
++		reg = <0x0 0x0e000000 0x0 0x400000>;
  
- static int ffs_ep0_release(struct inode *inode, struct file *file)
-@@ -1156,7 +1156,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
- 	file->private_data = epfile;
- 	ffs_data_opened(epfile->ffs);
- 
--	return 0;
-+	return stream_open(inode, file);
- }
- 
- static int ffs_aio_cancel(struct kiocb *kiocb)
+ 		nvidia,bpmp = <&bpmp>;
+ 	};
 -- 
 2.34.1
 
