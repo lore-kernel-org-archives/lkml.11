@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A369BC4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 433FDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353530AbiAXTe4 (ORCPT
+        id S1353735AbiAXTfS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:34:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53914 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351281AbiAXT0S (ORCPT
+        Mon, 24 Jan 2022 14:35:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52008 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347073AbiAXT1l (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:26:18 -0500
+        Mon, 24 Jan 2022 14:27:41 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199D9C08E7BF;
+        Mon, 24 Jan 2022 11:12:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99AB961488;
-        Mon, 24 Jan 2022 19:26:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4F67C340E5;
-        Mon, 24 Jan 2022 19:26:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC106B8122F;
+        Mon, 24 Jan 2022 19:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34347C340E8;
+        Mon, 24 Jan 2022 19:12:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052377;
-        bh=72uVLfWtCUTcy40tSIsRs3Qyj1G0Z5DXq+tMgL7Yfqs=;
+        s=korg; t=1643051570;
+        bh=N8Rgi53AUy+5nlRNc2Il+oQgNwWJTC8Or3+tDrNCYHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L9QzUtzUbdFeAz7VdbD1eimFhCqzX0+QveElqTaHnMAu+quz/tE+5LMmQXeYQVSVE
-         wAhlVlUrJeTyQQmdpkRi+S8TXw/XIahpf2w2LkjNXYj/Tc9LxaYvO5HJr/sYZyyMKN
-         tx7LHd+httazakaCBgPOAg3lEH0OVl5ZwUZcPWKI=
+        b=C9xReAzji9iIjedf3BxmJuhuZzhI0r11+gkq4l3DcGZQ/5w51b0+l8fDgluQONEGz
+         0NFMH8eqf5/RaJ+nItYEO3JzNdMqY49WWh30VpVbggjudMeqz2NoNurE2b6T7xKzjx
+         VHovutbhtltDZSux8TQ1OWRGw4J2f0hNg2u2iHPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 039/320] clk: bcm-2835: Remove rounding up the dividers
-Date:   Mon, 24 Jan 2022 19:40:23 +0100
-Message-Id: <20220124183955.088147075@linuxfoundation.org>
+        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
+        Johan Hovold <johan@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 4.19 018/239] firmware: qemu_fw_cfg: fix sysfs information leak
+Date:   Mon, 24 Jan 2022 19:40:56 +0100
+Message-Id: <20220124183943.701260030@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,82 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 8ca011ef4af48a7af7b15afd8a4a44039dd04cea ]
+commit 1b656e9aad7f4886ed466094d1dc5ee4dd900d20 upstream.
 
-The driver, once it found a divider, tries to round it up by increasing
-the least significant bit of the fractional part by one when the
-round_up argument is set and there's a remainder.
+Make sure to always NUL-terminate file names retrieved from the firmware
+to avoid accessing data beyond the entry slab buffer and exposing it
+through sysfs in case the firmware data is corrupt.
 
-However, since it increases the divider it will actually reduce the
-clock rate below what we were asking for, leading to issues with
-clk_set_min_rate() that will complain that our rounded clock rate is
-below the minimum of the rate.
-
-Since the dividers are fairly precise already, let's remove that part so
-that we can have clk_set_min_rate() working.
-
-This is effectively a revert of 9c95b32ca093 ("clk: bcm2835: add a round
-up ability to the clock divisor").
-
-Fixes: 9c95b32ca093 ("clk: bcm2835: add a round up ability to the clock divisor")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Acked-by: Stephen Boyd <sboyd@kernel.org>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-3-maxime@cerno.tech
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
+Cc: stable@vger.kernel.org      # 4.6
+Cc: Gabriel Somlo <somlo@cmu.edu>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20211201132528.30025-4-johan@kernel.org
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/clk/bcm/clk-bcm2835.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/firmware/qemu_fw_cfg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
-index b2af320d1b6c5..e637bd6b295bd 100644
---- a/drivers/clk/bcm/clk-bcm2835.c
-+++ b/drivers/clk/bcm/clk-bcm2835.c
-@@ -932,8 +932,7 @@ static int bcm2835_clock_is_on(struct clk_hw *hw)
+--- a/drivers/firmware/qemu_fw_cfg.c
++++ b/drivers/firmware/qemu_fw_cfg.c
+@@ -598,7 +598,7 @@ static int fw_cfg_register_file(const st
+ 	/* set file entry information */
+ 	entry->size = be32_to_cpu(f->size);
+ 	entry->select = be16_to_cpu(f->select);
+-	memcpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
++	strscpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
  
- static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
- 				    unsigned long rate,
--				    unsigned long parent_rate,
--				    bool round_up)
-+				    unsigned long parent_rate)
- {
- 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
- 	const struct bcm2835_clock_data *data = clock->data;
-@@ -945,10 +944,6 @@ static u32 bcm2835_clock_choose_div(struct clk_hw *hw,
- 
- 	rem = do_div(temp, rate);
- 	div = temp;
--
--	/* Round up and mask off the unused bits */
--	if (round_up && ((div & unused_frac_mask) != 0 || rem != 0))
--		div += unused_frac_mask + 1;
- 	div &= ~unused_frac_mask;
- 
- 	/* different clamping limits apply for a mash clock */
-@@ -1079,7 +1074,7 @@ static int bcm2835_clock_set_rate(struct clk_hw *hw,
- 	struct bcm2835_clock *clock = bcm2835_clock_from_hw(hw);
- 	struct bcm2835_cprman *cprman = clock->cprman;
- 	const struct bcm2835_clock_data *data = clock->data;
--	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate, false);
-+	u32 div = bcm2835_clock_choose_div(hw, rate, parent_rate);
- 	u32 ctl;
- 
- 	spin_lock(&cprman->regs_lock);
-@@ -1130,7 +1125,7 @@ static unsigned long bcm2835_clock_choose_div_and_prate(struct clk_hw *hw,
- 
- 	if (!(BIT(parent_idx) & data->set_rate_parent)) {
- 		*prate = clk_hw_get_rate(parent);
--		*div = bcm2835_clock_choose_div(hw, rate, *prate, true);
-+		*div = bcm2835_clock_choose_div(hw, rate, *prate);
- 
- 		*avgrate = bcm2835_clock_rate_from_divisor(clock, *prate, *div);
- 
--- 
-2.34.1
-
+ 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
+ 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
 
 
