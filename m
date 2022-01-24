@@ -2,39 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC53C3526E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F2A3C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457954AbiAXVmg (ORCPT
+        id S1457750AbiAXVmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59838 "EHLO
+        Mon, 24 Jan 2022 16:42:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58320 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377366AbiAXVIR (ORCPT
+        with ESMTP id S1354151AbiAXVFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:08:17 -0500
+        Mon, 24 Jan 2022 16:05:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A76B3B812A5;
-        Mon, 24 Jan 2022 21:08:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC848C340E7;
-        Mon, 24 Jan 2022 21:08:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5F8B811FB;
+        Mon, 24 Jan 2022 21:05:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535D3C340E5;
+        Mon, 24 Jan 2022 21:05:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058488;
-        bh=jwjFmACAnwdgTPgiXQNtUaCkXKpEKBIBAWq4GBFnCFA=;
+        s=korg; t=1643058345;
+        bh=X6EgPPABSu9qIS8VsK+/BZjQrgBbZL9LjiIth+gV+38=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uafc5laLJhTuj55KZLRMaeo5bC4pnPCJiMCI6CqWbTo87mCSOUwnEkREhMED+FEmX
-         +ip5pAE0id8gUNqaXIGfROJwmbuXoQUdjY3eQInGiiUixnyKr0jumCt4FloIhtsLtq
-         HmZyjHicLK7oZOaLMKIYBw9FKcMiPJnkKXyiTOKY=
+        b=D02rKWm/L+Nbuqn1eioq6F07MTd1pOyGPCoHKHPjHeuvgDIdCBEveGDmQCP9Cz80d
+         G9C/kUn925Ii7ujc+yBqc8NRthdYDgRFfXY0E9hzYSmMFFLjeKO12zBDhaS5fbj/7F
+         /Zd19ikI7/bEEyDHbE6K1WchiV8bUQdH2IZXOzXU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Thierry Reding <treding@nvidia.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
+        Pavle Kotarac <Pavle.Kotarac@amd.com>,
+        Wayne Lin <Wayne.Lin@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0298/1039] drm/tegra: gr2d: Explicitly control module reset
-Date:   Mon, 24 Jan 2022 19:34:47 +0100
-Message-Id: <20220124184135.315889632@linuxfoundation.org>
+Subject: [PATCH 5.16 0258/1039] drm/amd/display: Fix bug in debugfs crc_win_update entry
+Date:   Mon, 24 Jan 2022 19:34:07 +0100
+Message-Id: <20220124184133.986450956@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,111 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Wayne Lin <Wayne.Lin@amd.com>
 
-[ Upstream commit 271fca025a6d43f1c18a48543c5aaf31a31e4694 ]
+[ Upstream commit 4bef85d4c9491415b7931407b07f24841c1e0390 ]
 
-As of commit 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling
-clocks"), module resets are no longer automatically deasserted when the
-module clock is enabled. To make sure that the gr2d module continues to
-work, we need to explicitly control the module reset.
+[Why]
+crc_rd_wrk shouldn't be null in crc_win_update_set(). Current programming
+logic is inconsistent in crc_win_update_set().
 
-Fixes: 4782c0a5dd88 ("clk: tegra: Don't deassert reset on enabling clocks")
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+[How]
+Initially, return if crc_rd_wrk is NULL. Later on, we can use member of
+crc_rd_wrk safely.
+
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Fixes: 9a65df193108 ("drm/amd/display: Use PSP TA to read out crc")
+
+Reviewed-by: Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>
+Acked-by: Pavle Kotarac <Pavle.Kotarac@amd.com>
+Signed-off-by: Wayne Lin <Wayne.Lin@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/tegra/gr2d.c | 33 +++++++++++++++++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/tegra/gr2d.c b/drivers/gpu/drm/tegra/gr2d.c
-index de288cba39055..ba3722f1b8651 100644
---- a/drivers/gpu/drm/tegra/gr2d.c
-+++ b/drivers/gpu/drm/tegra/gr2d.c
-@@ -4,9 +4,11 @@
-  */
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+index 9d43ecb1f692d..f4e829ec8e108 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm_debugfs.c
+@@ -2909,10 +2909,13 @@ static int crc_win_update_set(void *data, u64 val)
+ 	struct amdgpu_device *adev = drm_to_adev(new_crtc->dev);
+ 	struct crc_rd_work *crc_rd_wrk = adev->dm.crc_rd_wrk;
  
- #include <linux/clk.h>
-+#include <linux/delay.h>
- #include <linux/iommu.h>
- #include <linux/module.h>
- #include <linux/of_device.h>
-+#include <linux/reset.h>
- 
- #include "drm.h"
- #include "gem.h"
-@@ -19,6 +21,7 @@ struct gr2d_soc {
- struct gr2d {
- 	struct tegra_drm_client client;
- 	struct host1x_channel *channel;
-+	struct reset_control *rst;
- 	struct clk *clk;
- 
- 	const struct gr2d_soc *soc;
-@@ -208,6 +211,12 @@ static int gr2d_probe(struct platform_device *pdev)
- 	if (!syncpts)
- 		return -ENOMEM;
- 
-+	gr2d->rst = devm_reset_control_get(dev, NULL);
-+	if (IS_ERR(gr2d->rst)) {
-+		dev_err(dev, "cannot get reset\n");
-+		return PTR_ERR(gr2d->rst);
-+	}
++	if (!crc_rd_wrk)
++		return 0;
 +
- 	gr2d->clk = devm_clk_get(dev, NULL);
- 	if (IS_ERR(gr2d->clk)) {
- 		dev_err(dev, "cannot get clock\n");
-@@ -220,6 +229,14 @@ static int gr2d_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
-+	usleep_range(2000, 4000);
-+
-+	err = reset_control_deassert(gr2d->rst);
-+	if (err < 0) {
-+		dev_err(dev, "failed to deassert reset: %d\n", err);
-+		goto disable_clk;
-+	}
-+
- 	INIT_LIST_HEAD(&gr2d->client.base.list);
- 	gr2d->client.base.ops = &gr2d_client_ops;
- 	gr2d->client.base.dev = dev;
-@@ -234,8 +251,7 @@ static int gr2d_probe(struct platform_device *pdev)
- 	err = host1x_client_register(&gr2d->client.base);
- 	if (err < 0) {
- 		dev_err(dev, "failed to register host1x client: %d\n", err);
--		clk_disable_unprepare(gr2d->clk);
--		return err;
-+		goto assert_rst;
- 	}
- 
- 	/* initialize address register map */
-@@ -245,6 +261,13 @@ static int gr2d_probe(struct platform_device *pdev)
- 	platform_set_drvdata(pdev, gr2d);
- 
- 	return 0;
-+
-+assert_rst:
-+	(void)reset_control_assert(gr2d->rst);
-+disable_clk:
-+	clk_disable_unprepare(gr2d->clk);
-+
-+	return err;
- }
- 
- static int gr2d_remove(struct platform_device *pdev)
-@@ -259,6 +282,12 @@ static int gr2d_remove(struct platform_device *pdev)
- 		return err;
- 	}
- 
-+	err = reset_control_assert(gr2d->rst);
-+	if (err < 0)
-+		dev_err(&pdev->dev, "failed to assert reset: %d\n", err);
-+
-+	usleep_range(2000, 4000);
-+
- 	clk_disable_unprepare(gr2d->clk);
- 
- 	return 0;
+ 	if (val) {
+ 		spin_lock_irq(&adev_to_drm(adev)->event_lock);
+ 		spin_lock_irq(&crc_rd_wrk->crc_rd_work_lock);
+-		if (crc_rd_wrk && crc_rd_wrk->crtc) {
++		if (crc_rd_wrk->crtc) {
+ 			old_crtc = crc_rd_wrk->crtc;
+ 			old_acrtc = to_amdgpu_crtc(old_crtc);
+ 		}
 -- 
 2.34.1
 
