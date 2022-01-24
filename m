@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31782C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A407C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452182AbiAXVYO (ORCPT
+        id S1452231AbiAXVYW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52570 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443570AbiAXU5Z (ORCPT
+        Mon, 24 Jan 2022 16:24:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354702AbiAXU5p (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:57:25 -0500
+        Mon, 24 Jan 2022 15:57:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 314B0C05486B;
+        Mon, 24 Jan 2022 12:00:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 443A7B80CCF;
-        Mon, 24 Jan 2022 20:57:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DB19C340E5;
-        Mon, 24 Jan 2022 20:57:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6C0A60B88;
+        Mon, 24 Jan 2022 20:00:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A560BC340E5;
+        Mon, 24 Jan 2022 20:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057841;
-        bh=eEUMKP1KZjrhKIfKroVDFJye3c2C2i+TYzy8Gb6Bsnc=;
+        s=korg; t=1643054453;
+        bh=0+XfjOPAbLf9sTVRzvQ+1jNIKU4CH6CO3sXWF4+Cn78=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k+jLLZ6RhY22AFRWcBAhR4Z7Cv134TL3syLAnIQt+3XiswG/tDhPdIysMbFqMHjW0
-         BfStUsVEw1iIXfAP3JbCPryyQOMpIe42EpDPJXycNIHeTl2NMNY2S5Of8o2vodPBdg
-         XlwHz7iPRNXWzZQWV3Vzad3czVtGvgfl8bVLS3xU=
+        b=ME5svfsQxlOfTrXJEnMUTsGGlsEjpl8wkVs9d36wzWpHX2UnC7l7dfINMPfcQo1i/
+         YzxFQq1/7F3i7FNnuwPrQ2oNaACDgyVpgIBsz7kZt6oWGtKZ0LuNGv7fNwZjmkiNMH
+         u+wDZTPuKX9voJM8OVeLG+Ly5S4m8+Qk9P+9xZLc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Nicolas Saenz Julienne <nsaenz@kernel.org>,
-        Michael Stapelberg <michael@stapelberg.ch>,
+        stable@vger.kernel.org, Alistair Francis <alistair@alistair23.me>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0097/1039] drm/vc4: hdmi: Move the HSM clock enable to runtime_pm
-Date:   Mon, 24 Jan 2022 19:31:26 +0100
-Message-Id: <20220124184128.416967340@linuxfoundation.org>
+Subject: [PATCH 5.10 362/563] HID: quirks: Allow inverting the absolute X/Y values
+Date:   Mon, 24 Jan 2022 19:42:07 +0100
+Message-Id: <20220124184036.931107513@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,166 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Maxime Ripard <maxime@cerno.tech>
+From: Alistair Francis <alistair@alistair23.me>
 
-[ Upstream commit c86b41214362e8e715e1343e16d5d6af0562db05 ]
+[ Upstream commit fd8d135b2c5e88662f2729e034913f183455a667 ]
 
-In order to access the HDMI controller, we need to make sure the HSM
-clock is enabled. If we were to access it with the clock disabled, the
-CPU would completely hang, resulting in an hard crash.
+Add a HID_QUIRK_X_INVERT/HID_QUIRK_Y_INVERT quirk that can be used
+to invert the X/Y values.
 
-Since we have different code path that would require it, let's move that
-clock enable / disable to runtime_pm that will take care of the
-reference counting for us.
-
-Since we also want to change the HSM clock rate and it's only valid
-while the clock is disabled, we need to move the clk_set_min_rate() call
-on the HSM clock above pm_runtime_get_and_sync().
-
-Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Reviewed-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
-Tested-by: Michael Stapelberg <michael@stapelberg.ch>
-Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-5-maxime@cerno.tech
-Link: https://lore.kernel.org/linux-arm-kernel/20210924152334.1342630-1-maxime@cerno.tech/
+Signed-off-by: Alistair Francis <alistair@alistair23.me>
+[bentiss: silence checkpatch warning]
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20211208124045.61815-2-alistair@alistair23.me
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vc4/vc4_hdmi.c | 70 +++++++++++++++++++++-------------
- 1 file changed, 44 insertions(+), 26 deletions(-)
+ drivers/hid/hid-input.c | 6 ++++++
+ include/linux/hid.h     | 2 ++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
-index 33f61e2f7e6d1..63b07087d37e8 100644
---- a/drivers/gpu/drm/vc4/vc4_hdmi.c
-+++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
-@@ -628,7 +628,6 @@ static void vc4_hdmi_encoder_post_crtc_powerdown(struct drm_encoder *encoder,
- 		vc4_hdmi->variant->phy_disable(vc4_hdmi);
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index 580d378342c41..eb53855898c8d 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1288,6 +1288,12 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
  
- 	clk_disable_unprepare(vc4_hdmi->pixel_bvb_clock);
--	clk_disable_unprepare(vc4_hdmi->hsm_clock);
- 	clk_disable_unprepare(vc4_hdmi->pixel_clock);
+ 	input = field->hidinput->input;
  
- 	ret = pm_runtime_put(&vc4_hdmi->pdev->dev);
-@@ -894,28 +893,10 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
- 		conn_state_to_vc4_hdmi_conn_state(conn_state);
- 	struct drm_display_mode *mode = &encoder->crtc->state->adjusted_mode;
- 	struct vc4_hdmi *vc4_hdmi = encoder_to_vc4_hdmi(encoder);
--	unsigned long bvb_rate, pixel_rate, hsm_rate;
-+	unsigned long pixel_rate = vc4_conn_state->pixel_rate;
-+	unsigned long bvb_rate, hsm_rate;
- 	int ret;
- 
--	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
--	if (ret < 0) {
--		DRM_ERROR("Failed to retain power domain: %d\n", ret);
--		return;
--	}
--
--	pixel_rate = vc4_conn_state->pixel_rate;
--	ret = clk_set_rate(vc4_hdmi->pixel_clock, pixel_rate);
--	if (ret) {
--		DRM_ERROR("Failed to set pixel clock rate: %d\n", ret);
--		return;
--	}
--
--	ret = clk_prepare_enable(vc4_hdmi->pixel_clock);
--	if (ret) {
--		DRM_ERROR("Failed to turn on pixel clock: %d\n", ret);
--		return;
--	}
--
- 	/*
- 	 * As stated in RPi's vc4 firmware "HDMI state machine (HSM) clock must
- 	 * be faster than pixel clock, infinitesimally faster, tested in
-@@ -939,10 +920,21 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
- 		return;
- 	}
- 
--	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
-+	ret = pm_runtime_resume_and_get(&vc4_hdmi->pdev->dev);
-+	if (ret < 0) {
-+		DRM_ERROR("Failed to retain power domain: %d\n", ret);
-+		return;
++	if (usage->type == EV_ABS &&
++	    (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
++	     ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))) {
++		value = field->logical_maximum - value;
 +	}
 +
-+	ret = clk_set_rate(vc4_hdmi->pixel_clock, pixel_rate);
- 	if (ret) {
--		DRM_ERROR("Failed to turn on HSM clock: %d\n", ret);
--		clk_disable_unprepare(vc4_hdmi->pixel_clock);
-+		DRM_ERROR("Failed to set pixel clock rate: %d\n", ret);
-+		return;
-+	}
-+
-+	ret = clk_prepare_enable(vc4_hdmi->pixel_clock);
-+	if (ret) {
-+		DRM_ERROR("Failed to turn on pixel clock: %d\n", ret);
- 		return;
- 	}
- 
-@@ -958,7 +950,6 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
- 	ret = clk_set_min_rate(vc4_hdmi->pixel_bvb_clock, bvb_rate);
- 	if (ret) {
- 		DRM_ERROR("Failed to set pixel bvb clock rate: %d\n", ret);
--		clk_disable_unprepare(vc4_hdmi->hsm_clock);
- 		clk_disable_unprepare(vc4_hdmi->pixel_clock);
- 		return;
- 	}
-@@ -966,7 +957,6 @@ static void vc4_hdmi_encoder_pre_crtc_configure(struct drm_encoder *encoder,
- 	ret = clk_prepare_enable(vc4_hdmi->pixel_bvb_clock);
- 	if (ret) {
- 		DRM_ERROR("Failed to turn on pixel bvb clock: %d\n", ret);
--		clk_disable_unprepare(vc4_hdmi->hsm_clock);
- 		clk_disable_unprepare(vc4_hdmi->pixel_clock);
- 		return;
- 	}
-@@ -2100,6 +2090,27 @@ static int vc5_hdmi_init_resources(struct vc4_hdmi *vc4_hdmi)
- 	return 0;
- }
- 
-+static int __maybe_unused vc4_hdmi_runtime_suspend(struct device *dev)
-+{
-+	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
-+
-+	clk_disable_unprepare(vc4_hdmi->hsm_clock);
-+
-+	return 0;
-+}
-+
-+static int vc4_hdmi_runtime_resume(struct device *dev)
-+{
-+	struct vc4_hdmi *vc4_hdmi = dev_get_drvdata(dev);
-+	int ret;
-+
-+	ret = clk_prepare_enable(vc4_hdmi->hsm_clock);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
- static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
- {
- 	const struct vc4_hdmi_variant *variant = of_device_get_match_data(dev);
-@@ -2367,11 +2378,18 @@ static const struct of_device_id vc4_hdmi_dt_match[] = {
- 	{}
- };
- 
-+static const struct dev_pm_ops vc4_hdmi_pm_ops = {
-+	SET_RUNTIME_PM_OPS(vc4_hdmi_runtime_suspend,
-+			   vc4_hdmi_runtime_resume,
-+			   NULL)
-+};
-+
- struct platform_driver vc4_hdmi_driver = {
- 	.probe = vc4_hdmi_dev_probe,
- 	.remove = vc4_hdmi_dev_remove,
- 	.driver = {
- 		.name = "vc4_hdmi",
- 		.of_match_table = vc4_hdmi_dt_match,
-+		.pm = &vc4_hdmi_pm_ops,
- 	},
- };
+ 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
+ 		int hat_dir = usage->hat_dir;
+ 		if (!hat_dir)
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index fc56d53cc68bf..2ba33d708942c 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -345,6 +345,8 @@ struct hid_item {
+ /* BIT(9) reserved for backward compatibility, was NO_INIT_INPUT_REPORTS */
+ #define HID_QUIRK_ALWAYS_POLL			BIT(10)
+ #define HID_QUIRK_INPUT_PER_APP			BIT(11)
++#define HID_QUIRK_X_INVERT			BIT(12)
++#define HID_QUIRK_Y_INVERT			BIT(13)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORTS		BIT(16)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORT_ID		BIT(17)
+ #define HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP	BIT(18)
 -- 
 2.34.1
 
