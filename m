@@ -2,48 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B34C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D1BEC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452099AbiAXVYD (ORCPT
+        id S1451982AbiAXVXx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44562 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443215AbiAXU4b (ORCPT
+        Mon, 24 Jan 2022 16:23:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52140 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443303AbiAXU4k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:56:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28A47C0D9431;
-        Mon, 24 Jan 2022 11:18:05 -0800 (PST)
+        Mon, 24 Jan 2022 15:56:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E55BAB8123D;
-        Mon, 24 Jan 2022 19:18:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1B52C340E5;
-        Mon, 24 Jan 2022 19:18:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3797B811A9;
+        Mon, 24 Jan 2022 20:56:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9CF5C340E5;
+        Mon, 24 Jan 2022 20:56:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051882;
-        bh=TYR6G0G1NNZYgGiHfvo4P7O8iCjHHs0h9Uv+G6h0s/I=;
+        s=korg; t=1643057797;
+        bh=ANJ5LKnxfnBTuQcDEKga1MP8P7cUsecKPu5TOiY2Go0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JDPGAkDSImTTwFUOZ4m02MmyNheI3dwy3yO6hGF15Kwcwjf9yFWO2f9VNTMfdfm3c
-         4TecFQFjVezSt4smLjhHWwiKNzyFiJOXym/6+4MaeYtmN97LQXd4gMi21s3aKTSqHE
-         vJicPHssYQ6kf/xDjWGmZhwfupSettaK2DH/v3eA=
+        b=r2V6hGdv8OY/bqHOcNQ9p+tDVWzBB+Uzy84UyhGcCUEYW4fonbjVC7u1sByi4FWRl
+         M0SNquKs4mPEVuS6NbVJmDRNhoCSNxKBWybiMq+g7rRxDhxoP7Cxgg/xPmTLtS0VY9
+         IJtnYEK6AQiM6lggSbAL7RrZRKlPf0tRjv5l1Zd8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 118/239] mips: bcm63xx: add support for clk_set_parent()
-Date:   Mon, 24 Jan 2022 19:42:36 +0100
-Message-Id: <20220124183946.860857778@linuxfoundation.org>
+        stable@vger.kernel.org, Brian Norris <briannorris@chromium.org>,
+        Chen-Yu Tsai <wenst@chromium.org>,
+        "=?UTF-8?q?N=C3=ADcolas=20F . =20R . =20A . =20Prado?=" 
+        <nfraprado@collabora.com>, Heiko Stuebner <heiko@sntech.de>
+Subject: [PATCH 5.16 0081/1039] drm/rockchip: dsi: Reconfigure hardware on resume()
+Date:   Mon, 24 Jan 2022 19:31:10 +0100
+Message-Id: <20220124184127.887606666@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,48 +48,112 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 6f03055d508ff4feb8db02ba3df9303a1db8d381 ]
+commit e584cdc1549932f87a2707b56bc588cfac5d89e0 upstream.
 
-The MIPS BMC63XX subarch does not provide/support clk_set_parent().
-This causes build errors in a few drivers, so add a simple implementation
-of that function so that callers of it will build without errors.
+Since commit 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except
+LCDC mux to bind()"), we perform most HW configuration in the bind()
+function. This configuration may be lost on suspend/resume, so we
+need to call it again. That may lead to errors like this after system
+suspend/resume:
 
-Fixes these build errors:
+  dw-mipi-dsi-rockchip ff968000.mipi: failed to write command FIFO
+  panel-kingdisplay-kd097d04 ff960000.mipi.0: failed write init cmds: -110
 
-ERROR: modpost: "clk_set_parent" [sound/soc/jz4740/snd-soc-jz4740-i2s.ko] undefined!
-ERROR: modpost: "clk_set_parent" [sound/soc/atmel/snd-soc-atmel-i2s.ko] undefined!
+Tested on Acer Chromebook Tab 10 (RK3399 Gru-Scarlet).
 
-Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Note that early mailing list versions of this driver borrowed Rockchip's
+downstream/BSP solution, to do HW configuration in mode_set() (which
+*is* called at the appropriate pre-enable() times), but that was
+discarded along the way. I've avoided that still, because mode_set()
+documentation doesn't suggest this kind of purpose as far as I can tell.
+
+Fixes: 43c2de1002d2 ("drm/rockchip: dsi: move all lane config except LCDC mux to bind()")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
+Tested-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210928143413.v3.2.I4e9d93aadb00b1ffc7d506e3186a25492bf0b732@changeid
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/mips/bcm63xx/clk.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c |   37 ++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/arch/mips/bcm63xx/clk.c b/arch/mips/bcm63xx/clk.c
-index aba6e2d6a736c..dcfa0ea912fe1 100644
---- a/arch/mips/bcm63xx/clk.c
-+++ b/arch/mips/bcm63xx/clk.c
-@@ -387,6 +387,12 @@ struct clk *clk_get_parent(struct clk *clk)
- }
- EXPORT_SYMBOL(clk_get_parent);
+--- a/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
++++ b/drivers/gpu/drm/rockchip/dw-mipi-dsi-rockchip.c
+@@ -267,6 +267,8 @@ struct dw_mipi_dsi_rockchip {
+ 	struct dw_mipi_dsi *dmd;
+ 	const struct rockchip_dw_dsi_chip_data *cdata;
+ 	struct dw_mipi_dsi_plat_data pdata;
++
++	bool dsi_bound;
+ };
  
-+int clk_set_parent(struct clk *clk, struct clk *parent)
+ struct dphy_pll_parameter_map {
+@@ -963,6 +965,8 @@ static int dw_mipi_dsi_rockchip_bind(str
+ 		goto out_pm_runtime;
+ 	}
+ 
++	dsi->dsi_bound = true;
++
+ 	return 0;
+ 
+ out_pm_runtime:
+@@ -982,6 +986,8 @@ static void dw_mipi_dsi_rockchip_unbind(
+ 	if (dsi->is_slave)
+ 		return;
+ 
++	dsi->dsi_bound = false;
++
+ 	dw_mipi_dsi_unbind(dsi->dmd);
+ 
+ 	clk_disable_unprepare(dsi->pllref_clk);
+@@ -1276,6 +1282,36 @@ static const struct phy_ops dw_mipi_dsi_
+ 	.exit		= dw_mipi_dsi_dphy_exit,
+ };
+ 
++static int __maybe_unused dw_mipi_dsi_rockchip_resume(struct device *dev)
 +{
++	struct dw_mipi_dsi_rockchip *dsi = dev_get_drvdata(dev);
++	int ret;
++
++	/*
++	 * Re-configure DSI state, if we were previously initialized. We need
++	 * to do this before rockchip_drm_drv tries to re-enable() any panels.
++	 */
++	if (dsi->dsi_bound) {
++		ret = clk_prepare_enable(dsi->grf_clk);
++		if (ret) {
++			DRM_DEV_ERROR(dsi->dev, "Failed to enable grf_clk: %d\n", ret);
++			return ret;
++		}
++
++		dw_mipi_dsi_rockchip_config(dsi);
++		if (dsi->slave)
++			dw_mipi_dsi_rockchip_config(dsi->slave);
++
++		clk_disable_unprepare(dsi->grf_clk);
++	}
++
 +	return 0;
 +}
-+EXPORT_SYMBOL(clk_set_parent);
 +
- unsigned long clk_get_rate(struct clk *clk)
++static const struct dev_pm_ops dw_mipi_dsi_rockchip_pm_ops = {
++	SET_LATE_SYSTEM_SLEEP_PM_OPS(NULL, dw_mipi_dsi_rockchip_resume)
++};
++
+ static int dw_mipi_dsi_rockchip_probe(struct platform_device *pdev)
  {
- 	if (!clk)
--- 
-2.34.1
-
+ 	struct device *dev = &pdev->dev;
+@@ -1593,6 +1629,7 @@ struct platform_driver dw_mipi_dsi_rockc
+ 	.remove		= dw_mipi_dsi_rockchip_remove,
+ 	.driver		= {
+ 		.of_match_table = dw_mipi_dsi_rockchip_dt_ids,
++		.pm	= &dw_mipi_dsi_rockchip_pm_ops,
+ 		.name	= "dw-mipi-dsi-rockchip",
+ 	},
+ };
 
 
