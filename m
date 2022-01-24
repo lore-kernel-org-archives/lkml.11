@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B4DC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85AA4C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374562AbiAYARW (ORCPT
+        id S2374593AbiAYAR3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52506 "EHLO
+        Mon, 24 Jan 2022 19:17:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1839675AbiAXX2d (ORCPT
+        with ESMTP id S1458085AbiAXX2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:28:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1A57C075948;
-        Mon, 24 Jan 2022 13:33:56 -0800 (PST)
+        Mon, 24 Jan 2022 18:28:15 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE344C01D7FC;
+        Mon, 24 Jan 2022 13:32:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6E44961305;
-        Mon, 24 Jan 2022 21:33:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 51596C340E4;
-        Mon, 24 Jan 2022 21:33:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 934D2B8105C;
+        Mon, 24 Jan 2022 21:32:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0C85C340E4;
+        Mon, 24 Jan 2022 21:32:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060035;
-        bh=2E50KrbVkwR/nqccvG/b6nh+kvOETHtkUWtyTvxMPhg=;
+        s=korg; t=1643059938;
+        bh=EA7dMKNdQg24nhqA/oLL+3Ocd+cZ/ldxMW1D3CxdYDs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=daUYLoYmfrc/Hl+Erm14FufKXPamXWwdPgCQTKa2jFgPR45gGc9nvWEgoeG1+hDAM
-         1QIJecWBdPtK9Ysu8530v8rxGWg8DO++UVyKAaZNlBuo7cjQRbkU61yph3Q8wCyDj4
-         L77SZlvLocbADiaJu2a27mnry5DOoCBiyXWHgZRI=
+        b=pqFGKyYR7JYddE/dLIoxcTABiKng5hTcmFmNrIxhq3u706tAqsme+ybkJSXLIhaS4
+         +7ffZPwdHPUEwNZlYQHPYMcIn2XQ9wXALgsQJE8WVAsdCjqunf4kQwuMhOa8crUOJu
+         5Vik0YAwXhsBb2mwJo5qFILq4UFClwN2+YkE8qsc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Maxime Ripard <maxime@cerno.tech>,
+        stable@vger.kernel.org, Tim Harvey <tharvey@gateworks.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Richard Zhu <hongxing.zhu@nxp.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0817/1039] drm/sun4i: dw-hdmi: Fix missing put_device() call in sun8i_hdmi_phy_get
-Date:   Mon, 24 Jan 2022 19:43:26 +0100
-Message-Id: <20220124184152.769352289@linuxfoundation.org>
+Subject: [PATCH 5.16 0785/1039] PCI: dwc: Do not remap invalid res
+Date:   Mon, 24 Jan 2022 19:42:54 +0100
+Message-Id: <20220124184151.676819654@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,38 +52,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Tim Harvey <tharvey@gateworks.com>
 
-[ Upstream commit c71af3dae3e34d2fde0c19623cf7f8483321f0e3 ]
+[ Upstream commit 6e5ebc96ec651b67131f816d7e3bf286c635e749 ]
 
-The reference taken by 'of_find_device_by_node()' must be released when
-not needed anymore.
-Add the corresponding 'put_device()' in the error handling path.
+On imx6 and perhaps others when pcie probes you get a:
+imx6q-pcie 33800000.pcie: invalid resource
 
-Fixes: 9bf3797796f5 ("drm/sun4i: dw-hdmi: Make HDMI PHY into a platform device")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Maxime Ripard <maxime@cerno.tech>
-Link: https://patchwork.freedesktop.org/patch/msgid/20220107083633.20843-1-linmq006@gmail.com
+This occurs because the atu is not specified in the DT and as such it
+should not be remapped.
+
+Link: https://lore.kernel.org/r/20211101180243.23761-1-tharvey@gateworks.com
+Fixes: 281f1f99cf3a ("PCI: dwc: Detect number of iATU windows")
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-by: Richard Zhu <hongxing.zhu@nxp.com>
+Cc: Richard Zhu <hongxing.zhu@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/pci/controller/dwc/pcie-designware.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-index b64d93da651d2..5e2b0175df36f 100644
---- a/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-+++ b/drivers/gpu/drm/sun4i/sun8i_hdmi_phy.c
-@@ -658,8 +658,10 @@ int sun8i_hdmi_phy_get(struct sun8i_dw_hdmi *hdmi, struct device_node *node)
- 		return -EPROBE_DEFER;
- 
- 	phy = platform_get_drvdata(pdev);
--	if (!phy)
-+	if (!phy) {
-+		put_device(&pdev->dev);
- 		return -EPROBE_DEFER;
-+	}
- 
- 	hdmi->phy = phy;
+diff --git a/drivers/pci/controller/dwc/pcie-designware.c b/drivers/pci/controller/dwc/pcie-designware.c
+index 850b4533f4ef5..d92c8a25094fa 100644
+--- a/drivers/pci/controller/dwc/pcie-designware.c
++++ b/drivers/pci/controller/dwc/pcie-designware.c
+@@ -672,10 +672,11 @@ void dw_pcie_iatu_detect(struct dw_pcie *pci)
+ 		if (!pci->atu_base) {
+ 			struct resource *res =
+ 				platform_get_resource_byname(pdev, IORESOURCE_MEM, "atu");
+-			if (res)
++			if (res) {
+ 				pci->atu_size = resource_size(res);
+-			pci->atu_base = devm_ioremap_resource(dev, res);
+-			if (IS_ERR(pci->atu_base))
++				pci->atu_base = devm_ioremap_resource(dev, res);
++			}
++			if (!pci->atu_base || IS_ERR(pci->atu_base))
+ 				pci->atu_base = pci->dbi_base + DEFAULT_DBI_ATU_OFFSET;
+ 		}
  
 -- 
 2.34.1
