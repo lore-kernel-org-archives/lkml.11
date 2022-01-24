@@ -2,98 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D66C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A16D7C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 03:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1315764AbiAYCyJ (ORCPT
+        id S1315858AbiAYCyr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:54:09 -0500
-Received: from out01.mta.xmission.com ([166.70.13.231]:39108 "EHLO
-        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S3408073AbiAYAVd (ORCPT
+        Mon, 24 Jan 2022 21:54:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S3409268AbiAYAZU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 19:21:33 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:40422)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nC9aR-001AUJ-QT; Mon, 24 Jan 2022 17:21:28 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:53348 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nC9aP-00E0KF-8z; Mon, 24 Jan 2022 17:21:26 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-ia64@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        kernel test robot <lkp@intel.com>,
-        Christoph Hellwig <hch@infradead.org>
-References: <20220124213129.29306-1-rdunlap@infradead.org>
-Date:   Mon, 24 Jan 2022 18:20:54 -0600
-In-Reply-To: <20220124213129.29306-1-rdunlap@infradead.org> (Randy Dunlap's
-        message of "Mon, 24 Jan 2022 13:31:29 -0800")
-Message-ID: <87ee4w1x95.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 24 Jan 2022 19:25:20 -0500
+Received: from mail-oo1-xc33.google.com (mail-oo1-xc33.google.com [IPv6:2607:f8b0:4864:20::c33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7757C04590A
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:07:24 -0800 (PST)
+Received: by mail-oo1-xc33.google.com with SMTP id t75-20020a4a3e4e000000b002e9c0821d78so869143oot.4
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 14:07:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=/aLnHFuStZ5orf+mOt/+JIQklpQVMq3vUHjZ6F6RUME=;
+        b=oVOpoQrs7lAhfFdYwpI0Rbzn4piuzf9e5etUCLba1zcBTLVJXNv0oO+H7iWuBfLpPF
+         ASNNSRyIUHiyAlE1wrc8sjhJTg7yluaGRdSE38M+06TBKdyjDXmPU4bzAnn+0kwjb55o
+         Xh651eHtRdmJG65PfUKKbclnQeEXW8CKWcSjs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=/aLnHFuStZ5orf+mOt/+JIQklpQVMq3vUHjZ6F6RUME=;
+        b=G9VXoVcTQWcZK3TL61knhK19pn2Tnf34+GL8ZtClBYsWGLc8jqQLHJRPt/+Kn4O0Jp
+         ZZhxrEPDpAOnHkYxAXn/HIBVGgIaujzuztVrIiM3fugOyIoYXuWH6ABWQ9ZuxqRPol8G
+         3sCVCRplonPyvsXAoE3hJzkxiA1JdaYK0gPQC6Nfw/QzVizHUscHVb6E5TlV4zd2TZiT
+         WFhmSo9sUfts2V1+hovFDjgCYjrf6+mnR39UitjN5t4mnGgvr2ZLatJXHFz/EzY01Czq
+         4ZsGqgE+guEEx0q8V6itMjgMhsgtrJ8HNbLeUVV7N25yU49OiG1LGwD+AQuTKCjL5P4i
+         Hzpw==
+X-Gm-Message-State: AOAM530YTbXQVvpKiToJgYHeeb/ZIlK415SffmF0CgQAUa2oLrMIehAq
+        c8hTEf4LFNtPLJdzmijNjW8Mgm0kvvUTiU+oOezwLg==
+X-Google-Smtp-Source: ABdhPJyc/dz2yM6w+iD9kilsMJPwY0RIbV00zr4BPr32NKAK/72Bw+/QQmFbTMkH7urzwVaB7eMehwTkn+zmuRw96G8=
+X-Received: by 2002:a4a:d51a:: with SMTP id m26mr4897764oos.1.1643062044068;
+ Mon, 24 Jan 2022 14:07:24 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 24 Jan 2022 14:07:23 -0800
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nC9aP-00E0KF-8z;;;mid=<87ee4w1x95.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+l7gNz9P0ebhyrkVdO1CIxfUNRBVsTFsw=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH -next v2] ia64: make IA64_MCA_RECOVERY bool instead of
- tristate
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+In-Reply-To: <28734c1c-a30c-d47f-3fc1-95035adcd33d@quicinc.com>
+References: <1643057170-10413-1-git-send-email-quic_khsieh@quicinc.com>
+ <CAE-0n53nFcMzuKfqVRac6PRTkoPrftXL+uVK56ZQsHVWHmivkQ@mail.gmail.com> <28734c1c-a30c-d47f-3fc1-95035adcd33d@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 24 Jan 2022 14:07:23 -0800
+Message-ID: <CAE-0n51wjxd+6azct0ENNBZuE7oVSH6tXfSfEUhT4LRX6kesdw@mail.gmail.com>
+Subject: Re: [PATCH] drm/msm/dp: always add fail-safe mode into connector mode list
+To:     Kuogee Hsieh <quic_khsieh@quicinc.com>, agross@kernel.org,
+        airlied@linux.ie, bjorn.andersson@linaro.org, daniel@ffwll.ch,
+        dmitry.baryshkov@linaro.org, robdclark@gmail.com, sean@poorly.run,
+        vkoul@kernel.org
+Cc:     quic_abhinavk@quicinc.com, aravindh@codeaurora.org,
+        freedreno@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Randy Dunlap <rdunlap@infradead.org> writes:
-
-> In linux-next, IA64_MCA_RECOVERY uses the (new) function make_task_dead(),
-> which is not exported for use by modules. Instead of exporting it for
-> one user, convert IA64_MCA_RECOVERY to be a bool Kconfig symbol.
+Quoting Kuogee Hsieh (2022-01-24 13:24:25)
 >
-> In a config file from "kernel test robot <lkp@intel.com>" for a
-> different problem, this linker error was exposed when
-> CONFIG_IA64_MCA_RECOVERY=m.
+> On 1/24/2022 1:04 PM, Stephen Boyd wrote:
+> > Quoting Kuogee Hsieh (2022-01-24 12:46:10)
+> >> Some of DP link compliant test expects to return fail-safe mode
+> >> if prefer detailed timing mode can not be supported by mainlink's
+> >> lane and rate after link training. Therefore add fail-safe mode
+> >> into connector mode list as backup mode. This patch fixes test
+> >> case 4.2.2.1.
+> >>
+> >> Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
+> > Any Fixes tag? I also wonder why this isn't pushed into the DP core code
+> > somehow. Wouldn't every device need to add a 640x480 mode by default?
 >
-> Fixes this build error:
+> Original test case 4.2.2.1 always passed until we did firmware upgrade
+> of our compliance test tester (Unigraph) recently.
+
+Ok. So the Fixes tag should be the introduction of the driver or at
+least whenever compliance testing support was added.
+
 >
-> ERROR: modpost: "make_task_dead" [arch/ia64/kernel/mca_recovery.ko] undefined!
+> The new firmware of tester use newer edid contains 1080p with 145.7 mhz
+> which can not be supported by 2 lanes with 1.6G rate. Hence we failed
+> this test case.
 
-Reviewed-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Interesting. So the test case wouldn't fail unless the number of lanes
+were limited by the hardware? Seems that the test isn't thorough.
 
-I looked and ia64_unreg_MCA_extension has no synchronization so I don't
-think it has ever been safe to this code when built as a module.
-
-
-> Fixes: 0e25498f8cd4 ("exit: Add and use make_task_dead.")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: "Eric W. Biederman" <ebiederm@xmission.com>
-> Cc: Andrew Morton <akpm@linux-foundation.org>
-> Cc: linux-ia64@vger.kernel.org
-> Cc: Tony Luck <tony.luck@intel.com>
-> Cc: kernel test robot <lkp@intel.com>
-> Suggested-by: Christoph Hellwig <hch@infradead.org>
-> ---
-> v1 was [PATCH -next] exit: export make_task_dead().
-> Christoph suggests and prefers that IA64 MCA recovery code just be
-> forced to be builtin if it is enabled.
 >
->  arch/ia64/Kconfig |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> After discuss with Vendor, they claims we have to return fail-safe mode
+> if prefer detailed timing mode can not be supported.
 >
-> --- linux-next-20220121.orig/arch/ia64/Kconfig
-> +++ linux-next-20220121/arch/ia64/Kconfig
-> @@ -318,7 +318,7 @@ config ARCH_PROC_KCORE_TEXT
->  	depends on PROC_KCORE
->  
->  config IA64_MCA_RECOVERY
-> -	tristate "MCA recovery from errors other than TLB."
-> +	bool "MCA recovery from errors other than TLB."
->  
->  config IA64_PALINFO
->  	tristate "/proc/pal support"
+> I think would be good to add fail-safe mode into connector mode list.
+>
+>
+>
+>
+> > we just run into this problem recently.
+
+
+Sure I'm not saying it's incorrect, just wondering why a connector
+that's DP wouldn't have the 640x480 resolution by default somewhere in
+the drm core.
