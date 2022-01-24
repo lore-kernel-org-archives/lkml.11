@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F3F6C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3C1C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3420956AbiAYCZw (ORCPT
+        id S3420598AbiAYCYw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:25:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51206 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346497AbiAXTYY (ORCPT
+        Mon, 24 Jan 2022 21:24:52 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38196 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346079AbiAXTM3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:24:24 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B102CC0619C0;
-        Mon, 24 Jan 2022 11:11:26 -0800 (PST)
+        Mon, 24 Jan 2022 14:12:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F0F061323;
-        Mon, 24 Jan 2022 19:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15BA8C340E5;
-        Mon, 24 Jan 2022 19:11:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28D1DB8123D;
+        Mon, 24 Jan 2022 19:12:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 259BBC340E5;
+        Mon, 24 Jan 2022 19:12:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051485;
-        bh=6lQU0+cS4us3o8O5T5OXmu4m7DtYZh4U7NdVeChhcAo=;
+        s=korg; t=1643051545;
+        bh=Vo4fc08dYU7Q2vdyaqh6jXfagzpgeNQG+pLuG1tBzYU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HWK0YOvXpo4ULzOK8ZKs7Isui5hK7epFnF4r4gpZO7Trt8HbTs52WZMN32qofzyM9
-         2FQuYyMRRqTh8rgD43pw6XUvcq8ToHKYbChM0ebzmBhOrX0VaDbmgKWH71ZP4QxkBK
-         Dj5XjS6knVcXqNEhmfs0R8EKxTuaSKRHI0LLfLNY=
+        b=vfpfjgUkKnZPe4a5s4Pgfj64YPwMBfrHw1/ZCCJ2GD2lq4Q5+BEzRbFXrD9Tij+nL
+         tEUs1XKAky8kELDicjfM7vegjBqLaZEMhO8jVBelg80lLvbSDHTSb481rxtEp9nHBr
+         m9Esrd/QJP0JmdYdTv50XJLpMciHVpD1Y+9NcZgE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Bracey <kevin@bracey.fi>,
-        Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.14 176/186] net_sched: restore "mpu xxx" handling
-Date:   Mon, 24 Jan 2022 19:44:11 +0100
-Message-Id: <20220124183942.775221370@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Biggers <ebiggers@google.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 4.19 010/239] random: fix data race on crng init time
+Date:   Mon, 24 Jan 2022 19:40:48 +0100
+Message-Id: <20220124183943.439160423@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,99 +47,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kevin Bracey <kevin@bracey.fi>
+From: Eric Biggers <ebiggers@google.com>
 
-commit fb80445c438c78b40b547d12b8d56596ce4ccfeb upstream.
+commit 009ba8568be497c640cab7571f7bfd18345d7b24 upstream.
 
-commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
-"overhead X", "linklayer atm" and "mpu X" attributes.
+_extract_crng() does plain loads of crng->init_time and
+crng_global_init_time, which causes undefined behavior if
+crng_reseed() and RNDRESEEDCRNG modify these corrently.
 
-"overhead X" and "linklayer atm" have already been fixed. This restores
-the "mpu X" handling, as might be used by DOCSIS or Ethernet shaping:
+Use READ_ONCE() and WRITE_ONCE() to make the behavior defined.
 
-    tc class add ... htb rate X overhead 4 mpu 64
+Don't fix the race on crng->init_time by protecting it with crng->lock,
+since it's not a problem for duplicate reseedings to occur.  I.e., the
+lockless access with READ_ONCE() is fine.
 
-The code being fixed is used by htb, tbf and act_police. Cake has its
-own mpu handling. qdisc_calculate_pkt_len still uses the size table
-containing values adjusted for mpu by user space.
-
-iproute2 tc has always passed mpu into the kernel via a tc_ratespec
-structure, but the kernel never directly acted on it, merely stored it
-so that it could be read back by `tc class show`.
-
-Rather, tc would generate length-to-time tables that included the mpu
-(and linklayer) in their construction, and the kernel used those tables.
-
-Since v3.7, the tables were no longer used. Along with "mpu", this also
-broke "overhead" and "linklayer" which were fixed in 01cb71d2d47b
-("net_sched: restore "overhead xxx" handling", v3.10) and 8a8e3d84b171
-("net_sched: restore "linklayer atm" handling", v3.11).
-
-"overhead" was fixed by simply restoring use of tc_ratespec::overhead -
-this had originally been used by the kernel but was initially omitted
-from the new non-table-based calculations.
-
-"linklayer" had been handled in the table like "mpu", but the mode was
-not originally passed in tc_ratespec. The new implementation was made to
-handle it by getting new versions of tc to pass the mode in an extended
-tc_ratespec, and for older versions of tc the table contents were analysed
-at load time to deduce linklayer.
-
-As "mpu" has always been given to the kernel in tc_ratespec,
-accompanying the mpu-based table, we can restore system functionality
-with no userspace change by making the kernel act on the tc_ratespec
-value.
-
-Fixes: 56b765b79e9a ("htb: improved accuracy at high rates")
-Signed-off-by: Kevin Bracey <kevin@bracey.fi>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Cc: Vimalkumar <j.vimal@gmail.com>
-Link: https://lore.kernel.org/r/20220112170210.1014351-1-kevin@bracey.fi
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: d848e5f8e1eb ("random: add new ioctl RNDRESEEDCRNG")
+Fixes: e192be9d9a30 ("random: replace non-blocking pool with a Chacha20-based CRNG")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eric Biggers <ebiggers@google.com>
+Acked-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/sch_generic.h |    5 +++++
- net/sched/sch_generic.c   |    1 +
- 2 files changed, 6 insertions(+)
+ drivers/char/random.c |   17 ++++++++++-------
+ 1 file changed, 10 insertions(+), 7 deletions(-)
 
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -885,6 +885,7 @@ struct psched_ratecfg {
- 	u64	rate_bytes_ps; /* bytes per second */
- 	u32	mult;
- 	u16	overhead;
-+	u16	mpu;
- 	u8	linklayer;
- 	u8	shift;
- };
-@@ -894,6 +895,9 @@ static inline u64 psched_l2t_ns(const st
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -969,7 +969,7 @@ static void crng_reseed(struct crng_stat
+ 		crng->state[i+4] ^= buf.key[i] ^ rv;
+ 	}
+ 	memzero_explicit(&buf, sizeof(buf));
+-	crng->init_time = jiffies;
++	WRITE_ONCE(crng->init_time, jiffies);
+ 	spin_unlock_irqrestore(&crng->lock, flags);
+ 	if (crng == &primary_crng && crng_init < 2) {
+ 		invalidate_batched_entropy();
+@@ -996,12 +996,15 @@ static void crng_reseed(struct crng_stat
+ static void _extract_crng(struct crng_state *crng,
+ 			  __u8 out[CHACHA20_BLOCK_SIZE])
  {
- 	len += r->overhead;
+-	unsigned long v, flags;
++	unsigned long v, flags, init_time;
  
-+	if (len < r->mpu)
-+		len = r->mpu;
-+
- 	if (unlikely(r->linklayer == TC_LINKLAYER_ATM))
- 		return ((u64)(DIV_ROUND_UP(len,48)*53) * r->mult) >> r->shift;
- 
-@@ -916,6 +920,7 @@ static inline void psched_ratecfg_getrat
- 	res->rate = min_t(u64, r->rate_bytes_ps, ~0U);
- 
- 	res->overhead = r->overhead;
-+	res->mpu = r->mpu;
- 	res->linklayer = (r->linklayer & TC_LINKLAYER_MASK);
- }
- 
---- a/net/sched/sch_generic.c
-+++ b/net/sched/sch_generic.c
-@@ -1010,6 +1010,7 @@ void psched_ratecfg_precompute(struct ps
- {
- 	memset(r, 0, sizeof(*r));
- 	r->overhead = conf->overhead;
-+	r->mpu = conf->mpu;
- 	r->rate_bytes_ps = max_t(u64, conf->rate, rate64);
- 	r->linklayer = (conf->linklayer & TC_LINKLAYER_MASK);
- 	r->mult = 1;
+-	if (crng_ready() &&
+-	    (time_after(crng_global_init_time, crng->init_time) ||
+-	     time_after(jiffies, crng->init_time + CRNG_RESEED_INTERVAL)))
+-		crng_reseed(crng, crng == &primary_crng ? &input_pool : NULL);
++	if (crng_ready()) {
++		init_time = READ_ONCE(crng->init_time);
++		if (time_after(READ_ONCE(crng_global_init_time), init_time) ||
++		    time_after(jiffies, init_time + CRNG_RESEED_INTERVAL))
++			crng_reseed(crng, crng == &primary_crng ?
++				    &input_pool : NULL);
++	}
+ 	spin_lock_irqsave(&crng->lock, flags);
+ 	if (arch_get_random_long(&v))
+ 		crng->state[14] ^= v;
+@@ -2074,7 +2077,7 @@ static long random_ioctl(struct file *f,
+ 		if (crng_init < 2)
+ 			return -ENODATA;
+ 		crng_reseed(&primary_crng, &input_pool);
+-		crng_global_init_time = jiffies - 1;
++		WRITE_ONCE(crng_global_init_time, jiffies - 1);
+ 		return 0;
+ 	default:
+ 		return -EINVAL;
 
 
