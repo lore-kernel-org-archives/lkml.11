@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E576EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4185DC35275
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409391AbiAYAZy (ORCPT
+        id S3409515AbiAYA0g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:25:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59010 "EHLO
+        Mon, 24 Jan 2022 19:26:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448972AbiAXVyz (ORCPT
+        with ESMTP id S1573421AbiAXVo5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:54:55 -0500
+        Mon, 24 Jan 2022 16:44:57 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C1E5C08B4FA;
-        Mon, 24 Jan 2022 12:34:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2348C0081A3;
+        Mon, 24 Jan 2022 12:32:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B6FC61530;
-        Mon, 24 Jan 2022 20:34:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84502C340E5;
-        Mon, 24 Jan 2022 20:34:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6104B61502;
+        Mon, 24 Jan 2022 20:32:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33042C340E5;
+        Mon, 24 Jan 2022 20:32:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056483;
-        bh=UH/NsbM9mt79CzA1kPcHg2YVaT+xnxkxbBGOOFUagss=;
+        s=korg; t=1643056339;
+        bh=uDbfPJ73HUWqhPHuTRXhY7UbI0yEEfy4ihntlu9sniM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NdbV5FwiRMwrHGZVZnr8blp31FVaBSjL+brfKJtoT34mv3jiUGg6+TuW8Zh5XSWyu
-         t4ikbYzBDfIT7YAnCcK6Z++CoyARdp4Goq1whCRTXW7SyZYepVGYY/8/v0dAuTR5Xh
-         DAcv2cd9jSEbRNGCRNPw8ONi2iTuJP2RJBlthGf8=
+        b=ybtYSwmnGmJAT/7w9Vgordv+xcf4LCzd44sLxpD7Nuxs9Q8Kwty80zZ8zixv7desq
+         bAIk+L6pOXu764NhZX4QsnFc+xIyctCnU6CUNH1YfqLlTkV4zicWiiwCcvG4MVOzpr
+         37qyyFNWhq1KPshT0qCj8+bIAncbSonTG65hx5cE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Aric Cyr <Aric.Cyr@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Martin Leung <Martin.Leung@amd.com>,
-        Daniel Wheeler <daniel.wheeler@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
+        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 498/846] drm/amd/display: add else to avoid double destroy clk_mgr
-Date:   Mon, 24 Jan 2022 19:40:15 +0100
-Message-Id: <20220124184118.201266166@linuxfoundation.org>
+Subject: [PATCH 5.15 451/846] clk: bm1880: remove kfrees on static allocations
+Date:   Mon, 24 Jan 2022 19:39:28 +0100
+Message-Id: <20220124184116.549492894@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -53,38 +50,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Martin Leung <Martin.Leung@amd.com>
+From: Conor Dooley <conor.dooley@microchip.com>
 
-[ Upstream commit 11dff0e871037a6ad978e52f826a2eb7f5fb274a ]
+[ Upstream commit c861c1be3897845313a0df47804b1db37c7052e1 ]
 
-[Why & How]
-when changing some code we accidentally
-changed else if-> if. reverting that.
+bm1880_clk_unregister_pll & bm1880_clk_unregister_div both try to
+free statically allocated variables, so remove those kfrees.
 
-Reviewed-by: Aric Cyr <Aric.Cyr@amd.com>
-Acked-by: Qingqing Zhuo <qingqing.zhuo@amd.com>
-Signed-off-by: Martin Leung <Martin.Leung@amd.com>
-Tested-by: Daniel Wheeler <daniel.wheeler@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+For example, if we take L703 kfree(div_hw):
+- div_hw is a bm1880_div_hw_clock pointer
+- in bm1880_clk_register_plls this is pointed to an element of arg1:
+  struct bm1880_div_hw_clock *clks
+- in the probe, where bm1880_clk_register_plls is called arg1 is
+  bm1880_div_clks, defined on L371:
+  static struct bm1880_div_hw_clock bm1880_div_clks[]
+
+Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Fixes: 1ab4601da55b ("clk: Add common clock driver for BM1880 SoC")
+Link: https://lore.kernel.org/r/20211223154244.1024062-1-conor.dooley@microchip.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/clk/clk-bm1880.c | 20 ++------------------
+ 1 file changed, 2 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
-index bb31541f80723..6420527fe476c 100644
---- a/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
-+++ b/drivers/gpu/drm/amd/display/dc/clk_mgr/clk_mgr.c
-@@ -306,8 +306,7 @@ void dc_destroy_clk_mgr(struct clk_mgr *clk_mgr_base)
- 	case FAMILY_NV:
- 		if (ASICREV_IS_SIENNA_CICHLID_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
- 			dcn3_clk_mgr_destroy(clk_mgr);
--		}
--		if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
-+		} else if (ASICREV_IS_DIMGREY_CAVEFISH_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
- 			dcn3_clk_mgr_destroy(clk_mgr);
- 		}
- 		if (ASICREV_IS_BEIGE_GOBY_P(clk_mgr_base->ctx->asic_id.hw_internal_rev)) {
+diff --git a/drivers/clk/clk-bm1880.c b/drivers/clk/clk-bm1880.c
+index e6d6599d310a1..fad78a22218e8 100644
+--- a/drivers/clk/clk-bm1880.c
++++ b/drivers/clk/clk-bm1880.c
+@@ -522,14 +522,6 @@ static struct clk_hw *bm1880_clk_register_pll(struct bm1880_pll_hw_clock *pll_cl
+ 	return hw;
+ }
+ 
+-static void bm1880_clk_unregister_pll(struct clk_hw *hw)
+-{
+-	struct bm1880_pll_hw_clock *pll_hw = to_bm1880_pll_clk(hw);
+-
+-	clk_hw_unregister(hw);
+-	kfree(pll_hw);
+-}
+-
+ static int bm1880_clk_register_plls(struct bm1880_pll_hw_clock *clks,
+ 				    int num_clks,
+ 				    struct bm1880_clock_data *data)
+@@ -555,7 +547,7 @@ static int bm1880_clk_register_plls(struct bm1880_pll_hw_clock *clks,
+ 
+ err_clk:
+ 	while (i--)
+-		bm1880_clk_unregister_pll(data->hw_data.hws[clks[i].pll.id]);
++		clk_hw_unregister(data->hw_data.hws[clks[i].pll.id]);
+ 
+ 	return PTR_ERR(hw);
+ }
+@@ -695,14 +687,6 @@ static struct clk_hw *bm1880_clk_register_div(struct bm1880_div_hw_clock *div_cl
+ 	return hw;
+ }
+ 
+-static void bm1880_clk_unregister_div(struct clk_hw *hw)
+-{
+-	struct bm1880_div_hw_clock *div_hw = to_bm1880_div_clk(hw);
+-
+-	clk_hw_unregister(hw);
+-	kfree(div_hw);
+-}
+-
+ static int bm1880_clk_register_divs(struct bm1880_div_hw_clock *clks,
+ 				    int num_clks,
+ 				    struct bm1880_clock_data *data)
+@@ -729,7 +713,7 @@ static int bm1880_clk_register_divs(struct bm1880_div_hw_clock *clks,
+ 
+ err_clk:
+ 	while (i--)
+-		bm1880_clk_unregister_div(data->hw_data.hws[clks[i].div.id]);
++		clk_hw_unregister(data->hw_data.hws[clks[i].div.id]);
+ 
+ 	return PTR_ERR(hw);
+ }
 -- 
 2.34.1
 
